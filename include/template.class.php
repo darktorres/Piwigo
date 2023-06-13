@@ -10,8 +10,48 @@
  * @package template
  */
 
-require_once( PHPWG_ROOT_PATH .'include/smarty/libs/Smarty.class.php');
+function customErrorHandler(
+    $errno,
+    $errstr,
+    $errfile,
+    $errline
+) {
+    // Define error types and corresponding prefixes
+    $error_types = [
+        E_ERROR => 'error',
+        E_WARNING => 'warn',
+        E_PARSE => 'error',
+        E_NOTICE => 'info',
+        E_CORE_ERROR => 'error',
+        E_CORE_WARNING => 'warn',
+        E_COMPILE_ERROR => 'error',
+        E_COMPILE_WARNING => 'warn',
+        E_USER_ERROR => 'error',
+        E_USER_WARNING => 'warn',
+        E_USER_NOTICE => 'info',
+        E_STRICT => 'info',
+        E_RECOVERABLE_ERROR => 'error',
+        E_DEPRECATED => 'warn',
+        E_USER_DEPRECATED => 'warn',
+    ];
 
+    // Determine the error type
+    $error_type = isset($error_types[$errno]) ? $error_types[$errno] : 'Unknown Error';
+
+    // Construct the error message
+    $errorMessage = "PHP: {$errstr} in {$errfile} on line {$errline}";
+
+    // Store in global var
+    global $custom_error_log;
+    $custom_error_log .= '<script>console.' . $error_type . '(' . json_encode($errorMessage) . ');</script>';
+
+    // Ensure PHP's internal error handler is not bypassed
+    return false;
+}
+
+set_error_handler('customErrorHandler');
+
+require_once( PHPWG_ROOT_PATH .'include/smarty/libs/Smarty.class.php');
 
 /** default rank for buttons */
 define('BUTTONS_RANK_NEUTRAL', 50);
@@ -567,6 +607,9 @@ class Template
 
     echo $this->output;
     $this->output='';
+
+    global $custom_error_log;
+    echo $custom_error_log;
   }
 
   /**
