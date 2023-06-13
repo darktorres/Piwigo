@@ -192,7 +192,6 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
 include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 upgrade_db_connect();
-pwg_db_check_charset();
 
 [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 define('CURRENT_DATE', $dbnow);
@@ -315,7 +314,7 @@ SELECT id
             get_branch_from_version(PHPWG_VERSION)
         );
 
-        header('Content-Type: text/html; charset=' . get_pwg_charset());
+        header('Content-Type: text/html; charset=utf-8');
         echo 'No upgrade required, the database structure is up to date';
         echo '<br><a href="index.php">← back to gallery</a>';
         exit();
@@ -331,7 +330,6 @@ $mysql_changes = [];
 
 // check php version
 if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
-    // include(PHPWG_ROOT_PATH.'install/php5_apache_configuration.php'); // to remove, with all its related content
     $page['errors'][] = l10n(
         'PHP version %s required (you are running on PHP %s)',
         REQUIRED_PHP_VERSION,
@@ -452,10 +450,6 @@ REPLACE INTO ' . PLUGINS_TABLE . '
 // |                          start template output                        |
 // +-----------------------------------------------------------------------+
 else {
-    if (! defined('PWG_CHARSET')) {
-        define('PWG_CHARSET', 'utf-8');
-    }
-
     include_once(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
     $languages = new languages();
 
