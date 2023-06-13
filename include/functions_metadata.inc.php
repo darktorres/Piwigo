@@ -110,7 +110,7 @@ function clean_iptc_value($value)
         }
       }
       
-      $value = convert_charset($value, $input_encoding, get_pwg_charset());
+      $value = convert_charset($value, $input_encoding, 'utf-8');
     }
   }
   return $value;

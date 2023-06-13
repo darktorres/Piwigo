@@ -124,7 +124,7 @@ UPDATE '.USER_INFOS_TABLE.'
   {
     if ( empty($target_charset) )
     {
-      $target_charset = get_pwg_charset();
+      $target_charset = 'utf-8';
     }
     $target_charset = strtolower($target_charset);
 
