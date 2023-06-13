@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preinstall": "cd tests && npm install",
+    "test": "cd tests && npm test"
   },
   "dependencies": {
     "jquery-migrate": "^1.4.1"
