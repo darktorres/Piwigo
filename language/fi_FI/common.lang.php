@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 /*
 Language Name: Finnish [FI]
-Version: auto
+Version: 13.7.0
 Language URI: http://piwigo.org/ext/extension_view.php?eid=686
 Author: Piwigo team
 Author URI: http://piwigo.org
@@ -416,3 +416,6 @@ $lang['Link: %s'] = 'Linkki: %s';
 $lang['Your authentication key is no longer valid.'] = 'Todennusavaimesi ei ole enää voimassa.';
 $lang['Invalid username or password!'] = 'Väärä käyttäjänimi tai salasana!';
 $lang['generate random password'] = 'luo satunnainen salasana';
+$lang['Password: ********** (no copy by email)'] = 'Salasana: ********** (ei kopioa sähköpostitse)';
+$lang['Related albums'] = 'Aiheeseen liittyvät albumit';
+$lang['Start-Date'] = 'Aloituspäivämäärä';

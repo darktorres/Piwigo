@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 /*
 Language Name: Íslenska [IS]
-Version: auto
+Version: 13.7.0
 Language URI: http://piwigo.org/ext/extension_view.php?eid=518
 Author: Piwigo team
 Author URI: http://piwigo.org
@@ -316,7 +316,7 @@ $lang['Email address is missing. Please specify an email address.'] = 'Netfang v
 $lang['This author modified following comment:'] = 'Þessi höfundur breytti eftirfarandi umsögn:';
 $lang['This author removed the comment with id %d'] = 'Þessi höfundur fjarlægði umsögnina með auðkenninu %d';
 $lang['html tags are not allowed in login'] = 'html merkingar eru ekki leyfilegar við innskráningu';
-$lang['Desktop'] = 'Tölvuskjár';
+$lang['Desktop'] = 'Tölvuskjá';
 $lang['Mobile'] = 'Farsíma';
 $lang['Photo title, A &rarr; Z'] = 'Titill myndar, A &rarr; Ö';
 $lang['Photo title, Z &rarr; A'] = 'Titill myndar, Ö &rarr; A';

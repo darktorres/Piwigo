@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 /*
 Language Name: Slovenšcina [SI]
-Version: auto
+Version: 13.7.0
 Language URI: http://piwigo.org/ext/extension_view.php?eid=453
 Author: Piwigo team
 Author URI: http://piwigo.org

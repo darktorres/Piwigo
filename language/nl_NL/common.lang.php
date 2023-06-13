@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 /*
 Language Name: Nederlands [NL]
-Version: auto
+Version: 13.7.0
 Language URI: http://piwigo.org/ext/extension_view.php?eid=429
 Author: Piwigo team
 Author URI: http://piwigo.org
@@ -39,7 +39,7 @@ $lang['About'] = 'Over';
 $lang['All tags'] = 'Alle labels';
 $lang['Any tag'] = 'Elk label';
 $lang['At least one listed rule must be satisfied.'] = 'Er moet tenminste voldaan worden aan &eacute;&eacute;n criterium.';
-$lang['Author'] = 'Naam';
+$lang['Author'] = 'Fotograaf/bron';
 $lang['Albums'] = 'Albums';
 $lang['Album'] = 'Album';
 $lang['Close this window'] = 'Sluit dit venster';

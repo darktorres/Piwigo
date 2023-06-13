@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 /*
 Language Name: Svenska [SE]
-Version: auto
+Version: 13.7.0
 Language URI: http://piwigo.org/ext/extension_view.php?eid=451
 Author: Piwigo team
 Author URI: http://piwigo.org
@@ -88,7 +88,7 @@ $lang['Login'] = 'Logga in';
 $lang['Contact webmaster'] = 'Kontakta webmaster';
 $lang['Create a new account'] = 'Skapa ett nytt konto';
 $lang['Created on'] = 'Skapad den';
-$lang['Creation date'] = 'Skapat den';
+$lang['Creation date'] = 'Skapelsedatum';
 $lang['Current password is wrong'] = 'Aktuellt lösenord är fel';
 $lang['Dimensions'] = 'Dimensioner';
 $lang['Display'] = 'Visa';
