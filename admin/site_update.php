@@ -230,7 +230,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
   // new categories are the directories not present yet in the database
   foreach (array_diff($fs_fulldirs, array_keys($db_fulldirs)) as $fulldir) 
   {
-    $dir = basename($fulldir);
+    $dir = $mysqli->real_escape_string(basename($fulldir));
     $insert = array(
       'id' => $next_id++,
       'dir' => $dir,

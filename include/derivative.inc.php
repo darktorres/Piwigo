@@ -72,6 +72,10 @@ final class SrcImage
       $this->size = @array($size[0],$size[1]);
     }
 
+    $segments = explode('/', $this->rel_path); // Split the string by "/"
+    $encodedSegments = array_map('rawurlencode', $segments); // Apply rawurlencode to each segment
+    $this->rel_path = implode('/', $encodedSegments); // Join the segments back together with "/"
+
     if (!$this->size)
     {
       if (isset($infos['width']) && isset($infos['height']))
@@ -118,7 +122,9 @@ final class SrcImage
    */
   function get_path()
   {
-    return PHPWG_ROOT_PATH.$this->rel_path;
+    $segments = explode('/', $this->rel_path);
+    $decodedSegments = array_map('rawurldecode', $segments);
+    return PHPWG_ROOT_PATH . implode('/', $decodedSegments);
   }
 
   /**
