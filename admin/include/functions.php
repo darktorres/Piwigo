@@ -2263,55 +2263,6 @@ UPDATE '.USER_CACHE_TABLE.'
 }
 
 /**
- * Adds the caracter set to a create table sql query.
- * All CREATE TABLE queries must call this function
- *
- * @param string $query
- * @return string
- */
-function create_table_add_character_set($query)
-{
-  defined('DB_CHARSET') or fatal_error('create_table_add_character_set DB_CHARSET undefined');
-  if ('DB_CHARSET'!='')
-  {
-    if ( version_compare(pwg_get_db_version(), '4.1.0', '<') )
-    {
-      return $query;
-    }
-    $charset_collate = " DEFAULT CHARACTER SET ".DB_CHARSET;
-    if (DB_COLLATE!='')
-    {
-      $charset_collate .= " COLLATE ".DB_COLLATE;
-    }
-    if ( is_array($query) )
-    {
-      foreach( $query as $id=>$q)
-      {
-        $q=trim($q);
-        $q=trim($q, ';');
-        if (preg_match('/^CREATE\s+TABLE/i',$q))
-        {
-          $q.=$charset_collate;
-        }
-        $q .= ';';
-        $query[$id] = $q;
-      }
-    }
-    else
-    {
-      $query=trim($query);
-      $query=trim($query, ';');
-      if (preg_match('/^CREATE\s+TABLE/i',$query))
-      {
-        $query.=$charset_collate;
-      }
-      $query .= ';';
-    }
-  }
-  return $query;
-}
-
-/**
  * Returns access levels as array used on template with html_options functions.
  *
  * @param int $MinLevelAccess
