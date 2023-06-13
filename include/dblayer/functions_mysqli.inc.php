@@ -112,7 +112,12 @@ function pwg_query($query)
   global $mysqli, $conf, $page, $debug, $t2;
 
   $start = microtime(true);
-  ($result = $mysqli->query($query)) or my_error($query, $conf['die_on_sql_error']);
+  
+  try {
+    $result = $mysqli->query($query);
+  } catch (Throwable) {
+    my_error($query, $conf['die_on_sql_error']);
+  }
 
   $time = microtime(true) - $start;
 
