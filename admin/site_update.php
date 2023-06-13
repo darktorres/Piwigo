@@ -45,10 +45,6 @@ list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 define('CURRENT_DATE', $dbnow);
 
 $error_labels = array(
-  'PWG-UPDATE-1' => array(
-    l10n('wrong filename'),
-    l10n('The name of directories and files must be composed of letters, numbers, "-", "_" or "."')
-    ),
   'PWG-ERROR-NO-FS' => array(
     l10n('File/directory read error'),
     l10n('The file or directory cannot be accessed (either it does not exist or the access is denied)')
@@ -232,74 +228,59 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
   }
   $inserts = array();
   // new categories are the directories not present yet in the database
-  foreach (array_diff($fs_fulldirs, array_keys($db_fulldirs)) as $fulldir)
+  foreach (array_diff($fs_fulldirs, array_keys($db_fulldirs)) as $fulldir) 
   {
     $dir = basename($fulldir);
-    if (preg_match($conf['sync_chars_regex'], $dir))
+    $insert = array(
+      'id' => $next_id++,
+      'dir' => $dir,
+      'name' => str_replace('_', ' ', $dir),
+      'site_id' => $site_id,
+      'commentable' => boolean_to_string($conf['newcat_default_commentable']),
+      'status' => $conf['newcat_default_status'],
+      'visible' => boolean_to_string($conf['newcat_default_visible']),
+    );
+
+    if (isset($db_fulldirs[dirname($fulldir)])) 
     {
-      $insert = array(
-        'id'          => $next_id++,
-        'dir'         => $dir,
-        'name'        => str_replace('_', ' ', $dir),
-        'site_id'     => $site_id,
-        'commentable' =>
-          boolean_to_string($conf['newcat_default_commentable']),
-        'status'      => $conf['newcat_default_status'],
-        'visible'     => boolean_to_string($conf['newcat_default_visible']),
-        );
+      $parent = $db_fulldirs[dirname($fulldir)];
 
-      if (isset($db_fulldirs[dirname($fulldir)]))
+      $insert['id_uppercat'] = $parent;
+      $insert['uppercats'] = $db_categories[$parent]['uppercats'] . ',' . $insert['id'];
+      $insert['rank'] = $next_rank[$parent]++;
+      $insert['global_rank'] = $db_categories[$parent]['global_rank'] . '.' . $insert['rank'];
+      if ('private' == $db_categories[$parent]['status']) 
       {
-        $parent = $db_fulldirs[dirname($fulldir)];
-
-        $insert['id_uppercat'] = $parent;
-        $insert['uppercats'] =
-          $db_categories[$parent]['uppercats'].','.$insert['id'];
-        $insert['rank'] = $next_rank[$parent]++;
-        $insert['global_rank'] =
-          $db_categories[$parent]['global_rank'].'.'.$insert['rank'];
-        if ('private' == $db_categories[$parent]['status'])
-        {
-          $insert['status'] = 'private';
-        }
-        if ('false' == $db_categories[$parent]['visible'])
-        {
-          $insert['visible'] = 'false';
-        }
+        $insert['status'] = 'private';
       }
-      else
+      if ('false' == $db_categories[$parent]['visible']) 
       {
-        $insert['uppercats'] = $insert['id'];
-        $insert['rank'] = $next_rank['NULL']++;
-        $insert['global_rank'] = $insert['rank'];
+        $insert['visible'] = 'false';
       }
-
-      $inserts[] = $insert;
-      $infos[] = array(
-          'path' => $fulldir,
-          'info' => l10n('added'),
-          );
-
-      // add the new category to $db_categories and $db_fulldirs array
-      $db_categories[$insert['id']] =
-        array(
-          'id' => $insert['id'],
-          'parent' => (isset($parent)) ? $parent : Null,
-          'status' => $insert['status'],
-          'visible' => $insert['visible'],
-          'uppercats' => $insert['uppercats'],
-          'global_rank' => $insert['global_rank']
-          );
-      $db_fulldirs[$fulldir] = $insert['id'];
-      $next_rank[$insert['id']] = 1;
+    } else {
+      $insert['uppercats'] = $insert['id'];
+      $insert['rank'] = $next_rank['NULL']++;
+      $insert['global_rank'] = $insert['rank'];
     }
-    else
-    {
-      $errors[] = array(
-        'path' => $fulldir,
-        'type' => 'PWG-UPDATE-1'
-        );
-    }
+
+    $inserts[] = $insert;
+    $infos[] = array(
+      'path' => $fulldir,
+      'info' => l10n('added'),
+    );
+
+    // add the new category to $db_categories and $db_fulldirs array
+    $db_categories[$insert['id']] =
+      array(
+        'id' => $insert['id'],
+        'parent' => (isset($parent)) ? $parent : Null,
+        'status' => $insert['status'],
+        'visible' => $insert['visible'],
+        'uppercats' => $insert['uppercats'],
+        'global_rank' => $insert['global_rank']
+      );
+    $db_fulldirs[$fulldir] = $insert['id'];
+    $next_rank[$insert['id']] = 1;
   }
 
   if (count($inserts) > 0)
@@ -517,15 +498,6 @@ SELECT id, path
       continue;
     }
     $filename = basename($path);
-    if (!preg_match($conf['sync_chars_regex'], $filename))
-    {
-      $errors[] = array(
-        'path' => $path,
-        'type' => 'PWG-UPDATE-1'
-        );
-
-      continue;
-    }
 
     $insert = array(
       'id'             => $next_element_id++,
