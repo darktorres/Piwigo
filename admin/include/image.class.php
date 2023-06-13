@@ -516,7 +516,7 @@ class image_ext_imagick implements imageInterface
       @putenv('MAGICK_THREAD_LIMIT=1');
     }
 
-    $command = $this->imagickdir.'identify -format "%wx%h" "'.realpath($source_filepath).'"';
+    $command = $this->imagickdir.'identify -quiet -format "%wx%h" "'.realpath($source_filepath).'"';
     @exec($command, $returnarray);
     if(!is_array($returnarray) or empty($returnarray[0]) or !preg_match('/^(\d+)x(\d+)$/', $returnarray[0], $match))
     {
@@ -633,7 +633,7 @@ class image_ext_imagick implements imageInterface
       $this->add_command('sampling-factor', '4:2:2' );
     }
 
-    $exec = $this->imagickdir.'convert';
+    $exec = $this->imagickdir.'convert -quiet';
     $exec .= ' "'.realpath($this->source_filepath).'"';
 
     foreach ($this->commands as $command => $params)
