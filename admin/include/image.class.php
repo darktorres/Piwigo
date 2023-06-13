@@ -341,6 +341,11 @@ class pwg_image
     return function_exists('gd_info');
   }
 
+  static function is_vips()
+  {
+    return class_exists('image_vips');
+  }
+
   static function get_library($library=null, $extension=null)
   {
     global $conf;
@@ -354,6 +359,11 @@ class pwg_image
     switch (strtolower($library))
     {
       case 'auto':
+      case 'vips':
+        if (self::is_vips())
+        {
+          return 'vips';
+        }
       case 'imagick':
         if ($extension != 'gif' and self::is_imagick())
         {
@@ -810,6 +820,85 @@ class image_gd implements imageInterface
   function destroy()
   {
     imagedestroy($this->image);
+  }
+}
+
+// +-----------------------------------------------------------------------+
+// |                       Class for libvips library                       |
+// +-----------------------------------------------------------------------+
+
+class image_vips implements imageInterface
+{
+  var Jcupitt\Vips\Image $image;
+  var $quality = 75;
+  var $source_filepath;
+
+  function __construct($source_filepath)
+  {
+    // putenv('VIPS_WARNING=0');
+    $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), array('access' => 'sequential'));
+    $this->source_filepath = realpath($source_filepath);
+  }
+
+  function add_command($command, $params = null)
+  {
+
+  }
+
+  function get_width()
+  {
+    return $this->image->width;
+  }
+
+  function get_height()
+  {
+    return $this->image->height;
+  }
+
+  function crop($width, $height, $x, $y)
+  {
+    $this->image = $this->image->crop($x, $y, $width, $height);
+    return true;
+  }
+
+  function strip()
+  {
+    return true;
+  }
+
+  function rotate($rotation)
+  {
+    $this->image = $this->image->rotate($rotation);
+    return true;
+  }
+
+  function set_compression_quality($quality)
+  {
+    $this->quality = $quality;
+    return true;
+  }
+
+  function resize($width, $height)
+  {
+    $this->image = Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, ['height' => $height]);
+    return true;
+  }
+
+  function sharpen($amount)
+  {
+    return true;
+  }
+
+  function compose($overlay, $x, $y, $opacity)
+  {
+    return true;
+  }
+
+  function write($destination_filepath)
+  {
+    $dest = pathinfo($destination_filepath);
+    $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);
+    return true;
   }
 }
 
