@@ -11,7 +11,7 @@
  */
 
 define('DB_ENGINE', 'MySQL');
-define('REQUIRED_MYSQL_VERSION', '5.0.0');
+define('REQUIRED_MYSQL_VERSION', '8.0.39');
 
 define('DB_REGEX_OPERATOR', 'REGEXP');
 define('DB_RANDOM_FUNCTION', 'RAND');
@@ -46,15 +46,13 @@ function pwg_db_connect($host, $user, $password, $database)
   {
     list($host, $port) = explode(':', $host);
   }
-
-  $dbname = '';
   
-  $mysqli = new mysqli($host, $user, $password, $dbname, $port, $socket);
+  $mysqli = new mysqli($host, $user, $password, '', $port, $socket);
   if (mysqli_connect_error())
   {
     throw new Exception("Can't connect to server");
   }
-  if (!$mysqli->select_db($database))
+  if (!empty($database) && !$mysqli->select_db($database))
   {
     throw new Exception('Connection to server succeed, but it was impossible to connect to database');
   }
@@ -71,21 +69,6 @@ function pwg_db_connect($host, $user, $password, $database)
   {
     pwg_query("SET SESSION sql_mode='".$sql_mode_altered."'");
   }
-}
-
-/**
- * Set charset for database connection.
- */
-function pwg_db_check_charset() 
-{
-  global $mysqli;
-
-  $db_charset = 'utf8';
-  if (defined('DB_CHARSET') and DB_CHARSET != '')
-  {
-    $db_charset = DB_CHARSET;
-  }
-  $mysqli->set_charset($db_charset);
 }
 
 /**

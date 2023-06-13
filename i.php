@@ -386,7 +386,6 @@ catch (Exception $e)
 {
   $logger->error($e->getMessage(), 'i.php');
 }
-pwg_db_check_charset();
 
 list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM '.$prefixeTable.'config WHERE param=\'derivatives\''));
 ImageStdParams::load_from_db();
