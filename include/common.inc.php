@@ -122,8 +122,6 @@ catch (Exception $e)
   my_error(l10n($e->getMessage()), true);
 }
 
-pwg_db_check_charset();
-
 load_conf_from_db();
 
 $logger = new Logger(array(
@@ -259,7 +257,7 @@ if ($conf['gallery_locked'])
   {
     set_status_header(503, 'Service Unavailable');
     @header('Retry-After: 900');
-    header('Content-Type: text/html; charset='.get_pwg_charset());
+    header('Content-Type: text/html; charset=utf-8');
     echo '<a href="'.get_absolute_root_url(false).'identification.php">'.l10n('The gallery is locked for maintenance. Please, come back later.').'</a>';
     echo str_repeat( ' ', 512); //IE6 doesn't error output if below a size
     exit();

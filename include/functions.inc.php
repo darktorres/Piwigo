@@ -314,7 +314,7 @@ function remove_accents($string)
   return $string;
 }
 
-if (function_exists('mb_strtolower') && defined('PWG_CHARSET'))
+if (function_exists('mb_strtolower'))
 {
   /**
    * removes accents from a string and converts it to lower case
@@ -324,7 +324,7 @@ if (function_exists('mb_strtolower') && defined('PWG_CHARSET'))
    */
   function pwg_transliterate($term)
   {
-    return remove_accents( mb_strtolower($term, PWG_CHARSET) );
+    return remove_accents( mb_strtolower($term, 'utf-8') );
   }
 }
 else
@@ -1692,20 +1692,6 @@ function get_filter_page_value($value_name)
   {
     return null;
   }
-}
-
-/**
- * return the character set used by Piwigo
- * @return string
- */
-function get_pwg_charset()
-{
-  $pwg_charset = 'utf-8';
-  if (defined('PWG_CHARSET'))
-  {
-    $pwg_charset = PWG_CHARSET;
-  }
-  return $pwg_charset;
 }
 
 /**
