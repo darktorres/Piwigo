@@ -381,7 +381,7 @@ function ws_session_getStatus(
     }
 
     $res['pwg_token'] = get_pwg_token();
-    $res['charset'] = get_pwg_charset();
+    $res['charset'] = 'utf-8';
 
     [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
     $res['current_datetime'] = $dbnow;

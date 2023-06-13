@@ -8,8 +8,8 @@
 // +-----------------------------------------------------------------------+
 
 //check php version
-if (PHP_VERSION_ID < 5) {
-    die('Piwigo requires PHP 5 or above.');
+if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
+    die('Piwigo requires PHP ' . REQUIRED_PHP_VERSION . ' or above.');
 }
 
 define('PHPWG_ROOT_PATH', './');
@@ -51,8 +51,6 @@ try {
 } catch (Exception $exception) {
     my_error(l10n($exception->getMessage()), true);
 }
-
-pwg_db_check_charset();
 
 // +-----------------------------------------------------------------------+
 // |                              Upgrades                                 |

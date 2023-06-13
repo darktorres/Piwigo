@@ -147,8 +147,7 @@ class PwgRestEncoder extends PwgResponseEncoder
         $this->_writer = new PwgXmlWriter();
         $this->encode($response);
         $ret = $this->_writer->getOutput();
-
-        return '<?xml version="1.0" encoding="' . get_pwg_charset() . '" ?>
+        return '<?xml version="1.0" encoding="utf-8" ?>
 <rsp stat="ok">
 ' . $ret . '
 </rsp>';

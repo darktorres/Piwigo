@@ -10,59 +10,52 @@
 //----------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
 
-// @set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
-//
-// addslashes to vars if magic_quotes_gpc is off this is a security
-// precaution to prevent someone trying to break out of a SQL statement.
-//
-if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
-    if (is_array($_POST)) {
-        foreach ($_POST as $k => $v) {
-            if (is_array($_POST[$k])) {
-                foreach ($_POST[$k] as $k2 => $v2) {
-                    $_POST[$k][$k2] = addslashes((string) $v2);
-                }
-
-                @reset($_POST[$k]);
-            } else {
-                $_POST[$k] = addslashes((string) $v);
+if (is_array($_POST)) {
+    foreach ($_POST as $k => $v) {
+        if (is_array($_POST[$k])) {
+            foreach ($_POST[$k] as $k2 => $v2) {
+                $_POST[$k][$k2] = addslashes((string) $v2);
             }
-        }
 
-        @reset($_POST);
+            @reset($_POST[$k]);
+        } else {
+            $_POST[$k] = addslashes((string) $v);
+        }
     }
 
-    if (is_array($_GET)) {
-        foreach ($_GET as $k => $v) {
-            if (is_array($_GET[$k])) {
-                foreach ($_GET[$k] as $k2 => $v2) {
-                    $_GET[$k][$k2] = addslashes((string) $v2);
-                }
+    @reset($_POST);
+}
 
-                @reset($_GET[$k]);
-            } else {
-                $_GET[$k] = addslashes((string) $v);
+if (is_array($_GET)) {
+    foreach ($_GET as $k => $v) {
+        if (is_array($_GET[$k])) {
+            foreach ($_GET[$k] as $k2 => $v2) {
+                $_GET[$k][$k2] = addslashes((string) $v2);
             }
+            
+            @reset($_GET[$k]);
+        } else {
+            $_GET[$k] = addslashes((string) $v);
         }
-
-        @reset($_GET);
     }
+    
+    @reset($_GET);
+}
 
-    if (is_array($_COOKIE)) {
-        foreach ($_COOKIE as $k => $v) {
-            if (is_array($_COOKIE[$k])) {
-                foreach ($_COOKIE[$k] as $k2 => $v2) {
-                    $_COOKIE[$k][$k2] = addslashes((string) $v2);
-                }
-
-                @reset($_COOKIE[$k]);
-            } else {
-                $_COOKIE[$k] = addslashes((string) $v);
+if (is_array($_COOKIE)) {
+    foreach ($_COOKIE as $k => $v) {
+        if (is_array($_COOKIE[$k])) {
+            foreach ($_COOKIE[$k] as $k2 => $v2) {
+                $_COOKIE[$k][$k2] = addslashes((string) $v2);
             }
+            
+            @reset($_COOKIE[$k]);
+        } else {
+            $_COOKIE[$k] = addslashes((string) $v);
         }
-
-        @reset($_COOKIE);
     }
+    
+    @reset($_COOKIE);
 }
 
 //----------------------------------------------------- variable initialization
@@ -103,18 +96,10 @@ $dbpasswd = (empty($_POST['dbpasswd'])) ? '' : $_POST['dbpasswd'];
 $dbname = (empty($_POST['dbname'])) ? '' : $_POST['dbname'];
 
 // dblayer
-if (extension_loaded('mysqli')) {
-    $dblayer = 'mysqli';
+if (! extension_loaded('mysqli')) {
+    fatal_error('PHP extension "mysqli" is not loaded');
 } else {
-    if (version_compare(PHP_VERSION, '7') >= 0) {
-        fatal_error('PHP extension "mysqli" is not loaded');
-    }
-
-    if (! extension_loaded('mysql')) {
-        fatal_error('No PHP extension installed for mysql, Piwigo needs one');
-    }
-
-    $dblayer = 'mysql';
+    $dblayer = 'mysqli';
 }
 
 $admin_name = (empty($_POST['admin_name'])) ? '' : $_POST['admin_name'];
@@ -210,12 +195,7 @@ if (version_compare(
     REQUIRED_PHP_VERSION,
     '<'
 )) {
-    // include(PHPWG_ROOT_PATH.'install/php5_apache_configuration.php'); // to remove, with all its related content
-    $errors[] = l10n(
-        'PHP version %s required (you are running on PHP %s)',
-        REQUIRED_PHP_VERSION,
-        PHP_VERSION
-    );
+    $errors[] = l10n('PHP version %s required (you are running on PHP %s)', REQUIRED_PHP_VERSION, PHP_VERSION);
 }
 
 //----------------------------------------------------- template initialization
@@ -236,9 +216,6 @@ include(PHPWG_ROOT_PATH . 'admin/include/functions_install.inc.php');
 include(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
 
 if (isset($_POST['install'])) {
-    install_db_connect($infos, $errors);
-    pwg_db_check_charset();
-
     $webmaster = trim(preg_replace('/\s{2,}/', ' ', $admin_name));
     if ($webmaster === '' || $webmaster === '0') {
         $errors[] = l10n('enter a login for webmaster');
@@ -261,46 +238,17 @@ if (isset($_POST['install'])) {
 
     if (count($errors) == 0) {
         $step = 2;
-        $file_content = '<?php
-$conf[\'dblayer\'] = \'' . $dblayer . '\';
-$conf[\'db_base\'] = \'' . $dbname . '\';
-$conf[\'db_user\'] = \'' . $dbuser . '\';
-$conf[\'db_password\'] = \'' . $dbpasswd . '\';
-$conf[\'db_host\'] = \'' . $dbhost . '\';
 
-$prefixeTable = \'' . $prefixeTable . '\';
+        pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], '');
 
-define(\'PHPWG_INSTALLED\', true);
-define(\'PWG_CHARSET\', \'utf-8\');
-define(\'DB_CHARSET\', \'utf8\');
-define(\'DB_COLLATE\', \'\');
-
-?' . '>';
-
-        @umask(0111);
-        // writing the configuration file
-        if (! ($fp = @fopen($config_file, 'w'))) {
-            // make sure nobody can list files of _data directory
-            secure_directory(
-                PHPWG_ROOT_PATH . $conf['data_location']
-            );
-
-            $tmp_filename = md5(uniqid(time()));
-            $fh = @fopen(PHPWG_ROOT_PATH . $conf['data_location'] . 'pwg_' . $tmp_filename, 'w');
-            @fwrite($fh, $file_content, strlen($file_content));
-            @fclose($fh);
-
-            $template->assign(
-                [
-                    'config_creation_failed' => true,
-                    'config_url' => 'install.php?dl=' . $tmp_filename,
-                    'config_file_content' => $file_content,
-                ]
-            );
+        try {
+            $mysqli->query(sprintf('DROP DATABASE IF EXISTS %s;', $dbname));
+            $mysqli->query(sprintf('CREATE DATABASE %s;', $dbname));
+        } catch (Throwable) {
+            my_error($query, $conf['die_on_sql_error']);
         }
 
-        @fwrite($fp, $file_content, strlen($file_content));
-        @fclose($fp);
+        pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], $_POST['dbname']);
 
         // tables creation, based on piwigo_structure.sql
         execute_sqlfile(
@@ -341,12 +289,6 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
         // fill $conf global array
         load_conf_from_db();
 
-        // PWG_CHARSET is required for building the fs_themes array in the
-        // themes class
-        if (! defined('PWG_CHARSET')) {
-            define('PWG_CHARSET', 'utf-8');
-        }
-
         activate_core_themes();
         activate_core_plugins();
 
@@ -361,7 +303,7 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
             [
                 'id' => 1,
                 'username' => $admin_name,
-                'password' => md5((string) $admin_pass1),
+                'password' => pwg_password_hash($admin_pass1),
                 'mail_address' => $admin_mail,
             ],
             [
@@ -394,6 +336,43 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
             array_keys($datas[0]),
             $datas
         );
+
+        $file_content = "<?php\n"
+        . "\$conf['dblayer'] = '{$dblayer}';\n"
+        . "\$conf['db_base'] = '{$dbname}';\n"
+        . "\$conf['db_user'] = '{$dbuser}';\n"
+        . "\$conf['db_password'] = '{$dbpasswd}';\n"
+        . "\$conf['db_host'] = '{$dbhost}';\n"
+        . "\n"
+        . "\$prefixeTable = '{$prefixeTable}';\n"
+        . "\n"
+        . "const PHPWG_INSTALLED = true;\n"
+        . "\n"
+        . '?>';
+
+        umask(0111);
+
+        // writing the configuration file
+        if (! ($fp = fopen($config_file, 'w'))) {
+            // make sure nobody can list files of _data directory
+            secure_directory(
+                PHPWG_ROOT_PATH . $conf['data_location']
+            );
+            $tmp_filename = md5(uniqid((string) time()));
+            $fh = fopen(PHPWG_ROOT_PATH . $conf['data_location'] . 'pwg_' . $tmp_filename, 'w');
+            fwrite($fh, $file_content, strlen($file_content));
+            fclose($fh);
+            $template->assign(
+                [
+                    'config_creation_failed' => true,
+                    'config_url' => 'install.php?dl=' . $tmp_filename,
+                    'config_file_content' => $file_content,
+                ]
+            );
+        }
+
+        fwrite($fp, $file_content, strlen($file_content));
+        fclose($fp);
     }
 }
 

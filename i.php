@@ -372,8 +372,6 @@ try {
     $logger->error($exception->getMessage(), 'i.php');
 }
 
-pwg_db_check_charset();
-
 [$conf['derivatives']] = pwg_db_fetch_row(
     pwg_query('SELECT value FROM ' . $prefixeTable . "config WHERE param='derivatives'")
 );
