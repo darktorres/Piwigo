@@ -40,8 +40,7 @@
     </span>
     {/if}
     <a href="{$cat.URL}">
-      <img class="category thumbnail" {if $derivative->is_cached()}src="{$derivative->get_url()}"{else}src="{$ROOT_URL}{$themeconf.icon_dir}/img_small.png" 
-        data-src="{$derivative->get_url()}"{/if} alt="{$cat.TN_ALT}" 
+      <img class="category thumbnail" src="{$derivative->get_url()}" {$derivative->get_size_htm()} loading="lazy" decoding="async" alt="{$cat.TN_ALT}" 
         title="{$cat.NAME|@replace:'"':' '|@strip_tags:false}" {$derivative->get_size_htm()}>
     </a>
   </li>
@@ -55,8 +54,6 @@
 {/html_style}{/strip}
 
 {combine_css path=$GDThumb.GDTHUMB_ROOT|cat:"/css/gdthumb.css"}
-{combine_script id='jquery.ajaxmanager' path='themes/default/js/plugins/jquery.ajaxmanager.js' load='footer'}
-{combine_script id='thumbnails.loader' path='themes/default/js/thumbnails.loader.js' require='jquery.ajaxmanager' load='footer'}
 {combine_script id='jquery.ba-resize' path=$GDThumb.GDTHUMB_ROOT|cat:"/js/jquery.ba-resize.min.js" load="footer"}
 {combine_script id='gdthumb' require='jquery,jquery.ba-resize' path=$GDThumb.GDTHUMB_ROOT|cat:"/js/gdthumb.js" load="footer"}
 

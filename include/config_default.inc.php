@@ -916,9 +916,6 @@ $conf['derivative_default_size'] = 'medium';
 // EXIF/IPTC... from derivative?
 $conf['derivatives_strip_metadata_threshold'] = 256000;
 
-//Maximum Ajax requests at once, for thumbnails on-the-fly generation
-$conf['max_requests']=3;
-
 // one of '', 'images', 'all'
 //TODO: Put this in admin and also manage .htaccess in #sites and upload folders
 $conf['original_url_protection'] = '';

@@ -184,8 +184,6 @@ final class DerivativeImage
   private $rel_path;
   /** @var string */
   private $rel_url;
-  /** @var bool */
-  private $is_cached=true;
 
   /**
    * @param string|DerivativeParams $type standard derivative param type (e.g. IMG_*)
@@ -204,7 +202,7 @@ final class DerivativeImage
       $this->params = $type;
     }
 
-    self::build($src_image, $this->params, $this->rel_path, $this->rel_url, $this->is_cached);
+    self::build($src_image, $this->params, $this->rel_path, $this->rel_url);
   }
 
   /**
@@ -308,7 +306,7 @@ final class DerivativeImage
   /**
    * @todo : documentation of DerivativeImage::build
    */
-  private static function build($src, &$params, &$rel_path, &$rel_url, &$is_cached=null)
+  private static function build($src, &$params, &$rel_path, &$rel_url)
   {
     if ( $src->has_size() && $params->is_identity( $src->get_size() ) )
     {// the source image is smaller than what we should do - we do not upsample
@@ -329,7 +327,7 @@ final class DerivativeImage
             if ($smaller->sizing->max_crop==$params->sizing->max_crop && $smaller->is_identity( $src->get_size() ))
             {
               $params = $smaller;
-              self::build($src, $params, $rel_path, $rel_url, $is_cached);
+              self::build($src, $params, $rel_path, $rel_url);
               return;
             }
           }
@@ -366,7 +364,6 @@ final class DerivativeImage
       $mtime = file_exists(PHPWG_ROOT_PATH.$rel_path) ? filemtime(PHPWG_ROOT_PATH.$rel_path) : false;
       if ($mtime===false or $mtime < $params->last_mod_time)
       {
-        $is_cached = false;
         $url_style = 2;
       }
       else
@@ -467,6 +464,9 @@ final class DerivativeImage
     if ($size)
     {
       return 'width="'.$size[0].'" height="'.$size[1].'"';
+    } else
+    {
+      return '';
     }
   }
 
@@ -527,14 +527,6 @@ final class DerivativeImage
     {
       return 'width="'.$size[0].'" height="'.$size[1].'"';
     }
-  }
-
-  /**
-   * @return bool
-   */
-  function is_cached()
-  {
-    return $this->is_cached;
   }
 }
 
