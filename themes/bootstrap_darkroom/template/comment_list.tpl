@@ -21,12 +21,8 @@
     {define_derivative name='cropped_derivative_params' width=$derivative_params->sizing->ideal_size[0] height=$derivative_params->sizing->ideal_size[0] crop=true}
   {/if}
   {assign var=derivative value=$pwg->derivative($cropped_derivative_params, $comment.src_image)}
-  {if !$derivative->is_cached()}
-  {combine_script id='jquery.ajaxmanager' path='themes/default/js/plugins/jquery.ajaxmanager.js' load='footer'}
-  {combine_script id='thumbnails.loader' path='themes/default/js/thumbnails.loader.js' require='jquery.ajaxmanager' load='footer'}
-  {/if}
             <a href="{$comment.U_PICTURE}">
-                <img {if $derivative->is_cached()}src="{$derivative->get_url()}"{else}src="{$ROOT_URL}{$themeconf.icon_dir}/img_small.png" data-src="{$derivative->get_url()}"{/if} alt="{$comment.ALT}">
+                <img src="{$derivative->get_url()}" {$derivative->get_size_htm()} loading="lazy" decoding="async" alt="{$comment.ALT}">
             </a>
 {else}
 {include file="http_scheme.tpl"}
