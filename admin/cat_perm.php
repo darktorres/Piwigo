@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -53,7 +53,7 @@ SELECT group_id
   FROM '.GROUP_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-    $groups_granted = array_from_query($query, 'group_id');
+    $groups_granted = query2array($query, null, 'group_id');
 
     if (!isset($_POST['groups']))
     {
@@ -95,7 +95,7 @@ SELECT id
   WHERE id IN ('.implode(',', $cat_ids).')
     AND status = \'private\'
 ;';
-      $private_cats = array_from_query($query, 'id');
+      $private_cats = query2array($query, null, 'id');
       
       $inserts = array();
       foreach ($private_cats as $cat_id)
@@ -125,7 +125,7 @@ SELECT user_id
   FROM '.USER_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-    $users_granted = array_from_query($query, 'user_id');
+    $users_granted = query2array($query, null, 'user_id');
 
     if (!isset($_POST['users']))
     {
@@ -195,7 +195,7 @@ SELECT id, name
   FROM '.GROUPS_TABLE.'
   ORDER BY name ASC
 ;';
-$groups = simple_hash_from_query($query, 'id', 'name');
+$groups = query2array($query, 'id', 'name');
 $template->assign('groups', $groups);
 
 // groups granted to access the category
@@ -204,7 +204,7 @@ SELECT group_id
   FROM '.GROUP_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-$group_granted_ids = array_from_query($query, 'group_id');
+$group_granted_ids = query2array($query, null, 'group_id');
 $template->assign('groups_selected', $group_granted_ids);
 
 // users...
@@ -215,7 +215,7 @@ SELECT '.$conf['user_fields']['id'].' AS id,
        '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.'
 ;';
-$users = simple_hash_from_query($query, 'id', 'username');
+$users = query2array($query, 'id', 'username');
 $template->assign('users', $users);
 
 
@@ -224,7 +224,7 @@ SELECT user_id
   FROM '.USER_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-$user_granted_direct_ids = array_from_query($query, 'user_id');
+$user_granted_direct_ids = query2array($query, null, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 
@@ -295,4 +295,4 @@ $template->assign(array(
   ));
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'cat_perm');
-?>
+

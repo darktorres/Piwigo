@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,7 +16,13 @@ if (!is_webmaster())
   return;
 }
 
-function get_watermark_filename($list, $candidate, $step = 0)
+/**
+ * @param $list
+ * @param $candidate
+ * @param int $step
+ * @return string
+ */
+function get_watermark_filename($list, $candidate, int $step = 0): string
 {
   global $change_name;
   $change_name = $candidate;
@@ -203,4 +209,4 @@ else
   $template->assign('watermark', $pwatermark);
   $template->assign('ferrors', $errors);
 }
-?>
+

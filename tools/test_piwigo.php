@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH', '../');
+const PHPWG_ROOT_PATH = '../';
 
 //Add a Clone piwigo from github//
 
@@ -57,6 +57,10 @@ add_picture($option, $cookies, $pwg_token);
 //| Create a new database |
 //+-----------------------+
 
+/**
+ * @param $option
+ * @return mixed|string|void
+ */
 function create_database($option)
 {
   global $mysqli;
@@ -91,7 +95,11 @@ function create_database($option)
 //| Script Installing Piwigo |
 //+--------------------------+
 
-function install_piwigo($option)
+/**
+ * @param $option
+ * @return void
+ */
+function install_piwigo($option): void
 {
   $data = array(
     'install'     =>  1,
@@ -141,7 +149,12 @@ function install_piwigo($option)
 //| Script Login an User |
 //+----------------------+
 
-function log_user($option, $cookies)
+/**
+ * @param $option
+ * @param $cookies
+ * @return mixed
+ */
+function log_user($option, $cookies): mixed
 {
   //Log an user - Admin here
   $data = array(
@@ -207,7 +220,12 @@ function log_user($option, $cookies)
 //| Script Creating Album |
 //+-----------------------+
 
-function create_album($option, $cookies)
+/**
+ * @param $option
+ * @param $cookies
+ * @return void
+ */
+function create_album($option, $cookies): void
 {
   $data = array(
     'method'    =>  'pwg.categories.add',
@@ -247,7 +265,13 @@ function create_album($option, $cookies)
 //|  Script adding picture  |
 //+-------------------------+
 
-function add_picture($option, $cookies, $pwg_token)
+/**
+ * @param $option
+ * @param $cookies
+ * @param $pwg_token
+ * @return void
+ */
+function add_picture($option, $cookies, $pwg_token): void
 {
   global $mysqli;
 
@@ -327,7 +351,7 @@ function add_picture($option, $cookies, $pwg_token)
   print_r($response);*/
 }
 
-if (isset($option['drop_db']) && $option['drop_db'] == true) {
+if (isset($option['drop_db']) && $option['drop_db']) {
   $query = '
     DROP DATABASE '.$option['db_name'].'
   ;';
@@ -337,4 +361,3 @@ if (isset($option['drop_db']) && $option['drop_db'] == true) {
 
 $mysqli->close();
 
-?>

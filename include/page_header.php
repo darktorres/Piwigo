@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -22,8 +22,7 @@ if (defined('IN_ADMIN') and IN_ADMIN)
 $template->assign(
   array(
     'GALLERY_TITLE' =>
-      isset($page['gallery_title']) ?
-        $page['gallery_title'] : $conf['gallery_title'],
+        $page['gallery_title'] ?? $conf['gallery_title'],
 
     'PAGE_BANNER' =>
       trigger_change(
@@ -31,13 +30,12 @@ $template->assign(
         str_replace(
           '%gallery_title%',
           $conf['gallery_title'],
-          isset($page['page_banner']) ? $page['page_banner'] : $conf['page_banner']
+          $page['page_banner'] ?? $conf['page_banner']
           )
         ),
 
     'BODY_ID' =>
-      isset($page['body_id']) ?
-        $page['body_id'] : '',
+      $page['body_id'] ?? '',
 
     'CONTENT_ENCODING' => 'utf-8',
     'PAGE_TITLE' => strip_tags($title),
@@ -100,4 +98,3 @@ header('Content-Type: text/html; charset=utf-8');
 $template->parse('header');
 
 trigger_notify('loc_after_page_header');
-?>

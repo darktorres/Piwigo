@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -24,7 +24,7 @@ else
  *
  * @return void
  */
-function tag_replace_keywords()
+function tag_replace_keywords(): void
 {
   // code taken from upgrades 19 and 22
   
@@ -78,24 +78,18 @@ SELECT id, keywords
         $tag_images[ $tag_id[$keyword] ] = array();
       }
 
-      array_push(
-        $tag_images[ $tag_id[$keyword] ],
-        $row['id']
-        );
+      $tag_images[$tag_id[$keyword]][] = $row['id'];
     }
   }
 
   $datas = array();
   foreach ($tag_id as $tag_name => $tag_id)
   {
-    array_push(
-      $datas,
-      array(
-        'id'       => $tag_id,
-        'name'     => $tag_name,
+    $datas[] = array(
+        'id' => $tag_id,
+        'name' => $tag_name,
         'url_name' => str2url($tag_name),
-        )
-      );
+    );
   }
   
   if (!empty($datas))
@@ -112,13 +106,10 @@ SELECT id, keywords
   {
     foreach (array_unique($images) as $image_id)
     {
-      array_push(
-        $datas,
-        array(
-          'tag_id'   => $tag_id,
+      $datas[] = array(
+          'tag_id' => $tag_id,
           'image_id' => $image_id,
-          )
-        );
+      );
     }
   }
   
@@ -366,14 +357,14 @@ SELECT value
   FROM '.PREFIX_TABLE.'config
   WHERE param=\'gallery_title\'
 ;';
-list($t) = array_from_query($query, 'value');
+list($t) = query2array($query, null, 'value');
 
 $query = '
 SELECT value
   FROM '.PREFIX_TABLE.'config
   WHERE param=\'gallery_description\'
 ;';
-list($d) = array_from_query($query, 'value');
+list($d) = query2array($query, null, 'value');
 
 $page_banner='<h1>'.$t.'</h1><p>'.$d.'</p>';
 $page_banner=addslashes($page_banner);
@@ -451,4 +442,4 @@ ALTER TABLE '.PREFIX_TABLE.'users
 
 // now we upgrade from 1.6.0 to 1.6.2
 include_once(PHPWG_ROOT_PATH.'install/upgrade_1.6.0.php');
-?>
+

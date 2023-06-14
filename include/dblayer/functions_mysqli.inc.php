@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,11 +10,11 @@
  * @package functions\mysql
  */
 
-define('DB_ENGINE', 'MySQL');
-define('REQUIRED_MYSQL_VERSION', '8.0.37');
+const DB_ENGINE = 'MySQL';
+const REQUIRED_MYSQL_VERSION = '8.0.37';
 
-define('DB_REGEX_OPERATOR', 'REGEXP');
-define('DB_RANDOM_FUNCTION', 'RAND');
+const DB_REGEX_OPERATOR = 'REGEXP';
+const DB_RANDOM_FUNCTION = 'RAND';
 
 
 /**
@@ -30,19 +30,19 @@ define('DB_RANDOM_FUNCTION', 'RAND');
  *
  * @throws Exception
  */
-function pwg_db_connect($host, $user, $password, $database)
+function pwg_db_connect(string $host, string $user, string $password, string $database): void
 {
   global $mysqli;
 
   $port = null;
   $socket = null;
   
-  if (strpos($host, '/') === 0)
+  if (str_starts_with($host, '/'))
   {
     $socket = $host;
     $host = null;
   }
-  elseif (strpos($host, ':') !== false)
+  elseif (str_contains($host, ':'))
   {
     list($host, $port) = explode(':', $host);
   }
@@ -74,7 +74,7 @@ function pwg_db_connect($host, $user, $password, $database)
 /**
  * Check MySQL version. Can call fatal_error().
  */
-function pwg_db_check_version()
+function pwg_db_check_version(): void
 {
   $current_mysql = pwg_get_db_version();
   if (version_compare($current_mysql, REQUIRED_MYSQL_VERSION, '<'))
@@ -94,7 +94,7 @@ function pwg_db_check_version()
  *
  * @return string
  */
-function pwg_get_db_version() 
+function pwg_get_db_version(): string
 {
   global $mysqli;
   
@@ -107,7 +107,7 @@ function pwg_get_db_version()
  * @param string $query
  * @return mysqli_result|bool
  */
-function pwg_query($query)
+function pwg_query(string $query): mysqli_result|bool
 {
   global $mysqli, $conf, $page, $debug, $t2;
 
@@ -132,8 +132,7 @@ function pwg_query($query)
 
   if ($conf['show_queries'])
   {
-    $output = '';
-    $output.= '<pre>['.$page['count_queries'].'] ';
+    $output = '<pre>[' . $page['count_queries'] . '] ';
     $output.= "\n".$query;
     $output.= "\n".'(this query time : ';
     $output.= '<b>'.number_format($time, 3, '.', ' ').' s)</b>';
@@ -165,9 +164,9 @@ function pwg_query($query)
  *
  * @param string $column
  * @param string $table
- * @param int
+ * @return mixed
  */
-function pwg_db_nextval($column, $table)
+function pwg_db_nextval(string $column, string $table): mixed
 {
   $query = '
 SELECT IF(MAX('.$column.')+1 IS NULL, 1, MAX('.$column.')+1)
@@ -177,72 +176,115 @@ SELECT IF(MAX('.$column.')+1 IS NULL, 1, MAX('.$column.')+1)
   return $next;
 }
 
-function pwg_db_changes() 
+/**
+ * @return int|string
+ */
+function pwg_db_changes(): int|string
 {
   global $mysqli;
   
   return $mysqli->affected_rows;
 }
 
-function pwg_db_num_rows($result) 
+/**
+ * @param $result
+ * @return mixed
+ */
+function pwg_db_num_rows($result): mixed
 {
   return $result->num_rows;
 }
 
-function pwg_db_fetch_array($result)
+/**
+ * @param $result
+ * @return mixed
+ */
+function pwg_db_fetch_array($result): mixed
 {
   return $result->fetch_array();
 }
 
-function pwg_db_fetch_assoc($result)
+/**
+ * @param $result
+ * @return mixed
+ */
+function pwg_db_fetch_assoc($result): mixed
 {
   return $result->fetch_assoc();
 }
 
-function pwg_db_fetch_row($result)
+/**
+ * @param $result
+ * @return mixed
+ */
+function pwg_db_fetch_row($result): mixed
 {
   return $result->fetch_row();
 }
 
-function pwg_db_fetch_object($result)
+/**
+ * @param $result
+ * @return mixed
+ */
+function pwg_db_fetch_object($result): mixed
 {
   return $result->fetch_object();
 }
 
-function pwg_db_free_result($result) 
+/**
+ * @param $result
+ * @return mixed
+ */
+function pwg_db_free_result($result): mixed
 {
   return $result->free_result();
 }
 
-function pwg_db_real_escape_string($s)
+/**
+ * @param $s
+ * @return string|null
+ */
+function pwg_db_real_escape_string($s): ?string
 {
   global $mysqli;
   
   return isset($s) ? $mysqli->real_escape_string($s) : null;
 }
 
-function pwg_db_insert_id()
+/**
+ * @return int|string
+ */
+function pwg_db_insert_id(): int|string
 {
   global $mysqli;
   
   return $mysqli->insert_id;
 }
 
-function pwg_db_errno()
+/**
+ * @return int
+ */
+function pwg_db_errno(): int
 {
   global $mysqli;
   
   return $mysqli->errno;
 }
 
-function pwg_db_error()
+/**
+ * @return string
+ */
+function pwg_db_error(): string
 {
   global $mysqli;
   
   return $mysqli->error;
 }
 
-function pwg_db_close()
+/**
+ * @return bool
+ */
+function pwg_db_close(): bool
 {
   global $mysqli;
   
@@ -250,7 +292,7 @@ function pwg_db_close()
 }
 
 
-define('MASS_UPDATES_SKIP_EMPTY', 1);
+const MASS_UPDATES_SKIP_EMPTY = 1;
 
 /**
  * Updates multiple lines in a table.
@@ -260,7 +302,7 @@ define('MASS_UPDATES_SKIP_EMPTY', 1);
  * @param array $datas - indexed by column names
  * @param int $flags - if MASS_UPDATES_SKIP_EMPTY, empty values do not overwrite existing ones
  */
-function mass_updates($tablename, $dbfields, $datas, $flags=0)
+function mass_updates(string $tablename, array $dbfields, array $datas, int $flags=0): void
 {
   if (count($datas) == 0)
   {
@@ -407,7 +449,7 @@ UPDATE '.protect_column_name($tablename).' AS t1, '.$temporary_tablename.' AS t2
  * @param array $where
  * @param int $flags - if MASS_UPDATES_SKIP_EMPTY, empty values do not overwrite existing ones
  */
-function single_update($tablename, $datas, $where, $flags=0)
+function single_update(string $tablename, array $datas, array $where, int $flags=0): void
 {
   if (count($datas) == 0)
   {
@@ -476,7 +518,7 @@ UPDATE '.protect_column_name($tablename).'
  * @param array $options
  *    - boolean ignore - use "INSERT IGNORE"
  */
-function mass_inserts($table_name, $dbfields, $datas, $options=array())
+function mass_inserts(string $table_name, array $dbfields, array $datas, array $options=array()): void
 {
   $ignore = '';
   if (isset($options['ignore']) and $options['ignore'])
@@ -537,7 +579,7 @@ function mass_inserts($table_name, $dbfields, $datas, $options=array())
  * @param array $options
  *    - boolean ignore - use "INSERT IGNORE"
  */
-function single_insert($table_name, $data, $options=array())
+function single_insert(string $table_name, array $data, array $options=array()): void
 {
   $ignore = '';
   if (isset($options['ignore']) and $options['ignore'])
@@ -580,7 +622,11 @@ INSERT '.$ignore.' INTO '.protect_column_name($table_name).'
   }
 }
 
-function protect_column_name($column_name)
+/**
+ * @param $column_name
+ * @return mixed|string
+ */
+function protect_column_name($column_name): mixed
 {
   if ('`' != $column_name[0])
   {
@@ -593,7 +639,7 @@ function protect_column_name($column_name)
 /**
  * Do maintenance on all Piwigo tables
  */
-function do_maintenance_all_tables()
+function do_maintenance_all_tables(): void
 {
   global $prefixeTable, $page;
 
@@ -646,19 +692,32 @@ function do_maintenance_all_tables()
   }
 }
 
-function pwg_db_concat($array)
+/**
+ * @param $array
+ * @return string
+ */
+function pwg_db_concat($array): string
 {
   $string = implode(',', $array);
   return 'CONCAT('. $string.')';
 }
 
-function pwg_db_concat_ws($array, $separator)
+/**
+ * @param $array
+ * @param $separator
+ * @return string
+ */
+function pwg_db_concat_ws($array, $separator): string
 {
   $string = implode(',', $array);
   return 'CONCAT_WS(\''.$separator.'\','. $string.')';
 }
 
-function pwg_db_cast_to_text($string)
+/**
+ * @param $string
+ * @return mixed
+ */
+function pwg_db_cast_to_text($string): mixed
 {
   return $string;
 }
@@ -670,7 +729,7 @@ function pwg_db_cast_to_text($string)
  * @param string $field
  * @return string[]
  */
-function get_enums($table, $field)
+function get_enums(string $table, string $field): array
 {
   $result = pwg_query('DESC '.$table);
   while ($row = pwg_db_fetch_assoc($result))
@@ -696,7 +755,7 @@ function get_enums($table, $field)
  * @param mixed $input
  * @return bool
  */
-function get_boolean($input)
+function get_boolean(mixed $input): bool
 {
   if ('false' === strtolower($input))
   {
@@ -713,7 +772,7 @@ function get_boolean($input)
  * @param mixed $var
  * @return mixed
  */
-function boolean_to_string($var)
+function boolean_to_string(mixed $var): mixed
 {
   if (is_bool($var))
   {
@@ -725,7 +784,12 @@ function boolean_to_string($var)
   }
 }
 
-function pwg_db_get_recent_period_expression($period, $date='CURRENT_DATE')
+/**
+ * @param $period
+ * @param string $date
+ * @return string
+ */
+function pwg_db_get_recent_period_expression($period, string $date='CURRENT_DATE'): string
 {
   if ($date!='CURRENT_DATE')
   {
@@ -735,7 +799,12 @@ function pwg_db_get_recent_period_expression($period, $date='CURRENT_DATE')
   return 'SUBDATE('.$date.',INTERVAL '.$period.' DAY)';
 }
 
-function pwg_db_get_recent_period($period, $date='CURRENT_DATE')
+/**
+ * @param $period
+ * @param string $date
+ * @return mixed
+ */
+function pwg_db_get_recent_period($period, string $date='CURRENT_DATE'): mixed
 {
   $query = '
 SELECT '.pwg_db_get_recent_period_expression($period);
@@ -744,37 +813,66 @@ SELECT '.pwg_db_get_recent_period_expression($period);
   return $d;
 }
 
-function pwg_db_get_flood_period_expression($seconds)
+/**
+ * @param $seconds
+ * @return string
+ */
+function pwg_db_get_flood_period_expression($seconds): string
 {
   return 'SUBDATE(NOW(), INTERVAL '.$seconds.' SECOND)';
 }
 
-function pwg_db_get_hour($date) 
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_hour($date): string
 {
   return 'HOUR('.$date.')';
 }
 
-function pwg_db_get_date_YYYYMM($date)
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_date_YYYYMM($date): string
 {
   return 'DATE_FORMAT('.$date.', \'%Y%m\')';
 }
 
-function pwg_db_get_date_MMDD($date)
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_date_MMDD($date): string
 {
   return 'DATE_FORMAT('.$date.', \'%m%d\')';
 }
 
-function pwg_db_get_year($date)
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_year($date): string
 {
   return 'YEAR('.$date.')';
 }
 
-function pwg_db_get_month($date)
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_month($date): string
 {
   return 'MONTH('.$date.')';
 }
 
-function pwg_db_get_week($date, $mode=null)
+/**
+ * @param $date
+ * @param $mode
+ * @return string
+ */
+function pwg_db_get_week($date, $mode=null): string
 {
   if ($mode)
   {
@@ -786,22 +884,38 @@ function pwg_db_get_week($date, $mode=null)
   }
 }
 
-function pwg_db_get_dayofmonth($date)
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_dayofmonth($date): string
 {
   return 'DAYOFMONTH('.$date.')';
 }
 
-function pwg_db_get_dayofweek($date)
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_dayofweek($date): string
 {
   return 'DAYOFWEEK('.$date.')';
 }
 
-function pwg_db_get_weekday($date)
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_get_weekday($date): string
 {
   return 'WEEKDAY('.$date.')';
 }
 
-function pwg_db_date_to_ts($date) 
+/**
+ * @param $date
+ * @return string
+ */
+function pwg_db_date_to_ts($date): string
 {
   return 'UNIX_TIMESTAMP('.$date.')';
 }
@@ -810,7 +924,7 @@ function pwg_db_date_to_ts($date)
  * Returns (or send to standard output) the message concerning the 
  * error occured for the last mysql query.
  */
-function my_error($header, $die)
+function my_error($header, $die): void
 {
   global $mysqli;
   
@@ -854,14 +968,12 @@ function my_error($header, $die)
  *          ...
  *          )
  *
- * @since 2.6
- *
  * @param string $query
- * @param string $key_name
- * @param string $value_name
+ * @param string|null $key_name
+ * @param string|null $value_name
  * @return array
  */
-function query2array($query, $key_name=null, $value_name=null)
+function query2array(string $query, string $key_name=null, string $value_name=null): array
 {
   $result = pwg_query($query);
   $data = array();
@@ -896,4 +1008,4 @@ function query2array($query, $key_name=null, $value_name=null)
   return $data;
 }
 
-?>
+

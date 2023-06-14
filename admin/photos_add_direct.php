@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -88,7 +88,7 @@ $formats_original_info = array();
 // If URL parameter isn't empty
 if ($display_formats && $_GET['formats']) 
 {
-  check_input_parameter('formats', $_GET, false, PATTERN_ID, false);
+  check_input_parameter('formats', $_GET, false, PATTERN_ID);
   
   $formats_original_info = get_image_infos($_GET['formats']);
   if ($formats_original_info)
@@ -155,4 +155,4 @@ $template->assign(array(
 ));
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'photos_add');
-?>
+

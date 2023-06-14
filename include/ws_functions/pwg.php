@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,13 +9,15 @@
 /**
  * API method
  * Returns a list of missing derivatives (not generated yet)
- * @param mixed[] $params
- *    @option string types (optional)
- *    @option int[] ids
- *    @option int max_urls
- *    @option int prev_page (optional)
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option string types (optional)
+ * @option int[] ids
+ * @option int max_urls
+ * @option int prev_page (optional)
  */
-function ws_getMissingDerivatives($params, &$service)
+function ws_getMissingDerivatives(array $params, &$service): PwgError|array
 {
   global $conf;
 
@@ -53,7 +55,7 @@ function ws_getMissingDerivatives($params, &$service)
   $conf['derivative_url_style'] = 2; //script
 
   $qlimit = min(5000, ceil(max($image_count/500, $max_urls/count($types))));
-  $where_clauses = ws_std_image_sql_filter( $params, '' );
+  $where_clauses = ws_std_image_sql_filter( $params);
   $where_clauses[] = 'id<start_id';
 
   if (!empty($params['ids']))
@@ -120,9 +122,11 @@ SELECT id, path, representative_ext, width, height, rotation
 /**
  * API method
  * Returns Piwigo version
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return string
  */
-function ws_getVersion($params, &$service)
+function ws_getVersion(array $params, &$service): string
 {
   return PHPWG_VERSION;
 }
@@ -130,9 +134,11 @@ function ws_getVersion($params, &$service)
 /**
  * API method
  * Returns general informations about the installation
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return array
  */
-function ws_getInfos($params, &$service)
+function ws_getInfos(array $params, &$service): array
 {
   $infos['version'] = PHPWG_VERSION;
 
@@ -198,10 +204,11 @@ function ws_getInfos($params, &$service)
  * API method
  * Calculates and returns the size of the cache
  *
- * @since 12
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return array
  */
-function ws_getCacheSize($params, &$service)
+function ws_getCacheSize(array $params, &$service): array
 {
   global $conf;
 
@@ -271,10 +278,12 @@ function ws_getCacheSize($params, &$service)
 /**
  * API method
  * Adds images to the caddie
- * @param mixed[] $params
- *    @option int[] image_id
+ * @param array $params
+ * @param $service
+ * @return int
+ * @option int[] image_id
  */
-function ws_caddie_add($params, &$service)
+function ws_caddie_add(array $params, &$service): int
 {
   global $user;
 
@@ -286,7 +295,7 @@ SELECT id
   WHERE id IN ('. implode(',',$params['image_id']) .')
     AND element_id IS NULL
 ;';
-  $result = array_from_query($query, 'id');
+  $result = query2array($query, null, 'id');
 
   $datas = array();
   foreach ($result as $id)
@@ -310,11 +319,13 @@ SELECT id
 /**
  * API method
  * Deletes rates of an user
- * @param mixed[] $params
- *    @option int user_id
- *    @option string anonymous_id (optional)
+ * @param array $params
+ * @param $service
+ * @return int|string
+ * @option int user_id
+ * @option string anonymous_id (optional)
  */
-function ws_rates_delete($params, &$service)
+function ws_rates_delete(array $params, &$service): int|string
 {
   $query = '
 DELETE FROM '. RATE_TABLE .'
@@ -329,7 +340,8 @@ DELETE FROM '. RATE_TABLE .'
     $query .= ' AND element_id='.$params['image_id'];
   }
 
-  $changes = pwg_db_changes(pwg_query($query));
+  pwg_query($query);
+  $changes = pwg_db_changes();
   if ($changes)
   {
     include_once(PHPWG_ROOT_PATH.'include/functions_rate.inc.php');
@@ -341,11 +353,13 @@ DELETE FROM '. RATE_TABLE .'
 /**
  * API method
  * Performs a login
- * @param mixed[] $params
- *    @option string username
- *    @option string password
+ * @param array $params
+ * @param $service
+ * @return true|PwgError
+ * @option string username
+ * @option string password
  */
-function ws_session_login($params, &$service)
+function ws_session_login(array $params, &$service): true|PwgError
 {
   if (try_log_user($params['username'], $params['password'], false))
   {
@@ -358,9 +372,11 @@ function ws_session_login($params, &$service)
 /**
  * API method
  * Performs a logout
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return true
  */
-function ws_session_logout($params, &$service)
+function ws_session_logout(array $params, &$service): true
 {
   if (!is_a_guest())
   {
@@ -372,9 +388,11 @@ function ws_session_logout($params, &$service)
 /**
  * API method
  * Returns info about the current user
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return array
  */
-function ws_session_getStatus($params, &$service)
+function ws_session_getStatus(array $params, &$service): array
 {
   global $user, $conf;
 
@@ -392,7 +410,7 @@ function ws_session_getStatus($params, &$service)
 
   // Piwigo Remote Sync does not support receiving the available sizes
   $piwigo_remote_sync_agent = 'Apache-HttpClient/';
-  if (!isset($_SERVER['HTTP_USER_AGENT']) or substr($_SERVER['HTTP_USER_AGENT'], 0, strlen($piwigo_remote_sync_agent)) !== $piwigo_remote_sync_agent)
+  if (!isset($_SERVER['HTTP_USER_AGENT']) or !str_starts_with($_SERVER['HTTP_USER_AGENT'], $piwigo_remote_sync_agent))
   {
     $res['available_sizes'] = array_keys(ImageStdParams::get_defined_type_map());
   }
@@ -418,9 +436,8 @@ function ws_session_getStatus($params, &$service)
 /**
  * API method
  * Returns lines of users activity
- *  @since 12
  */
-function ws_getActivityList($param, &$service)
+function ws_getActivityList($param, &$service): array
 {
   global $conf;
 
@@ -550,7 +567,7 @@ SELECT
     {
       foreach ($output_line['object_id'] as $user_id)
       {
-        $output_lines[$idx]['details']['users'][] = isset($username_of[$user_id]) ? $username_of[$user_id] : 'user#'.$user_id;
+        $output_lines[$idx]['details']['users'][] = $username_of[$user_id] ?? 'user#'.$user_id;
       }
 
       if (isset($output_lines[$idx]['details']['users']))
@@ -593,9 +610,8 @@ SELECT
 /**
  * API method
  * Log a new line in visit history
- * @since 13
  */
-function ws_history_log($params, &$service)
+function ws_history_log($params, &$service): void
 {
   global $logger, $page;
 
@@ -620,9 +636,8 @@ function ws_history_log($params, &$service)
 /**
  * API method
  * Returns lines of an history search
- * @since 13
  */
-function ws_history_search($param, &$service)
+function ws_history_search($param, &$service): array
 {
 
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
@@ -741,7 +756,7 @@ function ws_history_search($param, &$service)
 
     pwg_query($query);
 
-    $search_id = pwg_db_insert_id(SEARCH_TABLE);
+    $search_id = pwg_db_insert_id();
 
     // Remove redirect for ajax //
     // redirect(
@@ -784,7 +799,7 @@ SELECT rules
 
     if (isset($row['category_id']))
     {
-      array_push($category_ids, $row['category_id'] );
+      $category_ids[] = $row['category_id'];
     }
 
     if (isset($row['image_id']))
@@ -934,7 +949,7 @@ SELECT
     {
       $tag_names = preg_replace_callback(
         '/(\d+)/',
-        function($m) use ($name_of_tag) { return isset($name_of_tag[$m[1]]) ? $name_of_tag[$m[1]] : $m[1];} ,
+        function($m) use ($name_of_tag) { return $name_of_tag[$m[1]] ?? $m[1];} ,
           $line['tag_ids']
         );
       $tag_ids = $line['tag_ids'];
@@ -991,8 +1006,7 @@ SELECT
 
     $sorted_members[$user_name] += 1;
 
-    array_push( 
-      $result,
+    $result[] = 
       array(
         'DATE'       => format_date($line['date']),
         'TIME'       => $line['time'],
@@ -1007,11 +1021,10 @@ SELECT
         'TYPE'       => $line['image_type'],
         'SECTION'    => $line['section'],
         'FULL_CATEGORY_PATH'   => isset($full_cat_path[$line['category_id']]) ? strip_tags($full_cat_path[$line['category_id']]) : l10n('Root').$line['category_id'],
-        'CATEGORY'   => isset($name_of_category[$line['category_id']]) ? $name_of_category[$line['category_id']] : l10n('Root').$line['category_id'],
+        'CATEGORY'   => $name_of_category[$line['category_id']] ?? l10n('Root').$line['category_id'],
         'TAGS'       => explode(",",$tag_names),
         'TAGIDS'     => explode(",",$tag_ids),
-      )
-    );
+      );
   }
 
   $max_page = ceil(count($result)/300);
@@ -1068,4 +1081,4 @@ SELECT
     'summary' => $search_summary
   );
 }
-?>
+

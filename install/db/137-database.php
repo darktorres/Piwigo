@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,14 +16,14 @@ SELECT id, image_order
   FROM '.CATEGORIES_TABLE.'
   WHERE image_order != ""
 ;';
-$cats = hash_from_query($query, 'id');
+$cats = query2array($query, 'id');
 
 foreach ($cats as $id => &$data)
 {
   $image_order = explode(',',$data['image_order']);
   foreach ($image_order as &$order)
   {
-    if (strpos($order, ' ASC')===false && strpos($order, ' DESC')===false)
+    if (!str_contains($order, ' ASC') && !str_contains($order, ' DESC'))
     {
       $order.= ' ASC';
     }
@@ -44,4 +44,3 @@ mass_updates(CATEGORIES_TABLE,
   
 echo "\n".$upgrade_description."\n";
 
-?>

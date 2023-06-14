@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -32,7 +32,7 @@ if (($conf['show_exif']) and (function_exists('exif_read_data')))
 
     foreach ($conf['show_exif_fields'] as $field)
     {
-      if (strpos($field, ';') === false)
+      if (!str_contains($field, ';'))
       {
         if (isset($exif[$field]))
         {
@@ -87,4 +87,3 @@ if ($conf['show_iptc'])
 }
 
 
-?>

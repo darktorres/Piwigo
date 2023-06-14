@@ -1,64 +1,67 @@
-<?php
+<?php declare(strict_types=1);
 namespace BootstrapDarkroom;
 
+/**
+ *
+ */
 class Config {
 
-    const CONF_PARAM = 'bootstrap_darkroom';
-    const CONF_VERSION = 20;
+    public const CONF_PARAM = 'bootstrap_darkroom';
+    public const CONF_VERSION = 20;
 
-    const TYPE_BOOL = 'bool';
-    const TYPE_STRING = 'string';
-    const TYPE_NUM = 'numeric';
-    const TYPE_FILE = 'file';
+    public const TYPE_BOOL = 'bool';
+    public const TYPE_STRING = 'string';
+    public const TYPE_NUM = 'numeric';
+    public const TYPE_FILE = 'file';
 
-    const KEY_VERSION = 'conf_version';
+    public const KEY_VERSION = 'conf_version';
 
-    const KEY_FLUID_WIDTH = 'fluid_width';
-    const KEY_FLUID_WIDTH_COL_XXL = 'fluid_width_col_xxl';
-    const KEY_BOOTSTRAP_THEME = 'bootstrap_theme';
-    const KEY_BOOTSWATCH_THEME = 'bootswatch_theme';
-    const KEY_MATERIAL_COLOR = 'material_color';
-    const KEY_NAVBAR_MAIN_STYLE = 'navbar_main_style';
-    const KEY_NAVBAR_MAIN_BG = 'navbar_main_bg';
-    const KEY_NAVBAR_CONTEXTUAL_STYLE = 'navbar_contextual_style';
-    const KEY_NAVBAR_CONTEXTUAL_BG = 'navbar_contextual_bg';
+    public const KEY_FLUID_WIDTH = 'fluid_width';
+    public const KEY_FLUID_WIDTH_COL_XXL = 'fluid_width_col_xxl';
+    public const KEY_BOOTSTRAP_THEME = 'bootstrap_theme';
+    public const KEY_BOOTSWATCH_THEME = 'bootswatch_theme';
+    public const KEY_MATERIAL_COLOR = 'material_color';
+    public const KEY_NAVBAR_MAIN_STYLE = 'navbar_main_style';
+    public const KEY_NAVBAR_MAIN_BG = 'navbar_main_bg';
+    public const KEY_NAVBAR_CONTEXTUAL_STYLE = 'navbar_contextual_style';
+    public const KEY_NAVBAR_CONTEXTUAL_BG = 'navbar_contextual_bg';
 
-    const KEY_SLICK_ENABLED = 'slick_enabled';
-    const KEY_SLICK_LAZYLOAD = 'slick_lazyload';
-    const KEY_SLICK_INFINITE = 'slick_infinite';
-    const KEY_SLICK_CENTERED = 'slick_centered';
-    const KEY_PAGE_HEADER = 'page_header';
-    const KEY_PAGE_HEADER_FULL = 'page_header_full';
-    const KEY_PAGE_HEADER_IMAGE = 'page_header_image';
-    const KEY_PAGE_HEADER_BOTH_NAVS = 'page_header_both_navs';
-    const KEY_PICTURE_INFO = 'picture_info';
-    const KEY_PHOTOSWIPE = 'photoswipe';
-    const KEY_PHOTOSWIPE_INTERVAL = 'photoswipe_interval';
-    const KEY_THUMBNAIL_LINKTO = 'thumbnail_linkto';
-    const KEY_THUMBNAIL_CAPTION = 'thumbnail_caption';
-    const KEY_THUMBNAIL_DESC = 'thumbnail_desc';
-    const KEY_THUMBNAIL_CAT_DESC = 'thumbnail_cat_desc';
-    const KEY_CATEGORY_WELLS = 'category_wells';
-    const KEY_LOGO_IMAGE_ENABLED = 'logo_image_enabled';
-    const KEY_LOGO_IMAGE_PATH = 'logo_image_path';
-    const KEY_QUICKSEARCH_NAVBAR = 'quicksearch_navbar';
-    const KEY_CAT_DESCRIPTIONS = 'cat_descriptions';
-    const KEY_CAT_NB_IMAGES = 'cat_nb_images';
+    public const KEY_SLICK_ENABLED = 'slick_enabled';
+    public const KEY_SLICK_LAZYLOAD = 'slick_lazyload';
+    public const KEY_SLICK_INFINITE = 'slick_infinite';
+    public const KEY_SLICK_CENTERED = 'slick_centered';
+    public const KEY_PAGE_HEADER = 'page_header';
+    public const KEY_PAGE_HEADER_FULL = 'page_header_full';
+    public const KEY_PAGE_HEADER_IMAGE = 'page_header_image';
+    public const KEY_PAGE_HEADER_BOTH_NAVS = 'page_header_both_navs';
+    public const KEY_PICTURE_INFO = 'picture_info';
+    public const KEY_PHOTOSWIPE = 'photoswipe';
+    public const KEY_PHOTOSWIPE_INTERVAL = 'photoswipe_interval';
+    public const KEY_THUMBNAIL_LINKTO = 'thumbnail_linkto';
+    public const KEY_THUMBNAIL_CAPTION = 'thumbnail_caption';
+    public const KEY_THUMBNAIL_DESC = 'thumbnail_desc';
+    public const KEY_THUMBNAIL_CAT_DESC = 'thumbnail_cat_desc';
+    public const KEY_CATEGORY_WELLS = 'category_wells';
+    public const KEY_LOGO_IMAGE_ENABLED = 'logo_image_enabled';
+    public const KEY_LOGO_IMAGE_PATH = 'logo_image_path';
+    public const KEY_QUICKSEARCH_NAVBAR = 'quicksearch_navbar';
+    public const KEY_CAT_DESCRIPTIONS = 'cat_descriptions';
+    public const KEY_CAT_NB_IMAGES = 'cat_nb_images';
 
-    const KEY_SOCIAL_ENABLED = 'social_enabled';
-    const KEY_SOCIAL_BUTTONS = 'social_buttons';
-    const KEY_SOCIAL_TWITTER = 'social_twitter';
-    const KEY_SOCIAL_FACEBOOK = 'social_facebook';
-    const KEY_SOCIAL_PINTEREST = 'social_pinterest';
-    const KEY_SOCIAL_VK = 'social_vk';
+    public const KEY_SOCIAL_ENABLED = 'social_enabled';
+    public const KEY_SOCIAL_BUTTONS = 'social_buttons';
+    public const KEY_SOCIAL_TWITTER = 'social_twitter';
+    public const KEY_SOCIAL_FACEBOOK = 'social_facebook';
+    public const KEY_SOCIAL_PINTEREST = 'social_pinterest';
+    public const KEY_SOCIAL_VK = 'social_vk';
 
-    const KEY_COMMENTS_TYPE = 'comments_type';
-    const KEY_COMMENTS_DISQUS_SHORTNAME = 'comments_disqus_shortname';
-    const KEY_TAG_CLOUD_TYPE = 'tag_cloud_type';
+    public const KEY_COMMENTS_TYPE = 'comments_type';
+    public const KEY_COMMENTS_DISQUS_SHORTNAME = 'comments_disqus_shortname';
+    public const KEY_TAG_CLOUD_TYPE = 'tag_cloud_type';
 
-    const KEY_CUSTOM_CSS = 'custom_css';
+    public const KEY_CUSTOM_CSS = 'custom_css';
 
-    private $defaults = array(
+    private array $defaults = array(
         self::KEY_FLUID_WIDTH => false,
         self::KEY_FLUID_WIDTH_COL_XXL => true,
         self::KEY_BOOTSTRAP_THEME => 'material-darkroom',
@@ -101,7 +104,7 @@ class Config {
         self::KEY_CUSTOM_CSS => null,
     );
 
-    private $types = array(
+    private array $types = array(
         self::KEY_FLUID_WIDTH => self::TYPE_BOOL,
         self::KEY_FLUID_WIDTH_COL_XXL => self::TYPE_BOOL,
         self::KEY_BOOTSTRAP_THEME => self::TYPE_STRING,
@@ -144,9 +147,9 @@ class Config {
         self::KEY_CUSTOM_CSS => self::TYPE_FILE,
     );
 
-    private $config = array();
+    private mixed $config = array();
 
-    private $files = array();
+    private array $files = array();
 
     public function __construct() {
         global $conf;
@@ -177,18 +180,27 @@ class Config {
         $this->save();
     }
 
-    private function initFiles() {
+  /**
+   * @return void
+   */
+  private function initFiles(): void
+    {
         $this->files[self::KEY_CUSTOM_CSS] = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'bootstrap_darkroom/custom.css';
     }
 
-    public function __set($key, $value) {
+  /**
+   * @param $key
+   * @param $value
+   * @return void
+   */
+  public function __set($key, $value) {
         if (array_key_exists($key, $this->defaults)) {
             switch ($this->types[$key]) {
                 case self::TYPE_STRING:
                     $this->config[$key] = !empty($value) ? $value : null;
                     break;
                 case self::TYPE_BOOL:
-                    $this->config[$key] = $value ? true : false;
+                    $this->config[$key] = (bool)$value;
                     break;
                 case self::TYPE_NUM:
                     $this->config[$key] = is_numeric($value) ? $value : $this->defaults[$key];
@@ -200,7 +212,11 @@ class Config {
         }
     }
 
-    public function __get($key) {
+  /**
+   * @param $key
+   * @return false|mixed|string|void|null
+   */
+  public function __get($key) {
         if (array_key_exists($key, $this->defaults)) {
             switch ($this->types[$key]) {
                 case self::TYPE_STRING:
@@ -215,29 +231,54 @@ class Config {
         }
     }
 
-    public function fromPost(array $post) {
+  /**
+   * @param array $post
+   * @return void
+   */
+  public function fromPost(array $post): void
+    {
         foreach (array_keys($this->defaults) as $key) {
             $this->__set($key, isset($post[$key]) ? stripslashes($post[$key]) : null);
         }
     }
 
-    public function save() {
+  /**
+   * @return void
+   */
+  public function save(): void
+    {
         conf_update_param(self::CONF_PARAM, json_encode($this->config));
     }
 
-    private function createDefaultConfig() {
+  /**
+   * @return void
+   */
+  private function createDefaultConfig(): void
+    {
         $this->config = $this->defaults;
         $this->config[self::KEY_VERSION] = self::CONF_VERSION;
     }
 
-    private function populateConfig(array $config) {
+  /**
+   * @param array $config
+   * @return void
+   */
+  private function populateConfig(array $config): void
+    {
         foreach (array_keys($this->defaults) as $key) {
             if (isset($config[$key])) {
                 $this->config[$key] = $config[$key];
             }
         }
     }
-    private function saveFile($key, $content) {
+
+  /**
+   * @param $key
+   * @param $content
+   * @return void
+   */
+  private function saveFile($key, $content): void
+    {
         $file = $this->files[$key];
         $dir = dirname($file);
         if (!file_exists($dir)) {
@@ -249,8 +290,13 @@ class Config {
             file_put_contents($file, $content);
         }
     }
-                                                                                                                                                                                                   
-    private function loadFile($key) {
+
+  /**
+   * @param $key
+   * @return false|string|null
+   */
+  private function loadFile($key): false|string|null
+    {
         $file = $this->files[$key];
         if (file_exists($file)) {
             return file_get_contents($file);
@@ -259,4 +305,4 @@ class Config {
         }
     }
 }
-?>
+

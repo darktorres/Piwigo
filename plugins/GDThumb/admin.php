@@ -1,8 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
-function int_delete_gdthumb_cache($pattern) {
+/**
+ * @param $pattern
+ * @return void
+ */
+function int_delete_gdthumb_cache($pattern): void
+{
   if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)):
     while (($node = readdir($contents)) !== false):
       if ($node != '.'
@@ -15,7 +20,12 @@ function int_delete_gdthumb_cache($pattern) {
   endif;
 }
 
-function delete_gdthumb_cache($height) {
+/**
+ * @param $height
+ * @return void
+ */
+function delete_gdthumb_cache($height): void
+{
   int_delete_gdthumb_cache('#.*-cu_s9999x' . $height . '\.[a-zA-Z0-9]{3,4}$#');
   int_delete_gdthumb_cache('#.*-cu_s' . $height . 'x9999\.[a-zA-Z0-9]{3,4}$#');
 }
@@ -108,21 +118,21 @@ if (isset($_POST['submit'])) {
   if ($method == "slide"):
     if ($big_thumb):
       $big_thumb = false;
-      array_push($page['warnings'], l10n('Big thumb cannot be used in Slide mode. Disabled'));
+      $page['warnings'][] = l10n('Big thumb cannot be used in Slide mode. Disabled');
     endif;
     if ($thumb_animate):
       $thumb_animate = false;
-      array_push($page['warnings'], l10n('Thumb animation cannot be used in Slide mode. Disabled'));
+      $page['warnings'][] = l10n('Thumb animation cannot be used in Slide mode. Disabled');
     endif;
 
     if (($thumb_mode_album == "overlay-ex") || ($thumb_mode_album == "overlay") || ($thumb_mode_album == "top") || ($thumb_mode_album == "bottom")):
       $thumb_mode_album = "bottom_static";
-      array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+      $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
     endif;
 
     if (($thumb_mode_photo == "overlay-ex") || ($thumb_mode_photo == "overlay") || ($thumb_mode_photo == "top") || ($thumb_mode_photo == "bottom")):
       $thumb_mode_photo = "bottom_static";
-      array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+      $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
     endif;
   endif;
 
@@ -147,13 +157,13 @@ if (isset($_POST['submit'])) {
   );
 
   if (!is_numeric($params['height'])) {
-    array_push($page['errors'], l10n('Thumbnails max height must be an integer'));
+    $page['errors'][] = l10n('Thumbnails max height must be an integer');
   }
   if (!is_numeric($params['margin'])) {
-    array_push($page['errors'], l10n('Margin between thumbnails must be an integer'));
+    $page['errors'][] = l10n('Margin between thumbnails must be an integer');
   }
   if (!is_numeric($params['nb_image_page'])) {
-    array_push($page['errors'], l10n('Number of photos per page must be an integer'));
+    $page['errors'][] = l10n('Number of photos per page must be an integer');
   }
 
   if ($params['height'] != $conf['gdThumb']['height']) {
@@ -165,12 +175,12 @@ if (isset($_POST['submit'])) {
 
   if (empty($page['errors'])) {
     conf_update_param('gdThumb', $params);
-    array_push($page['infos'], l10n('Information data registered in database'));
+    $page['infos'][] = l10n('Information data registered in database');
   }
 }
 
 // Try to find GreyDragon Theme and use Theme's styles for admin area
-$css_file = str_replace('/./', '/', dirname(dirname(dirname(__FILE__))) . '/' . GDTHEME_PATH . "admin/css/styles.css");
+$css_file = str_replace('/./', '/', dirname(__FILE__, 3) . '/' . GDTHEME_PATH . "admin/css/styles.css");
 if (file_exists($css_file)):
   $custom_css = "yes";
 else:
@@ -213,4 +223,3 @@ $template->assign(
 $template->set_filenames(array('plugin_admin_content' => dirname(__FILE__) . '/template/admin.tpl'));
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugin_admin_content');
 
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -29,7 +29,7 @@ if (isset($_GET['action']))
 // |                                actions                                |
 // +-----------------------------------------------------------------------+
 
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = $_GET['action'] ?? '';
 
 switch ($action)
 {
@@ -56,9 +56,9 @@ switch ($action)
     images_integrity();
     categories_integrity();
     update_uppercats();
-    update_category('all');
+    update_category();
     update_global_rank();
-    invalidate_user_cache(true);
+    invalidate_user_cache();
     break;
   }
   case 'images' :
@@ -116,7 +116,7 @@ SELECT
     '.$conf['user_fields']['id'].' AS id
   FROM '.USERS_TABLE.'
 ;';
-    $all_user_ids = query2array($query, 'id', null);
+    $all_user_ids = query2array($query, 'id');
 
     $sessions_to_delete = array();
 
@@ -200,7 +200,7 @@ DELETE
   
       // if the current version is a BSF (development branch) build, we check
       // the first line, for stable versions, we check the second line
-      if (preg_match('/^BSF/', $versions['current']))
+      if (str_starts_with($versions['current'], 'BSF'))
       {
         $versions['latest'] = trim($lines[0]);
   
@@ -223,11 +223,11 @@ DELETE
       }
       // concatenation needed to avoid automatic transformation by release
       // script generator
-      else if ('%'.'PWGVERSION'.'%' == $versions['current'])
+      elseif ('%'.'PWGVERSION'.'%' == $versions['current'])
       {
         $page['infos'][] = l10n('You are running on development sources, no check possible.');
       }
-      else if (version_compare($versions['current'], $versions['latest']) < 0)
+      elseif (version_compare($versions['current'], $versions['latest']) < 0)
       {
         $page['infos'][] = l10n('A new version of Piwigo is available.');
 
@@ -306,7 +306,7 @@ switch (pwg_image::get_library())
   case 'imagick':
     $library = 'ImageMagick';
     $img = new Imagick();
-    $version = $img->getVersion();
+    $version = Imagick::getVersion();
     if (preg_match('/ImageMagick \d+\.\d+\.\d+-?\d*/', $version['versionString'], $match))
     {
       $library = $match[0];
@@ -393,4 +393,3 @@ $template->assign('advanced_features', $advanced_features);
 // +-----------------------------------------------------------------------+
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'maintenance');
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,8 +6,8 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define ('PHPWG_ROOT_PATH', './');
-define ('IN_WS', true);
+const PHPWG_ROOT_PATH = './';
+const IN_WS = true;
 
 include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 check_status(ACCESS_FREE);
@@ -25,7 +25,7 @@ $service->run();
 /**
  * event handler that registers standard methods with the web service
  */
-function ws_addDefaultMethods( $arr )
+function ws_addDefaultMethods( $arr ): void
 {
   global $conf, $user;
   $service = &$arr[0];
@@ -1367,4 +1367,4 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
     );
 }
 
-?>
+

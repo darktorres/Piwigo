@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,27 +6,30 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class languages
 {
-  var $fs_languages = array();
-  var $db_languages = array();
-  var $server_languages = array();
+  public array $fs_languages = array();
+  public array $db_languages = array();
+  public array $server_languages = array();
 
   /**
    * Initialize $fs_languages and $db_languages
-  */
-  function __construct($target_charset = null)
+   */
+  public function __construct($target_charset = null)
   {
     $this->get_fs_languages($target_charset);
   }
 
   /**
    * Perform requested actions
-   * @param string - action
-   * @param string - language id
-   * @param array - errors
+   * @param string $action
+   * @param string $language_id
+   * @return array errors
    */
-  function perform_action($action, $language_id)
+  public function perform_action(string $action, string $language_id): array
   {
     global $conf;
 
@@ -118,9 +121,9 @@ UPDATE '.USER_INFOS_TABLE.'
   }
 
   /**
-  *  Get languages defined in the language directory
-  */
-  function get_fs_languages($target_charset = null)
+   *  Get languages defined in the language directory
+   */
+  public function get_fs_languages($target_charset = null): void
   {
     if ( empty($target_charset) )
     {
@@ -185,7 +188,10 @@ UPDATE '.USER_INFOS_TABLE.'
     uasort($this->fs_languages, 'name_compare');
   }
 
-  function get_db_languages()
+  /**
+   * @return void
+   */
+  public function get_db_languages(): void
   {
     $query = '
   SELECT id, name
@@ -203,7 +209,7 @@ UPDATE '.USER_INFOS_TABLE.'
   /**
    * Retrieve PEM server datas to $server_languages
    */
-  function get_server_languages($new=false)
+  public function get_server_languages($new = false): bool
   {
     global $user, $conf;
 
@@ -225,7 +231,7 @@ UPDATE '.USER_INFOS_TABLE.'
       $branch = get_branch_from_version($version);
       foreach ($pem_versions as $pem_version)
       {
-        if (strpos($pem_version['name'], $branch) === 0)
+        if (str_starts_with($pem_version['name'], $branch))
         {
           $versions_to_check[] = $pem_version['id'];
         }
@@ -290,11 +296,11 @@ UPDATE '.USER_INFOS_TABLE.'
   /**
    * Extract language files from archive
    *
-   * @param string - install or upgrade
-   * @param string - remote revision identifier (numeric)
-   * @param string - language id or extension id
+   * @param string $action install or upgrade
+   * @param string $revision remote revision identifier (numeric)
+   * @param string $dest language id or extension id
    */
-  function extract_language_files($action, $revision, $dest='')
+  public function extract_language_files(string $action, string $revision, string $dest = '')
   {
     global $logger;
 
@@ -385,7 +391,7 @@ UPDATE '.USER_INFOS_TABLE.'
 
                     // make sure the obsolete file is withing the extension directory, prevent traversal path
                     $realpath = realpath($path);
-                    if ($realpath === false or strpos($realpath, $extract_path_realpath) !== 0)
+                    if ($realpath === false or !str_starts_with($realpath, $extract_path_realpath))
                     {
                       continue;
                     }
@@ -422,9 +428,8 @@ UPDATE '.USER_INFOS_TABLE.'
   /**
    * Sort functions
    */
-  function extension_name_compare($a, $b)
+  public function extension_name_compare($a, $b): int
   {
     return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
   }
 }
-?>

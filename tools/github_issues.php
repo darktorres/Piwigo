@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // A) requirements
 // 
 // curl -s http://getcomposer.org/installer | php

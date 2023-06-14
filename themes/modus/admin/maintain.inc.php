@@ -1,10 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
-function theme_activate($id, $version, &$errors)
+/**
+ * @param $id
+ * @param $version
+ * @param $errors
+ * @return void
+ */
+function theme_activate($id, $version, &$errors): void
 {
   global $conf;
 
-  include_once( dirname(dirname(__FILE__)).'/functions.inc.php');
+  include_once( dirname(__FILE__, 2).'/functions.inc.php');
   $default_conf = modus_get_default_config();
 
   $my_conf = $conf['modus_theme'];
@@ -17,10 +23,12 @@ function theme_activate($id, $version, &$errors)
   conf_update_param('modus_theme', addslashes(serialize($my_conf)) );
 }
 
-function theme_delete()
+/**
+ * @return void
+ */
+function theme_delete(): void
 {
   $query = 'DELETE FROM ' . CONFIG_TABLE . ' WHERE param="modus_theme"';
   pwg_query($query);
 }
 
-?>

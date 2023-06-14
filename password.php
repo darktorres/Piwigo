@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,7 +10,7 @@
 // |                           initialization                              |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 include_once(PHPWG_ROOT_PATH.'include/functions_mail.inc.php');
 
@@ -33,8 +33,11 @@ check_input_parameter('action', $_GET, false, '/^(lost|reset|none)$/');
  * $page['infos'] and send an email with confirmation link
  *
  * @return bool (true if email was sent, false otherwise)
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
-function process_password_request()
+function process_password_request(): bool
 {
   global $page, $conf;
   
@@ -57,7 +60,7 @@ function process_password_request()
     return false;
   }
 
-  $userdata = getuserdata($user_id, false);
+  $userdata = getuserdata($user_id);
 
   // password request is not possible for guest/generic users
   $status = $userdata['status'];
@@ -133,7 +136,7 @@ function process_password_request()
  *
  * @return mixed (user_id if OK, false otherwise)
  */
-function check_password_reset_key($reset_key)
+function check_password_reset_key($reset_key): mixed
 {
   global $page, $conf;
 
@@ -210,7 +213,7 @@ SELECT
  *
  * @return bool (true if password was reset, false otherwise)
  */
-function reset_password()
+function reset_password(): bool
 {
   global $page, $conf;
 
@@ -286,7 +289,7 @@ if (isset($_GET['key']) and !isset($_POST['submit']))
   $user_id = check_password_reset_key($_GET['key']);
   if (is_numeric($user_id))
   {
-    $userdata = getuserdata($user_id, false);
+    $userdata = getuserdata($user_id);
     $page['username'] = $userdata['username'];
     $template->assign('key', $_GET['key']);
 
@@ -346,7 +349,7 @@ $template->assign(
     'title' => $title,
     'form_action'=> get_root_url().'password.php',
     'action' => $page['action'],
-    'username' => isset($page['username']) ? $page['username'] : $user['username'],
+    'username' => $page['username'] ?? $user['username'],
     'PWG_TOKEN' => get_pwg_token(),
     )
   );
@@ -369,4 +372,4 @@ flush_page_messages();
 $template->pparse('password');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
 
-?>
+

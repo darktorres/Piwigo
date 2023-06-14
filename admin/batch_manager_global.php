@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -49,11 +49,11 @@ if (isset($_POST['nb_photos_deleted']))
   // care about the number of items here)
   $collection = array_fill(0, $_POST['nb_photos_deleted'], null);
 }
-else if (isset($_POST['setSelected']))
+elseif (isset($_POST['setSelected']))
 {
   $collection = $page['cat_elements_id'];
 }
-else if (isset($_POST['selection']))
+elseif (isset($_POST['selection']))
 {
   $collection = $_POST['selection'];
 }
@@ -99,7 +99,7 @@ DELETE
     $redirect = true;
   }
 
-  else if ('add_tags' == $action)
+  elseif ('add_tags' == $action)
   {
     if (empty($_POST['add_tags']))
     {
@@ -117,7 +117,7 @@ DELETE
     }
   }
 
-  else if ('del_tags' == $action)
+  elseif ('del_tags' == $action)
   {
     if (isset($_POST['del_tags']) and count($_POST['del_tags']) > 0)
     {
@@ -164,7 +164,7 @@ DELETE
       $redirect = true;
     }
 
-    else if ('no_virtual_album' == $page['prefilter'])
+    elseif ('no_virtual_album' == $page['prefilter'])
     {
       $category_info = get_cat_info($_POST['associate']);
       if (empty($category_info['dir']))
@@ -174,7 +174,7 @@ DELETE
     }
   }
 
-  else if ('move' == $action)
+  elseif ('move' == $action)
   {
     move_images_to_categories($collection, array($_POST['associate']));
 
@@ -188,7 +188,7 @@ DELETE
       $redirect = true;
     }
 
-    else if ('no_virtual_album' == $page['prefilter'])
+    elseif ('no_virtual_album' == $page['prefilter'])
     {
       $category_info = get_cat_info($_POST['associate']);
       if (empty($category_info['dir']))
@@ -197,14 +197,14 @@ DELETE
       }
     }
 
-    else if (isset($_SESSION['bulk_manager_filter']['category'])
+    elseif (isset($_SESSION['bulk_manager_filter']['category'])
         and $_POST['move'] != $_SESSION['bulk_manager_filter']['category'])
     {
       $redirect = true;
     }
   }
 
-  else if ('dissociate' == $action)
+  elseif ('dissociate' == $action)
   {
     // physical links must not be broken, so we must first retrieve image_id
     // which create virtual links with the category to "dissociate from".
@@ -219,7 +219,7 @@ SELECT id
       OR storage_category_id IS NULL
     )
 ;';
-    $dissociables = array_from_query($query, 'id');
+    $dissociables = query2array($query, null, 'id');
 
     if (!empty($dissociables))
     {
@@ -241,7 +241,7 @@ DELETE
   }
 
   // author
-  else if ('author' == $action)
+  elseif ('author' == $action)
   {
     if (isset($_POST['remove_author']))
     {
@@ -267,7 +267,7 @@ DELETE
   }
 
   // title
-  else if ('title' == $action)
+  elseif ('title' == $action)
   {
     if (isset($_POST['remove_title']))
     {
@@ -293,7 +293,7 @@ DELETE
   }
 
   // date_creation
-  else if ('date_creation' == $action)
+  elseif ('date_creation' == $action)
   {
     if (isset($_POST['remove_date_creation']) || empty($_POST['date_creation']))
     {
@@ -323,7 +323,7 @@ DELETE
   }
 
   // privacy_level
-  else if ('level' == $action)
+  elseif ('level' == $action)
   {
     $datas = array();
     foreach ($collection as $image_id)
@@ -352,13 +352,13 @@ DELETE
   }
 
   // add_to_caddie
-  else if ('add_to_caddie' == $action)
+  elseif ('add_to_caddie' == $action)
   {
     fill_caddie($collection);
   }
 
   // delete
-  else if ('delete' == $action)
+  elseif ('delete' == $action)
   {
     if (isset($_POST['confirm_deletion']) and 1 == $_POST['confirm_deletion'])
     {
@@ -386,12 +386,12 @@ DELETE
   }
 
   // synchronize metadata
-  else if ('metadata' == $action)
+  elseif ('metadata' == $action)
   {
     $page['infos'][] = l10n('Metadata synchronized from file').' <span class="badge">'.count($collection).'</span>';
   }
 
-  else if ('delete_derivatives' == $action && !empty($_POST['del_derivatives_type']))
+  elseif ('delete_derivatives' == $action && !empty($_POST['del_derivatives_type']))
   {
     $query='SELECT path,representative_ext FROM '.IMAGES_TABLE.'
   WHERE id IN ('.implode(',', $collection).')';
@@ -405,7 +405,7 @@ DELETE
     }
   }
 
-  else if ('generate_derivatives' == $action)
+  elseif ('generate_derivatives' == $action)
   {
     if ($_POST['regenerateSuccess'] != '0')
     {
@@ -453,7 +453,12 @@ if ($conf['enable_synchronization'])
   $prefilters[] = array('ID' => 'no_sync_md5sum', 'NAME' => l10n('With no checksum'));
 }
 
-function UC_name_compare($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function UC_name_compare($a, $b): int
 {
   return strcmp(strtolower($a['NAME']), strtolower($b['NAME']));
 }
@@ -514,9 +519,7 @@ foreach ($conf['available_permission_levels'] as $level)
 $template->assign(
   array(
     'filter_level_options'=> $level_options,
-    'filter_level_options_selected' => isset($_SESSION['bulk_manager_filter']['level'])
-    ? $_SESSION['bulk_manager_filter']['level']
-    : 0,
+    'filter_level_options_selected' => $_SESSION['bulk_manager_filter']['level'] ?? 0,
     )
   );
 
@@ -759,4 +762,4 @@ trigger_notify('loc_end_element_set_global');
 
 //----------------------------------------------------------- sending html code
 $template->assign_var_from_handle('ADMIN_CONTENT', 'batch_manager_global');
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -92,4 +92,3 @@ trigger_notify('loc_end_page_tail');
 //
 $template->parse('tail');
 $template->p();
-?>

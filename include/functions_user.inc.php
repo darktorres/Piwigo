@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -14,11 +14,11 @@
 /**
  * Checks if an email is well formed and not already in use.
  *
- * @param int $user_id
+ * @param int|null $user_id
  * @param string $mail_address
  * @return string|void error message or nothing
  */
-function validate_mail_address($user_id, $mail_address)
+function validate_mail_address(int|null $user_id, string $mail_address)
 {
   global $conf;
 
@@ -57,7 +57,7 @@ WHERE upper('.$conf['user_fields']['email'].') = upper(\''.$mail_address.'\')
  * @param string $login
  * @return string|void error message or nothing
  */
-function validate_login_case($login)
+function validate_login_case(string $login)
 {
   global $conf;
 
@@ -83,7 +83,7 @@ WHERE LOWER(".stripslashes($conf['user_fields']['username']).") = '".strtolower(
  * @param string $username typically typed in by user for identification
  * @return string $username found in database
  */
-function search_case_username($username)
+function search_case_username(string $username): string
 {
   global $conf;
 
@@ -114,13 +114,16 @@ function search_case_username($username)
  *
  * @param string $login
  * @param string $password
- * @param string $mail_adress
+ * @param string $mail_address
  * @param bool $notify_admin
- * @param array &$errors populated with error messages
+ * @param array|null &$errors populated with error messages
  * @param bool $notify_user
  * @return int|false user id or false
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
-function register_user($login, $password, $mail_address, $notify_admin=true, &$errors = array(), $notify_user=false)
+function register_user(string $login, string $password, string $mail_address, bool $notify_admin=true, array|null &$errors = array(), bool $notify_user=false): false|int
 {
   global $conf;
 
@@ -150,7 +153,7 @@ function register_user($login, $password, $mail_address, $notify_admin=true, &$e
     $errors[] = $mail_error;
   }
 
-  if ($conf['insensitive_case_logon'] == true)
+  if ($conf['insensitive_case_logon'])
   {
     $login_error = validate_login_case($login);
     if ($login_error != '')
@@ -245,14 +248,14 @@ SELECT id
       $keyargs_content = array(
         get_l10n_args('Hello %s,', stripslashes($login)),
         get_l10n_args('Thank you for registering at %s!', $conf['gallery_title']),
-        get_l10n_args('', ''),
-        get_l10n_args('Here are your connection settings', ''),
-        get_l10n_args('', ''),
+        get_l10n_args(''),
+        get_l10n_args('Here are your connection settings'),
+        get_l10n_args(''),
         get_l10n_args('Link: %s', get_absolute_root_url()),
         get_l10n_args('Username: %s', stripslashes($login)),
         get_l10n_args('Password: %s', stripslashes($password)),
         get_l10n_args('Email: %s', $mail_address),
-        get_l10n_args('', ''),
+        get_l10n_args(''),
         get_l10n_args('If you think you\'ve received this email in error, please contact us at %s', get_webmaster_mail_address()),
         );
 
@@ -290,10 +293,10 @@ SELECT id
  * Same that getuserdata() but with additional tests for guest.
  *
  * @param int $user_id
- * @param boolean $user_cache
+ * @param bool $use_cache
  * @return array
  */
-function build_user($user_id, $use_cache=true)
+function build_user(int $user_id, bool $use_cache=true): array
 {
   global $conf;
 
@@ -322,10 +325,10 @@ function build_user($user_id, $use_cache=true)
  * Finds informations related to the user identifier.
  *
  * @param int $user_id
- * @param boolean $use_cache
+ * @param bool $use_cache
  * @return array
  */
-function getuserdata($user_id, $use_cache=false)
+function getuserdata(int $user_id, bool $use_cache=false): array
 {
   global $conf;
 
@@ -409,7 +412,7 @@ SELECT
   {
     if (!isset($userdata['need_update'])
         or !is_bool($userdata['need_update'])
-        or $userdata['need_update'] == true)
+        or $userdata['need_update'])
     {
       $userdata['cache_update_time'] = time();
 
@@ -417,7 +420,7 @@ SELECT
       $userdata['need_update'] = false;
 
       $userdata['forbidden_categories'] =
-        calculate_permissions($userdata['id'], $userdata['status']);
+        calculate_permissions((int)$userdata['id'], $userdata['status']);
 
       /* now we build the list of forbidden images (this list does not contain
       images that are not in at least an authorized category)*/
@@ -445,7 +448,7 @@ SELECT COUNT(DISTINCT(image_id)) as total
 
 
       // now we update user cache categories
-      $user_cache_cats = get_computed_categories($userdata, null);
+      $user_cache_cats = get_computed_categories($userdata);
       if ( !is_admin($userdata['status']) )
       { // for non admins we forbid categories with no image (feature 1053)
         $forbidden_ids = array();
@@ -519,7 +522,7 @@ INSERT IGNORE INTO '.USER_CACHE_TABLE.'
 /**
  * Deletes favorites of the current user if he's not allowed to see them.
  */
-function check_user_favorites()
+function check_user_favorites(): void
 {
   global $user;
 
@@ -577,7 +580,7 @@ DELETE FROM '.FAVORITES_TABLE.'
  * @param string $user_status
  * @return string comma separated ids
  */
-function calculate_permissions($user_id, $user_status)
+function calculate_permissions(int $user_id, string $user_status): string
 {
   $query = '
 SELECT id
@@ -640,9 +643,9 @@ SELECT id
  * Returns user identifier thanks to his name.
  *
  * @param string $username
- * @param int|false
+ * @return mixed
  */
-function get_userid($username)
+function get_userid(string $username): mixed
 {
   global $conf;
 
@@ -670,9 +673,9 @@ SELECT '.$conf['user_fields']['id'].'
  * Returns user identifier thanks to his email.
  *
  * @param string $email
- * @param int|false
+ * @return mixed
  */
-function get_userid_by_email($email)
+function get_userid_by_email(string $email): mixed
 {
   global $conf;
 
@@ -700,10 +703,10 @@ SELECT
 /**
  * Returns a array with default user valuees.
  *
- * @param convert_str ceonferts 'true' and 'false' into booleans
- * @return array
+ * @param bool $convert_str converts 'true' and 'false' into booleans
+ * @return array|false
  */
-function get_default_user_info($convert_str=true)
+function get_default_user_info(bool $convert_str=true): array|false
 {
   global $cache, $conf;
 
@@ -761,9 +764,9 @@ SELECT *
  * @param mixed $default
  * @return mixed
  */
-function get_default_user_value($value_name, $default)
+function get_default_user_value(string $value_name, mixed $default): mixed
 {
-  $default_user = get_default_user_info(true);
+  $default_user = get_default_user_info();
   if ($default_user === false or empty($default_user[$value_name]))
   {
     return $default;
@@ -780,7 +783,7 @@ function get_default_user_value($value_name, $default)
  *
  * @return string
  */
-function get_default_theme()
+function get_default_theme(): string
 {
   $theme = get_default_user_value('theme', PHPWG_DEFAULT_TEMPLATE);
   if (check_theme_installed($theme))
@@ -790,7 +793,7 @@ function get_default_theme()
 
   // let's find the first available theme
   $active_themes = array_keys(get_pwg_themes());
-  return isset($active_themes[0]) ? $active_themes[0] : 'default';
+  return $active_themes[0] ?? 'default';
 }
 
 /**
@@ -798,7 +801,7 @@ function get_default_theme()
  *
  * @return string
  */
-function get_default_language()
+function get_default_language(): string
 {
   return get_default_user_value('language', PHPWG_DEFAULT_LANGUAGE);
 }
@@ -806,9 +809,9 @@ function get_default_language()
 /**
  * Tries to find the browser language among available languages.
  *
- * @return string
+ * @return false|string
  */
-function get_browser_language()
+function get_browser_language(): false|string
 {
   $language_header = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
   if ($language_header == '')
@@ -833,7 +836,7 @@ function get_browser_language()
   $q_values = $matches[3];  // ['0.9', '', '0.7']
   foreach ($q_values as $i => $q_value)
   {
-    $q_values[$i] = ($q_values[$i] === '') ? 1 : floatval($q_values[$i]);
+    $q_values[$i] = ($q_value === '') ? 1 : floatval($q_value);
   }
 
   // since quick sort is not stable,
@@ -869,7 +872,7 @@ function get_browser_language()
     // only in case that an exact match was not available,
     // should we fallback to other variants in the same language family
     // fr_CH => fr => fr_FR
-    else if (array_key_exists($accept_languages_short[$i], $languages_available))
+    elseif (array_key_exists($accept_languages_short[$i], $languages_available))
     {
       return $languages_available[$accept_languages_short[$i]];
     }
@@ -882,9 +885,9 @@ function get_browser_language()
  * Creates user informations based on default values.
  *
  * @param int|int[] $user_ids
- * @param array $override_values values used to override default user values
+ * @param array|null $override_values values used to override default user values
  */
-function create_user_infos($user_ids, $override_values=null)
+function create_user_infos(array|int $user_ids, array $override_values=null): void
 {
   global $conf;
 
@@ -912,7 +915,7 @@ function create_user_infos($user_ids, $override_values=null)
 
     foreach ($user_ids as $user_id)
     {
-      $level= isset($default_user['level']) ? $default_user['level'] : 0;
+      $level= $default_user['level'] ?? 0;
       if ($user_id == $conf['webmaster_id'])
       {
         $status = 'webmaster';
@@ -952,7 +955,7 @@ function create_user_infos($user_ids, $override_values=null)
  * @param string &$username fille with corresponding username
  * @return string|false
  */
-function calculate_auto_login_key($user_id, $time, &$username)
+function calculate_auto_login_key(int $user_id, int $time, string &$username): false|string
 {
   global $conf;
   $query = '
@@ -966,8 +969,7 @@ WHERE '.$conf['user_fields']['id'].' = '.$user_id;
     $row = pwg_db_fetch_assoc($result);
     $username = stripslashes($row['username']);
     $data = $time.$user_id.$username;
-    $key = base64_encode( hash_hmac('sha1', $data, $conf['secret_key'].$row['password'],true) );
-    return $key;
+    return base64_encode( hash_hmac('sha1', $data, $conf['secret_key'].$row['password'],true) );
   }
   return false;
 }
@@ -978,7 +980,7 @@ WHERE '.$conf['user_fields']['id'].' = '.$user_id;
  * @param int $user_id
  * @param bool $remember_me
  */
-function log_user($user_id, $remember_me)
+function log_user(int $user_id, bool $remember_me): void
 {
   global $conf, $user;
 
@@ -1010,7 +1012,7 @@ function log_user($user_id, $remember_me)
   {
     session_start();
   }
-  $_SESSION['pwg_uid'] = (int)$user_id;
+  $_SESSION['pwg_uid'] = $user_id;
 
   $user['id'] = $_SESSION['pwg_uid'];
   trigger_notify('user_login', $user['id']);
@@ -1022,7 +1024,7 @@ function log_user($user_id, $remember_me)
  *
  * @return bool
  */
-function auto_login()
+function auto_login(): bool
 {
   global $conf;
 
@@ -1055,7 +1057,7 @@ function auto_login()
  * @param string $password plain text
  * @return string
  */
-function pwg_password_hash($password)
+function pwg_password_hash(string $password): string
 {
   return password_hash($password, PASSWORD_DEFAULT);
 }
@@ -1070,7 +1072,7 @@ function pwg_password_hash($password)
  * @param string $hash may be md5 or phpass hashed password
  * @return bool
  */
-function pwg_password_verify($password, $hash)
+function pwg_password_verify(string $password, string $hash): bool
 {
   return password_verify($password, $hash);
 }
@@ -1083,7 +1085,7 @@ function pwg_password_verify($password, $hash)
  * @param bool $remember_me
  * @return bool
  */
-function try_log_user($username, $password, $remember_me)
+function try_log_user(string $username, string $password, bool $remember_me): bool
 {
   return trigger_change('try_log_user', false, $username, $password, $remember_me);
 }
@@ -1092,14 +1094,14 @@ add_event_handler('try_log_user', 'pwg_login');
 
 /**
  * Default method for user login, can be overwritten with 'try_log_user' trigger.
- * @see try_log_user()
- *
+ * @param $success
  * @param string $username
  * @param string $password
  * @param bool $remember_me
  * @return bool
+ * @see try_log_user()
  */
-function pwg_login($success, $username, $password, $remember_me)
+function pwg_login($success, string $username, string $password, bool $remember_me): bool
 {
   if ($success===true)
   {
@@ -1163,7 +1165,7 @@ SELECT
 
     if ('guest' != $status)
     {
-      log_user($row['id'], $remember_me);
+      log_user((int)$row['id'], $remember_me);
       trigger_notify('login_success', stripslashes($username));
       return true;
     }
@@ -1175,7 +1177,7 @@ SELECT
 /**
  * Performs all the cleanup on user logout.
  */
-function logout_user()
+function logout_user(): void
 {
   global $conf;
 
@@ -1198,21 +1200,13 @@ function logout_user()
  * @param string $user_status used if $user not initialized
  * @return string
  */
-function get_user_status($user_status='')
+function get_user_status(string $user_status=''): string
 {
   global $user;
 
   if (empty($user_status))
   {
-    if (isset($user['status']))
-    {
-      $user_status = $user['status'];
-    }
-    else
-    {
-      // swicth to default value
-      $user_status = '';
-    }
+    $user_status = $user['status'] ?? '';
   }
   return $user_status;
 }
@@ -1223,7 +1217,7 @@ function get_user_status($user_status='')
  * @param string $user_status used if $user not initialized
  * @return int one of ACCESS_* constants
  */
-function get_access_type_status($user_status='')
+function get_access_type_status(string $user_status=''): int
 {
   global $conf;
 
@@ -1268,22 +1262,22 @@ function get_access_type_status($user_status='')
 /**
  * Returns if user has access to a particular ACCESS_*
  *
- * @return int $access_type one of ACCESS_* constants
+ * @param int $access_type one of ACCESS_* constants
  * @param string $user_status used if $user not initialized
  * @return bool
  */
-function is_autorize_status($access_type, $user_status='')
+function is_autorize_status(int $access_type, string $user_status=''): bool
 {
   return (get_access_type_status($user_status) >= $access_type);
 }
 
 /**
- * Abord script if user has no access to a particular ACCESS_*
+ * Abort script if user has no access to a particular ACCESS_*
  *
- * @return int $access_type one of ACCESS_* constants
+ * @param int $access_type one of ACCESS_* constants
  * @param string $user_status used if $user not initialized
  */
-function check_status($access_type, $user_status='')
+function check_status(int $access_type, string $user_status=''): void
 {
   if (!is_autorize_status($access_type, $user_status))
   {
@@ -1297,7 +1291,7 @@ function check_status($access_type, $user_status='')
  * @param string $user_status used if $user not initialized
  * @return bool
  */
-function is_generic($user_status='')
+function is_generic(string $user_status=''): bool
 {
   return get_user_status($user_status) == 'generic';
 }
@@ -1308,7 +1302,7 @@ function is_generic($user_status='')
  * @param string $user_status used if $user not initialized
  * @return bool
  */
-function is_a_guest($user_status='')
+function is_a_guest(string $user_status=''): bool
 {
   return get_user_status($user_status) == 'guest';
 }
@@ -1317,9 +1311,9 @@ function is_a_guest($user_status='')
  * Returns if user is, at least, a classic user.
  *
  * @param string $user_status used if $user not initialized
- * @return bool
+ * @return bool|int
  */
-function is_classic_user($user_status='')
+function is_classic_user(string $user_status=''): bool|int
 {
   return is_autorize_status(ACCESS_CLASSIC, $user_status);
 }
@@ -1328,9 +1322,9 @@ function is_classic_user($user_status='')
  * Returns if user is, at least, an administrator.
  *
  * @param string $user_status used if $user not initialized
- * @return bool
+ * @return bool|int
  */
-function is_admin($user_status='')
+function is_admin(string $user_status=''): bool|int
 {
   return is_autorize_status(ACCESS_ADMINISTRATOR, $user_status);
 }
@@ -1339,9 +1333,9 @@ function is_admin($user_status='')
  * Returns if user is a webmaster.
  *
  * @param string $user_status used if $user not initialized
- * @return bool
+ * @return bool|int
  */
-function is_webmaster($user_status='')
+function is_webmaster(string $user_status=''): bool|int
 {
   return is_autorize_status(ACCESS_WEBMASTER, $user_status);
 }
@@ -1353,7 +1347,7 @@ function is_webmaster($user_status='')
  * @param int $comment_author_id
  * @return bool
  */
-function can_manage_comment($action, $comment_author_id)
+function can_manage_comment(string $action, int $comment_author_id): bool
 {
   global $user, $conf;
 
@@ -1398,15 +1392,15 @@ function can_manage_comment($action, $comment_author_id)
  *    - visible_categories
  *    - forbidden_images
  *    - visible_images
- * @param string $prefix_condition prefixes query if condition is not empty
- * @param boolean $force_one_condition use at least "1 = 1"
+ * @param string|null $prefix_condition prefixes query if condition is not empty
+ * @param bool $force_one_condition use at least "1 = 1"
  * @return string
  */
 function get_sql_condition_FandF(
-  $condition_fields,
-  $prefix_condition = null,
-  $force_one_condition = false
-  )
+    array  $condition_fields,
+    string $prefix_condition = null,
+    bool   $force_one_condition = false
+  ): string
 {
   global $user, $filter;
 
@@ -1470,7 +1464,6 @@ function get_sql_condition_FandF(
       default:
       {
         die('Unknow condition');
-        break;
       }
     }
   }
@@ -1498,7 +1491,7 @@ function get_sql_condition_FandF(
  * @param string $db_field
  * @return string
  */
-function get_recent_photos_sql($db_field)
+function get_recent_photos_sql(string $db_field): string
 {
   global $user;
   if (!isset($user['last_photo_date']))
@@ -1513,11 +1506,10 @@ function get_recent_photos_sql($db_field)
 /**
  * Performs auto-connection if authentication key is valid.
  *
- * @since 2.8
- *
+ * @param $auth_key
  * @return bool
  */
-function auth_key_login($auth_key)
+function auth_key_login($auth_key): bool
 {
   global $conf, $user, $page;
 
@@ -1571,11 +1563,12 @@ SELECT
 /**
  * Creates an authentication key.
  *
- * @since 2.8
  * @param int $user_id
- * @return array
+ * @param null $user_status
+ * @return array|false
+ * @throws Exception
  */
-function create_user_auth_key($user_id, $user_status=null)
+function create_user_auth_key(int $user_id, $user_status=null): array|false
 {
   global $conf;
 
@@ -1644,11 +1637,10 @@ SELECT
 /**
  * Deactivates authentication keys
  *
- * @since 2.8
  * @param int $user_id
- * @return null
+ * @return void
  */
-function deactivate_user_auth_keys($user_id)
+function deactivate_user_auth_keys(int $user_id): void
 {
   $query = '
 UPDATE '.USER_AUTH_KEYS_TABLE.'
@@ -1662,11 +1654,10 @@ UPDATE '.USER_AUTH_KEYS_TABLE.'
 /**
  * Deactivates password reset key
  *
- * @since 11
  * @param int $user_id
- * @return null
+ * @return void
  */
-function deactivate_password_reset_key($user_id)
+function deactivate_password_reset_key(int $user_id): void
 {
   single_update(
     USER_INFOS_TABLE,
@@ -1681,12 +1672,11 @@ function deactivate_password_reset_key($user_id)
 /**
  * Gets the last visit (datetime) of a user, based on history table
  *
- * @since 2.9
  * @param int $user_id
- * @param boolean $save_in_user_infos to store result in user_infos.last_visit
- * @return string date & time of last visit
+ * @param bool $save_in_user_infos to store result in user_infos.last_visit
+ * @return string|null date & time of last visit
  */
-function get_user_last_visit_from_history($user_id, $save_in_user_infos=false)
+function get_user_last_visit_from_history(int $user_id, bool $save_in_user_infos=false): ?string
 {
   $last_visit = null;
 
@@ -1722,9 +1712,8 @@ UPDATE '.USER_INFOS_TABLE.'
 
 /**
  * Save user preferences in database
- * @since 13
  */
-function userprefs_save()
+function userprefs_save(): void
 {
   global $user;
 
@@ -1740,13 +1729,10 @@ UPDATE '.USER_INFOS_TABLE.'
 
 /**
  * Add or update a user preferences parameter
- * @since 13
- *
  * @param string $param
  * @param string $value
- * @param boolean $updateGlobal update global *$conf* variable
  */
-function userprefs_update_param($param, $value)
+function userprefs_update_param(string $param, string $value): void
 {
   global $user;
 
@@ -1767,11 +1753,9 @@ function userprefs_update_param($param, $value)
 
 /**
  * Delete one or more user preferences parameters
- * @since 13
- *
  * @param string|string[] $params
  */
-function userprefs_delete_param($params)
+function userprefs_delete_param(array|string $params): void
 {
   global $user;
 
@@ -1797,14 +1781,12 @@ function userprefs_delete_param($params)
 
 /**
  * Return a default value for a user preferences parameter.
- * @since 13
- *
  * @param string $param the configuration value to be extracted (if it exists)
- * @param mixed $default_value the default value if it does not exist yet.
+ * @param mixed $default_value if it does not exist yet.
  *
  * @return mixed The configuration value if the variable exists, otherwise the default.
  */
-function userprefs_get_param($param, $default_value=null)
+function userprefs_get_param(string $param, mixed $default_value=null): mixed
 {
   global $user;
 
@@ -1815,4 +1797,4 @@ function userprefs_get_param($param, $default_value=null)
 
   return $default_value;
 }
-?>
+

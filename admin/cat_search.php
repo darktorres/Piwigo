@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -96,4 +96,4 @@ $template->assign(
 // |                          sending html code                            |
 // +-----------------------------------------------------------------------+
 $template->assign_var_from_handle('ADMIN_CONTENT', 'cat_search');
-?>
+

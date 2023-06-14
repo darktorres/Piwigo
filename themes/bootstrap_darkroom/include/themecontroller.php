@@ -1,14 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 namespace BootstrapDarkroom;
 
+/**
+ *
+ */
 class ThemeController {
-    private $config;
+    private Config $config;
 
     public function __construct() {
         $this->config = new Config();
     }
 
-    public function init() {
+  /**
+   * @return void
+   */
+  public function init(): void
+    {
         load_language('theme.lang', PHPWG_THEMES_PATH.'bootstrap_darkroom/');
         load_language('lang', PHPWG_ROOT_PATH.PWG_LOCAL_DIR, array('no_fallback'=>true, 'local'=>true) );
 
@@ -39,7 +46,11 @@ class ThemeController {
         }
     }
 
-    public function assignConfig() {
+  /**
+   * @return void
+   */
+  public function assignConfig(): void
+    {
         global $template, $conf;
 
         if (array_key_exists('bootstrap_darkroom_navbar_main_style', $conf) && !empty($conf['bootstrap_darkroom_navbar_main_style'])) {
@@ -58,25 +69,42 @@ class ThemeController {
         $template->assign('theme_config', $this->config);
     }
 
-    public function showUpgradeWarning() {
+  /**
+   * @return void
+   */
+  public function showUpgradeWarning(): void
+    {
         global $page;
         $page['errors'][] = l10n('Your selected color style has been reset to "bootstrap-darkroom". You can select a different color style in the admin section.');
     }
 
-    public function hideMenus($menus) {
+  /**
+   * @param $menus
+   * @return void
+   */
+  public function hideMenus($menus): void
+    {
         $menu = &$menus[0];
 
         $mbMenu = $menu->get_block('mbMenu');
         unset($mbMenu->data['comments']);
     }
 
-    public function returnPageStart() {
+  /**
+   * @return void
+   */
+  public function returnPageStart(): void
+    {
         global $page, $template;
 
         $template->assign('START_ID', $page['start']);
     }
 
-    public function checkIfHomepage() {
+  /**
+   * @return void
+   */
+  public function checkIfHomepage(): void
+    {
         global $template, $page;
 
         if (isset($page['is_homepage']) and $page['is_homepage']) {
@@ -86,7 +114,10 @@ class ThemeController {
         }
     }
 
-    public function setInitValues()
+  /**
+   * @return void
+   */
+  public function setInitValues(): void
     {
         global $template, $pwg_loaded_plugins, $conf;
 
@@ -114,7 +145,12 @@ class ThemeController {
         }
     }
 
-    public function exifReplacements($exif) {
+  /**
+   * @param $exif
+   * @return mixed
+   */
+  public function exifReplacements($exif): mixed
+  {
         global $conf;
 
         if (array_key_exists('bootstrap_darkroom_ps_exif_replacements', $conf)) {
@@ -128,7 +164,13 @@ class ThemeController {
     }
 
     // register additional template files
-    public function registerPictureTemplates() {
+
+  /**
+   * @return void
+   * @throws \SmartyException
+   */
+  public function registerPictureTemplates(): void
+    {
         global $template;
 
         $template->set_filenames(array('picture_nav'=>'picture_nav.tpl'));
@@ -137,7 +179,11 @@ class ThemeController {
         $template->assign_var_from_handle('PICTURE_NAV', 'picture_nav');
     }
 
-    public function stripBreadcrumbs() {
+  /**
+   * @return void
+   */
+  public function stripBreadcrumbs(): void
+    {
         global $page, $template;
 
         $l_sep = $template->get_template_vars('LEVEL_SEPARATOR');
@@ -166,7 +212,10 @@ class ThemeController {
         }
     }
 
-    public function getAllThumbnailsInCategory()
+  /**
+   * @return void
+   */
+  public function getAllThumbnailsInCategory(): void
     {
         global $template, $conf, $user, $page;
 
@@ -255,4 +304,4 @@ class ThemeController {
 
 }
 
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -15,4 +15,3 @@ $tabsheet->set_id('users');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
-?>

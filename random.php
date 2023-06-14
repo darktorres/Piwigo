@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,7 +10,7 @@
 // |                          define and include                           |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 // +-----------------------------------------------------------------------+
@@ -44,5 +44,4 @@ SELECT id
 // |                                redirect                               |
 // +-----------------------------------------------------------------------+
 
-redirect(make_index_url(array('list' => array_from_query($query, 'id'))));
-?>
+redirect(make_index_url(array('list' => query2array($query, null, 'id'))));

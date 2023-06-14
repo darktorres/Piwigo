@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -57,7 +57,7 @@ DELETE
 ;';
   pwg_query($query);
 }
-else if (isset($_POST['trueify'])
+elseif (isset($_POST['trueify'])
          and isset($_POST['cat_false'])
          and count($_POST['cat_false']) > 0)
 {
@@ -173,4 +173,4 @@ $template->assign('PWG_TOKEN', get_pwg_token());
 $template->assign_var_from_handle('DOUBLE_SELECT', 'double_select');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'group_perm');
 
-?>
+

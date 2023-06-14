@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,18 +7,21 @@
 // +-----------------------------------------------------------------------+
 
 
+/**
+ *
+ */
 class PwgXmlWriter
 {
-  var $_indent;
-  var $_indentStr;
+  public bool $_indent;
+  public string $_indentStr;
 
-  var $_elementStack;
-  var $_lastTagOpen;
-  var $_indentLevel;
+  public array $_elementStack;
+  public bool $_lastTagOpen;
+  public int $_indentLevel;
 
-  var $_encodedXml;
+  public string $_encodedXml;
 
-  function __construct()
+  public function __construct()
   {
     $this->_elementStack = array();
     $this->_lastTagOpen = false;
@@ -29,13 +32,20 @@ class PwgXmlWriter
     $this->_indentStr = "\t";
   }
 
-  function &getOutput()
+  /**
+   * @return string
+   */
+  public function &getOutput(): string
   {
     return $this->_encodedXml;
   }
 
 
-  function start_element($name)
+  /**
+   * @param $name
+   * @return void
+   */
+  public function start_element($name): void
   {
     $this->_end_prev(false);
     if (!empty($this->_elementStack))
@@ -54,7 +64,11 @@ class PwgXmlWriter
     $this->_elementStack[] = $name;
   }
 
-  function end_element($x)
+  /**
+   * @param $x
+   * @return void
+   */
+  public function end_element($x): void
   {
     $close_tag = $this->_end_prev(true);
     $name = array_pop( $this->_elementStack );
@@ -67,14 +81,22 @@ class PwgXmlWriter
     }
   }
 
-  function write_content($value)
+  /**
+   * @param $value
+   * @return void
+   */
+  public function write_content($value): void
   {
     $this->_end_prev(false);
     $value = (string)$value;
     $this->_output( htmlspecialchars( $value ) );
   }
 
-  function write_cdata($value)
+  /**
+   * @param $value
+   * @return void
+   */
+  public function write_cdata($value): void
   {
     $this->_end_prev(false);
     $value = (string)$value;
@@ -84,17 +106,30 @@ class PwgXmlWriter
       . ']]>' );
   }
 
-  function write_attribute($name, $value)
+  /**
+   * @param $name
+   * @param $value
+   * @return void
+   */
+  public function write_attribute($name, $value): void
   {
     $this->_output(' '.$name.'="'.$this->encode_attribute($value).'"');
   }
 
-  function encode_attribute($value)
+  /**
+   * @param $value
+   * @return string
+   */
+  public function encode_attribute($value): string
   {
     return htmlspecialchars( (string)$value);
   }
 
-  function _end_prev($done)
+  /**
+   * @param $done
+   * @return bool
+   */
+  public function _end_prev($done): bool
   {
     $ret = true;
     if ($this->_lastTagOpen)
@@ -115,13 +150,19 @@ class PwgXmlWriter
     return $ret;
   }
 
-  function _eol_indent()
+  /**
+   * @return void
+   */
+  public function _eol_indent(): void
   {
     if ($this->_indent)
       $this->_output("\n");
   }
 
-  function _indent()
+  /**
+   * @return void
+   */
+  public function _indent(): void
   {
     if ($this->_indent and
         $this->_indentLevel > count($this->_elementStack) )
@@ -132,42 +173,61 @@ class PwgXmlWriter
     }
   }
 
-  function _output($raw_content)
+  /**
+   * @param $raw_content
+   * @return void
+   */
+  public function _output($raw_content): void
   {
     $this->_encodedXml .= $raw_content;
   }
 }
 
+/**
+ *
+ */
 class PwgRestEncoder extends PwgResponseEncoder
 {
-  function encodeResponse($response)
+  private PwgXmlWriter $_writer;
+
+  /**
+   * @param mixed $response
+   * @return string
+   */
+  public function encodeResponse(mixed $response): string
   {
     if ($response instanceof PwgError)
     {
-      $ret = '<?xml version="1.0"?>
+      return '<?xml version="1.0"?>
 <rsp stat="fail">
 	<err code="'.$response->code().'" msg="'.htmlspecialchars($response->message()).'" />
 </rsp>';
-      return $ret;
     }
 
     $this->_writer = new PwgXmlWriter();
     $this->encode($response);
     $ret = $this->_writer->getOutput();
-    $ret = '<?xml version="1.0" encoding="utf-8" ?>
+    return '<?xml version="1.0" encoding="utf-8" ?>
 <rsp stat="ok">
 '.$ret.'
 </rsp>';
-
-    return $ret;
   }
 
-  function getContentType()
+  /**
+   * @return string
+   */
+  public function getContentType(): string
   {
     return 'text/xml';
   }
 
-  function encode_array($data, $itemName, $xml_attributes=array())
+  /**
+   * @param $data
+   * @param $itemName
+   * @param array $xml_attributes
+   * @return void
+   */
+  public function encode_array($data, $itemName, array $xml_attributes=array()): void
   {
     foreach ($data as $item)
     {
@@ -177,7 +237,13 @@ class PwgRestEncoder extends PwgResponseEncoder
     }
   }
 
-  function encode_struct($data, $skip_underscore, $xml_attributes=array())
+  /**
+   * @param $data
+   * @param $skip_underscore
+   * @param array $xml_attributes
+   * @return void
+   */
+  public function encode_struct($data, $skip_underscore, array $xml_attributes=array()): void
   {
     foreach ($data as $name => $value)
     {
@@ -195,7 +261,7 @@ class PwgRestEncoder extends PwgResponseEncoder
         }
         unset($data[$name]);
       }
-      else if ( isset($xml_attributes[$name]) )
+      elseif ( isset($xml_attributes[$name]) )
       {
         $this->_writer->write_attribute($name, $value);
         unset($data[$name]);
@@ -216,11 +282,15 @@ class PwgRestEncoder extends PwgResponseEncoder
     }
   }
 
-  function encode($data, $xml_attributes=array() )
+  /**
+   * @param $data
+   * @param array $xml_attributes
+   * @return void
+   */
+  public function encode($data, array $xml_attributes=array() ): void
   {
     switch (gettype($data))
     {
-      case 'null':
       case 'NULL':
         $this->_writer->write_content('');
         break;
@@ -229,8 +299,6 @@ class PwgRestEncoder extends PwgResponseEncoder
         break;
       case 'integer':
       case 'double':
-        $this->_writer->write_content($data);
-        break;
       case 'string':
         $this->_writer->write_content($data);
         break;
@@ -265,4 +333,4 @@ class PwgRestEncoder extends PwgResponseEncoder
   }
 }
 
-?>
+

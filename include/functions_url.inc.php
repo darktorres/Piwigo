@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,7 +12,7 @@
  * and return an empty string for current path
  * @return string
  */
-function get_root_url()
+function get_root_url(): string
 {
   global $page;
   if ( ($root_url = $page['root_path'] ?? null) === null )
@@ -28,9 +28,9 @@ function get_root_url()
 
 /**
  * returns the absolute url to the root of PWG
- * @param boolean with_scheme if false - does not add http://toto.com
+ * @param bool $with_scheme if false - does not add http://toto.com
  */
-function get_absolute_root_url($with_scheme=true)
+function get_absolute_root_url(bool $with_scheme=true): string
 {
   global $conf;
   // TODO - add HERE the possibility to call PWG functions from external scripts
@@ -96,11 +96,12 @@ function get_absolute_root_url($with_scheme=true)
  * adds one or more _GET style parameters to an url
  * example: add_url_params('/x', array('a'=>'b')) returns /x?a=b
  * add_url_params('/x?cat_id=10', array('a'=>'b')) returns /x?cat_id=10&amp;a=b
- * @param string url
- * @param array params
+ * @param string $url
+ * @param array $params
+ * @param string $arg_separator
  * @return string
  */
-function add_url_params($url, $params, $arg_separator='&amp;' )
+function add_url_params(string $url, array $params, string $arg_separator='&amp;' ): string
 {
   if ( !empty($params) )
   {
@@ -111,7 +112,7 @@ function add_url_params($url, $params, $arg_separator='&amp;' )
       if ($is_first)
       {
         $is_first = false;
-        $url .= ( strpos($url, '?')===false ) ? '?' : $arg_separator;
+        $url .= ( !str_contains($url, '?') ) ? '?' : $arg_separator;
       }
       else
       {
@@ -130,10 +131,10 @@ function add_url_params($url, $params, $arg_separator='&amp;' )
 /**
  * build an index URL for a specific section
  *
- * @param array
+ * @param array $params
  * @return string
  */
-function make_index_url($params = array())
+function make_index_url(array $params = array()): string
 {
   global $conf;
   $url = get_root_url().'index';
@@ -169,11 +170,11 @@ function make_index_url($params = array())
  * ) will create an index URL on the current section (categories), but on
  * a redefined category and without the start URL parameter.
  *
- * @param array redefined keys
- * @param array removed keys
+ * @param array $redefined keys
+ * @param array $removed keys
  * @return string
  */
-function duplicate_index_url($redefined = array(), $removed = array())
+function duplicate_index_url(array $redefined = array(), array $removed = array()): string
 {
   return make_index_url(
     params_for_duplication($redefined, $removed)
@@ -183,11 +184,11 @@ function duplicate_index_url($redefined = array(), $removed = array())
 /**
  * returns $page global array with key redefined and key removed
  *
- * @param array redefined keys
- * @param array removed keys
+ * @param array $redefined keys
+ * @param array $removed keys
  * @return array
  */
-function params_for_duplication($redefined, $removed)
+function params_for_duplication(array $redefined, array $removed): array
 {
   global $page;
 
@@ -210,11 +211,11 @@ function params_for_duplication($redefined, $removed)
  * create a picture URL with current page parameters, but with redefinitions
  * and removes. See duplicate_index_url.
  *
- * @param array redefined keys
- * @param array removed keys
+ * @param array $redefined keys
+ * @param array $removed keys
  * @return string
  */
-function duplicate_picture_url($redefined = array(), $removed = array())
+function duplicate_picture_url(array $redefined = array(), array $removed = array()): string
 {
   return make_picture_url(
     params_for_duplication($redefined, $removed)
@@ -224,10 +225,10 @@ function duplicate_picture_url($redefined = array(), $removed = array())
 /**
  * create a picture URL on a specific section for a specific picture
  *
- * @param array
+ * @param array $params
  * @return string
  */
-function make_picture_url($params)
+function make_picture_url(array $params): string
 {
   global $conf;
 
@@ -268,8 +269,7 @@ function make_picture_url($params)
     unset( $params['flat'] );
   }
   $url .= make_section_in_url($params);
-  $url = add_well_known_params_in_url($url, $params);
-  return $url;
+  return add_well_known_params_in_url($url, $params);
 }
 
 /**
@@ -309,10 +309,10 @@ function add_well_known_params_in_url($url, $params)
  * Depending on section, other parameters are required (see function code
  * for details)
  *
- * @param array
+ * @param array $params
  * @return string
  */
-function make_section_in_url($params)
+function make_section_in_url(array $params): string
 {
   global $conf;
   $section_string = '';
@@ -453,11 +453,12 @@ function make_section_in_url($params)
  *
  * Depending on section, other parameters are returned (category/tags/list/...)
  *
- * @param array of url tokens to parse
- * @param int the index in the array of url tokens; in/out
+ * @param array $tokens of url tokens to parse
+ * @param int $next_token the index in the array of url tokens; in/out
  * @return array
+ * @throws SmartyException
  */
-function parse_section_url( $tokens, &$next_token)
+function parse_section_url(array $tokens, int &$next_token): array
 {
   $page=array();
   if (strncmp($tokens[$next_token], 'categor', 7)==0 )
@@ -473,10 +474,10 @@ function parse_section_url( $tokens, &$next_token)
       if ($loop_counter++ > count($tokens)+10){die('infinite loop?');}
 
       if (
-        strpos($tokens[$next_token], 'created-')===0
-        or strpos($tokens[$next_token], 'posted-')===0
-        or strpos($tokens[$next_token], 'start-')===0
-        or strpos($tokens[$next_token], 'startcat-')===0
+        str_starts_with($tokens[$next_token], 'created-')
+        or str_starts_with($tokens[$next_token], 'posted-')
+        or str_starts_with($tokens[$next_token], 'start-')
+        or str_starts_with($tokens[$next_token], 'startcat-')
         or 'flat' == $tokens[$next_token]
       )
       {
@@ -503,10 +504,10 @@ function parse_section_url( $tokens, &$next_token)
         $maybe_permalinks = array();
         $current_token = $next_token;
         while ( isset($tokens[$current_token])
-            and strpos($tokens[$current_token], 'created-')!==0
-            and strpos($tokens[$current_token], 'posted-')!==0
-            and strpos($tokens[$next_token], 'start-')!==0
-            and strpos($tokens[$next_token], 'startcat-')!==0
+            and !str_starts_with($tokens[$current_token], 'created-')
+            and !str_starts_with($tokens[$current_token], 'posted-')
+            and !str_starts_with($tokens[$next_token], 'start-')
+            and !str_starts_with($tokens[$next_token], 'startcat-')
             and $tokens[$current_token] != 'flat')
         {
           if (empty($maybe_permalinks))
@@ -590,9 +591,9 @@ function parse_section_url( $tokens, &$next_token)
 
     while (isset($tokens[$i]))
     {
-      if (strpos($tokens[$i], 'created-')===0
-           or strpos($tokens[$i], 'posted-')===0
-           or strpos($tokens[$i], 'start-')===0 )
+      if (str_starts_with($tokens[$i], 'created-')
+           or str_starts_with($tokens[$i], 'posted-')
+           or str_starts_with($tokens[$i], 'start-') )
         break;
 
       if ( $conf['tag_url_style'] != 'tag' and preg_match('/^(\d+)(?:-(.*)|)$/', $tokens[$i], $matches) )
@@ -690,7 +691,7 @@ function parse_section_url( $tokens, &$next_token)
  * the reverse of add_well_known_params_in_url
  * parses start, flat and chronology from url tokens
 */
-function parse_well_known_params_url($tokens, &$i)
+function parse_well_known_params_url($tokens, &$i): array
 {
   $page = array();
   while (isset($tokens[$i]))
@@ -700,7 +701,7 @@ function parse_well_known_params_url($tokens, &$i)
       // indicate a special list of images
       $page['flat'] = true;
     }
-    elseif (strpos($tokens[$i], 'created-')===0 or strpos($tokens[$i], 'posted-')===0)
+    elseif (str_starts_with($tokens[$i], 'created-') or str_starts_with($tokens[$i], 'posted-'))
     {
       $chronology_tokens = explode('-', $tokens[$i] );
 
@@ -750,10 +751,10 @@ function parse_well_known_params_url($tokens, &$i)
 
 
 /**
- * @param id image id
- * @param what_part string one of 'e' (element), 'r' (representative)
+ * @param int $id image id
+ * @param string $what_part one of 'e' (element), 'r' (representative)
  */
-function get_action_url($id, $what_part, $download)
+function get_action_url(int $id, string $what_part, $download): string
 {
   $params = array(
         'id' => $id,
@@ -771,7 +772,11 @@ function get_action_url($id, $what_part, $download)
  * @param element_info array containing element information from db;
  * at least 'id', 'path' should be present
  */
-function get_element_url($element_info)
+/**
+ * @param $element_info
+ * @return mixed|string
+ */
+function get_element_url($element_info): mixed
 {
   $url = $element_info['path'];
   if ( !url_is_remote($url) )
@@ -785,10 +790,9 @@ function get_element_url($element_info)
 /**
  * Indicate to build url with full path
  *
- * @param null
- * @return null
+ * @return void
  */
-function set_make_full_url()
+function set_make_full_url(): void
 {
   global $page;
 
@@ -810,10 +814,9 @@ function set_make_full_url()
 /**
  * Restore old parameter to build url with full path
  *
- * @param null
- * @return null
+ * @return void
  */
-function unset_make_full_url()
+function unset_make_full_url(): void
 {
   global $page;
 
@@ -841,10 +844,10 @@ function unset_make_full_url()
 /**
  * Embellish the url argument
  *
- * @param $url
- * @return $url embellished
+ * @param string $url
+ * @return string url embellished
  */
-function embellish_url($url)
+function embellish_url(string $url): string
 {
   $url = str_replace('/./', '/', $url);
   while ( ($dotdot = strpos($url, '/../', 1) ) !== false )
@@ -884,10 +887,10 @@ function get_gallery_home_url()
  * returns $_SERVER['QUERY_STRING'] whithout keys given in parameters
  *
  * @param string[] $rejects
- * @param boolean $escape escape *&* to *&amp;*
- * @returns string
+ * @param bool $escape escape *&* to *&amp;*
+ * @return string
  */
-function get_query_string_diff($rejects=array(), $escape=true)
+function get_query_string_diff(array $rejects=array(), bool $escape=true): string
 {
   if (empty($_SERVER['QUERY_STRING']))
   {
@@ -905,9 +908,9 @@ function get_query_string_diff($rejects=array(), $escape=true)
  * returns true if the url is absolute (begins with http)
  *
  * @param string $url
- * @returns boolean
+ * @return bool
  */
-function url_is_remote($url)
+function url_is_remote(string $url): bool
 {
   if ( strncmp($url, 'http://', 7)==0
     or strncmp($url, 'https://', 8)==0 )
@@ -919,9 +922,8 @@ function url_is_remote($url)
 
 /**
  * List favorite image_ids of the current user.
- * @since 13
  */
-function get_user_favorites()
+function get_user_favorites(): array
 {
   global $user;
 
@@ -941,4 +943,4 @@ SELECT
   return query2array($query, 'image_id', 'fake_value');
 }
 
-?>
+

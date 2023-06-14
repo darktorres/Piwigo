@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -11,16 +11,16 @@
  */
 
 
-define('IMG_SQUARE', 'square');
-define('IMG_THUMB', 'thumb');
-define('IMG_XXSMALL', '2small');
-define('IMG_XSMALL', 'xsmall');
-define('IMG_SMALL', 'small');
-define('IMG_MEDIUM', 'medium');
-define('IMG_LARGE', 'large');
-define('IMG_XLARGE', 'xlarge');
-define('IMG_XXLARGE', 'xxlarge');
-define('IMG_CUSTOM', 'custom');
+const IMG_SQUARE = 'square';
+const IMG_THUMB = 'thumb';
+const IMG_XXSMALL = '2small';
+const IMG_XSMALL = 'xsmall';
+const IMG_SMALL = 'small';
+const IMG_MEDIUM = 'medium';
+const IMG_LARGE = 'large';
+const IMG_XLARGE = 'xlarge';
+const IMG_XXLARGE = 'xxlarge';
+const IMG_CUSTOM = 'custom';
 
 
 /**
@@ -28,20 +28,13 @@ define('IMG_CUSTOM', 'custom');
  */
 final class WatermarkParams
 {
-  /** @var string */
-  public $file = '';
-  /** @var int[] */
-  public $min_size = array(500,500);
-  /** @var int */
-  public $xpos = 50;
-  /** @var int */
-  public $ypos = 50;
-  /** @var int */
-  public $xrepeat = 0;
-  /** @var int */
-  public $yrepeat = 0;
-  /** @var int */
-  public $opacity = 100;
+  public string $file = '';
+  public array $min_size = array(500,500);
+  public int $xpos = 50;
+  public int $ypos = 50;
+  public int $xrepeat = 0;
+  public int $yrepeat = 0;
+  public int $opacity = 100;
 }
 
 
@@ -50,28 +43,21 @@ final class WatermarkParams
  */
 final class ImageStdParams
 {
-  /** @var string[] */
-  private static $all_types = array(
+  private static array $all_types = array(
     IMG_SQUARE, IMG_THUMB, IMG_XXSMALL, IMG_XSMALL, IMG_SMALL,
     IMG_MEDIUM, IMG_LARGE, IMG_XLARGE, IMG_XXLARGE
-    );
-  /** @var DerivativeParams[] */
-  private static $all_type_map = array();
-  /** @var DerivativeParams[] */
-  private static $type_map = array();
-  /** @var DerivativeParams[] */
-  private static $undefined_type_map = array();
-  /** @var WatermarkParams */
-  private static $watermark;
-  /** @var array */
-  public static $custom = array();
-  /** @var int */
-  public static $quality=95;
+  );
+  private static array $all_type_map = array();
+  private static array $type_map = array();
+  private static array $undefined_type_map = array();
+  private static WatermarkParams $watermark;
+  public static array $custom = array();
+  public static int $quality=95;
 
   /**
    * @return string[]
    */
-  static function get_all_types()
+  public static function get_all_types(): array
   {
     return self::$all_types;
   }
@@ -79,7 +65,7 @@ final class ImageStdParams
   /**
    * @return DerivativeParams[]
    */
-  static function get_all_type_map()
+  public static function get_all_type_map(): array
   {
     return self::$all_type_map;
   }
@@ -87,7 +73,7 @@ final class ImageStdParams
   /**
    * @return DerivativeParams[]
    */
-  static function get_defined_type_map()
+  public static function get_defined_type_map(): array
   {
     return self::$type_map;
   }
@@ -95,28 +81,29 @@ final class ImageStdParams
   /**
    * @return DerivativeParams[]
    */
-  static function get_undefined_type_map()
+  public static function get_undefined_type_map(): array
   {
     return self::$undefined_type_map;
   }
 
   /**
+   * @param $type
    * @return DerivativeParams
    */
-  static function get_by_type($type)
+  public static function get_by_type($type): DerivativeParams
   {
     return self::$all_type_map[$type];
   }
 
   /**
-   * @param int $w
-   * @param int $h
-   * @param float $crop
-   * @param int $minw
-   * @param int $minh
+   * @param int|string $w
+   * @param int|string $h
+   * @param float|int $crop
+   * @param int|null $minw
+   * @param int|null $minh
    * @return DerivativeParams
    */
-  static function get_custom($w, $h, $crop=0, $minw=null, $minh=null)
+  public static function get_custom(int|string $w, int|string $h, float|int $crop=0, int $minw=null, int $minh=null): DerivativeParams
   {
     $params = new DerivativeParams( new SizingParams( array($w,$h), $crop, array($minw,$minh)) );
     self::apply_global($params);
@@ -135,7 +122,7 @@ final class ImageStdParams
   /**
    * @return WatermarkParams
    */
-  static function get_watermark()
+  public static function get_watermark(): WatermarkParams
   {
     return self::$watermark;
   }
@@ -143,7 +130,7 @@ final class ImageStdParams
   /**
    * Loads derivative configuration from database or initializes it.
    */
-  static function load_from_db()
+  public static function load_from_db(): void
   {
     global $conf;
     $arr = $conf['derivatives'] ?? false;
@@ -168,17 +155,17 @@ final class ImageStdParams
   /**
    * @param WatermarkParams $watermark
    */
-  static function set_watermark($watermark)
+  public static function set_watermark(WatermarkParams $watermark): void
   {
     self::$watermark = $watermark;
   }
 
   /**
+   * @param DerivativeParams[] $map
    * @see ImageStdParams::save()
    *
-   * @param DerivativeParams[] $map
    */
-  static function set_and_save($map)
+  public static function set_and_save(array $map): void
   {
     self::$type_map = $map;
     self::save();
@@ -188,7 +175,7 @@ final class ImageStdParams
   /**
    * Saves the configuration in database.
    */
-  static function save()
+  public static function save(): void
   {
     $ser = serialize( array(
       'd' => self::$type_map,
@@ -202,10 +189,10 @@ final class ImageStdParams
   /**
    * @return DerivativeParams[]
    */
-  static function get_default_sizes()
+  public static function get_default_sizes(): array
   {
     $arr = array(
-      IMG_SQUARE => new DerivativeParams( SizingParams::square(120,120) ),
+      IMG_SQUARE => new DerivativeParams( SizingParams::square(120) ),
       IMG_THUMB => new DerivativeParams( SizingParams::classic(144,144) ),
       IMG_XXSMALL => new DerivativeParams( SizingParams::classic(240,240) ),
       IMG_XSMALL => new DerivativeParams( SizingParams::classic(432,324) ),
@@ -228,7 +215,7 @@ final class ImageStdParams
    *
    * @param DerivativeParams $params
    */
-  static function apply_global($params)
+  public static function apply_global(DerivativeParams $params): void
   {
     $params->use_watermark = !empty(self::$watermark->file) &&
         (self::$watermark->min_size[0]<=$params->sizing->ideal_size[0]
@@ -238,7 +225,7 @@ final class ImageStdParams
   /**
    * Build 'type_map', 'all_type_map' and 'undefined_type_map'.
    */
-  private static function build_maps()
+  private static function build_maps(): void
   {
     foreach (self::$type_map as $type=>$params)
     {
@@ -267,4 +254,3 @@ final class ImageStdParams
   }
 }
 
-?>

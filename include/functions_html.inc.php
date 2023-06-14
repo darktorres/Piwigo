@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -22,7 +22,7 @@
  * @param string|null $url
  * @return string
  */
-function get_cat_display_name($cat_informations, $url='')
+function get_cat_display_name(array $cat_informations, ?string $url=''): string
 {
   global $conf;
 
@@ -77,19 +77,19 @@ function get_cat_display_name($cat_informations, $url='')
 
 /**
  * Generates breadcrumb from categories list using a cache.
- * @see get_cat_display_name()
- *
  * @param string $uppercats
  * @param string|null $url
  * @param bool $single_link
  * @param string|null $link_class
+ * @param null $auth_key
  * @return string
+ * @see get_cat_display_name()
  */
-function get_cat_display_name_cache($uppercats,
-                                    $url = '',
-                                    $single_link = false,
-                                    $link_class = null,
-                                    $auth_key=null)
+function get_cat_display_name_cache(string  $uppercats,
+                                    ?string $url = '',
+                                    bool    $single_link = false,
+                                    string  $link_class = null,
+                                            $auth_key=null): string
 {
   global $cache, $conf;
 
@@ -174,13 +174,13 @@ SELECT id, name, permalink
 
 /**
  * Generates breadcrumb for a category.
- * @see get_cat_display_name()
- *
  * @param int $cat_id
  * @param string|null $url
  * @return string
+ *@see get_cat_display_name()
+ *
  */
-function get_cat_display_name_from_id($cat_id, $url = '')
+function get_cat_display_name_from_id(int $cat_id, ?string $url = ''): string
 {
   $cat_info = get_cat_info($cat_id);
   return get_cat_display_name($cat_info['upper_names'], $url);
@@ -197,7 +197,7 @@ function get_cat_display_name_from_id($cat_id, $url = '')
  * @param string $content
  * @return string
  */
-function render_comment_content($content)
+function render_comment_content(string $content): string
 {
   $content = htmlspecialchars($content);
   $pattern = '/(https?:\/\/\S*)/';
@@ -219,18 +219,17 @@ function render_comment_content($content)
   // replace /word/ by an italic word
   $pattern = "/\/(\S*)\/(\s)/";
   $replacement = '<span style="font-style:italic;">$1$2</span>';
-  $content = preg_replace($pattern, $replacement, $content);
-
+  
   // TODO : add a trigger
 
-  return $content;
+  return preg_replace($pattern, $replacement, $content);
 }
 
 
 /**
  * Callback used for sorting by name.
  */
-function name_compare($a, $b)
+function name_compare($a, $b): int
 {
   return strcmp(strtolower($a['name']), strtolower($b['name']));
 }
@@ -238,7 +237,7 @@ function name_compare($a, $b)
 /**
  * Callback used for sorting by name (slug) with cache.
  */
-function tag_alpha_compare($a, $b)
+function tag_alpha_compare($a, $b): int
 {
   global $cache;
 
@@ -256,7 +255,7 @@ function tag_alpha_compare($a, $b)
 /**
  * Exits the current script (or redirect to login page if not logged).
  */
-function access_denied()
+function access_denied(): void
 {
   global $user, $conf;
 
@@ -287,12 +286,13 @@ function access_denied()
 
 /**
  * Exits the current script with 403 code.
- * @todo nice display if $template loaded
- *
  * @param string $msg
  * @param string|null $alternate_url redirect to this url
+ * @throws SmartyException
+ * @todo nice display if $template loaded
+ *
  */
-function page_forbidden($msg, $alternate_url=null)
+function page_forbidden(string $msg, string $alternate_url=null): void
 {
   set_status_header(403);
   if ($alternate_url==null)
@@ -306,12 +306,13 @@ function page_forbidden($msg, $alternate_url=null)
 
 /**
  * Exits the current script with 400 code.
- * @todo nice display if $template loaded
- *
  * @param string $msg
  * @param string|null $alternate_url redirect to this url
+ * @throws SmartyException
+ * @todo nice display if $template loaded
+ *
  */
-function bad_request($msg, $alternate_url=null)
+function bad_request(string $msg, string $alternate_url=null): void
 {
   set_status_header(400);
   if ($alternate_url==null)
@@ -325,12 +326,13 @@ function bad_request($msg, $alternate_url=null)
 
 /**
  * Exits the current script with 404 code.
- * @todo nice display if $template loaded
- *
  * @param string $msg
  * @param string|null $alternate_url redirect to this url
+ * @throws SmartyException
+ * @todo nice display if $template loaded
+ *
  */
-function page_not_found($msg, $alternate_url=null)
+function page_not_found(string $msg, string $alternate_url=null): void
 {
   set_status_header(404);
   if ($alternate_url==null)
@@ -344,13 +346,13 @@ function page_not_found($msg, $alternate_url=null)
 
 /**
  * Exits the current script with 500 code.
- * @todo nice display if $template loaded
- *
  * @param string $msg
  * @param string|null $title
  * @param bool $show_trace
+ *@todo nice display if $template loaded
+ *
  */
-function fatal_error($msg, $title=null, $show_trace=true)
+function fatal_error(string $msg, string $title=null, bool $show_trace=true): void
 {
   if (empty($title))
   {
@@ -386,7 +388,6 @@ $btrace_msg
   }
   error_reporting( E_ALL );
   trigger_error( strip_tags($msg).$btrace_msg, E_USER_ERROR );
-  die(0); // just in case
 }
 
 /**
@@ -394,7 +395,7 @@ $btrace_msg
  *
  * @return string
  */
-function get_tags_content_title()
+function get_tags_content_title(): string
 {
   global $page;
   $title = '<a href="'.get_root_url().'tags.php" title="'.l10n('display available tags').'">'
@@ -447,7 +448,7 @@ function get_tags_content_title()
  *
  * @return string
  */
-function get_combined_categories_content_title()
+function get_combined_categories_content_title(): string
 {
   global $page;
 
@@ -496,7 +497,7 @@ function get_combined_categories_content_title()
  * @param int $code
  * @param string $text for exotic http codes
  */
-function set_status_header($code, $text='')
+function set_status_header(int $code, string $text=''): void
 {
   if (empty($text))
   {
@@ -527,10 +528,10 @@ function set_status_header($code, $text='')
  * Returns the category comment for rendering in html textual mode (subcatify)
  * This method is called by a trigger_notify()
  *
- * @param string $desc
+ * @param string|null $desc
  * @return string
  */
-function render_category_literal_description($desc)
+function render_category_literal_description(string|null $desc): string
 {
   !isset($desc) ? $desc = "" : false;
   return strip_tags($desc, '<span><p><a><br><b><i><small><big><strong><em>');
@@ -542,7 +543,7 @@ function render_category_literal_description($desc)
  *
  * @param BlockManager[] $menu_ref_arr
  */
-function register_default_menubar_blocks($menu_ref_arr)
+function register_default_menubar_blocks(array $menu_ref_arr): void
 {
   $menu = & $menu_ref_arr[0];
   if ($menu->get_id() != 'menubar')
@@ -569,7 +570,7 @@ function register_default_menubar_blocks($menu_ref_arr)
  * @param array $info at least file or name
  * @return string
  */
-function render_element_name($info)
+function render_element_name(array $info): string
 {
   if (!empty($info['name']))
   {
@@ -585,7 +586,7 @@ function render_element_name($info)
  * @param string $param used to identify the trigger
  * @return string
  */
-function render_element_description($info, $param='')
+function render_element_description(array $info, string $param=''): string
 {
   if (!empty($info['comment']))
   {
@@ -602,7 +603,7 @@ function render_element_description($info, $param='')
  * @param string $comment
  * @return string
  */
-function get_thumbnail_title($info, $title, $comment='')
+function get_thumbnail_title(array $info, string $title, string $comment=''): string
 {
   global $conf, $user;
 
@@ -635,9 +636,7 @@ function get_thumbnail_title($info, $title, $comment='')
   }
 
   $title = htmlspecialchars(strip_tags($title));
-  $title = trigger_change('get_thumbnail_title', $title, $info);
-
-  return $title;
+  return trigger_change('get_thumbnail_title', $title, $info);
 }
 
 /**
@@ -647,7 +646,7 @@ function get_thumbnail_title($info, $title, $comment='')
  * @param SrcImage $src_image
  * @return string
  */
-function get_src_image_url_protection_handler($url, $src_image)
+function get_src_image_url_protection_handler(string $url, SrcImage $src_image): string
 {
   return get_action_url($src_image->id, $src_image->is_original() ? 'e' : 'r', false);
 }
@@ -659,7 +658,7 @@ function get_src_image_url_protection_handler($url, $src_image)
  * @param array $infos id, path
  * @return string
  */
-function get_element_url_protection_handler($url, $infos)
+function get_element_url_protection_handler(string $url, array $infos): string
 {
   global $conf;
   if ('images'==$conf['original_url_protection'])
@@ -676,7 +675,7 @@ function get_element_url_protection_handler($url, $infos)
 /**
  * Sends to the template all messages stored in $page and in the session.
  */
-function flush_page_messages()
+function flush_page_messages(): void
 {
   global $template, $page;
   if ($template->get_template_vars('page_refresh') === null)
@@ -697,4 +696,4 @@ function flush_page_messages()
   }
 }
 
-?>
+

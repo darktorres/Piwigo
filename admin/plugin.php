@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -56,4 +56,3 @@ else
 {
   die('Missing file '.htmlentities($filename));
 }
-?>

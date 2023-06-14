@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -11,50 +11,104 @@
 // +-----------------------------------------------------------------------+
 
 // Define all needed methods for image class
+
+/**
+ *
+ */
 interface imageInterface
 {
-  function get_width();
+  /**
+   * @return mixed
+   */
+  public function get_width(): mixed;
 
-  function get_height();
+  /**
+   * @return mixed
+   */
+  public function get_height(): mixed;
 
-  function set_compression_quality($quality);
+  /**
+   * @param int $quality
+   * @return bool
+   */
+  public function set_compression_quality(int $quality): bool;
 
-  function crop($width, $height, $x, $y);
+  /**
+   * @param $width
+   * @param $height
+   * @param $x
+   * @param $y
+   * @return mixed
+   */
+  public function crop($width, $height, $x, $y): mixed;
 
-  function strip();
+  /**
+   * @return mixed
+   */
+  public function strip(): mixed;
 
-  function rotate($rotation);
+  /**
+   * @param $rotation
+   * @return mixed
+   */
+  public function rotate($rotation): mixed;
 
-  function resize($width, $height);
+  /**
+   * @param $width
+   * @param $height
+   * @return mixed
+   */
+  public function resize($width, $height): mixed;
 
-  function sharpen($amount);
+  /**
+   * @param $amount
+   * @return mixed
+   */
+  public function sharpen($amount): mixed;
 
-  function compose($overlay, $x, $y, $opacity);
+  /**
+   * @param $overlay
+   * @param $x
+   * @param $y
+   * @param $opacity
+   * @return mixed
+   */
+  public function compose($overlay, $x, $y, $opacity): mixed;
 
-  function write($destination_filepath);
+  /**
+   * @param $destination_filepath
+   * @return mixed
+   */
+  public function write($destination_filepath): mixed;
 }
 
 // +-----------------------------------------------------------------------+
 // |                          Main Image Class                             |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class pwg_image
 {
-  var $image;
-  var $library = '';
-  var $source_filepath = '';
-  static $ext_imagick_version = '';
+  public mixed $image;
+  public string|false $library = '';
+  public string $source_filepath = '';
+  public static string $ext_imagick_version = '';
 
-  function __construct($source_filepath, $library=null)
+  /**
+   * @param $source_filepath
+   * @param $library
+   */
+  public function __construct($source_filepath, $library=null)
   {
     $this->source_filepath = $source_filepath;
 
     trigger_notify('load_image_library', array(&$this) );
 
-    if (is_object($this->image))
-    {
-      return; // A plugin may have load its own library
-    }
+    // if (is_object($this->image)) {
+    //   return; // A plugin may have load its own library
+    // }
 
     $extension = strtolower(get_extension($source_filepath));
 
@@ -73,13 +127,31 @@ class pwg_image
   }
 
   // Unknow methods will be redirected to image object
-  function __call($method, $arguments)
+
+  /**
+   * @param $method
+   * @param $arguments
+   * @return mixed
+   */
+  public function __call($method, $arguments)
   {
     return call_user_func_array(array($this->image, $method), $arguments);
   }
 
   // Piwigo resize function
-  function pwg_resize($destination_filepath, $max_width, $max_height, $quality, $automatic_rotation=true, $strip_metadata=false, $crop=false, $follow_orientation=true)
+
+  /**
+   * @param $destination_filepath
+   * @param $max_width
+   * @param $max_height
+   * @param $quality
+   * @param bool $automatic_rotation
+   * @param bool $strip_metadata
+   * @param bool $crop
+   * @param bool $follow_orientation
+   * @return array
+   */
+  public function pwg_resize($destination_filepath, $max_width, $max_height, $quality, bool $automatic_rotation=true, bool $strip_metadata=false, bool $crop=false, bool $follow_orientation=true): array
   {
     $starttime = get_moment();
 
@@ -129,7 +201,17 @@ class pwg_image
     return $this->get_resize_result($destination_filepath, $resize_dimensions['width'], $resize_dimensions['height'], $starttime);
   }
 
-  static function get_resize_dimensions($width, $height, $max_width, $max_height, $rotation=null, $crop=false, $follow_orientation=true)
+  /**
+   * @param $width
+   * @param $height
+   * @param $max_width
+   * @param $max_height
+   * @param $rotation
+   * @param bool $crop
+   * @param bool $follow_orientation
+   * @return array
+   */
+  public static function get_resize_dimensions($width, $height, $max_width, $max_height, $rotation = null, bool $crop = false, bool $follow_orientation = true): array
   {
     $rotate_for_dimensions = false;
     if (isset($rotation) and in_array(abs($rotation), array(90, 270)))
@@ -211,7 +293,11 @@ class pwg_image
     return $result;
   }
 
-  static function get_rotation_angle($source_filepath)
+  /**
+   * @param $source_filepath
+   * @return int|null
+   */
+  public static function get_rotation_angle($source_filepath): ?int
   {
     list($width, $height, $type) = getimagesize($source_filepath);
     if (IMAGETYPE_JPEG != $type)
@@ -228,7 +314,7 @@ class pwg_image
 
     $exif = @exif_read_data($source_filepath);
 
-    if (isset($exif['Orientation']) and preg_match('/^\s*(\d)/', $exif['Orientation'], $matches))
+    if (isset($exif['Orientation']) and preg_match('/^\s*(\d)/', (string)$exif['Orientation'], $matches))
     {
       $orientation = $matches[1];
       if (in_array($orientation, array(3, 4)))
@@ -248,30 +334,42 @@ class pwg_image
     return $rotation;
   }
 
-  static function get_rotation_code_from_angle($rotation_angle)
+  /**
+   * @param int|null $rotation_angle
+   * @return int
+   * @throws Exception
+   */
+  public static function get_rotation_code_from_angle(int|null $rotation_angle): int
   {
-    switch($rotation_angle)
+    return match ($rotation_angle)
     {
-      case 0:   return 0;
-      case 90:  return 1;
-      case 180: return 2;
-      case 270: return 3;
-    }
+      0, null => 0,
+      90 => 1,
+      180 => 2,
+      270 => 3,
+      default => throw new Exception('Unexpected rotation angle:' . $rotation_angle),
+    };
   }
 
-  static function get_rotation_angle_from_code($rotation_code)
+  /**
+   * @param int|null $rotation_code
+   * @return int
+   * @throws Exception
+   */
+  public static function get_rotation_angle_from_code(int|null $rotation_code): int
   {
-    switch($rotation_code%4)
+    return match ($rotation_code % 4)
     {
-      case 0: return 0;
-      case 1: return 90;
-      case 2: return 180;
-      case 3: return 270;
-    }
+      0 => 0,
+      1 => 90,
+      2 => 180,
+      3 => 270,
+      default => throw new Exception('Unexpected rotation code:' . $rotation_code),
+    };
   }
 
   /** Returns a normalized convolution kernel for sharpening*/
-  static function get_sharpen_matrix($amount)
+  public static function get_sharpen_matrix($amount): array
   {
     // Amount should be in the range of 48-10
     $amount = round(abs(-48 + ($amount * 0.38)), 2);
@@ -295,7 +393,14 @@ class pwg_image
     return $matrix;
   }
 
-  private function get_resize_result($destination_filepath, $width, $height, $time=null)
+  /**
+   * @param $destination_filepath
+   * @param $width
+   * @param $height
+   * @param $time
+   * @return array
+   */
+  private function get_resize_result($destination_filepath, $width, $height, $time = null): array
   {
     return array(
       'source'      => $this->source_filepath,
@@ -308,12 +413,18 @@ class pwg_image
     );
   }
 
-  static function is_imagick()
+  /**
+   * @return bool
+   */
+  public static function is_imagick(): bool
   {
     return (extension_loaded('imagick') and class_exists('Imagick'));
   }
 
-  static function is_ext_imagick()
+  /**
+   * @return bool
+   */
+  public static function is_ext_imagick(): bool
   {
     global $conf;
 
@@ -336,17 +447,28 @@ class pwg_image
     return false;
   }
 
-  static function is_gd()
+  /**
+   * @return bool
+   */
+  public static function is_gd(): bool
   {
     return function_exists('gd_info');
   }
 
-  static function is_vips()
+  /**
+   * @return bool
+   */
+  public static function is_vips(): bool
   {
     return class_exists('image_vips');
   }
 
-  static function get_library($library=null, $extension=null)
+  /**
+   * @param $library
+   * @param $extension
+   * @return false|string
+   */
+  public static function get_library($library = null, $extension = null): false|string
   {
     global $conf;
 
@@ -389,7 +511,10 @@ class pwg_image
     return false;
   }
 
-  function destroy()
+  /**
+   * @return true
+   */
+  public function destroy(): true
   {
     if (method_exists($this->image, 'destroy'))
     {
@@ -403,49 +528,92 @@ class pwg_image
 // |                   Class for Imagick extension                         |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class image_imagick implements imageInterface
 {
-  var $image;
+  public Imagick $image;
 
-  function __construct($source_filepath)
+  /**
+   * @param $source_filepath
+   * @throws ImagickException
+   */
+  public function __construct($source_filepath)
   {
     // A bug cause that Imagick class can not be extended
     $this->image = new Imagick($source_filepath);
   }
 
-  function get_width()
+  /**
+   * @return int
+   * @throws ImagickException
+   */
+  public function get_width(): int
   {
     return $this->image->getImageWidth();
   }
 
-  function get_height()
+  /**
+   * @return int
+   * @throws ImagickException
+   */
+  public function get_height(): int
   {
     return $this->image->getImageHeight();
   }
 
-  function set_compression_quality($quality)
+  /**
+   * @param int $quality
+   * @return bool
+   * @throws ImagickException
+   */
+  public function set_compression_quality(int $quality): bool
   {
     return $this->image->setImageCompressionQuality($quality);
   }
 
-  function crop($width, $height, $x, $y)
+  /**
+   * @param $width
+   * @param $height
+   * @param $x
+   * @param $y
+   * @return bool
+   * @throws ImagickException
+   */
+  public function crop($width, $height, $x, $y): bool
   {
     return $this->image->cropImage($width, $height, $x, $y);
   }
 
-  function strip()
+  /**
+   * @return bool
+   * @throws ImagickException
+   */
+  public function strip(): bool
   {
     return $this->image->stripImage();
   }
 
-  function rotate($rotation)
+  /**
+   * @param $rotation
+   * @return true
+   * @throws ImagickException
+   */
+  public function rotate($rotation): true
   {
     $this->image->rotateImage(new ImagickPixel(), -$rotation);
     $this->image->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
     return true;
   }
 
-  function resize($width, $height)
+  /**
+   * @param $width
+   * @param $height
+   * @return bool
+   * @throws ImagickException
+   */
+  public function resize($width, $height): bool
   {
     $this->image->setInterlaceScheme(Imagick::INTERLACE_LINE);
 
@@ -460,13 +628,26 @@ class image_imagick implements imageInterface
     return $this->image->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 0.9);
   }
 
-  function sharpen($amount)
+  /**
+   * @param $amount
+   * @return bool
+   * @throws ImagickException
+   */
+  public function sharpen($amount): bool
   {
     $m = pwg_image::get_sharpen_matrix($amount);
     return  $this->image->convolveImage($m);
   }
 
-  function compose($overlay, $x, $y, $opacity)
+  /**
+   * @param $overlay
+   * @param $x
+   * @param $y
+   * @param $opacity
+   * @return bool
+   * @throws ImagickException
+   */
+  public function compose($overlay, $x, $y, $opacity): bool
   {
     $ioverlay = $overlay->image->image;
     /*if ($ioverlay->getImageAlphaChannel() !== Imagick::ALPHACHANNEL_OPAQUE)
@@ -485,7 +666,12 @@ class image_imagick implements imageInterface
     return $this->image->compositeImage($ioverlay, Imagick::COMPOSITE_DISSOLVE, $x, $y);
   }
 
-  function write($destination_filepath)
+  /**
+   * @param $destination_filepath
+   * @return bool
+   * @throws ImagickException
+   */
+  public function write($destination_filepath): bool
   {
     // use 4:2:2 chroma subsampling (reduce file size by 20-30% with "almost" no human perception)
     $this->image->setSamplingFactors( array(2,1) );
@@ -497,21 +683,27 @@ class image_imagick implements imageInterface
 // |            Class for ImageMagick external installation                |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class image_ext_imagick implements imageInterface
 {
-  var $imagickdir = '';
-  var $source_filepath = '';
-  var $width = '';
-  var $height = '';
-  var $commands = array();
+  public mixed $imagickdir = '';
+  public string $source_filepath = '';
+  public string $width = '';
+  public string $height = '';
+  public array $commands = array();
 
-  function __construct($source_filepath)
+  /**
+   * @param $source_filepath
+   */
+  public function __construct($source_filepath)
   {
     global $conf;
     $this->source_filepath = $source_filepath;
     $this->imagickdir = $conf['ext_imagick_dir'];
 
-    if (strpos($_SERVER['SCRIPT_FILENAME'], '/kunden/') === 0)  // 1and1
+    if (str_starts_with($_SERVER['SCRIPT_FILENAME'], '/kunden/'))  // 1and1
     {
       putenv('MAGICK_THREAD_LIMIT=1');
     }
@@ -527,22 +719,40 @@ class image_ext_imagick implements imageInterface
     $this->height = $match[2];
   }
 
-  function add_command($command, $params=null)
+  /**
+   * @param $command
+   * @param $params
+   * @return void
+   */
+  public function add_command($command, $params = null): void
   {
     $this->commands[$command] = $params;
   }
 
-  function get_width()
+  /**
+   * @return string
+   */
+  public function get_width(): string
   {
     return $this->width;
   }
 
-  function get_height()
+  /**
+   * @return string
+   */
+  public function get_height(): string
   {
     return $this->height;
   }
 
-  function crop($width, $height, $x, $y)
+  /**
+   * @param $width
+   * @param $height
+   * @param $x
+   * @param $y
+   * @return true
+   */
+  public function crop($width, $height, $x, $y): true
   {
     $this->width = $width;
     $this->height = $height;
@@ -551,13 +761,20 @@ class image_ext_imagick implements imageInterface
     return true;
   }
 
-  function strip()
+  /**
+   * @return true
+   */
+  public function strip(): true
   {
     $this->add_command('strip');
     return true;
   }
 
-  function rotate($rotation)
+  /**
+   * @param $rotation
+   * @return true
+   */
+  public function rotate($rotation): true
   {
     if (empty($rotation))
     {
@@ -575,13 +792,22 @@ class image_ext_imagick implements imageInterface
     return true;
   }
 
-  function set_compression_quality($quality)
+  /**
+   * @param int $quality
+   * @return true
+   */
+  public function set_compression_quality(int $quality): true
   {
     $this->add_command('quality', $quality);
     return true;
   }
 
-  function resize($width, $height)
+  /**
+   * @param $width
+   * @param $height
+   * @return true
+   */
+  public function resize($width, $height): true
   {
     $this->width = $width;
     $this->height = $height;
@@ -591,7 +817,11 @@ class image_ext_imagick implements imageInterface
     return true;
   }
 
-  function sharpen($amount)
+  /**
+   * @param $amount
+   * @return true
+   */
+  public function sharpen($amount): true
   {
     $m = pwg_image::get_sharpen_matrix($amount);
 
@@ -606,7 +836,14 @@ class image_ext_imagick implements imageInterface
     return true;
   }
 
-  function compose($overlay, $x, $y, $opacity)
+  /**
+   * @param $overlay
+   * @param $x
+   * @param $y
+   * @param $opacity
+   * @return true
+   */
+  public function compose($overlay, $x, $y, $opacity): true
   {
     $param = 'compose dissolve -define compose:args='.$opacity;
     $param .= ' '.escapeshellarg(realpath($overlay->image->source_filepath));
@@ -616,7 +853,11 @@ class image_ext_imagick implements imageInterface
     return true;
   }
 
-  function write($destination_filepath)
+  /**
+   * @param $destination_filepath
+   * @return bool
+   */
+  public function write($destination_filepath): bool
   {
     global $logger;
 
@@ -664,12 +905,18 @@ class image_ext_imagick implements imageInterface
 // |                       Class for GD library                            |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class image_gd implements imageInterface
 {
-  var $image;
-  var $quality = 95;
+  public $image;
+  public int $quality = 95;
 
-  function __construct($source_filepath)
+  /**
+   * @param $source_filepath
+   */
+  public function __construct($source_filepath)
   {
     $gd_info = gd_info();
     $extension = strtolower(get_extension($source_filepath));
@@ -678,7 +925,7 @@ class image_gd implements imageInterface
     {
       $this->image = imagecreatefromjpeg($source_filepath);
     }
-    else if ($extension == 'png')
+    elseif ($extension == 'png')
     {
       $this->image = imagecreatefrompng($source_filepath);
     }
@@ -692,17 +939,30 @@ class image_gd implements imageInterface
     }
   }
 
-  function get_width()
+  /**
+   * @return false|int
+   */
+  public function get_width(): false|int
   {
     return imagesx($this->image);
   }
 
-  function get_height()
+  /**
+   * @return false|int
+   */
+  public function get_height(): false|int
   {
     return imagesy($this->image);
   }
 
-  function crop($width, $height, $x, $y)
+  /**
+   * @param $width
+   * @param $height
+   * @param $x
+   * @param $y
+   * @return bool
+   */
+  public function crop($width, $height, $x, $y): bool
   {
     $dest = imagecreatetruecolor($width, $height);
 
@@ -727,12 +987,19 @@ class image_gd implements imageInterface
     return $result;
   }
 
-  function strip()
+  /**
+   * @return true
+   */
+  public function strip(): true
   {
     return true;
   }
 
-  function rotate($rotation)
+  /**
+   * @param $rotation
+   * @return true
+   */
+  public function rotate($rotation): true
   {
     $dest = imagerotate($this->image, $rotation, 0);
     imagedestroy($this->image);
@@ -740,13 +1007,22 @@ class image_gd implements imageInterface
     return true;
   }
 
-  function set_compression_quality($quality)
+  /**
+   * @param int $quality
+   * @return true
+   */
+  public function set_compression_quality(int $quality): true
   {
     $this->quality = $quality;
     return true;
   }
 
-  function resize($width, $height)
+  /**
+   * @param $width
+   * @param $height
+   * @return bool
+   */
+  public function resize($width, $height): bool
   {
     $dest = imagecreatetruecolor($width, $height);
 
@@ -771,13 +1047,24 @@ class image_gd implements imageInterface
     return $result;
   }
 
-  function sharpen($amount)
+  /**
+   * @param $amount
+   * @return bool
+   */
+  public function sharpen($amount): bool
   {
     $m = pwg_image::get_sharpen_matrix($amount);
     return imageconvolution($this->image, $m, 1, 0);
   }
 
-  function compose($overlay, $x, $y, $opacity)
+  /**
+   * @param $overlay
+   * @param $x
+   * @param $y
+   * @param $opacity
+   * @return true
+   */
+  public function compose($overlay, $x, $y, $opacity): true
   {
     $ioverlay = $overlay->image->image;
     /* A replacement for php's imagecopymerge() function that supports the alpha channel
@@ -799,7 +1086,11 @@ class image_gd implements imageInterface
     return true;
   }
 
-  function write($destination_filepath)
+  /**
+   * @param $destination_filepath
+   * @return bool
+   */
+  public function write($destination_filepath): bool
   {
     $extension = strtolower(get_extension($destination_filepath));
 
@@ -815,9 +1106,14 @@ class image_gd implements imageInterface
     {
       imagejpeg($this->image, $destination_filepath, $this->quality);
     }
+
+    return true;
   }
 
-  function destroy()
+  /**
+   * @return void
+   */
+  public function destroy(): void
   {
     imagedestroy($this->image);
   }
@@ -827,74 +1123,131 @@ class image_gd implements imageInterface
 // |                       Class for libvips library                       |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class image_vips implements imageInterface
 {
-  var Jcupitt\Vips\Image $image;
-  var $quality = 75;
-  var $source_filepath;
+  public Jcupitt\Vips\Image $image;
+  public int $quality = 75;
+  public string $source_filepath;
 
-  function __construct($source_filepath)
+  /**
+   * @param string $source_filepath
+   * @throws \Jcupitt\Vips\Exception
+   */
+  public function __construct(string $source_filepath)
   {
     // putenv('VIPS_WARNING=0');
     $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), array('access' => 'sequential'));
     $this->source_filepath = realpath($source_filepath);
   }
 
-  function add_command($command, $params = null)
+  /**
+   * @param $command
+   * @param $params
+   * @return void
+   */
+  public function add_command($command, $params = null): void
   {
 
   }
 
-  function get_width()
+  /**
+   * @return int
+   */
+  public function get_width(): int
   {
     return $this->image->width;
   }
 
-  function get_height()
+  /**
+   * @return int
+   */
+  public function get_height(): int
   {
     return $this->image->height;
   }
 
-  function crop($width, $height, $x, $y)
+  /**
+   * @param $width
+   * @param $height
+   * @param $x
+   * @param $y
+   * @return true
+   */
+  public function crop($width, $height, $x, $y): true
   {
     $this->image = $this->image->crop($x, $y, $width, $height);
     return true;
   }
 
-  function strip()
+  /**
+   * @return true
+   */
+  public function strip(): true
   {
     return true;
   }
 
-  function rotate($rotation)
+  /**
+   * @param $rotation
+   * @return true
+   */
+  public function rotate($rotation): true
   {
     $this->image = $this->image->rotate($rotation);
     return true;
   }
 
-  function set_compression_quality($quality)
+  /**
+   * @param int $quality
+   * @return true
+   */
+  public function set_compression_quality(int $quality): true
   {
     $this->quality = $quality;
     return true;
   }
 
-  function resize($width, $height)
+  /**
+   * @param $width
+   * @param $height
+   * @return true
+   */
+  public function resize($width, $height): true
   {
     $this->image = Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, ['height' => $height]);
     return true;
   }
 
-  function sharpen($amount)
+  /**
+   * @param $amount
+   * @return true
+   */
+  public function sharpen($amount): true
   {
     return true;
   }
 
-  function compose($overlay, $x, $y, $opacity)
+  /**
+   * @param $overlay
+   * @param $x
+   * @param $y
+   * @param $opacity
+   * @return true
+   */
+  public function compose($overlay, $x, $y, $opacity): true
   {
     return true;
   }
 
-  function write($destination_filepath)
+  /**
+   * @param $destination_filepath
+   * @return true
+   * @throws \Jcupitt\Vips\Exception
+   */
+  public function write($destination_filepath): true
   {
     $dest = pathinfo($destination_filepath);
     $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);
@@ -902,4 +1255,3 @@ class image_vips implements imageInterface
   }
 }
 
-?>

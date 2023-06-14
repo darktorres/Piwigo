@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -17,4 +17,4 @@ conf_update_param('nb_categories_page', '50');
 
 echo "\n".$upgrade_description."\n";
 
-?>
+

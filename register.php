@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 //----------------------------------------------------------- include
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 // +-----------------------------------------------------------------------+
@@ -36,11 +36,11 @@ if (isset($_POST['submit']))
   {
     $page['errors'][] = l10n('Password is missing. Please enter the password.');
   }
-  else if(empty($_POST['password_conf']))
+  elseif(empty($_POST['password_conf']))
   {
     $page['errors'][] = l10n('Password confirmation is missing. Please confirm the chosen password.');
   }
-  else if ($_POST['password'] != $_POST['password_conf'])
+  elseif ($_POST['password'] != $_POST['password_conf'])
   {
     $page['errors'][] = l10n('The passwords do not match');
   }
@@ -106,4 +106,4 @@ trigger_notify('loc_end_register');
 flush_page_messages();
 $template->parse('register');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

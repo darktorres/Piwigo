@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -14,13 +14,13 @@ function ws_isInvokeAllowed($res, $methodName, $params)
 {
   global $conf;
 
-  if ( strpos($methodName,'reflection.')===0 )
+  if ( str_starts_with($methodName, 'reflection.') )
   { // OK for reflection
     return $res;
   }
 
   if ( !is_autorize_status(ACCESS_GUEST) and
-      strpos($methodName,'pwg.session.')!==0 )
+      !str_starts_with($methodName, 'pwg.session.') )
   {
     return new PwgError(401, 'Access denied');
   }
@@ -32,7 +32,7 @@ function ws_isInvokeAllowed($res, $methodName, $params)
  * returns a "standard" (for our web service) array of sql where clauses that
  * filters the images (images table only)
  */
-function ws_std_image_sql_filter( $params, $tbl_name='' )
+function ws_std_image_sql_filter( $params, $tbl_name='' ): array
 {
   $clauses = array();
   if ( is_numeric($params['f_min_rate']) )
@@ -85,7 +85,7 @@ function ws_std_image_sql_filter( $params, $tbl_name='' )
 /**
  * returns a "standard" (for our web service) ORDER BY sql clause for images
  */
-function ws_std_image_sql_order( $params, $tbl_name='' )
+function ws_std_image_sql_order( $params, $tbl_name='' ): string
 {
   $ret = '';
   if ( empty($params['order']) )
@@ -127,7 +127,7 @@ function ws_std_image_sql_order( $params, $tbl_name='' )
  * returns an array map of urls (thumb/element) for image_row - to be returned
  * in a standard way by different web service methods
  */
-function ws_std_get_urls($image_row)
+function ws_std_get_urls($image_row): array
 {
   $ret = array();
 
@@ -160,7 +160,7 @@ function ws_std_get_urls($image_row)
     $size != null or $size=array(null,null);
     $derivatives_arr[$type] = array('url' => $derivative->get_url(), 'width'=>$size[0], 'height'=>$size[1] );
   }
-  $ret['derivatives'] = $derivatives_arr;;
+  $ret['derivatives'] = $derivatives_arr;
   return $ret;
 }
 
@@ -168,21 +168,27 @@ function ws_std_get_urls($image_row)
  * returns an array of image attributes that are to be encoded as xml attributes
  * instead of xml elements
  */
-function ws_std_get_image_xml_attributes()
+function ws_std_get_image_xml_attributes(): array
 {
   return array(
     'id','element_url', 'page_url', 'file','width','height','hit','date_available','date_creation'
     );
 }
 
-function ws_std_get_category_xml_attributes()
+/**
+ * @return string[]
+ */
+function ws_std_get_category_xml_attributes(): array
 {
   return array(
     'id', 'url', 'nb_images', 'total_nb_images', 'nb_categories', 'date_last', 'max_date_last', 'status',
     );
 }
 
-function ws_std_get_tag_xml_attributes()
+/**
+ * @return string[]
+ */
+function ws_std_get_tag_xml_attributes(): array
 {
   return array(
     'id', 'name', 'url_name', 'counter', 'url', 'page_url',
@@ -192,7 +198,7 @@ function ws_std_get_tag_xml_attributes()
 /**
  * create a tree from a flat list of categories, no recursivity for high speed
  */
-function categories_flatlist_to_tree($categories)
+function categories_flatlist_to_tree($categories): array
 {
   $tree = array();
   $key_of_cat = array();
@@ -220,4 +226,4 @@ function categories_flatlist_to_tree($categories)
   return $tree;
 }
 
-?>
+

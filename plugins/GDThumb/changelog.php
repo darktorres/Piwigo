@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $lines = file('changelog.txt');
 $show = FALSE;
@@ -9,7 +9,7 @@ echo '<div class="changelog">';
 foreach ($lines as $line_num => $line):
   if (trim($line)):
     if ($show):
-      if (substr( $line, 0, 7 ) === "version"):
+      if (str_starts_with($line, "version")):
         if ($first):
           $first = FALSE;
         else:
@@ -26,4 +26,3 @@ foreach ($lines as $line_num => $line):
 endforeach;
 echo "</ul></div>";
 
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -36,15 +36,12 @@ while ($row = pwg_db_fetch_assoc($result))
     $high_path = dirname($row['path']).'/pwg_high/'.basename($row['path']);
     rename($high_path, $row['path']);
 
-    array_push(
-      $updates,
-      array(
+    $updates[] = array(
         'id' => $row['id'],
         'width' => $row['high_width'],
         'height' => $row['high_height'],
         'filesize' => $row['high_filesize'],
-        )
-      );
+    );
   }
 }
 
@@ -65,4 +62,3 @@ echo
 . $upgrade_description.sprintf(' (execution in %.3fs)', (get_moment() - $starttime))
 ."\n"
 ;
-?>

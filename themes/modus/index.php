@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+
@@ -27,4 +27,4 @@ header( 'Request-URI: '.$url );
 header( 'Content-Location: '.$url );
 header( 'Location: '.$url );
 exit();
-?>
+

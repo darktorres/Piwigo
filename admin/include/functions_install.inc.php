@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -20,8 +20,9 @@
  * @param string $filepath
  * @param string $replaced
  * @param string $replacing
+ * @param $dblayer
  */
-function execute_sqlfile($filepath, $replaced, $replacing, $dblayer)
+function execute_sqlfile(string $filepath, string $replaced, string $replacing, $dblayer): void
 {
   $sql_lines = file($filepath);
   $query = '';
@@ -35,7 +36,7 @@ function execute_sqlfile($filepath, $replaced, $replacing, $dblayer)
     $query.= ' '.$sql_line;
     // if we reached the end of query, we execute it and reinitialize the
     // variable "query"
-    if (preg_match('/;$/', $sql_line))
+    if (str_ends_with($sql_line, ';'))
     {
       $query = trim($query);
       $query = str_replace($replaced, $replacing, $query);
@@ -52,7 +53,7 @@ function execute_sqlfile($filepath, $replaced, $replacing, $dblayer)
 /**
  * Automatically activate all core themes in the "themes" directory.
  */
-function activate_core_themes()
+function activate_core_themes(): void
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/themes.class.php');
   $themes = new themes();
@@ -68,7 +69,7 @@ function activate_core_themes()
 /**
  * Automatically activate some core plugins
  */
-function activate_core_plugins()
+function activate_core_plugins(): void
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/plugins.class.php');
   
@@ -89,7 +90,7 @@ function activate_core_plugins()
  * @param array &$infos - populated with infos
  * @param array &$errors - populated with errors
  */
-function install_db_connect(&$infos, &$errors)
+function install_db_connect(array &$infos, array &$errors): void
 {
   try
   {
@@ -103,4 +104,3 @@ function install_db_connect(&$infos, &$errors)
   }
 }
 
-?>

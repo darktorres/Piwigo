@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -31,7 +31,11 @@ if
  *
  * @return string nbm identifier
  */
-function find_available_check_key()
+/**
+ * @return string
+ * @throws Exception
+ */
+function find_available_check_key(): string
 {
   while (true)
   {
@@ -57,7 +61,10 @@ where
  *
  * @return true, if it's timeout
  */
-function check_sendmail_timeout()
+/**
+ * @return bool
+ */
+function check_sendmail_timeout(): bool
 {
   global $env_nbm;
 
@@ -72,7 +79,11 @@ function check_sendmail_timeout()
  *
  * @return quoted check key list
  */
-function quote_check_key_list($check_key_list = array())
+/**
+ * @param array $check_key_list
+ * @return array
+ */
+function quote_check_key_list(array $check_key_list = array()): array
 {
   return array_map(function($s) { return  '\''.$s.'\'';   } , $check_key_list);
 }
@@ -84,7 +95,13 @@ function quote_check_key_list($check_key_list = array())
  *
  * return array of users
  */
-function get_user_notifications($action, $check_key_list = array(), $enabled_filter_value = '')
+/**
+ * @param $action
+ * @param array $check_key_list
+ * @param string $enabled_filter_value
+ * @return array
+ */
+function get_user_notifications($action, array $check_key_list = array(), string $enabled_filter_value = ''): array
 {
   global $conf;
 
@@ -167,7 +184,11 @@ order by';
  *
  * Return none
  */
-function begin_users_env_nbm($is_to_send_mail = false)
+/**
+ * @param bool $is_to_send_mail
+ * @return void
+ */
+function begin_users_env_nbm(bool $is_to_send_mail = false): void
 {
   global $user, $lang, $lang_info, $conf, $env_nbm;
 
@@ -200,7 +221,10 @@ function begin_users_env_nbm($is_to_send_mail = false)
  *
  * Return none
  */
-function end_users_env_nbm()
+/**
+ * @return void
+ */
+function end_users_env_nbm(): void
 {
   global $user, $lang, $lang_info, $env_nbm;
 
@@ -231,11 +255,17 @@ function end_users_env_nbm()
  *
  * Return none
  */
-function set_user_on_env_nbm(&$nbm_user, $is_action_send)
+/**
+ * @param $nbm_user
+ * @param $is_action_send
+ * @return void
+ * @throws SmartyException
+ */
+function set_user_on_env_nbm($nbm_user, $is_action_send): void
 {
   global $user, $lang, $lang_info, $env_nbm;
 
-  $user = build_user( $nbm_user['user_id'], true );
+  $user = build_user( $nbm_user['user_id']);
 
   switch_lang_to($user['language']);
 
@@ -251,7 +281,10 @@ function set_user_on_env_nbm(&$nbm_user, $is_action_send)
  *
  * Return none
  */
-function unset_user_on_env_nbm()
+/**
+ * @return void
+ */
+function unset_user_on_env_nbm(): void
 {
   global $env_nbm;
 
@@ -264,7 +297,11 @@ function unset_user_on_env_nbm()
  *
  * Return none
  */
-function inc_mail_sent_success($nbm_user)
+/**
+ * @param $nbm_user
+ * @return void
+ */
+function inc_mail_sent_success($nbm_user): void
 {
   global $page, $env_nbm;
 
@@ -277,7 +314,11 @@ function inc_mail_sent_success($nbm_user)
  *
  * Return none
  */
-function inc_mail_sent_failed($nbm_user)
+/**
+ * @param $nbm_user
+ * @return void
+ */
+function inc_mail_sent_failed($nbm_user): void
 {
   global $page, $env_nbm;
 
@@ -290,7 +331,10 @@ function inc_mail_sent_failed($nbm_user)
  *
  * Return none
  */
-function display_counter_info()
+/**
+ * @return void
+ */
+function display_counter_info(): void
 {
   global $page, $env_nbm;
 
@@ -325,7 +369,11 @@ function display_counter_info()
   }
 }
 
-function assign_vars_nbm_mail_content($nbm_user)
+/**
+ * @param $nbm_user
+ * @return void
+ */
+function assign_vars_nbm_mail_content($nbm_user): void
 {
   global $env_nbm;
 
@@ -356,7 +404,16 @@ function assign_vars_nbm_mail_content($nbm_user)
  *
  * @return check_key list treated
  */
-function do_subscribe_unsubscribe_notification_by_mail($is_admin_request, $is_subscribe = false, $check_key_list = array())
+/**
+ * @param $is_admin_request
+ * @param bool $is_subscribe
+ * @param array $check_key_list
+ * @return array
+ * @throws SmartyException
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ */
+function do_subscribe_unsubscribe_notification_by_mail($is_admin_request, bool $is_subscribe = false, array $check_key_list = array()): array
 {
   global $conf, $page, $env_nbm, $conf;
 
@@ -381,7 +438,7 @@ function do_subscribe_unsubscribe_notification_by_mail($is_admin_request, $is_su
   {
     $updates = array();
     $enabled_value = boolean_to_string($is_subscribe);
-    $data_users = get_user_notifications('subscribe', $check_key_list, !$is_subscribe);
+    $data_users = get_user_notifications('subscribe', $check_key_list, (string)!$is_subscribe);
 
     // Prepare message after change language
     $msg_break_timeout = l10n('Time to send mail is limited. Others mails are skipped.');
@@ -511,7 +568,15 @@ function do_subscribe_unsubscribe_notification_by_mail($is_admin_request, $is_su
  *
  * @return check_key list treated
  */
-function unsubscribe_notification_by_mail($is_admin_request, $check_key_list = array())
+/**
+ * @param $is_admin_request
+ * @param array $check_key_list
+ * @return array
+ * @throws SmartyException
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ */
+function unsubscribe_notification_by_mail($is_admin_request, array $check_key_list = array()): array
 {
   return do_subscribe_unsubscribe_notification_by_mail($is_admin_request, false, $check_key_list);
 }
@@ -523,9 +588,17 @@ function unsubscribe_notification_by_mail($is_admin_request, $check_key_list = a
  *
  * @return check_key list treated
  */
-function subscribe_notification_by_mail($is_admin_request, $check_key_list = array())
+/**
+ * @param $is_admin_request
+ * @param array $check_key_list
+ * @return array
+ * @throws SmartyException
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ */
+function subscribe_notification_by_mail($is_admin_request, array $check_key_list = array()): array
 {
   return do_subscribe_unsubscribe_notification_by_mail($is_admin_request, true, $check_key_list);
 }
 
-?>
+

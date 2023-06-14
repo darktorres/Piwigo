@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -133,7 +133,11 @@ echo "\n".$upgrade_description."\n";
 // | Functions                                                             |
 // +-----------------------------------------------------------------------+
 
-function replace_hotlinks($string)
+/**
+ * @param $string
+ * @return array|string|null
+ */
+function replace_hotlinks($string): array|string|null
 {
   global $conf;
   
@@ -171,12 +175,9 @@ function replace_hotlinks($string)
     $string
     );
 
-  $string = preg_replace(
+  return preg_replace(
     '#(galleries/.*?)/pwg_high(/.*?\.[a-z0-9]{3,4})#',
     '$1$2',
     $string
     );
-  
-  return $string;
 }
-?>

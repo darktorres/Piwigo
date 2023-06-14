@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -11,15 +11,15 @@
  */
 
 /** URL keyword for list view */
-define('CAL_VIEW_LIST',     'list');
+const CAL_VIEW_LIST = 'list';
 /** URL keyword for calendar view */
-define('CAL_VIEW_CALENDAR', 'calendar');
+const CAL_VIEW_CALENDAR = 'calendar';
 
 
 /**
  * Initialize _$page_ and _$template_ vars for calendar view.
  */
-function initialize_calendar()
+function initialize_calendar(): void
 {
   global $page, $conf, $user, $template, $persistent_cache, $filter;
 
@@ -52,7 +52,7 @@ WHERE category_id IN ('.implode(',',$sub_ids).')';
           (
             'visible_images' => 'id'
           ),
-        'AND', false
+        'AND'
       );
     }
     else
@@ -293,7 +293,7 @@ WHERE id IN (' . implode(',',$page['items']) .')';
         .$calendar->inner_sql.'
   '.$calendar->get_date_where().'
   '.$order_by;
-      $page['items'] = array_from_query($query, 'id');
+      $page['items'] = query2array($query, null, 'id');
       if ( isset($cache_key) )
         $persistent_cache->set($cache_key, $page['items']);
     }
@@ -301,4 +301,3 @@ WHERE id IN (' . implode(',',$page['items']) .')';
   pwg_debug('end initialize_calendar');
 }
 
-?>

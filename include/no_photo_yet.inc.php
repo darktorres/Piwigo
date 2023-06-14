@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -55,7 +55,7 @@ SELECT
     if (is_admin())
     {
       $url = $conf['no_photo_yet_url'];
-      if (substr($url, 0, 4) != 'http')
+      if (!str_starts_with($url, 'http'))
       {
         $url = get_root_url().$url;
       }
@@ -95,4 +95,3 @@ SELECT
   }
 }
 
-?>

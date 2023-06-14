@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -26,14 +26,13 @@ include_once( PHPWG_ROOT_PATH .'include/derivative.inc.php');
 /**
  * returns the current microsecond since Unix epoch
  *
- * @return int
+ * @return int|string
  */
-function micro_seconds()
+function micro_seconds(): int|string
 {
   $t1 = explode(' ', microtime());
   $t2 = explode('.', $t1[0]);
-  $t2 = $t1[1].substr($t2[1], 0, 6);
-  return $t2;
+  return $t1[1].substr($t2[1], 0, 6);
 }
 
 /**
@@ -43,7 +42,7 @@ function micro_seconds()
  *
  * @return float
  */
-function get_moment()
+function get_moment(): float
 {
   return microtime(true);
 }
@@ -56,7 +55,7 @@ function get_moment()
  * @param float $end
  * @return string "$TIME s"
  */
-function get_elapsed_time($start, $end)
+function get_elapsed_time(float $start, float $end): string
 {
   return number_format($end - $start, 3, '.', ' ').' s';
 }
@@ -67,7 +66,7 @@ function get_elapsed_time($start, $end)
  * @param string $filename
  * @return string
  */
-function get_extension( $filename )
+function get_extension(string $filename ): string
 {
   return substr( strrchr( $filename, '.' ), 1, strlen ( $filename ) );
 }
@@ -79,24 +78,24 @@ function get_extension( $filename )
  * @param string $filename
  * @return string
  */
-function get_filename_wo_extension( $filename )
+function get_filename_wo_extension(string $filename ): string
 {
   $pos = strrpos( $filename, '.' );
   return ($pos===false) ? $filename : substr( $filename, 0, $pos);
 }
 
 /** no option for mkgetdir() */
-define('MKGETDIR_NONE', 0);
+const MKGETDIR_NONE = 0;
 /** sets mkgetdir() recursive */
-define('MKGETDIR_RECURSIVE', 1);
+const MKGETDIR_RECURSIVE = 1;
 /** sets mkgetdir() exit script on error */
-define('MKGETDIR_DIE_ON_ERROR', 2);
+const MKGETDIR_DIE_ON_ERROR = 2;
 /** sets mkgetdir() add a index.htm file */
-define('MKGETDIR_PROTECT_INDEX', 4);
+const MKGETDIR_PROTECT_INDEX = 4;
 /** sets mkgetdir() add a .htaccess file*/
-define('MKGETDIR_PROTECT_HTACCESS', 8);
+const MKGETDIR_PROTECT_HTACCESS = 8;
 /** default options for mkgetdir() = MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_INDEX */
-define('MKGETDIR_DEFAULT', MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_INDEX);
+const MKGETDIR_DEFAULT = MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_INDEX;
 
 /**
  * creates directory if not exists and ensures that directory is writable
@@ -105,19 +104,19 @@ define('MKGETDIR_DEFAULT', MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR
  * @param int $flags combination of MKGETDIR_xxx
  * @return bool
  */
-function mkgetdir($dir, $flags=MKGETDIR_DEFAULT)
+function mkgetdir(string $dir, int $flags=MKGETDIR_DEFAULT): bool
 {
   if ( !is_dir($dir) )
   {
     global $conf;
-    if (substr(PHP_OS, 0, 3) == 'WIN')
+    if (str_starts_with(PHP_OS, 'WIN'))
     {
       $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
     }
     $umask = umask(0);
-    $mkd = mkdir($dir, $conf['chmod_value'], ($flags&MKGETDIR_RECURSIVE) ? true:false );
+    $mkd = mkdir($dir, $conf['chmod_value'], (bool)(($flags & MKGETDIR_RECURSIVE)));
     umask($umask);
-    if ($mkd==false)
+    if (!$mkd)
     {
       !($flags&MKGETDIR_DIE_ON_ERROR) or fatal_error( "$dir ".l10n('no write access'));
       return false;
@@ -147,22 +146,22 @@ function mkgetdir($dir, $flags=MKGETDIR_DEFAULT)
  * @param string $str
  * @return int *0* if _$str_ is ASCII, *1* if UTF-8, *-1* otherwise
  */
-function qualify_utf8($Str)
+function qualify_utf8(string $str): int
 {
   $ret = 0;
-  for ($i=0; $i<strlen($Str); $i++)
+  for ($i=0; $i<strlen(string: $str); $i++)
   {
-    if (ord($Str[$i]) < 0x80) continue; # 0bbbbbbb
+    if (ord($str[$i]) < 0x80) continue; # 0bbbbbbb
     $ret = 1;
-    if ((ord($Str[$i]) & 0xE0) == 0xC0) $n=1; # 110bbbbb
-    elseif ((ord($Str[$i]) & 0xF0) == 0xE0) $n=2; # 1110bbbb
-    elseif ((ord($Str[$i]) & 0xF8) == 0xF0) $n=3; # 11110bbb
-    elseif ((ord($Str[$i]) & 0xFC) == 0xF8) $n=4; # 111110bb
-    elseif ((ord($Str[$i]) & 0xFE) == 0xFC) $n=5; # 1111110b
+    if ((ord($str[$i]) & 0xE0) == 0xC0) $n=1; # 110bbbbb
+    elseif ((ord($str[$i]) & 0xF0) == 0xE0) $n=2; # 1110bbbb
+    elseif ((ord($str[$i]) & 0xF8) == 0xF0) $n=3; # 11110bbb
+    elseif ((ord($str[$i]) & 0xFC) == 0xF8) $n=4; # 111110bb
+    elseif ((ord($str[$i]) & 0xFE) == 0xFC) $n=5; # 1111110b
     else return -1; # Does not match any model
     for ($j=0; $j<$n; $j++)
     { # n bytes matching 10bbbbbb follow ?
-      if ((++$i == strlen($Str)) || ((ord($Str[$i]) & 0xC0) != 0x80))
+      if ((++$i == strlen($str)) || ((ord($str[$i]) & 0xC0) != 0x80))
         return -1;
     }
   }
@@ -175,7 +174,7 @@ function qualify_utf8($Str)
  * @param string $string
  * @return string
  */
-function remove_accents($string)
+function remove_accents(string $string): string
 {
   $utf = qualify_utf8($string);
   if ( $utf == 0 )
@@ -322,7 +321,7 @@ if (function_exists('mb_strtolower'))
    * @param string $term
    * @return string
    */
-  function pwg_transliterate($term)
+  function pwg_transliterate(string $term): string
   {
     return remove_accents( mb_strtolower($term, 'utf-8') );
   }
@@ -332,7 +331,7 @@ else
   /**
    * @ignore
    */
-  function pwg_transliterate($term)
+  function pwg_transliterate($term): string
   {
     return remove_accents( strtolower($term) );
   }
@@ -344,7 +343,7 @@ else
  * @param string $str
  * @return string
  */
-function str2url($str)
+function str2url(string $str): string
 {
   $str = $safe = pwg_transliterate($str);
   $str = preg_replace('/[^\x80-\xffa-z0-9_\s\'\:\/\[\],-]/','',$str);
@@ -364,7 +363,7 @@ function str2url($str)
  *
  * @return string[]
  */
-function get_languages()
+function get_languages(): array
 {
   $query = '
 SELECT id, name
@@ -388,11 +387,12 @@ SELECT id, name
 /**
  * log the visit into history table
  *
- * @param int $image_id
- * @param string $image_type
+ * @param int|null $image_id
+ * @param string|null $image_type
+ * @param null $format_id
  * @return bool
  */
-function pwg_log($image_id = null, $image_type = null, $format_id = null)
+function pwg_log(int $image_id = null, string $image_type = null, $format_id = null): bool
 {
   global $conf, $user, $page;
 
@@ -443,7 +443,7 @@ UPDATE '.USER_INFOS_TABLE.'
   // It would be "cleaner" to increase length of history.IP to 50 chars, but
   // the alter table is very long on such a big table. We should plan this
   // for a future version, once history table is kept "smaller".
-  if (strpos($ip,':') !== false and strlen($ip) > 15)
+  if (str_contains($ip, ':') and strlen($ip) > 15)
   {
     $ip = substr($ip, 0, 15);
   }
@@ -498,17 +498,17 @@ INSERT INTO '.HISTORY_TABLE.'
     '.$user['id'].',
     \''.$ip.'\',
     '.(isset($section) ? "'".$section."'" : 'NULL').',
-    '.(isset($page['category']['id']) ? $page['category']['id'] : 'NULL').',
-    '.(isset($image_id) ? $image_id : 'NULL').',
+    '.($page['category']['id'] ?? 'NULL').',
+    '.($image_id ?? 'NULL').',
     '.(isset($image_type) ? "'".$image_type."'" : 'NULL').',
-    '.(isset($format_id) ? $format_id : 'NULL').',
-    '.(isset($page['auth_key_id']) ? $page['auth_key_id'] : 'NULL').',
+    '.($format_id ?? 'NULL').',
+    '.($page['auth_key_id'] ?? 'NULL').',
     '.(isset($tags_string) ? "'".$tags_string."'" : 'NULL').'
   )
 ;';
   pwg_query($query);
 
-  $history_id = pwg_db_insert_id(HISTORY_TABLE);
+  $history_id = pwg_db_insert_id();
   if ($history_id % 1000 == 0)
   {
     include_once(PHPWG_ROOT_PATH.'admin/include/functions_history.inc.php');
@@ -524,7 +524,14 @@ INSERT INTO '.HISTORY_TABLE.'
   return true;
 }
 
-function pwg_activity($object, $object_id, $action, $details=array())
+/**
+ * @param $object
+ * @param $object_id
+ * @param $action
+ * @param array $details
+ * @return void
+ */
+function pwg_activity($object, $object_id, $action, array $details=array()): void
 {
   global $user;
 
@@ -577,7 +584,7 @@ function pwg_activity($object, $object_id, $action, $details=array())
   if ('photo' == $object and 'add' == $action and !isset($details['sync']))
   {
     $details['added_with'] = 'app';
-    if (isset($_SERVER['HTTP_REFERER']) and preg_match('/page=photos_add/', $_SERVER['HTTP_REFERER']))
+    if (isset($_SERVER['HTTP_REFERER']) and str_contains($_SERVER['HTTP_REFERER'], 'page=photos_add'))
     {
       $details['added_with'] = 'browser';
     }
@@ -596,7 +603,7 @@ function pwg_activity($object, $object_id, $action, $details=array())
 
   $inserts = array();
   $details_insert = pwg_db_real_escape_string(serialize($details));
-  $ip_address = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+  $ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
   $session_id = !empty(session_id()) ? session_id() : 'none';
 
   foreach ($object_ids as $loop_object_id)
@@ -632,7 +639,7 @@ function pwg_activity($object, $object_id, $action, $details=array())
  * @param DateTime $date2
  * @return DateInterval|stdClass
  */
-function dateDiff($date1, $date2)
+function dateDiff(DateTime $date1, DateTime $date2): DateInterval|stdClass
 {
   if (version_compare(PHP_VERSION, '5.3.0') >= 0)
   {
@@ -695,11 +702,12 @@ function dateDiff($date1, $date2)
 /**
  * converts a string into a DateTime object
  *
- * @param int|string timestamp or datetime string
- * @param string $format input format respecting date() syntax
+ * @param int|string $original timestamp or datetime string
+ * @param string|null $format input format respecting date() syntax
  * @return DateTime|false
+ * @throws Exception
  */
-function str2DateTime($original, $format=null)
+function str2DateTime(int|string $original, string $format=null): DateTime|false
 {
   if (empty($original))
   {
@@ -717,7 +725,10 @@ function str2DateTime($original, $format=null)
   }
   else
   {
+    if (is_string($original)) 
+    {
     $t = trim($original, '0123456789');
+    }
     if (empty($t)) // from timestamp
     {
       return new DateTime('@'.$original);
@@ -738,8 +749,8 @@ function str2DateTime($original, $format=null)
       if (!isset($ymdhms[5])) $ymdhms[5] = 0;
 
       $date = new DateTime();
-      $date->setDate($ymdhms[0], $ymdhms[1], $ymdhms[2]);
-      $date->setTime($ymdhms[3], $ymdhms[4], $ymdhms[5]);
+      $date->setDate((int)$ymdhms[0], (int)$ymdhms[1], (int)$ymdhms[2]);
+      $date->setTime((int)$ymdhms[3], (int)$ymdhms[4], (int)$ymdhms[5]);
       return $date;
     }
   }
@@ -748,13 +759,14 @@ function str2DateTime($original, $format=null)
 /**
  * returns a formatted and localized date for display
  *
- * @param int|string timestamp or datetime string
- * @param array $show list of components displayed, default is ['day_name', 'day', 'month', 'year']
+ * @param int|string $original timestamp or datetime string
+ * @param array|null $show list of components displayed, default is ['day_name', 'day', 'month', 'year']
  *    THIS PARAMETER IS PLANNED TO CHANGE
- * @param string $format input format respecting date() syntax
+ * @param string|null $format input format respecting date() syntax
  * @return string
+ * @throws Exception
  */
-function format_date($original, $show=null, $format=null)
+function format_date(int|string $original, array $show=null, string $format=null): string
 {
   global $lang;
 
@@ -801,10 +813,11 @@ function format_date($original, $show=null, $format=null)
  * Format a "From ... to ..." string from two dates
  * @param string $from
  * @param string $to
- * @param boolean $full
+ * @param bool $full
  * @return string
+ * @throws Exception
  */
-function format_fromto($from, $to, $full=false)
+function format_fromto(string $from, string $to, bool $full=false): string
 {
   $from = str2DateTime($from);
   $to = str2DateTime($to);
@@ -819,7 +832,7 @@ function format_fromto($from, $to, $full=false)
     {
       $from_str = format_date($from);
     }
-    else if ($from->format('m') != $to->format('m'))
+    elseif ($from->format('m') != $to->format('m'))
     {
       $from_str = format_date($from, array('day_name', 'day', 'month'));
     }
@@ -836,14 +849,16 @@ function format_fromto($from, $to, $full=false)
 /**
  * Works out the time since the given date
  *
- * @param int|string timestamp or datetime string
+ * @param int|string $original timestamp or datetime string
  * @param string $stop year,month,week,day,hour,minute,second
- * @param string $format input format respecting date() syntax
+ * @param string|null $format input format respecting date() syntax
  * @param bool $with_text append "ago" or "in the future"
- * @param bool $with_weeks
+ * @param bool $with_week
+ * @param bool $only_last_unit
  * @return string
+ * @throws Exception
  */
-function time_since($original, $stop='minute', $format=null, $with_text=true, $with_week=true, $only_last_unit=false)
+function time_since(int|string $original, string $stop='minute', string $format=null, bool $with_text=true, bool $with_week=true, bool $only_last_unit=false): string
 {
   $date = str2DateTime($original, $format);
 
@@ -931,10 +946,11 @@ function time_since($original, $stop='minute', $format=null, $with_text=true, $w
  * @param string $original
  * @param string $format_in respecting date() syntax
  * @param string $format_out respecting date() syntax
- * @param string $default if _$original_ is empty
- * @return string
+ * @param string|null $default if _$original_ is empty
+ * @return string|null
+ * @throws Exception
  */
-function transform_date($original, $format_in, $format_out, $default=null)
+function transform_date(string $original, string $format_in, string $format_out, string $default=null): ?string
 {
   if (empty($original)) return $default;
   $date = str2DateTime($original, $format_in);
@@ -946,7 +962,7 @@ function transform_date($original, $format_in, $format_out, $default=null)
  *
  * @param string $string
  */
-function pwg_debug( $string )
+function pwg_debug(string $string ): void
 {
   global $debug,$t2,$page;
 
@@ -968,7 +984,7 @@ function pwg_debug( $string )
  * @param string $url
  * @return void
  */
-function redirect_http( $url )
+function redirect_http(string $url ): void
 {
   if (ob_get_length () !== FALSE)
   {
@@ -989,16 +1005,17 @@ function redirect_http( $url )
  *
  * @param string $url
  * @param string $msg
- * @param integer $refresh_time
+ * @param int $refresh_time
  * @return void
+ * @throws SmartyException
  */
-function redirect_html( $url , $msg = '', $refresh_time = 0)
+function redirect_html(string $url , string $msg = '', int $refresh_time = 0): void
 {
   global $user, $template, $lang_info, $conf, $lang, $t2, $page, $debug;
 
   if (!isset($lang_info) || !isset($template) )
   {
-    $user = build_user( $conf['guest_id'], true);
+    $user = build_user( $conf['guest_id']);
     load_language('common.lang');
     trigger_notify('loading_lang');
     load_language('lang', PHPWG_ROOT_PATH.PWG_LOCAL_DIR, array('no_fallback'=>true, 'local'=>true) );
@@ -1039,10 +1056,11 @@ function redirect_html( $url , $msg = '', $refresh_time = 0)
  *
  * @param string $url
  * @param string $msg
- * @param integer $refresh_time
+ * @param int $refresh_time
  * @return void
+ * @throws SmartyException
  */
-function redirect( $url , $msg = '', $refresh_time = 0)
+function redirect(string $url , string $msg = '', int $refresh_time = 0): void
 {
   global $conf;
 
@@ -1066,7 +1084,7 @@ function redirect( $url , $msg = '', $refresh_time = 0)
  * @param bool $show_mobile
  * @return array
  */
-function get_pwg_themes($show_mobile=false)
+function get_pwg_themes(bool $show_mobile=false): array
 {
   global $conf;
 
@@ -1097,9 +1115,7 @@ SELECT
   }
 
   // plugins want remove some themes based on user status maybe?
-  $themes = trigger_change('get_pwg_themes', $themes);
-
-  return $themes;
+  return trigger_change('get_pwg_themes', $themes);
 }
 
 /**
@@ -1108,7 +1124,7 @@ SELECT
  * @param string $theme_id
  * @return bool
  */
-function check_theme_installed($theme_id)
+function check_theme_installed(string $theme_id): bool
 {
   global $conf;
 
@@ -1122,7 +1138,7 @@ function check_theme_installed($theme_id)
  * @param string $representative_ext
  * @return string
  */
-function original_to_representative($path, $representative_ext)
+function original_to_representative(string $path, string $representative_ext): string
 {
   $pos = strrpos($path, '/');
   $path = substr_replace($path, 'pwg_representative/', $pos+1, 0);
@@ -1137,7 +1153,7 @@ function original_to_representative($path, $representative_ext)
  * @param string $format_ext
  * @return string
  */
-function original_to_format($path, $format_ext)
+function original_to_format(string $path, string $format_ext): string
 {
   $pos = strrpos($path, '/');
   $path = substr_replace($path, 'pwg_format/', $pos+1, 0);
@@ -1151,7 +1167,7 @@ function original_to_format($path, $format_ext)
  * @param array $element_info element information from db (at least 'path')
  * @return string
  */
-function get_element_path($element_info)
+function get_element_path(array $element_info): string
 {
   $path = $element_info['path'];
   if ( !url_is_remote($path) )
@@ -1167,7 +1183,7 @@ function get_element_path($element_info)
  *
  * @param int[] $elements_id
  */
-function fill_caddie($elements_id)
+function fill_caddie(array $elements_id): void
 {
   global $user;
 
@@ -1203,7 +1219,7 @@ SELECT element_id
  * @param string $filename
  * @return string name
  */
-function get_name_from_file($filename)
+function get_name_from_file(string $filename): string
 {
   return str_replace('_',' ',get_filename_wo_extension($filename));
 }
@@ -1217,7 +1233,7 @@ function get_name_from_file($filename)
  * @param mixed $args,... optional arguments
  * @return string
  */
-function l10n($key)
+function l10n(string $key): string
 {
   global $lang, $conf;
 
@@ -1245,10 +1261,10 @@ function l10n($key)
  *
  * @param string $singular_key
  * @param string $plural_key
- * @param int $decimal
+ * @param int|string $decimal
  * @return string
  */
-function l10n_dec($singular_key, $plural_key, $decimal)
+function l10n_dec(string $singular_key, string $plural_key, int|string $decimal): string
 {
   global $lang_info;
 
@@ -1267,9 +1283,9 @@ function l10n_dec($singular_key, $plural_key, $decimal)
  * @param string $key translation key
  * @param mixed $args arguments to use on sprintf($key, args)
  *   if args is a array, each values are used on sprintf
- * @return string
+ * @return array
  */
-function get_l10n_args($key, $args='')
+function get_l10n_args(string $key, mixed $args=''): array
 {
   if (is_array($args))
   {
@@ -1285,13 +1301,13 @@ function get_l10n_args($key, $args='')
 /**
  * returns a string formated with l10n elements.
  * it is usefull to "prepare" a text and translate it later
- * @see get_l10n_args()
- *
  * @param array $key_args one l10n_args element or array of l10n_args elements
  * @param string $sep used when translated elements are concatened
  * @return string
+ *@see get_l10n_args()
+ *
  */
-function l10n_args($key_args, $sep = "\n")
+function l10n_args(array $key_args, string $sep = "\n"): string
 {
   if (is_array($key_args))
   {
@@ -1329,9 +1345,9 @@ function l10n_args($key_args, $sep = "\n")
  * returns the corresponding value from $themeconf if existing or an empty string
  *
  * @param string $key
- * @return string
+ * @return mixed
  */
-function get_themeconf($key)
+function get_themeconf(string $key): mixed
 {
   return $GLOBALS['template']->get_themeconf($key);
 }
@@ -1341,7 +1357,7 @@ function get_themeconf($key)
  *
  * @return string
  */
-function get_webmaster_mail_address()
+function get_webmaster_mail_address(): string
 {
   global $conf;
 
@@ -1352,11 +1368,14 @@ SELECT '.$conf['user_fields']['email'].'
 ;';
   list($email) = pwg_db_fetch_row(pwg_query($query));
 
-  $email = trigger_change('get_webmaster_mail_address', $email);
-
-  return $email;
+  return trigger_change('get_webmaster_mail_address', $email);
 }
 
+/**
+ * @param mixed $data
+ * @param bool $strict
+ * @return bool
+ */
 function is_serialized(mixed $data, bool $strict = true): bool
 {
   // If it isn't a string, it isn't serialized.
@@ -1435,7 +1454,7 @@ function is_serialized(mixed $data, bool $strict = true): bool
  * @param string $condition SQL condition
  * @return void
  */
-function load_conf_from_db($condition = '')
+function load_conf_from_db(string $condition = ''): void
 {
   global $conf;
 
@@ -1453,7 +1472,7 @@ SELECT param, value
 
   while ($row = pwg_db_fetch_assoc($result))
   {
-    $val = isset($row['value']) ? $row['value'] : '';
+    $val = $row['value'] ?? '';
     if ($val === 'true')
     {
       $val = true;
@@ -1487,18 +1506,18 @@ SELECT param, value
  * Add or update a config parameter
  *
  * @param string $param
- * @param string $value
- * @param boolean $updateGlobal update global *$conf* variable
- * @param callable $parser function to apply to the value before save in database
-      (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
+ * @param mixed $value
+ * @param bool $updateGlobal update global *$conf* variable
+ * @param callable|null $parser function to apply to the value before save in database
+ * (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
  */
-function conf_update_param($param, $value, $updateGlobal=false, $parser=null)
+function conf_update_param(string $param, mixed $value, bool $updateGlobal=false, callable $parser=null): void
 {
   if ($parser != null)
   {
     $dbValue = call_user_func($parser, $value);
   }
-  else if (is_array($value) || is_object($value))
+  elseif (is_array($value) || is_object($value))
   {
     $dbValue = addslashes(serialize($value));
   }
@@ -1525,11 +1544,9 @@ INSERT INTO
 
 /**
  * Delete one or more config parameters
- * @since 2.6
- *
  * @param string|string[] $params
  */
-function conf_delete_param($params)
+function conf_delete_param(array|string $params): void
 {
   global $conf;
 
@@ -1556,14 +1573,12 @@ DELETE FROM '.CONFIG_TABLE.'
 
 /**
  * Return a default value for a configuration parameter.
- * @since 2.8
- *
  * @param string $param the configuration value to be extracted (if it exists)
  * @param mixed $default_value the default value for the configuration value if it does not exist.
  *
  * @return mixed The configuration value if the variable exists, otherwise the default.
  */
-function conf_get_param($param, $default_value=null)
+function conf_get_param(string $param, mixed $default_value=null): mixed
 {
   global $conf;
   
@@ -1576,12 +1591,10 @@ function conf_get_param($param, $default_value=null)
 
 /**
  * Apply *json_decode* on a value only if it is a string
- * @since 2.7
- *
  * @param array|string $value
  * @return array
  */
-function safe_json_decode($value)
+function safe_json_decode(array|string $value): array
 {
   if (is_string($value))
   {
@@ -1598,61 +1611,10 @@ function safe_json_decode($value)
  * @param string $append_str
  * @return array
  */
-function prepend_append_array_items($array, $prepend_str, $append_str)
+function prepend_append_array_items(array $array, string $prepend_str, string $append_str): array
 {
   array_walk($array, function(&$value, $key) use($prepend_str,$append_str) { $value = "$prepend_str$value$append_str"; } );
   return $array;
-}
-
-/**
- * creates an simple hashmap based on a SQL query.
- * choose one to be the key, another one to be the value.
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $keyname
- * @param string $valuename
- * @return array
- */
-function simple_hash_from_query($query, $keyname, $valuename)
-{
-	return query2array($query, $keyname, $valuename);
-}
-
-/**
- * creates an associative array based on a SQL query.
- * choose one to be the key
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $keyname
- * @return array
- */
-function hash_from_query($query, $keyname)
-{
-	return query2array($query, $keyname);
-}
-
-/**
- * creates a numeric array based on a SQL query.
- * if _$fieldname_ is empty the returned value will be an array of arrays
- * if _$fieldname_ is provided the returned value will be a one dimension array
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $fieldname
- * @return array
- */
-function array_from_query($query, $fieldname=false)
-{
-  if (false === $fieldname)
-  {
-		return query2array($query);
-  }
-  else
-  {
-		return query2array($query, null, $fieldname);
-  }
 }
 
 /**
@@ -1661,7 +1623,7 @@ function array_from_query($query, $fieldname=false)
  *
  * @return string
  */
-function script_basename()
+function script_basename(): string
 {
   global $conf;
 
@@ -1688,7 +1650,7 @@ function script_basename()
  * @param string $value_name
  * @return mixed
  */
-function get_filter_page_value($value_name)
+function get_filter_page_value(string $value_name): mixed
 {
   global $conf;
 
@@ -1711,12 +1673,10 @@ function get_filter_page_value($value_name)
 /**
  * returns the parent (fallback) language of a language.
  * if _$lang_id_ is null it applies to the current language
- * @since 2.6
- *
- * @param string $lang_id
+ * @param string|null $lang_id
  * @return string|null
  */
-function get_parent_language($lang_id=null)
+function get_parent_language(string $lang_id=null): ?string
 {
   if (empty($lang_id))
   {
@@ -1743,16 +1703,16 @@ function get_parent_language($lang_id=null)
  *
  * @param string $filename
  * @param string $dirname
- * @param mixed options can contain
+ * @param mixed $options can contain
  *     @option string language - language to load
  *     @option bool return - if true the file content is returned
  *     @option bool no_fallback - if true do not load default language
  *     @option bool|string force_fallback - force pre-loading of another language
  *        default language if *true* or specified language
  *     @option bool local - if true load file from local directory
- * @return boolean|string
+ * @return bool|string
  */
-function load_language($filename, $dirname = '', $options = array())
+function load_language(string $filename, string $dirname = '', mixed $options = array()): bool|string
 {
   global $user, $language_files;
 
@@ -1847,7 +1807,7 @@ function load_language($filename, $dirname = '', $options = array())
       // load parent language content directly in global
       if (!empty($load_lang_info['parent']))
         $parent_language = $load_lang_info['parent'];
-      else if (!empty($lang_info['parent']))
+      elseif (!empty($lang_info['parent']))
         $parent_language = $lang_info['parent'];
       else 
         $parent_language = null;
@@ -1864,9 +1824,8 @@ function load_language($filename, $dirname = '', $options = array())
     }
     else
     {
-      $content = file_get_contents($source_file);
       //Note: target charset is always utf-8 $content = convert_charset($content, 'utf-8', $target_charset);
-      return $content;
+      return file_get_contents($source_file);
     }
   }
 
@@ -1879,18 +1838,19 @@ function load_language($filename, $dirname = '', $options = array())
  * @param string $str
  * @param string $source_charset
  * @param string $dest_charset
+ * @return false|array|string
  */
-function convert_charset($str, $source_charset, $dest_charset)
+function convert_charset(string $str, string $source_charset, string $dest_charset): false|array|string
 {
   if ($source_charset==$dest_charset)
     return $str;
   if ($source_charset=='iso-8859-1' and $dest_charset=='utf-8')
   {
-    return utf8_encode($str);
+    return mb_convert_encoding($str, 'UTF-8');
   }
   if ($source_charset=='utf-8' and $dest_charset=='iso-8859-1')
   {
-    return utf8_decode($str);
+    return mb_convert_encoding($str, 'ISO-8859-1');
   }
   if (function_exists('iconv'))
   {
@@ -1908,7 +1868,7 @@ function convert_charset($str, $source_charset, $dest_charset)
  *
  * @param string $dir
  */
-function secure_directory($dir)
+function secure_directory(string $dir): void
 {
   $file = $dir.'/index.htm';
   if (!file_exists($file))
@@ -1924,7 +1884,7 @@ function secure_directory($dir)
  * @param string $aditionnal_data_to_hash
  * @return string
  */
-function get_ephemeral_key($valid_after_seconds, $aditionnal_data_to_hash = '')
+function get_ephemeral_key(int $valid_after_seconds, string $aditionnal_data_to_hash = ''): string
 {
 	global $conf;
 	$time = round(microtime(true), 1);
@@ -1942,7 +1902,7 @@ function get_ephemeral_key($valid_after_seconds, $aditionnal_data_to_hash = '')
  * @param string $aditionnal_data_to_hash
  * @return bool
  */
-function verify_ephemeral_key($key, $aditionnal_data_to_hash = '')
+function verify_ephemeral_key(string $key, string $aditionnal_data_to_hash = ''): bool
 {
 	global $conf;
 	$time = microtime(true);
@@ -1964,20 +1924,20 @@ function verify_ephemeral_key($key, $aditionnal_data_to_hash = '')
  * return an array which will be sent to template to display navigation bar
  *
  * @param string $url base url of all links
- * @param int $nb_elements
+ * @param $nb_element
  * @param int $start
  * @param int $nb_element_page
  * @param bool $clean_url
  * @param string $param_name
  * @return array
  */
-function create_navigation_bar($url, $nb_element, $start, $nb_element_page, $clean_url = false, $param_name='start')
+function create_navigation_bar(string $url, $nb_element, int $start, int $nb_element_page, bool $clean_url = false, string $param_name='start'): array
 {
   global $conf;
 
   $navbar = array();
   $pages_around = $conf['paginate_pages_around'];
-  $start_str = $clean_url ? '/'.$param_name.'-' : (strpos($url, '?')===false ? '?':'&amp;').$param_name.'=';
+  $start_str = $clean_url ? '/'.$param_name.'-' : (!str_contains($url, '?') ? '?':'&amp;').$param_name.'=';
 
   if (!isset($start) or !is_numeric($start) or (is_numeric($start) and $start < 0))
   {
@@ -2006,7 +1966,7 @@ function create_navigation_bar($url, $nb_element, $start, $nb_element_page, $cle
     // link on next page and last page?
     if ($cur_page != $maximum)
     {
-      $navbar['URL_NEXT'] = $url_start.($next < $last ? $next : $last);
+      $navbar['URL_NEXT'] = $url_start.(min($next, $last));
       $navbar['URL_LAST'] = $url_start.$last;
     }
 
@@ -2029,9 +1989,9 @@ function create_navigation_bar($url, $nb_element, $start, $nb_element_page, $cle
  *
  * @param string $date
  * @param bool $is_child_date
- * @return array
+ * @return array|false
  */
-function get_icon($date, $is_child_date = false)
+function get_icon(string $date, bool $is_child_date = false): false|array
 {
   global $cache, $user;
 
@@ -2070,13 +2030,14 @@ function get_icon($date, $is_child_date = false)
 }
 
 /**
- * check token comming from form posted or get params to prevent csrf attacks.
+ * check token coming from form posted or get params to prevent csrf attacks.
  * if pwg_token is empty action doesn't require token
  * else pwg_token is compare to server token
  *
  * @return void access denied if token given is not equal to server token
+ * @throws SmartyException
  */
-function check_pwg_token()
+function check_pwg_token(): void
 {
   if (!empty($_REQUEST['pwg_token']))
   {
@@ -2096,7 +2057,7 @@ function check_pwg_token()
  *
  * @return string
  */
-function get_pwg_token()
+function get_pwg_token(): string
 {
   global $conf;
 
@@ -2113,7 +2074,15 @@ function get_pwg_token()
  * @param string $pattern
  * @param boolean $mandatory
  */
-function check_input_parameter($param_name, $param_array, $is_array, $pattern, $mandatory=false)
+/**
+ * @param $param_name
+ * @param $param_array
+ * @param $is_array
+ * @param $pattern
+ * @param bool $mandatory
+ * @return true|void
+ */
+function check_input_parameter($param_name, $param_array, $is_array, $pattern, bool $mandatory=false)
 {
   $param_value = null;
   if (isset($param_array[$param_name]))
@@ -2140,7 +2109,7 @@ function check_input_parameter($param_name, $param_array, $is_array, $pattern, $
 
     foreach ($param_value as $key => $item_to_check)
     {
-      if (!preg_match(PATTERN_ID, $key) or !preg_match($pattern, $item_to_check))
+      if (!preg_match(PATTERN_ID, (string)$key) or !preg_match($pattern, $item_to_check))
       {
         fatal_error('[Hacking attempt] an item is not valid in input parameter "'.$param_name.'"');
       }
@@ -2160,7 +2129,7 @@ function check_input_parameter($param_name, $param_array, $is_array, $pattern, $
  *
  * @return string[]
  */
-function get_privacy_level_options()
+function get_privacy_level_options(): array
 {
   global $conf;
 
@@ -2192,7 +2161,7 @@ function get_privacy_level_options()
  * @param string $version
  * @return string
  */
-function get_branch_from_version($version)
+function get_branch_from_version(string $version): string
 {
   // the algorithm is a bit complicated to just retrieve the first digits before
   // the first ".". It's because before version 11.0.0, we used to take the 2 first
@@ -2205,7 +2174,7 @@ function get_branch_from_version($version)
  *
  * @return string
  */
-function get_device()
+function get_device(): string
 {
   $device = pwg_get_session_var('device');
 
@@ -2235,7 +2204,7 @@ function get_device()
  *
  * @return bool
  */
-function mobile_theme()
+function mobile_theme(): bool
 {
   global $conf;
 
@@ -2269,9 +2238,9 @@ function mobile_theme()
  * @param string $url
  * @return bool
  */
-function url_check_format($url)
+function url_check_format(string $url): bool
 {
-  if (strpos($url, '"') !== false)
+  if (str_contains($url, '"'))
   {
     return false;
   }
@@ -2290,7 +2259,7 @@ function url_check_format($url)
  * @param string $mail_address
  * @return bool
  */
-function email_check_format($mail_address)
+function email_check_format(string $mail_address): bool
 {
   return filter_var($mail_address, FILTER_VALIDATE_EMAIL)!==false;
 }
@@ -2300,7 +2269,7 @@ function email_check_format($mail_address)
  *
  * @return int
  */
-function get_nb_available_comments()
+function get_nb_available_comments(): int
 {
   global $user;
   if (!isset($user['nb_available_comments']))
@@ -2339,13 +2308,12 @@ SELECT COUNT(DISTINCT(com.id))
  * Compare two versions with version_compare after having converted
  * single chars to their decimal values.
  * Needed because version_compare does not understand versions like '2.5.c'.
- * @since 2.6
- *
  * @param string $a
  * @param string $b
- * @param string $op
+ * @param string|null $op
+ * @return bool|int
  */
-function safe_version_compare($a, $b, $op=null)
+function safe_version_compare(string $a, string $b, string $op=null): bool|int
 {
   $replace_chars   = function($m)  { return ord(strtolower($m[1])); };
 
@@ -2369,10 +2337,8 @@ function safe_version_compare($a, $b, $op=null)
 
 /**
  * Checks if the lounge needs to be emptied automatically.
- *
- * @since 12
  */
-function check_lounge()
+function check_lounge(): void
 {
   global $conf;
 
@@ -2411,4 +2377,4 @@ SELECT
   }
 }
 
-?>
+

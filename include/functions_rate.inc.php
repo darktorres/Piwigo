@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,21 +16,21 @@
  *
  * @param int $image_id
  * @param float $rate
- * @return array as return by update_rating_score()
+ * @return array|false as return by update_rating_score()
  */
-function rate_picture($image_id, $rate)
+function rate_picture(int $image_id, float $rate): false|array
 {
   global $conf, $user;
 
   if (!isset($rate)
       or !$conf['rate']
-      or !preg_match('/^[0-9]+$/', $rate)
+      or !preg_match('/^[0-9]+$/', (string)$rate)
       or !in_array($rate, $conf['rate_items']))
   {
     return false;
   }
 
-  $user_anonymous = is_autorize_status(ACCESS_CLASSIC) ? false : true;
+  $user_anonymous = !is_autorize_status(ACCESS_CLASSIC);
 
   if ($user_anonymous and !$conf['rate_anonymous'])
   {
@@ -56,7 +56,7 @@ SELECT element_id
   WHERE user_id = '.$user['id'].'
     AND anonymous_id = \''.$anonymous_id.'\'
 ;';
-      $already_there = array_from_query($query, 'element_id');
+      $already_there = query2array($query, null, 'element_id');
 
       if (count($already_there) > 0)
       {
@@ -117,10 +117,10 @@ INSERT
  *  C = average number of rates per item
  *  m = global average rate (all rates)
  *
- * @param int|false $element_id if false applies to all
+ * @param false|int $element_id if false applies to all
  * @return array (score, average, count) values are null if $element_id is false
 */
-function update_rating_score($element_id = false)
+function update_rating_score(false|int $element_id = false): array
 {
   if ( ($alt_result = trigger_change('update_rating_score', false, $element_id)) !== false)
   {
@@ -185,7 +185,7 @@ SELECT id FROM '.IMAGES_TABLE .'
   LEFT JOIN '.RATE_TABLE.' ON id=element_id
   WHERE element_id IS NULL AND rating_score IS NOT NULL';
 
-    $to_update = array_from_query( $query, 'id');
+    $to_update = query2array( $query, null, 'id');
 
     if ( !empty($to_update) )
     {
@@ -197,7 +197,6 @@ UPDATE '.IMAGES_TABLE .'
     }
   }
 
-  return isset($return) ? $return : array('score'=>null, 'average'=>null, 'count'=>0 );
+  return $return ?? array('score'=>null, 'average'=>null, 'count'=>0 );
 }
 
-?>

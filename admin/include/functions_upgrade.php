@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,10 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-function check_upgrade()
+/**
+ * @return bool
+ */
+function check_upgrade(): bool
 {
   if (defined('PHPWG_IN_UPGRADE'))
   {
@@ -16,7 +19,10 @@ function check_upgrade()
 }
 
 // concerning upgrade, we use the default tables
-function prepare_conf_upgrade()
+/**
+ * @return void
+ */
+function prepare_conf_upgrade(): void
 {
   global $prefixeTable;
 
@@ -55,7 +61,10 @@ function prepare_conf_upgrade()
 }
 
 // Deactivate all non-standard plugins
-function deactivate_non_standard_plugins()
+/**
+ * @return void
+ */
+function deactivate_non_standard_plugins(): void
 {
   global $page;
 
@@ -95,7 +104,10 @@ WHERE id IN (\'' . implode('\',\'', $plugins) . '\')
 }
 
 // Deactivate all non-standard themes
-function deactivate_non_standard_themes()
+/**
+ * @return void
+ */
+function deactivate_non_standard_themes(): void
 {
   global $page, $conf;
 
@@ -172,13 +184,19 @@ UPDATE '.PREFIX_TABLE.'user_infos
 }
 
 // Deactivate all templates
-function deactivate_templates()
+/**
+ * @return void
+ */
+function deactivate_templates(): void
 {
   conf_update_param('extents_for_templates', array());
 }
 
 // Check access rights
-function check_upgrade_access_rights()
+/**
+ * @return void
+ */
+function check_upgrade_access_rights(): void
 {
   global $conf, $page, $current_release;
 
@@ -219,8 +237,8 @@ SELECT status
 
   if (version_compare($current_release, '2.0', '<'))
   {
-    $username = utf8_decode($username);
-    $password = utf8_decode($password);
+    $username = mb_convert_encoding($username, 'ISO-8859-1');
+    $password = mb_convert_encoding($password, 'ISO-8859-1');
   }
 
   if (version_compare($current_release, '1.5', '<'))
@@ -262,7 +280,7 @@ WHERE '.$conf['user_fields']['username'].'=\''.$username.'\'
  *
  * @return array
  */
-function get_available_upgrade_ids()
+function get_available_upgrade_ids(): array
 {
   $upgrades_path = PHPWG_ROOT_PATH.'install/db';
 
@@ -288,14 +306,14 @@ function get_available_upgrade_ids()
 /**
  * returns true if there are available upgrade files
  */
-function check_upgrade_feed()
+function check_upgrade_feed(): bool
 {
   // retrieve already applied upgrades
   $query = '
 SELECT id
   FROM '.UPGRADE_TABLE.'
 ;';
-  $applied = array_from_query($query, 'id');
+  $applied = query2array($query, null, 'id');
 
   // retrieve existing upgrades
   $existing = get_available_upgrade_ids();
@@ -304,7 +322,10 @@ SELECT id
   return (count(array_diff($existing, $applied)) > 0);
 }
 
-function upgrade_db_connect()
+/**
+ * @return void
+ */
+function upgrade_db_connect(): void
 {
   global $conf;
 
@@ -319,4 +340,4 @@ function upgrade_db_connect()
     my_error(l10n($e->getMessage()), true); 
   }
 }
-?>
+

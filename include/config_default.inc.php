@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -990,4 +990,4 @@ $conf['proxy_server'] = 'proxy.domain.org:port';
 // If the http-proxy requires authentication, set username and password here
 // e.g. username:password
 $conf['proxy_auth'] = '';
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,9 +9,10 @@
 defined('PHPWG_ROOT_PATH') or trigger_error('Hacking attempt!', E_USER_ERROR);
 
 include_once(PHPWG_ROOT_PATH.'include/ws_core.inc.php');
+include_once(PHPWG_ROOT_PATH.'include/ws_functions.inc.php');
 
 add_event_handler('ws_add_methods', 'ws_addDefaultMethods');
-add_event_handler('ws_invoke_allowed', 'ws_isInvokeAllowed', EVENT_HANDLER_PRIORITY_NEUTRAL, 3);
+add_event_handler('ws_invoke_allowed', 'ws_isInvokeAllowed');
 
 $requestFormat = 'rest';
 $responseFormat = null;
@@ -31,12 +32,10 @@ $service = new PwgServer();
 if (!is_null($requestFormat))
 {
   $handler = null;
-  switch ($requestFormat)
+  if ($requestFormat == 'rest')
   {
-    case 'rest':
-      include_once(PHPWG_ROOT_PATH.'include/ws_protocols/rest_handler.php');
-      $handler = new PwgRestRequestHandler();
-      break;
+    include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php');
+    $handler = new PwgRestRequestHandler();
   }
   $service->setHandler($requestFormat, $handler);
 }

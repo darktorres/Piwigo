@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,10 +10,10 @@
  * returns language value 'included' or 'excluded' depending on boolean
  * value. This function is useful only to make duplicate code shorter
  *
- * @param bool is_included
+ * @param bool $is_included
  * @return string
  */
-function inc_exc_str($is_included)
+function inc_exc_str(bool $is_included): string
 {
   return $is_included ? l10n('included') : l10n('excluded');
 }
@@ -22,7 +22,7 @@ function inc_exc_str($is_included)
 // |                           initialization                              |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 check_status(ACCESS_FREE);
 include_once( PHPWG_ROOT_PATH.'include/functions_search.inc.php' );
@@ -82,7 +82,7 @@ SELECT name
 ;';
   $template->assign(
       'search_tags',
-      array_from_query($query, 'name')
+      query2array($query, null, 'name')
     );
 }
 
@@ -225,4 +225,3 @@ foreach (array('date_available', 'date_creation') as $datefield)
 
 $template->pparse('search_rules');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>

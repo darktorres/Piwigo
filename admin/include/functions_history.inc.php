@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -17,7 +17,7 @@ include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
  * Init tabsheet for history pages
  * @ignore
  */
-function history_tabsheet()
+function history_tabsheet(): void
 {
   global $page, $link_start;
 
@@ -31,7 +31,7 @@ function history_tabsheet()
 /**
  * Callback used to sort history entries
  */
-function history_compare($a, $b)
+function history_compare($a, $b): int
 {
   return strcmp($a['date'].$a['time'], $b['date'].$b['time']);
 }
@@ -39,12 +39,12 @@ function history_compare($a, $b)
 /**
  * Perform history search.
  *
- * @param array $data  - used in trigger_change
+ * @param array $data - used in trigger_change
  * @param array $search
  * @param string[] $types
- * @param array
+ * @return array
  */
-function get_history($data, $search, $types)
+function get_history(array $data, array $search, array $types): array
 {
   if (isset($search['fields']['filename']))
   {
@@ -54,7 +54,7 @@ SELECT
   FROM '.IMAGES_TABLE.'
   WHERE file LIKE \''.$search['fields']['filename'].'\'
 ;';
-    $search['image_ids'] = array_from_query($query, 'id');
+    $search['image_ids'] = query2array($query, null, 'id');
   }
 
   // echo '<pre>'; print_r($search); echo '</pre>';
@@ -164,9 +164,9 @@ SELECT
 /**
  * Compute statistics from history table to history_summary table
  *
- * @param int $max_lines - to only compute the next X lines, not the whole remaining lines
+ * @param int|null $max_lines - to only compute the next X lines, not the whole remaining lines
  */
-function history_summarize($max_lines=null)
+function history_summarize(int $max_lines=null): void
 {
   // we need to know which was the last line "summarized"
   $query = '
@@ -340,7 +340,7 @@ SELECT *
 
   foreach ($need_update as $time_key => $summary)
   {
-    $time_tokens = explode('-', $time_key);
+    $time_tokens = explode('-', (string)$time_key);
 
     $inserts[] = array(
       'year'     => $time_tokens[0],
@@ -377,10 +377,8 @@ SELECT *
 
 /**
  * Smart purge on history table. Keep some lines, purge only summarized lines
- *
- * @since 2.9
  */
-function history_autopurge()
+function history_autopurge(): void
 {
   global $conf, $logger;
 
@@ -468,7 +466,10 @@ DELETE
   history_remove_summarized_column();
 }
 
-function history_remove_summarized_column()
+/**
+ * @return void
+ */
+function history_remove_summarized_column(): void
 {
   global $conf;
 
@@ -502,4 +503,3 @@ SELECT
 add_event_handler('get_history', 'get_history');
 trigger_notify('functions_history_included');
 
-?>

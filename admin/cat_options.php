@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -72,7 +72,7 @@ UPDATE '.CATEGORIES_TABLE.'
 
   pwg_activity('album', $_POST['cat_true'], 'edit', array('section'=>$_GET['section'], 'action'=>'falsify'));
 }
-else if (isset($_POST['trueify'])
+elseif (isset($_POST['trueify'])
          and isset($_POST['cat_false'])
          and count($_POST['cat_false']) > 0)
 {
@@ -121,7 +121,7 @@ $template->set_filenames(
     )
   );
 
-$page['section'] = isset($_GET['section']) ? $_GET['section'] : 'status';
+$page['section'] = $_GET['section'] ?? 'status';
 $base_url = PHPWG_ROOT_PATH.'admin.php?page=cat_options&amp;section=';
 
 $template->assign(
@@ -250,4 +250,3 @@ $template->assign('ADMIN_PAGE_TITLE', l10n('Properties of abums'));
 
 $template->assign_var_from_handle('DOUBLE_SELECT', 'double_select');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'cat_options');
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,15 +10,16 @@
 // |                           initialization                              |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 /**
  * search an available feed_id
  *
  * @return string feed identifier
+ * @throws Exception
  */
-function find_available_feed_id()
+function find_available_feed_id(): string
 {
   while (true)
   {
@@ -104,4 +105,3 @@ flush_page_messages();
 $template->pparse('notification');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
 
-?>

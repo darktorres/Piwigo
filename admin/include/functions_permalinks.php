@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,14 +7,15 @@
 // +-----------------------------------------------------------------------+
 
 /** returns a category id that corresponds to the given permalink (or null)
- * @param string permalink
+ * @param string $permalink
+ * @return mixed
  */
-function get_cat_id_from_permalink( $permalink )
+function get_cat_id_from_permalink(string $permalink ): mixed
 {
   $query ='
 SELECT id FROM '.CATEGORIES_TABLE.'
   WHERE permalink=\''.$permalink.'\'';
-  $ids = array_from_query($query, 'id');
+  $ids = query2array($query, null, 'id');
   if (!empty($ids))
   {
     return $ids[0];
@@ -23,10 +24,10 @@ SELECT id FROM '.CATEGORIES_TABLE.'
 }
 
 /** returns a category id that has used before this permalink (or null)
- * @param string permalink
- * @param boolean is_hit if true update the usage counters on the old permalinks
+ * @param string $permalink
+ * @return mixed
  */
-function get_cat_id_from_old_permalink($permalink)
+function get_cat_id_from_old_permalink(string $permalink): mixed
 {
   $query='
 SELECT c.id
@@ -44,11 +45,11 @@ SELECT c.id
 
 /** deletes the permalink associated with a category
  * returns true on success
- * @param int cat_id the target category id
- * @param boolean save if true, the current category-permalink association
+ * @param int $cat_id the target category id
+ * @param bool $save if true, the current category-permalink association
  * is saved in the old permalinks table in case external links hit it
  */
-function delete_cat_permalink( $cat_id, $save )
+function delete_cat_permalink(int $cat_id, bool $save ): bool
 {
   global $page, $cache;
   $query = '
@@ -110,12 +111,12 @@ VALUES
 
 /** sets a new permalink for a category
  * returns true on success
- * @param int cat_id the target category id
- * @param string permalink the new permalink
- * @param boolean save if true, the current category-permalink association
+ * @param int $cat_id the target category id
+ * @param string $permalink the new permalink
+ * @param bool $save if true, the current category-permalink association
  * is saved in the old permalinks table in case external links hit it
  */
-function set_cat_permalink( $cat_id, $permalink, $save )
+function set_cat_permalink(int $cat_id, string $permalink, bool $save )
 {
   global $page, $cache;
   
@@ -186,4 +187,4 @@ UPDATE '.CATEGORIES_TABLE.'
   return true;
 }
 
-?>
+

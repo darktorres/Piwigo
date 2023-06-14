@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,23 +9,26 @@
 /**
  * API method
  * Returns a list of users
- * @param mixed[] $params
- *    @option int[] user_id (optional)
- *    @option string username (optional)
- *    @option string[] status (optional)
- *    @option int min_level (optional)
- *    @option int max_level (optional)
- *    @option int[] group_id (optional)
- *    @option int per_page
- *    @option int page
- *    @option string order
- *    @option string display
- *    @option string filter
- *    @option int[] exclude (optional)
- *    @option string min_register
- *    @option string max_register
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @throws Exception
+ * @option int[] user_id (optional)
+ * @option string username (optional)
+ * @option string[] status (optional)
+ * @option int min_level (optional)
+ * @option int max_level (optional)
+ * @option int[] group_id (optional)
+ * @option int per_page
+ * @option int page
+ * @option string order
+ * @option string display
+ * @option string filter
+ * @option int[] exclude (optional)
+ * @option string min_register
+ * @option string max_register
  */
-function ws_users_getList($params, &$service)
+function ws_users_getList(array $params, &$service): PwgError|array
 {
   global $conf;
 
@@ -137,13 +140,13 @@ function ws_users_getList($params, &$service)
         'last_visit_since', 'total_count'
         );
     }
-    else if (in_array('basics', $params['display']))
+    elseif (in_array('basics', $params['display']))
     {
       $params['display'] = array_merge($params['display'], array(
         'username','email','status','level','groups',
         ));
     }
-    else if (in_array('only_id', $params["display"]))
+    elseif (in_array('only_id', $params["display"]))
     {
       $params['display'] = array();
     }
@@ -269,7 +272,7 @@ SELECT DISTINCT ';
         $users[ $cur_user['id'] ]['registration_date_since'] = time_since($cur_user['registration_date'], 'month');
       }
       if (isset($params['display']['last_visit'])) {
-        $last_visit = $cur_user['last_visit'];
+        $last_visit = $cur_user['last_visit'] ?? '';
         $users[ $cur_user['id'] ]['last_visit'] = $last_visit;
 
         if (!get_boolean($cur_user['last_visit_from_history']) and empty($last_visit))
@@ -355,12 +358,17 @@ SELECT DISTINCT ';
 /**
  * API method
  * Adds a user
- * @param mixed[] $params
- *    @option string username
- *    @option string password (optional)
- *    @option string email (optional)
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option string username
+ * @option string password (optional)
+ * @option string email (optional)
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
-function ws_users_add($params, &$service)
+function ws_users_add(array $params, $service): mixed
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -401,11 +409,14 @@ function ws_users_add($params, &$service)
 /**
  * API method
  * Get a new authentication key for a user.
- * @param mixed[] $params
- *    @option int[] user_id
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int[] user_id
+ * @option string pwg_token
+ * @throws Exception
  */
-function ws_users_getAuthKey($params, &$service)
+function ws_users_getAuthKey(array $params, &$service): PwgError|array
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -425,11 +436,13 @@ function ws_users_getAuthKey($params, &$service)
 /**
  * API method
  * Deletes users
- * @param mixed[] $params
- *    @option int[] user_id
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return PwgError|string
+ * @option int[] user_id
+ * @option string pwg_token
  */
-function ws_users_delete($params, &$service)
+function ws_users_delete(array $params, &$service): PwgError|string
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -479,23 +492,25 @@ SELECT
 /**
  * API method
  * Updates users
- * @param mixed[] $params
- *    @option int[] user_id
- *    @option string username (optional)
- *    @option string password (optional)
- *    @option string email (optional)
- *    @option string status (optional)
- *    @option int level (optional)
- *    @option string language (optional)
- *    @option string theme (optional)
- *    @option int nb_image_page (optional)
- *    @option int recent_period (optional)
- *    @option bool expand (optional)
- *    @option bool show_nb_comments (optional)
- *    @option bool show_nb_hits (optional)
- *    @option bool enabled_high (optional)
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option int[] user_id
+ * @option string username (optional)
+ * @option string password (optional)
+ * @option string email (optional)
+ * @option string status (optional)
+ * @option int level (optional)
+ * @option string language (optional)
+ * @option string theme (optional)
+ * @option int nb_image_page (optional)
+ * @option int recent_period (optional)
+ * @option bool expand (optional)
+ * @option bool show_nb_comments (optional)
+ * @option bool show_nb_hits (optional)
+ * @option bool enabled_high (optional)
  */
-function ws_users_setInfo($params, &$service)
+function ws_users_setInfo(array $params, $service): mixed
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -737,7 +752,7 @@ SELECT
   FROM '.GROUPS_TABLE.'
   WHERE id IN ('.implode(',', $params['group_id']).')
 ;';
-    $group_ids = array_from_query($query, 'id');
+    $group_ids = query2array($query, null, 'id');
 
     // if only -1 (a group id that can't exist) is in the list, then no
     // group is associated
@@ -771,12 +786,13 @@ SELECT
 /**
  * API method
  * Set a preferences parameter to current user
- * @since 13
- * @param mixed[] $params
- *    @option string param
- *    @option string|mixed value
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option string param
+ * @option mixed value
  */
-function ws_users_preferences_set($params, &$service)
+function ws_users_preferences_set(array $params, &$service): mixed
 {
   global $user;
 
@@ -791,7 +807,7 @@ function ws_users_preferences_set($params, &$service)
     $value = json_decode($value, true);
   }
 
-  userprefs_update_param($params['param'], $value, true);
+  userprefs_update_param($params['param'], $value);
 
   return $user['preferences'];
 }
@@ -799,10 +815,12 @@ function ws_users_preferences_set($params, &$service)
 /**
  * API method
  * Adds a favorite image for the current user
- * @param mixed[] $params
- *    @option int image_id
+ * @param array $params
+ * @param $service
+ * @return true|PwgError
+ * @option int image_id
  */
-function ws_users_favorites_add($params, &$service)
+function ws_users_favorites_add(array $params, &$service): true|PwgError
 {
   global $user;
 
@@ -838,10 +856,12 @@ SELECT COUNT(*)
 /**
  * API method
  * Removes a favorite image for the current user
- * @param mixed[] $params
- *    @option int image_id
+ * @param array $params
+ * @param $service
+ * @return true|PwgError
+ * @option int image_id
  */
-function ws_users_favorites_remove($params, &$service)
+function ws_users_favorites_remove(array $params, &$service): true|PwgError
 {
   global $user;
 
@@ -877,12 +897,14 @@ DELETE
 /**
  * API method
  * Returns the favorite images of the current user
- * @param mixed[] $params
- *    @option int per_page
- *    @option int page
- *    @option string order
+ * @param array $params
+ * @param $service
+ * @return false|array
+ * @option int per_page
+ * @option int page
+ * @option string order
  */
-function ws_users_favorites_getList($params, &$service)
+function ws_users_favorites_getList(array $params, &$service): false|array
 {
   global $conf, $user;
 
@@ -950,4 +972,4 @@ SELECT
    );
 }
 
-?>
+

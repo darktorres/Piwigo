@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 //--------------------------------------------------------------------- include
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 // +-----------------------------------------------------------------------+
@@ -96,7 +96,7 @@ if (isset($_POST['submit']))
     
     $search['fields']['cat'] = array(
       'words'   => $_POST['cat'],
-      'sub_inc' => ($_POST['subcats-included'] == 1) ? true : false,
+      'sub_inc' => $_POST['subcats-included'] == 1,
       );
   }
 
@@ -146,7 +146,7 @@ INSERT INTO '.SEARCH_TABLE.'
 ;';
     pwg_query($query);
 
-    $search_id = pwg_db_insert_id(SEARCH_TABLE);
+    $search_id = pwg_db_insert_id();
   }
   else
   {
@@ -258,7 +258,7 @@ SELECT id,name,global_rank,uppercats
     'WHERE'
   ).'
 ;';
-display_select_cat_wrapper($query, array(), 'category_options', true);
+display_select_cat_wrapper($query, array(), 'category_options');
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
@@ -273,4 +273,4 @@ trigger_notify('loc_end_search');
 flush_page_messages();
 $template->pparse('search');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

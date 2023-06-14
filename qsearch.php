@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 // +-----------------------------------------------------------------------+
@@ -26,7 +26,7 @@ $query = '
 SElECT id FROM '.SEARCH_TABLE.'
   WHERE rules = \''.addslashes(serialize($search)).'\'
 ;';
-$search_id = array_from_query( $query, 'id');
+$search_id = query2array( $query, null, 'id');
 if ( !empty($search_id) )
 {
   $search_id = $search_id[0];
@@ -45,7 +45,7 @@ INSERT INTO '.SEARCH_TABLE.'
   (\''.addslashes(serialize($search)).'\', NOW() )
 ;';
   pwg_query($query);
-  $search_id = pwg_db_insert_id(SEARCH_TABLE);
+  $search_id = pwg_db_insert_id();
 }
 
 redirect(
@@ -56,4 +56,3 @@ redirect(
       )
     )
   );
-?>

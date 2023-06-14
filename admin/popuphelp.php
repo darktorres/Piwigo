@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,9 +10,9 @@
 // |                           initialization                              |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH', '../');
-define('PWG_HELP', true);
-define('IN_ADMIN', true);
+const PHPWG_ROOT_PATH = '../';
+const PWG_HELP = true;
+const IN_ADMIN = true;
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 // +-----------------------------------------------------------------------+
@@ -41,7 +41,7 @@ if
       )
     );
 
-  if ($help_content == false)
+  if (!$help_content)
   {
     $help_content = '';
   }
@@ -75,4 +75,3 @@ $template->pparse('popuphelp');
 
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
 
-?>

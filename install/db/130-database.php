@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -23,4 +23,3 @@ conf_update_param('comments_email_mandatory', 'false');
 
 echo "\n".$upgrade_description."\n";
 
-?>

@@ -1,4 +1,5 @@
-<?php /*
+<?php declare(strict_types=1); 
+/*
 Plugin Name: RV Thumb Scroller
 Version: 12.a
 Plugin URI: http://piwigo.org/ext/extension_view.php?eid=493
@@ -7,11 +8,17 @@ Author: rvelices
 Author URI: http://www.modusoptimus.com
 Has Settings: false
 */
-define('RVTS_VERSION', '12.a');
+const RVTS_VERSION = '12.a';
 
+/**
+ *
+ */
 class RVTS
 {
-static function on_end_section_init()
+  /**
+   * @return void
+   */
+  public static function on_end_section_init(): void
 {
 	global $page;
 	$page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
@@ -23,7 +30,10 @@ static function on_end_section_init()
 	add_event_handler('loc_begin_index', array('RVTS','on_index_begin'), EVENT_HANDLER_PRIORITY_NEUTRAL+10);
 }
 
-static function on_index_begin()
+  /**
+   * @return void
+   */
+  public static function on_index_begin(): void
 {
 	global $page;
 	$is_ajax = isset($_GET['rvts']);
@@ -32,7 +42,7 @@ static function on_index_begin()
 		if (empty($page['items']))
 			add_event_handler('loc_end_index', array('RVTS','on_end_index'));
 		else
-			add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails'), EVENT_HANDLER_PRIORITY_NEUTRAL, 1);
+			add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails'));
 	}
 	else
 	{
@@ -46,7 +56,7 @@ static function on_index_begin()
 				pwg_set_session_var('rvts_mult', --$mult);
 		}
 		$page['nb_image_page']=(int)$_GET['rvts'];
-		add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails_ajax'), EVENT_HANDLER_PRIORITY_NEUTRAL+5, 1);
+		add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails_ajax'), EVENT_HANDLER_PRIORITY_NEUTRAL+5);
 		$page['root_path'] = get_absolute_root_url(false);
 		$page['body_id'] = 'scroll';
 		global $user, $template, $conf;
@@ -54,8 +64,12 @@ static function on_index_begin()
 	}
 }
 
-static function on_index_thumbnails($thumbs)
-{
+  /**
+   * @param $thumbs
+   * @return mixed
+   */
+  public static function on_index_thumbnails($thumbs): mixed
+  {
 	global $page, $template;
 	$total = count($page['items']);
 	if (count($thumbs) >= $total)
@@ -109,7 +123,12 @@ jQuery('.navigationBar').hide();");
 	return $thumbs;
 }
 
-static function on_index_thumbnails_ajax($thumbs)
+  /**
+   * @param $thumbs
+   * @return void
+   * @throws SmartyException
+   */
+  public static function on_index_thumbnails_ajax($thumbs): void
 {
 	global $template;
 	$template->assign('thumbnails', $thumbs);
@@ -118,7 +137,10 @@ static function on_index_thumbnails_ajax($thumbs)
 	exit;
 }
 
-static function on_end_index()
+  /**
+   * @return void
+   */
+  public static function on_end_index(): void
 {
 	global $template;
 	$req = null;
@@ -136,7 +158,7 @@ static function on_end_index()
 			'path'=> 'plugins/'.$my_base_name.'/rv_tscroller.min.js',
 			'require' => $req,
 			'version' => RVTS_VERSION,
-		), $template->smarty);
+		));
 	}
 	//var_export($template->scriptLoader);
 }
@@ -144,4 +166,3 @@ static function on_end_index()
 }
 
 add_event_handler('loc_end_section_init', array('RVTS','on_end_section_init'));
-?>

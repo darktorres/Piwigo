@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -116,7 +116,7 @@ $query = '
 SELECT tag_id, COUNT(image_id) AS counter
   FROM '.IMAGE_TAG_TABLE.'
   GROUP BY tag_id';
-$tag_counters = simple_hash_from_query($query, 'tag_id', 'counter');
+$tag_counters = query2array($query, 'tag_id', 'counter');
 
 // all tags
 $query = '
@@ -161,4 +161,4 @@ $template->assign(
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'tags');
 
-?>
+

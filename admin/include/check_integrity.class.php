@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,13 +6,16 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class check_integrity
 {
-  var $ignore_list;
-  var $retrieve_list;
-  var $build_ignore_list;
+  public array $ignore_list;
+  public array $retrieve_list;
+  public array $build_ignore_list;
 
-  function __construct()
+  public function __construct()
   {
     $this->ignore_list = array();
     $this->retrieve_list = array();
@@ -22,10 +25,9 @@ class check_integrity
   /**
    * Check integrities
    *
-   * @param void
    * @return void
    */
-  function check()
+  public function check(): void
   {
     global $page, $header_notes, $conf;
 
@@ -157,10 +159,10 @@ class check_integrity
   /**
    * Display anomalies list
    *
-   * @param void
    * @return void
+   * @throws SmartyException
    */
-  function display()
+  public function display(): void
   {
     global $template;
 
@@ -182,7 +184,6 @@ class check_integrity
            'show_correction_success_fct' => false,
            'correction_error_fct' => '',
            'show_correction_fct' => false,
-           'correction_error_fct' => '',
            'show_correction_bad_fct' => false,
            'correction_msg' => ''
           );
@@ -210,10 +211,10 @@ class check_integrity
               }
               else
               {
-                $c13y_display['correction_error_fct'] = $this->get_htlm_links_more_info();
+                $c13y_display['correction_error_fct'] = $this->get_html_links_more_info();
               }
             }
-            else if ($c13y['is_callable'])
+            elseif ($c13y['is_callable'])
             {
               $c13y_display['show_correction_fct'] = true;
               $template->append('c13y_do_check', $c13y['id']);
@@ -257,10 +258,13 @@ class check_integrity
   /**
    * Add anomaly data
    *
-   * @param anomaly arguments
+   * @param string $anomaly arguments
+   * @param string|null $correction_fct
+   * @param string|null $correction_fct_args
+   * @param string|null $correction_msg
    * @return void
    */
-  function add_anomaly($anomaly, $correction_fct = null, $correction_fct_args = null, $correction_msg = null)
+  public function add_anomaly(string $anomaly, string|null $correction_fct = null, string|null $correction_fct_args = null, string|null $correction_msg = null): void
   {
     $id = md5($anomaly.$correction_fct.serialize($correction_fct_args).$correction_msg);
 
@@ -284,10 +288,10 @@ class check_integrity
   /**
    * Update table config
    *
-   * @param ignore list array
+   * @param array $conf_ignore_list
    * @return void
    */
-  function update_conf($conf_ignore_list = array())
+  public function update_conf(array $conf_ignore_list = array()): void
   {
     $conf_c13y_ignore =  array();
     $conf_c13y_ignore['version'] = PHPWG_VERSION;
@@ -299,10 +303,9 @@ class check_integrity
   /**
    * Apply maintenance
    *
-   * @param void
    * @return void
    */
-  function maintenance()
+  public function maintenance(): void
   {
     $this->update_conf();
   }
@@ -310,22 +313,21 @@ class check_integrity
   /**
    * Returns links more informations
    *
-   * @param void
-   * @return html links
+   * @return string links
    */
-  function get_htlm_links_more_info()
+  public function get_html_links_more_info(): string
   {
     $pwg_links = pwg_URL();
     $link_fmt = '<a href="%s" onclick="window.open(this.href, \'\'); return false;">%s</a>';
     return
       sprintf
-      (
-        l10n('Go to %s or %s for more informations'),
-        sprintf($link_fmt, $pwg_links['FORUM'], l10n('the forum')),
-        sprintf($link_fmt, $pwg_links['WIKI'], l10n('the wiki'))
-      );
+        (
+          l10n('Go to %s or %s for more informations'),
+          sprintf($link_fmt, $pwg_links['FORUM'], l10n('the forum')),
+          sprintf($link_fmt, $pwg_links['WIKI'], l10n('the wiki'))
+        );
   }
 
 }
 
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -19,7 +19,7 @@
  *
  * @return array
  */
-function get_default_slideshow_params()
+function get_default_slideshow_params(): array
 {
   global $conf;
 
@@ -36,7 +36,7 @@ function get_default_slideshow_params()
  * @param array $params
  * @return array
  */
-function correct_slideshow_params($params=array())
+function correct_slideshow_params(array $params=array()): array
 {
   global $conf;
 
@@ -44,7 +44,7 @@ function correct_slideshow_params($params=array())
   {
     $params['period'] = $conf['slideshow_period_min'];
   }
-  else if ($params['period'] > $conf['slideshow_period_max'])
+  elseif ($params['period'] > $conf['slideshow_period_max'])
   {
     $params['period'] = $conf['slideshow_period_max'];
   }
@@ -55,10 +55,10 @@ function correct_slideshow_params($params=array())
 /**
  * Decodes slideshow string params into array
  *
- * @param string $encode_params
+ * @param string|null $encode_params
  * @return array
  */
-function decode_slideshow_params($encode_params=null)
+function decode_slideshow_params(string $encode_params=null): array
 {
   global $conf;
 
@@ -99,7 +99,7 @@ function decode_slideshow_params($encode_params=null)
  * @param array $decode_params
  * @return string
  */
-function encode_slideshow_params($decode_params=array())
+function encode_slideshow_params(array $decode_params=array()): string
 {
   global $conf;
 
@@ -115,4 +115,3 @@ function encode_slideshow_params($decode_params=array())
   return $result;
 }
 
-?>

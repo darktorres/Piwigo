@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH', './');
+const PHPWG_ROOT_PATH = './';
 
 // load config file
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
@@ -31,7 +31,7 @@ include($config_file);
 define('USERS_TABLE', $prefixeTable.'users');
 include_once(PHPWG_ROOT_PATH.'include/constants.php');
 define('PREFIX_TABLE', $prefixeTable);
-define('UPGRADES_PATH', PHPWG_ROOT_PATH.'install/db');
+const UPGRADES_PATH = PHPWG_ROOT_PATH . 'install/db';
 
 include_once(PHPWG_ROOT_PATH.'include/functions.inc.php');
 include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
@@ -46,7 +46,7 @@ include_once(PHPWG_ROOT_PATH . 'include/template.class.php');
  *
  * @return array
  */
-function get_tables()
+function get_tables(): array
 {
   $tables = array();
 
@@ -71,7 +71,7 @@ SHOW TABLES
  *
  * @return array of array
  */
-function get_columns_of($tables)
+function get_columns_of($tables): array
 {
   $columns_of = array();
 
@@ -95,7 +95,7 @@ DESC `'.$table.'`
 
 /**
  */
-function print_time($message)
+function print_time($message): void
 {
   global $last_time;
 
@@ -150,40 +150,40 @@ else
 if ('fr_FR' == $language) {
   define('PHPWG_DOMAIN', 'fr.piwigo.org');
 }
-else if ('it_IT' == $language) {
+elseif ('it_IT' == $language) {
   define('PHPWG_DOMAIN', 'it.piwigo.org');
 }
-else if ('de_DE' == $language) {
+elseif ('de_DE' == $language) {
   define('PHPWG_DOMAIN', 'de.piwigo.org');
 }
-else if ('es_ES' == $language) {
+elseif ('es_ES' == $language) {
   define('PHPWG_DOMAIN', 'es.piwigo.org');
 }
-else if ('pl_PL' == $language) {
+elseif ('pl_PL' == $language) {
   define('PHPWG_DOMAIN', 'pl.piwigo.org');
 }
-else if ('zh_CN' == $language) {
+elseif ('zh_CN' == $language) {
   define('PHPWG_DOMAIN', 'cn.piwigo.org');
 }
-else if ('ru_RU' == $language) {
+elseif ('ru_RU' == $language) {
   define('PHPWG_DOMAIN', 'ru.piwigo.org');
 }
-else if ('nl_NL' == $language) {
+elseif ('nl_NL' == $language) {
   define('PHPWG_DOMAIN', 'nl.piwigo.org');
 }
-else if ('tr_TR' == $language) {
+elseif ('tr_TR' == $language) {
   define('PHPWG_DOMAIN', 'tr.piwigo.org');
 }
-else if ('da_DK' == $language) {
+elseif ('da_DK' == $language) {
   define('PHPWG_DOMAIN', 'da.piwigo.org');
 }
-else if ('pt_BR' == $language) {
+elseif ('pt_BR' == $language) {
   define('PHPWG_DOMAIN', 'br.piwigo.org');
 }
 else {
   define('PHPWG_DOMAIN', 'piwigo.org');
 }
-define('PHPWG_URL', 'https://'.PHPWG_DOMAIN);
+const PHPWG_URL = 'https://' . PHPWG_DOMAIN;
 
 load_language( 'common.lang', '', array('language'=>$language, 'target_charset'=>'utf-8', 'no_fallback' => true) );
 load_language( 'admin.lang', '', array('language'=>$language, 'target_charset'=>'utf-8', 'no_fallback' => true) );
@@ -270,15 +270,15 @@ if (!in_array('param', $columns_of[PREFIX_TABLE.'config']))
     $current_release = '1.3.0';
   }
 }
-else if (!in_array(PREFIX_TABLE.'user_cache', $tables))
+elseif (!in_array(PREFIX_TABLE.'user_cache', $tables))
 {
   $current_release = '1.4.0';
 }
-else if (!in_array(PREFIX_TABLE.'tags', $tables))
+elseif (!in_array(PREFIX_TABLE.'tags', $tables))
 {
   $current_release = '1.5.0';
 }
-else if ( !in_array(PREFIX_TABLE.'plugins', $tables) )
+elseif ( !in_array(PREFIX_TABLE.'plugins', $tables) )
 {
   if (!in_array('auto_login_key', $columns_of[PREFIX_TABLE.'user_infos']))
   {
@@ -289,47 +289,47 @@ else if ( !in_array(PREFIX_TABLE.'plugins', $tables) )
     $current_release = '1.6.2';
   }
 }
-else if (!in_array('md5sum', $columns_of[PREFIX_TABLE.'images']))
+elseif (!in_array('md5sum', $columns_of[PREFIX_TABLE.'images']))
 {
   $current_release = '1.7.0';
 }
-else if (!in_array(PREFIX_TABLE.'themes', $tables))
+elseif (!in_array(PREFIX_TABLE.'themes', $tables))
 {
   $current_release = '2.0.0';
 }
-else if (!in_array('added_by', $columns_of[PREFIX_TABLE.'images']))
+elseif (!in_array('added_by', $columns_of[PREFIX_TABLE.'images']))
 {
   $current_release = '2.1.0';
 }
-else if (!in_array('rating_score', $columns_of[PREFIX_TABLE.'images']))
+elseif (!in_array('rating_score', $columns_of[PREFIX_TABLE.'images']))
 {
   $current_release = '2.2.0';
 }
-else if (!in_array('rotation', $columns_of[PREFIX_TABLE.'images']))
+elseif (!in_array('rotation', $columns_of[PREFIX_TABLE.'images']))
 {
   $current_release = '2.3.0';
 }
-else if (!in_array('website_url', $columns_of[PREFIX_TABLE.'comments']))
+elseif (!in_array('website_url', $columns_of[PREFIX_TABLE.'comments']))
 {
   $current_release = '2.4.0';
 }
-else if (!in_array('nb_available_tags', $columns_of[PREFIX_TABLE.'user_cache']))
+elseif (!in_array('nb_available_tags', $columns_of[PREFIX_TABLE.'user_cache']))
 {
   $current_release = '2.5.0';
 }
-else if (!in_array('activation_key_expire', $columns_of[PREFIX_TABLE.'user_infos']))
+elseif (!in_array('activation_key_expire', $columns_of[PREFIX_TABLE.'user_infos']))
 {
   $current_release = '2.6.0';
 }
-else if (!in_array('auth_key_id', $columns_of[PREFIX_TABLE.'history']))
+elseif (!in_array('auth_key_id', $columns_of[PREFIX_TABLE.'history']))
 {
   $current_release = '2.7.0';
 }
-else if (!in_array('history_id_to', $columns_of[PREFIX_TABLE.'history_summary']))
+elseif (!in_array('history_id_to', $columns_of[PREFIX_TABLE.'history_summary']))
 {
   $current_release = '2.8.0';
 }
-else if (!in_array(PREFIX_TABLE.'activity', $tables))
+elseif (!in_array(PREFIX_TABLE.'activity', $tables))
 {
   $current_release = '2.9.0';
 }
@@ -340,17 +340,17 @@ else
 SELECT id
   FROM '.PREFIX_TABLE.'upgrade
 ;';
-  $applied_upgrades = array_from_query($query, 'id');
+  $applied_upgrades = query2array($query, null, 'id');
 
   if (!in_array(159, $applied_upgrades))
   {
     $current_release = '2.10.0';
   }
-  else if (!in_array(162, $applied_upgrades))
+  elseif (!in_array(162, $applied_upgrades))
   {
     $current_release = '11.0.0';
   }
-  else if (!in_array(164, $applied_upgrades))
+  elseif (!in_array(164, $applied_upgrades))
   {
     $current_release = '12.0.0';
   }
@@ -480,7 +480,7 @@ REPLACE INTO '.PLUGINS_TABLE.'
     }
 
     // Delete cache data
-    invalidate_user_cache(true);
+    invalidate_user_cache();
     $template->delete_compiled_templates();
 
     // Restore $page['infos'] in order to hide informations messages from functions calles
@@ -533,4 +533,4 @@ if (count($page['infos']) != 0)
 // +-----------------------------------------------------------------------+
 
 $template->pparse('upgrade');
-?>
+

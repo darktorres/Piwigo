@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,49 +12,78 @@
  */
 class DummyPlugin_maintain extends PluginMaintain
 {
-  function install($plugin_version, &$errors=array())
+  /**
+   * @param $plugin_version
+   * @param $errors
+   * @return void
+   */
+  public function install($plugin_version, &$errors=array()): void
   {
     if (is_callable('plugin_install'))
     {
-      return plugin_install($this->plugin_id, $plugin_version, $errors);
+      plugin_install($this->plugin_id, $plugin_version, $errors);
     }
   }
-  function activate($plugin_version, &$errors=array())
+
+  /**
+   * @param $plugin_version
+   * @param $errors
+   * @return void
+   */
+  public function activate($plugin_version, &$errors=array()): void
   {
     if (is_callable('plugin_activate'))
     {
-      return plugin_activate($this->plugin_id, $plugin_version, $errors);
+      plugin_activate($this->plugin_id, $plugin_version, $errors);
     }
   }
-  function deactivate()
+
+  /**
+   * @return void
+   */
+  public function deactivate(): void
   {
     if (is_callable('plugin_deactivate'))
     {
-      return plugin_deactivate($this->plugin_id);
+      plugin_deactivate($this->plugin_id);
     }
   }
-  function uninstall()
+
+  /**
+   * @return void
+   */
+  public function uninstall(): void
   {
     if (is_callable('plugin_uninstall'))
     {
-      return plugin_uninstall($this->plugin_id);
+      plugin_uninstall($this->plugin_id);
     }
   }
-  function update($old_version, $new_version, &$errors=array()) {}
+
+  /**
+   * @param $old_version
+   * @param $new_version
+   * @param $errors
+   * @return void
+   */
+  public function update($old_version, $new_version, &$errors=array()) {}
 }
 
 
+/**
+ *
+ */
 class plugins
 {
-  var $fs_plugins = array();
-  var $db_plugins_by_id = array();
-  var $server_plugins = array();
-  var $default_plugins = array('LocalFilesEditor', 'language_switch', 'TakeATour', 'AdminTools');
+  public array $fs_plugins = array();
+  public array $db_plugins_by_id = array();
+  public array $server_plugins = array();
+  public array $default_plugins = array('LocalFilesEditor', 'language_switch', 'TakeATour', 'AdminTools');
 
   /**
    * Initialize $fs_plugins and $db_plugins_by_id
    */
-  function __construct()
+  public function __construct()
   {
     $this->get_fs_plugins();
 
@@ -68,8 +97,9 @@ class plugins
    * Returns the maintain class of a plugin
    * or build a new class with the procedural methods
    * @param string $plugin_id
+   * @return mixed
    */
-  private static function build_maintain_class($plugin_id)
+  private static function build_maintain_class(string $plugin_id): mixed
   {
     $file_to_include = PHPWG_PLUGINS_PATH . $plugin_id . '/maintain';
     $classname = $plugin_id.'_maintain';
@@ -101,11 +131,12 @@ class plugins
 
   /**
    * Perform requested actions
-   * @param string - action
-   * @param string - plugin id
-   * @param array - errors
+   * @param string $action
+   * @param string $plugin_id
+   * @param array $options
+   * @return array
    */
-  function perform_action($action, $plugin_id, $options=array())
+  public function perform_action(string $action, string $plugin_id, array $options=array()): array
   {
     global $conf;
 
@@ -306,7 +337,7 @@ DELETE FROM '. PLUGINS_TABLE .'
   /**
    * Get plugins defined in the plugin directory
    */
-  function get_fs_plugins()
+  public function get_fs_plugins(): void
   {
     $dir = opendir(PHPWG_PLUGINS_PATH);
     while ($file = readdir($dir))
@@ -328,7 +359,7 @@ DELETE FROM '. PLUGINS_TABLE .'
    * @param $plugin_id
    * @return false|array
    */
-  function get_fs_plugin($plugin_id)
+  public function get_fs_plugin($plugin_id): false|array
   {
     $path = PHPWG_PLUGINS_PATH.$plugin_id;
 
@@ -409,7 +440,7 @@ DELETE FROM '. PLUGINS_TABLE .'
   /**
    * Sort fs_plugins
    */
-  function sort_fs_plugins($order='name')
+  public function sort_fs_plugins($order='name'): void
   {
     switch ($order)
     {
@@ -430,7 +461,12 @@ DELETE FROM '. PLUGINS_TABLE .'
 
   // Retrieve PEM versions
   // Beta test : return last version on PEM if the current version isn't known or else return the current and the last version
-  function get_versions_to_check($beta_test=false, $version=PHPWG_VERSION)
+  /**
+   * @param bool $beta_test
+   * @param string $version
+   * @return array
+   */
+  public function get_versions_to_check(bool $beta_test=false, string $version=PHPWG_VERSION): array
   {
     global $conf;
 
@@ -493,7 +529,7 @@ DELETE FROM '. PLUGINS_TABLE .'
    * Retrieve PEM server datas to $server_plugins
    * $beta_test parameter add plugins compatible with the previous version
    */
-  function get_server_plugins($new=false, $beta_test=false)
+  public function get_server_plugins($new=false, $beta_test=false): bool
   {
     global $user, $conf;
 
@@ -551,7 +587,11 @@ DELETE FROM '. PLUGINS_TABLE .'
     return false;
   }
 
-  function get_incompatible_plugins($actualize=false)
+  /**
+   * @param bool $actualize
+   * @return mixed
+   */
+  public function get_incompatible_plugins(bool $actualize=false): mixed
   {
     if (isset($_SESSION['incompatible_plugins']) and !$actualize
       and $_SESSION['incompatible_plugins']['~~expire~~'] > time())
@@ -624,7 +664,7 @@ DELETE FROM '. PLUGINS_TABLE .'
   /**
    * Sort $server_plugins
    */
-  function sort_server_plugins($order='date')
+  public function sort_server_plugins($order='date'): void
   {
     switch ($order)
     {
@@ -648,11 +688,11 @@ DELETE FROM '. PLUGINS_TABLE .'
 
   /**
    * Extract plugin files from archive
-   * @param string - install or upgrade
-   *  @param string - archive URL
-    * @param string - plugin id or extension id
+   * @param string $action install or upgrade
+   * @param string $revision archive URL
+   * @param string $dest plugin id or extension id
    */
-  function extract_plugin_files($action, $revision, $dest, &$plugin_id=null)
+  public function extract_plugin_files(string $action, string $revision, string $dest, &$plugin_id=null)
   {
     global $logger;
 
@@ -732,7 +772,7 @@ DELETE FROM '. PLUGINS_TABLE .'
 
                   // make sure the obsolete file is withing the extension directory, prevent traversal path
                   $realpath = realpath($path);
-                  if ($realpath === false or strpos($realpath, $extract_path_realpath) !== 0)
+                  if ($realpath === false or !str_starts_with($realpath, $extract_path_realpath))
                   {
                     continue;
                   }
@@ -764,7 +804,11 @@ DELETE FROM '. PLUGINS_TABLE .'
     return $status;
   }
 
-  function get_merged_extensions($version=PHPWG_VERSION)
+  /**
+   * @param string $version
+   * @return array
+   */
+  public function get_merged_extensions(string $version=PHPWG_VERSION): array
   {
     $file = PHPWG_ROOT_PATH.'install/obsolete_extensions.list';
     $merged_extensions = array();
@@ -785,38 +829,61 @@ DELETE FROM '. PLUGINS_TABLE .'
   /**
    * Sort functions
    */
-  function extension_revision_compare($a, $b)
+  public function extension_revision_compare($a, $b): int
   {
     if ($a['revision_date'] < $b['revision_date']) return 1;
     else return -1;
   }
 
-  function extension_name_compare($a, $b)
+  /**
+   * @param $a
+   * @param $b
+   * @return int
+   */
+  public function extension_name_compare($a, $b): int
   {
     return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
   }
 
-  function extension_author_compare($a, $b)
+  /**
+   * @param $a
+   * @param $b
+   * @return int
+   */
+  public function extension_author_compare($a, $b): int
   {
     $r = strcasecmp($a['author_name'], $b['author_name']);
     if ($r == 0) return $this->extension_name_compare($a, $b);
     else return $r;
   }
 
-  function plugin_author_compare($a, $b)
+  /**
+   * @param $a
+   * @param $b
+   * @return int
+   */
+  public function plugin_author_compare($a, $b): int
   {
     $r = strcasecmp($a['author'], $b['author']);
     if ($r == 0) return name_compare($a, $b);
     else return $r;
   }
 
-  function extension_downloads_compare($a, $b)
+  /**
+   * @param $a
+   * @param $b
+   * @return int
+   */
+  public function extension_downloads_compare($a, $b): int
   {
     if ($a['extension_nb_downloads'] < $b['extension_nb_downloads']) return 1;
     else return -1;
   }
 
-  function sort_plugins_by_state()
+  /**
+   * @return void
+   */
+  public function sort_plugins_by_state(): void
   {
     uasort($this->fs_plugins, 'name_compare');
 
@@ -839,4 +906,3 @@ DELETE FROM '. PLUGINS_TABLE .'
     $this->fs_plugins = $active_plugins + $inactive_plugins + $not_installed;
   }
 }
-?>

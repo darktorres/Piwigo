@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 $themeconf = array(
   'name'          => 'default',
   'icon_dir'       => 'themes/default/icon',
@@ -6,4 +6,4 @@ $themeconf = array(
   'mime_icon_dir'  => 'themes/default/icon/mimetypes/',
   'colorscheme' => 'dark',
 );
-?>
+

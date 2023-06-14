@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -127,7 +127,7 @@ $navigation = get_cat_display_name_cache(
 $template->assign(
   array(
     'CATEGORIES_NAV' => preg_replace("# {2,}#"," ",preg_replace("#(\r\n|\n\r|\n|\r)#"," ",$navigation)),
-    'F_ACTION' => $base_url.get_query_string_diff(array()),
+    'F_ACTION' => $base_url.get_query_string_diff(),
    )
  );
 
@@ -203,7 +203,7 @@ $sort_fields = array(
 
 $template->assign('image_order_options', $sort_fields);
 
-$image_order = explode(',', isset($category['image_order']) ? $category['image_order'] : "");
+$image_order = explode(',', $category['image_order'] ?? "");
 
 for ($i=0; $i<3; $i++) // 3 fields
 {
@@ -225,4 +225,4 @@ $template->assign('image_order_choice', $image_order_choice);
 // +-----------------------------------------------------------------------+
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'element_set_ranks');
-?>
+

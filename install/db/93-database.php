@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -24,4 +24,4 @@ echo
 . $upgrade_description
 ."\n"
 ;
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -15,8 +15,9 @@
  * @param int $image_id
  * @param string $categories_string - "cat_id[,rank];cat_id[,rank]"
  * @param bool $replace_mode - removes old associations
+ * @return PwgError|true|void
  */
-function ws_add_image_category_relations($image_id, $categories_string, $replace_mode=false)
+function ws_add_image_category_relations(int $image_id, string $categories_string, bool $replace_mode=false)
 {
   // let's add links between the image and the categories
   //
@@ -164,8 +165,9 @@ SELECT category_id, MAX(`rank`) AS max_rank
  * @param string $output_filepath
  * @param string $original_sum
  * @param string $type
+ * @return PwgError|void
  */
-function merge_chunks($output_filepath, $original_sum, $type)
+function merge_chunks(string $output_filepath, string $original_sum, string $type)
 {
   global $conf, $logger;
 
@@ -239,7 +241,7 @@ function merge_chunks($output_filepath, $original_sum, $type)
  * will be the biggest (we could remove the thumb, but let's use the same
  * algorithm)
  */
-function remove_chunks($original_sum, $type)
+function remove_chunks(string $original_sum, string $type): void
 {
   global $conf;
 
@@ -273,13 +275,18 @@ function remove_chunks($original_sum, $type)
 /**
  * API method
  * Adds a comment to an image
- * @param mixed[] $params
- *    @option int image_id
- *    @option string author
- *    @option string content
- *    @option string key
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int image_id
+ * @option string author
+ * @option string content
+ * @option string key
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
-function ws_images_addComment($params, $service)
+function ws_images_addComment(array $params, $service): PwgError|array
 {
   $query = '
 SELECT DISTINCT image_id
@@ -334,12 +341,14 @@ SELECT DISTINCT image_id
 /**
  * API method
  * Returns detailed information for an element
- * @param mixed[] $params
- *    @option int image_id
- *    @option int comments_page
- *    @option int comments_per_page
+ * @param array $params
+ * @param $service
+ * @return array|PwgError|PwgNamedStruct[]
+ * @option int image_id
+ * @option int comments_page
+ * @option int comments_per_page
  */
-function ws_images_getInfo($params, $service)
+function ws_images_getInfo(array $params, $service): PwgError|array
 {
   global $user, $conf;
 
@@ -562,11 +571,13 @@ SELECT id, date, author, content
 /**
  * API method
  * Rates an image
- * @param mixed[] $params
- *    @option int image_id
- *    @option float rate
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int image_id
+ * @option float rate
  */
-function ws_images_rate($params, $service)
+function ws_images_rate(array $params, $service): PwgError|array
 {
   $query = '
 SELECT DISTINCT id
@@ -590,7 +601,7 @@ SELECT DISTINCT id
   include_once(PHPWG_ROOT_PATH.'include/functions_rate.inc.php');
   $res = rate_picture($params['image_id'], (int)$params['rate']);
 
-  if ($res==false)
+  if (!$res)
   {
     global $conf;
     return new PwgError(403, 'Forbidden or rate not in '. implode(',', $conf['rate_items']));
@@ -601,13 +612,15 @@ SELECT DISTINCT id
 /**
  * API method
  * Returns a list of elements corresponding to a query search
- * @param mixed[] $params
- *    @option string query
- *    @option int per_page
- *    @option int page
- *    @option string order (optional)
+ * @param array $params
+ * @param $service
+ * @return array
+ * @option string query
+ * @option int per_page
+ * @option int page
+ * @option string order (optional)
  */
-function ws_images_search($params, $service)
+function ws_images_search(array $params, $service): array
 {
   include_once(PHPWG_ROOT_PATH .'include/functions_search.inc.php');
 
@@ -691,11 +704,13 @@ SELECT *
 /**
  * API method
  * Sets the level of an image
- * @param mixed[] $params
- *    @option int image_id
- *    @option int level
+ * @param array $params
+ * @param $service
+ * @return PwgError|int|string
+ * @option int image_id
+ * @option int level
  */
-function ws_images_setPrivacyLevel($params, $service)
+function ws_images_setPrivacyLevel(array $params, $service): PwgError|int|string
 {
   global $conf;
 
@@ -713,7 +728,7 @@ UPDATE '. IMAGES_TABLE .'
 
   pwg_activity('photo', $params['image_id'], 'edit');
 
-  $affected_rows = pwg_db_changes($result);
+  $affected_rows = pwg_db_changes();
   if ($affected_rows)
   {
     include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
@@ -725,12 +740,14 @@ UPDATE '. IMAGES_TABLE .'
 /**
  * API method
  * Sets the rank of an image in a category
- * @param mixed[] $params
- *    @option int image_id
- *    @option int category_id
- *    @option int rank
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int image_id
+ * @option int category_id
+ * @option int rank
  */
-function ws_images_setRank($params, $service)
+function ws_images_setRank(array $params, $service): PwgError|array
 {
   if (count($params['image_id']) > 1)
   {
@@ -840,13 +857,15 @@ UPDATE '. IMAGE_CATEGORY_TABLE .'
 /**
  * API method
  * Adds a file chunk
- * @param mixed[] $params
- *    @option string data
- *    @option string original_sum
- *    @option string type = 'file'
- *    @option int position
+ * @param array $params
+ * @param $service
+ * @return PwgError|void
+ * @option string data
+ * @option string original_sum
+ * @option string type = 'file'
+ * @option int position
  */
-function ws_images_add_chunk($params, $service)
+function ws_images_add_chunk(array $params, $service)
 {
   global $conf, $logger;
 
@@ -897,12 +916,15 @@ function ws_images_add_chunk($params, $service)
 /**
  * API method
  * Adds a file
- * @param mixed[] $params
- *    @option int image_id
- *    @option string type = 'file'
- *    @option string sum
+ * @param array $params
+ * @param $service
+ * @return PwgError|true|void
+ * @option int image_id
+ * @option string type = 'file'
+ * @option string sum
+ * @throws Exception
  */
-function ws_images_addFile($params, $service)
+function ws_images_addFile(array $params, $service)
 {
   global $conf, $logger;
 
@@ -982,20 +1004,23 @@ SELECT
 /**
  * API method
  * Adds an image
- * @param mixed[] $params
- *    @option string original_sum
- *    @option string original_filename (optional)
- *    @option string name (optional)
- *    @option string author (optional)
- *    @option string date_creation (optional)
- *    @option string comment (optional)
- *    @option string categories (optional) - "cat_id[,rank];cat_id[,rank]"
- *    @option string tags_ids (optional) - "tag_id,tag_id"
- *    @option int level
- *    @option bool check_uniqueness
- *    @option int image_id (optional)
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option string original_sum
+ * @option string original_filename (optional)
+ * @option string name (optional)
+ * @option string author (optional)
+ * @option string date_creation (optional)
+ * @option string comment (optional)
+ * @option string categories (optional) - "cat_id[,rank];cat_id[,rank]"
+ * @option string tags_ids (optional) - "tag_id,tag_id"
+ * @option int level
+ * @option bool check_uniqueness
+ * @option int image_id (optional)
+ * @throws Exception
  */
-function ws_images_add($params, $service)
+function ws_images_add(array $params, $service): PwgError|array
 {
   global $conf, $user, $logger;
 
@@ -1073,7 +1098,7 @@ SELECT COUNT(*)
     $file_path,
     $params['original_filename'],
     null, // categories
-    isset($params['level']) ? $params['level'] : null,
+    $params['level'] ?? null,
     $params['image_id'] > 0 ? $params['image_id'] : null,
     $params['original_sum']
     );
@@ -1147,16 +1172,19 @@ SELECT id, name, permalink
 /**
  * API method
  * Adds a image (simple way)
- * @param mixed[] $params
- *    @option int[] category
- *    @option string name (optional)
- *    @option string author (optional)
- *    @option string comment (optional)
- *    @option int level
- *    @option string|string[] tags
- *    @option int image_id (optional)
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int[] category
+ * @option string name (optional)
+ * @option string author (optional)
+ * @option string comment (optional)
+ * @option int level
+ * @option string|string[] tags
+ * @option int image_id (optional)
+ * @throws Exception
  */
-function ws_images_addSimple($params, $service)
+function ws_images_addSimple(array $params, $service): PwgError|array
 {
   global $conf, $logger;
 
@@ -1167,34 +1195,19 @@ function ws_images_addSimple($params, $service)
 
   if (isset($_FILES['image']['error']) && $_FILES['image']['error'] != 0)
   {
-    switch($_FILES['image']['error'])
+    $message = match ($_FILES['image']['error'])
     {
-      case UPLOAD_ERR_INI_SIZE:
-        $message = 'The uploaded file exceeds the upload_max_filesize directive in php.ini.';
-        break;
-      case UPLOAD_ERR_FORM_SIZE:
-        $message = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.';
-        break;
-      case UPLOAD_ERR_PARTIAL:
-        $message = 'The uploaded file was only partially uploaded.';
-        break;
-      case UPLOAD_ERR_NO_FILE:
-        $message = 'No file was uploaded.';
-        break;
-      case UPLOAD_ERR_NO_TMP_DIR:
-        $message = 'Missing a temporary folder.';
-        break;
-      case UPLOAD_ERR_CANT_WRITE:
-        $message = 'Failed to write file to disk.';
-        break;
-      case UPLOAD_ERR_EXTENSION:
-        $message = 'A PHP extension stopped the file upload. ' .
-        'PHP does not provide a way to ascertain which extension caused the file ' .
-        'upload to stop; examining the list of loaded extensions with phpinfo() may help.';
-        break;
-      default:
-        $message = "Error number {$_FILES['image']['error']} occurred while uploading a file.";
-    }
+      UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
+      UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.',
+      UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
+      UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+      UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder.',
+      UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+      UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload. ' .
+          'PHP does not provide a way to ascertain which extension caused the file ' .
+          'upload to stop; examining the list of loaded extensions with phpinfo() may help.',
+      default => "Error number {$_FILES['image']['error']} occurred while uploading a file.",
+    };
 
     $logger->error(__FUNCTION__ . " " . $message);
     return new PwgError(500, $message);
@@ -1301,16 +1314,19 @@ SELECT id, name, permalink
 /**
  * API method
  * Adds a image (simple way)
- * @param mixed[] $params
- *    @option int[] category
- *    @option string name (optional)
- *    @option string author (optional)
- *    @option string comment (optional)
- *    @option int level
- *    @option string|string[] tags
- *    @option int image_id (optional)
+ * @param array $params
+ * @param $service
+ * @return array|PwgError|void
+ * @option int[] category
+ * @option string name (optional)
+ * @option string author (optional)
+ * @option string comment (optional)
+ * @option int level
+ * @option string|string[] tags
+ * @option int image_id (optional)
+ * @throws Exception
  */
-function ws_images_upload($params, $service)
+function ws_images_upload(array $params, $service)
 {
   global $conf;
 
@@ -1458,8 +1474,7 @@ SELECT *
       $filePath,
       stripslashes($params['name']), // function add_uploaded_file will secure before insert
       $params['category'],
-      $params['level'],
-      null // image_id = not provided, this is a new photo
+      $params['level'] // image_id = not provided, this is a new photo
       );
 
     $query = '
@@ -1508,25 +1523,27 @@ SELECT
 /**
  * API method
  * Adds a chunk of an image. Chunks don't have to be uploaded in the right sort order. When the last chunk is added, they get merged.
- * @since 11
- * @param mixed[] $params
- *    @option string username
- *    @option string password
- *    @option chunk int number of the chunk
- *    @option string chunk_sum MD5 sum of the chunk
- *    @option chunks int total number of chunks for this image
- *    @option string original_sum MD5 sum of the final image
- *    @option int[] category
- *    @option string filename
- *    @option string name (optional)
- *    @option string author (optional)
- *    @option string comment (optional)
- *    @option string date_creation (optional)
- *    @option int level
- *    @option string tag_ids (optional) - "tag_id,tag_id"
- *    @option int image_id (optional)
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option string username
+ * @option string password
+ * @option chunk int number of the chunk
+ * @option string chunk_sum MD5 sum of the chunk
+ * @option chunks int total number of chunks for this image
+ * @option string original_sum MD5 sum of the final image
+ * @option int[] category
+ * @option string filename
+ * @option string name (optional)
+ * @option string author (optional)
+ * @option string comment (optional)
+ * @option string date_creation (optional)
+ * @option int level
+ * @option string tag_ids (optional) - "tag_id,tag_id"
+ * @option int image_id (optional)
+ * @throws Exception
  */
-function ws_images_uploadAsync($params, &$service)
+function ws_images_uploadAsync(array $params, $service): mixed
 {
   global $conf, $user, $logger;
 
@@ -1785,11 +1802,13 @@ SELECT COUNT(*)
 /**
  * API method
  * Check if an image exists by it's name or md5 sum
- * @param mixed[] $params
- *    @option string md5sum_list (optional)
- *    @option string filename_list (optional)
+ * @param array $params
+ * @param $service
+ * @return array
+ * @option string md5sum_list (optional)
+ * @option string filename_list (optional)
  */
-function ws_images_exist($params, $service)
+function ws_images_exist(array $params, $service): array
 {
   global $conf, $logger;
 
@@ -1858,13 +1877,14 @@ SELECT id, file
 /**
  * API method
  * Check if an image exists by it's name or md5 sum
- * 
- * @since 13
- * @param mixed[] $params
- *    @option string category_id (optional)
- *    @option string filename_list
+ *
+ * @param array $params
+ * @param $service
+ * @return array
+ * @option string category_id (optional)
+ * @option string filename_list
  */
-function ws_images_formats_searchImage($params, $service)
+function ws_images_formats_searchImage(array $params, $service): array
 {
   global $conf, $logger;
 
@@ -1930,13 +1950,15 @@ SELECT
 /**
  * API method
  * Remove a formats from the database and the file system
- * 
- * @since 13
- * @param mixed[] $params
- *    @option int format_id
- *    @option string pwg_token
+ *
+ * @param array $params
+ * @param $service
+ * @return PwgError|bool
+ * @option int format_id
+ * @option string pwg_token
  */
-function ws_images_formats_delete($params, $service) {
+function ws_images_formats_delete(array $params, $service): PwgError|bool
+{
   if (get_pwg_token() != $params['pwg_token'])
   {
     return new PwgError(403, 'Invalid security token');
@@ -2049,11 +2071,13 @@ DELETE FROM '.IMAGE_FORMAT_TABLE.'
 /**
  * API method
  * Check is file has been update
- * @param mixed[] $params
- *    @option int image_id
- *    @option string file_sum
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int image_id
+ * @option string file_sum
  */
-function ws_images_checkFiles($params, $service)
+function ws_images_checkFiles(array $params, $service): PwgError|array
 {
   global $logger;
 
@@ -2114,20 +2138,22 @@ SELECT path
 /**
  * API method
  * Sets details of an image
- * @param mixed[] $params
- *    @option int image_id
- *    @option string file (optional)
- *    @option string name (optional)
- *    @option string author (optional)
- *    @option string date_creation (optional)
- *    @option string comment (optional)
- *    @option string categories (optional) - "cat_id[,rank];cat_id[,rank]"
- *    @option string tags_ids (optional) - "tag_id,tag_id"
- *    @option int level (optional)
- *    @option string single_value_mode
- *    @option string multiple_value_mode
+ * @param array $params
+ * @param $service
+ * @return PwgError|void
+ * @option int image_id
+ * @option string file (optional)
+ * @option string name (optional)
+ * @option string author (optional)
+ * @option string date_creation (optional)
+ * @option string comment (optional)
+ * @option string categories (optional) - "cat_id[,rank];cat_id[,rank]"
+ * @option string tags_ids (optional) - "tag_id,tag_id"
+ * @option int level (optional)
+ * @option string single_value_mode
+ * @option string multiple_value_mode
  */
-function ws_images_setInfo($params, $service)
+function ws_images_setInfo(array $params, $service)
 {
   global $conf;
 
@@ -2227,7 +2253,7 @@ SELECT *
     ws_add_image_category_relations(
       $params['image_id'],
       $params['categories'],
-      ('replace' == $params['multiple_value_mode'] ? true : false)
+      'replace' == $params['multiple_value_mode']
       );
   }
 
@@ -2276,11 +2302,13 @@ SELECT *
 /**
  * API method
  * Deletes an image
- * @param mixed[] $params
- *    @option int|int[] image_id
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return PwgError|int
+ * @option int|int[] image_id
+ * @option string pwg_token
  */
-function ws_images_delete($params, $service)
+function ws_images_delete(array $params, $service): PwgError|int
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -2317,9 +2345,11 @@ function ws_images_delete($params, $service)
 /**
  * API method
  * Checks if Piwigo is ready for upload
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return array
  */
-function ws_images_checkUpload($params, $service)
+function ws_images_checkUpload(array $params, $service): array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions_upload.inc.php');
 
@@ -2336,25 +2366,27 @@ function ws_images_checkUpload($params, $service)
 /**
  * API method
  * Empties the lounge, where photos may wait before taking off.
- * @since 12
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return array
+ * @throws Exception
  */
-function ws_images_emptyLounge($params, $service)
+function ws_images_emptyLounge(array $params, $service): array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
-  $ret = array('rows' => empty_lounge());
-
-  return $ret;
+  return array('rows' => empty_lounge());
 }
 
 /**
  * API method
  * Empties the lounge, where photos may wait before taking off.
- * @since 12
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @throws Exception
  */
-function ws_images_uploadCompleted($params, $service)
+function ws_images_uploadCompleted(array $params, $service): PwgError|array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
@@ -2418,10 +2450,12 @@ SELECT
 /**
  * API method
  * add md5sum at photos, by block. Returns how md5sum were added and how many are remaining.
- * @param mixed[] $params
- *    @option int block_size
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int block_size
  */
-function ws_images_setMd5sum($params, $service)
+function ws_images_setMd5sum(array $params, $service): PwgError|array
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -2442,10 +2476,12 @@ function ws_images_setMd5sum($params, $service)
 /**
  * API method
  * Synchronize metadatas photos. Returns how many metadatas were sync.
- * @param mixed[] $params
- *    @option int image_id
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int image_id
  */
-function ws_images_syncMetadata($params, $service)
+function ws_images_syncMetadata(array $params, $service): PwgError|array
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -2476,10 +2512,12 @@ SELECT id
 /**
  * API method
  * Deletes orphan photos, by block. Returns how many orphans were deleted and how many are remaining.
- * @param mixed[] $params
- *    @option int block_size
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int block_size
  */
-function ws_images_deleteOrphans($params, $service)
+function ws_images_deleteOrphans(array $params, $service): PwgError|array
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -2496,4 +2534,4 @@ function ws_images_deleteOrphans($params, $service)
     'nb_orphans' => count(get_orphans()),
     );
 }
-?>
+

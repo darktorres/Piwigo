@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -17,4 +17,3 @@ $query = 'UPDATE '.CATEGORIES_TABLE.' SET site_id=NULL WHERE dir IS NULL';
 pwg_query($query);
 
 echo "\n".$upgrade_description."\n";
-?>

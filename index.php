@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 //--------------------------------------------------------------------- include
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 include(PHPWG_ROOT_PATH.'include/section_init.inc.php');
 
@@ -63,8 +63,8 @@ if (count($page['items']) > $page['nb_image_page'])
     duplicate_index_url(array(), array('start')),
     count($page['items']),
     $page['start'],
-    $page['nb_image_page'],
-    true, 'start'
+    (int) $page['nb_image_page'],
+    true
     );
 }
 
@@ -210,7 +210,7 @@ if ( empty($page['is_external']) )
       $hints = array();
       foreach ( $cats as $cat )
       {
-        $hints[] = get_cat_display_name( array($cat), '' );
+        $hints[] = get_cat_display_name( array($cat));
       }
       $template->assign( 'category_search_results', $hints);
     }
@@ -324,7 +324,7 @@ if ( empty($page['is_external']) )
           array(
             'DISPLAY' => l10n($params->type),
             'URL' => $url.$params->type,
-            'SELECTED' => ($params->type == $selected_type ? true:false),
+            'SELECTED' => $params->type == $selected_type,
             )
           );
       }
@@ -356,4 +356,4 @@ $template->pparse('index');
 //------------------------------------------------------------ log informations
 pwg_log();
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

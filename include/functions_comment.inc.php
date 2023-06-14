@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -21,7 +21,7 @@ add_event_handler('user_comment_check', 'user_comment_check');
  * @param array $comment
  * @return string validate, moderate, reject
  */
-function user_comment_check($action, $comment)
+function user_comment_check(string $action, array $comment): string
 {
   global $conf,$user;
 
@@ -40,7 +40,7 @@ function user_comment_check($action, $comment)
   $link_count = preg_match_all( '/https?:\/\//',
     $comment['content'], $matches);
 
-  if ( strpos($comment['author'], 'http://')!==false )
+  if ( str_contains($comment['author'], 'http://') )
   {
     $link_count++;
   }
@@ -58,10 +58,13 @@ function user_comment_check($action, $comment)
  *
  * @param array &$comm
  * @param string $key secret key sent back to the browser
- * @param array &$infos output array of error messages
+ * @param array|null &$infos output array of error messages
  * @return string validate, moderate, reject
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
-function insert_user_comment(&$comm, $key, &$infos)
+function insert_user_comment(array &$comm, string $key, array|null &$infos): string
 {
   global $conf, $user;
 
@@ -227,7 +230,7 @@ INSERT INTO '.COMMENTS_TABLE.'
   )
 ';
     pwg_query($query);
-    $comm['id'] = pwg_db_insert_id(COMMENTS_TABLE);
+    $comm['id'] = pwg_db_insert_id();
 
     invalidate_user_cache_nb_comments();
 
@@ -268,8 +271,11 @@ INSERT INTO '.COMMENTS_TABLE.'
  *
  * @param int|int[] $comment_id
  * @return bool false if nothing deleted
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
-function delete_user_comment($comment_id)
+function delete_user_comment(array|int $comment_id): bool
 {
   $user_where_clause = '';
   if (!is_admin())
@@ -288,7 +294,9 @@ DELETE FROM '.COMMENTS_TABLE.'
 $user_where_clause.'
 ;';
 
-  if ( pwg_db_changes(pwg_query($query)) )
+  pwg_query($query);
+
+  if ( pwg_db_changes() )
   {
     invalidate_user_cache_nb_comments();
 
@@ -312,9 +320,12 @@ $user_where_clause.'
  * @param array $comment
  * @param string $post_key secret key sent back to the browser
  * @return string validate, moderate, reject
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
 
-function update_user_comment($comment, $post_key)
+function update_user_comment(array $comment, string $post_key): string
 {
   global $conf, $page;
 
@@ -414,8 +425,11 @@ $user_where_clause.'
  *
  * @param string $action edit, delete
  * @param array $comment
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ * @throws SmartyException
  */
-function email_admin($action, $comment)
+function email_admin(string $action, array $comment): void
 {
   global $conf;
 
@@ -453,9 +467,9 @@ function email_admin($action, $comment)
  *
  * @param int $comment_id
  * @param bool $die_on_error
- * @return int
+ * @return false|int
  */
-function get_comment_author_id($comment_id, $die_on_error=true)
+function get_comment_author_id(int $comment_id, bool $die_on_error=true): false|int
 {
   $query = '
 SELECT
@@ -486,7 +500,7 @@ SELECT
  *
  * @param int|int[] $comment_id
  */
-function validate_user_comment($comment_id)
+function validate_user_comment(array|int $comment_id): void
 {
   if (is_array($comment_id))
     $where_clause = 'id IN('.implode(',', $comment_id).')';
@@ -508,7 +522,7 @@ UPDATE '.COMMENTS_TABLE.'
 /**
  * Clears cache of nb comments for all users
  */
-function invalidate_user_cache_nb_comments()
+function invalidate_user_cache_nb_comments(): void
 {
   global $user;
 
@@ -521,4 +535,3 @@ UPDATE '.USER_CACHE_TABLE.'
   pwg_query($query);
 }
 
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -23,4 +23,3 @@ pwg_query($q);
 $q="UPDATE ".CONFIG_TABLE." SET value=REPLACE(value, 'average_rate', 'rating_score')
 WHERE param IN ('picture_informations', 'order_by', 'order_by_inside_category')";
 pwg_query($q);
-?>

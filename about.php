@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 //----------------------------------------------------------- include
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 // +-----------------------------------------------------------------------+
@@ -45,4 +45,4 @@ include(PHPWG_ROOT_PATH.'include/page_header.php');
 flush_page_messages();
 $template->pparse('about');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

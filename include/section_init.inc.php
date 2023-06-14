@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -32,7 +32,7 @@ $page['start'] = $page['startcat'] = 0;
 
 // some ISPs set PATH_INFO to empty string or to SCRIPT_FILENAME while in the
 // default apache implementation it is not set
-if ( $conf['question_mark_in_urls']==false and
+if ( !$conf['question_mark_in_urls'] and
      isset($_SERVER["PATH_INFO"]) and !empty($_SERVER["PATH_INFO"]) )
 {
   $rewritten = $_SERVER["PATH_INFO"];
@@ -225,7 +225,7 @@ if ('categories' == $page['section'])
             $page['category']['comment'],
             'main_page_category_description'
             ),
-        'title'   => get_cat_display_name($page['category']['upper_names'], '', false),
+        'title'   => get_cat_display_name($page['category']['upper_names']),
         )
       );
   }
@@ -357,11 +357,11 @@ else
 // +-----------------------------------------------------------------------+
 // |                           search section                              |
 // +-----------------------------------------------------------------------+
-  else if ($page['section'] == 'search')
+  elseif ($page['section'] == 'search')
   {
     include_once( PHPWG_ROOT_PATH .'include/functions_search.inc.php' );
 
-    $search_result = get_search_results($page['search'], $page['super_order_by'] ?? false );
+    $search_result = get_search_results((int)$page['search'], $page['super_order_by'] ?? false );
     //save the details of the query search
     if ( isset($search_result['qs']) )
     {
@@ -380,7 +380,7 @@ else
 // +-----------------------------------------------------------------------+
 // |                           favorite section                            |
 // +-----------------------------------------------------------------------+
-  else if ($page['section'] == 'favorites')
+  elseif ($page['section'] == 'favorites')
   {
     check_user_favorites();
 
@@ -440,7 +440,7 @@ SELECT image_id
 // +-----------------------------------------------------------------------+
 // |                       recent pictures section                         |
 // +-----------------------------------------------------------------------+
-  else if ($page['section'] == 'recent_pics')
+  elseif ($page['section'] == 'recent_pics')
   {
     if ( !isset($page['super_order_by']) )
     {
@@ -473,7 +473,7 @@ SELECT DISTINCT(id)
 // +-----------------------------------------------------------------------+
 // |                 recently updated categories section                   |
 // +-----------------------------------------------------------------------+
-  else if ($page['section'] == 'recent_cats')
+  elseif ($page['section'] == 'recent_cats')
   {
     $page = array_merge(
       $page,
@@ -486,7 +486,7 @@ SELECT DISTINCT(id)
 // +-----------------------------------------------------------------------+
 // |                        most visited section                           |
 // +-----------------------------------------------------------------------+
-  else if ($page['section'] == 'most_visited')
+  elseif ($page['section'] == 'most_visited')
   {
     $page['super_order_by'] = true;
     $conf['order_by'] = ' ORDER BY hit DESC, id DESC';
@@ -513,7 +513,7 @@ SELECT DISTINCT(id)
 // +-----------------------------------------------------------------------+
 // |                          best rated section                           |
 // +-----------------------------------------------------------------------+
-  else if ($page['section'] == 'best_rated')
+  elseif ($page['section'] == 'best_rated')
   {
     $page['super_order_by'] = true;
     $conf['order_by'] = ' ORDER BY rating_score DESC, id DESC';
@@ -539,7 +539,7 @@ SELECT DISTINCT(id)
 // +-----------------------------------------------------------------------+
 // |                             list section                              |
 // +-----------------------------------------------------------------------+
-  else if ($page['section'] == 'list')
+  elseif ($page['section'] == 'list')
   {
     $query ='
 SELECT DISTINCT(id)
@@ -648,13 +648,13 @@ if ( 'categories'==$page['section'] and isset($page['category']) and !isset($pag
   unset( $need_redirect, $page['hit_by'] );
 }
 
-array_push($page['body_classes'], 'section-'.$page['section']);
+$page['body_classes'][] = 'section-' . $page['section'];
 $page['body_data']['section'] = $page['section'];
 
 
 if ('categories' == $page['section'] && isset($page['category']))
 {
-  array_push($page['body_classes'], 'category-'.$page['category']['id']);
+  $page['body_classes'][] = 'category-' . $page['category']['id'];
   $page['body_data']['category_id'] = $page['category']['id'];
 
   if (isset($page['combined_categories']))
@@ -662,8 +662,8 @@ if ('categories' == $page['section'] && isset($page['category']))
     $page['body_data']['combined_category_ids'] = array();
     foreach ($page['combined_categories'] as $combined_categories)
     {
-      array_push($page['body_classes'],'category-'.$combined_categories['id']);
-      array_push($page['body_data']['combined_category_ids'], $combined_categories['id']);
+      $page['body_classes'][] = 'category-' . $combined_categories['id'];
+      $page['body_data']['combined_category_ids'][] = $combined_categories['id'];
     }
   }
 }
@@ -672,22 +672,21 @@ elseif (isset($page['tags']))
   $page['body_data']['tag_ids'] = array();
   foreach ($page['tags'] as $tag)
   {
-    array_push($page['body_classes'], 'tag-'.$tag['id']);
-    array_push($page['body_data']['tag_ids'], $tag['id']);
+    $page['body_classes'][] = 'tag-' . $tag['id'];
+    $page['body_data']['tag_ids'][] = $tag['id'];
   }
   
 }
 elseif (isset($page['search']))
 {
-  array_push($page['body_classes'], 'search-'.$page['search']);
+  $page['body_classes'][] = 'search-' . $page['search'];
   $page['body_data']['search_id'] = $page['search'];
 }
 
 if (isset($page['image_id']))
 {
-  array_push($page['body_classes'], 'image-'.$page['image_id']);
+  $page['body_classes'][] = 'image-' . $page['image_id'];
   $page['body_data']['image_id'] = $page['image_id'];
 }
 
 trigger_notify('loc_end_section_init');
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -46,7 +46,12 @@ $must_repost = false;
  * @param check_key_treated: array of check_key treated
  * @return none
  */
-function do_timeout_treatment($post_keyname, $check_key_treated = array())
+/**
+ * @param $post_keyname
+ * @param array $check_key_treated
+ * @return void
+ */
+function do_timeout_treatment($post_keyname, array $check_key_treated = array()): void
 {
   global $env_nbm, $base_url, $page, $must_repost;
 
@@ -81,29 +86,29 @@ function do_timeout_treatment($post_keyname, $check_key_treated = array())
  * Get the authorized_status for each tab
  * return corresponding status
  */
-function get_tab_status($mode)
+/**
+ * @param $mode
+ * @return int
+ */
+function get_tab_status($mode): int
 {
-  $result = ACCESS_WEBMASTER;
-  switch ($mode)
+  return match ($mode)
   {
-    case 'param':
-    case 'subscribe':
-      $result = ACCESS_WEBMASTER;
-      break;
-    case 'send':
-      $result = ACCESS_ADMINISTRATOR;
-      break;
-    default:
-      $result = ACCESS_WEBMASTER;
-      break;
-  }
-  return $result;
+    'send' => ACCESS_ADMINISTRATOR,
+    default => ACCESS_WEBMASTER,
+  };
 }
 
 /*
  * Inserting News users
  */
-function insert_new_data_user_mail_notification()
+/**
+ * @return void
+ * @throws SmartyException
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ */
+function insert_new_data_user_mail_notification(): void
 {
   global $conf, $page, $env_nbm;
 
@@ -189,11 +194,15 @@ order by
  * Apply global functions to mail content
  * return customize mail content rendered
  */
-function render_global_customize_mail_content($customize_mail_content)
+/**
+ * @param $customize_mail_content
+ * @return mixed|string
+ */
+function render_global_customize_mail_content($customize_mail_content): mixed
 {
   global $conf;
 
-  if ($conf['nbm_send_html_mail'] and !(strpos($customize_mail_content, '<') === 0))
+  if ($conf['nbm_send_html_mail'] and !(str_starts_with($customize_mail_content, '<')))
   {
     // On HTML mail, detects if the content are HTML format.
     // If it's plain text format, convert content to readable HTML
@@ -210,7 +219,16 @@ function render_global_customize_mail_content($customize_mail_content)
  * Return list of "selected" users for 'list_to_send'
  * Return list of "treated" check_key for 'send'
  */
-function do_action_send_mail_notification($action = 'list_to_send', $check_key_list = array(), $customize_mail_content = '')
+/**
+ * @param string $action
+ * @param array $check_key_list
+ * @param string $customize_mail_content
+ * @return array
+ * @throws SmartyException
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ */
+function do_action_send_mail_notification(string $action = 'list_to_send', array $check_key_list = array(), string $customize_mail_content = ''): array
 {
   global $conf, $page, $user, $lang_info, $lang, $env_nbm;
   $return_list = array();
@@ -576,7 +594,7 @@ $template->assign
   (
     'PWG_TOKEN' => get_pwg_token(),
     'U_HELP' => get_root_url().'admin/popuphelp.php?page=notification_by_mail',
-    'F_ACTION'=> $base_url.get_query_string_diff(array())
+    'F_ACTION'=> $base_url.get_query_string_diff()
   )
 );
 
@@ -676,7 +694,7 @@ switch ($page['mode'])
   {
     $tpl_var = array('users'=> array() );
 
-    $data_users = do_action_send_mail_notification('list_to_send');
+    $data_users = do_action_send_mail_notification();
 
     $tpl_var['CUSTOMIZE_MAIL_CONTENT'] = 
       isset($_POST['send_customize_mail_content']) 
@@ -732,4 +750,4 @@ $template->assign('ADMIN_PAGE_TITLE', l10n('Send mail to users'));
 // +-----------------------------------------------------------------------+
 $template->assign_var_from_handle('ADMIN_CONTENT', 'notification_by_mail');
 
-?>
+

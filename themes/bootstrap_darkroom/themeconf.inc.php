@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
 Theme Name: Bootstrap Darkroom
 Version: 2.5.17

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -141,7 +141,12 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme)
 }
 
 // sort themes by state then by name
-function cmp($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function cmp($a, $b): int
 { 
   $s = array('active' => 0, 'inactive' => 1);
   
@@ -174,4 +179,4 @@ $template->assign('CONF_ENABLE_EXTENSIONS_INSTALL', $conf['enable_extensions_ins
 
 $template->set_filenames(array('themes' => 'themes_installed.tpl'));
 $template->assign_var_from_handle('ADMIN_CONTENT', 'themes');
-?>
+

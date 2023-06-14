@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -36,4 +36,4 @@ foreach ($queries as $query)
 
 // now we upgrade from 1.6.2
 include_once(PHPWG_ROOT_PATH.'install/upgrade_1.6.2.php');
-?>
+

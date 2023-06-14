@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -144,7 +144,7 @@ list($nb_albums) = pwg_db_fetch_row(pwg_query($query));
 $template->assign('NB_ALBUMS', $nb_albums);
 
 // image level options
-$selected_level = isset($_POST['level']) ? $_POST['level'] : 0;
+$selected_level = $_POST['level'] ?? 0;
 $template->assign(
     array(
       'level_options'=> get_privacy_level_options(),
@@ -216,4 +216,4 @@ if (!isset($_SESSION['upload_hide_warnings']))
     );
 }
 
-?>
+

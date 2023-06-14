@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,12 +7,19 @@
 // +-----------------------------------------------------------------------+
 
 // provides data for site synchronization from the local file system
+
+/**
+ *
+ */
 class LocalSiteReader
 {
 
-var $site_url;
+public $site_url;
 
-function __construct($url)
+  /**
+   * @param $url
+   */
+  public function __construct($url)
 {
   $this->site_url = $url;
   global $conf;
@@ -29,9 +36,9 @@ function __construct($url)
 /**
  * Is this local site ok ?
  *
- * @return true on success, false otherwise
+ * @return bool
  */
-function open()
+public function open(): bool
 {
   global $errors;
 
@@ -49,10 +56,14 @@ function open()
 }
 
 // retrieve file system sub-directories fulldirs
-function get_full_directories($basedir)
+
+  /**
+   * @param $basedir
+   * @return array
+   */
+  public function get_full_directories($basedir): array
 {
-  $fs_fulldirs = get_fs_directories($basedir);
-  return $fs_fulldirs;
+  return get_fs_directories($basedir);
 }
 
 /**
@@ -61,7 +72,7 @@ function get_full_directories($basedir)
  * @param string $path recurse in this directory
  * @return array like "pic.jpg"=>array('representative_ext'=>'jpg' ... )
  */
-function get_elements($path)
+public function get_elements(string $path): array
 {
   global $conf;
 
@@ -94,7 +105,7 @@ function get_elements($path)
           }
         }
       }
-      else if (is_dir($path.'/'.$node)
+      elseif (is_dir($path.'/'.$node)
                and $node != 'pwg_high'
                and $node != 'pwg_representative'
                and $node != 'pwg_format'
@@ -117,12 +128,19 @@ function get_elements($path)
 
 // returns the name of the attributes that are supported for
 // files update/synchronization
-function get_update_attributes()
+  /**
+   * @return string[]
+   */
+  public function get_update_attributes(): array
 {
   return array('representative_ext');
 }
 
-function get_element_update_attributes($file)
+  /**
+   * @param $file
+   * @return array
+   */
+  public function get_element_update_attributes($file): array
 {
   global $conf;
   $data = array();
@@ -144,21 +162,35 @@ function get_element_update_attributes($file)
 
 // returns the name of the attributes that are supported for
 // metadata update/synchronization according to configuration
-function get_metadata_attributes()
+  /**
+   * @return array
+   */
+  public function get_metadata_attributes(): array
 {
   return get_sync_metadata_attributes();
 }
 
 // returns a hash of attributes (metadata+filesize+width,...) for file
-function get_element_metadata($infos)
+
+  /**
+   * @param $infos
+   * @return false|array
+   */
+  public function get_element_metadata($infos): false|array
 {
   return get_sync_metadata($infos);
 }
 
 
 //-------------------------------------------------- private functions --------
-function get_representative_ext($path, $filename_wo_ext)
-{
+
+  /**
+   * @param $path
+   * @param $filename_wo_ext
+   * @return mixed|null
+   */
+  public function get_representative_ext($path, $filename_wo_ext): mixed
+  {
   global $conf;
   $base_test = $path.'/pwg_representative/'.$filename_wo_ext.'.';
   foreach ($conf['picture_ext'] as $ext)
@@ -172,7 +204,12 @@ function get_representative_ext($path, $filename_wo_ext)
   return null;
 }
 
-function get_formats($path, $filename_wo_ext)
+  /**
+   * @param $path
+   * @param $filename_wo_ext
+   * @return array
+   */
+  public function get_formats($path, $filename_wo_ext): array
 {
   global $conf;
 
@@ -194,4 +231,3 @@ function get_formats($path, $filename_wo_ext)
 }
 
 }
-?>

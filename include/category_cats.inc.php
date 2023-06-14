@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -294,9 +294,9 @@ if (count($categories) > 0)
             ),
           'CAPTION_NB_IMAGES' => get_display_images_count
                                   (
-                                    $category['nb_images'],
-                                    $category['count_images'],
-                                    $category['count_categories'],
+                                    (int)$category['nb_images'],
+                                    (int)$category['count_images'],
+                                    (int)$category['count_categories'],
                                     true,
                                     '<br>'
                                   ),
@@ -335,7 +335,7 @@ if (count($categories) > 0)
   $tpl_thumbnails_var_selection = array_slice(
     $tpl_thumbnails_var,
     $page['startcat'],
-    $conf['nb_categories_page']
+    (int)$conf['nb_categories_page']
     );
 
   $derivative_params = trigger_change('get_index_album_derivative_params', ImageStdParams::get_by_type(IMG_THUMB) );
@@ -364,4 +364,3 @@ if (count($categories) > 0)
 }
 
 pwg_debug('end include/category_cats.inc.php');
-?>
