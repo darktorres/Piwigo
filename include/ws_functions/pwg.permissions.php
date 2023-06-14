@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,12 +9,14 @@
 /**
  * API method
  * Returns permissions
- * @param mixed[] $params
- *    @option int[] cat_id (optional)
- *    @option int[] group_id (optional)
- *    @option int[] user_id (optional)
+ * @param array $params
+ * @param $service
+ * @return array|PwgError
+ * @option int[] cat_id (optional)
+ * @option int[] group_id (optional)
+ * @option int[] user_id (optional)
  */
-function ws_permissions_getList($params, &$service)
+function ws_permissions_getList(array $params, &$service): array|PwgError
 {
   $my_params = array_intersect(array_keys($params), array('cat_id','group_id','user_id'));
   if (count($my_params) > 1)
@@ -123,13 +125,15 @@ SELECT group_id, cat_id
 /**
  * API method
  * Add permissions
- * @param mixed[] $params
- *    @option int[] cat_id
- *    @option int[] group_id (optional)
- *    @option int[] user_id (optional)
- *    @option bool recursive
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option int[] cat_id
+ * @option int[] group_id (optional)
+ * @option int[] user_id (optional)
+ * @option bool recursive
  */
-function ws_permissions_add($params, &$service)
+function ws_permissions_add(array $params, $service): mixed
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -152,7 +156,7 @@ SELECT id
   WHERE id IN ('. implode(',', $cat_ids) .')
     AND status = \'private\'
 ;';
-    $private_cats = array_from_query($query, 'id');
+    $private_cats = query2array($query, null, 'id');
 
     $inserts = array();
     foreach ($private_cats as $cat_id)
@@ -186,12 +190,14 @@ SELECT id
 /**
  * API method
  * Removes permissions
- * @param mixed[] $params
- *    @option int[] cat_id
- *    @option int[] group_id (optional)
- *    @option int[] user_id (optional)
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option int[] cat_id
+ * @option int[] group_id (optional)
+ * @option int[] user_id (optional)
  */
-function ws_permissions_remove($params, &$service)
+function ws_permissions_remove(array $params, $service): mixed
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -227,4 +233,3 @@ DELETE
   return $service->invoke('pwg.permissions.getList', array('cat_id'=>$params['cat_id']));
 }
 
-?>

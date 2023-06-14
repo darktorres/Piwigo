@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,8 +10,8 @@
 // | Basic constants and includes                                          |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
-define('IN_ADMIN', true);
+const PHPWG_ROOT_PATH = './';
+const IN_ADMIN = true;
 
 include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
@@ -363,4 +363,4 @@ flush_page_messages();
 $template->pparse('admin');
 
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

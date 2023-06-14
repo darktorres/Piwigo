@@ -110,4 +110,3 @@ $lang['Search tags'] = 'सोदपाचे टॅग्स';
 $lang['Search'] = 'सोद';
 $lang['search'] = 'सोद';
 
-?>

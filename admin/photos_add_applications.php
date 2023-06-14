@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -22,4 +22,3 @@ if (!defined('PHOTOS_ADD_BASE_URL'))
 $template->assign('ADMIN_PAGE_TITLE', l10n('Upload Photos'));
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'photos_add');
-?>

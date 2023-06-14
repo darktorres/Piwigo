@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,6 +6,10 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+/**
+ * @param $data
+ * @return string|void
+ */
 function xmlrpc_encode($data)
 {
   switch (gettype($data))
@@ -45,15 +49,21 @@ function xmlrpc_encode($data)
   }
 }
 
+/**
+ *
+ */
 class PwgXmlRpcEncoder extends PwgResponseEncoder
 {
-  function encodeResponse($response)
+  /**
+   * @param mixed $response
+   * @return string
+   */
+  public function encodeResponse(mixed $response): string
   {
-    if ($response instanceof PwgError)
-    {
+    if ($response instanceof PwgError) {
       $code = $response->code();
       $msg = htmlspecialchars($response->message());
-      $ret = <<<EOD
+      return <<<EOD
 <methodResponse>
   <fault>
     <value>
@@ -71,12 +81,11 @@ class PwgXmlRpcEncoder extends PwgResponseEncoder
   </fault>
 </methodResponse>
 EOD;
-      return $ret;
     }
 
     parent::flattenResponse($response);
     $ret = xmlrpc_encode($response);
-    $ret = <<<EOD
+    return <<<EOD
 <methodResponse>
   <params>
     <param>
@@ -87,13 +96,15 @@ EOD;
   </params>
 </methodResponse>
 EOD;
-    return $ret;
   }
 
-  function getContentType()
+  /**
+   * @return string
+   */
+  public function getContentType(): string
   {
     return 'text/xml';
   }
 }
 
-?>
+

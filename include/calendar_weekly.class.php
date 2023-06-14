@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -21,7 +21,7 @@ class CalendarWeekly extends CalendarBase
    * Initialize the calendar
    * @param string $inner_sql
    */
-  function initialize($inner_sql)
+  public function initialize(string $inner_sql): void
   {
     parent::initialize($inner_sql);
     global $lang, $conf;
@@ -59,9 +59,9 @@ class CalendarWeekly extends CalendarBase
   /**
    * Generate navigation bars for category page.
    *
-   * @return boolean false indicates that thumbnails where not included
+   * @return bool false indicates that thumbnails where not included
    */
-  function generate_category_content()
+  public function generate_category_content(): bool
   {
     global $conf, $page;
 
@@ -87,7 +87,7 @@ class CalendarWeekly extends CalendarBase
    * @param int $max_levels (e.g. 2=only year and month)
    * @return string
    */
-  function get_date_where($max_levels=3)
+  public function get_date_where(int $max_levels=3): string
   {
     global $page;
     $date = $page['chronology_date'];
@@ -118,4 +118,3 @@ class CalendarWeekly extends CalendarBase
   }
 }
 
-?>

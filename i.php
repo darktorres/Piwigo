@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 
 // fast bootstrap - no db connection
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
@@ -20,8 +20,16 @@ include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], array('filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt'));
 
 
+/**
+ * @return void
+ */
 function trigger_notify() {}
-function get_extension( $filename )
+
+/**
+ * @param $filename
+ * @return string
+ */
+function get_extension($filename ): string
 {
   $ext = strrchr($filename, '.');
   if (!$ext) { 
@@ -30,19 +38,23 @@ function get_extension( $filename )
   return substr(strrchr($ext, '.'), 1, strlen($filename));
 }
 
-function mkgetdir($dir)
+/**
+ * @param $dir
+ * @return bool
+ */
+function mkgetdir($dir): bool
 {
   if ( !is_dir($dir) )
   {
     global $conf;
-    if (substr(PHP_OS, 0, 3) == 'WIN')
+    if (str_starts_with(PHP_OS, 'WIN'))
     {
       $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
     }
     $umask = umask(0);
     $mkd = mkdir($dir, $conf['chmod_value'], true);
     umask($umask);
-    if ($mkd==false && !is_dir($dir) /* retest existence because of potential concurrent i.php with slow file systems*/)
+    if (!$mkd && !is_dir($dir) /* retest existence because of potential concurrent i.php with slow file systems*/)
     {
       return false;
     }
@@ -59,7 +71,12 @@ function mkgetdir($dir)
 
 // end fast bootstrap
 
-function ierror($msg, $code)
+/**
+ * @param $msg
+ * @param $code
+ * @return void
+ */
+function ierror($msg, $code): void
 {
   global $logger;
   if ($code==301 || $code==302)
@@ -94,14 +111,22 @@ function ierror($msg, $code)
   exit;
 }
 
-function time_step( &$step )
+/**
+ * @param $step
+ * @return int
+ */
+function time_step(&$step ): int
 {
   $tmp = $step;
   $step = microtime(true);
   return intval(1000*($step - $tmp));
 }
 
-function url_to_size($s)
+/**
+ * @param $s
+ * @return int[]
+ */
+function url_to_size($s): array
 {
   $pos = strpos($s, 'x');
   if ($pos===false)
@@ -111,7 +136,11 @@ function url_to_size($s)
   return array((int)substr($s,0,$pos), (int)substr($s,$pos+1));
 }
 
-function parse_custom_params($tokens)
+/**
+ * @param $tokens
+ * @return DerivativeParams
+ */
+function parse_custom_params($tokens): DerivativeParams
 {
   if (count($tokens)<1)
     ierror('Empty array while parsing Sizing', 400);
@@ -144,11 +173,14 @@ function parse_custom_params($tokens)
   return new DerivativeParams( new SizingParams($size, $crop, $min_size) );
 }
 
-function parse_request()
+/**
+ * @return void
+ */
+function parse_request(): void
 {
   global $conf, $page;
 
-  if ( $conf['question_mark_in_urls']==false and
+  if ( !$conf['question_mark_in_urls'] and
        isset($_SERVER["PATH_INFO"]) and !empty($_SERVER["PATH_INFO"]) )
   {
     $req = $_SERVER["PATH_INFO"];
@@ -249,7 +281,12 @@ function parse_request()
   $page['src_url'] = $page['root_path'].$page['src_location'];
 }
 
-function try_switch_source(DerivativeParams $params, $original_mtime)
+/**
+ * @param DerivativeParams $params
+ * @param $original_mtime
+ * @return bool
+ */
+function try_switch_source(DerivativeParams $params, $original_mtime): bool
 {
   global $page;
   if (!isset($page['original_size']))
@@ -319,7 +356,11 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
 	return false;
 }
 
-function send_derivative($expires)
+/**
+ * @param $expires
+ * @return void
+ */
+function send_derivative($expires): void
 {
   global $page;
 
@@ -428,9 +469,9 @@ if (!$need_generate)
 
 include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
 $page['coi'] = null;
-if (strpos($page['src_location'], '/pwg_representative/')===false
-    && strpos($page['src_location'], 'themes/')===false
-    && strpos($page['src_location'], 'plugins/')===false)
+if (!str_contains($page['src_location'], '/pwg_representative/')
+    && !str_contains($page['src_location'], 'themes/')
+    && !str_contains($page['src_location'], 'plugins/'))
 {
   try
   {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -39,8 +39,13 @@ $sort_orders = array(
 // +-----------------------------------------------------------------------+
 
 
-
-function get_categories_ref_date($ids, $field='date_available', $minmax='max')
+/**
+ * @param $ids
+ * @param string $field
+ * @param string $minmax
+ * @return array
+ */
+function get_categories_ref_date($ids, string $field='date_available', string $minmax='max'): array
 {
   // we need to work on the whole tree under each category, even if we don't
   // want to sort sub categories
@@ -230,7 +235,7 @@ else
 $query.= '
   ORDER BY `rank` ASC
 ;';
-$categories = hash_from_query($query, 'id');
+$categories = query2array($query, 'id');
 
 // get the categories containing images directly 
 $categories_with_images = array();
@@ -309,8 +314,8 @@ foreach ($categories as $category)
           $category['name'],
           'admin_cat_list'
           ),
-      'NB_PHOTOS' => isset($nb_photos_in[$category['id']]) ? $nb_photos_in[$category['id']] : 0,
-      'NB_SUB_PHOTOS' => isset($nb_sub_photos[$category['id']]) ? $nb_sub_photos[$category['id']] : 0,
+      'NB_PHOTOS' => $nb_photos_in[$category['id']] ?? 0,
+      'NB_SUB_PHOTOS' => $nb_sub_photos[$category['id']] ?? 0,
       'NB_SUB_ALBUMS' => isset($subcats_of[$category['id']]) ? count($subcats_of[$category['id']]) : 0,
       'ID'         => $category['id'],
       'RANK'       => $category['rank']*10,
@@ -351,4 +356,4 @@ trigger_notify('loc_end_cat_list');
 // |                          sending html code                            |
 // +-----------------------------------------------------------------------+
 $template->assign_var_from_handle('ADMIN_CONTENT', 'categories');
-?>
+

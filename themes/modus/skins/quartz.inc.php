@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 $themeconf['colorscheme'] = 'dark';
 
 $skin = array(
@@ -86,4 +86,4 @@ $skin = array(
 		),*/
 
 );
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,7 +8,7 @@
 
 
 //--------------------------------------------------------------------- include
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 check_status(ACCESS_FREE);
 include_once(PHPWG_ROOT_PATH.'include/functions_notification.inc.php');
@@ -30,7 +30,7 @@ if (isset($_GET['subscribe'])
 {
   subscribe_notification_by_mail(false, array($_GET['subscribe']));
 }
-else if (isset($_GET['unsubscribe'])
+elseif (isset($_GET['unsubscribe'])
     and preg_match('/^[A-Za-z0-9]{16}$/', $_GET['unsubscribe']))
 {
   unsubscribe_notification_by_mail(false, array($_GET['unsubscribe']));
@@ -63,4 +63,4 @@ include(PHPWG_ROOT_PATH.'include/page_header.php');
 flush_page_messages();
 $template->parse('nbm');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

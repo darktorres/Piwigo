@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -22,4 +22,4 @@ if (!preg_match('/^TIMESTAMP/i', $row['Type']))
 
 echo "\n".$upgrade_description."\n";
 
-?>
+

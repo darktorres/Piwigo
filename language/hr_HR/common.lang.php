@@ -402,4 +402,3 @@ $lang['Your website URL is invalid'] = 'URL vašeg web sjedišta nije valjan';
 $lang['mandatory'] = 'obavezno';
 $lang['Password is missing. Please enter the password.'] = 'Nedostaje zaporka. Molimo unesite zaporku.';
 $lang['Password confirmation is missing. Please confirm the chosen password.'] = 'Nedostaje potvrda zaporke. Molimo potvrdite odabranu zaporku.';
-?>

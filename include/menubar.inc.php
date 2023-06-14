@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -17,7 +17,7 @@ initialize_menu();
 /**
  * Setups each block the main menubar.
  */ 
-function initialize_menu()
+function initialize_menu(): void
 {
   global $page, $conf, $user, $template, $filter;
 
@@ -62,8 +62,8 @@ function initialize_menu()
         {
           $tpl_var['new_window'] =
             array(
-              'NAME' => (isset($url_data['nw_name']) ? $url_data['nw_name'] : ''),
-              'FEATURES' => (isset($url_data['nw_features']) ? $url_data['nw_features'] : '')
+              'NAME' => ($url_data['nw_name'] ?? ''),
+              'FEATURES' => ($url_data['nw_features'] ?? '')
             );
         }
         $block->data[] = $tpl_var;
@@ -84,14 +84,14 @@ function initialize_menu()
     {
       $template->assign(
         'U_STOP_FILTER',
-        add_url_params(make_index_url(array()), array('filter' => 'stop'))
+        add_url_params(make_index_url(), array('filter' => 'stop'))
         );
     }
     else
     {
       $template->assign(
         'U_START_FILTER',
-        add_url_params(make_index_url(array()), array('filter' => 'start-recent-'.$user['recent_period']))
+        add_url_params(make_index_url(), array('filter' => 'start-recent-'.$user['recent_period']))
         );
     }
   }
@@ -173,7 +173,7 @@ function initialize_menu()
       $template->assign( 'IS_RELATED', false);
     }
     //displays all tags available for the current user
-    else if ($conf['menubar_tag_cloud_content'] == 'always_all' or ($conf['menubar_tag_cloud_content'] == 'all_or_current' and empty($page['items'])) )
+    elseif ($conf['menubar_tag_cloud_content'] == 'always_all' or ($conf['menubar_tag_cloud_content'] == 'all_or_current' and empty($page['items'])) )
     {
       $tags = get_available_tags();
       usort($tags, 'tags_counter_compare');
@@ -190,9 +190,9 @@ function initialize_menu()
       $template->assign( 'IS_RELATED', false);
     }
     //displays only the tags available from the current thumbnails displayed
-    else if ( !empty($page['items']) and ($conf['menubar_tag_cloud_content'] == 'current_only' or $conf['menubar_tag_cloud_content'] == 'all_or_current') )
+    elseif ( !empty($page['items']) and ($conf['menubar_tag_cloud_content'] == 'current_only' or $conf['menubar_tag_cloud_content'] == 'all_or_current') )
     {        
-      $selection = array_slice( $page['items'], $page['start'], $page['nb_image_page'] );
+      $selection = array_slice( $page['items'], $page['start'], (int)$page['nb_image_page'] );
       $tags = add_level_to_tags( get_common_tags($selection, $conf['content_tag_cloud_items_number']) );
       foreach ($tags as $tag)
       {
@@ -380,4 +380,3 @@ function initialize_menu()
   $menu->apply('MENUBAR',  'menubar.tpl' );
 }
 
-?>

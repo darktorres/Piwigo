@@ -24,4 +24,3 @@ $lang['%d album'] = '%d album';
 $lang['%d albums'] = '%d album';
 $lang['Explore'] = 'Utforsk';
 $lang['modus_theme'] = 'modus_theme';
-?>

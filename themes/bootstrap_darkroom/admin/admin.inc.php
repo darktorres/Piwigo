@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // Check whether we are indeed included by Piwigo.
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
@@ -9,13 +9,13 @@ require_once(PHPWG_THEMES_PATH . 'bootstrap_darkroom/include/config.php');
 load_language('theme.lang', PHPWG_THEMES_PATH.'bootstrap_darkroom/');
 
 // Constants
-define('THEME_ID', basename(dirname(dirname(__FILE__))));
+define('THEME_ID', basename(dirname(__FILE__, 2)));
 define('ADMIN_PATH',   get_root_url() . 'admin.php?page=theme&theme=' . THEME_ID);
-define('TAB_SETTINGS', 'settings');
-define('TAB_ABOUT', 'about');
+const TAB_SETTINGS = 'settings';
+const TAB_ABOUT = 'about';
 
 // Get current tab
-$page['tab'] = isset($_GET['tab']) ? $_GET['tab'] : $page['tab'] = TAB_SETTINGS;
+$page['tab'] = $_GET['tab'] ?? $page['tab'] = TAB_SETTINGS;
 if (!in_array($page['tab'], array(TAB_SETTINGS, TAB_ABOUT))) {
     $page['tab'] = TAB_SETTINGS;
 }

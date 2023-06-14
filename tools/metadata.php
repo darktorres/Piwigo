@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,10 +12,10 @@ echo 'Informations are read from '.$filename.'<br><br><br>';
 /**
  * return a cleaned IPTC value
  *
- * @param string value
+ * @param string $value
  * @return string
  */
-function clean_iptc_value($value)
+function clean_iptc_value(string $value): string
 {
   // strip leading zeros (weird Kodak Scanner software)
   while ( isset($value[0]) and $value[0] == chr(0))
@@ -23,9 +23,7 @@ function clean_iptc_value($value)
     $value = substr($value, 1);
   }
   // remove binary nulls
-  $value = str_replace(chr(0x00), ' ', $value);
-
-  return $value;
+  return str_replace(chr(0x00), ' ', $value);
 }
 
 $iptc_result = array();
@@ -115,4 +113,4 @@ if( extension_loaded('imagick') && class_exists("Imagick") ){ //Check ImageMagic
 print '</pre>' ;
 
 
-?>
+

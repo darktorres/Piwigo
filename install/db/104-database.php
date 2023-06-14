@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -44,13 +44,10 @@ foreach ($upload_form_config as $param_shortname => $param)
   {
     $conf[$param_name] = $param;
     
-    array_push(
-      $inserts,
-      array(
+    $inserts[] = array(
         'param' => $param_name,
         'value' => boolean_to_string($param),
-        )
-      );
+    );
   }
 }
 
@@ -68,4 +65,3 @@ echo
 . $upgrade_description
 ."\n"
 ;
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -95,4 +95,4 @@ $template->assign($tpl_var);
 $template->set_filename('picture_coi', 'picture_coi.tpl');
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'picture_coi');
-?>
+

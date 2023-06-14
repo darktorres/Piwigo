@@ -23,4 +23,3 @@ $lang['This page proposes to upgrade your database corresponding to your old ver
 $lang['As a precaution, following plugins have been deactivated. You must check for plugins upgrade before reactiving them:'] = 'სასურველია,რომ შემდეგი პლაგინები დეზაქტივირებული იყოს. თქვენ უნდა შეამოწმოთ პლაგინების განახლება მანამდე,სანამ მოახდენთ მათ აქტივაციას:';
 $lang['In <i>%s</i>, before <b>?></b>, insert:'] =' %s, მდე ?>, ჩავსვათ:';
 $lang['As a precaution, following themes have been deactivated. You must check for themes upgrade before reactiving them:'] = 'უსაფრთხოების მიზნით შემდეგი თემები გამორთულია. თქვენ უნდა შეამოწმოთთემების განახლება? სანამ მათ ახლიდან ჩართავთ:';
-?>

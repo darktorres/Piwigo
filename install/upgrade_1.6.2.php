@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -300,8 +300,7 @@ SET
   show_nb_comments = '".boolean_to_string($conf['show_nb_comments'])."',
   show_nb_hits = '".boolean_to_string($conf['show_nb_hits'])."',
   enabled_high = '".boolean_to_string(
-    (isset($conf['newuser_default_enabled_high']) ?
-      $conf['newuser_default_enabled_high'] : true)
+    ($conf['newuser_default_enabled_high'] ?? true)
     ).
   "'
 WHERE
@@ -329,4 +328,4 @@ pwg_query($query);
 
 // now we upgrade from 1.7.0
 include_once(PHPWG_ROOT_PATH.'install/upgrade_1.7.0.php');
-?>
+

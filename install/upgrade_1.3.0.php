@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -86,15 +86,15 @@ foreach (array_keys($id_uppercats) as $id)
   $data['id'] = $id;
   $uppercats = array();
   
-  array_push($uppercats, $id);
+  $uppercats[] = $id;
   while (isset($id_uppercats[$id]) and $id_uppercats[$id] != 'NULL')
   {
-    array_push($uppercats, $id_uppercats[$id]);
+    $uppercats[] = $id_uppercats[$id];
     $id = $id_uppercats[$id];
   }
   $data['uppercats'] = implode(',', array_reverse($uppercats));
 
-  array_push($datas, $data);
+  $datas[] = $data;
 }
 
 mass_updates(
@@ -108,4 +108,3 @@ mass_updates(
 
 // now we upgrade from 1.3.1 to 1.6.0
 include_once(PHPWG_ROOT_PATH.'install/upgrade_1.3.1.php');
-?>

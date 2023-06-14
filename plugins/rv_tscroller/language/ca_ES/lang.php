@@ -21,4 +21,3 @@
 // | USA.                                                                  |
 // +-----------------------------------------------------------------------+
 $lang['See the remaining %d photos'] = 'Visualitzar les %d imatges restants';
-?>

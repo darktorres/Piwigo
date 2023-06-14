@@ -12,4 +12,3 @@ $lang['Average rate'] = 'Просек';
 $lang['Rate'] = 'Оцени';
 $lang['Add to caddie'] = 'Додај ја фотографијата во календарот';
 $lang['Caddie'] = 'Календар';
-?>

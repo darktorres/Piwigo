@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -31,4 +31,4 @@ $page['errors'] = array_merge($page['errors'], $errors);
 
 $template->set_filename('profile', 'profile.tpl');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'profile');
-?>
+

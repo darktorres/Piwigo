@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -11,7 +11,12 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-function upgrade65_change_table_to_blob($table, $field_definitions)
+/**
+ * @param $table
+ * @param $field_definitions
+ * @return void
+ */
+function upgrade65_change_table_to_blob($table, $field_definitions): void
 {
   $types = array('varchar'  => 'varbinary',
     'text' => 'blob',
@@ -36,7 +41,13 @@ function upgrade65_change_table_to_blob($table, $field_definitions)
   }
 }
 
-function upgrade65_change_table_to_charset($table, $field_definitions, $db_charset)
+/**
+ * @param $table
+ * @param $field_definitions
+ * @param $db_charset
+ * @return void
+ */
+function upgrade65_change_table_to_charset($table, $field_definitions, $db_charset): void
 {
   $changes=array();
   foreach( $field_definitions as $row)
@@ -45,7 +56,7 @@ function upgrade65_change_table_to_charset($table, $field_definitions, $db_chars
       continue;
     $query = $row['Field'].' '.$row['Type'];
     $query .= ' CHARACTER SET '.$db_charset;
-    if (strpos($row['Collation'],'_bin')!==false)
+    if (str_contains($row['Collation'], '_bin'))
     {
       $query .= ' BINARY';
     }
@@ -152,7 +163,7 @@ SELECT language FROM '.USER_INFOS_TABLE.'
   $result = pwg_query($query);
   while ( $row=pwg_db_fetch_row($result) )
   {
-    array_push($all_tables, $row[0]);
+    $all_tables[] = $row[0];
   }
 
   $all_tables_definition = array();
@@ -165,7 +176,7 @@ SELECT language FROM '.USER_INFOS_TABLE.'
     {
       if ( !isset($row['Collation']) or $row['Collation']=='NULL' )
         continue;
-      array_push($field_definitions, $row);
+      $field_definitions[] = $row;
     }
     $all_tables_definition[$table] = $field_definitions;
   }
@@ -241,11 +252,10 @@ ALTER TABLE t1 CHANGE c1 c1 TEXT CHARACTER SET utf8;
 
 // +-----------------------------------------------------------------------+
 // changes to write in database.inc.php
-  array_push($mysql_changes,
+  $mysql_changes[] =
 'define(\'PWG_CHARSET\', \''.$pwg_charset.'\');
 define(\'DB_CHARSET\',  \''.$db_charset.'\');
-define(\'DB_COLLATE\',  \'\');'
-  );
+define(\'DB_COLLATE\',  \'\');';
 
   foreach ($all_langs as $old_lang=>$lang_data)
   {
@@ -282,4 +292,4 @@ else
 {
   echo 'PWG_CHARSET already defined - nada';
 }
-?>
+

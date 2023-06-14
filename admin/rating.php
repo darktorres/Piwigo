@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -232,14 +232,7 @@ ORDER BY date DESC;';
 
   while ($row = pwg_db_fetch_assoc($result))
   {
-    if ( isset($users[$row['user_id']]) )
-    {
-      $user_rate = $users[$row['user_id']];
-    }
-    else
-    {
-      $user_rate = '? '. $row['user_id'];
-    }
+    $user_rate = $users[$row['user_id']] ?? '? ' . $row['user_id'];
     if ( strlen($row['anonymous_id'])>0 )
     {
       $user_rate .= '('.$row['anonymous_id'].')';
@@ -255,4 +248,3 @@ ORDER BY date DESC;';
 // |                           sending html code                           |
 // +-----------------------------------------------------------------------+
 $template->assign_var_from_handle('ADMIN_CONTENT', 'rating');
-?>

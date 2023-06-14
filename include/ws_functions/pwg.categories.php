@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,14 +9,16 @@
 /**
  * API method
  * Returns images per category
- * @param mixed[] $params
- *    @option int[] cat_id (optional)
- *    @option bool recursive
- *    @option int per_page
- *    @option int page
- *    @option string order (optional)
+ * @param array $params
+ * @param $service
+ * @return array
+ * @option int[] cat_id (optional)
+ * @option bool recursive
+ * @option int per_page
+ * @option int page
+ * @option string order (optional)
  */
-function ws_categories_getImages($params, &$service)
+function ws_categories_getImages(array $params, &$service): array
 {
   global $user, $conf;
 
@@ -210,14 +212,16 @@ SELECT
 /**
  * API method
  * Returns a list of categories
- * @param mixed[] $params
- *    @option int cat_id (optional)
- *    @option bool recursive
- *    @option bool public
- *    @option bool tree_output
- *    @option bool fullname
+ * @param array $params
+ * @param $service
+ * @return array|PwgError
+ * @option int cat_id (optional)
+ * @option bool recursive
+ * @option bool public
+ * @option bool tree_output
+ * @option bool fullname
  */
-function ws_categories_getList($params, &$service)
+function ws_categories_getList(array $params, &$service): array|PwgError
 {
   global $user, $conf;
 
@@ -519,12 +523,12 @@ SELECT id, path, representative_ext
 /**
  * API method
  * Returns the list of categories as you can see them in administration
- * @param mixed[] $params
+ * @param array $params
  *
  * Only admin can run this method and permissions are not taken into
  * account.
  */
-function ws_categories_getAdminList($params, &$service)
+function ws_categories_getAdminList(array $params, &$service): array
 {
 
   global $conf;
@@ -564,7 +568,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
   while ($row = pwg_db_fetch_assoc($result))
   {
     $id = $row['id'];
-    $row['nb_images'] = isset($nb_images_of[$id]) ? $nb_images_of[$id] : 0;
+    $row['nb_images'] = $nb_images_of[$id] ?? 0;
 
     $cat_display_name = get_cat_display_name_cache(
       $row['uppercats'],
@@ -616,15 +620,17 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
 /**
  * API method
  * Adds a category
- * @param mixed[] $params
- *    @option string name
- *    @option int parent (optional)
- *    @option string comment (optional)
- *    @option bool visible
- *    @option string status (optional)
- *    @option bool commentable
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option string name
+ * @option int parent (optional)
+ * @option string comment (optional)
+ * @option bool visible
+ * @option string status (optional)
+ * @option bool commentable
  */
-function ws_categories_add($params, &$service)
+function ws_categories_add(array $params, &$service): PwgError|array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
@@ -667,11 +673,13 @@ function ws_categories_add($params, &$service)
 /**
  * API method
  * Set the rank of a category
- * @param mixed[] $params
- *    @option int cat_id
- *    @option int rank
+ * @param array $params
+ * @param $service
+ * @return PwgError|void
+ * @option int cat_id
+ * @option int rank
  */
-function ws_categories_setRank($params, &$service)
+function ws_categories_setRank(array $params, &$service)
 {
   // does the category really exist?
   $query = '
@@ -749,16 +757,18 @@ SELECT id
 /**
  * API method
  * Sets details of a category
- * @param mixed[] $params
- *    @option int cat_id
- *    @option string name (optional)
- *    @option string status (optional)
- *    @option bool visible (optional)
- *    @option string comment (optional)
- *    @option bool commentable (optional)
- *    @option bool apply_commentable_to_subalbums (optional)
+ * @param array $params
+ * @param $service
+ * @return PwgError|void
+ * @option int cat_id
+ * @option string name (optional)
+ * @option string status (optional)
+ * @option bool visible (optional)
+ * @option string comment (optional)
+ * @option bool commentable (optional)
+ * @option bool apply_commentable_to_subalbums (optional)
  */
-function ws_categories_setInfo($params, &$service)
+function ws_categories_setInfo(array $params, &$service)
 {
   // does the category really exist?
   $query = '
@@ -848,11 +858,13 @@ UPDATE '.CATEGORIES_TABLE.'
 /**
  * API method
  * Sets representative image of a category
- * @param mixed[] $params
- *    @option int category_id
- *    @option int image_id
+ * @param array $params
+ * @param $service
+ * @return PwgError|void
+ * @option int category_id
+ * @option int image_id
  */
-function ws_categories_setRepresentative($params, &$service)
+function ws_categories_setRepresentative(array $params, &$service)
 {
   // does the category really exist?
   $query = '
@@ -902,10 +914,12 @@ UPDATE '. USER_CACHE_CATEGORIES_TABLE .'
  * Deletes the album thumbnail. Only possible if
  * $conf['allow_random_representative'] or if the album has no direct photos.
  *
- * @param mixed[] $params
- *    @option int category_id
+ * @param array $params
+ * @param $service
+ * @return PwgError|void
+ * @option int category_id
  */
-function ws_categories_deleteRepresentative($params, &$service)
+function ws_categories_deleteRepresentative(array $params, &$service)
 {
   global $conf;
   
@@ -948,10 +962,12 @@ UPDATE '.CATEGORIES_TABLE.'
  *
  * Find a new album thumbnail.
  *
- * @param mixed[] $params
- *    @option int category_id
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int category_id
  */
-function ws_categories_refreshRepresentative($params, &$service)
+function ws_categories_refreshRepresentative(array $params, &$service): PwgError|array
 {
   global $conf;
   
@@ -975,7 +991,7 @@ SELECT
   LIMIT 1
 ;';
   $result = pwg_query($query);
-  $has_images = pwg_db_num_rows($result) > 0 ? true : false;
+  $has_images = pwg_db_num_rows($result) > 0;
 
   if (!$has_images)
   {
@@ -1002,12 +1018,14 @@ SELECT *
 /**
  * API method
  * Deletes a category
- * @param mixed[] $params
- *    @option string|int[] category_id
- *    @option string photo_deletion_mode
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return PwgError|void
+ * @option string|int[] category_id
+ * @option string photo_deletion_mode
+ * @option string pwg_token
  */
-function ws_categories_delete($params, &$service)
+function ws_categories_delete(array $params, &$service)
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -1054,7 +1072,7 @@ SELECT id
   FROM '. CATEGORIES_TABLE .'
   WHERE id IN ('. implode(',', $category_ids) .')
 ;';
-  $category_ids = array_from_query($query, 'id');
+  $category_ids = query2array($query, null, 'id');
 
   if (count($category_ids) == 0)
   {
@@ -1070,12 +1088,14 @@ SELECT id
 /**
  * API method
  * Moves a category
- * @param mixed[] $params
- *    @option string|int[] category_id
- *    @option int parent
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option string|int[] category_id
+ * @option int parent
+ * @option string pwg_token
  */
-function ws_categories_move($params, &$service)
+function ws_categories_move(array $params, &$service): PwgError|array
 {
   global $page;
 
@@ -1199,9 +1219,8 @@ SELECT id, name, dir
 /**
  * API method
  * Return the number of orphan photos if an album is deleted
- * @since 12
  */
-function ws_categories_calculateOrphans($param, &$service)
+function ws_categories_calculateOrphans($param, &$service): array
 {
   global $conf;
 
@@ -1216,7 +1235,7 @@ SELECT DISTINCT
     category_id = '.$category_id.'
   LIMIT 1';
   $result = pwg_query($query);
-  $category['has_images'] = pwg_db_num_rows($result)>0 ? true : false;
+  $category['has_images'] = pwg_db_num_rows($result)>0;
 
   // number of sub-categories
   $subcat_ids = get_subcat_ids(array($category_id));
@@ -1264,8 +1283,7 @@ SELECT DISTINCT
     $category['nb_images_associated_outside'] = count($image_ids_associated_outside);
 
     $image_ids_becoming_orphan = array_diff($image_ids_recursive, $image_ids_associated_outside);
-    $category['nb_images_becoming_orphan'] = count($image_ids_becoming_orphan);
-  }
+    }
   // else it's better to avoid sending a huge SQL request, we compute the orphan list with PHP
     else
     {
@@ -1294,9 +1312,9 @@ SELECT DISTINCT
 
     $category['nb_images_associated_outside'] = count(array_unique($image_ids_not_orphan));
     $image_ids_becoming_orphan = array_diff($image_ids_recursive, $image_ids_not_orphan);
-    $category['nb_images_becoming_orphan'] = count($image_ids_becoming_orphan);
+    }
+      $category['nb_images_becoming_orphan'] = count($image_ids_becoming_orphan);
   }
-}
 
   $output[] = array(
     'nb_images_associated_outside' => $category['nb_images_associated_outside'],
@@ -1307,4 +1325,4 @@ SELECT DISTINCT
   return $output;
 }
 
-?>
+

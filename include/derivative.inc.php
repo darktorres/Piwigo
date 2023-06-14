@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -18,25 +18,20 @@
  */
 final class SrcImage
 {
-  const IS_ORIGINAL = 0x01;
-  const IS_MIMETYPE = 0x02;
-  const DIM_NOT_GIVEN = 0x04;
+  public const IS_ORIGINAL = 0x01;
+  public const IS_MIMETYPE = 0x02;
+  public const DIM_NOT_GIVEN = 0x04;
 
-  /** @var int */
-  public $id;
-  /** @var string */
-  public $rel_path;
-  /** @var int */
-  public $rotation = 0;
-  /** @var int[] */
-  private $size=null;
-  /** @var int */
-  private $flags=0;
+  public mixed $id;
+  public string $rel_path;
+  public int $rotation = 0;
+  private ?array $size=null;
+  private int $flags=0;
 
   /**
    * @param array $infos assoc array of data from images table
    */
-  function __construct($infos)
+  public function __construct(array $infos)
   {
     global $conf;
 
@@ -101,17 +96,17 @@ final class SrcImage
   }
 
   /**
-   * @return bool
+   * @return int
    */
-  function is_original()
+  public function is_original(): int
   {
     return $this->flags & self::IS_ORIGINAL;
   }
 
   /**
-   * @return bool
+   * @return int
    */
-  function is_mimetype()
+  public function is_mimetype(): int
   {
     return $this->flags & self::IS_MIMETYPE;
   }
@@ -119,7 +114,7 @@ final class SrcImage
   /**
    * @return string
    */
-  function get_path()
+  public function get_path(): string
   {
     $segments = explode('/', $this->rel_path);
     $decodedSegments = array_map('rawurldecode', $segments);
@@ -129,7 +124,7 @@ final class SrcImage
   /**
    * @return string
    */
-  function get_url()
+  public function get_url(): string
   {
     $url = get_root_url().$this->rel_path;
     if ( !($this->flags & self::IS_MIMETYPE) )
@@ -142,7 +137,7 @@ final class SrcImage
   /**
    * @return bool
    */
-  function has_size()
+  public function has_size(): bool
   {
     return $this->size != null;
   }
@@ -150,7 +145,7 @@ final class SrcImage
   /**
    * @return int[]|null 0=width, 1=height or null if fail to compute size
    */
-  function get_size()
+  public function get_size(): ?array
   {
     if ($this->size == null)
     {
@@ -175,21 +170,17 @@ final class SrcImage
  */
 final class DerivativeImage
 {
-  /** @var SrcImage */
-  public $src_image;
-  /** @var array */
-  private $params;
-  /** @var string */
-  private $rel_path;
-  /** @var string */
-  private $rel_url;
+  public SrcImage $src_image;
+  private array|DerivativeParams|null $params = null;
+  private string $rel_path = '';
+  private string $rel_url = '';
 
   /**
-   * @param string|DerivativeParams $type standard derivative param type (e.g. IMG_*)
+   * @param DerivativeParams|string $type standard derivative param type (e.g. IMG_*)
    *    or a DerivativeParams object
    * @param SrcImage $src_image the source image of this derivative
    */
-  function __construct($type, SrcImage $src_image)
+  public function __construct(DerivativeParams|string $type, SrcImage $src_image)
   {
     $this->src_image = $src_image;
     if (is_string($type))
@@ -207,10 +198,10 @@ final class DerivativeImage
   /**
    * Generates the url of a thumbnail.
    *
-   * @param array|SrcImage $infos array of info from db or SrcImage
+   * @param SrcImage|array $infos array of info from db or SrcImage
    * @return string
    */
-  static function thumb_url($infos)
+  public static function thumb_url(SrcImage|array $infos): string
   {
     return self::url(IMG_THUMB, $infos);
   }
@@ -218,12 +209,12 @@ final class DerivativeImage
   /**
    * Generates the url for a particular photo size.
    *
-   * @param string|DerivativeParams $type standard derivative param type (e.g. IMG_*)
+   * @param DerivativeParams|string $type standard derivative param type (e.g. IMG_*)
    *    or a DerivativeParams object
-   * @param array|SrcImage $infos array of info from db or SrcImage
+   * @param SrcImage|array $infos array of info from db or SrcImage
    * @return string
    */
-  static function url($type, $infos)
+  public static function url(DerivativeParams|string $type, SrcImage|array $infos): string
   {
     $src_image = is_object($infos) ? $infos : new SrcImage($infos);
     $params = is_string($type) ? ImageStdParams::get_by_type($type) : $type;
@@ -246,10 +237,10 @@ final class DerivativeImage
    * This is useful for any plugin/theme to just use $deriv[IMG_XLARGE] even if 
    * the XLARGE is disabled.
    *
-   * @param array|SrcImage $src_image array of info from db or SrcImage
+   * @param SrcImage|array $src_image array of info from db or SrcImage
    * @return DerivativeImage[]
    */
-  static function get_all($src_image)
+  public static function get_all(SrcImage|array $src_image): array
   {
     if (!is_object($src_image))
     {
@@ -277,10 +268,10 @@ final class DerivativeImage
    * Disabled derivatives fallback to an enabled derivative.
    *
    * @param string $type standard derivative param type (e.g. IMG_*)
-   * @param array|SrcImage $src_image array of info from db or SrcImage
+   * @param SrcImage|array $src_image array of info from db or SrcImage
    * @return DerivativeImage|null null if $type not found
    */
-  static function get_one($type, $src_image)
+  public static function get_one(string $type, SrcImage|array $src_image): ?DerivativeImage
   {
     if (!is_object($src_image))
     {
@@ -305,7 +296,7 @@ final class DerivativeImage
   /**
    * @todo : documentation of DerivativeImage::build
    */
-  private static function build($src, &$params, &$rel_path, &$rel_url)
+  private static function build($src, &$params, &$rel_path, &$rel_url): void
   {
     if ( $src->has_size() && $params->is_identity( $src->get_size() ) )
     {// the source image is smaller than what we should do - we do not upsample
@@ -387,7 +378,7 @@ final class DerivativeImage
   /**
    * @return string
    */
-  function get_path()
+  public function get_path(): string
   {
     return PHPWG_ROOT_PATH.$this->rel_path;
   }
@@ -395,7 +386,7 @@ final class DerivativeImage
   /**
    * @return string
    */
-  function get_url()
+  public function get_url(): string
   {
     if ($this->params == null)
     {
@@ -411,7 +402,7 @@ final class DerivativeImage
   /**
    * @return bool
    */
-  function same_as_source()
+  public function same_as_source(): bool
   {
     return $this->params == null;
   }
@@ -419,7 +410,7 @@ final class DerivativeImage
   /**
    * @return string one if IMG_* or 'Original'
    */
-  function get_type()
+  public function get_type(): string
   {
     if ($this->params == null)
       return 'Original';
@@ -427,9 +418,9 @@ final class DerivativeImage
   }
 
   /**
-   * @return int[]
+   * @return array|null
    */
-  function get_size()
+  public function get_size(): array|null
   {
     if ($this->params == null)
     {
@@ -443,7 +434,7 @@ final class DerivativeImage
    *
    * @return string
    */
-  function get_size_css()
+  public function get_size_css(): string
   {
     $size = $this->get_size();
     if ($size)
@@ -457,7 +448,7 @@ final class DerivativeImage
    *
    * @return string
    */
-  function get_size_htm()
+  public function get_size_htm(): string
   {
     $size = $this->get_size();
     if ($size)
@@ -474,7 +465,7 @@ final class DerivativeImage
    *
    * @return string
    */
-  function get_size_hr()
+  public function get_size_hr(): string
   {
     $size = $this->get_size();
     if ($size)
@@ -485,10 +476,10 @@ final class DerivativeImage
 
   /**
    * @param int $maxw
-   * @param int $mawh
+   * @param int $maxh
    * @return int[]
    */
-  function get_scaled_size($maxw, $maxh)
+  public function get_scaled_size(int $maxw, int $maxh): array
   {
     $size = $this->get_size();
     if ($size)
@@ -516,10 +507,10 @@ final class DerivativeImage
    * Returns the scaled size as HTML attributes.
    *
    * @param int $maxw
-   * @param int $mawh
+   * @param int $maxh
    * @return string
    */
-  function get_scaled_size_htm($maxw=9999, $maxh=9999)
+  public function get_scaled_size_htm(int $maxw=9999, int $maxh=9999): string
   {
     $size = $this->get_scaled_size($maxw, $maxh);
     if ($size)
@@ -529,4 +520,3 @@ final class DerivativeImage
   }
 }
 
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -47,7 +47,7 @@ SELECT
 ;';
 
   $result = pwg_query($query);
-  array_push($output_lines, ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details']);
+  $output_lines[] = ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details'];
   while ($row = pwg_db_fetch_assoc($result))
   {
     $row['details'] = str_replace('`groups`', 'groups', $row['details']);
@@ -122,13 +122,10 @@ $username_of = query2array($query, 'id', 'username');
 $filterable_users = array();
 
 foreach ($nb_lines_for_user as $id => $nb_line) {
-  array_push(
-    $filterable_users, 
-    array(
+  $filterable_users[] = array(
       'id' => $id,
-      'username' => isset($username_of[$id]) ? $username_of[$id] : 'user#'.$id,
+      'username' => $username_of[$id] ?? 'user#'.$id,
       'nb_lines' => $nb_line,
-    )
   );
 }
 $template->assign('ulist', $filterable_users);
@@ -143,4 +140,3 @@ $template->assign('nb_users', $nb_users);
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'user_activity');
 
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,19 +6,26 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class tabsheet
 {
-  var $sheets;
-  var $uniqid;
-  var $name;
-  var $titlename;
-  var $selected;
+  public array $sheets;
+  public $uniqid;
+  public mixed $name;
+  public mixed $titlename;
+  public string $selected;
 
   /*
     $name is the tabsheet's name inside the template .tpl file
     $titlename in the template is affected by $titlename value
   */
-  function __construct($name = 'TABSHEET', $titlename = 'TABSHEET_TITLE')
+  /**
+   * @param string $name
+   * @param string $titlename
+   */
+  public function __construct(string $name = 'TABSHEET', string $titlename = 'TABSHEET_TITLE')
   {
     $this->sheets = array();
     $this->uniqid = null;
@@ -26,8 +33,12 @@ class tabsheet
     $this->titlename = $titlename;
     $this->selected = "";
   }
-  
-  function set_id($id)
+
+  /**
+   * @param $id
+   * @return void
+   */
+  public function set_id($id): void
   {
     $this->uniqid = $id;
   }
@@ -35,7 +46,14 @@ class tabsheet
   /*
      add a tab
   */
-  function add($name, $caption, $url, $selected = false)
+  /**
+   * @param $name
+   * @param $caption
+   * @param $url
+   * @param bool $selected
+   * @return bool
+   */
+  public function add($name, $caption, $url, bool $selected = false): bool
   {
     if (!isset($this->sheets[$name]))
     {
@@ -53,7 +71,11 @@ class tabsheet
   /*
      remove a tab
   */
-  function delete($name)
+  /**
+   * @param $name
+   * @return bool
+   */
+  public function delete($name): bool
   {
     if (isset($this->sheets[$name]))
     {
@@ -71,7 +93,11 @@ class tabsheet
   /*
      select a tab to be active
   */
-  function select($name)
+  /**
+   * @param $name
+   * @return void
+   */
+  public function select($name): void
   {
     $this->sheets = trigger_change('tabsheet_before_select', $this->sheets, $this->uniqid);
     if (!array_key_exists($name, $this->sheets))
@@ -85,7 +111,11 @@ class tabsheet
   /*
     set $titlename value
   */
-  function set_titlename($titlename)
+  /**
+   * @param $titlename
+   * @return mixed|string
+   */
+  public function set_titlename($titlename): mixed
   {
     $this->titlename = $titlename;
     return $this->titlename;
@@ -94,7 +124,10 @@ class tabsheet
   /*
     returns $titlename value
   */
-  function get_titlename()
+  /**
+   * @return mixed|string
+   */
+  public function get_titlename(): mixed
   {
     return $this->titlename;
   }
@@ -102,7 +135,10 @@ class tabsheet
   /*
     returns properties of selected tab
   */
-  function get_selected()
+  /**
+   * @return mixed|null
+   */
+  public function get_selected(): mixed
   {
     if (!empty($this->selected))
     {
@@ -120,7 +156,11 @@ class tabsheet
    * Fill $this->$name {default value = TABSHEET} with HTML code for tabsheet
    * Fill $this->titlename {default value = TABSHEET_TITLE} with formated caption of the selected tab
    */
-  function assign()
+  /**
+   * @return void
+   * @throws SmartyException
+   */
+  public function assign(): void
   {
     global $template;
 
@@ -141,4 +181,3 @@ class tabsheet
   }
 }
 
-?>

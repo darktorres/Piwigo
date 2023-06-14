@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,17 +16,14 @@
  */
 class BlockManager
 {
-  /** @var string */
-  protected $id;
-  /** @var RegisteredBlock[] */
-  protected $registered_blocks = array();
-  /** @var DisplayBlock[] */
-  protected $display_blocks = array();
+  protected string $id;
+  protected array $registered_blocks = array();
+  protected array $display_blocks = array();
 
   /**
    * @param string $id
    */
-  public function __construct($id)
+  public function __construct(string $id)
   {
     $this->id = $id;
   }
@@ -34,7 +31,7 @@ class BlockManager
   /**
    * Triggers a notice that allows plugins of menu blocks to register the blocks.
    */
-  public function load_registered_blocks()
+  public function load_registered_blocks(): void
   {
     trigger_notify('blockmanager_register_blocks', array($this));
   }
@@ -42,7 +39,7 @@ class BlockManager
   /**
    * @return string
    */
-  public function get_id()
+  public function get_id(): string
   {
     return $this->id;
   }
@@ -50,7 +47,7 @@ class BlockManager
   /**
    * @return RegisteredBlock[]
    */
-  public function get_registered_blocks()
+  public function get_registered_blocks(): array
   {
     return $this->registered_blocks;
   }
@@ -59,8 +56,9 @@ class BlockManager
    * Add a block with the menu. Usually called in 'blockmanager_register_blocks' event.
    *
    * @param RegisteredBlock $block
+   * @return bool
    */
-  public function register_block($block)
+  public function register_block(RegisteredBlock $block): bool
   {
     if (isset($this->registered_blocks[$block->get_id()]))
     {
@@ -75,11 +73,11 @@ class BlockManager
    * Triggers 'blockmanager_prepare_display' event where plugins can
    * reposition or hide blocks
    */
-  public function prepare_display()
+  public function prepare_display(): void
   {
     global $conf;
     $conf_id = 'blk_'.$this->id;
-    $mb_conf = isset($conf[$conf_id]) ? $conf[$conf_id] : array();
+    $mb_conf = $conf[$conf_id] ?? array();
     if (!is_array($mb_conf))
     {
       $mb_conf = unserialize($mb_conf);
@@ -88,7 +86,7 @@ class BlockManager
     $idx = 1;
     foreach ($this->registered_blocks as $id => $block)
     {
-      $pos = isset($mb_conf[$id]) ? $mb_conf[$id] : $idx*50;
+      $pos = $mb_conf[$id] ?? $idx*50;
       if ($pos>0)
       {
         $this->display_blocks[$id] = new DisplayBlock($block);
@@ -107,7 +105,7 @@ class BlockManager
    * @param string $block_id
    * @return bool
    */
-  public function is_hidden($block_id)
+  public function is_hidden(string $block_id): bool
   {
     return !isset($this->display_blocks[$block_id]);
   }
@@ -117,7 +115,7 @@ class BlockManager
    *
    * @param string $block_id
    */
-  public function hide_block($block_id)
+  public function hide_block(string $block_id): void
   {
     unset($this->display_blocks[$block_id]);
   }
@@ -128,7 +126,7 @@ class BlockManager
    * @param string $block_id
    * @return DisplayBlock|null
    */
-  public function get_block($block_id)
+  public function get_block(string $block_id): ?DisplayBlock
   {
     if (isset($this->display_blocks[$block_id]))
     {
@@ -143,7 +141,7 @@ class BlockManager
    * @param string $block_id
    * @param int $position
    */
-  public function set_block_position($block_id, $position)
+  public function set_block_position(string $block_id, int $position): void
   {
     if (isset($this->display_blocks[$block_id]))
     {
@@ -154,7 +152,7 @@ class BlockManager
   /**
    * Sorts the blocks.
    */
-  protected function sort_blocks()
+  protected function sort_blocks(): void
   {
     uasort($this->display_blocks, array('BlockManager', 'cmp_by_position'));
   }
@@ -162,7 +160,7 @@ class BlockManager
   /**
    * Callback for blocks sorting.
    */
-  static protected function cmp_by_position($a, $b)
+  protected static function cmp_by_position($a, $b)
   {
     return $a->get_position() - $b->get_position();
   }
@@ -172,8 +170,9 @@ class BlockManager
    *
    * @param string $var
    * @param string $file
+   * @throws SmartyException
    */
-  public function apply($var, $file)
+  public function apply(string $var, string $file): void
   {
     global $template;
 
@@ -199,19 +198,16 @@ class BlockManager
  */
 class RegisteredBlock
 {
-  /** @var string */
-  protected $id;
-  /** @var string */
-  protected $name;
-  /** @var string */
-  protected $owner;
+  protected string $id;
+  protected string $name;
+  protected string $owner;
 
   /**
    * @param string $id
    * @param string $name
    * @param string $owner
    */
-  public function __construct($id, $name, $owner)
+  public function __construct(string $id, string $name, string $owner)
   {
     $this->id = $id;
     $this->name = $name;
@@ -221,7 +217,7 @@ class RegisteredBlock
   /**
    * @return string
    */
-  public function get_id()
+  public function get_id(): string
   {
     return $this->id;
   }
@@ -229,7 +225,7 @@ class RegisteredBlock
   /**
    * @return string
    */
-  public function get_name()
+  public function get_name(): string
   {
     return $this->name;
   }
@@ -237,7 +233,7 @@ class RegisteredBlock
   /**
    * @return string
    */
-  public function get_owner()
+  public function get_owner(): string
   {
     return $this->owner;
   }
@@ -249,24 +245,18 @@ class RegisteredBlock
  */
 class DisplayBlock
 {
-  /** @var RegisteredBlock */
-  protected $_registeredBlock;
-  /** @var int */
-  protected $_position;
-  /** @var string */
-  protected $_title;
+  protected RegisteredBlock $_registeredBlock;
+  protected int $_position;
+  protected string $_title;
 
-  /** @var mixed */
-  public $data;
-  /** @var string */
-  public $template;
-  /** @var string */
-  public $raw_content;
+  public mixed $data;
+  public string $template;
+  public string $raw_content;
 
   /**
    * @param RegisteredBlock $block
    */
-  public function __construct($block)
+  public function __construct(RegisteredBlock $block)
   {
     $this->_registeredBlock = $block;
   }
@@ -274,7 +264,7 @@ class DisplayBlock
   /**
    * @return RegisteredBlock
    */
-  public function get_block()
+  public function get_block(): RegisteredBlock
   {
     return $this->_registeredBlock;
   }
@@ -282,7 +272,7 @@ class DisplayBlock
   /**
    * @return int
    */
-  public function get_position()
+  public function get_position(): int
   {
     return $this->_position;
   }
@@ -290,7 +280,7 @@ class DisplayBlock
   /**
    * @param int $position
    */
-  public function set_position($position)
+  public function set_position(int $position): void
   {
     $this->_position = $position;
   }
@@ -298,25 +288,17 @@ class DisplayBlock
   /**
    * @return string
    */
-  public function get_title()
+  public function get_title(): string
   {
-    if (isset($this->_title))
-    {
-      return $this->_title;
-    }
-    else
-    {
-      return $this->_registeredBlock->get_name();
-    }
+    return $this->_title ?? $this->_registeredBlock->get_name();
   }
 
   /**
-   * @param string
+   * @param string $title
    */
-  public function set_title($title)
+  public function set_title(string $title): void
   {
     $this->_title = $title;
   }
 }
 
-?>

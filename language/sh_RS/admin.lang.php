@@ -880,4 +880,3 @@ $lang['bottom right corner'] = 'donji desni ugao';
 $lang['middle'] = 'sredina';
 $lang['top left corner'] = 'gornji lefi ugao';
 $lang['top right corner'] = 'gornji desni ugao';
-?>

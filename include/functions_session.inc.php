@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -44,8 +44,9 @@ if (isset($conf['session_save_handler'])
  *
  * @param int $size
  * @return string
+ * @throws Exception
  */
-function generate_key($size)
+function generate_key(int $size): string
 {
   $bytes = random_bytes($size + 10);
 
@@ -64,10 +65,10 @@ function generate_key($size)
  * Called by PHP session manager, always return true.
  *
  * @param string $path
- * @param sring $name
+ * @param string $name
  * @return true
  */
-function pwg_session_open($path, $name)
+function pwg_session_open(string $path, string $name): true
 {
   return true;
 }
@@ -77,7 +78,7 @@ function pwg_session_open($path, $name)
  *
  * @return true
  */
-function pwg_session_close()
+function pwg_session_close(): true
 {
   return true;
 }
@@ -87,7 +88,7 @@ function pwg_session_close()
  *
  * @return string
  */
-function get_remote_addr_session_hash()
+function get_remote_addr_session_hash(): string
 {
   global $conf;
 
@@ -96,7 +97,7 @@ function get_remote_addr_session_hash()
     return '';
   }
   
-  if (strpos($_SERVER['REMOTE_ADDR'],':')===false)
+  if (!str_contains($_SERVER['REMOTE_ADDR'], ':'))
   {//ipv4
     return vsprintf(
       "%02X%02X",
@@ -112,7 +113,7 @@ function get_remote_addr_session_hash()
  * @param string $session_id
  * @return string
  */
-function pwg_session_read($session_id)
+function pwg_session_read(string $session_id): string
 {
   $query = '
 SELECT data
@@ -131,10 +132,10 @@ SELECT data
  * Called by PHP session manager, writes data in the sessions table.
  *
  * @param string $session_id
- * @param sring $data
+ * @param string $data
  * @return true
  */
-function pwg_session_write($session_id, $data)
+function pwg_session_write(string $session_id, string $data): true
 {
   $query = '
 REPLACE INTO '.SESSIONS_TABLE.'
@@ -151,7 +152,7 @@ REPLACE INTO '.SESSIONS_TABLE.'
  * @param string $session_id
  * @return true
  */
-function pwg_session_destroy($session_id)
+function pwg_session_destroy(string $session_id): true
 {
   $query = '
 DELETE
@@ -167,7 +168,7 @@ DELETE
  *
  * @return true
  */
-function pwg_session_gc()
+function pwg_session_gc(): true
 {
   global $conf;
 
@@ -188,7 +189,7 @@ DELETE
  * @param mixed $value
  * @return bool
  */
-function pwg_set_session_var($var, $value)
+function pwg_set_session_var(string $var, mixed $value): bool
 {
   if ( !isset($_SESSION) )
     return false;
@@ -203,7 +204,7 @@ function pwg_set_session_var($var, $value)
  * @param mixed $default
  * @return mixed
  */
-function pwg_get_session_var($var, $default = null)
+function pwg_get_session_var(string $var, mixed $default = null): mixed
 {
   if (isset( $_SESSION['pwg_'.$var] ) )
   {
@@ -218,7 +219,7 @@ function pwg_get_session_var($var, $default = null)
  * @param string $var
  * @return bool
  */
-function pwg_unset_session_var($var)
+function pwg_unset_session_var(string $var): bool
 {
   if ( !isset($_SESSION) )
     return false;
@@ -229,17 +230,16 @@ function pwg_unset_session_var($var)
 /**
  * delete all sessions for a given user (certainly deleted)
  *
- * @since 2.8
  * @param int $user_id
- * @return null
+ * @return void
  */
-function delete_user_sessions($user_id)
+function delete_user_sessions(int $user_id): void
 {
   $query = '
 DELETE
   FROM '.SESSIONS_TABLE.'
-  WHERE data LIKE \'%pwg_uid|i:'.(int)$user_id.';%\'
+  WHERE data LIKE \'%pwg_uid|i:'. $user_id .';%\'
 ;';
   pwg_query($query);
 }
-?>
+

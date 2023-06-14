@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -46,14 +46,14 @@ $pderivatives = $_POST['d'];
 // step 1 - sanitize HTML input
 foreach ($pderivatives as $type => &$pderivative)
 {
-  if ($pderivative['must_square'] = ($type==IMG_SQUARE ? true : false))
+  if ($pderivative['must_square'] = $type==IMG_SQUARE)
   {
     $pderivative['h'] = $pderivative['w'];
     $pderivative['minh'] = $pderivative['minw'] = $pderivative['w'];
     $pderivative['crop'] = 100;
   }
-  $pderivative['must_enable'] = ($type==IMG_SQUARE || $type==IMG_THUMB || $type==$conf['derivative_default_size'])? true : false;
-  $pderivative['enabled'] = isset($pderivative['enabled']) || $pderivative['must_enable'] ? true : false;
+  $pderivative['must_enable'] = $type==IMG_SQUARE || $type==IMG_THUMB || $type==$conf['derivative_default_size'];
+  $pderivative['enabled'] = isset($pderivative['enabled']) || $pderivative['must_enable'];
 
   if (isset($pderivative['crop']))
   {
@@ -268,4 +268,3 @@ else
   $template->assign('resize_quality', $_POST['resize_quality']);
   $page['sizes_loaded_in_tpl'] = true;
 }
-?>

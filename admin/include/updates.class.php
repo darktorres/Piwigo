@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,20 +8,26 @@
 
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
+/**
+ *
+ */
 class updates
 {
-  var $types = array();
-  var $plugins;
-  var $themes;
-  var $languages;
-  var $missing = array();
-  var $default_plugins = array();
-  var $default_themes = array();
-  var $default_languages = array();
-  var $merged_extensions = array();
-  var $merged_extension_url = 'http://piwigo.org/download/merged_extensions.txt';
+  public array $types = array();
+  public $plugins;
+  public $themes;
+  public $languages;
+  public array $missing = array();
+  public array $default_plugins = array();
+  public array $default_themes = array();
+  public array $default_languages = array();
+  public array $merged_extensions = array();
+  public string $merged_extension_url = 'http://piwigo.org/download/merged_extensions.txt';
 
-  function __construct($page='updates')
+  /**
+   * @param string $page
+   */
+  public function __construct(string $page = 'updates')
   {
     $this->types = array('plugins', 'themes', 'languages');
 
@@ -39,12 +45,15 @@ class updates
     }
   }
 
-  static function check_piwigo_upgrade()
+  /**
+   * @return void
+   */
+  public static function check_piwigo_upgrade(): void
   {
     $_SESSION['need_update'.PHPWG_VERSION] = null;
 
     if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches)
-      and fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid(rand(), true)), $result))
+      and fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid((string)rand(), true)), $result))
     {
       $all_versions = explode("\n", $result);
       $new_version = trim($all_versions[0]);
@@ -55,15 +64,15 @@ class updates
   /**
    * finds new versions of Piwigo on Piwigo.org.
    *
-   * @since 2.9
    * @return array (
    *   'piwigo.org-checked' => has piwigo.org been checked?,
    *   'is_dev' => are we on a dev version?,
    *   'minor_version' => new minor version available,
    *   'major_version' => new major version available,
    * )
+   * @since 2.9
    */
-  function get_piwigo_new_versions()
+  public function get_piwigo_new_versions(): array
   {
     $new_versions = array(
       'piwigo.org-checked' => false,
@@ -76,7 +85,7 @@ class updates
       $actual_branch = get_branch_from_version(PHPWG_VERSION);
 
       $url = PHPWG_URL.'/download/all_versions.php';
-      $url.= '?rand='.md5(uniqid(rand(), true)); // Avoid server cache
+      $url.= '?rand='.md5(uniqid((string)rand(), true)); // Avoid server cache
       $url.= '&show_requirements';
 
       if (fetchRemote($url, $result)
@@ -130,7 +139,7 @@ class updates
    *
    * @since 2.9
    */
-  function notify_piwigo_new_versions()
+  public function notify_piwigo_new_versions(): void
   {
     global $conf;
 
@@ -224,7 +233,11 @@ class updates
     }
   }
 
-  function get_server_extensions($version=PHPWG_VERSION)
+  /**
+   * @param string $version
+   * @return bool
+   */
+  public function get_server_extensions(string $version = PHPWG_VERSION): bool
   {
     global $user;
 
@@ -244,7 +257,7 @@ class updates
       $branch = get_branch_from_version($version);
       foreach ($pem_versions as $pem_version)
       {
-        if (strpos($pem_version['name'], $branch) === 0)
+        if (str_starts_with($pem_version['name'], $branch))
         {
           $versions_to_check[] = $pem_version['id'];
         }
@@ -326,7 +339,11 @@ class updates
   }
 
   // Check all extensions upgrades
-  function check_extensions()
+
+  /**
+   * @return false|void
+   */
+  public function check_extensions()
   {
     global $conf;
 
@@ -372,7 +389,11 @@ class updates
   }
 
   // Check if extension have been upgraded since last check
-  function check_updated_extensions()
+
+  /**
+   * @return void
+   */
+  public function check_updated_extensions(): void
   {
     foreach ($this->types as $type)
     {
@@ -393,7 +414,11 @@ class updates
     }
   }
 
-  function check_missing_extensions($missing)
+  /**
+   * @param $missing
+   * @return void
+   */
+  public function check_missing_extensions($missing): void
   {
     foreach ($missing as $id => $type)
     {
@@ -412,7 +437,11 @@ class updates
     }
   }
 
-  function get_merged_extensions($version)
+  /**
+   * @param $version
+   * @return void
+   */
+  public function get_merged_extensions($version): void
   {
     if (fetchRemote($this->merged_extension_url, $result))
     {
@@ -431,7 +460,11 @@ class updates
     }
   }
 
-  static function process_obsolete_list($file)
+  /**
+   * @param $file
+   * @return void
+   */
+  public static function process_obsolete_list($file): void
   {
     if (file_exists(PHPWG_ROOT_PATH.$file)
       and $old_files = file(PHPWG_ROOT_PATH.$file, FILE_IGNORE_NEW_LINES)
@@ -453,7 +486,14 @@ class updates
     }
   }
 
-  static function upgrade_to($upgrade_to, &$step, $check_current_version=true)
+  /**
+   * @param $upgrade_to
+   * @param $step
+   * @param bool $check_current_version
+   * @return void
+   * @throws SmartyException
+   */
+  public static function upgrade_to($upgrade_to, &$step, bool $check_current_version=true): void
   {
     global $page, $conf, $template;
 
@@ -552,7 +592,7 @@ class updates
             }
 
             deltree(PHPWG_ROOT_PATH.$conf['data_location'].'update');
-            invalidate_user_cache(true);
+            invalidate_user_cache();
             pwg_activity('system', ACTIVITY_SYSTEM_CORE, 'update', array('from_version'=>PHPWG_VERSION, 'to_version'=>$upgrade_to));
 
             if ($step == 2)
@@ -598,4 +638,3 @@ class updates
   }
 }
 
-?>

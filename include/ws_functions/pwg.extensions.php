@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,14 +9,16 @@
 /**
  * API method
  * Returns the list of all plugins
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return array
  */
-function ws_plugins_getList($params, $service)
+function ws_plugins_getList(array $params, $service): array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/plugins.class.php');
 
   $plugins = new plugins();
-  $plugins->sort_fs_plugins('name');
+  $plugins->sort_fs_plugins();
   $plugin_list = array();
 
   foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin)
@@ -45,12 +47,14 @@ function ws_plugins_getList($params, $service)
 /**
  * API method
  * Performs an action on a plugin
- * @param mixed[] $params
- *    @option string action
- *    @option string plugin
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return true|PwgError
+ * @option string action
+ * @option string plugin
+ * @option string pwg_token
  */
-function ws_plugins_performAction($params, $service)
+function ws_plugins_performAction(array $params, $service): true|PwgError
 {
   global $template, $conf;
 
@@ -92,12 +96,14 @@ function ws_plugins_performAction($params, $service)
 /**
  * API method
  * Performs an action on a theme
- * @param mixed[] $params
- *    @option string action
- *    @option string theme
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return true|PwgError
+ * @option string action
+ * @option string theme
+ * @option string pwg_token
  */
-function ws_themes_performAction($params, $service)
+function ws_themes_performAction(array $params, $service): true|PwgError
 {
   global $template, $conf;
 
@@ -134,14 +140,17 @@ function ws_themes_performAction($params, $service)
 /**
  * API method
  * Updates an extension
- * @param mixed[] $params
- *    @option string type
- *    @option string id
- *    @option string revision
- *    @option string pwg_token
- *    @option bool reactivate (optional - undocumented)
+ * @param array $params
+ * @param $service
+ * @return PwgError|string
+ * @option string type
+ * @option string id
+ * @option string revision
+ * @option string pwg_token
+ * @option bool reactivate (optional - undocumented)
+ * @throws SmartyException
  */
-function ws_extensions_update($params, $service)
+function ws_extensions_update(array $params, $service): PwgError|string
 {
   global $conf;
 
@@ -203,7 +212,7 @@ function ws_extensions_update($params, $service)
       $extension->perform_action('activate', $extension_id);
     }
   }
-  else if ($type == 'themes')
+  elseif ($type == 'themes')
   {
     $upgrade_status = $extension->extract_theme_files('upgrade', $revision, $extension_id);
     $extension_name = $extension->fs_themes[$extension_id]['name'];
@@ -222,7 +231,7 @@ function ws_extensions_update($params, $service)
 
     pwg_activity('system', ACTIVITY_SYSTEM_THEME, 'update', $activity_details);
   }
-  else if ($type == 'languages')
+  elseif ($type == 'languages')
   {
     $upgrade_status = $extension->extract_language_files('upgrade', $revision, $extension_id);
     $extension_name = $extension->fs_languages[$extension_id]['name'];
@@ -231,35 +240,28 @@ function ws_extensions_update($params, $service)
   global $template;
   $template->delete_compiled_templates();
 
-  switch ($upgrade_status)
+  return match ($upgrade_status)
   {
-    case 'ok':
-      return l10n('%s has been successfully updated.', $extension_name);
-
-    case 'temp_path_error':
-      return new PwgError(null, l10n('Can\'t create temporary file.'));
-
-    case 'dl_archive_error':
-      return new PwgError(null, l10n('Can\'t download archive.'));
-
-    case 'archive_error':
-      return new PwgError(null, l10n('Can\'t read or extract archive.'));
-
-    default:
-      return new PwgError(null, l10n('An error occured during extraction (%s).', $upgrade_status));
-  }
+    'ok' => l10n('%s has been successfully updated.', $extension_name),
+    'temp_path_error' => new PwgError(null, l10n('Can\'t create temporary file.')),
+    'dl_archive_error' => new PwgError(null, l10n('Can\'t download archive.')),
+    'archive_error' => new PwgError(null, l10n('Can\'t read or extract archive.')),
+    default => new PwgError(null, l10n('An error occured during extraction (%s).', $upgrade_status)),
+  };
 }
 
 /**
  * API method
  * Ignore an update
- * @param mixed[] $params
- *    @option string type (optional)
- *    @option string id (optional)
- *    @option bool reset
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return true|PwgError
+ * @option string type (optional)
+ * @option string id (optional)
+ * @option bool reset
+ * @option string pwg_token
  */
-function ws_extensions_ignoreupdate($params, $service)
+function ws_extensions_ignoreupdate(array $params, $service): true|PwgError
 {
   global $conf;
 
@@ -316,9 +318,11 @@ function ws_extensions_ignoreupdate($params, $service)
 /**
  * API method
  * Checks for updates (core and extensions)
- * @param mixed[] $params
+ * @param array $params
+ * @param $service
+ * @return array
  */
-function ws_extensions_checkupdates($params, $service)
+function ws_extensions_checkupdates(array $params, $service): array
 {
   global $conf;
 
@@ -330,7 +334,7 @@ function ws_extensions_checkupdates($params, $service)
 
   if (!isset($_SESSION['need_update'.PHPWG_VERSION]))
   {
-    $update->check_piwigo_upgrade();
+    updates::check_piwigo_upgrade();
   }
 
   $result['piwigo_need_update'] = $_SESSION['need_update'.PHPWG_VERSION];
@@ -356,4 +360,3 @@ function ws_extensions_checkupdates($params, $service)
   return $result;
 }
 
-?>

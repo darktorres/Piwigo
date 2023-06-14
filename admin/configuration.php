@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -174,7 +174,7 @@ if (isset($_POST['submit']))
           else
           {
             // limit to the number of available parameters
-            $order_by = $order_by_inside_category = array_slice($_POST['order_by'], 0, ceil(count($sort_fields)/2));
+            $order_by = $order_by_inside_category = array_slice($_POST['order_by'], 0, (int)ceil(count($sort_fields)/2));
 
             // there is no rank outside categories
             if ( ($i = array_search('`rank` ASC', $order_by)) !== false)
@@ -269,7 +269,7 @@ if (isset($_POST['submit']))
       foreach( $display_info_checkboxes as $checkbox)
       {
         $_POST['picture_informations'][$checkbox] =
-          empty($_POST['picture_informations'][$checkbox])? false : true;
+          !empty($_POST['picture_informations'][$checkbox]);
       }
       $_POST['picture_informations'] = addslashes(serialize($_POST['picture_informations']));
       break;
@@ -346,7 +346,10 @@ switch ($page['section'])
   case 'main' :
   {
 
-    function order_by_is_local()
+    /**
+     * @return bool
+     */
+    function order_by_is_local(): bool
     {
       $conf = array();
       include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
@@ -373,7 +376,7 @@ switch ($page['section'])
     {
       $out = array();
       $order_by = trim($conf['order_by_inside_category']);
-      $order_by = str_replace('ORDER BY ', false, $order_by);
+      $order_by = str_replace('ORDER BY ', '', $order_by);
       $order_by = explode(', ', $order_by);
     }
 
@@ -499,7 +502,7 @@ switch ($page['section'])
     // when submitting the form and an error remains
     if (!isset($page['sizes_loaded_in_tpl']))
     {
-      $is_gd = (pwg_image::get_library()=='gd')? true : false;
+      $is_gd = pwg_image::get_library()=='gd';
       $template->assign('is_gd', $is_gd);
       $template->assign(
         'sizes',
@@ -530,8 +533,8 @@ switch ($page['section'])
       {
         $tpl_var = array();
 
-        $tpl_var['must_square'] = ($type==IMG_SQUARE ? true : false);
-        $tpl_var['must_enable'] = ($type==IMG_SQUARE || $type==IMG_THUMB || $type==$conf['derivative_default_size'])? true : false;
+        $tpl_var['must_square'] = $type==IMG_SQUARE;
+        $tpl_var['must_enable'] = $type==IMG_SQUARE || $type==IMG_THUMB || $type==$conf['derivative_default_size'];
 
         if ($params = $enabled[$type])
         {
@@ -650,4 +653,4 @@ $template->assign('ADMIN_PAGE_TITLE', l10n('Configuration'));
 
 //----------------------------------------------------------- sending html code
 $template->assign_var_from_handle('ADMIN_CONTENT', 'config');
-?>
+

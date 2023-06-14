@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,8 +16,8 @@ $pictures = array();
 
 $selection = array_slice(
   $page['items'],
-  $page['start'],
-  $page['nb_image_page']
+  (int)$page['start'],
+  (int)$page['nb_image_page']
   );
 
 $selection = trigger_change('loc_index_thumbnails_selection', $selection);
@@ -56,8 +56,7 @@ if (count($pictures) > 0)
         array('start')
       ),
       array('slideshow' =>
-        (isset($_GET['slideshow']) ? $_GET['slideshow']
-                                   : '' ))
+        ($_GET['slideshow'] ?? ''))
     );
 
   if ($conf['activate_comments'] and $user['show_nb_comments'])
@@ -149,4 +148,3 @@ $template->assign_var_from_handle('THUMBNAILS', 'index_thumbnails');
 unset($pictures, $selection, $tpl_thumbnails_var);
 $template->clear_assign( 'thumbnails' );
 pwg_debug('end include/category_default.inc.php');
-?>

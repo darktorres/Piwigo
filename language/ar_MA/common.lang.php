@@ -21,4 +21,3 @@ $lang_info['code'] = 'ar';
 $lang_info['zero_plural'] = true;
 $lang_info['parent']= "ar_SA";
 
-?>

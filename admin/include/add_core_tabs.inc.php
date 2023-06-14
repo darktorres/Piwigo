@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,7 +8,12 @@
 
 add_event_handler('tabsheet_before_select', 'add_core_tabs', 0);
 
-function add_core_tabs($sheets, $tab_id)
+/**
+ * @param $sheets
+ * @param $tab_id
+ * @return mixed
+ */
+function add_core_tabs($sheets, $tab_id): mixed
 {
   global $conf;
 
@@ -63,11 +68,6 @@ function add_core_tabs($sheets, $tab_id)
     case 'comments':
       global $my_base_url;
       $sheets[''] = array('caption' => '<span class="icon-menu"></span>'.l10n('List'), 'url' => $my_base_url.'comments');
-      break;
-
-    case 'users':
-      global $my_base_url;
-      $sheets[''] = array('caption' => '<span class="icon-users"> </span>'.l10n('User list'), 'url' => $my_base_url.'user_list');
       break;
 
     case 'groups':
@@ -192,4 +192,3 @@ function add_core_tabs($sheets, $tab_id)
   return $sheets;
 }
 
-?>

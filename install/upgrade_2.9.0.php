@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -42,14 +42,11 @@ foreach ($to_apply as $upgrade_id)
     break;
   }
   
-  array_push(
-    $inserts,
-    array(
+  $inserts[] = array(
       'id' => $upgrade_id,
       'applied' => CURRENT_DATE,
       'description' => '[migration from 2.9.0 to '.PHPWG_VERSION.'] not applied', // TODO change on each release
-      )
-    );
+  );
 }
 
 if (!empty($inserts))
@@ -108,4 +105,4 @@ ob_end_clean();
 
 // now we upgrade from 2.10.0
 include_once(PHPWG_ROOT_PATH.'install/upgrade_2.10.0.php');
-?>
+

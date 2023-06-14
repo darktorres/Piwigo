@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,13 +9,13 @@
 // +-----------------------------------------------------------------------+
 // |                           initialization                              |
 // +-----------------------------------------------------------------------+
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 include_once(PHPWG_ROOT_PATH.'include/functions_comment.inc.php');
 
 if (!$conf['activate_comments'])
 {
-  page_not_found(null);
+  page_not_found('');
 }
 
 // +-----------------------------------------------------------------------+
@@ -310,7 +310,7 @@ SELECT id, name, uppercats, global_rank
     'WHERE'
   ).'
 ;';
-display_select_cat_wrapper($query, array($_GET['cat']), $blockname, true);
+display_select_cat_wrapper($query, array($_GET['cat']), $blockname);
 
 // Filter on recent comments...
 $tpl_var=array();
@@ -405,8 +405,8 @@ $url = PHPWG_ROOT_PATH.'comments.php'
 $navbar = create_navigation_bar($url,
                                 $counter,
                                 $start,
-                                $page['items_number'],
-                                '');
+                                $page['items_number']
+                                );
 
 $template->assign('navbar', $navbar);
 
@@ -455,7 +455,7 @@ SELECT *
     {
       $email = $comment['user_email'];
     }
-    else if (!empty($comment['email']))
+    elseif (!empty($comment['email']))
     {
       $email = $comment['email'];
     }
@@ -544,4 +544,4 @@ flush_page_messages();
 if (count($comments) > 0)  $template->assign_var_from_handle('COMMENT_LIST', 'comment_list');
 $template->pparse('comments');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

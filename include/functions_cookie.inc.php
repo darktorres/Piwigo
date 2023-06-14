@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -19,14 +19,14 @@
  *
  * @return string
  */
-function cookie_path()
+function cookie_path(): string
 {
   if ( isset($_SERVER['REDIRECT_SCRIPT_NAME']) and
        !empty($_SERVER['REDIRECT_SCRIPT_NAME']) )
   {
     $scr = $_SERVER['REDIRECT_SCRIPT_NAME'];
   }
-  else if ( isset($_SERVER['REDIRECT_URL']) )
+  elseif ( isset($_SERVER['REDIRECT_URL']) )
   {
     // mod_rewrite is activated for upper level directories. we must set the
     // cookie to the path shown in the browser otherwise it will be discarded.
@@ -34,8 +34,7 @@ function cookie_path()
       (
         isset($_SERVER['PATH_INFO']) and !empty($_SERVER['PATH_INFO']) and
         ($_SERVER['REDIRECT_URL'] !== $_SERVER['PATH_INFO']) and
-        (substr($_SERVER['REDIRECT_URL'],-strlen($_SERVER['PATH_INFO']))
-            == $_SERVER['PATH_INFO'])
+        (str_ends_with($_SERVER['REDIRECT_URL'], $_SERVER['PATH_INFO']))
       )
     {
       $scr = substr($_SERVER['REDIRECT_URL'], 0,
@@ -59,7 +58,7 @@ function cookie_path()
     $scr .= '/';
   }
 
-  if ( substr(PHPWG_ROOT_PATH,0,3)=='../')
+  if ( str_starts_with(PHPWG_ROOT_PATH, '../') )
   { // this is maybe a plugin inside pwg directory
     // TODO - what if it is an external script outside PWG ?
     $scr = $scr.PHPWG_ROOT_PATH;
@@ -80,12 +79,12 @@ function cookie_path()
  * Persistently stores a variable in pwg cookie.
  * Set $value to null to delete the cookie.
  *
- * @param string $car
+ * @param string $var
  * @param mixed $value
  * @param int|null $expire
  * @return bool
  */
-function pwg_set_cookie_var($var, $value, $expire=null)
+function pwg_set_cookie_var(string $var, mixed $value, int $expire=null): bool
 {
   if ($value==null or $expire===0)
   {
@@ -103,22 +102,14 @@ function pwg_set_cookie_var($var, $value, $expire=null)
 
 /**
  * Retrieves the value of a persistent variable in pwg cookie
- * @see pwg_set_cookie_var
- *
  * @param string $var
  * @param mixed $default
  * @return mixed
+ * @see pwg_set_cookie_var
+ *
  */
-function pwg_get_cookie_var($var, $default = null)
+function pwg_get_cookie_var(string $var, mixed $default = null): mixed
 {
-  if (isset($_COOKIE['pwg_'.$var]))
-  {
-    return $_COOKIE['pwg_'.$var];
-  }
-  else
-  {
-    return $default;
-  }
+  return $_COOKIE['pwg_' . $var] ?? $default;
 }
 
-?>

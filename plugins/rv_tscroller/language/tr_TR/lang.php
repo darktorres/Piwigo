@@ -21,4 +21,3 @@
 // | USA.                                                                  |
 // +-----------------------------------------------------------------------+
 $lang['See the remaining %d photos'] = 'Geriye kalan %d adet fotoğrafı görün';
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -107,7 +107,7 @@ $base_url = PHPWG_ROOT_PATH.'admin.php';
 $template->assign(
   array(
     'U_ELEMENTS_PAGE' => $base_url.get_query_string_diff(array('display','start')),
-    'F_ACTION' => $base_url.get_query_string_diff(array()),
+    'F_ACTION' => $base_url.get_query_string_diff(),
     'level_options' => get_privacy_level_options(),
     'ADMIN_PAGE_TITLE' => l10n('Batch Manager'),
     )
@@ -223,10 +223,10 @@ SELECT
         'FILE_SRC' => DerivativeImage::url(IMG_LARGE, $src_image),
         'LEGEND' => $legend,
         'U_EDIT' => get_root_url().'admin.php?page=photo-'.$row['id'],
-        'NAME' => htmlspecialchars(isset($row['name']) ? $row['name'] : ""),
-        'AUTHOR' => htmlspecialchars(isset($row['author']) ? $row['author'] : ""),
+        'NAME' => htmlspecialchars($row['name'] ?? ""),
+        'AUTHOR' => htmlspecialchars($row['author'] ?? ""),
         'LEVEL' => !empty($row['level'])?$row['level']:'0',
-        'DESCRIPTION' => htmlspecialchars(isset($row['comment']) ? $row['comment'] : ""),
+        'DESCRIPTION' => htmlspecialchars($row['comment'] ?? ""),
         'DATE_CREATION' => $row['date_creation'],
         'TAGS' => $tag_selection,
         'is_svg' => (strtoupper(end($extTab)) == 'SVG'),
@@ -247,4 +247,4 @@ trigger_notify('loc_end_element_set_unit');
 // +-----------------------------------------------------------------------+
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'batch_manager_unit');
-?>
+

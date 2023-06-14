@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -121,7 +121,7 @@ if ($plugins->get_server_plugins(true, $beta_test))
   }
   else
   {
-    $plugins->sort_server_plugins('date');
+    $plugins->sort_server_plugins();
     $template->assign('order_selected', 'date');
   }
 
@@ -178,7 +178,7 @@ if ($plugins->get_server_plugins(true, $beta_test))
       'SMALL_DESC' => trim($small_desc, " \r\n"),
       'BIG_DESC' => $ext_desc,
       'VERSION' => $plugin['revision_name'],
-      'REVISION_DATE' => preg_replace('/[^0-9]/', '', strtotime($plugin['revision_date'])),
+      'REVISION_DATE' => preg_replace('/[^0-9]/', '', (string)strtotime($plugin['revision_date'])),
       'REVISION_FORMATED_DATE' => format_date($plugin['revision_date'], array('day','month','year')).", ".time_since($plugin['revision_date'], "day"),
       'AUTHOR' => $plugin['author_name'],
       'DOWNLOADS' => $plugin['extension_nb_downloads'],
@@ -205,4 +205,3 @@ if (!$beta_test and preg_match('/(beta|RC)/', PHPWG_VERSION))
 $template->assign('ADMIN_PAGE_TITLE', l10n('Plugins'));
 $template->assign('BETA_TEST', $beta_test);
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugins');
-?>

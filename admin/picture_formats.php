@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -60,4 +60,4 @@ $template->assign(array(
 $template->set_filename('picture_formats', 'picture_formats.tpl');
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'picture_formats');
-?>
+

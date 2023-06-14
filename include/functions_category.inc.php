@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -14,7 +14,7 @@
 /**
  * Callback used for sorting by global_rank
  */
-function global_rank_compare($a, $b)
+function global_rank_compare($a, $b): int
 {
   return strnatcasecmp($a['global_rank'], $b['global_rank']);
 }
@@ -33,7 +33,7 @@ function rank_compare($a, $b)
  *
  * @param int $category_id
  */
-function check_restrictions($category_id)
+function check_restrictions(int $category_id): void
 {
   global $user;
 
@@ -48,9 +48,9 @@ function check_restrictions($category_id)
 /**
  * Returns template vars for main categories menu.
  *
- * @return array[]
+ * @return array
  */
-function get_categories_menu()
+function get_categories_menu(): array
 {
   global $page, $user, $filter, $conf;
 
@@ -102,7 +102,7 @@ WHERE '.$where.'
 
   $result = pwg_query($query);
   $cats = array();
-  $selected_category = isset($page['category']) ? $page['category'] : null;
+  $selected_category = $page['category'] ?? null;
   while ($row = pwg_db_fetch_assoc($result))
   {
     $child_date_last = $row['max_date_last']> $row['date_last'];
@@ -114,16 +114,16 @@ WHERE '.$where.'
           'get_categories_menu'
           ),
         'TITLE' => get_display_images_count(
-          $row['nb_images'],
-          $row['count_images'],
-          $row['count_categories'],
+          (int)$row['nb_images'],
+          (int)$row['count_images'],
+          (int)$row['count_categories'],
           false,
           ' / '
           ),
         'URL' => make_index_url(array('category' => $row)),
         'LEVEL' => substr_count($row['global_rank'], '.') + 1,
-        'SELECTED' => ($selected_category!==null && $selected_category['id'] == $row['id']) ? true : false,
-        'IS_UPPERCAT' => ($selected_category!==null && $selected_category['id_uppercat'] == $row['id']) ? true : false,
+        'SELECTED' => $selected_category!==null && $selected_category['id'] == $row['id'],
+        'IS_UPPERCAT' => $selected_category!==null && $selected_category['id_uppercat'] == $row['id'],
         )
       );
     if ($conf['index_new_icon'])
@@ -146,12 +146,12 @@ WHERE '.$where.'
 }
 
 /**
- * Retrieves informations about a category.
+ * Retrieves information about a category.
  *
- * @param int $id
- * @return array
+ * @param int|string $id
+ * @return array|null
  */
-function get_cat_info($id)
+function get_cat_info(int|string $id): ?array
 {
   $query = '
 SELECT *
@@ -166,9 +166,9 @@ SELECT *
   {
     // If the field is true or false, the variable is transformed into a
     // boolean value.
-    if ($cat[$k] == 'true' or $cat[$k] == 'false')
+    if ($v == 'true' or $v == 'false')
     {
-      $cat[$k] = get_boolean( $cat[$k] );
+      $cat[$k] = get_boolean($v);
     }
   }
 
@@ -209,9 +209,9 @@ SELECT *
  *  1: SQL ORDER command
  *  2: visiblity (true or false)
  *
- * @return array[]
+ * @return array
  */
-function get_category_preferred_image_orders()
+function get_category_preferred_image_orders(): array
 {
   global $conf, $page;
 
@@ -234,15 +234,15 @@ function get_category_preferred_image_orders()
 /**
  * Assign a template var useable with {html_options} from a list of categories
  *
- * @param array[] $categories (at least id,name,global_rank,uppercats for each)
- * @param int[] $selected ids of selected items
+ * @param array $categories (at least id,name,global_rank,uppercats for each)
+ * @param array $selecteds
  * @param string $blockname variable name in template
  * @param bool $fullname full breadcrumb or not
  */
-function display_select_categories($categories,
-                                   $selecteds,
-                                   $blockname,
-                                   $fullname = true)
+function display_select_categories(array  $categories,
+                                   array  $selecteds,
+                                   string $blockname,
+                                   bool   $fullname = true): void
 {
   global $template;
 
@@ -285,7 +285,7 @@ function display_select_categories($categories,
 function display_select_cat_wrapper($query,
                                     $selecteds,
                                     $blockname,
-                                    $fullname = true)
+                                    $fullname = true): void
 {
   $categories = query2array($query);
   usort($categories, 'global_rank_compare');
@@ -298,7 +298,7 @@ function display_select_cat_wrapper($query,
  * @param int[] $ids
  * @return int[]
  */
-function get_subcat_ids($ids)
+function get_subcat_ids(array $ids): array
 {
   $query = '
 SELECT DISTINCT(id)
@@ -330,7 +330,7 @@ SELECT DISTINCT(id)
  * @param int &$idx filled with the index in $permalinks that matches
  * @return int|null
  */
-function get_cat_id_from_permalinks($permalinks, &$idx)
+function get_cat_id_from_permalinks(array $permalinks, int &$idx): ?int
 {
   $in = '';
   foreach($permalinks as $permalink)
@@ -381,7 +381,7 @@ UPDATE '.OLD_PERMALINKS_TABLE.' SET last_hit=NOW(), hit=hit+1
  * @param string $separator
  * @return string
  */
-function get_display_images_count($cat_nb_images, $cat_count_images, $cat_count_categories, $short_message = true, $separator = '\n')
+function get_display_images_count(int $cat_nb_images, int $cat_count_images, int $cat_count_categories, bool $short_message = true, string $separator = '\n'): string
 {
   $display_text = '';
 
@@ -421,7 +421,7 @@ function get_display_images_count($cat_nb_images, $cat_count_images, $cat_count_
  * @param bool $recursive
  * @return int|null
  */
-function get_random_image_in_category($category, $recursive=true)
+function get_random_image_in_category(array $category, bool $recursive=true): ?int
 {
   $image_id = null;
   if ($category['count_images']>0)
@@ -470,10 +470,10 @@ SELECT image_id
  * available for the current user (count_categories, count_images, etc.).
  *
  * @param array &$userdata
- * @param int $filter_days number of recent days to filter on or null
+ * @param int|null $filter_days number of recent days to filter on or null
  * @return array
  */
-function get_computed_categories(&$userdata, $filter_days=null)
+function get_computed_categories(array &$userdata, int $filter_days=null): array
 {
   $query = 'SELECT c.id AS cat_id, id_uppercat';
   $query.= ', global_rank';
@@ -579,7 +579,7 @@ FROM '.CATEGORIES_TABLE.' as c
  * @param array &$cats
  * @param array $cat category to remove
  */
-function remove_computed_category(&$cats, $cat)
+function remove_computed_category(array &$cats, array $cat): void
 {
   if ( isset($cats[$cat['id_uppercat']]) )
   {
@@ -608,13 +608,13 @@ function remove_computed_category(&$cats, $cat)
  * AND & OR mode supported.
  *
  * @param int[] $cat_ids
- * @param string mode
+ * @param string $mode
  * @param string $extra_images_where_sql - optionally apply a sql where filter to retrieved images
  * @param string $order_by - optionally overwrite default photo order
- * @param bool $user_permissions
+ * @param bool $use_permissions
  * @return array
  */
-function get_image_ids_for_categories($cat_ids, $mode='AND', $extra_images_where_sql='', $order_by='', $use_permissions=true)
+function get_image_ids_for_categories(array $cat_ids, string $mode='AND', string $extra_images_where_sql='', string $order_by='', bool $use_permissions=true): array
 {
   global $conf;
 
@@ -658,11 +658,11 @@ SELECT id
  * Return a list of categories corresponding to given items.
  *
  * @param int[] $items
- * @param int $max
+ * @param int|null $max
  * @param int[] $excluded_cat_ids
  * @return array [id, name, counter, url_name]
  */
-function get_common_categories($items, $max=null, $excluded_cat_ids=array(), $use_permissions=true)
+function get_common_categories(array $items, int $max=null, array $excluded_cat_ids=array(), $use_permissions=true): array
 {
   if (empty($items))
   {
@@ -718,7 +718,12 @@ SELECT
   return $cats;
 }
 
-function get_related_categories_menu($items, $excluded_cat_ids=array())
+/**
+ * @param $items
+ * @param array $excluded_cat_ids
+ * @return array
+ */
+function get_related_categories_menu($items, array $excluded_cat_ids=array()): array
 {
   global $page, $conf;
 
@@ -803,4 +808,4 @@ SELECT
 
   return $cats;
 }
-?>
+

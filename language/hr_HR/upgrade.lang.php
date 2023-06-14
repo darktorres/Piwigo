@@ -24,4 +24,3 @@ $lang['As a precaution, following plugins have been deactivated. You must check 
 $lang['In <i>%s</i>, before <b>?></b>, insert:'] = 'U <i>%s</i>, prije <b>?></b>, ubaci:';
 $lang['As a precaution, following themes have been deactivated. You must check for themes upgrade before reactiving them:'] = 'Sljedeće teme su preventivno deaktivirane. Prije ponovnog aktiviranja morate provjeriti postoje li nadogradnje:';
 
-?>

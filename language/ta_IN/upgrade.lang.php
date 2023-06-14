@@ -25,4 +25,3 @@ $lang['As a precaution, following plugins have been deactivated. You must check 
 ';
 $lang['All sub-albums of private albums become private'] = 'அனைத்து துணை ஆல்பங்களின்
 தனியார் ஆல்பங்கள் தனியார் ஆக இருந்து';
-?>

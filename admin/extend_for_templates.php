@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -28,8 +28,7 @@ if (!defined('PHPWG_ROOT_PATH')) { die('Hacking attempt!'); }
 include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 check_status(ACCESS_ADMINISTRATOR);
 
-$tpl_extension = isset($conf['extents_for_templates']) ?
-      $conf['extents_for_templates'] : array();
+$tpl_extension = $conf['extents_for_templates'] ?? array();
 $new_extensions = get_extents(); 
 
 /* Selective URLs keyword */
@@ -55,7 +54,7 @@ SELECT permalink
 ';
 
 /* Add active permalinks */ 
-$permalinks = array_from_query($query, 'permalink');
+$permalinks = query2array($query, null, 'permalink');
 $relevant_parameters = array_merge($relevant_parameters, $permalinks);
 
 /* Link all supported templates to their respective handle */
@@ -187,4 +186,3 @@ foreach ($tpl_extension as $file => $conditions)
 $template->assign('ADMIN_PAGE_TITLE', l10n('Extend for templates'));
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'extend_for_templates');
-?>

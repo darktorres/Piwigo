@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,11 +6,20 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+/**
+ * @param $sortable_by
+ * @param $default_field
+ * @param $get_param
+ * @param $get_rejects
+ * @param $template_var
+ * @param string $anchor
+ * @return array
+ */
 function parse_sort_variables(
-    $sortable_by, $default_field,
-    $get_param, $get_rejects,
-    $template_var,
-    $anchor = '' )
+  $sortable_by, $default_field,
+  $get_param, $get_rejects,
+  $template_var,
+  string $anchor = '' ): array
 {
   global $template;
 
@@ -94,7 +103,7 @@ DELETE FROM '.OLD_PERMALINKS_TABLE.'
   WHERE permalink=\''.pwg_db_real_escape_string($_GET['delete_permanent']).'\'
   LIMIT 1';
   $result = pwg_query($query);
-  if (pwg_db_changes($result)==0)
+  if (pwg_db_changes()==0)
   {
     $page['errors'][] = l10n('Cannot delete the old permalink !');
   }
@@ -187,4 +196,4 @@ $template->assign(array(
   ));
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'permalinks');
-?>
+

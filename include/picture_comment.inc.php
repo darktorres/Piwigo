@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -263,4 +263,3 @@ SELECT
   $template->assign_var_from_handle('COMMENT_LIST', 'comment_list');
 }
 
-?>

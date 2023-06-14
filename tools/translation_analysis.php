@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH', '../');
+const PHPWG_ROOT_PATH = '../';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 include_once( PHPWG_ROOT_PATH.'tools/language/translation_validated.inc.php' );
 $languages = array_keys(get_languages());
@@ -30,7 +30,7 @@ if (!isset($_GET['lang']))
   echo '</ul>';
   exit();
 }
-else if (in_array($_GET['lang'], $languages))
+elseif (in_array($_GET['lang'], $languages))
 {
   $languages = array($_GET['lang']);
 }
@@ -126,7 +126,12 @@ foreach ($languages as $language)
   }
 }
 
-function load_metalang($language, $file_list)
+/**
+ * @param $language
+ * @param $file_list
+ * @return array
+ */
+function load_metalang($language, $file_list): array
 {
   global $lang, $user;
   
@@ -143,7 +148,12 @@ function load_metalang($language, $file_list)
   return $metalang;
 }
 
-function get_line_to_translate($file, $key)
+/**
+ * @param $file
+ * @param $key
+ * @return string
+ */
+function get_line_to_translate($file, $key): string
 {
   global $metalang, $page;
   
@@ -151,4 +161,3 @@ function get_line_to_translate($file, $key)
   $print_value = str_replace("'", '\\\'', $metalang[ $page['ref_default_values'] ][$file][$key]);
   return '$'."lang['".$print_key."'] = '".$print_value."';\n";
 }
-?>

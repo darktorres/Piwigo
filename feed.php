@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 include_once(PHPWG_ROOT_PATH.'include/functions_notification.inc.php');
 
@@ -18,10 +18,10 @@ include_once(PHPWG_ROOT_PATH.'include/functions_notification.inc.php');
  * creates a Unix timestamp (number of seconds since 1970-01-01 00:00:00
  * GMT) from a MySQL datetime format (2005-07-14 23:01:37)
  *
- * @param string mysql datetime format
+ * @param string $datetime mysql datetime format
  * @return int timestamp
  */
-function datetime_to_ts($datetime)
+function datetime_to_ts(string $datetime): int
 {
   return strtotime($datetime);
 }
@@ -32,10 +32,10 @@ function datetime_to_ts($datetime)
  *
  * function copied from Dotclear project http://dotclear.net
  *
- * @param int timestamp
+ * @param int $ts timestamp
  * @return string ISO 8601 date format
  */
-function ts_to_iso8601($ts)
+function ts_to_iso8601(int $ts): string
 {
   $tz = date('O',$ts);
   $tz = substr($tz, 0, -2).':'.substr($tz, -2);
@@ -48,7 +48,7 @@ function ts_to_iso8601($ts)
 
 check_input_parameter('feed', $_GET, false, '/^[0-9a-z]{50}$/i');
 
-$feed_id= isset($_GET['feed']) ? $_GET['feed'] : '';
+$feed_id= $_GET['feed'] ?? '';
 $image_only=isset($_GET['image_only']);
 
 // echo '<pre>'.generate_key(50).'</pre>';
@@ -67,7 +67,7 @@ SELECT user_id,
   }
   if ($feed_row['user_id']!=$user['id'])
   { // new user
-    $user = build_user( $feed_row['user_id'], true );
+    $user = build_user( $feed_row['user_id']);
   }
 }
 else
@@ -75,7 +75,7 @@ else
   $image_only = true;
   if (!is_a_guest())
   {// auto session was created - so switch to guest
-    $user = build_user( $conf['guest_id'], true );
+    $user = build_user( $conf['guest_id']);
   }
 }
 
@@ -118,7 +118,7 @@ if (!$image_only)
 
     $item->date = ts_to_iso8601(datetime_to_ts($dbnow));
     $item->author = $conf['rss_feed_author'];
-    $item->guid= sprintf('%s', $dbnow);;
+    $item->guid= sprintf('%s', $dbnow);
 
     $rss->addItem($item);
 
@@ -170,7 +170,7 @@ foreach($dates as $date_detail)
 
   $item->date = ts_to_iso8601(datetime_to_ts($date));
   $item->author = $conf['rss_feed_author'];
-  $item->guid= sprintf('%s', 'pics-'.$date);;
+  $item->guid= sprintf('%s', 'pics-'.$date);
 
   $rss->addItem($item);
 }
@@ -179,5 +179,4 @@ $fileName= PHPWG_ROOT_PATH.$conf['data_location'].'tmp';
 mkgetdir($fileName); // just in case
 $fileName.='/feed.xml';
 // send XML feed
-echo $rss->saveFeed('RSS2.0', $fileName, true);
-?>
+echo $rss->saveFeed('RSS2.0', $fileName);

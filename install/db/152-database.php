@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -22,4 +22,4 @@ conf_update_param('picture_representative_icon','true');
 
 echo "\n".$upgrade_description."\n";
 
-?>
+

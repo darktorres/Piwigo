@@ -1,3 +1,2 @@
 <?php
-$lang['See the remaining %d photos']='Se gjenværende %d bilder';
-?>
+$lang['See the remaining %d photos']='Se gjenvï¿½rende %d bilder';

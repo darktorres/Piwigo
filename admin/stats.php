@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -19,7 +19,12 @@ include_once(PHPWG_ROOT_PATH.'admin/include/functions_history.inc.php');
 // +-----------------------------------------------------------------------+
 
 //Get the last unit of time for years, months, days and hours
-function get_last($last_number=60, $type='year')
+/**
+ * @param int $last_number
+ * @param string $type
+ * @return array
+ */
+function get_last(int $last_number=60, string $type='year'): array
 {
   $query = '
 SELECT
@@ -93,7 +98,12 @@ SELECT
   return $output;
 }
 
-function get_month_of_last_years ($last = 'all') 
+/**
+ * @param string $last
+ * @return array
+ * @throws Exception
+ */
+function get_month_of_last_years (string $last = 'all'): array
 {
 
   $query = '
@@ -135,7 +145,11 @@ ORDER BY
   }
 }
 
-function get_month_stats() 
+/**
+ * @return array
+ * @throws Exception
+ */
+function get_month_stats(): array
 {
   $result = array();
   $date = new DateTime();
@@ -251,7 +265,15 @@ $template->assign(
 // | Set missing rows to 0                                                 |
 // +-----------------------------------------------------------------------+
 
-function set_missing_values($unit, $data, $firstDate = null, $lastDate = null)
+/**
+ * @param $unit
+ * @param $data
+ * @param $firstDate
+ * @param $lastDate
+ * @return array
+ * @throws Exception
+ */
+function set_missing_values($unit, $data, $firstDate = null, $lastDate = null): array
 {
   $limit = count($data);
   $result = array();
@@ -275,17 +297,17 @@ function set_missing_values($unit, $data, $firstDate = null, $lastDate = null)
     $date_format = 'Y';
     $date_add = 'P1Y';
   } 
-  else if ($unit == 'month') 
+  elseif ($unit == 'month') 
   {
     $date_format = 'Y-m';
     $date_add = 'P1M';
   } 
-  else if ($unit == 'day') 
+  elseif ($unit == 'day') 
   {
     $date_format = 'Y-m-d';
     $date_add = 'P1D';
   } 
-  else if ($unit == 'hour') 
+  elseif ($unit == 'hour') 
   {
     $date_format = 'Y-m-d\TH:00';
     $date_add = 'PT1H';
@@ -311,7 +333,12 @@ function set_missing_values($unit, $data, $firstDate = null, $lastDate = null)
 }
 
 //Get a DateTime object for a database row
-function get_date_object($row) 
+/**
+ * @param $row
+ * @return DateTime
+ * @throws Exception
+ */
+function get_date_object($row): DateTime
 {
   $date_string = $row['year'];
     if ($row['month'] != null) 
@@ -365,17 +392,17 @@ $last_months = set_missing_values(
   $actual_date
 );
 
-if (count(get_last(60, 'year')) > 1 ) 
+if (count(get_last()) > 1 ) 
 {
   $last_years = set_missing_values(
     'year',
-    get_last(60, 'year')
+    get_last()
   );
 } else {
   $last_year_date = new DateTime();
   $last_years = set_missing_values(
     'year', 
-    get_last(60, 'year'),
+    get_last(),
     $last_year_date->sub(new DateInterval('P1Y')),
     new DateTime()
   );
@@ -384,7 +411,7 @@ if (count(get_last(60, 'year')) > 1 )
 ksort($lang['month']);
 
 $template->assign(array(
-  'compareYears' => get_month_of_last_years($conf['stat_compare_year_displayed']),
+  'compareYears' => get_month_of_last_years((string)$conf['stat_compare_year_displayed']),
   'monthStats' => get_month_stats(),
   'lastHours' => $last_hours,
   'lastDays' => $last_days,
@@ -396,4 +423,3 @@ $template->assign(array(
 ));
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'stats');
-?>

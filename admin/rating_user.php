@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -41,7 +41,7 @@ while ($row = pwg_db_fetch_assoc($result))
 {
   $users_by_id[(int)$row['id']] = array(
     'name' => $row['name'],
-    'anon' => is_autorize_status(ACCESS_CLASSIC, $row['status']) ? false : true
+    'anon' => !is_autorize_status(ACCESS_CLASSIC, $row['status'])
   );
 }
 
@@ -125,7 +125,7 @@ $query='SELECT id
   FROM '.IMAGES_TABLE.'
   ORDER by rating_score DESC
   LIMIT '.$consensus_top_number;
-$best_rated = array_flip( array_from_query($query, 'id'));
+$best_rated = array_flip( query2array($query, null, 'id'));
 
 // by user stats
 foreach($by_user_ratings as $id => &$rating)
@@ -175,31 +175,56 @@ foreach($by_user_ratings as $id => $rating)
 }
 
 
-function avg_compare($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function avg_compare($a, $b): int
 {
   $d = $a['avg'] - $b['avg'];
   return ($d==0) ? 0 : ($d<0 ? -1 : 1);
 }
 
-function count_compare($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function count_compare($a, $b): int
 {
   $d = $a['count'] - $b['count'];
   return ($d==0) ? 0 : ($d<0 ? -1 : 1);
 }
 
-function cv_compare($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function cv_compare($a, $b): int
 {
   $d = $b['cv'] - $a['cv']; //desc
   return ($d==0) ? 0 : ($d<0 ? -1 : 1);
 }
 
-function consensus_dev_compare($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function consensus_dev_compare($a, $b): int
 {
   $d = $b['cd'] - $a['cd']; //desc
   return ($d==0) ? 0 : ($d<0 ? -1 : 1);
 }
 
-function last_rate_compare($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function last_rate_compare($a, $b): int
 {
   return -strcmp( $a['last_date'], $b['last_date']);
 }
@@ -250,4 +275,3 @@ $template->assign( array(
 $template->set_filename('rating', 'rating_user.tpl');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'rating');
 
-?>

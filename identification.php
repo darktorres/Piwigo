@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 //--------------------------------------------------------------------- include
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 
 // +-----------------------------------------------------------------------+
@@ -52,7 +52,7 @@ if (isset($_POST['login']))
   }
   else
   {
-    if ($conf['insensitive_case_logon'] == true)
+    if ($conf['insensitive_case_logon'])
     {
       $_POST['username'] = search_case_username($_POST['username']);
     }
@@ -127,4 +127,4 @@ trigger_notify('loc_end_identification');
 flush_page_messages();
 $template->pparse('identification');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>
+

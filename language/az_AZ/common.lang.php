@@ -65,4 +65,3 @@ $lang['%d rate'] = '%d norma';
 $lang['2small'] = 'XXS-bapbalaca';
 $lang['Comment'] = 'qeyd';
 $lang['Albums'] = 'Albomlar';
-?>

@@ -65,4 +65,3 @@ $lang['square'] = 'Cearnóg';
 $lang['the beginning'] = 'an tús';
 $lang['small'] = 'B - beag';
 $lang['today'] = 'inniu';
-?>

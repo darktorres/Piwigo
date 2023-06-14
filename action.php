@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,36 +6,41 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 session_cache_limiter('public');
 include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
 
-function guess_mime_type($ext)
+/**
+ * @param $ext
+ * @return string
+ */
+function guess_mime_type($ext): string
 {
-  switch ( strtolower($ext) )
+  return match (strtolower($ext)) 
   {
-    case "jpe": case "jpeg":
-    case "jpg": $ctype="image/jpeg"; break;
-    case "png": $ctype="image/png"; break;
-    case "gif": $ctype="image/gif"; break;
-    case "tiff":
-    case "tif": $ctype="image/tiff"; break;
-    case "txt": $ctype="text/plain"; break;
-    case "html":
-    case "htm": $ctype="text/html"; break;
-    case "xml": $ctype="text/xml"; break;
-    case "pdf": $ctype="application/pdf"; break;
-    case "zip": $ctype="application/zip"; break;
-    case "ogg": $ctype="application/ogg"; break;
-    default: $ctype="application/octet-stream";
-  }
-  return $ctype;
+    "jpe", "jpeg", "jpg" => "image/jpeg",
+    "png" => "image/png",
+    "gif" => "image/gif",
+    "tiff", "tif" => "image/tiff",
+    "txt" => "text/plain",
+    "html", "htm" => "text/html",
+    "xml" => "text/xml",
+    "pdf" => "application/pdf",
+    "zip" => "application/zip",
+    "ogg" => "application/ogg",
+    default => "application/octet-stream",
+  };
 }
 
-function do_error( $code, $str )
+/**
+ * @param $code
+ * @param $str
+ * @return void
+ */
+function do_error($code, $str ): void
 {
   set_status_header( $code );
   echo $str ;
@@ -148,11 +153,11 @@ if ( empty($file) )
 if ($_GET['part'] == 'e') {
   pwg_log($_GET['id'], 'high');
 }
-else if ($_GET['part'] == 'e')
+elseif ($_GET['part'] == 'r')
 {
   pwg_log($_GET['id'], 'other');
 }
-else if ($_GET['part'] == 'f')
+elseif ($_GET['part'] == 'f')
 {
   pwg_log($_GET['id'], 'high', $format['format_id']);
 }
@@ -230,4 +235,4 @@ flush();
 
 readfile($file);
 
-?>
+

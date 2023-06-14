@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
 Theme Name: modus
 Version: 13.7.0
@@ -13,8 +13,8 @@ $themeconf = array(
 	'colorscheme' => 'dark',
 );
 
-define('MODUS_STR_RECENT', "\xe2\x9c\xbd"); //HEAVY TEARDROP-SPOKED ASTERISK
-define('MODUS_STR_RECENT_CHILD', "\xe2\x9c\xbb"); //TEARDROP-SPOKED ASTERISK
+const MODUS_STR_RECENT = "\xe2\x9c\xbd"; //HEAVY TEARDROP-SPOKED ASTERISK
+const MODUS_STR_RECENT_CHILD = "\xe2\x9c\xbb"; //TEARDROP-SPOKED ASTERISK
 
 if (!empty($_GET['skin']) && !preg_match('/[^a-zA-Z0-9_-]/', $_GET['skin']))
 	$conf['modus_theme']['skin'] = $_GET['skin'];
@@ -51,7 +51,7 @@ if (!$conf['compiled_template_cache_language'])
 
 if (isset($_COOKIE['caps']))
 {
-	setcookie('caps',false,0,cookie_path());
+	// setcookie('caps','false',0,cookie_path());
 	pwg_set_session_var('caps', explode('x', $_COOKIE['caps']) );
 	/*file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'tmp/modus.log', implode("\t", array(
 		date("Y-m-d H:i:s"), $_COOKIE['caps'], $_SERVER['HTTP_USER_AGENT']
@@ -64,7 +64,11 @@ elseif ('tablet'==get_device())
 	$conf['tag_letters_column_number'] = min($conf['tag_letters_column_number'],3);
 
 $this->smarty->registerFilter('pre', 'modus_smarty_prefilter_wrap');
-function modus_smarty_prefilter_wrap($source)
+/**
+ * @param $source
+ * @return array|string|null
+ */
+function modus_smarty_prefilter_wrap($source): array|string|null
 {
 	include_once(dirname(__FILE__).'/functions.inc.php');
 	return modus_smarty_prefilter($source);
@@ -74,16 +78,26 @@ function modus_smarty_prefilter_wrap($source)
 if (!defined('IN_ADMIN') && defined('RVCDN') )
 {
 	$this->smarty->registerFilter('pre', 'rv_cdn_prefilter' );
-	add_event_handler('combined_script', 'rv_cdn_combined_script', EVENT_HANDLER_PRIORITY_NEUTRAL, 2);
+	add_event_handler('combined_script', 'rv_cdn_combined_script');
 }
 
-function rv_cdn_prefilter($source, &$smarty)
+/**
+ * @param $source
+ * @param $smarty
+ * @return array|string
+ */
+function rv_cdn_prefilter($source, &$smarty): array|string
 {
 	$source = str_replace('src="{$ROOT_URL}{$themeconf.icon_dir}/', 'src="'.RVCDN_ROOT_URL.'{$themeconf.icon_dir}/', $source);
-	$source = str_replace('url({$'.'ROOT_URL}', 'url('.RVCDN_ROOT_URL, $source);
-	return $source;
+	return str_replace('url({$'.'ROOT_URL}', 'url('.RVCDN_ROOT_URL, $source);
 }
-function rv_cdn_combined_script($url, $script)
+
+/**
+ * @param $url
+ * @param $script
+ * @return mixed|string
+ */
+function rv_cdn_combined_script($url, $script): mixed
 {
 	if (!$script->is_remote())
 		$url = RVCDN_ROOT_URL.$script->path;
@@ -92,7 +106,10 @@ function rv_cdn_combined_script($url, $script)
 
 if (defined('RVPT_JQUERY_SRC'))
 add_event_handler('loc_begin_page_header', 'modus_loc_begin_page_header');
-function modus_loc_begin_page_header()
+/**
+ * @return void
+ */
+function modus_loc_begin_page_header(): void
 {
 	$all = $GLOBALS['template']->scriptLoader->get_all();
 	if ( ($jq = $all['jquery']) )
@@ -100,7 +117,11 @@ function modus_loc_begin_page_header()
 }
 
 add_event_handler('combinable_preparse', 'modus_combinable_preparse');
-function modus_combinable_preparse($template)
+/**
+ * @param $template
+ * @return void
+ */
+function modus_combinable_preparse($template): void
 {
 	global $conf, $template;
 	include_once(dirname(__FILE__).'/functions.inc.php');
@@ -121,7 +142,11 @@ function modus_combinable_preparse($template)
 
 
 $this->smarty->registerPlugin('function', 'cssResolution', 'modus_css_resolution');
-function modus_css_resolution($params)
+/**
+ * @param $params
+ * @return string
+ */
+function modus_css_resolution($params): string
 {
 	$base = $params['base'] ?? null;
 	$min = $params['min'] ?? null;
@@ -151,7 +176,13 @@ function modus_css_resolution($params)
 }
 
 $this->smarty->registerPlugin('function', 'modus_thumbs', 'modus_thumbs');
-function modus_thumbs($x, $smarty)
+/**
+ * @param $x
+ * @param $smarty
+ * @return void
+ * @throws Exception
+ */
+function modus_thumbs($x, $smarty): void
 {
 	global $template, $page, $conf;
 
@@ -214,18 +245,21 @@ function modus_thumbs($x, $smarty)
 		}
 	}
 
-	$template->block_html_style(null,
+	$template->block_html_style(array(),
 '#thumbnails{text-align:justify;overflow:hidden;margin-left:'.($container_margin-$horizontal_margin).'px;margin-right:'.$container_margin.'px}
 #thumbnails>li{float:left;overflow:hidden;position:relative;margin-bottom:'.$vertical_margin.'px;margin-left:'.$horizontal_margin.'px}#thumbnails>li>a{position:absolute;border:0}');
 	$template->block_footer_script(null, 'rvgtProcessor=new RVGThumbs({hMargin:'.$horizontal_margin.',rowHeight:'.$row_height.'});');
 
 	$my_base_name = basename(dirname(__FILE__));
 	// not async to avoid visible flickering reflow
-	$template->scriptLoader->add('modus.arange', 1, array('jquery'), 'themes/'.$my_base_name."/js/thumb.arrange.min.js", 0);
+	$template->scriptLoader->add('modus.arange', 1, array('jquery'), 'themes/'.$my_base_name."/js/thumb.arrange.min.js");
 }
 
 add_event_handler('loc_end_index', 'modus_on_end_index');
-function modus_on_end_index()
+/**
+ * @return void
+ */
+function modus_on_end_index(): void
 {
 	global $template;
 	if (!pwg_get_session_var('caps'))
@@ -234,7 +268,11 @@ function modus_on_end_index()
 }
 
 add_event_handler('get_index_derivative_params', 'modus_get_index_photo_derivative_params', EVENT_HANDLER_PRIORITY_NEUTRAL+1 );
-function modus_get_index_photo_derivative_params($default)
+/**
+ * @param $default
+ * @return DerivativeParams|mixed
+ */
+function modus_get_index_photo_derivative_params($default): mixed
 {
 	global $conf;
 	if (isset($conf['modus_theme']) && pwg_get_session_var('index_deriv')===null)
@@ -254,12 +292,17 @@ function modus_get_index_photo_derivative_params($default)
 }
 
 add_event_handler('loc_end_index_category_thumbnails', 'modus_index_category_thumbnails' );
-function modus_index_category_thumbnails($items)
+/**
+ * @param $items
+ * @return mixed
+ * @throws Exception
+ */
+function modus_index_category_thumbnails($items): mixed
 {
 	global $page, $template, $conf;
 
 	if ('categories'!=$page['section'] || !($wh=$conf['modus_theme']['album_thumb_size']) )
-		return $items;;
+		return $items;
 
 	$template->assign('album_thumb_size', $wh);
 
@@ -322,7 +365,10 @@ function modus_index_category_thumbnails($items)
 }
 
 add_event_handler('loc_begin_picture', 'modus_loc_begin_picture');
-function modus_loc_begin_picture()
+/**
+ * @return void
+ */
+function modus_loc_begin_picture(): void
 {
 	global $conf, $template;
 	if ( isset($_GET['slideshow']) )
@@ -336,8 +382,14 @@ function modus_loc_begin_picture()
 	$template->append('head_elements', '<script>if(document.documentElement.offsetWidth>1270)document.documentElement.className=\'wide\'</script>');
 }
 
-add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL-1, 2 );
-function modus_picture_content($content, $element_info)
+add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL-1);
+/**
+ * @param $content
+ * @param $element_info
+ * @return mixed|string|null
+ * @throws SmartyException
+ */
+function modus_picture_content($content, $element_info): mixed
 {
 	global $conf, $picture, $template;
 

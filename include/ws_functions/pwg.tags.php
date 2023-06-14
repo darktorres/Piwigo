@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,10 +9,12 @@
 /**
  * API method
  * Returns a list of tags
- * @param mixed[] $params
- *    @option bool sort_by_counter
+ * @param array $params
+ * @param $service
+ * @return array
+ * @option bool sort_by_counter
  */
-function ws_tags_getList($params, &$service)
+function ws_tags_getList(array $params, &$service): array
 {
   $tags = get_available_tags();
   if ($params['sort_by_counter'])
@@ -48,12 +50,12 @@ function ws_tags_getList($params, &$service)
 /**
  * API method
  * Returns the list of tags as you can see them in administration
- * @param mixed[] $params
+ * @param array $params
  *
  * Only admin can run this method and permissions are not taken into
  * account.
  */
-function ws_tags_getAdminList($params, &$service)
+function ws_tags_getAdminList(array $params, &$service): array
 {
   return array(
     'tags' => new PwgNamedArray(
@@ -67,16 +69,18 @@ function ws_tags_getAdminList($params, &$service)
 /**
  * API method
  * Returns a list of images for tags
- * @param mixed[] $params
- *    @option int[] tag_id (optional)
- *    @option string[] tag_url_name (optional)
- *    @option string[] tag_name (optional)
- *    @option bool tag_mode_and
- *    @option int per_page
- *    @option int page
- *    @option string order
+ * @param array $params
+ * @param $service
+ * @return array
+ * @option int[] tag_id (optional)
+ * @option string[] tag_url_name (optional)
+ * @option string[] tag_name (optional)
+ * @option bool tag_mode_and
+ * @option int per_page
+ * @option int page
+ * @option string order
  */
-function ws_tags_getImages($params, &$service)
+function ws_tags_getImages(array $params, &$service): array
 {
   // first build all the tag_ids we are interested in
   $tags = find_tags($params['tag_id'], $params['tag_url_name'], $params['tag_name']);
@@ -215,10 +219,12 @@ SELECT *
 /**
  * API method
  * Adds a tag
- * @param mixed[] $params
- *    @option string name
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option string name
  */
-function ws_tags_add($params, &$service)
+function ws_tags_add(array $params, &$service): PwgError|array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
@@ -246,7 +252,12 @@ $new_tag = query2array($query);
   );
 }
 
-function ws_tags_delete($params, &$service) 
+/**
+ * @param $params
+ * @param $service
+ * @return PwgError|array
+ */
+function ws_tags_delete($params, &$service): PwgError|array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
@@ -278,7 +289,12 @@ SELECT COUNT(*)
   }
 }
 
-function ws_tags_rename($params, &$service) 
+/**
+ * @param $params
+ * @param $service
+ * @return PwgError|array
+ */
+function ws_tags_rename($params, &$service): PwgError|array
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
@@ -307,7 +323,7 @@ SELECT name
   FROM '.TAGS_TABLE.'
   WHERE id != '.$tag_id.'
 ;';
-  $existing_names = array_from_query($query, 'name');
+  $existing_names = query2array($query, null, 'name');
 
   $update = array();
 
@@ -315,7 +331,7 @@ SELECT name
   {
     return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already token');
   }
-  else if (!empty($tag_name))
+  elseif (!empty($tag_name))
   {
     $update = array(
       'name' => addslashes($tag_name),
@@ -340,7 +356,12 @@ SELECT name
 }
 
 
-function ws_tags_duplicate($params, &$service)
+/**
+ * @param $params
+ * @param $service
+ * @return PwgError|array
+ */
+function ws_tags_duplicate($params, &$service): PwgError|array
 {
 
   include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
@@ -384,7 +405,7 @@ SELECT COUNT(*)
       'url_name' => trigger_change('render_tag_url', $copy_name),
     )
   );
-  $destination_tag_id = pwg_db_insert_id(TAGS_TABLE);
+  $destination_tag_id = pwg_db_insert_id();
 
   pwg_activity('tag', $destination_tag_id, 'add', array('action'=>'duplicate', 'source_tag'=>$tag_id));
 
@@ -393,7 +414,7 @@ SELECT image_id
   FROM '.IMAGE_TAG_TABLE.'
   WHERE tag_id = '.$tag_id.'
 ;';
-  $destination_tag_image_ids = array_from_query($query, 'image_id');
+  $destination_tag_image_ids = query2array($query, null, 'image_id');
 
   $inserts = array();
         
@@ -421,9 +442,14 @@ SELECT image_id
     'url_name' => trigger_change('render_tag_url', $copy_name),
     'count' => count($inserts)
   );
-} 
+}
 
-function ws_tags_merge($params, &$service)
+/**
+ * @param $params
+ * @param $service
+ * @return PwgError|array
+ */
+function ws_tags_merge($params, &$service): PwgError|array
 {
 
   if (get_pwg_token() != $params['pwg_token'])
@@ -432,7 +458,7 @@ function ws_tags_merge($params, &$service)
   }
 
   $all_tags = $params['merge_tag_id'];
-  array_push($all_tags, $params['destination_tag_id']);
+  $all_tags[] = $params['destination_tag_id'];
 
   $all_tags = array_unique($all_tags);
   $merge_tag = array_diff($params['merge_tag_id'], array($params['destination_tag_id']));
@@ -466,8 +492,7 @@ SELECT image_id
   WHERE tag_id = '.$params['destination_tag_id'].'
 ;';
 
-  $image_in_dest = query2array($query, null, 'image_id');;
-
+  $image_in_dest = query2array($query, null, 'image_id');
   
   $image_to_add = array_diff($image_in_merge_tags, $image_in_dest);
 
@@ -506,4 +531,4 @@ SELECT image_id
   );
 }
 
-?>
+

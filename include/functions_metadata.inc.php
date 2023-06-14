@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,16 +16,17 @@
  *
  * @param string $filename
  * @param array $map
+ * @param string $array_sep
  * @return array
  */
-function get_iptc_data($filename, $map, $array_sep=',')
+function get_iptc_data(string $filename, array $map, string $array_sep=','): array
 {
   global $conf;
   
   $result = array();
 
   $imginfo = array();
-  if (false == getimagesize($filename, $imginfo) )
+  if (!getimagesize($filename, $imginfo) )
   {
     return $result;
   }
@@ -75,7 +76,7 @@ function get_iptc_data($filename, $map, $array_sep=',')
  * @param string $value
  * @return string
  */
-function clean_iptc_value($value)
+function clean_iptc_value(string $value): string
 {
   // strip leading zeros (weird Kodak Scanner software)
   while ( isset($value[0]) and $value[0] == chr(0))
@@ -123,7 +124,7 @@ function clean_iptc_value($value)
  * @param array $map
  * @return array
  */
-function get_exif_data($filename, $map)
+function get_exif_data(string $filename, array $map): array
 {
   global $conf;
   
@@ -149,7 +150,7 @@ function get_exif_data($filename, $map)
     // configured fields
     foreach ($map as $key => $field)
     {
-      if (strpos($field, ';') === false)
+      if (!str_contains($field, ';'))
       {
         if (isset($exif[$field]))
         {
@@ -197,16 +198,14 @@ function get_exif_data($filename, $map)
 
 /**
  * Converts EXIF GPS format to a float value.
- * @since 2.6
- *
  * @param string[] $raw eg:
  *    - 41/1
  *    - 54/1
  *    - 9843/500
  * @param string $ref 'S', 'N', 'E', 'W'. eg: 'N'
- * @return float eg: 41.905468
+ * @return float|int|string eg: 41.905468
  */
-function parse_exif_gps_data($raw, $ref)
+function parse_exif_gps_data(array $raw, string $ref): float|int|string
 {
   foreach ($raw as &$i)
   {
@@ -223,4 +222,3 @@ function parse_exif_gps_data($raw, $ref)
   return $v;
 }
 
-?>

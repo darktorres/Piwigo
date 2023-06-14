@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -57,10 +57,9 @@ while ($row = pwg_db_fetch_assoc($result))
       $user_theme = 'Sylvia';
   }
 
-  array_push($users, array(
+  $users[] = array(
     'user_id' => $row['user_id'],
     'theme' => $user_theme
-    )
   );
 }
 
@@ -78,4 +77,3 @@ echo
 . $upgrade_description
 ."\n"
 ;
-?>

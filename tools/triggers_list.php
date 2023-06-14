@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 $core = array(
 array(
   'name' => 'allow_increment_element_hit_count',

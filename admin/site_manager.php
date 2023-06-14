@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -58,7 +58,7 @@ if (isset($_POST['submit']) and !empty($_POST['galleries_url']))
   }
   $url = preg_replace('/[\/]*$/', '', $_POST['galleries_url']);
   $url.= '/';
-  if ( ! (strpos($url, '.') === 0 ) )
+  if ( ! (str_starts_with($url, '.')) )
   {
     $url = './' . $url;
   }
@@ -136,7 +136,7 @@ SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_image
   WHERE c.site_id IS NOT NULL
   GROUP BY c.site_id
 ;';
-$sites_detail = hash_from_query($query, 'site_id'); 
+$sites_detail = query2array($query, 'site_id'); 
 
 $query = '
 SELECT *
@@ -182,4 +182,3 @@ while ($row = pwg_db_fetch_assoc($result))
 }
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'site_manager');
-?>

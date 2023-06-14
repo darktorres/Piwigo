@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -11,13 +11,13 @@
  */
 
 /** level of year view */
-define('CYEAR', 0);
+const CYEAR = 0;
 /** level of week view in weekly view */
-define('CWEEK', 1);
+const CWEEK = 1;
 /** level of month view in monthly view */
-define('CMONTH', 1);
+const CMONTH = 1;
 /** level of day view */
-define('CDAY',  2);
+const CDAY = 2;
 
 /**
  * Base class for monthly and weekly calendar styles
@@ -25,18 +25,18 @@ define('CDAY',  2);
 abstract class CalendarBase
 {
   /** db column on which this calendar works */
-  var $date_field;
+  public $date_field;
   /** used for queries (INNER JOIN or normal) */
-  var $inner_sql;
+  public $inner_sql;
   /** used to store db fields */
-  var $calendar_levels;
+  public $calendar_levels;
 
   /**
    * Generate navigation bars for category page.
    *
-   * @return boolean false indicates that thumbnails where not included
+   * @return bool false indicates that thumbnails where not included
    */
-  abstract function generate_category_content();
+  abstract public function generate_category_content(): bool;
 
   /**
    * Returns a sql WHERE subquery for the date field.
@@ -44,14 +44,14 @@ abstract class CalendarBase
    * @param int $max_levels (e.g. 2=only year and month)
    * @return string
    */
-  abstract function get_date_where($max_levels=3);
+  abstract public function get_date_where(int $max_levels=3): string;
 
   /**
    * Initialize the calendar.
    *
    * @param string $inner_sql
    */
-  function initialize($inner_sql)
+  public function initialize(string $inner_sql): void
   {
     global $page;
     if ($page['chronology_field']=='posted')
@@ -70,7 +70,7 @@ abstract class CalendarBase
    *
    * @return string
    */
-  function get_display_name()
+  public function get_display_name(): string
   {
     global $conf, $page;
     $res = '';
@@ -104,9 +104,11 @@ abstract class CalendarBase
   /**
    * Returns a display name for a date component optionally using labels.
    *
+   * @param $level
+   * @param $date_component
    * @return string
    */
-  protected function get_date_component_label($level, $date_component)
+  protected function get_date_component_label($level, $date_component): string
   {
     $label = $date_component;
     if (isset($this->calendar_levels[$level]['labels'][$date_component]))
@@ -126,7 +128,7 @@ abstract class CalendarBase
    * @param string $date
    * @return string
    */
-  protected function get_date_nice_name($date)
+  protected function get_date_nice_name(string $date): string
   {
     $date_components = explode('-', $date);
     $res = '';
@@ -152,12 +154,12 @@ abstract class CalendarBase
    * @param array $items - hash of items to put in the bar (e.g. 2005,2006)
    * @param bool $show_any - adds any link to the end of the bar
    * @param bool $show_empty - shows all labels even those without items
-   * @param array $labels - optional labels for items (e.g. Jan,Feb,...)
-   * @return string
+   * @param array|null $labels - optional labels for items (e.g. Jan,Feb,...)
+   * @return array|string
    */
-  protected function get_nav_bar_from_items($date_components, $items,
-                                  $show_any,
-                                  $show_empty=false, $labels=null)
+  protected function get_nav_bar_from_items(array $date_components, array $items,
+                                            bool  $show_any,
+                                            bool  $show_empty=false, array $labels=null): array|string
   {
     global $conf, $page, $template;
 
@@ -228,7 +230,7 @@ abstract class CalendarBase
    *
    * @param int $level - 0-year, 1-month/week, 2-day
    */
-  protected function build_nav_bar($level, $labels=null)
+  protected function build_nav_bar(int $level, $labels=null): void
   {
     global $template, $conf, $page;
 
@@ -268,7 +270,7 @@ $this->get_date_where($level).'
       $level_items,
       true,
       true,
-      isset($labels) ? $labels : $this->calendar_levels[$level]['labels']
+      $labels ?? $this->calendar_levels[$level]['labels']
       );
 
     $template->append(
@@ -283,7 +285,7 @@ $this->get_date_where($level).'
    * Assigns the next/previous link to the template with regards to
    * the currently choosen date.
    */
-  protected function build_next_prev()
+  protected function build_next_prev(): void
   {
     global $template, $page;
 
@@ -366,4 +368,3 @@ GROUP BY period';
   }
 }
 
-?>

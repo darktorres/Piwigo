@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -13,7 +13,10 @@ if (!defined('PHPWG_ROOT_PATH'))
 
 $upgrade_description = 'Show date period of an album';
 
-function value_display_fromto()
+/**
+ * @return string
+ */
+function value_display_fromto(): string
 {
   $file = PHPWG_ROOT_PATH.'local/config/config.inc.php';
   if (file_exists($file))
@@ -41,4 +44,4 @@ echo
 . $upgrade_description
 ."\n"
 ;
-?>
+

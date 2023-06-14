@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -72,7 +72,7 @@ SELECT category_id
 ;';
 
   $authorizeds = array_diff(
-    array_from_query($query, 'category_id'),
+    query2array($query, null, 'category_id'),
     explode(',', calculate_permissions($user['id'], $user['status']))
     );
 
@@ -347,7 +347,7 @@ if (in_array(get_extension($row['path']),$conf['picture_ext']))
 }
 
 // image level options
-$selected_level = isset($_POST['level']) ? $_POST['level'] : $row['level'];
+$selected_level = $_POST['level'] ?? $row['level'];
 $template->assign(
     array(
       'level_options'=> get_privacy_level_options(),
@@ -404,7 +404,7 @@ SELECT category_id
 ;';
 
 $authorizeds = array_diff(
-  array_from_query($query, 'category_id'),
+  query2array($query, null, 'category_id'),
   explode(
     ',',
     calculate_permissions($user['id'], $user['status'])
@@ -464,4 +464,4 @@ trigger_notify('loc_end_picture_modify');
 //----------------------------------------------------------- sending html code
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'picture_modify');
-?>
+

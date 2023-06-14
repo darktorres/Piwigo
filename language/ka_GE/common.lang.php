@@ -403,4 +403,3 @@ $lang['xsmall'] = 'XS - ძალიან პატარა';
 $lang['xxlarge'] = 'XXL - უდიდესი';
 $lang['Password is missing. Please enter the password.'] = 'პაროლი არა სწორია. გთხოვთ გაიმეოროთ.';
 $lang['Password confirmation is missing. Please confirm the chosen password.'] = 'პაროლის დადასტურება არ არის. გთხოვთ დაადასტურეთ არჩეული პაროლი.';
-?>

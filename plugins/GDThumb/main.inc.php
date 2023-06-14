@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
 Plugin Name: gdThumb
 Version: 1.0.26
@@ -19,9 +19,9 @@ if (mobile_theme()) return;
 // +-----------------------------------------------------------------------+
 // | Plugin constants                                               |
 // +-----------------------------------------------------------------------+
-define('GDTHUMB_VERSION', '1.0.26');
+const GDTHUMB_VERSION = '1.0.26';
 define('GDTHUMB_ID',      basename(dirname(__FILE__)));
-define('GDTHUMB_PATH' ,   PHPWG_PLUGINS_PATH . GDTHUMB_ID . '/');
+const GDTHUMB_PATH = PHPWG_PLUGINS_PATH . GDTHUMB_ID . '/';
 if (!defined('GDTHEME_PATH')):
   define('GDTHEME_PATH' ,   PHPWG_THEMES_PATH . 'greydragon/');
 endif;
@@ -35,16 +35,20 @@ endif;
 // RV Thumbnails Scroller
 if (isset($_GET['rvts'])):
   $conf['gdThumb']['big_thumb'] = false;
-  add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb', 50, 2);
+  add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb');
 endif;
 
 add_event_handler('init', 'GDThumb_init');
 add_event_handler('loc_begin_index', 'GDThumb_index', 60);
-// add_event_handler('loc_end_index_category_thumbnails', 'GDThumb_process_category', 50, 2);
+// add_event_handler('loc_end_index_category_thumbnails', 'GDThumb_process_category');
 add_event_handler('get_admin_plugin_menu_links', 'GDThumb_admin_menu');
 add_event_handler('loc_end_index', 'GDThumb_remove_thumb_size');
 
-function GDThumb_init() {
+/**
+ * @return void
+ */
+function GDThumb_init(): void
+{
   global $conf, $user, $page, $stripped;
 
   $confTemp = $conf['gdThumb'];
@@ -53,29 +57,40 @@ function GDThumb_init() {
   $stripped['maxThumb']     = $confTemp['nb_image_page'];
 }
 
-function GDThumb_index() {
+/**
+ * @return void
+ * @throws SmartyException
+ */
+function GDThumb_index(): void
+{
   global $template;
 
   $template->smarty->registerPlugin("function", "media_type", "GDThumb_media_type");
   $template->set_prefilter('index', 'GDThumb_prefilter');
 
-  add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb', 50, 2);
-}
-                                                 
-function GDThumb_endsWith($needles, $haystack) {
-  if(empty($needles) || empty($haystack)):
-    return false;
-  else:
-    $arr_needles = explode(',', $needles);
-    
-    foreach ((array) $arr_needles as $needle) { 
-      if ((string) $needle === substr($haystack, -strlen($needle))) return true; 
-    } 
-    return false; 
-  endif;
+  add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb');
 }
 
-function GDThumb_media_type($params, $smarty) {
+/**
+ * @param $needles
+ * @param $haystack
+ * @return bool
+ */
+function GDThumb_endsWith($needles, $haystack): bool
+{
+  if(!empty($needles) && !empty($haystack)):
+  $arr_needles = explode(',', $needles);
+  endif;
+    return false;
+}
+
+/**
+ * @param $params
+ * @param $smarty
+ * @return string
+ */
+function GDThumb_media_type($params, $smarty): string
+{
   if(empty($params["file"]))
     return "image";
 
@@ -96,7 +111,13 @@ function GDThumb_media_type($params, $smarty) {
   return "image";
 }
 
-function GDThumb_process_thumb($tpl_vars, $pictures) {
+/**
+ * @param $tpl_vars
+ * @param $pictures
+ * @return mixed
+ */
+function GDThumb_process_thumb($tpl_vars, $pictures): mixed
+{
   global $template, $conf;
   $confTemp = $conf['gdThumb'];
   $confTemp['GDTHUMB_ROOT'] = 'plugins/' . GDTHUMB_ID;
@@ -125,7 +146,12 @@ function GDThumb_process_thumb($tpl_vars, $pictures) {
   return $tpl_vars;
 }
 
-function GDThumb_process_category($tpl_vars) {
+/**
+ * @param $tpl_vars
+ * @return mixed
+ */
+function GDThumb_process_category($tpl_vars): mixed
+{
 
   global $template, $conf;
   $confTemp = $conf['gdThumb'];
@@ -155,26 +181,37 @@ function GDThumb_process_category($tpl_vars) {
   return $tpl_vars;
 }
 
-function GDThumb_prefilter($content) {
+/**
+ * @param $content
+ * @return array|string|null
+ */
+function GDThumb_prefilter($content): array|string|null
+{
   $pattern = '#\<div.*?id\="thumbnails".*?\>\{\$THUMBNAILS\}\</div\>#';
   $replacement = '<ul id="thumbnails">{$THUMBNAILS}</ul>';
 
   return preg_replace($pattern, $replacement, $content);
 }
 
-function GDThumb_admin_menu($menu) {
-  array_push($menu,
-    array(
+/**
+ * @param $menu
+ * @return mixed
+ */
+function GDThumb_admin_menu($menu): mixed
+{
+  $menu[] = array(
       'NAME' => 'gdThumb',
       'URL' => get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__)),
-    )
   );
   return $menu;
 }
 
-function GDThumb_remove_thumb_size() {
+/**
+ * @return void
+ */
+function GDThumb_remove_thumb_size(): void
+{
   global $template;
   $template->clear_assign('image_derivatives');
 }
 
-?>

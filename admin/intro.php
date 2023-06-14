@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -173,7 +173,7 @@ $template->assign(
     'NB_USERS' => $nb_users,
     'NB_GROUPS' => $nb_groups,
     'NB_RATES' => $nb_rates,
-    'NB_VIEWS' => number_format_human_readable($nb_views),
+    'NB_VIEWS' => number_format_human_readable((float)$nb_views),
     'NB_PLUGINS' => count($pwg_loaded_plugins),
     'STORAGE_USED' => str_replace(' ', '&nbsp;', l10n('%sGB', number_format($du_gb, $du_decimals))),
     'U_QUICK_SYNC' => PHPWG_ROOT_PATH.'admin.php?page=site_update&amp;site=1&amp;quick_sync=1&amp;pwg_token='.get_pwg_token(),
@@ -309,7 +309,12 @@ foreach($activity_last_weeks as $week => $i)
 //  * Set the sizes according to the groups created
 
 //Function to sort days by number of activity
-function cmp_day($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function cmp_day($a, $b): int
 {
   if ($a['x'] == $b['x']) 
   {
@@ -452,7 +457,7 @@ if ($conf['add_cache_to_storage_chart'] && isset($conf['cache_sizes']))
   $cache_sizes = $conf['cache_sizes'];
   if (isset($cache_sizes))
   {
-    if (isset($cache_sizes[0]) && isset($cache_sizes[0]['value']))
+    if (isset($cache_sizes[0]['value']))
     {
       $data_storage['Cache'] = $cache_sizes[0]['value']/1024;
     }
@@ -484,4 +489,4 @@ new c13y_internal();
 $c13y->check();
 $c13y->display();
 
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -28,7 +28,7 @@ if (!is_numeric($_GET['site']))
 {
   die ('site param missing or invalid');
 }
-$site_id = $_GET['site'];
+$site_id = (int)$_GET['site'];
 
 $query='
 SELECT galleries_url
@@ -158,7 +158,7 @@ SELECT id, uppercats, global_rank, status, visible
 ';
     }
   }
-  $db_categories = hash_from_query($query, 'id');
+  $db_categories = query2array($query, 'id');
 
   // get categort full directories in an array for comparison with file
   // system directory tree
@@ -171,7 +171,7 @@ SELECT id, uppercats, global_rank, status, visible
   }
   else
   {
-    $basedir = preg_replace('#/*$#', '', $site_url);
+    $basedir = rtrim($site_url, "/");
   }
 
   // we need to have fulldirs as keys to make efficient comparison
@@ -326,11 +326,8 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
               $granted_grps[$row['cat_id']]=array();
             }
             // TODO: explanaition
-            array_push(
-              $granted_grps,
-              array(
-                $row['cat_id'] => array_push($granted_grps[$row['cat_id']],$row['group_id'])
-              )
+            $granted_grps[] = array(
+              $row['cat_id'] => array_push($granted_grps[$row['cat_id']], $row['group_id'])
             );
           }
         }
@@ -350,11 +347,8 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
               $granted_users[$row['cat_id']]=array();
             }
             // TODO: explanaition
-            array_push(
-              $granted_users,
-              array(
-                $row['cat_id'] => array_push($granted_users[$row['cat_id']],$row['user_id'])
-              )
+            $granted_users[] = array(
+              $row['cat_id'] => array_push($granted_users[$row['cat_id']], $row['user_id'])
             );
           }
         }
@@ -472,10 +466,9 @@ SELECT id, path
   WHERE storage_category_id IN ('
       .wordwrap(
         implode(', ', $cat_ids),
-        160,
-        "\n"
-        ).')';
-    $db_elements = simple_hash_from_query($query, 'id', 'path');
+        160
+      ).')';
+    $db_elements = query2array($query, 'id', 'path');
   }
 
   // next element id available
@@ -713,7 +706,7 @@ if (isset($_POST['submit'])
   if (!$simulate)
   {
     $start = get_moment();
-    update_category('all');
+    update_category();
     $template->append('footer_elements', '<!-- update_category(all) : '
       . get_elapsed_time($start,get_moment())
       . ' -->' );
@@ -738,8 +731,7 @@ if (isset($_POST['submit'])
       }
     }
     $files = get_filelist($opts['category_id'], $site_id,
-                          $opts['recursive'],
-                          false);
+                          $opts['recursive']);
     $template->append('footer_elements', '<!-- get_filelist : '
       . get_elapsed_time($start, get_moment())
       . ' -->');
@@ -803,7 +795,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
          and !$general_failure)
 {
   // sync only never synchronized files ?
-  $opts['only_new'] = isset($_POST['meta_all']) ? false : true;
+  $opts['only_new'] = !isset($_POST['meta_all']);
   $opts['category_id'] = '';
   $opts['recursive'] = true;
 
@@ -939,13 +931,13 @@ if (isset($_POST['submit']))
 {
   $tpl_introduction = array(
       'sync'  => $_POST['sync'],
-      'sync_meta'  => isset($_POST['sync_meta']) ? true : false,
+      'sync_meta'  => isset($_POST['sync_meta']),
       'display_info' => isset($_POST['display_info']) and $_POST['display_info']==1,
       'add_to_caddie' => isset($_POST['add_to_caddie']) and $_POST['add_to_caddie']==1,
       'subcats_included' => isset($_POST['subcats-included']) and $_POST['subcats-included']==1,
       'privacy_level_selected' => (int)$_POST['privacy_level'],
-      'meta_all'  => isset($_POST['meta_all']) ? true : false,
-      'meta_empty_overrides'  => isset($_POST['meta_empty_overrides']) ? true : false,
+      'meta_all'  => isset($_POST['meta_all']),
+      'meta_empty_overrides'  => isset($_POST['meta_empty_overrides']),
     );
 
   if (isset($_POST['cat']) and is_numeric($_POST['cat']))
@@ -1037,4 +1029,3 @@ if (count($infos) > 0
 // |                          sending html code                            |
 // +-----------------------------------------------------------------------+
 $template->assign_var_from_handle('ADMIN_CONTENT', 'update');
-?>

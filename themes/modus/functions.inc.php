@@ -1,4 +1,8 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * @param $gradient
+ * @return string|void
+ */
 function modus_css_gradient($gradient) {
 	if (!empty($gradient))
 	{
@@ -13,7 +17,10 @@ function modus_css_gradient($gradient) {
 	}
 }
 
-function modus_get_default_config()
+/**
+ * @return array
+ */
+function modus_get_default_config(): array
 {
   return array(
 	'skin' => 'newspaper',
@@ -24,7 +31,11 @@ function modus_get_default_config()
 );
 }
 
-function modus_smarty_prefilter($source)
+/**
+ * @param $source
+ * @return array|string|null
+ */
+function modus_smarty_prefilter($source): array|string|null
 {
 	global $lang, $conf;
 
@@ -35,7 +46,7 @@ function modus_smarty_prefilter($source)
 		load_language('theme.lang', dirname(__FILE__).'/');
 
 	// picture page actionButtons wrap for mobile
-	if (strpos($source, '<div id="imageToolBar">')!==false || strpos($source, '<div id=imageToolBar>')!==false){
+	if (str_contains($source, '<div id="imageToolBar">') || str_contains($source, '<div id=imageToolBar>')){
 		if ( !($pos=strpos($source,'<div class="actionButtons">') ) )
 			$pos = strpos($source,'<div class=actionButtons>');
 		if ($pos !== false)
@@ -73,11 +84,9 @@ function modus_smarty_prefilter($source)
 	$re = preg_quote('<img title="{$thumbnail.icon_ts.TITLE}" src="', '/')
 		.'[^>]+'
 		.preg_quote('/recent.png" alt="(!)">', '/');
-	$source = preg_replace('/'.$re.'/',
-		'<span class=albSymbol title="{$thumbnail.icon_ts.TITLE}">'.MODUS_STR_RECENT.'</span>',
-		$source);
-
-	return $source;
+	return preg_replace('/'.$re.'/',
+        '<span class=albSymbol title="{$thumbnail.icon_ts.TITLE}">'.MODUS_STR_RECENT.'</span>',
+        $source);
 }
 
-?>
+

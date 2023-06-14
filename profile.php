@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -79,6 +79,14 @@ SELECT '.implode(',', $fields).'
 }
 
 //------------------------------------------------------ update & customization
+/**
+ * @param $userdata
+ * @param $errors
+ * @return bool|void
+ * @throws SmartyException
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws \Symfony\Component\CssSelector\Exception\ParseException
+ */
 function save_profile_from_post($userdata, &$errors)
 {
   global $conf, $page;
@@ -218,7 +226,7 @@ function save_profile_from_post($userdata, &$errors)
             switch_lang_to($userdata['language']);
             
             $keyargs_content = array(
-              get_l10n_args('Hello', ''),
+              get_l10n_args('Hello'),
               get_l10n_args('Your username has been successfully changed to : %s', $_POST['username']),
               );
               
@@ -294,12 +302,13 @@ function save_profile_from_post($userdata, &$errors)
 /**
  * Assign template variables, from arguments
  * Used to build profile edition pages
- * 
+ *
  * @param string $url_action
  * @param string $url_redirect
  * @param array $userdata
+ * @param null $template_prefixe
  */
-function load_profile_in_template($url_action, $url_redirect, $userdata, $template_prefixe=null)
+function load_profile_in_template(string $url_action, string $url_redirect, array $userdata, $template_prefixe=null): void
 {
   global $template, $conf;
 
@@ -346,4 +355,4 @@ function load_profile_in_template($url_action, $url_redirect, $userdata, $templa
 
   $template->assign('PWG_TOKEN', get_pwg_token());
 }
-?>
+

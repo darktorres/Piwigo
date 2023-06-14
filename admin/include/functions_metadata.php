@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -21,7 +21,7 @@ include_once(PHPWG_ROOT_PATH.'/include/functions_metadata.inc.php');
  * @param string $file
  * @return array
  */
-function get_sync_iptc_data($file)
+function get_sync_iptc_data(string $file): array
 {
   global $conf;
 
@@ -58,7 +58,7 @@ function get_sync_iptc_data($file)
 
   foreach ($iptc as $pwg_key => $value)
   {
-    $iptc[$pwg_key] = addslashes($iptc[$pwg_key]);
+    $iptc[$pwg_key] = addslashes($value);
   }
 
   return $iptc;
@@ -70,7 +70,7 @@ function get_sync_iptc_data($file)
  * @param string $file
  * @return array
  */
-function get_sync_exif_data($file)
+function get_sync_exif_data(string $file): array
 {
   global $conf;
 
@@ -128,7 +128,12 @@ function get_sync_exif_data($file)
   return $exif;
 }
 
-function validateDate($date, $format = 'Y-m-d H:i:s'): bool
+/**
+ * @param $date
+ * @param string $format
+ * @return bool
+ */
+function validateDate($date, string $format = 'Y-m-d H:i:s'): bool
 {
   $d = DateTime::createFromFormat($format, $date);
   return $d && $d->format($format) == $date;
@@ -139,7 +144,7 @@ function validateDate($date, $format = 'Y-m-d H:i:s'): bool
  *
  * @return string[]
  */
-function get_sync_metadata_attributes()
+function get_sync_metadata_attributes(): array
 {
   global $conf;
 
@@ -170,10 +175,10 @@ function get_sync_metadata_attributes()
 /**
  * Get all metadata of a file.
  *
- * @param array $infos - (path[, representative_ext])
- * @return array - includes data provided in $infos
+ * @param array $infos (path[, representative_ext])
+ * @return array|false includes data provided in $infos
  */
-function get_sync_metadata($infos)
+function get_sync_metadata(array $infos): false|array
 {
   global $conf;
   $file = PHPWG_ROOT_PATH.$infos['path'];
@@ -266,7 +271,7 @@ function get_sync_metadata($infos)
  *
  * @param int[] $ids
  */
-function sync_metadata($ids)
+function sync_metadata(array $ids): void
 {
   global $conf;
 
@@ -282,7 +287,7 @@ function sync_metadata($ids)
 SELECT id, path, representative_ext
   FROM '.IMAGES_TABLE.'
   WHERE id IN (
-'.wordwrap(implode(', ', $ids), 160, "\n").'
+'.wordwrap(implode(', ', $ids), 160).'
 )
 ;';
 
@@ -345,14 +350,14 @@ SELECT id, path, representative_ext
  * Returns an array associating element id (images.id) with its complete
  * path in the filesystem
  *
- * @param int $category_id
+ * @param int|string $category_id
  * @param int $site_id
- * @param boolean $recursive
- * @param boolean $only_new
+ * @param bool $recursive
+ * @param bool $only_new
  * @return array
  */
-function get_filelist($category_id = '', $site_id=1, $recursive = false,
-                      $only_new = false)
+function get_filelist(int|string $category_id = '', int $site_id=1, bool $recursive = false,
+                      bool       $only_new = false): array
 {
   // filling $cat_ids : all categories required
   $cat_ids = array();
@@ -402,7 +407,7 @@ SELECT id, path, representative_ext
   }
   $query.= '
 ;';
-  return hash_from_query($query, 'id');
+  return query2array($query, 'id');
 }
 
 /**
@@ -412,15 +417,15 @@ SELECT id, path, representative_ext
  * @param string $keywords_string
  * @return string
  */
-function metadata_normalize_keywords_string($keywords_string)
+function metadata_normalize_keywords_string(string $keywords_string): string
 {
   global $conf;
   
   $keywords_string = preg_replace($conf['metadata_keyword_separator_regex'], ',', $keywords_string);
   $keywords_string = preg_replace('/,+/', ',', $keywords_string);
-  $keywords_string = preg_replace('/^,+|,+$/', '', $keywords_string);
+  $keywords_string = trim($keywords_string, ",");
       
-  $keywords_string = implode(
+  return implode(
     ',',
     array_unique(
       explode(
@@ -429,7 +434,4 @@ function metadata_normalize_keywords_string($keywords_string)
         )
       )
     );
-
-  return $keywords_string;
 }
-?>

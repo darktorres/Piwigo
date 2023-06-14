@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -77,7 +77,7 @@ foreach ($plugin_menu_links_deprec as $value)
 // |                     start template output                             |
 // +-----------------------------------------------------------------------+
 
-$plugins->sort_fs_plugins('name');
+$plugins->sort_fs_plugins();
 $merged_extensions = $plugins->get_merged_extensions();
 $merged_plugins = false;
 $tpl_plugins = array();
@@ -95,7 +95,7 @@ foreach($plugins->fs_plugins as $plugin_id => $fs_plugin)
   $setting_url = '';
   if (isset($settings_url_for_plugin_deprec[$plugin_id])) { //old version
     $setting_url = $settings_url_for_plugin_deprec[$plugin_id];
-  } else if ($fs_plugin['hasSettings']) { // new version
+  } elseif ($fs_plugin['hasSettings']) { // new version
     $setting_url = "admin.php?page=plugin-".$plugin_id;
 
     if (preg_match('/^piwigo-(videojs|openstreetmap)$/', $plugin_id))
@@ -172,7 +172,12 @@ if (count($missing_plugin_ids) > 0)
 }
 
 // sort plugins by state then by name
-function cmp($a, $b)
+/**
+ * @param $a
+ * @param $b
+ * @return bool|int
+ */
+function cmp($a, $b): bool|int
 { 
   $s = array('merged' => 0, 'missing' => 1, 'active' => 2, 'inactive' => 3);
   
@@ -201,4 +206,3 @@ $template->assign(
   );
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugins');
-?>

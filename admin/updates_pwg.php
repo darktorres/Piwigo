@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -25,10 +25,10 @@ STEP:
 2 = upgrade on same branch
 3 = upgrade on different branch
 */
-$step = isset($_GET['step']) ? $_GET['step'] : 0;
+$step = $_GET['step'] ?? 0;
 
 check_input_parameter('to', $_GET, false, '/^\d+\.\d+\.\d+$/');
-$upgrade_to = isset($_GET['to']) ? $_GET['to'] : '';
+$upgrade_to = $_GET['to'] ?? '';
 
 $updates = new updates();
 $new_versions = $updates->get_piwigo_new_versions();
@@ -117,7 +117,7 @@ if (!is_webmaster())
 
 $template->assign(array(
   'STEP'          => $step,
-  'PIWIGO_CURRENT_VERSION' => isset($page['updated_version']) ? $page['updated_version'] : PHPWG_VERSION,
+  'PIWIGO_CURRENT_VERSION' => $page['updated_version'] ?? PHPWG_VERSION,
   'UPGRADE_TO'    => $upgrade_to,
   )
 );
@@ -146,4 +146,3 @@ $template->assign('ADMIN_PAGE_TITLE', l10n('Updates'));
 $template->set_filename('plugin_admin_content', 'updates_pwg.tpl');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugin_admin_content');
 
-?>

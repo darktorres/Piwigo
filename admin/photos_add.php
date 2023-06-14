@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -71,4 +71,3 @@ $template->set_filenames(
 // +-----------------------------------------------------------------------+
 
 include(PHPWG_ROOT_PATH.'admin/photos_add_'.$page['tab'].'.php');
-?>

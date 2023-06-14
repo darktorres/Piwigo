@@ -22,4 +22,3 @@ $lang['Statistics'] = 'Statistikk';
 $lang['Upgrade'] = 'Oppgradering';
 $lang['Upgrade from version %s to %s'] = 'Oppgrader frå vesjon %s til %s';
 $lang['Upgrade informations'] = 'Oppgraderingsinformasjon';
-?>

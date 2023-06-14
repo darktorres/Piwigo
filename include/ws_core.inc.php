@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,22 +16,22 @@
  */
 
 
-define( 'WS_PARAM_ACCEPT_ARRAY',  0x010000 );
-define( 'WS_PARAM_FORCE_ARRAY',   0x030000 );
-define( 'WS_PARAM_OPTIONAL',      0x040000 );
+const WS_PARAM_ACCEPT_ARRAY = 0x010000;
+const WS_PARAM_FORCE_ARRAY = 0x030000;
+const WS_PARAM_OPTIONAL = 0x040000;
 
-define( 'WS_TYPE_BOOL',           0x01 );
-define( 'WS_TYPE_INT',            0x02 );
-define( 'WS_TYPE_FLOAT',          0x04 );
-define( 'WS_TYPE_POSITIVE',       0x10 );
-define( 'WS_TYPE_NOTNULL',        0x20 );
-define( 'WS_TYPE_ID', WS_TYPE_INT | WS_TYPE_POSITIVE | WS_TYPE_NOTNULL);
+const WS_TYPE_BOOL = 0x01;
+const WS_TYPE_INT = 0x02;
+const WS_TYPE_FLOAT = 0x04;
+const WS_TYPE_POSITIVE = 0x10;
+const WS_TYPE_NOTNULL = 0x20;
+const WS_TYPE_ID = WS_TYPE_INT | WS_TYPE_POSITIVE | WS_TYPE_NOTNULL;
 
-define( 'WS_ERR_INVALID_METHOD',  501 );
-define( 'WS_ERR_MISSING_PARAM',   1002 );
-define( 'WS_ERR_INVALID_PARAM',   1003 );
+const WS_ERR_INVALID_METHOD = 501;
+const WS_ERR_MISSING_PARAM = 1002;
+const WS_ERR_INVALID_PARAM = 1003;
 
-define( 'WS_XML_ATTRIBUTES', 'attributes_xml_');
+const WS_XML_ATTRIBUTES = 'attributes_xml_';
 
 /**
  * PwgError object can be returned from any web service function implementation.
@@ -41,7 +41,11 @@ class PwgError
   private $_code;
   private $_codeText;
 
-  function __construct($code, $codeText)
+  /**
+   * @param $code
+   * @param $codeText
+   */
+  public function __construct($code, $codeText)
   {
     if ($code>=400 and $code<600)
     {
@@ -52,8 +56,17 @@ class PwgError
     $this->_codeText = $codeText;
   }
 
-  function code() { return $this->_code; }
-  function message() { return $this->_codeText; }
+  /**
+   * @return mixed
+   */
+  public function code(): mixed
+  { return $this->_code; }
+
+  /**
+   * @return mixed
+   */
+  public function message(): mixed
+  { return $this->_codeText; }
 }
 
 /**
@@ -63,18 +76,18 @@ class PwgError
  */
 class PwgNamedArray
 {
-  /*private*/ var $_content;
-  /*private*/ var $_itemName;
-  /*private*/ var $_xmlAttributes;
+  public array $_content;
+  public string $_itemName;
+  public array $_xmlAttributes;
 
   /**
    * Constructs a named array
-   * @param arr array (keys must be consecutive integers starting at 0)
-   * @param itemName string xml element name for values of arr (e.g. image)
-   * @param xmlAttributes array of sub-item attributes that will be encoded as
+   * @param array $arr (keys must be consecutive integers starting at 0)
+   * @param string $itemName xml element name for values of arr (e.g. image)
+   * @param array $xmlAttributes of sub-item attributes that will be encoded as
    *      xml attributes instead of xml child elements
    */
-  function __construct($arr, $itemName, $xmlAttributes=array() )
+  public function __construct(array $arr, string $itemName, array $xmlAttributes=array() )
   {
     $this->_content = $arr;
     $this->_itemName = $itemName;
@@ -88,19 +101,19 @@ class PwgNamedArray
  */
 class PwgNamedStruct
 {
-  /*private*/ var $_content;
-  /*private*/ var $_xmlAttributes;
+  public array $_content;
+  public array $_xmlAttributes;
 
   /**
    * Constructs a named struct (usually returned by web service function
    * implementation)
-   * @param name string - containing xml element name
-   * @param content array - the actual content (php array)
-   * @param xmlAttributes array - name of the keys in $content that will be
+   * @param array $content the actual content (php array)
+   * @param array|null $xmlAttributes name of the keys in $content that will be
    *    encoded as xml attributes (if null - automatically prefer xml attributes
    *    whenever possible)
+   * @param null $xmlElements
    */
-  function __construct($content, $xmlAttributes=null, $xmlElements=null )
+  public function __construct(array $content, array $xmlAttributes=null, $xmlElements=null )
   {
     $this->_content = $content;
     if ( isset($xmlAttributes) )
@@ -133,7 +146,7 @@ abstract class PwgRequestHandler
   /** Virtual abstract method. Decodes the request (GET or POST) handles the
    * method invocation as well as response sending.
    */
-  abstract function handleRequest(&$service);
+  abstract public function handleRequest($service);
 }
 
 /**
@@ -143,19 +156,19 @@ abstract class PwgRequestHandler
 abstract class PwgResponseEncoder
 {
   /** encodes the web service response to the appropriate output format
-   * @param response mixed the unencoded result of a service method call
+   * @param mixed $response the unencoded result of a service method call
    */
-  abstract function encodeResponse($response);
+  abstract public function encodeResponse(mixed $response);
 
   /** default "Content-Type" http header for this kind of response format
    */
-  abstract function getContentType();
+  abstract public function getContentType();
 
   /**
    * returns true if the parameter is a 'struct' (php array type whose keys are
    * NOT consecutive integers starting with 0)
    */
-  static function is_struct(&$data)
+  public static function is_struct($data): bool
   {
     if (is_array($data) )
     {
@@ -171,12 +184,16 @@ abstract class PwgResponseEncoder
    * removes all XML formatting from $response (named array, named structs, etc)
    * usually called by every response encoder, except rest xml.
    */
-  static function flattenResponse(&$value)
+  public static function flattenResponse(&$value): void
   {
     self::flatten($value);
   }
 
-  private static function flatten(&$value)
+  /**
+   * @param $value
+   * @return void
+   */
+  private static function flatten(&$value): void
   {
     if (is_object($value))
     {
@@ -211,24 +228,26 @@ abstract class PwgResponseEncoder
 }
 
 
-
+/**
+ *
+ */
 class PwgServer
 {
-  var $_requestHandler;
-  var $_requestFormat;
-  var $_responseEncoder;
-  var $_responseFormat;
+  public $_requestHandler;
+  public $_requestFormat;
+  public $_responseEncoder;
+  public $_responseFormat;
 
-  var $_methods = array();
+  public array $_methods = array();
 
-  function __construct()
+  public function __construct()
   {
   }
 
   /**
    *  Initializes the request handler.
    */
-  function setHandler($requestFormat, &$requestHandler)
+  public function setHandler($requestFormat, &$requestHandler): void
   {
     $this->_requestHandler = &$requestHandler;
     $this->_requestFormat = $requestFormat;
@@ -237,7 +256,7 @@ class PwgServer
   /**
    *  Initializes the request handler.
    */
-  function setEncoder($responseFormat, &$encoder)
+  public function setEncoder($responseFormat, &$encoder): void
   {
     $this->_responseEncoder = &$encoder;
     $this->_responseFormat = $responseFormat;
@@ -247,7 +266,7 @@ class PwgServer
    * Runs the web service call (handler and response encoder should have been
    * created)
    */
-  function run()
+  public function run(): void
   {
     if ( is_null($this->_responseEncoder) )
     {
@@ -284,7 +303,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
   /**
    * Encodes a response and sends it back to the browser.
    */
-  function sendResponse($response)
+  public function sendResponse($response): void
   {
     $encodedResponse = $this->_responseEncoder->encodeResponse($response);
     $contentType = $this->_responseEncoder->getContentType();
@@ -296,24 +315,24 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
 
   /**
    * Registers a web service method.
-   * @param methodName string - the name of the method as seen externally
-   * @param callback mixed - php method to be invoked internally
-   * @param params array - map of allowed parameter names with options
-   *    @option mixed default (optional)
-   *    @option int flags (optional)
+   * @param string $methodName the name of the method as seen externally
+   * @param mixed $callback php method to be invoked internally
+   * @param array|null $params map of allowed parameter names with options
+   * @option mixed default (optional)
+   * @option int flags (optional)
    *      possible values: WS_PARAM_ALLOW_ARRAY, WS_PARAM_FORCE_ARRAY, WS_PARAM_OPTIONAL
-   *    @option int type (optional)
+   * @option int type (optional)
    *      possible values: WS_TYPE_BOOL, WS_TYPE_INT, WS_TYPE_FLOAT, WS_TYPE_ID
    *                       WS_TYPE_POSITIVE, WS_TYPE_NOTNULL
-   *    @option int|float maxValue (optional)
-   * @param description string - a description of the method.
-   * @param include_file string - a file to be included befaore the callback is executed
-   * @param options array
-   *    @option bool hidden (optional) - if true, this method won't be visible by reflection.getMethodList
-   *    @option bool admin_only (optional)
-   *    @option bool post_only (optional)
+   * @option int|float maxValue (optional)
+   * @param string|null $description a description of the method.
+   * @param string $include_file a file to be included before the callback is executed
+   * @param array $options
+   * @option bool hidden (optional) - if true, this method won't be visible by reflection.getMethodList
+   * @option bool admin_only (optional)
+   * @option bool post_only (optional)
    */
-  function addMethod($methodName, $callback, $params=array(), $description='', $include_file='', $options=array())
+  public function addMethod(string $methodName, mixed $callback, array|null $params=array(), string|null $description='', string $include_file='', array $options=array()): void
   {
     if (!is_array($params))
     {
@@ -358,38 +377,58 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
       );
   }
 
-  function hasMethod($methodName)
+  /**
+   * @param $methodName
+   * @return bool
+   */
+  public function hasMethod($methodName): bool
   {
     return isset($this->_methods[$methodName]);
   }
 
-  function getMethodDescription($methodName)
+  /**
+   * @param $methodName
+   * @return mixed|string
+   */
+  public function getMethodDescription($methodName): mixed
   {
     $desc = $this->_methods[$methodName]['description'];
-    return isset($desc) ? $desc : '';
+    return $desc ?? '';
   }
 
-  function getMethodSignature($methodName)
+  /**
+   * @param $methodName
+   * @return array|mixed
+   */
+  public function getMethodSignature($methodName): mixed
   {
     $signature = $this->_methods[$methodName]['signature'];
-    return isset($signature) ? $signature : array();
-  }
-  
-  /**
-   * @since 2.6
-   */
-  function getMethodOptions($methodName)
-  {
-    $options = $this->_methods[$methodName]['options'];
-    return isset($options) ? $options : array();
+    return $signature ?? array();
   }
 
-  static function isPost()
+  /**
+   * @param $methodName
+   * @return array|mixed
+   */
+  public function getMethodOptions($methodName): mixed
+  {
+    $options = $this->_methods[$methodName]['options'];
+    return $options ?? array();
+  }
+
+  /**
+   * @return bool
+   */
+  public static function isPost(): bool
   {
     return isset($HTTP_RAW_POST_DATA) or !empty($_POST);
   }
 
-  static function makeArrayParam(&$param)
+  /**
+   * @param $param
+   * @return void
+   */
+  public static function makeArrayParam(&$param): void
   {
     if ( $param==null )
     {
@@ -403,8 +442,14 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
       }
     }
   }
-  
-  static function checkType(&$param, $type, $name)
+
+  /**
+   * @param $param
+   * @param $type
+   * @param $name
+   * @return PwgError|null
+   */
+  public static function checkType(&$param, $type, $name): ?PwgError
   {
     $opts = array();
     $msg = '';
@@ -413,7 +458,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
       $opts['options']['min_range'] = 1;
       $msg = ' positive and not null';
     }
-    else if ( self::hasFlag($type, WS_TYPE_POSITIVE) )
+    elseif ( self::hasFlag($type, WS_TYPE_POSITIVE) )
     {
       $opts['options']['min_range'] = 0;
       $msg = ' positive';
@@ -432,7 +477,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
         }
         unset($value);
       }
-      else if ( self::hasFlag($type, WS_TYPE_INT) )
+      elseif ( self::hasFlag($type, WS_TYPE_INT) )
       {
         foreach ($param as &$value)
         {
@@ -443,7 +488,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
         }
         unset($value);
       }
-      else if ( self::hasFlag($type, WS_TYPE_FLOAT) )
+      elseif ( self::hasFlag($type, WS_TYPE_FLOAT) )
       {
         foreach ($param as &$value)
         {
@@ -457,7 +502,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
         unset($value);
       }
     }
-    else if ( $param !== '' )
+    elseif ( $param !== '' )
     {
       if ( self::hasFlag($type, WS_TYPE_BOOL) )
       {
@@ -466,14 +511,14 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
           return new PwgError(WS_ERR_INVALID_PARAM, $name.' must be a boolean' );
         }
       }
-      else if ( self::hasFlag($type, WS_TYPE_INT) )
+      elseif ( self::hasFlag($type, WS_TYPE_INT) )
       {
         if ( ($param = filter_var($param, FILTER_VALIDATE_INT, $opts)) === false )
         {
           return new PwgError(WS_ERR_INVALID_PARAM, $name.' must be an'.$msg.' integer' );
         }
       }
-      else if ( self::hasFlag($type, WS_TYPE_FLOAT) )
+      elseif ( self::hasFlag($type, WS_TYPE_FLOAT) )
       {
         if (
           ($param = filter_var($param, FILTER_VALIDATE_FLOAT)) === false
@@ -486,19 +531,24 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
     
     return null;
   }
-  
-  static function hasFlag($val, $flag)
+
+  /**
+   * @param $val
+   * @param $flag
+   * @return bool
+   */
+  public static function hasFlag($val, $flag): bool
   {
     return ($val & $flag) == $flag;
   }
 
   /**
-   *  Invokes a registered method. Returns the return of the method (or
-   *  a PwgError object if the method is not found)
-   *  @param methodName string the name of the method to invoke
-   *  @param params array array of parameters to pass to the invoked method
+   * Invokes a registered method. Returns the return of the method (or
+   * a PwgError object if the method is not found)
+   * @param string $methodName the name of the method to invoke
+   * @param array $params of parameters to pass to the invoked method
    */
-  function invoke($methodName, $params)
+  public function invoke(string $methodName, array $params)
   {
     $method = $this->_methods[$methodName];
 
@@ -532,7 +582,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
         {
           $missing_params[] = $name;
         }
-        else if ( array_key_exists('default', $options) )
+        elseif ( array_key_exists('default', $options) )
         {
           $params[$name] = $options['default'];
           if ( self::hasFlag($flags, WS_PARAM_FORCE_ARRAY) )
@@ -542,7 +592,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
         }
       }
       // parameter provided but empty
-      else if ( $params[$name]==='' and !self::hasFlag($flags, WS_PARAM_OPTIONAL) )
+      elseif ( $params[$name]==='' and !self::hasFlag($flags, WS_PARAM_OPTIONAL) )
       {
         $missing_params[] = $name;
       }
@@ -606,7 +656,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
   /**
    * WS reflection method implementation: lists all available methods
    */
-  static function ws_getMethodList($params, &$service)
+  public static function ws_getMethodList($params, $service): array
   {
     $methods = array_filter($service->_methods,
       function($m) { return empty($m["options"]["hidden"]) || !$m["options"]["hidden"];} );
@@ -616,7 +666,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
   /**
    * WS reflection method implementation: gets information about a given method
    */
-  static function ws_getMethodDetails($params, &$service)
+  public static function ws_getMethodDetails($params, $service): PwgError|array
   {
     $methodName = $params['methodName'];
     
@@ -658,11 +708,11 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
       {
         $param_data['type'] = 'bool';
       }
-      else if ( self::hasFlag($options['type'], WS_TYPE_INT) )
+      elseif ( self::hasFlag($options['type'], WS_TYPE_INT) )
       {
         $param_data['type'] = 'int';
       }
-      else if ( self::hasFlag($options['type'], WS_TYPE_FLOAT) )
+      elseif ( self::hasFlag($options['type'], WS_TYPE_FLOAT) )
       {
         $param_data['type'] = 'float';
       }
@@ -680,4 +730,4 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
     return $res;
   }
 }
-?>
+

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,11 +9,13 @@
 /**
  * API method
  * Returns the list of groups
- * @param mixed[] $params
- *    @option int[] group_id (optional)
- *    @option string name (optional)
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int[] group_id (optional)
+ * @option string name (optional)
  */
-function ws_groups_getList($params, &$service)
+function ws_groups_getList(array $params, &$service): PwgError|array
 {
   if (!preg_match(PATTERN_ORDER, $params['order']))
   {
@@ -45,7 +47,7 @@ SELECT
   OFFSET '. ($params['per_page']*$params['page']) .'
 ;';
 
-  $groups = array_from_query($query);
+  $groups = query2array($query);
 
   return array(
     'paging' => new PwgNamedStruct(array(
@@ -60,11 +62,13 @@ SELECT
 /**
  * API method
  * Adds a group
- * @param mixed[] $params
- *    @option string name
- *    @option bool is_default
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option string name
+ * @option bool is_default
  */
-function ws_groups_add($params, &$service)
+function ws_groups_add(array $params, $service): mixed
 {
   $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes($params['name'])));
 
@@ -102,11 +106,13 @@ SELECT COUNT(*)
 /**
  * API method
  * Deletes a group
- * @param mixed[] $params
- *    @option int[] group_id
- *    @option string pwg_token
+ * @param array $params
+ * @param $service
+ * @return PwgError|PwgNamedArray
+ * @option int[] group_id
+ * @option string pwg_token
  */
-function ws_groups_delete($params, &$service)
+function ws_groups_delete(array $params, &$service): PwgError|PwgNamedArray
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -124,12 +130,14 @@ function ws_groups_delete($params, &$service)
 /**
  * API method
  * Updates a group
- * @param mixed[] $params
- *    @option int group_id
- *    @option string name (optional)
- *    @option bool is_default (optional)
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option int group_id
+ * @option string name (optional)
+ * @option bool is_default (optional)
  */
-function ws_groups_setInfo($params, &$service)
+function ws_groups_setInfo(array $params, $service): mixed
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -193,11 +201,13 @@ SELECT COUNT(*)
 /**
  * API method
  * Adds user(s) to a group
- * @param mixed[] $params
- *    @option int group_id
- *    @option int[] user_id
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option int group_id
+ * @option int[] user_id
  */
-function ws_groups_addUser($params, &$service)
+function ws_groups_addUser(array $params, $service): mixed
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -243,11 +253,14 @@ SELECT COUNT(*)
 /**
  * API method
  * Merge groups in one other group
- * @param mixed[] $params
- *    @option int destination_group_id
- *    @option int[] merge_group_id
+ * @param array $params
+ * @param $service
+ * @return PwgError|array
+ * @option int destination_group_id
+ * @option int[] merge_group_id
  */
-function ws_groups_merge($params, &$service) {
+function ws_groups_merge(array $params, $service): PwgError|array
+{
 
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -255,7 +268,7 @@ function ws_groups_merge($params, &$service) {
   }
 
   $all_groups = $params['merge_group_id'];
-  array_push($all_groups, $params['destination_group_id']);
+  $all_groups[] = $params['destination_group_id'];
 
   $all_groups = array_unique($all_groups);
   $merge_group = array_diff($params['merge_group_id'], array($params['destination_group_id']));
@@ -290,9 +303,9 @@ SELECT user_id
   WHERE group_id = '.$params['destination_group_id'].'
 ;';
 
-  $user_in_dest = query2array($query, null, 'user_id');;
+  $user_in_dest = query2array($query, null, 'user_id');
 
-  
+
   $user_to_add = array_diff($user_in_merge_groups, $user_in_dest);
 
   $inserts = array();
@@ -333,11 +346,14 @@ SELECT user_id
 /**
  * API method
  * Create a copy of a group
- * @param mixed[] $params
- *    @option int group_id
- *    @option string copy_name
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option int group_id
+ * @option string copy_name
  */
-function ws_groups_duplicate($params, &$service) {
+function ws_groups_duplicate(array $params, $service): mixed
+{
 
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -424,11 +440,13 @@ SELECT is_default
 /**
  * API method
  * Removes user(s) from a group
- * @param mixed[] $params
- *    @option int group_id
- *    @option int[] user_id
+ * @param array $params
+ * @param $service
+ * @return mixed
+ * @option int group_id
+ * @option int[] user_id
  */
-function ws_groups_deleteUser($params, &$service)
+function ws_groups_deleteUser(array $params, $service): mixed
 {
   if (get_pwg_token() != $params['pwg_token'])
   {
@@ -464,4 +482,3 @@ DELETE FROM '. USER_GROUP_TABLE .'
   return $service->invoke('pwg.groups.getList', array('group_id' => $params['group_id']));
 }
 
-?>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -33,4 +33,3 @@ else
 {
   include(PHPWG_ROOT_PATH.'admin/plugins_'.$page['tab'].'.php');
 }
-?>

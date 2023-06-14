@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -113,4 +113,3 @@ $template->assign('ADMIN_PAGE_TITLE', l10n('Groups').' <span class="badge-number
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'group_list');
 
-?>

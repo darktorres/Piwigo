@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -32,4 +32,3 @@ $tabsheet->assign();
 
 include(PHPWG_ROOT_PATH.'admin/updates_'.$page['tab'].'.php');
 
-?>

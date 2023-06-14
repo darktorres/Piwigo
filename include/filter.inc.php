@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -83,7 +83,7 @@ WHERE ';
   $query.= '
     date_available >= '.pwg_db_get_recent_period_expression($filter['recent_period']);
 
-    $filter['visible_images'] = implode(',', array_from_query($query, 'image_id'));
+    $filter['visible_images'] = implode(',', query2array($query, null, 'image_id'));
 
     if (empty($filter['visible_images']))
     {
@@ -128,4 +128,3 @@ else
 }
 
 
-?>

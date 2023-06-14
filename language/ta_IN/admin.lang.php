@@ -181,4 +181,3 @@ $lang['Associated'] = '
 $lang['Authorized'] = 'அங்கீகரிக்கப்பட்ட';
 $lang['Automatic correction'] = 'தானியக்க திருத்தம்';
 $lang['Automatic sort order'] = 'தானியக்க வரிசை ஒழுங்கை';
-?>

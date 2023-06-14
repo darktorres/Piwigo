@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
 global $template;
 
-include_once( dirname(dirname(__FILE__)).'/functions.inc.php');
+include_once( dirname(__FILE__, 2).'/functions.inc.php');
 include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
 
 $default_conf = modus_get_default_config();
@@ -28,7 +28,7 @@ if (isset($_POST[$text_values[0]]))
 	foreach ($text_values as $k )
 		$my_conf[$k] = stripslashes($_POST[$k]);
 	foreach ($bool_values as $k )
-		$my_conf[$k] = isset($_POST[$k]) ? true:false;
+		$my_conf[$k] = isset($_POST[$k]);
   
   if (!isset($_POST['use_album_square_thumbs']))
   {
@@ -99,7 +99,7 @@ foreach(array_keys(ImageStdParams::get_defined_type_map()) as $type)
 	$available_derivatives[$type] = l10n($type);
 
 $available_skins=array();
-$skin_dir = dirname(dirname(__FILE__)).'/skins/';
+$skin_dir = dirname(__FILE__, 2).'/skins/';
 $skin_suffix = '.inc.php';
 foreach( glob($skin_dir.'*'.$skin_suffix) as $file)
 {
@@ -114,4 +114,3 @@ $template->assign( array(
 
 $template->set_filename( 'modus_content', dirname(__FILE__).'/modus_admin.tpl' );
 $template->assign_var_from_handle( 'ADMIN_CONTENT', 'modus_content');
-?>

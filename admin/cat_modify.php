@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -19,7 +19,11 @@ include_once(PHPWG_ROOT_PATH.'include/functions_mail.inc.php');
 // Example : "pets > rex > 1_year_old" is on the the same site as the
 // Piwigo files and this category has 22 for identifier
 // get_complete_dir(22) returns "./galleries/pets/rex/1_year_old/"
-function get_complete_dir( $category_id )
+/**
+ * @param $category_id
+ * @return string
+ */
+function get_complete_dir($category_id ): string
 {
   return get_site_url($category_id).get_local_dir($category_id);
 }
@@ -28,7 +32,11 @@ function get_complete_dir( $category_id )
 // Example : "pets > rex > 1_year_old" is on the the same site as the
 // Piwigo files and this category has 22 for identifier
 // get_local_dir(22) returns "pets/rex/1_year_old/"
-function get_local_dir( $category_id )
+/**
+ * @param $category_id
+ * @return string
+ */
+function get_local_dir($category_id ): string
 {
   global $page;
 
@@ -69,7 +77,11 @@ function get_local_dir( $category_id )
 
 // retrieving the site url : "http://domain.com/gallery/" or
 // simply "./galleries/"
-function get_site_url($category_id)
+/**
+ * @param $category_id
+ * @return mixed
+ */
+function get_site_url($category_id): mixed
 {
   global $page;
 
@@ -112,14 +124,14 @@ foreach (array('comment','dir','site_id', 'id_uppercat') as $nullable)
   }
 }
 
-$category['is_virtual'] = empty($category['dir']) ? true : false;
+$category['is_virtual'] = empty($category['dir']);
 
 $query = 'SELECT DISTINCT category_id
   FROM '.IMAGE_CATEGORY_TABLE.'
   WHERE category_id = '.$_GET['cat_id'].'
   LIMIT 1';
 $result = pwg_query($query);
-$category['has_images'] = pwg_db_num_rows($result)>0 ? true : false;
+$category['has_images'] = pwg_db_num_rows($result)>0;
 
 // number of sub-categories
 $subcat_ids = get_subcat_ids(array($category['id']));
@@ -344,7 +356,7 @@ if ($category['has_images'] or !empty($category['representative_picture_id']))
   }
 
   // can the admin choose to set a new random representant ?
-  $tpl_representant['ALLOW_SET_RANDOM'] = ($category['has_images'] ? true : false);
+  $tpl_representant['ALLOW_SET_RANDOM'] = $category['has_images'];
 
   // can the admin delete the current representant ?
   if (
@@ -370,4 +382,4 @@ trigger_notify('loc_end_cat_modify');
 
 //----------------------------------------------------------- sending html code
 $template->assign_var_from_handle('ADMIN_CONTENT', 'album_properties');
-?>
+

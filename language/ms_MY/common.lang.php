@@ -145,4 +145,3 @@ $lang['Add a comment'] = 'Tambahkan sebuah komentar';
 $lang['Accelerate diaporama speed'] = 'Tingkatkan kecepatan gambar geser';
 $lang['2small'] = 'XXS - Kecil';
 $lang['%d rate'] = '%d rating';
-?>

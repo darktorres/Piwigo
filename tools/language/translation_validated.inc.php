@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 $validated_keys = array(
   'af_ZA' => array(
 	'IP: %s',
@@ -650,4 +650,4 @@ $validated_keys = array(
 	'localhost, sql.multimania.com, toto.freesurf.fr',
 	),	
   );
-?>
+

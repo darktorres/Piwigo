@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -173,4 +173,4 @@ $template->assign('PWG_TOKEN', get_pwg_token());
 
 $template->assign_var_from_handle('DOUBLE_SELECT', 'double_select');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'user_perm');
-?>
+

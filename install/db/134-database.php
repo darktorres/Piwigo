@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -25,4 +25,3 @@ if ( extension_loaded('mysqli') and $conf['dblayer']=='mysql' and is_writable($c
 }
 
 echo "\n".$upgrade_description."\n";
-?>

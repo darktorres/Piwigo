@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,9 +6,12 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class c13y_internal
 {
-  function __construct()
+  public function __construct()
   {
     add_event_handler('list_check_integrity', array(&$this, 'c13y_version'));
     add_event_handler('list_check_integrity', array(&$this, 'c13y_exif'));
@@ -18,10 +21,10 @@ class c13y_internal
   /**
    * Check version
    *
-   * @param c13y object
+   * @param $c13y
    * @return void
    */
-  function c13y_version($c13y)
+  public function c13y_version($c13y): void
   {
     global $conf;
 
@@ -49,7 +52,7 @@ class c13y_internal
           null,
           l10n('You need to upgrade your system to take full advantage of the application else the application will not work correctly, or not at all')
           .'<br>'.
-          $c13y->get_htlm_links_more_info());
+          $c13y->get_html_links_more_info());
       }
     }
   }
@@ -57,10 +60,10 @@ class c13y_internal
   /**
    * Check exif
    *
-   * @param c13y object
+   * @param $c13y
    * @return void
    */
-  function c13y_exif($c13y)
+  public function c13y_exif($c13y): void
   {
     global $conf;
 
@@ -74,7 +77,7 @@ class c13y_internal
           null,
           sprintf(l10n('%s must be to set to false in your local/config/config.inc.php file'), '$conf[\''.$value.'\']')
           .'<br>'.
-          $c13y->get_htlm_links_more_info());
+          $c13y->get_html_links_more_info());
       }
     }
   }
@@ -82,10 +85,10 @@ class c13y_internal
   /**
    * Check user
    *
-   * @param c13y object
+   * @param $c13y
    * @return void
    */
-  function c13y_user($c13y)
+  public function c13y_user($c13y): void
   {
     global $conf;
 
@@ -144,10 +147,12 @@ class c13y_internal
   /**
    * Do correction user
    *
-   * @param user_id, action
-   * @return boolean true if ok else false
+   * @param $id
+   * @param $action
+   * @return bool true if ok else false
+   * @throws Exception
    */
-  function c13y_correction_user($id, $action)
+  public function c13y_correction_user($id, $action): bool
   {
     global $conf, $page;
 
@@ -163,12 +168,12 @@ class c13y_internal
             $name = 'guest';
             $password = null;
           }
-          else if  ($id == $conf['default_user_id'])
+          elseif  ($id == $conf['default_user_id'])
           {
             $name = 'guest';
             $password = null;
           }
-          else if  ($id == $conf['webmaster_id'])
+          elseif  ($id == $conf['webmaster_id'])
           {
             $name = 'webmaster';
             $password = generate_key(6);
@@ -207,11 +212,11 @@ class c13y_internal
           {
             $status = 'guest';
           }
-          else if  ($id == $conf['default_user_id'])
+          elseif  ($id == $conf['default_user_id'])
           {
             $status = 'guest';
           }
-          else if  ($id == $conf['webmaster_id'])
+          elseif  ($id == $conf['webmaster_id'])
           {
             $status = 'webmaster';
           }
@@ -240,4 +245,4 @@ class c13y_internal
   }
 }
 
-?>
+

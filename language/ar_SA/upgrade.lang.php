@@ -24,4 +24,3 @@ $lang['Only thumbnails prefix and webmaster mail address have been saved from pr
 $lang['In <i>%s</i>, before <b>?></b>, insert:'] = 'في <i>%s</i>, قبل <b>?></b>, إدراج:';
 $lang['As a precaution, following themes have been deactivated. You must check for themes upgrade before reactiving them:'] = 'للاحتياط,الثيمات التالية تم الغاء تفعيلها.يجب ان تقوم بعملية تحديث للثيمات قبل تفعيلها';
 
-?>

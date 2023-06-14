@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,7 +12,7 @@ if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<'))
   die('Piwigo requires PHP ' . REQUIRED_PHP_VERSION . ' or above.');
 }
 
-define('PHPWG_ROOT_PATH', './');
+const PHPWG_ROOT_PATH = './';
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
@@ -38,7 +38,7 @@ if (!$conf['check_upgrade_feed'])
 prepare_conf_upgrade();
 
 define('PREFIX_TABLE', $prefixeTable);
-define('UPGRADES_PATH', PHPWG_ROOT_PATH.'install/db');
+const UPGRADES_PATH = PHPWG_ROOT_PATH . 'install/db';
 
 // +-----------------------------------------------------------------------+
 // |                         Database connection                           |
@@ -50,7 +50,7 @@ try
 }
 catch (Exception $e)
 {
-  my_error(l10n($e->getMessage(), true)); 
+  my_error(l10n($e->getMessage()), true);
 }
 
 
@@ -63,7 +63,7 @@ $query = '
 SELECT id
   FROM '.PREFIX_TABLE.'upgrade
 ;';
-$applied = array_from_query($query, 'id');
+$applied = query2array($query, null, 'id');
 
 // retrieve existing upgrades
 $existing = get_available_upgrade_ids();
@@ -97,4 +97,4 @@ INSERT INTO '.PREFIX_TABLE.'upgrade
 }
 
 echo '</pre>';
-?>
+

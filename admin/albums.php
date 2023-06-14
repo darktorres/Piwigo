@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -64,7 +64,7 @@ SELECT id
   WHERE id_uppercat '.
     (($_POST['id'] === '-1') ? 'IS NULL' : '= '.$_POST['id']).'
 ;';
-  $category_ids = array_from_query($query, 'id');
+  $category_ids = query2array($query, null, 'id');
 
   if (isset($_POST['recursiveAutoOrder']))
   {
@@ -77,7 +77,7 @@ SELECT id
   list($order_by_field, $order_by_asc) = explode(' ', $_POST['order']);
   
   $order_by_date = false;
-  if (strpos($order_by_field, 'date_') === 0)
+  if (str_starts_with($order_by_field, 'date_'))
   {
     $order_by_date = true;
     
@@ -163,10 +163,10 @@ foreach ($allAlbum as $album)
   $album['lastmodified'] = time_since($album['lastmodified'], 'year');
 
   $parents = explode(',',$album['uppercats']);
-  $the_place = &$associatedTree[strval($parents[0])];
+  $the_place = &$associatedTree[$parents[0]];
   for ($i=1; $i < count($parents); $i++) 
   { 
-    $the_place = &$the_place['children'][strval($parents[$i])];
+    $the_place = &$the_place['children'][$parents[$i]];
   }
   $the_place['cat'] = $album;
 }
@@ -179,7 +179,12 @@ foreach ($allAlbum as $album)
 $is_forbidden = array_fill_keys(explode(',', $user['forbidden_categories'] ?? ''), 1);
 
 //Make an ordered tree
-function cmpCat($a, $b) 
+/**
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function cmpCat($a, $b): int
 {
   if ($a['rank'] == $b['rank']) 
   {
@@ -188,7 +193,11 @@ function cmpCat($a, $b)
   return ($a['rank'] < $b['rank']) ? -1 : 1;
 }
 
-function assocToOrderedTree($assocT) 
+/**
+ * @param $assocT
+ * @return array
+ */
+function assocToOrderedTree($assocT): array
 {
   global $nb_photos_in, $nb_sub_photos, $is_forbidden;
 
@@ -201,17 +210,17 @@ function assocToOrderedTree($assocT)
     $orderedCat['name'] = $cat['cat']['name'];
     $orderedCat['status'] = $cat['cat']['status'];
     $orderedCat['id'] = $cat['cat']['id'];
-    $orderedCat['nb_images'] = isset($nb_photos_in[$cat['cat']['id']]) ? $nb_photos_in[$cat['cat']['id']] : 0;
+    $orderedCat['nb_images'] = $nb_photos_in[$cat['cat']['id']] ?? 0;
     $orderedCat['last_updates'] = $cat['cat']['lastmodified'];
     $orderedCat['has_not_access'] = isset($is_forbidden[$cat['cat']['id']]);
-    $orderedCat['nb_sub_photos'] = isset($nb_sub_photos[$cat['cat']['id']]) ? $nb_sub_photos[$cat['cat']['id']] : 0;
+    $orderedCat['nb_sub_photos'] = $nb_sub_photos[$cat['cat']['id']] ?? 0;
     if (isset($cat['children'])) 
     {
       //Does not update when moving a node
       $orderedCat['nb_subcats'] = count($cat['children']);
       $orderedCat['children'] = assocToOrderedTree($cat['children']);
     }
-    array_push($orderedTree, $orderedCat);
+    $orderedTree[] = $orderedCat;
   }
   usort($orderedTree, 'cmpCat');
   return $orderedTree;
@@ -279,7 +288,13 @@ $template->assign_var_from_handle('ADMIN_CONTENT', 'albums');
 // +-----------------------------------------------------------------------+
 // |                              functions                                |
 // +-----------------------------------------------------------------------+
-function get_categories_ref_date($ids, $field='date_available', $minmax='max')
+/**
+ * @param $ids
+ * @param string $field
+ * @param string $minmax
+ * @return array
+ */
+function get_categories_ref_date($ids, string $field='date_available', string $minmax='max'): array
 {
   // we need to work on the whole tree under each category, even if we don't
   // want to sort sub categories
@@ -349,4 +364,4 @@ SELECT
   
   return $return;
 }
-?>
+

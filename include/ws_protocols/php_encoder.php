@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,9 +6,16 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+/**
+ *
+ */
 class PwgSerialPhpEncoder extends PwgResponseEncoder
 {
-  function encodeResponse($response)
+  /**
+   * @param $response
+   * @return string
+   */
+  public function encodeResponse($response): string
   {
     if ($response instanceof PwgError)
     {
@@ -29,10 +36,13 @@ class PwgSerialPhpEncoder extends PwgResponseEncoder
     );
   }
 
-  function getContentType()
+  /**
+   * @return string
+   */
+  public function getContentType(): string
   {
     return 'text/plain';
   }
 }
 
-?>
+

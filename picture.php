@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 include(PHPWG_ROOT_PATH.'include/section_init.inc.php');
 include_once(PHPWG_ROOT_PATH.'include/functions_picture.inc.php');
@@ -129,7 +129,7 @@ add_event_handler('render_element_description', 'pwg_nl2br');
  * parameter on nl2br() (and anyway the second parameter of nl2br does not
  * match what Piwigo gives.
  */
-function pwg_nl2br($string)
+function pwg_nl2br($string): string
 {
   return nl2br($string);
 }
@@ -137,7 +137,13 @@ function pwg_nl2br($string)
 trigger_notify('loc_begin_picture');
 
 // this is the default handler that generates the display for the element
-function default_picture_content($content, $element_info)
+/**
+ * @param $content
+ * @param $element_info
+ * @return mixed|string|null
+ * @throws SmartyException
+ */
+function default_picture_content($content, $element_info): mixed
 {
   global $conf;
 
@@ -456,7 +462,7 @@ SELECT id,uppercats,commentable,visible,status,global_rank
     'AND'
   ).'
 ;';
-$related_categories = array_from_query($query);
+$related_categories = query2array($query);
 usort($related_categories, 'global_rank_compare');
 //-------------------------first, prev, current, next & last picture management
 $picture = array();
@@ -966,7 +972,7 @@ else
 SELECT id, name, permalink
   FROM '.CATEGORIES_TABLE.'
   WHERE id IN ('.implode(',',$ids).')';
-  $cat_map = hash_from_query($query, 'id');
+  $cat_map = query2array($query, 'id');
   foreach ($related_categories as $category)
   {
     $cats = array();
@@ -990,7 +996,7 @@ $template->assign( 'ELEMENT_CONTENT', $element_content );
 if (isset($picture['next'])
     and $picture['next']['src_image']->is_original()
     and $template->get_template_vars('U_PREFETCH') == null
-    and strpos($_SERVER['HTTP_USER_AGENT'], 'Chrome/') === false)
+    and !str_contains($_SERVER['HTTP_USER_AGENT'], 'Chrome/'))
 {
   $template->assign(
     'U_PREFETCH',
@@ -1044,4 +1050,3 @@ else
 //------------------------------------------------------------ log informations
 pwg_log($picture['current']['id'], 'picture');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
-?>

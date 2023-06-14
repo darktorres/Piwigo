@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,37 +7,37 @@
 // +-----------------------------------------------------------------------+
 
 // Default settings
-define('PHPWG_VERSION', '13.7.0');
-define('PHPWG_DEFAULT_LANGUAGE', 'en_UK');
+const PHPWG_VERSION = '13.7.0';
+const PHPWG_DEFAULT_LANGUAGE = 'en_UK';
 
 // this constant is only used in the upgrade process, the true default theme
 // is the theme of user "guest", which is initialized with column user_infos.theme
 // default value (see file install/piwigo_structure-mysql.sql)
-define('PHPWG_DEFAULT_TEMPLATE', 'modus');
+const PHPWG_DEFAULT_TEMPLATE = 'modus';
 
 define('PHPWG_THEMES_PATH', $conf['themes_dir'].'/');
 defined('PWG_COMBINED_DIR') or define('PWG_COMBINED_DIR', $conf['data_location'].'combined/');
 defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'].'i/');
 
 // Required versions
-define('REQUIRED_PHP_VERSION', '8.3.7');
+const REQUIRED_PHP_VERSION = '8.3.7';
 
 // Access codes
-define('ACCESS_FREE', 0);
-define('ACCESS_GUEST', 1);
-define('ACCESS_CLASSIC', 2);
-define('ACCESS_ADMINISTRATOR', 3);
-define('ACCESS_WEBMASTER', 4);
-define('ACCESS_CLOSED', 5);
+const ACCESS_FREE = 0;
+const ACCESS_GUEST = 1;
+const ACCESS_CLASSIC = 2;
+const ACCESS_ADMINISTRATOR = 3;
+const ACCESS_WEBMASTER = 4;
+const ACCESS_CLOSED = 5;
 
 // System activities
-define('ACTIVITY_SYSTEM_CORE', 1);
-define('ACTIVITY_SYSTEM_PLUGIN', 2);
-define('ACTIVITY_SYSTEM_THEME', 3);
+const ACTIVITY_SYSTEM_CORE = 1;
+const ACTIVITY_SYSTEM_PLUGIN = 2;
+const ACTIVITY_SYSTEM_THEME = 3;
 
 // Sanity checks
-define('PATTERN_ID', '/^\d+$/');
-define('PATTERN_ORDER', '/^(rand(om)?|[a-z_]+(\s+(asc|desc))?)(\s*,\s*(rand(om)?|[a-z_]+(\s+(asc|desc))?))*$/i');
+const PATTERN_ID = '/^\d+$/';
+const PATTERN_ORDER = '/^(rand(om)?|[a-z_]+(\s+(asc|desc))?)(\s*,\s*(rand(om)?|[a-z_]+(\s+(asc|desc))?))*$/i';
 
 // Table names
 if (!defined('CATEGORIES_TABLE'))
@@ -109,4 +109,4 @@ if (!defined('ACTIVITY_TABLE'))
 if (!defined('LOUNGE_TABLE'))
   define('LOUNGE_TABLE', "`{$prefixeTable}lounge`");
 
-?>
+

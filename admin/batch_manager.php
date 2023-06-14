@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -521,8 +521,8 @@ if (!empty($_SESSION['bulk_manager_filter']['tags']))
   $filter_sets[] = get_image_ids_for_tags(
     $_SESSION['bulk_manager_filter']['tags'],
     $_SESSION['bulk_manager_filter']['tag_mode'],
-    null,
-    null,
+    '',
+    '',
     false // we don't apply permissions in administration screens
     );
 }
@@ -720,15 +720,15 @@ foreach ($ratios as $ratio)
   {
     $ratio_categories['portrait'][] = $ratio;
   }
-  else if ($ratio >= 0.95 and $ratio <= 1.05)
+  elseif ($ratio >= 0.95 and $ratio <= 1.05)
   {
     $ratio_categories['square'][] = $ratio;
   }
-  else if ($ratio > 1.05 and $ratio < 2)
+  elseif ($ratio > 1.05 and $ratio < 2)
   {
     $ratio_categories['landscape'][] = $ratio;
   }
-  else if ($ratio >= 2)
+  elseif ($ratio >= 2)
   {
     $ratio_categories['panorama'][] = $ratio;
   }
@@ -748,9 +748,7 @@ foreach (array_keys($ratio_categories) as $type)
 // selected=bound if nothing selected
 foreach (array_keys($dimensions['bounds']) as $type)
 {
-  $dimensions['selected'][$type] = isset($_SESSION['bulk_manager_filter']['dimension'][$type])
-    ? $_SESSION['bulk_manager_filter']['dimension'][$type]
-    : $dimensions['bounds'][$type]
+  $dimensions['selected'][$type] = $_SESSION['bulk_manager_filter']['dimension'][$type] ?? $dimensions['bounds'][$type]
   ;
 }
 
@@ -799,9 +797,7 @@ $filesize['bounds'] = array(
 // selected=bound if nothing selected
 foreach (array_keys($filesize['bounds']) as $type)
 {
-  $filesize['selected'][$type] = isset($_SESSION['bulk_manager_filter']['filesize'][$type])
-    ? $_SESSION['bulk_manager_filter']['filesize'][$type]
-    : $filesize['bounds'][$type]
+  $filesize['selected'][$type] = $_SESSION['bulk_manager_filter']['filesize'][$type] ?? $filesize['bounds'][$type]
   ;
 }
 
@@ -812,4 +808,3 @@ $template->assign('filesize', $filesize);
 // +-----------------------------------------------------------------------+
 
 include(PHPWG_ROOT_PATH.'admin/batch_manager_'.$page['tab'].'.php');
-?>

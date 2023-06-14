@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -27,7 +27,7 @@ $query = '
 SELECT id
   FROM '.PREFIX_TABLE.'upgrade
 ;';
-$applied = array_from_query($query, 'id');
+$applied = query2array($query, null, 'id');
 
 // retrieve existing upgrades
 $existing = get_available_upgrade_ids();
@@ -42,14 +42,11 @@ foreach ($to_apply as $upgrade_id)
     break;
   }
   
-  array_push(
-    $inserts,
-    array(
+  $inserts[] = array(
       'id' => $upgrade_id,
       'applied' => CURRENT_DATE,
       'description' => '[migration from 2.0.0 to '.PHPWG_VERSION.'] not applied',
-      )
-    );
+  );
 }
 
 if (!empty($inserts))
@@ -100,4 +97,4 @@ ob_end_clean();
 
 // now we upgrade from 2.1.0
 include_once(PHPWG_ROOT_PATH.'install/upgrade_2.1.0.php');
-?>
+

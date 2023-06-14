@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -23,7 +23,12 @@ $t2 = microtime(true);
 // but we stil want to sanitize user input variables.
 if(!function_exists('get_magic_quotes_gpc') or !get_magic_quotes_gpc() )
 {
-  function sanitize_mysql_kv(&$v, $k)
+  /**
+   * @param $v
+   * @param $k
+   * @return void
+   */
+  function sanitize_mysql_kv(&$v, $k): void
   {
     $v = addslashes($v);
   }
@@ -77,7 +82,7 @@ if (!defined('PHPWG_INSTALLED'))
 }
 include(PHPWG_ROOT_PATH .'include/dblayer/functions_'.$conf['dblayer'].'.inc.php');
 
-if(isset($conf['show_php_errors']) && !empty($conf['show_php_errors']))
+if(!empty($conf['show_php_errors']))
 {
   ini_set('error_reporting', $conf['show_php_errors']);
   if($conf['show_php_errors_on_frontend'])
@@ -167,7 +172,7 @@ elseif ('pt_BR' == $user['language']) {
 else {
   define('PHPWG_DOMAIN', 'piwigo.org');
 }
-define('PHPWG_URL', 'https://'.PHPWG_DOMAIN);
+const PHPWG_URL = 'https://' . PHPWG_DOMAIN;
 
 if(isset($conf['alternative_pem_url']) and $conf['alternative_pem_url']!='')
 {
@@ -292,4 +297,4 @@ if ( !empty($conf['original_url_protection']) )
   add_event_handler('get_src_image_url', 'get_src_image_url_protection_handler');
 }
 trigger_notify('init');
-?>
+

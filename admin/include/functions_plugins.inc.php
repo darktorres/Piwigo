@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,9 +8,9 @@
 
 /**
  * Retrieves an url for a plugin page.
- * @param string file - php script full name
+ * @param string $file php script full name
  */
-function get_admin_plugin_menu_link($file)
+function get_admin_plugin_menu_link(string $file): string
 {
   global $page;
   $real_file = realpath($file);
@@ -22,10 +22,9 @@ function get_admin_plugin_menu_link($file)
     $file = str_replace('\\', '/', $file);//Windows
     $url .= '&amp;section='.urlencode($file);
   }
-  else if (isset($page['errors']))
+  elseif (isset($page['errors']))
   {
     $page['errors'][] = 'PLUGIN ERROR: "'.$file.'" is not a valid file';
   }
   return $url;
 }
-?>

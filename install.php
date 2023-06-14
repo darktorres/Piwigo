@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,15 +7,15 @@
 // +-----------------------------------------------------------------------+
 
 //----------------------------------------------------------- include
-define('PHPWG_ROOT_PATH','./');
+const PHPWG_ROOT_PATH = './';
 
 if( is_array($_POST) )
 {
   foreach($_POST as $k => $v)
   {
-    if( is_array($_POST[$k]) )
+    if( is_array($v) )
     {
-      foreach($_POST[$k] as $k2 => $v2)
+      foreach($v as $k2 => $v2)
       {
         $_POST[$k][$k2] = addslashes($v2);
       }
@@ -33,9 +33,9 @@ if( is_array($_GET) )
 {
   foreach($_GET as $k => $v )
   {
-    if( is_array($_GET[$k]) )
+    if( is_array($v) )
     {
-      foreach($_GET[$k] as $k2 => $v2)
+      foreach($v as $k2 => $v2)
       {
         $_GET[$k][$k2] = addslashes($v2);
       }
@@ -53,9 +53,9 @@ if( is_array($_COOKIE) )
 {
   foreach($_COOKIE as $k => $v)
   {
-    if( is_array($_COOKIE[$k]) )
+    if( is_array($v) )
     {
-      foreach($_COOKIE[$k] as $k2 => $v2)
+      foreach($v as $k2 => $v2)
       {
         $_COOKIE[$k][$k2] = addslashes($v2);
       }
@@ -71,7 +71,7 @@ if( is_array($_COOKIE) )
 
 //----------------------------------------------------- variable initialization
 
-define('DEFAULT_PREFIX_TABLE', 'piwigo_');
+const DEFAULT_PREFIX_TABLE = 'piwigo_';
 
 if (isset($_POST['install']))
 {
@@ -171,40 +171,40 @@ $languages = new languages('utf-8');
 if ('fr_FR' == $language) {
   define('PHPWG_DOMAIN', 'fr.piwigo.org');
 }
-else if ('it_IT' == $language) {
+elseif ('it_IT' == $language) {
   define('PHPWG_DOMAIN', 'it.piwigo.org');
 }
-else if ('de_DE' == $language) {
+elseif ('de_DE' == $language) {
   define('PHPWG_DOMAIN', 'de.piwigo.org');
 }
-else if ('es_ES' == $language) {
+elseif ('es_ES' == $language) {
   define('PHPWG_DOMAIN', 'es.piwigo.org');
 }
-else if ('pl_PL' == $language) {
+elseif ('pl_PL' == $language) {
   define('PHPWG_DOMAIN', 'pl.piwigo.org');
 }
-else if ('zh_CN' == $language) {
+elseif ('zh_CN' == $language) {
   define('PHPWG_DOMAIN', 'cn.piwigo.org');
 }
-else if ('ru_RU' == $language) {
+elseif ('ru_RU' == $language) {
   define('PHPWG_DOMAIN', 'ru.piwigo.org');
 }
-else if ('nl_NL' == $language) {
+elseif ('nl_NL' == $language) {
   define('PHPWG_DOMAIN', 'nl.piwigo.org');
 }
-else if ('tr_TR' == $language) {
+elseif ('tr_TR' == $language) {
   define('PHPWG_DOMAIN', 'tr.piwigo.org');
 }
-else if ('da_DK' == $language) {
+elseif ('da_DK' == $language) {
   define('PHPWG_DOMAIN', 'da.piwigo.org');
 }
-else if ('pt_BR' == $language) {
+elseif ('pt_BR' == $language) {
   define('PHPWG_DOMAIN', 'br.piwigo.org');
 }
 else {
   define('PHPWG_DOMAIN', 'piwigo.org');
 }
-define('PHPWG_URL', 'https://'.PHPWG_DOMAIN);
+const PHPWG_URL = 'https://' . PHPWG_DOMAIN;
 
 load_language('common.lang', '', array('language' => $language, 'target_charset'=>'utf-8'));
 load_language('admin.lang', '', array('language' => $language, 'target_charset'=>'utf-8'));
@@ -236,7 +236,7 @@ if (isset($_POST['install']))
   {
     $errors[] = l10n('enter a login for webmaster');
   }
-  else if (preg_match( '/[\'"]/', $webmaster))
+  elseif (preg_match( '/[\'"]/', $webmaster))
   {
     $errors[] = l10n('webmaster login can\'t contain characters \' or "');
   }
@@ -451,7 +451,7 @@ else
     session_set_cookie_params(0, cookie_path());
     register_shutdown_function('session_write_close');
     
-    $user = build_user(1, true);
+    $user = build_user(1);
     log_user($user['id'], false);
     
     // newsletter subscription
@@ -464,7 +464,7 @@ else
         array('origin' => 'installation')
         );
 
-      userprefs_update_param('show_newsletter_subscription', false);
+      userprefs_update_param('show_newsletter_subscription', 'false');
     }
 
     // email notification
@@ -474,15 +474,15 @@ else
             
       $keyargs_content = array(
         get_l10n_args('Hello %s,', $admin_name),
-        get_l10n_args('Welcome to your new installation of Piwigo!', ''),
-        get_l10n_args('', ''),
-        get_l10n_args('Here are your connection settings', ''),
-        get_l10n_args('', ''),
+        get_l10n_args('Welcome to your new installation of Piwigo!'),
+        get_l10n_args(''),
+        get_l10n_args('Here are your connection settings'),
+        get_l10n_args(''),
         get_l10n_args('Link: %s', get_absolute_root_url()),
         get_l10n_args('Username: %s', $admin_name),
-        get_l10n_args('Password: ********** (no copy by email)', ''),
+        get_l10n_args('Password: ********** (no copy by email)'),
         get_l10n_args('Email: %s', $admin_mail),
-        get_l10n_args('', ''),
+        get_l10n_args(''),
         get_l10n_args('Don\'t hesitate to consult our forums for any help: %s', PHPWG_URL),
         );
         
@@ -509,4 +509,4 @@ if (count($infos) != 0 )
 
 //----------------------------------------------------------- html code display
 $template->pparse('install');
-?>
+

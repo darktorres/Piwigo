@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $config_default = array(
   'height'           => 200,
@@ -15,4 +15,3 @@ $config_default = array(
   'no_wordwrap'      => false
 );
 
-?>

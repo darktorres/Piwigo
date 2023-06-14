@@ -805,4 +805,4 @@ $lang['Edit photo'] = 'ფოტოს რედაქტირება';
 $lang['Original file : %s'] = 'ორიგინალი ფაილი: %d';
 $lang['Posted %s on %s'] = 'გამოქვეყნებულია %s %s -ში';
 $lang['Sharpen'] = 'სიმკვეთრე';
-?>
+

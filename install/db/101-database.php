@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -21,7 +21,7 @@ if ('mysql' == $conf['dblayer'])
       ADD COLUMN `nb_image_page` smallint(3) unsigned NOT NULL default \'15\'
   ;');
 }
-else if (in_array($conf['dblayer'], array('pgsql', 'sqlite', 'pdo-sqlite')))
+elseif (in_array($conf['dblayer'], array('pgsql', 'sqlite', 'pdo-sqlite')))
 {
   pwg_query('
     ALTER TABLE '.USER_INFOS_TABLE.' 
@@ -47,4 +47,3 @@ echo
 . $upgrade_description
 ."\n"
 ;
-?>
