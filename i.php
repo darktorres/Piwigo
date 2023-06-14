@@ -23,7 +23,11 @@ $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] .
 function trigger_notify() {}
 function get_extension( $filename )
 {
-  return substr( strrchr( $filename, '.' ), 1, strlen ( $filename ) );
+  $ext = strrchr($filename, '.');
+  if (!$ext) { 
+    return ''; 
+  }
+  return substr(strrchr($ext, '.'), 1, strlen($filename));
 }
 
 function mkgetdir($dir)
