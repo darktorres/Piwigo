@@ -29,7 +29,7 @@ include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 check_status(ACCESS_ADMINISTRATOR);
 
 $tpl_extension = isset($conf['extents_for_templates']) ?
-      unserialize($conf['extents_for_templates']) : array();
+      $conf['extents_for_templates'] : array();
 $new_extensions = get_extents(); 
 
 /* Selective URLs keyword */
