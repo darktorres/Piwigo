@@ -42,7 +42,6 @@ final class SrcImage
 
     $this->id = $infos['id'];
     $ext = strtolower(get_extension($infos['path']));
-    $infos['file_ext'] = @strtolower(get_extension($infos['file']));
     $infos['path_ext'] = $ext;
     if (in_array($ext, $conf['picture_ext']))
     {
