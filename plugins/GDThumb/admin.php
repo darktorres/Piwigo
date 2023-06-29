@@ -55,7 +55,7 @@ if (isset($_GET['getMissingDerivative'])) {
 
   $urls=array();
   do {
-    $result = pwg_query( str_replace('start_id', $start_id, $query_model));
+    $result = pwg_query( str_replace('start_id', (string)$start_id, $query_model));
     $is_last = pwg_db_num_rows($result) < $qlimit;
     while ($row=pwg_db_fetch_assoc($result)) {
       $start_id = $row['id'];
@@ -67,7 +67,7 @@ if (isset($_GET['getMissingDerivative'])) {
       else:
         $derivative = new DerivativeImage(ImageStdParams::get_custom(9999, $params['height']), $src_image);
       endif;
-      if (filemtime($derivative->get_path())===false) {
+      if (@filemtime($derivative->get_path())===false) {
         $urls[] = $derivative->get_url().$uid;
       }
       if (count($urls)>=$max_urls && !$is_last)

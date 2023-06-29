@@ -293,10 +293,7 @@ final class DerivativeImage
     return null;
   }
 
-  /**
-   * @todo : documentation of DerivativeImage::build
-   */
-  private static function build($src, &$params, &$rel_path, &$rel_url): void
+  private static function build(SrcImage $src, array|DerivativeParams|null &$params, string|null &$rel_path, string|null &$rel_url): void
   {
     if ( $src->has_size() && $params->is_identity( $src->get_size() ) )
     {// the source image is smaller than what we should do - we do not upsample

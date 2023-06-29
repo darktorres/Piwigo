@@ -106,9 +106,9 @@ abstract class CalendarBase
    *
    * @param $level
    * @param $date_component
-   * @return string
+   * @return int|string
    */
-  protected function get_date_component_label($level, $date_component): string
+  protected function get_date_component_label($level, $date_component): int|string
   {
     $label = $date_component;
     if (isset($this->calendar_levels[$level]['labels'][$date_component]))

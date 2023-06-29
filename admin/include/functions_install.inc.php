@@ -87,8 +87,8 @@ function activate_core_plugins(): void
 /**
  * Connect to database during installation. Uses $_POST.
  *
- * @param array &$infos - populated with infos
- * @param array &$errors - populated with errors
+ * @param array $infos - populated with infos
+ * @param array $errors - populated with errors
  */
 function install_db_connect(array &$infos, array &$errors): void
 {

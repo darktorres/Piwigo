@@ -88,12 +88,10 @@ class updates
       $url.= '?rand='.md5(uniqid((string)rand(), true)); // Avoid server cache
       $url.= '&show_requirements';
 
-      if (fetchRemote($url, $result)
-          and $all_versions = explode("\n", $result)
-          and is_array($all_versions))
+      if (fetchRemote($url, $result))
       {
+        $all_versions = explode("\n", $result);
         $new_versions['piwigo.org-checked'] = true;
-        $last_version = trim($all_versions[0]);
         list($last_version_number, $last_version_php) = explode('/', trim($all_versions[0]));
 
         if (version_compare(PHPWG_VERSION, $last_version_number, '<'))

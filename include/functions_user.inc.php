@@ -116,7 +116,7 @@ function search_case_username(string $username): string
  * @param string $password
  * @param string $mail_address
  * @param bool $notify_admin
- * @param array|null &$errors populated with error messages
+ * @param array|null $errors populated with error messages
  * @param bool $notify_user
  * @return int|false user id or false
  * @throws \PHPMailer\PHPMailer\Exception
@@ -952,10 +952,10 @@ function create_user_infos(array|int $user_ids, array $override_values=null): vo
  *
  * @param int $user_id
  * @param int $time
- * @param string &$username fille with corresponding username
+ * @param string|null $username file with corresponding username
  * @return string|false
  */
-function calculate_auto_login_key(int $user_id, int $time, string &$username): false|string
+function calculate_auto_login_key(int $user_id, int $time, string|null &$username): false|string
 {
   global $conf;
   $query = '
@@ -991,11 +991,14 @@ function log_user(int $user_id, bool $remember_me): void
     if ($key!==false)
     {
       $cookie = $user_id.'-'.$now.'-'.$key;
-      setcookie($conf['remember_me_name'],
+      setcookie(
+        $conf['remember_me_name'],
         $cookie,
         time()+$conf['remember_me_length'],
-        cookie_path(),ini_get('session.cookie_domain'),ini_get('session.cookie_secure'),
-        ini_get('session.cookie_httponly')
+        cookie_path(),
+        ini_get('session.cookie_domain'),
+        (bool)ini_get('session.cookie_secure'),
+        (bool)ini_get('session.cookie_httponly')
         );
     }
   }

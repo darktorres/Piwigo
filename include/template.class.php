@@ -1387,11 +1387,11 @@ final class Script extends Combinable
   /**
    * @param int $load_mode 0,1,2
    * @param string $id
-   * @param string $path
+   * @param string|null $path
    * @param int|string $version
    * @param array $precedents
    */
-  public function __construct($load_mode, string $id, $path, int|string $version=0, array $precedents=array())
+  public function __construct(int $load_mode, string $id, string|null $path, int|string $version=0, array $precedents=array())
   {
     parent::__construct($id, $path, $version);
     $this->load_mode = $load_mode;
@@ -1742,7 +1742,7 @@ class ScriptLoader
   }
 
   /**
-   * Fill a script dependancies with the known jQuery UI scripts.
+   * Fill a script dependencies with the known jQuery UI scripts.
    *
    * @param string $id in FileCombiner::$known_paths
    * @param Script $script
@@ -1942,8 +1942,8 @@ final class FileCombiner
   /**
    * Process a set of pending files.
    *
-   * @param array &$result
-   * @param array &$pending
+   * @param array $result
+   * @param array $pending
    * @param string[] $key
    * @param bool $force
    * @throws SmartyException

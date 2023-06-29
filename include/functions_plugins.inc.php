@@ -34,13 +34,13 @@ class PluginMaintain
 
   /**
    * @param string $plugin_version
-   * @param array &$errors - used to return error messages
+   * @param array $errors - used to return error messages
    */
   public function install(string $plugin_version, array &$errors=array()) {}
 
   /**
    * @param string $plugin_version
-   * @param array &$errors - used to return error messages
+   * @param array $errors - used to return error messages
    */
   public function activate(string $plugin_version, array &$errors=array()) {}
 
@@ -57,7 +57,7 @@ class PluginMaintain
   /**
    * @param string $old_version
    * @param string $new_version
-   * @param array &$errors - used to return error messages
+   * @param array $errors - used to return error messages
    */
   public function update(string $old_version, string $new_version, array &$errors=array()) {}
 
@@ -90,7 +90,7 @@ class ThemeMaintain
 
   /**
    * @param string $theme_version
-   * @param array &$errors - used to return error messages
+   * @param array $errors - used to return error messages
    */
   public function activate(string $theme_version, array &$errors=array()) {}
 
@@ -277,7 +277,7 @@ function trigger_notify(string $event): void
  * @deprecated 2.6
  *
  * @param string $plugin_id
- * @param mixed &$data
+ * @param mixed $data
  * @return bool
  */
 function set_plugin_data(string $plugin_id, mixed &$data): bool
@@ -360,7 +360,7 @@ function load_plugin(array $plugin): void
  * Performs update task of a plugin.
  * Autoupdate is only performed if the plugin has a maintain.class.php file.
  *
- * @param array &$plugin (id, version, state) will be updated if version changes
+ * @param array $plugin (id, version, state) will be updated if version changes
  */
 function autoupdate_plugin(array &$plugin): void
 {

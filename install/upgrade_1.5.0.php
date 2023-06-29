@@ -309,7 +309,7 @@ $params = array(
 // Get real values from config file
 $conf_save = $conf;
 unset($conf);
-include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 if ( isset($conf['gallery_url']) )
 {
   $params['gallery_url'][0] = $conf['gallery_url'];

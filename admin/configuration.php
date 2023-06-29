@@ -536,7 +536,7 @@ switch ($page['section'])
         $tpl_var['must_square'] = $type==IMG_SQUARE;
         $tpl_var['must_enable'] = $type==IMG_SQUARE || $type==IMG_THUMB || $type==$conf['derivative_default_size'];
 
-        if ($params = $enabled[$type])
+        if (isset($enabled[$type]) && ($params = $enabled[$type]))
         {
           $tpl_var['enabled'] = true;
         }

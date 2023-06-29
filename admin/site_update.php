@@ -160,7 +160,7 @@ SELECT id, uppercats, global_rank, status, visible
   }
   $db_categories = query2array($query, 'id');
 
-  // get categort full directories in an array for comparison with file
+  // get category full directories in an array for comparison with file
   // system directory tree
   $db_fulldirs = get_fulldirs(array_keys($db_categories));
 

@@ -46,8 +46,8 @@ class RVTS
 	}
 	else
 	{
-		$adj = (int)$_GET['adj'];
-		if ($adj)
+		$adj = (int)($_GET['adj'] ?? 0);
+		if ($adj !== 0)
 		{
 			$mult = pwg_get_session_var('rvts_mult', 1);
 			if ($adj>0 && $mult<5)

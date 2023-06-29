@@ -207,7 +207,7 @@ SELECT *
  * Each entry is an array containing
  *  0: name
  *  1: SQL ORDER command
- *  2: visiblity (true or false)
+ *  2: visibility (true or false)
  *
  * @return array
  */
@@ -327,7 +327,7 @@ SELECT DISTINCT(id)
  * Finds a matching category id from a potential list of permalinks
  *
  * @param string[] $permalinks
- * @param int &$idx filled with the index in $permalinks that matches
+ * @param int $idx filled with the index in $permalinks that matches
  * @return int|null
  */
 function get_cat_id_from_permalinks(array $permalinks, int &$idx): ?int
@@ -469,7 +469,7 @@ SELECT image_id
  * Get computed array of categories, that means cache data of all categories
  * available for the current user (count_categories, count_images, etc.).
  *
- * @param array &$userdata
+ * @param array $userdata
  * @param int|null $filter_days number of recent days to filter on or null
  * @return array
  */
@@ -576,7 +576,7 @@ FROM '.CATEGORIES_TABLE.' as c
 /**
  * Removes a category from computed array of categories and updates counters.
  *
- * @param array &$cats
+ * @param array $cats
  * @param array $cat category to remove
  */
 function remove_computed_category(array &$cats, array $cat): void
@@ -797,11 +797,11 @@ SELECT
     // 3. number of sub-albums containing photos
     //
     // Option 3 seems more appropriate here.
-    if (!empty($cat['id_uppercat']) and $cats[$idx]['count_images'] > 0)
+    if (!empty($cat['id_uppercat']) and ($cats[$idx]['count_images'] ?? 0) > 0)
     {
       foreach (array_slice(explode(',', $cat['uppercats']), 0, -1) as $uppercat_id)
       {
-        $cats[ $index_of_cat[ $uppercat_id ] ]['count_categories']++;
+        $cats[ $index_of_cat[ $uppercat_id ] ]['count_categories'] = ($cats[ $index_of_cat[ $uppercat_id ] ]['count_categories'] ?? 0) + 1;
       }
     }
   }

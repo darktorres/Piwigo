@@ -62,7 +62,7 @@ if (count($page['items']) > $page['nb_image_page'])
   $page['navigation_bar'] = create_navigation_bar(
     duplicate_index_url(array(), array('start')),
     count($page['items']),
-    $page['start'],
+    (int) $page['start'],
     (int) $page['nb_image_page'],
     true
     );

@@ -389,10 +389,10 @@ SELECT id, name
  *
  * @param int|null $image_id
  * @param string|null $image_type
- * @param null $format_id
+ * @param string|null $format_id
  * @return bool
  */
-function pwg_log(int $image_id = null, string $image_type = null, $format_id = null): bool
+function pwg_log(int $image_id = null, string $image_type = null, string $format_id = null): bool
 {
   global $conf, $user, $page;
 
@@ -1236,8 +1236,9 @@ function get_name_from_file(string $filename): string
 function l10n(string $key): string
 {
   global $lang, $conf;
+  $val = $lang[$key] ?? null;
 
-  if ( ($val=$lang[$key] ?? null) === null)
+  if ($val === null)
   {
     if ($conf['debug_l10n'] and !isset($lang[$key]) and !empty($key))
     {
@@ -1795,7 +1796,7 @@ function load_language(string $filename, string $dirname = '', mixed $options = 
       }
 
       // load language content
-      @include($source_file);
+      include($source_file);
       $load_lang = $lang ?? null;
       $load_lang_info = $lang_info ?? array();
 
@@ -1818,8 +1819,8 @@ function load_language(string $filename, string $dirname = '', mixed $options = 
       }
 
       // merge contents
-      $lang = array_merge($lang, (array)$load_lang);
-      $lang_info = array_merge($lang_info, (array)$load_lang_info);
+      $lang = array_merge($lang, $load_lang);
+      $lang_info = array_merge($lang_info, $load_lang_info);
       return true;
     }
     else
@@ -1987,11 +1988,11 @@ function create_navigation_bar(string $url, $nb_element, int $start, int $nb_ele
 /**
  * return an array which will be sent to template to display recent icon
  *
- * @param string $date
+ * @param string|null $date
  * @param bool $is_child_date
  * @return array|false
  */
-function get_icon(string $date, bool $is_child_date = false): false|array
+function get_icon(string|null $date, bool $is_child_date = false): false|array
 {
   global $cache, $user;
 

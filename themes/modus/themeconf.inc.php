@@ -51,7 +51,7 @@ if (!$conf['compiled_template_cache_language'])
 
 if (isset($_COOKIE['caps']))
 {
-	// setcookie('caps','false',0,cookie_path());
+	// setcookie('caps','',0,cookie_path());
 	pwg_set_session_var('caps', explode('x', $_COOKIE['caps']) );
 	/*file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'tmp/modus.log', implode("\t", array(
 		date("Y-m-d H:i:s"), $_COOKIE['caps'], $_SERVER['HTTP_USER_AGENT']
@@ -301,7 +301,7 @@ function modus_index_category_thumbnails($items): mixed
 {
 	global $page, $template, $conf;
 
-	if ('categories'!=$page['section'] || !($wh=$conf['modus_theme']['album_thumb_size']) )
+	if ('categories'!=$page['section'] || !($wh=(int)$conf['modus_theme']['album_thumb_size']) )
 		return $items;
 
 	$template->assign('album_thumb_size', $wh);
@@ -414,7 +414,7 @@ function modus_picture_content($content, $element_info): mixed
 	}
 
 	if (isset($_COOKIE['picture_deriv'])) // ignore persistence
-		setcookie('picture_deriv', false, 0, cookie_path() );
+		setcookie('picture_deriv', '', 0, cookie_path() );
 
 	$selected_derivative = null;
 	if (isset($_COOKIE['phavsz']))

@@ -421,8 +421,8 @@ foreach ($file_extensions as $ext => $ext_details)
     $type = 'Other';
   }
 
-  @$file_extensions_of[$type][strtoupper($ext)] = $ext_details['ext_counter'];
-  @$data_storage[$type] += $ext_details['filesize'];
+  $file_extensions_of[$type][strtoupper($ext)] = $ext_details['ext_counter'];
+  $data_storage[$type] = ($data_storage[$type] ?? 0) + $ext_details['filesize'];
 }
 
 $data_storage_details = array();

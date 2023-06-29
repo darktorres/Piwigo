@@ -56,9 +56,9 @@ function user_comment_check(string $action, array $comment): string
 /**
  * Tries to insert a user comment and returns action to perform.
  *
- * @param array &$comm
+ * @param array $comm
  * @param string $key secret key sent back to the browser
- * @param array|null &$infos output array of error messages
+ * @param array|null $infos output array of error messages
  * @return string validate, moderate, reject
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
