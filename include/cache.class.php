@@ -118,8 +118,8 @@ class PersistentFileCache extends PersistentCache
     $limit = time() - $this->default_lifetime;
     foreach ($files as $file)
     {
-      if ($all || @filemtime($file) < $limit)
-        @unlink($file);
+      if ($all || filemtime($file) < $limit)
+        unlink($file);
     }
   }
 

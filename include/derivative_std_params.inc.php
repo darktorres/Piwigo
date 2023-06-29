@@ -124,7 +124,7 @@ final class ImageStdParams
     $key = array();
     $params->add_url_tokens($key);
     $key = implode('_',$key);
-    if ( @self::$custom[$key] < time() - 24*3600)
+    if ( self::$custom[$key] < time() - 24*3600)
     {
       self::$custom[$key] = time();
       self::save();
@@ -150,9 +150,9 @@ final class ImageStdParams
     if (false!==$arr)
     {
       self::$type_map = $arr['d'];
-      self::$watermark = @$arr['w'];
+      self::$watermark = $arr['w'];
       if (!self::$watermark) self::$watermark = new WatermarkParams();
-      self::$custom = @$arr['c'];
+      self::$custom = $arr['c'];
       if (!self::$custom) self::$custom = array();
       if (isset($arr['q'])) self::$quality = $arr['q'];
     }

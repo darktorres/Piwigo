@@ -565,7 +565,7 @@ UPDATE '.CATEGORIES_TABLE.'
 
 // load the config file
 $config_file = PHPWG_ROOT_PATH.'local/config/database.inc.php';
-$config_file_contents = @file_get_contents($config_file);
+$config_file_contents = file_get_contents($config_file);
 if ($config_file_contents === false)
 {
   die('CANNOT LOAD '.$config_file);

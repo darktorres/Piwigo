@@ -489,7 +489,7 @@ SELECT
     $version = PHPWG_VERSION;
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
+    if (fetchRemote($url, $result, $get_data) and $pem_versions = unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
@@ -542,7 +542,7 @@ SELECT
     }
     if (fetchRemote($url, $result, $get_data))
     {
-      $pem_themes = @unserialize($result);
+      $pem_themes = unserialize($result);
       if (!is_array($pem_themes))
       {
         return false;
@@ -600,7 +600,7 @@ SELECT
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
+      if ($handle = fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -682,7 +682,7 @@ SELECT
 
                   if (is_file($path))
                   {
-                    @unlink($path);
+                    unlink($path);
                   }
                   elseif (is_dir($path))
                   {
@@ -701,7 +701,7 @@ SELECT
     }
     else $status = 'temp_path_error';
 
-    @unlink($archive);
+    unlink($archive);
     return $status;
   }
 

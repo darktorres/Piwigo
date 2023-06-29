@@ -169,13 +169,13 @@ ORDER BY
   foreach (query2array($query) as $value) 
   {
     $date = get_date_object($value);
-    @$months[$date->format('Y/m/1')][] = $value;
+    $months[$date->format('Y/m/1')][] = $value;
   }
 
   $actual_date = new DateTime();
   if (!isset($months[$actual_date->format('Y/m/1')])) 
   {
-    @$months[$actual_date->format('Y/m/1')][] = array(
+    $months[$actual_date->format('Y/m/1')][] = array(
       'year' => $actual_date->format('Y'),
       'month'=> $actual_date->format('n'),
       'day'=> null,

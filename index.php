@@ -202,8 +202,8 @@ if ( empty($page['is_external']) )
       !isset($page['chronology_field']) and isset($page['qsearch_details']) )
   {
     $cats = array_merge(
-        (array)@$page['qsearch_details']['matching_cats_no_images'],
-        (array)@$page['qsearch_details']['matching_cats'] );
+        (array)$page['qsearch_details']['matching_cats_no_images'],
+        (array)$page['qsearch_details']['matching_cats'] );
     if (count($cats))
     {
       usort($cats, 'name_compare');
@@ -215,7 +215,7 @@ if ( empty($page['is_external']) )
       $template->assign( 'category_search_results', $hints);
     }
 
-    $tags = (array)@$page['qsearch_details']['matching_tags'];
+    $tags = (array)$page['qsearch_details']['matching_tags'];
     foreach ( $tags as $tag )
     {
       $tag['URL'] = make_index_url(array('tags'=>array($tag)));

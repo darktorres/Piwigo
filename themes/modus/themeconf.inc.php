@@ -28,13 +28,13 @@ include( dirname(__FILE__).'/skins/'.$conf['modus_theme']['skin'].'.inc.php' );
 
 $this->assign( array(
 	'MODUS_CSS_VERSION' => crc32(implode(',', array(
-		'a'.@$conf['modus_theme']['skin'],
-		@$conf['modus_theme']['album_thumb_size'],
+		'a'.$conf['modus_theme']['skin'],
+		$conf['modus_theme']['album_thumb_size'],
 		ImageStdParams::get_by_type(IMG_SQUARE)->max_width(),
 		$conf['index_created_date_icon'],
 		$conf['index_posted_date_icon'],
 	))),
-	'MODUS_DISPLAY_PAGE_BANNER' => @$conf['modus_theme']['display_page_banner']
+	'MODUS_DISPLAY_PAGE_BANNER' => $conf['modus_theme']['display_page_banner']
 	)
 );
 
@@ -95,7 +95,7 @@ add_event_handler('loc_begin_page_header', 'modus_loc_begin_page_header');
 function modus_loc_begin_page_header()
 {
 	$all = $GLOBALS['template']->scriptLoader->get_all();
-	if ( ($jq = @$all['jquery']) )
+	if ( ($jq = $all['jquery']) )
 		$jq->set_path(RVPT_JQUERY_SRC);
 }
 
@@ -113,7 +113,7 @@ function modus_combinable_preparse($template)
 	$template->assign( array(
 		'conf' => $conf,
 		'skin' => $skin,
-		'MODUS_ALBUM_THUMB_SIZE' => intval(@$conf['modus_theme']['album_thumb_size']),
+		'MODUS_ALBUM_THUMB_SIZE' => intval($conf['modus_theme']['album_thumb_size']),
 		'SQUARE_WIDTH' => ImageStdParams::get_by_type(IMG_SQUARE)->max_width(),
 		'loaded_plugins' => $GLOBALS['pwg_loaded_plugins']
 		));
@@ -247,7 +247,7 @@ function modus_get_index_photo_derivative_params($default)
 				)
 				$type = $conf['modus_theme']['index_photo_deriv_hdpi'];
 		}
-		$new = @ImageStdParams::get_by_type($type);
+		$new = ImageStdParams::get_by_type($type);
 		if ($new) return $new;
 	}
 	return $default;
@@ -258,7 +258,7 @@ function modus_index_category_thumbnails($items)
 {
 	global $page, $template, $conf;
 
-	if ('categories'!=$page['section'] || !($wh=@$conf['modus_theme']['album_thumb_size']) )
+	if ('categories'!=$page['section'] || !($wh=$conf['modus_theme']['album_thumb_size']) )
 		return $items;;
 
 	$template->assign('album_thumb_size', $wh);

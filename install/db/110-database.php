@@ -48,7 +48,7 @@ if (!empty($gallery_url))
   else
   {
     // we have to update the local conf
-    $config_file_contents = @file_get_contents($local_conf);
+    $config_file_contents = file_get_contents($local_conf);
     if ($config_file_contents === false)
     {
       $error = 'Cannot load '.$local_conf.', add by hand: '.$conf_line;
@@ -77,7 +77,7 @@ if (!empty($gallery_url))
 
   if (isset($config_file_contents_new))
   {
-    if (!@file_put_contents($local_conf, $config_file_contents_new))
+    if (!file_put_contents($local_conf, $config_file_contents_new))
     {
       $error = 'Cannot write into local configuration file '.$local_conf.', add by hand: '.$conf_line;
       

@@ -82,7 +82,7 @@ class BlockManager
     $mb_conf = isset($conf[$conf_id]) ? $conf[$conf_id] : array();
     if (!is_array($mb_conf))
     {
-      $mb_conf = @unserialize($mb_conf);
+      $mb_conf = unserialize($mb_conf);
     }
 
     $idx = 1;
