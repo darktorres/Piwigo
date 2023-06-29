@@ -43,7 +43,7 @@ class DummyTheme_maintain extends ThemeMaintain
   {
     if (is_callable('theme_delete'))
     {
-      theme_delete($this->theme_id);
+      theme_delete();
     }
   }
 }

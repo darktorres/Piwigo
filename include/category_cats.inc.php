@@ -334,7 +334,7 @@ if (count($categories) > 0)
 
   $tpl_thumbnails_var_selection = array_slice(
     $tpl_thumbnails_var,
-    $page['startcat'],
+    (int)$page['startcat'],
     (int)$conf['nb_categories_page']
     );
 
@@ -354,7 +354,7 @@ if (count($categories) > 0)
     $page['cats_navigation_bar'] = create_navigation_bar(
       duplicate_index_url(array(), array('startcat')),
       $page['total_categories'],
-      $page['startcat'],
+      (int)$page['startcat'],
       $conf['nb_categories_page'],
       true, 'startcat'
       );

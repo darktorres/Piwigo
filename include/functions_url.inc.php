@@ -753,8 +753,9 @@ function parse_well_known_params_url($tokens, &$i): array
 /**
  * @param int $id image id
  * @param string $what_part one of 'e' (element), 'r' (representative)
+ * @param bool $download
  */
-function get_action_url(int $id, string $what_part, $download): string
+function get_action_url(int $id, string $what_part, bool $download): string
 {
   $params = array(
         'id' => $id,

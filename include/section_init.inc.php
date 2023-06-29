@@ -635,7 +635,7 @@ if ( 'categories'==$page['section'] and isset($page['category']) and !isset($pag
 
   if ($need_redirect)
   {
-    check_restrictions($page['category']['id']);
+    check_restrictions((int)$page['category']['id']);
     $redirect_url = script_basename()=='picture' ? duplicate_picture_url() : duplicate_index_url();
 
     if (!headers_sent())

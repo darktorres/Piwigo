@@ -17,7 +17,7 @@ check_status(ACCESS_GUEST);
 // access authorization check
 if (isset($page['category']))
 {
-  check_restrictions($page['category']['id']);
+  check_restrictions((int)$page['category']['id']);
 }
 
 $page['rank_of'] = array_flip($page['items']);
@@ -158,7 +158,7 @@ function default_picture_content($content, $element_info): mixed
     {
       pwg_set_session_var('picture_deriv', $_COOKIE['picture_deriv']);
     }
-    setcookie('picture_deriv', false, 0, cookie_path() );
+    setcookie('picture_deriv', '', 0, cookie_path() );
   }
   $deriv_type = pwg_get_session_var('picture_deriv', $conf['derivative_default_size']);
   $selected_derivative = $element_info['derivatives'][$deriv_type];
@@ -526,13 +526,13 @@ while ($row = pwg_db_fetch_assoc($result))
       if ( $user['enabled_high']=='true' )
       {
         $row['element_url'] = $row['src_image']->get_url();
-        $row['download_url'] = get_action_url($row['id'], 'e', true);
+        $row['download_url'] = get_action_url((int)$row['id'], 'e', true);
       }
     }
     else
     { // not a pic - need download link
       $row['element_url'] = get_element_url($row);
-      $row['download_url'] = get_action_url($row['id'], 'e', true);
+      $row['download_url'] = get_action_url((int)$row['id'], 'e', true);
     }
   }
 
@@ -1048,5 +1048,5 @@ else
   $template->pparse('picture');
 }
 //------------------------------------------------------------ log informations
-pwg_log($picture['current']['id'], 'picture');
+pwg_log((int)$picture['current']['id'], 'picture');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');

@@ -12,7 +12,7 @@
 
 
 /**
- * returns informations from IPTC metadata, mapping is done in this function.
+ * returns information from IPTC metadata, mapping is done in this function.
  *
  * @param string $filename
  * @param array $map
@@ -129,6 +129,11 @@ function get_exif_data(string $filename, array $map): array
   global $conf;
   
   $result = array();
+
+  if (!file_exists($filename) || pathinfo($filename)['extension'] != 'jpg')
+  {
+    return $result;
+  }
 
   if (!function_exists('exif_read_data'))
   {

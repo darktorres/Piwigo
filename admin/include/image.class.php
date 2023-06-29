@@ -54,11 +54,11 @@ interface imageInterface
   public function rotate($rotation): mixed;
 
   /**
-   * @param $width
-   * @param $height
-   * @return mixed
+   * @param int $width
+   * @param int $height
+   * @return bool
    */
-  public function resize($width, $height): mixed;
+  public function resize(int $width, int $height): bool;
 
   /**
    * @param $amount
@@ -608,12 +608,12 @@ class image_imagick implements imageInterface
   }
 
   /**
-   * @param $width
-   * @param $height
+   * @param int $width
+   * @param int $height
    * @return bool
    * @throws ImagickException
    */
-  public function resize($width, $height): bool
+  public function resize(int $width, int $height): bool
   {
     $this->image->setInterlaceScheme(Imagick::INTERLACE_LINE);
 
@@ -690,8 +690,8 @@ class image_ext_imagick implements imageInterface
 {
   public mixed $imagickdir = '';
   public string $source_filepath = '';
-  public string $width = '';
-  public string $height = '';
+  public int $width;
+  public int $height;
   public array $commands = array();
 
   /**
@@ -803,11 +803,11 @@ class image_ext_imagick implements imageInterface
   }
 
   /**
-   * @param $width
-   * @param $height
+   * @param int $width
+   * @param int $height
    * @return true
    */
-  public function resize($width, $height): true
+  public function resize(int $width, int $height): true
   {
     $this->width = $width;
     $this->height = $height;
@@ -1018,11 +1018,11 @@ class image_gd implements imageInterface
   }
 
   /**
-   * @param $width
-   * @param $height
+   * @param int $width
+   * @param int $height
    * @return bool
    */
-  public function resize($width, $height): bool
+  public function resize(int $width, int $height): bool
   {
     $dest = imagecreatetruecolor($width, $height);
 
@@ -1211,11 +1211,11 @@ class image_vips implements imageInterface
   }
 
   /**
-   * @param $width
-   * @param $height
+   * @param int $width
+   * @param int $height
    * @return true
    */
-  public function resize($width, $height): true
+  public function resize(int $width, int $height): true
   {
     $this->image = Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, ['height' => $height]);
     return true;

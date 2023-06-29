@@ -66,7 +66,7 @@ function char_to_fraction(string $c): float|int
  */
 function fraction_to_char(float $f): string
 {
-	return chr(ord('a') + round($f*25));
+	return chr(ord('a') + (int)round($f*25));
 }
 
 
@@ -93,17 +93,17 @@ final class ImageRect
   /**
    * @return int|float
    */
-  public function width(): int|float
+  public function width(): int
   {
-    return $this->r - $this->l;
+    return (int)($this->r - $this->l);
   }
 
   /**
    * @return int|float
    */
-  public function height(): int|float
+  public function height(): int
   {
-    return $this->b - $this->t;
+    return (int)($this->b - $this->t);
   }
 
   /**
@@ -225,7 +225,7 @@ final class SizingParams
   /**
    * Adds tokens depending on sizing configuration.
    *
-   * @param array &$tokens
+   * @param array $tokens
    */
   public function add_url_tokens(array &$tokens): void
   {
@@ -250,10 +250,10 @@ final class SizingParams
    *
    * @param int[] $in_size - two element array of input dimensions (width, height)
    * @param string|null $coi - four character encoded string containing the center of interest (unused if max_crop=0)
-   * @param ImageRect|null &$crop_rect - ImageRect containing the cropping rectangle or null if cropping is not required
-   * @param int[]|null &$scale_size - two element array containing width and height of the scaled image
+   * @param ImageRect|null $crop_rect - ImageRect containing the cropping rectangle or null if cropping is not required
+   * @param int[]|null $scale_size - two element array containing width and height of the scaled image
    */
-  public function compute(array $in_size, string|null $coi, ImageRect|null &$crop_rect, array|null &$scale_size): void
+  public function compute(array|null $in_size, string|null $coi, ImageRect|null &$crop_rect, array|null &$scale_size): void
   {
     $destCrop = new ImageRect($in_size);
 
@@ -294,13 +294,13 @@ final class SizingParams
     {
       if ($ratio_w > $ratio_h)
       {
-        $scale_size[0] = $this->ideal_size[0];
-        $scale_size[1] = floor(1e-6 + $scale_size[1] / $ratio_w);
+        $scale_size[0] = (int)$this->ideal_size[0];
+        $scale_size[1] = (int)floor(1e-6 + $scale_size[1] / $ratio_w);
       }
       else
       {
-        $scale_size[0] = floor(1e-6 + $scale_size[0] / $ratio_h);
-        $scale_size[1] = $this->ideal_size[1];
+        $scale_size[0] = (int)floor(1e-6 + $scale_size[0] / $ratio_h);
+        $scale_size[1] = (int)$this->ideal_size[1];
       }
     }
     else
@@ -347,7 +347,7 @@ final class DerivativeParams
   /**
    * Adds tokens depending on sizing configuration.
    *
-   * @param array &$tokens
+   * @param array $tokens
    */
   public function add_url_tokens(array &$tokens): void
   {

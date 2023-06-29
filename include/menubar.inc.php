@@ -192,7 +192,7 @@ function initialize_menu(): void
     //displays only the tags available from the current thumbnails displayed
     elseif ( !empty($page['items']) and ($conf['menubar_tag_cloud_content'] == 'current_only' or $conf['menubar_tag_cloud_content'] == 'all_or_current') )
     {        
-      $selection = array_slice( $page['items'], $page['start'], (int)$page['nb_image_page'] );
+      $selection = array_slice( $page['items'], (int)$page['start'], (int)$page['nb_image_page'] );
       $tags = add_level_to_tags( get_common_tags($selection, $conf['content_tag_cloud_items_number']) );
       foreach ($tags as $tag)
       {

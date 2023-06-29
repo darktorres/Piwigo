@@ -10,12 +10,12 @@ const PHPWG_ROOT_PATH = './';
 
 // fast bootstrap - no db connection
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'].'i/');
 
-include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
+file_exists(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php') && include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], array('filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt'));
 
@@ -39,11 +39,15 @@ function get_extension($filename ): string
 }
 
 /**
- * @param $dir
+ * @param string $dir
  * @return bool
  */
-function mkgetdir($dir): bool
+function mkgetdir(string $dir): bool
 {
+  if ($dir == null)
+  {
+    return false;
+  }
   if ( !is_dir($dir) )
   {
     global $conf;
@@ -341,7 +345,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime): bool
   {
     $candidate_path = $page['derivative_path'];
     $candidate_path = str_replace( '-'.derivative_to_url($params->type), '-'.derivative_to_url($candidate->type), $candidate_path);
-    $candidate_mtime = filemtime($candidate_path);
+    $candidate_mtime = file_exists($candidate_path) ? filemtime($candidate_path) : false;
     if ($candidate_mtime === false
       || $candidate_mtime < $original_mtime
       || $candidate_mtime < $candidate->last_mod_time)
@@ -403,7 +407,7 @@ foreach( explode(',','load,rotate,crop,scale,sharpen,watermark,save,send') as $k
   $timing[$k] = '';
 }
 
-include_once(PHPWG_ROOT_PATH .'include/dblayer/functions_'.$conf['dblayer'].'.inc.php');
+include_once( PHPWG_ROOT_PATH .'/include/dblayer/functions_'.$conf['dblayer'].'.inc.php');
 include_once( PHPWG_ROOT_PATH .'/include/derivative_params.inc.php');
 include_once( PHPWG_ROOT_PATH .'/include/derivative_std_params.inc.php');
 
@@ -427,14 +431,14 @@ parse_request();
 
 $params = $page['derivative_params'];
 
-$src_mtime = filemtime($page['src_path']);
+$src_mtime = file_exists($page['src_path']) ? filemtime($page['src_path']) : false;
 if ($src_mtime === false)
 {
   ierror('Source not found', 404);
 }
 
 $need_generate = false;
-$derivative_mtime = filemtime($page['derivative_path']);
+$derivative_mtime = file_exists($page['derivative_path']) ? filemtime($page['derivative_path']) : false;
 if ($derivative_mtime === false or
     $derivative_mtime < $src_mtime or
     $derivative_mtime < $params->last_mod_time)

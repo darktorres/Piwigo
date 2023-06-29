@@ -9,65 +9,65 @@
 //----------------------------------------------------------- include
 const PHPWG_ROOT_PATH = './';
 
-if( is_array($_POST) )
-{
-  foreach($_POST as $k => $v)
-  {
-    if( is_array($v) )
-    {
-      foreach($v as $k2 => $v2)
-      {
-        $_POST[$k][$k2] = addslashes($v2);
-      }
-      reset($_POST[$k]);
-    }
-    else
-    {
-      $_POST[$k] = addslashes($v);
-    }
-  }
-  reset($_POST);
-}
+// if( is_array($_POST) )
+// {
+//   foreach($_POST as $k => $v)
+//   {
+//     if( is_array($v) )
+//     {
+//       foreach($v as $k2 => $v2)
+//       {
+//         $_POST[$k][$k2] = addslashes($v2);
+//       }
+//       reset($_POST[$k]);
+//     }
+//     else
+//     {
+//       $_POST[$k] = addslashes($v);
+//     }
+//   }
+//   reset($_POST);
+// }
 
-if( is_array($_GET) )
-{
-  foreach($_GET as $k => $v )
-  {
-    if( is_array($v) )
-    {
-      foreach($v as $k2 => $v2)
-      {
-        $_GET[$k][$k2] = addslashes($v2);
-      }
-      reset($_GET[$k]);
-    }
-    else
-    {
-      $_GET[$k] = addslashes($v);
-    }
-  }
-  reset($_GET);
-}
+// if( is_array($_GET) )
+// {
+//   foreach($_GET as $k => $v )
+//   {
+//     if( is_array($v) )
+//     {
+//       foreach($v as $k2 => $v2)
+//       {
+//         $_GET[$k][$k2] = addslashes($v2);
+//       }
+//       reset($_GET[$k]);
+//     }
+//     else
+//     {
+//       $_GET[$k] = addslashes($v);
+//     }
+//   }
+//   reset($_GET);
+// }
 
-if( is_array($_COOKIE) )
-{
-  foreach($_COOKIE as $k => $v)
-  {
-    if( is_array($v) )
-    {
-      foreach($v as $k2 => $v2)
-      {
-        $_COOKIE[$k][$k2] = addslashes($v2);
-      }
-      reset($_COOKIE[$k]);
-    }
-    else
-    {
-      $_COOKIE[$k] = addslashes($v);
-    }
-  }
-  reset($_COOKIE);
-}
+// if( is_array($_COOKIE) )
+// {
+//   foreach($_COOKIE as $k => $v)
+//   {
+//     if( is_array($v) )
+//     {
+//       foreach($v as $k2 => $v2)
+//       {
+//         $_COOKIE[$k][$k2] = addslashes($v2);
+//       }
+//       reset($_COOKIE[$k]);
+//     }
+//     else
+//     {
+//       $_COOKIE[$k] = addslashes($v);
+//     }
+//   }
+//   reset($_COOKIE);
+// }
 
 //----------------------------------------------------- variable initialization
 
@@ -83,7 +83,7 @@ else
 }
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
