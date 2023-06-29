@@ -324,7 +324,7 @@ class pwg_image
     if (empty($conf['ext_imagick_dir'])) {
       return false;
     }
-    @exec($conf['ext_imagick_dir'].'convert -version', $returnarray);
+    exec($conf['ext_imagick_dir'].'convert -version', $returnarray);
     if (is_array($returnarray) and !empty($returnarray[0]) and preg_match('/ImageMagick/i', $returnarray[0]))
     {
       if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match))
@@ -511,13 +511,13 @@ class image_ext_imagick implements imageInterface
     $this->source_filepath = $source_filepath;
     $this->imagickdir = $conf['ext_imagick_dir'];
 
-    if (strpos(@$_SERVER['SCRIPT_FILENAME'], '/kunden/') === 0)  // 1and1
+    if (strpos($_SERVER['SCRIPT_FILENAME'], '/kunden/') === 0)  // 1and1
     {
-      @putenv('MAGICK_THREAD_LIMIT=1');
+      putenv('MAGICK_THREAD_LIMIT=1');
     }
 
     $command = $this->imagickdir.'identify -quiet -format "%wx%h" "'.realpath($source_filepath).'"';
-    @exec($command, $returnarray);
+    exec($command, $returnarray);
     if(!is_array($returnarray) or empty($returnarray[0]) or !preg_match('/^(\d+)x(\d+)$/', $returnarray[0], $match))
     {
       die("[External ImageMagick] Corrupt image\n" . var_export($returnarray, true));
@@ -648,7 +648,7 @@ class image_ext_imagick implements imageInterface
     $dest = pathinfo($destination_filepath);
     $exec .= ' "'.realpath($dest['dirname']).'/'.$dest['basename'].'" 2>&1';
     $logger->debug($exec);
-    @exec($exec, $returnarray);
+    exec($exec, $returnarray);
 
     if (is_array($returnarray) && (count($returnarray)>0) )
     {

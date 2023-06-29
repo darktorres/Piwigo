@@ -91,7 +91,7 @@ SELECT id, path, representative_ext, width, height, rotation
         {
           continue;
         }
-        if (@filemtime($derivative->get_path())===false)
+        if (filemtime($derivative->get_path())===false)
         {
           $urls[] = $derivative->get_url().$uid;
         }
@@ -210,7 +210,7 @@ function ws_getCacheSize($params, &$service)
   $infos['cache_size'] = null;
   if (function_exists('exec'))
   {
-    @exec('du -sk '.$path_cache, $return_array_cache);
+    exec('du -sk '.$path_cache, $return_array_cache);
     if (
       is_array($return_array_cache)
       and !empty($return_array_cache[0])
@@ -232,7 +232,7 @@ function ws_getCacheSize($params, &$service)
 
   foreach(array_keys($infos['msizes']) as $size_type)
   {
-    $infos['msizes'][$size_type] += @$msizes[derivative_to_url($size_type)];
+    $infos['msizes'][$size_type] += $msizes[derivative_to_url($size_type)];
     $all += $infos['msizes'][$size_type];
   }
   $infos['msizes']['all'] = $all;
@@ -242,7 +242,7 @@ function ws_getCacheSize($params, &$service)
   $infos['tsizes'] = null;
   if (function_exists('exec'))
   {
-    @exec('du -sk '.$path_template_c, $return_array_template_c);
+    exec('du -sk '.$path_template_c, $return_array_template_c);
     if (
       is_array($return_array_template_c)
       and !empty($return_array_template_c[0])
@@ -477,7 +477,7 @@ SELECT
   {
     $row['details'] = str_replace('`groups`', 'groups', $row['details']);
     $row['details'] = str_replace('`rank`', 'rank', $row['details']);
-    $details = @unserialize($row['details']);
+    $details = unserialize($row['details']);
 
     if (isset($row['user_agent']))
     {
@@ -550,7 +550,7 @@ SELECT
     {
       foreach ($output_line['object_id'] as $user_id)
       {
-        @$output_lines[$idx]['details']['users'][] = isset($username_of[$user_id]) ? $username_of[$user_id] : 'user#'.$user_id;
+        $output_lines[$idx]['details']['users'][] = isset($username_of[$user_id]) ? $username_of[$user_id] : 'user#'.$user_id;
       }
 
       if (isset($output_lines[$idx]['details']['users']))
@@ -892,7 +892,7 @@ SELECT
   {
     if (isset($line['image_type']) and $line['image_type'] == 'high')
     {
-      $summary['total_filesize'] += @intval($image_infos[$line['image_id']]['filesize']);
+      $summary['total_filesize'] += intval($image_infos[$line['image_id']]['filesize']);
     }
 
     if ($line['user_id'] == $conf['guest_id'])
@@ -985,11 +985,11 @@ SELECT
       $image_id = $line['image_id'];
 
       $image_string =
-      '<span><img src="'.@DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
+      '<span><img src="'.DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
       .'" alt="'.$image_title.'" title="'.$image_title.'">';
     }
 
-    @$sorted_members[$user_name] += 1;
+    $sorted_members[$user_name] += 1;
 
     array_push( 
       $result,

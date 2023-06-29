@@ -160,7 +160,7 @@ elseif (isset($_POST['submitAdd']))
 {
   $output_create = create_virtual_category(
     $_POST['virtual_name'],
-    @$_GET['parent_id']
+    $_GET['parent_id']
   );
 
   invalidate_user_cache();
@@ -260,7 +260,7 @@ SELECT
   {
     foreach (array_slice(explode(',', $uppercats), 0, -1) as $uppercat_id)
     {
-      @$subcats_of[$uppercat_id][] = $id;
+      $subcats_of[$uppercat_id][] = $id;
     }
   }
 

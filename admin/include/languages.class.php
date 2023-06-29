@@ -182,7 +182,7 @@ UPDATE '.USER_INFOS_TABLE.'
       }
     }
     closedir($dir);
-    @uasort($this->fs_languages, 'name_compare');
+    uasort($this->fs_languages, 'name_compare');
   }
 
   function get_db_languages()
@@ -216,7 +216,7 @@ UPDATE '.USER_INFOS_TABLE.'
     $version = PHPWG_VERSION;
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
+    if (fetchRemote($url, $result, $get_data) and $pem_versions = unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
@@ -269,7 +269,7 @@ UPDATE '.USER_INFOS_TABLE.'
 
     if (fetchRemote($url, $result, $get_data))
     {
-      $pem_languages = @unserialize($result);
+      $pem_languages = unserialize($result);
       if (!is_array($pem_languages))
       {
         return false;
@@ -281,7 +281,7 @@ UPDATE '.USER_INFOS_TABLE.'
           $this->server_languages[$language['extension_id']] = $language;
         }
       }
-      @uasort($this->server_languages, array($this, 'extension_name_compare'));
+      uasort($this->server_languages, array($this, 'extension_name_compare'));
       return true;
     }
     return false;
@@ -306,7 +306,7 @@ UPDATE '.USER_INFOS_TABLE.'
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
+      if ($handle = fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -394,7 +394,7 @@ UPDATE '.USER_INFOS_TABLE.'
 
                     if (is_file($path))
                     {
-                      @unlink($path);
+                      unlink($path);
                     }
                     elseif (is_dir($path))
                     {
@@ -415,7 +415,7 @@ UPDATE '.USER_INFOS_TABLE.'
     }
     else $status = 'temp_path_error';
 
-    @unlink($archive);
+    unlink($archive);
     return $status;
   }
 

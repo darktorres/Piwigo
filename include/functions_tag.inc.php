@@ -70,7 +70,7 @@ SELECT *
   $tags = array();
   while ($row = pwg_db_fetch_assoc($result))
   {
-    $counter = intval(@$tag_counters[ $row['id'] ]);
+    $counter = intval($tag_counters[ $row['id'] ]);
     if ( $counter )
     {
       $row['counter'] = $counter;

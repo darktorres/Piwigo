@@ -620,14 +620,14 @@ if ( 'categories'==$page['section'] and isset($page['category']) and !isset($pag
   if ( empty($page['category']['permalink']) )
   {
     if ( $conf['category_url_style'] == 'id-name' and
-        @$page['hit_by']['cat_url_name'] !== str2url($page['category']['name']) )
+        $page['hit_by']['cat_url_name'] !== str2url($page['category']['name']) )
     {
       $need_redirect=true;
     }
   }
   else
   {
-    if ( $page['category']['permalink'] !== @$page['hit_by']['cat_permalink'] )
+    if ( $page['category']['permalink'] !== $page['hit_by']['cat_permalink'] )
     {
       $need_redirect=true;
     }

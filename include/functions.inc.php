@@ -115,7 +115,7 @@ function mkgetdir($dir, $flags=MKGETDIR_DEFAULT)
       $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
     }
     $umask = umask(0);
-    $mkd = @mkdir($dir, $conf['chmod_value'], ($flags&MKGETDIR_RECURSIVE) ? true:false );
+    $mkd = mkdir($dir, $conf['chmod_value'], ($flags&MKGETDIR_RECURSIVE) ? true:false );
     umask($umask);
     if ($mkd==false)
     {
@@ -125,12 +125,12 @@ function mkgetdir($dir, $flags=MKGETDIR_DEFAULT)
     if( $flags&MKGETDIR_PROTECT_HTACCESS )
     {
       $file = $dir.'/.htaccess';
-      file_exists($file) or @file_put_contents( $file, 'deny from all' );
+      file_exists($file) or file_put_contents( $file, 'deny from all' );
     }
     if( $flags&MKGETDIR_PROTECT_INDEX )
     {
       $file = $dir.'/index.htm';
-      file_exists($file) or @file_put_contents( $file, 'Not allowed!' );
+      file_exists($file) or file_put_contents( $file, 'Not allowed!' );
     }
   }
   if ( !is_writable($dir) )
@@ -432,7 +432,7 @@ UPDATE '.USER_INFOS_TABLE.'
   }
 
   $tags_string = null;
-  if ('tags'==@$page['section'])
+  if ('tags'==$page['section'])
   {
     $tags_string = implode(',', $page['tag_ids']);
   }
@@ -1831,7 +1831,7 @@ function load_language($filename, $dirname = '', $options = array())
       // load forced fallback
       if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language)
       {
-        @include(str_replace($selected_language, $options['force_fallback'], $source_file));
+        include(str_replace($selected_language, $options['force_fallback'], $source_file));
       }
 
       // load language content
@@ -1854,7 +1854,7 @@ function load_language($filename, $dirname = '', $options = array())
 
       if (!empty($parent_language) && $parent_language != $selected_language)
       {
-        @include(str_replace($selected_language, $parent_language, $source_file));
+        include(str_replace($selected_language, $parent_language, $source_file));
       }
 
       // merge contents
@@ -1864,7 +1864,7 @@ function load_language($filename, $dirname = '', $options = array())
     }
     else
     {
-      $content = @file_get_contents($source_file);
+      $content = file_get_contents($source_file);
       //Note: target charset is always utf-8 $content = convert_charset($content, 'utf-8', $target_charset);
       return $content;
     }
@@ -1913,7 +1913,7 @@ function secure_directory($dir)
   $file = $dir.'/index.htm';
   if (!file_exists($file))
   {
-    @file_put_contents($file, 'Not allowed!');
+    file_put_contents($file, 'Not allowed!');
   }
 }
 
@@ -1946,7 +1946,7 @@ function verify_ephemeral_key($key, $aditionnal_data_to_hash = '')
 {
 	global $conf;
 	$time = microtime(true);
-	$key = explode( ':', @$key );
+	$key = explode( ':', $key );
 	if ( count($key)!=3
 		or $key[0]>$time-(float)$key[1] // page must have been retrieved more than X sec ago
 		or $key[0]<$time-3600 // 60 minutes expiration

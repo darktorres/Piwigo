@@ -17,7 +17,7 @@ static function on_end_section_init()
 	$page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
 	if (count($page['items'])<$page['nb_image_page']+3)
 	{
-		if (!@$page['start'] || script_basename()=='picture')
+		if (!$page['start'] || script_basename()=='picture')
 			$page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
 	}
 	add_event_handler('loc_begin_index', array('RVTS','on_index_begin'), EVENT_HANDLER_PRIORITY_NEUTRAL+10);
@@ -36,7 +36,7 @@ static function on_index_begin()
 	}
 	else
 	{
-		$adj = (int)@$_GET['adj'];
+		$adj = (int)$_GET['adj'];
 		if ($adj)
 		{
 			$mult = pwg_get_session_var('rvts_mult', 1);

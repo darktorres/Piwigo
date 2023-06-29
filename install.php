@@ -19,14 +19,14 @@ if( is_array($_POST) )
       {
         $_POST[$k][$k2] = addslashes($v2);
       }
-      @reset($_POST[$k]);
+      reset($_POST[$k]);
     }
     else
     {
       $_POST[$k] = addslashes($v);
     }
   }
-  @reset($_POST);
+  reset($_POST);
 }
 
 if( is_array($_GET) )
@@ -39,14 +39,14 @@ if( is_array($_GET) )
       {
         $_GET[$k][$k2] = addslashes($v2);
       }
-      @reset($_GET[$k]);
+      reset($_GET[$k]);
     }
     else
     {
       $_GET[$k] = addslashes($v);
     }
   }
-  @reset($_GET);
+  reset($_GET);
 }
 
 if( is_array($_COOKIE) )
@@ -59,14 +59,14 @@ if( is_array($_COOKIE) )
       {
         $_COOKIE[$k][$k2] = addslashes($v2);
       }
-      @reset($_COOKIE[$k]);
+      reset($_COOKIE[$k]);
     }
     else
     {
       $_COOKIE[$k] = addslashes($v);
     }
   }
-  @reset($_COOKIE);
+  reset($_COOKIE);
 }
 
 //----------------------------------------------------- variable initialization
@@ -83,7 +83,7 @@ else
 }
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-@include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
@@ -129,7 +129,7 @@ $infos = array();
 $errors = array();
 
 $config_file = PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php';
-if (@file_exists($config_file))
+if (file_exists($config_file))
 {
   include($config_file);
   // Is Piwigo already installed ?

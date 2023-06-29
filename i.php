@@ -10,12 +10,12 @@ define('PHPWG_ROOT_PATH','./');
 
 // fast bootstrap - no db connection
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-@include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'].'i/');
 
-@include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
+include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], array('filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt'));
 
@@ -40,7 +40,7 @@ function mkgetdir($dir)
       $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
     }
     $umask = umask(0);
-    $mkd = @mkdir($dir, $conf['chmod_value'], true);
+    $mkd = mkdir($dir, $conf['chmod_value'], true);
     umask($umask);
     if ($mkd==false && !is_dir($dir) /* retest existence because of potential concurrent i.php with slow file systems*/)
     {
@@ -48,7 +48,7 @@ function mkgetdir($dir)
     }
 
     $file = $dir.'/index.htm';
-    file_exists($file) or @file_put_contents( $file, 'Not allowed!' );
+    file_exists($file) or file_put_contents( $file, 'Not allowed!' );
   }
   if ( !is_writable($dir) )
   {
@@ -304,7 +304,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
   {
     $candidate_path = $page['derivative_path'];
     $candidate_path = str_replace( '-'.derivative_to_url($params->type), '-'.derivative_to_url($candidate->type), $candidate_path);
-    $candidate_mtime = @filemtime($candidate_path);
+    $candidate_mtime = filemtime($candidate_path);
     if ($candidate_mtime === false
       || $candidate_mtime < $original_mtime
       || $candidate_mtime < $candidate->last_mod_time)
@@ -386,14 +386,14 @@ parse_request();
 
 $params = $page['derivative_params'];
 
-$src_mtime = @filemtime($page['src_path']);
+$src_mtime = filemtime($page['src_path']);
 if ($src_mtime === false)
 {
   ierror('Source not found', 404);
 }
 
 $need_generate = false;
-$derivative_mtime = @filemtime($page['derivative_path']);
+$derivative_mtime = filemtime($page['derivative_path']);
 if ($derivative_mtime === false or
     $derivative_mtime < $src_mtime or
     $derivative_mtime < $params->last_mod_time)
@@ -495,7 +495,7 @@ if (!mkgetdir(dirname($page['derivative_path'])))
 }
 
 ignore_user_abort(true);
-@set_time_limit(0);
+set_time_limit(0);
 
 $image = new pwg_image($page['src_path']);
 $timing['load'] = time_step($step);
@@ -590,7 +590,7 @@ if ($d_size[0]*$d_size[1] < $conf['derivatives_strip_metadata_threshold'])
 $image->set_compression_quality( ImageStdParams::$quality );
 $image->write( $page['derivative_path'] );
 $image->destroy();
-@chmod($page['derivative_path'], 0644);
+chmod($page['derivative_path'], 0644);
 $timing['save'] = time_step($step);
 
 send_derivative($expires);

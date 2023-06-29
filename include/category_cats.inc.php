@@ -60,7 +60,7 @@ $user_representative_updates_for = array();
 
 while ($row = pwg_db_fetch_assoc($result))
 {
-  $row['is_child_date_last'] = @$row['max_date_last']>@$row['date_last'];
+  $row['is_child_date_last'] = $row['max_date_last']>$row['date_last'];
 
   if (!empty($row['user_representative_picture_id']))
   {
@@ -303,7 +303,7 @@ if (count($categories) > 0)
           'DESCRIPTION' =>
             trigger_change('render_category_literal_description',
               trigger_change('render_category_description',
-                @$category['comment'],
+                $category['comment'],
                 'subcatify_category_description')),
           'NAME'  => $name,
         ) );

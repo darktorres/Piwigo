@@ -25,7 +25,7 @@ function get_iptc_data($filename, $map, $array_sep=',')
   $result = array();
 
   $imginfo = array();
-  if (false == @getimagesize($filename, $imginfo) )
+  if (false == getimagesize($filename, $imginfo) )
   {
     return $result;
   }

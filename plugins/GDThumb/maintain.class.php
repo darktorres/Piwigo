@@ -45,12 +45,12 @@ class GDThumb_maintain extends PluginMaintain {
           if (is_dir($pathfile)):
             gtdeltree($pathfile);
           else:
-            @unlink($pathfile);
+            unlink($pathfile);
           endif;
         endif;
       }
       closedir($fh);
-      return @rmdir($path);
+      return rmdir($path);
     endif;
   }
 

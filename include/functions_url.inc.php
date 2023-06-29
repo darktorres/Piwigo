@@ -460,7 +460,7 @@ function make_section_in_url($params)
 function parse_section_url( $tokens, &$next_token)
 {
   $page=array();
-  if (strncmp(@$tokens[$next_token], 'categor', 7)==0 )
+  if (strncmp($tokens[$next_token], 'categor', 7)==0 )
   {
     $page['section'] = 'categories';
     $next_token++;
@@ -575,7 +575,7 @@ function parse_section_url( $tokens, &$next_token)
       $page['combined_categories'] = $combined_categories;
     }
   }
-  elseif ( 'tags' == @$tokens[$next_token] )
+  elseif ( 'tags' == $tokens[$next_token] )
   {
     global $conf;
 
@@ -618,37 +618,37 @@ function parse_section_url( $tokens, &$next_token)
       page_not_found(l10n('Requested tag does not exist'), get_root_url().'tags.php' );
     }
   }
-  elseif ( 'favorites' == @$tokens[$next_token] )
+  elseif ( 'favorites' == $tokens[$next_token] )
   {
     $page['section'] = 'favorites';
     $next_token++;
   }
-  elseif ('most_visited' == @$tokens[$next_token])
+  elseif ('most_visited' == $tokens[$next_token])
   {
     $page['section'] = 'most_visited';
     $next_token++;
   }
-  elseif ('best_rated' == @$tokens[$next_token])
+  elseif ('best_rated' == $tokens[$next_token])
   {
     $page['section'] = 'best_rated';
     $next_token++;
   }
-  elseif ('recent_pics' == @$tokens[$next_token])
+  elseif ('recent_pics' == $tokens[$next_token])
   {
     $page['section'] = 'recent_pics';
     $next_token++;
   }
-  elseif ('recent_cats' == @$tokens[$next_token])
+  elseif ('recent_cats' == $tokens[$next_token])
   {
     $page['section'] = 'recent_cats';
     $next_token++;
   }
-  elseif ('search' == @$tokens[$next_token])
+  elseif ('search' == $tokens[$next_token])
   {
     $page['section'] = 'search';
     $next_token++;
 
-    preg_match('/(\d+)/', @$tokens[$next_token], $matches);
+    preg_match('/(\d+)/', $tokens[$next_token], $matches);
     if (!isset($matches[1]))
     {
       bad_request('search identifier is missing');
@@ -656,7 +656,7 @@ function parse_section_url( $tokens, &$next_token)
     $page['search'] = $matches[1];
     $next_token++;
   }
-  elseif ('list' == @$tokens[$next_token])
+  elseif ('list' == $tokens[$next_token])
   {
     $page['section'] = 'list';
     $next_token++;

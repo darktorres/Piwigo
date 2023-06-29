@@ -21,7 +21,7 @@ $t2 = microtime(true);
 // but function get_magic_quotes_gpc was always replying false.
 // Since php 8 the function get_magic_quotes_gpc is also removed
 // but we stil want to sanitize user input variables.
-if(!function_exists('get_magic_quotes_gpc') or !@get_magic_quotes_gpc() )
+if(!function_exists('get_magic_quotes_gpc') or !get_magic_quotes_gpc() )
 {
   function sanitize_mysql_kv(&$v, $k)
   {
@@ -65,11 +65,11 @@ $header_notes = array();
 $filter = array();
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-@include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 
-@include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
+include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 if (!defined('PHPWG_INSTALLED'))
 {
   header('Location: install.php');
@@ -79,17 +79,17 @@ include(PHPWG_ROOT_PATH .'include/dblayer/functions_'.$conf['dblayer'].'.inc.php
 
 if(isset($conf['show_php_errors']) && !empty($conf['show_php_errors']))
 {
-  @ini_set('error_reporting', $conf['show_php_errors']);
+  ini_set('error_reporting', $conf['show_php_errors']);
   if($conf['show_php_errors_on_frontend'])
   {
-    @ini_set('display_errors', true);
+    ini_set('display_errors', true);
   }
 }
 
 if ($conf['session_gc_probability'] > 0)
 {
-  @ini_set('session.gc_divisor', 100);
-  @ini_set('session.gc_probability', min((int)$conf['session_gc_probability'], 100));
+  ini_set('session.gc_divisor', 100);
+  ini_set('session.gc_probability', min((int)$conf['session_gc_probability'], 100));
 }
 
 include(PHPWG_ROOT_PATH . 'include/constants.php');
@@ -238,7 +238,7 @@ if ($conf['gallery_locked'])
   if ( script_basename() != 'identification' and !is_admin() )
   {
     set_status_header(503, 'Service Unavailable');
-    @header('Retry-After: 900');
+    header('Retry-After: 900');
     header('Content-Type: text/html; charset=utf-8');
     echo '<a href="'.get_absolute_root_url(false).'identification.php">'.l10n('The gallery is locked for maintenance. Please, come back later.').'</a>';
     echo str_repeat( ' ', 512); //IE6 doesn't error output if below a size

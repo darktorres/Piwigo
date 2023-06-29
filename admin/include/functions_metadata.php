@@ -177,7 +177,7 @@ function get_sync_metadata($infos)
 {
   global $conf;
   $file = PHPWG_ROOT_PATH.$infos['path'];
-  $fs = @filesize($file);
+  $fs = filesize($file);
 
   if ($fs===false)
   {
@@ -190,7 +190,7 @@ function get_sync_metadata($infos)
 
   if (isset($infos['representative_ext']))
   {
-    if ($image_size = @getimagesize($file))
+    if ($image_size = getimagesize($file))
     {
       $type = $image_size[2];
 
@@ -233,7 +233,7 @@ function get_sync_metadata($infos)
     }
   }
 
-  if ($image_size = @getimagesize($file))
+  if ($image_size = getimagesize($file))
   {
     $infos['width'] = $image_size[0];
     $infos['height'] = $image_size[1];

@@ -273,9 +273,9 @@ if (!isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity_
     }
     $day_nb = $day_date->format('N');
 
-    @$activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst($action['action'])] = $action['activity_counter'];
-    @$activity_last_weeks[$week][$day_nb]['number'] = ($activity_last_weeks[$week][$day_nb]['number'] ?? 0) + $action['activity_counter'];
-    @$activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
+    $activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst($action['action'])] = $action['activity_counter'];
+    $activity_last_weeks[$week][$day_nb]['number'] = ($activity_last_weeks[$week][$day_nb]['number'] ?? 0) + $action['activity_counter'];
+    $activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
   }
 
   $logger->debug('[admin/intro::'.__LINE__.'] recent activity calculated in '.get_elapsed_time($start_time, get_moment()));
@@ -417,7 +417,7 @@ foreach ($file_extensions as $ext => $ext_details)
   }
 
   @$file_extensions_of[$type][strtoupper($ext)] = $ext_details['ext_counter'];
-  @$data_storage[$type] = ($data_storage[$type] ?? 0) + $ext_details['filesize'];
+  @$data_storage[$type] += $ext_details['filesize'];
 }
 
 $data_storage_details = array();

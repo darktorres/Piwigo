@@ -356,12 +356,12 @@ class QNumericRangeScope extends QSearchScope
     $range_requested = true;
     if ( ($pos = strpos($str, '..')) !== false)
       $range = array( substr($str,0,$pos), substr($str, $pos+2));
-    elseif ('>' == @$str[0])// ratio:>1
+    elseif ('>' == $str[0])// ratio:>1
     {
       $range = array( substr($str,1), '');
       $strict[0] = 1;
     }
-    elseif ('<' == @$str[0]) // size:<5mp
+    elseif ('<' == $str[0]) // size:<5mp
     {
       $range = array('', substr($str,1));
       $strict[1] = 1;
@@ -455,12 +455,12 @@ class QDateRangeScope extends QSearchScope
     $strict = array(0,0);
     if ( ($pos = strpos($str, '..')) !== false)
       $range = array( substr($str,0,$pos), substr($str, $pos+2));
-    elseif ('>' == @$str[0])
+    elseif ('>' == $str[0])
     {
       $range = array( substr($str,1), '');
       $strict[0] = 1;
     }
-    elseif ('<' == @$str[0])
+    elseif ('<' == $str[0])
     {
       $range = array('', substr($str,1));
       $strict[1] = 1;
@@ -647,7 +647,7 @@ class QMultiToken
               $stop = true;
             break;
           case ':':
-            $scope = @$root->scopes[strtolower($crt_token)];
+            $scope = $root->scopes[strtolower($crt_token)];
             if (!isset($scope) || isset($crt_scope))
             { // white space
               $this->push($crt_token, $crt_modifier, $crt_scope);
@@ -1379,7 +1379,7 @@ function get_quick_search_results_no_cache($q, $options)
   // get inflections for terms
   $inflector = null;
   $lang_code = substr(get_default_language(),0,2);
-  @include_once(PHPWG_ROOT_PATH.'include/inflectors/'.$lang_code.'.php');
+  include_once(PHPWG_ROOT_PATH.'include/inflectors/'.$lang_code.'.php');
   $class_name = 'Inflector_'.$lang_code;
   if (class_exists($class_name))
   {

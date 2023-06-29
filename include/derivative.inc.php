@@ -56,7 +56,7 @@ final class SrcImage
     {
       $this->rel_path = trigger_change('get_mimetype_location', get_themeconf('mime_icon_dir').$ext.'.png', $ext );
       $this->flags |= self::IS_MIMETYPE;
-      if ( ($size=@getimagesize(PHPWG_ROOT_PATH.$this->rel_path)) === false)
+      if ( ($size=getimagesize(PHPWG_ROOT_PATH.$this->rel_path)) === false)
       {
         if ('svg' == $ext) 
         {
@@ -68,7 +68,7 @@ final class SrcImage
         }
         $size = getimagesize(PHPWG_ROOT_PATH.$this->rel_path);
       }
-      $this->size = @array($size[0],$size[1]);
+      $this->size = array($size[0],$size[1]);
     }
 
     $segments = explode('/', $this->rel_path); // Split the string by "/"

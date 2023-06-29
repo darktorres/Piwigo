@@ -150,9 +150,9 @@ final class ImageStdParams
     if (false!==$arr)
     {
       self::$type_map = $arr['d'];
-      self::$watermark = @$arr['w'];
+      self::$watermark = $arr['w'];
       if (!self::$watermark) self::$watermark = new WatermarkParams();
-      self::$custom = @$arr['c'];
+      self::$custom = $arr['c'];
       if (!self::$custom) self::$custom = array();
       if (isset($arr['q'])) self::$quality = $arr['q'];
     }
