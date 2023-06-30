@@ -168,7 +168,7 @@ class pwg_image
 
     // testing on height is useless in theory: if width is unchanged, there
     // should be no resize, because width/height ratio is not modified.
-    if ($resize_dimensions['width'] == $source_width and $resize_dimensions['height'] == $source_height)
+    if ($resize_dimensions['width'] == $source_width && $resize_dimensions['height'] == $source_height)
     {
       // the image doesn't need any resize! We just copy it to the destination
       copy($this->source_filepath, $destination_filepath);
@@ -214,7 +214,7 @@ class pwg_image
   public static function get_resize_dimensions($width, $height, $max_width, $max_height, $rotation = null, bool $crop = false, bool $follow_orientation = true): array
   {
     $rotate_for_dimensions = false;
-    if (isset($rotation) and in_array(abs($rotation), array(90, 270)))
+    if (isset($rotation) && in_array(abs($rotation), array(90, 270)))
     {
       $rotate_for_dimensions = true;
     }
@@ -229,7 +229,7 @@ class pwg_image
       $x = 0;
       $y = 0;
 
-      if ($width < $height and $follow_orientation)
+      if ($width < $height && $follow_orientation)
       {
         list($max_width, $max_height) = array($max_height, $max_width);
       }
@@ -257,7 +257,7 @@ class pwg_image
     $destination_height = $height;
 
     // maximal size exceeded ?
-    if ($ratio_width > 1 or $ratio_height > 1)
+    if ($ratio_width > 1 || $ratio_height > 1)
     {
       if ($ratio_width < $ratio_height)
       {
@@ -281,7 +281,7 @@ class pwg_image
       'height'=> $destination_height,
       );
 
-    if ($crop and ($x or $y))
+    if ($crop && ($x || $y))
     {
       $result['crop'] = array(
         'width' => $width,
@@ -314,7 +314,7 @@ class pwg_image
 
     $exif = @exif_read_data($source_filepath);
 
-    if (isset($exif['Orientation']) and preg_match('/^\s*(\d)/', (string)$exif['Orientation'], $matches))
+    if (isset($exif['Orientation']) && preg_match('/^\s*(\d)/', (string)$exif['Orientation'], $matches))
     {
       $orientation = $matches[1];
       if (in_array($orientation, array(3, 4)))
@@ -418,7 +418,7 @@ class pwg_image
    */
   public static function is_imagick(): bool
   {
-    return (extension_loaded('imagick') and class_exists('Imagick'));
+    return (extension_loaded('imagick') && class_exists('Imagick'));
   }
 
   /**
@@ -436,7 +436,7 @@ class pwg_image
       return false;
     }
     exec($conf['ext_imagick_dir'].'convert -version', $returnarray);
-    if (is_array($returnarray) and !empty($returnarray[0]) and preg_match('/ImageMagick/i', $returnarray[0]))
+    if (is_array($returnarray) && !empty($returnarray[0]) && preg_match('/ImageMagick/i', $returnarray[0]))
     {
       if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match))
       {
@@ -487,12 +487,12 @@ class pwg_image
           return 'vips';
         }
       case 'imagick':
-        if ($extension != 'gif' and self::is_imagick())
+        if ($extension != 'gif' && self::is_imagick())
         {
           return 'imagick';
         }
       case 'ext_imagick':
-        if ($extension != 'gif' and self::is_ext_imagick())
+        if ($extension != 'gif' && self::is_ext_imagick())
         {
           return 'ext_imagick';
         }
@@ -710,7 +710,7 @@ class image_ext_imagick implements imageInterface
 
     $command = $this->imagickdir.'identify -quiet -format "%wx%h" "'.realpath($source_filepath).'"';
     exec($command, $returnarray);
-    if(!is_array($returnarray) or empty($returnarray[0]) or !preg_match('/^(\d+)x(\d+)$/', $returnarray[0], $match))
+    if(!is_array($returnarray) || empty($returnarray[0]) || !preg_match('/^(\d+)x(\d+)$/', $returnarray[0], $match))
     {
       die("[External ImageMagick] Corrupt image\n" . var_export($returnarray, true));
     }
@@ -929,7 +929,7 @@ class image_gd implements imageInterface
     {
       $this->image = imagecreatefrompng($source_filepath);
     }
-    elseif ($extension == 'gif' and $gd_info['GIF Read Support'] and $gd_info['GIF Create Support'])
+    elseif ($extension == 'gif' && $gd_info['GIF Read Support'] && $gd_info['GIF Create Support'])
     {
       $this->image = imagecreatefromgif($source_filepath);
     }

@@ -75,11 +75,11 @@ function get_sql_search_clause(array $search): string
     }
   }
 
-  if (isset($search['fields']['allwords']) and count($search['fields']['allwords']['fields']) > 0)
+  if (isset($search['fields']['allwords']) && count($search['fields']['allwords']['fields']) > 0)
   {
     $fields = array('file', 'name', 'comment');
 
-    if (isset($search['fields']['allwords']['fields']) and count($search['fields']['allwords']['fields']) > 0)
+    if (isset($search['fields']['allwords']['fields']) && count($search['fields']['allwords']['fields']) > 0)
     {
       $fields = array_intersect($fields, $search['fields']['allwords']['fields']);
     }
@@ -112,7 +112,7 @@ function get_sql_search_clause(array $search): string
       );
 
     // make sure the "mode" is either OR or AND
-    if ($search['fields']['allwords']['mode'] != 'AND' and $search['fields']['allwords']['mode'] != 'OR')
+    if ($search['fields']['allwords']['mode'] != 'AND' && $search['fields']['allwords']['mode'] != 'OR')
     {
       $search['fields']['allwords']['mode'] = 'AND';
     }
@@ -270,7 +270,7 @@ SELECT DISTINCT(id)
     switch ($search['mode'])
     {
       case 'AND':
-        if (empty($search_clause) and !isset($search_in_tags_items))
+        if (empty($search_clause) && !isset($search_in_tags_items))
         {
           $items = $tag_items;
         }
@@ -1029,7 +1029,7 @@ function qsearch_get_text_token_search_sql($token, $fields): array
         // regular expression operations, rather than International Components for Unicode (ICU)
         $page['use_regexp_ICU'] = false;
         $db_version = pwg_get_db_version();
-        if (!preg_match('/mariadb/i', $db_version) and version_compare($db_version, '8.0.4', '>'))
+        if (!preg_match('/mariadb/i', $db_version) && version_compare($db_version, '8.0.4', '>'))
         {
           $page['use_regexp_ICU'] = true;
         }

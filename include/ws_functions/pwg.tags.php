@@ -116,7 +116,7 @@ function ws_tags_getImages(array $params, &$service): array
 
   $image_tag_map = array();
   // build list of image ids with associated tags per image
-  if (!empty($image_ids) and !$params['tag_mode_and'])
+  if (!empty($image_ids) && !$params['tag_mode_and'])
   {
     $query = '
 SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids

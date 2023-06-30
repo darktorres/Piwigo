@@ -107,7 +107,7 @@ class ThemeController {
     {
         global $template, $page;
 
-        if (isset($page['is_homepage']) and $page['is_homepage']) {
+        if (isset($page['is_homepage']) && $page['is_homepage']) {
             $template->assign('is_homepage', true);
         } else {
             $template->assign('is_homepage', false);
@@ -201,7 +201,7 @@ class ThemeController {
 
             $title = str_replace('<a href', '<a class="nav-breadcrumb-item" href', $title);
             $title = str_replace($l_sep, '', $title);
-            if ($page['section'] == 'recent_cats' or $page['section'] == 'favorites') {
+            if ($page['section'] == 'recent_cats' || $page['section'] == 'favorites') {
                 $title = preg_replace('/<\/a>([a-zA-Z0-9]+)/', '</a><a class="nav-breadcrumb-item" href="' . make_index_url(array('section' => $page['section'])) . '">${1}', $title) . '</a>';
             }
             if (empty($section_title)) {

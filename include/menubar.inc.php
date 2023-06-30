@@ -24,7 +24,7 @@ function initialize_menu(): void
   $menu = new BlockManager("menubar");
 
   // if guest_access is disabled, we only display the menus if the user is identified
-  if ($conf['guest_access'] or !is_a_guest())
+  if ($conf['guest_access'] || !is_a_guest())
   {
     $menu->load_registered_blocks();
   }
@@ -36,7 +36,7 @@ function initialize_menu(): void
   }
 
 //--------------------------------------------------------------- external links
-  if ( ($block=$menu->get_block('mbLinks')) and !empty($conf['links']) )
+  if ( ($block=$menu->get_block('mbLinks')) && !empty($conf['links']) )
   {
     $block->data = array();
     foreach ($conf['links'] as $url => $url_data)
@@ -58,7 +58,7 @@ function initialize_menu(): void
             'LABEL' => $url_data['label']
           );
 
-        if (!isset($url_data['new_window']) or $url_data['new_window'])
+        if (!isset($url_data['new_window']) || $url_data['new_window'])
         {
           $tpl_var['new_window'] =
             array(
@@ -78,7 +78,7 @@ function initialize_menu(): void
 //-------------------------------------------------------------- categories
   $block = $menu->get_block('mbCategories');
 //------------------------------------------------------------------------ filter
-  if ($conf['menubar_filter_icon'] and !empty($conf['filter_pages']) and get_filter_page_value('used'))
+  if ($conf['menubar_filter_icon'] && !empty($conf['filter_pages']) && get_filter_page_value('used'))
   {
     if ($filter['enabled'])
     {
@@ -111,9 +111,9 @@ function initialize_menu(): void
 
   if (
     isset($page['items'])
-    and count($page['items']) < $conf['related_albums_maximum_items_to_compute']
-    and $block != null
-    and !empty($page['items'])
+    && count($page['items']) < $conf['related_albums_maximum_items_to_compute']
+    && $block != null
+    && !empty($page['items'])
   )
   {
     $exclude_cat_ids = array();
@@ -141,7 +141,7 @@ function initialize_menu(): void
 
 //------------------------------------------------------------------------ tags
   $block = $menu->get_block('mbTags');
-  if ( $block!=null and 'picture' != script_basename() )
+  if ( $block!=null && 'picture' != script_basename() )
   {
     if ('tags'===($page['section'] ?? null))
     {
@@ -173,7 +173,7 @@ function initialize_menu(): void
       $template->assign( 'IS_RELATED', false);
     }
     //displays all tags available for the current user
-    elseif ($conf['menubar_tag_cloud_content'] == 'always_all' or ($conf['menubar_tag_cloud_content'] == 'all_or_current' and empty($page['items'])) )
+    elseif ($conf['menubar_tag_cloud_content'] == 'always_all' || ($conf['menubar_tag_cloud_content'] == 'all_or_current' && empty($page['items'])) )
     {
       $tags = get_available_tags();
       usort($tags, 'tags_counter_compare');
@@ -190,7 +190,7 @@ function initialize_menu(): void
       $template->assign( 'IS_RELATED', false);
     }
     //displays only the tags available from the current thumbnails displayed
-    elseif ( !empty($page['items']) and ($conf['menubar_tag_cloud_content'] == 'current_only' or $conf['menubar_tag_cloud_content'] == 'all_or_current') )
+    elseif ( !empty($page['items']) && ($conf['menubar_tag_cloud_content'] == 'current_only' || $conf['menubar_tag_cloud_content'] == 'all_or_current') )
     {        
       $selection = array_slice( $page['items'], (int)$page['start'], (int)$page['nb_image_page'] );
       $tags = add_level_to_tags( get_common_tags($selection, $conf['content_tag_cloud_items_number']) );

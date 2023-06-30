@@ -140,13 +140,13 @@ function pwg_query(string $query): mysqli_result|bool
     $output.= number_format($page['queries_time'], 3, '.', ' ').' s)';
     $output.= "\n".'(total time      : ';
     $output.= number_format( ($time+$start-$t2), 3, '.', ' ').' s)';
-    if ( $result!=null and preg_match('/\s*SELECT\s+/i',$query) )
+    if ( $result!=null && preg_match('/\s*SELECT\s+/i',$query) )
     {
       $output.= "\n".'(num rows        : ';
       $output.= pwg_db_num_rows($result).' )';
     }
     elseif ( $result!=null
-      and preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i',$query) )
+      && preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i',$query) )
     {
       $output.= "\n".'(affected rows   : ';
       $output.= pwg_db_changes().' )';
@@ -324,7 +324,7 @@ UPDATE '.protect_column_name($tablename).'
       {
         $separator = $is_first ? '' : ",\n    ";
 
-        if (isset($data[$key]) and $data[$key] != '')
+        if (isset($data[$key]) && $data[$key] != '')
         {
           $query.= $separator.protect_column_name($key).' = \''.$data[$key].'\'';
         }
@@ -381,7 +381,7 @@ UPDATE '.protect_column_name($tablename).'
         $column.= ' '.$row['Type'];
 
         $nullable = true;
-        if (!isset($row['Null']) or $row['Null'] == '' or $row['Null']=='NO')
+        if (!isset($row['Null']) || $row['Null'] == '' || $row['Null']=='NO')
         {
           $column.= ' NOT NULL';
           $nullable = false;
@@ -394,7 +394,7 @@ UPDATE '.protect_column_name($tablename).'
         {
           $column.= " default NULL";
         }
-        if (isset($row['Collation']) and $row['Collation'] != 'NULL')
+        if (isset($row['Collation']) && $row['Collation'] != 'NULL')
         {
           $column.= " collate '".$row['Collation']."'";
         }
@@ -466,7 +466,7 @@ UPDATE '.protect_column_name($tablename).'
   {
     $separator = $is_first ? '' : ",\n    ";
 
-    if (isset($value) and $value !== '')
+    if (isset($value) && $value !== '')
     {
       $query.= $separator.protect_column_name($key).' = \''.$value.'\'';
     }
@@ -521,7 +521,7 @@ UPDATE '.protect_column_name($tablename).'
 function mass_inserts(string $table_name, array $dbfields, array $datas, array $options=array()): void
 {
   $ignore = '';
-  if (isset($options['ignore']) and $options['ignore'])
+  if (isset($options['ignore']) && $options['ignore'])
   {
     $ignore = 'IGNORE';
   }
@@ -543,7 +543,7 @@ function mass_inserts(string $table_name, array $dbfields, array $datas, array $
           $queryTemp .= ',';
         }
 
-        if (!isset($insert[$dbfield]) or $insert[$dbfield] === '')
+        if (!isset($insert[$dbfield]) || $insert[$dbfield] === '')
         {
           $queryTemp .= 'NULL';
         }
@@ -582,7 +582,7 @@ function mass_inserts(string $table_name, array $dbfields, array $datas, array $
 function single_insert(string $table_name, array $data, array $options=array()): void
 {
   $ignore = '';
-  if (isset($options['ignore']) and $options['ignore'])
+  if (isset($options['ignore']) && $options['ignore'])
   {
     $ignore = 'IGNORE';
   }

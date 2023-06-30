@@ -12,8 +12,8 @@
 
 
 if (isset($conf['session_save_handler'])
-  and ($conf['session_save_handler'] == 'db')
-  and defined('PHPWG_INSTALLED'))
+  && ($conf['session_save_handler'] == 'db')
+  && defined('PHPWG_INSTALLED'))
 {
   session_set_save_handler(
     'pwg_session_open',

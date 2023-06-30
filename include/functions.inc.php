@@ -118,23 +118,23 @@ function mkgetdir(string $dir, int $flags=MKGETDIR_DEFAULT): bool
     umask($umask);
     if (!$mkd)
     {
-      !($flags&MKGETDIR_DIE_ON_ERROR) or fatal_error( "$dir ".l10n('no write access'));
+      !($flags&MKGETDIR_DIE_ON_ERROR) || fatal_error( "$dir ".l10n('no write access'));
       return false;
     }
     if( $flags&MKGETDIR_PROTECT_HTACCESS )
     {
       $file = $dir.'/.htaccess';
-      file_exists($file) or file_put_contents( $file, 'deny from all' );
+      file_exists($file) || file_put_contents( $file, 'deny from all' );
     }
     if( $flags&MKGETDIR_PROTECT_INDEX )
     {
       $file = $dir.'/index.htm';
-      file_exists($file) or file_put_contents( $file, 'Not allowed!' );
+      file_exists($file) || file_put_contents( $file, 'Not allowed!' );
     }
   }
   if ( !is_writable($dir) )
   {
-    !($flags&MKGETDIR_DIE_ON_ERROR) or fatal_error( "$dir ".l10n('no write access'));
+    !($flags&MKGETDIR_DIE_ON_ERROR) || fatal_error( "$dir ".l10n('no write access'));
     return false;
   }
   return true;
@@ -397,7 +397,7 @@ function pwg_log(int $image_id = null, string $image_type = null, string $format
   global $conf, $user, $page;
 
   $update_last_visit = false;
-  if (empty($user['last_visit']) or strtotime($user['last_visit']) < time()-$conf['session_length'])
+  if (empty($user['last_visit']) || strtotime($user['last_visit']) < time()-$conf['session_length'])
   {
     $update_last_visit = true;
   }
@@ -443,7 +443,7 @@ UPDATE '.USER_INFOS_TABLE.'
   // It would be "cleaner" to increase length of history.IP to 50 chars, but
   // the alter table is very long on such a big table. We should plan this
   // for a future version, once history table is kept "smaller".
-  if (str_contains($ip, ':') and strlen($ip) > 15)
+  if (str_contains($ip, ':') && strlen($ip) > 15)
   {
     $ip = substr($ip, 0, 15);
   }
@@ -515,7 +515,7 @@ INSERT INTO '.HISTORY_TABLE.'
     history_summarize(50000);
   }
 
-  if ($conf['history_autopurge_every'] > 0 and $history_id % $conf['history_autopurge_every'] == 0)
+  if ($conf['history_autopurge_every'] > 0 && $history_id % $conf['history_autopurge_every'] == 0)
   {
     include_once(PHPWG_ROOT_PATH.'admin/include/functions_history.inc.php');
     history_autopurge();
@@ -536,12 +536,12 @@ function pwg_activity($object, $object_id, $action, array $details=array()): voi
   global $user;
 
   // in case of uploadAsync, do not log the automatic login as an independant activity
-  if (isset($_REQUEST['method']) and 'pwg.images.uploadAsync' == $_REQUEST['method'] and 'login' == $action)
+  if (isset($_REQUEST['method']) && 'pwg.images.uploadAsync' == $_REQUEST['method'] && 'login' == $action)
   {
     return;
   }
 
-  if (isset($_REQUEST['method']) and 'pwg.plugins.performAction' == $_REQUEST['method'] and $_REQUEST['action'] != $action)
+  if (isset($_REQUEST['method']) && 'pwg.plugins.performAction' == $_REQUEST['method'] && $_REQUEST['action'] != $action)
   {
     // for example, if you "restore" a plugin, the internal sequence will perform deactivate/uninstall/install/activate.
     // We only want to keep the last call to pwg_activity with the "restore" action.
@@ -562,7 +562,7 @@ function pwg_activity($object, $object_id, $action, array $details=array()): voi
   {
     $details['script'] = script_basename();
 
-    if ('admin' == $details['script'] and isset($_GET['page']))
+    if ('admin' == $details['script'] && isset($_GET['page']))
     {
       $details['script'].= '/'.$_GET['page'];
     }
@@ -576,26 +576,26 @@ function pwg_activity($object, $object_id, $action, array $details=array()): voi
   }
 
   $user_agent = null;
-  if ('user' == $object and 'login' == $action and isset($_SERVER['HTTP_USER_AGENT']))
+  if ('user' == $object && 'login' == $action && isset($_SERVER['HTTP_USER_AGENT']))
   {
     $user_agent = strip_tags($_SERVER['HTTP_USER_AGENT']);
   }
 
-  if ('photo' == $object and 'add' == $action and !isset($details['sync']))
+  if ('photo' == $object && 'add' == $action && !isset($details['sync']))
   {
     $details['added_with'] = 'app';
-    if (isset($_SERVER['HTTP_REFERER']) and str_contains($_SERVER['HTTP_REFERER'], 'page=photos_add'))
+    if (isset($_SERVER['HTTP_REFERER']) && str_contains($_SERVER['HTTP_REFERER'], 'page=photos_add'))
     {
       $details['added_with'] = 'browser';
     }
   }
 
-  if (in_array($object, array('album', 'photo')) and 'delete' == $action and isset($_GET['page']) and 'site_update' == $_GET['page'])
+  if (in_array($object, array('album', 'photo')) && 'delete' == $action && isset($_GET['page']) && 'site_update' == $_GET['page'])
   {
     $details['sync'] = true;
   }
 
-  if ('tag' == $object and 'delete' == $action and isset($_POST['destination_tag']))
+  if ('tag' == $object && 'delete' == $action && isset($_POST['destination_tag']))
   {
     $details['action'] = 'merge';
     $details['destination_tag'] = $_POST['destination_tag'];
@@ -1021,7 +1021,7 @@ function redirect_html(string $url , string $msg = '', int $refresh_time = 0): v
     load_language('lang', PHPWG_ROOT_PATH.PWG_LOCAL_DIR, array('no_fallback'=>true, 'local'=>true) );
     $template = new Template(PHPWG_ROOT_PATH.'themes', get_default_theme());
   }
-	elseif (defined('IN_ADMIN') and IN_ADMIN)
+	elseif (defined('IN_ADMIN') && IN_ADMIN)
 	{
 		$template = new Template(PHPWG_ROOT_PATH.'themes', get_default_theme());
 	}
@@ -1066,8 +1066,8 @@ function redirect(string $url , string $msg = '', int $refresh_time = 0): void
 
   // with RefeshTime <> 0, only html must be used
   if ($conf['default_redirect_method']=='http'
-      and $refresh_time==0
-      and !headers_sent()
+      && $refresh_time==0
+      && !headers_sent()
     )
   {
     redirect_http($url);
@@ -1240,7 +1240,7 @@ function l10n(string $key): string
 
   if ($val === null)
   {
-    if ($conf['debug_l10n'] and !isset($lang[$key]) and !empty($key))
+    if ($conf['debug_l10n'] && !isset($lang[$key]) && !empty($key))
     {
       trigger_error('[l10n] language key "'. $key .'" not defined', E_USER_WARNING);
     }
@@ -1272,7 +1272,7 @@ function l10n_dec(string $singular_key, string $plural_key, int|string $decimal)
   return
     sprintf(
       l10n((
-        (($decimal > 1) or ($decimal == 0 and $lang_info['zero_plural']))
+        (($decimal > 1) || ($decimal == 0 && $lang_info['zero_plural']))
           ? $plural_key
           : $singular_key
         )), $decimal);
@@ -1466,7 +1466,7 @@ SELECT param, value
 ;';
   $result = pwg_query($query);
 
-  if ((pwg_db_num_rows($result) == 0) and !empty($condition))
+  if ((pwg_db_num_rows($result) == 0) && !empty($condition))
   {
     fatal_error('No configuration data');
   }
@@ -1633,7 +1633,7 @@ function script_basename(): string
     if (!empty($_SERVER[$value]))
     {
       $filename = strtolower($_SERVER[$value]);
-      if ($conf['php_extension_in_urls'] and get_extension($filename)!=='php')
+      if ($conf['php_extension_in_urls'] && get_extension($filename)!=='php')
         continue;
       $basename = basename($filename, '.php');
       if (!empty($basename))
@@ -1734,7 +1734,7 @@ function load_language(string $filename, string $dirname = '', mixed $options = 
   }
   $dirname .= 'language/';
 
-  $default_language = (defined('PHPWG_INSTALLED') and !defined('UPGRADES_PATH')) ?
+  $default_language = (defined('PHPWG_INSTALLED') && !defined('UPGRADES_PATH')) ?
       get_default_language() : PHPWG_DEFAULT_LANGUAGE;
 
   // construct list of potential languages
@@ -1845,11 +1845,11 @@ function convert_charset(string $str, string $source_charset, string $dest_chars
 {
   if ($source_charset==$dest_charset)
     return $str;
-  if ($source_charset=='iso-8859-1' and $dest_charset=='utf-8')
+  if ($source_charset=='iso-8859-1' && $dest_charset=='utf-8')
   {
     return mb_convert_encoding($str, 'UTF-8');
   }
-  if ($source_charset=='utf-8' and $dest_charset=='iso-8859-1')
+  if ($source_charset=='utf-8' && $dest_charset=='iso-8859-1')
   {
     return mb_convert_encoding($str, 'ISO-8859-1');
   }
@@ -1940,7 +1940,7 @@ function create_navigation_bar(string $url, $nb_element, int $start, int $nb_ele
   $pages_around = $conf['paginate_pages_around'];
   $start_str = $clean_url ? '/'.$param_name.'-' : (!str_contains($url, '?') ? '?':'&amp;').$param_name.'=';
 
-  if (!isset($start) or !is_numeric($start) or (is_numeric($start) and $start < 0))
+  if (!isset($start) || !is_numeric($start) || (is_numeric($start) && $start < 0))
   {
     $start = 0;
   }
@@ -2110,7 +2110,7 @@ function check_input_parameter($param_name, $param_array, $is_array, $pattern, b
 
     foreach ($param_value as $key => $item_to_check)
     {
-      if (!preg_match(PATTERN_ID, (string)$key) or !preg_match($pattern, $item_to_check))
+      if (!preg_match(PATTERN_ID, (string)$key) || !preg_match($pattern, $item_to_check))
       {
         fatal_error('[Hacking attempt] an item is not valid in input parameter "'.$param_name.'"');
       }
@@ -2246,7 +2246,7 @@ function url_check_format(string $url): bool
     return false;
   }
 
-  if (strncmp($url, 'http://', 7) !== 0 and strncmp($url, 'https://', 8) !== 0)
+  if (strncmp($url, 'http://', 7) !== 0 && strncmp($url, 'https://', 8) !== 0)
   {
     return false;
   }
@@ -2343,12 +2343,12 @@ function check_lounge(): void
 {
   global $conf;
 
-  if (!isset($conf['lounge_active']) or !$conf['lounge_active'])
+  if (!isset($conf['lounge_active']) || !$conf['lounge_active'])
   {
     return;
   }
 
-  if (isset($_REQUEST['method']) and in_array($_REQUEST['method'], array('pwg.images.upload', 'pwg.images.uploadAsync')))
+  if (isset($_REQUEST['method']) && in_array($_REQUEST['method'], array('pwg.images.upload', 'pwg.images.uploadAsync')))
   {
     return;
   }

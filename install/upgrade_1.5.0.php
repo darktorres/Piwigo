@@ -12,7 +12,7 @@ if (!defined('PHPWG_ROOT_PATH'))
 }
 else
 {
-  if (!defined('PHPWG_IN_UPGRADE') or !PHPWG_IN_UPGRADE)
+  if (!defined('PHPWG_IN_UPGRADE') || !PHPWG_IN_UPGRADE)
   {
     die ('Hacking attempt!');
   }
@@ -314,11 +314,11 @@ if ( isset($conf['gallery_url']) )
 {
   $params['gallery_url'][0] = $conf['gallery_url'];
 }
-if ( isset($conf['rate']) and is_bool($conf['rate']) )
+if ( isset($conf['rate']) && is_bool($conf['rate']) )
 {
   $params['rate'][0] = $conf['rate'] ? 'true' : 'false';
 }
-if ( isset($conf['rate_anonymous']) and is_bool($conf['rate_anonymous']) )
+if ( isset($conf['rate_anonymous']) && is_bool($conf['rate_anonymous']) )
 {
   $params['rate_anonymous'][0] = $conf['rate_anonymous'] ? 'true' : 'false';
 }

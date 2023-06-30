@@ -82,7 +82,7 @@ public function get_elements(string $path): array
   {
     while (($node = readdir($contents)) !== false)
     {
-      if ($node == '.' or $node == '..') continue;
+      if ($node == '.' || $node == '..') continue;
 
       if (is_file($path.'/'.$node))
       {
@@ -106,10 +106,10 @@ public function get_elements(string $path): array
         }
       }
       elseif (is_dir($path.'/'.$node)
-               and $node != 'pwg_high'
-               and $node != 'pwg_representative'
-               and $node != 'pwg_format'
-               and $node != 'thumbnail' )
+               && $node != 'pwg_high'
+               && $node != 'pwg_representative'
+               && $node != 'pwg_format'
+               && $node != 'thumbnail' )
       {
         $subdirs[] = $node;
       }

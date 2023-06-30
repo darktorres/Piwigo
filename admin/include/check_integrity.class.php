@@ -65,7 +65,7 @@ class check_integrity
     }
 
     // Treatments
-    if (isset($_POST['c13y_submit_correction']) and isset($_POST['c13y_selection']))
+    if (isset($_POST['c13y_submit_correction']) && isset($_POST['c13y_selection']))
     {
       $corrected_count = 0;
       $not_corrected_count = 0;
@@ -119,7 +119,7 @@ class check_integrity
     }
     else
     {
-      if (isset($_POST['c13y_submit_ignore']) and isset($_POST['c13y_selection']))
+      if (isset($_POST['c13y_submit_ignore']) && isset($_POST['c13y_selection']))
       {
         $ignored_count = 0;
 
@@ -170,7 +170,7 @@ class check_integrity
     $submit_automatic_correction = false;
     $submit_ignore = false;
 
-    if (isset($this->retrieve_list) and count($this->retrieve_list) > 0)
+    if (isset($this->retrieve_list) && count($this->retrieve_list) > 0)
     {
       $template->set_filenames(array('check_integrity' => 'check_integrity.tpl'));
 
@@ -232,7 +232,7 @@ class check_integrity
             $can_select = true;
           }
 
-          if (!empty($c13y['correction_msg']) and !isset($c13y['corrected']))
+          if (!empty($c13y['correction_msg']) && !isset($c13y['corrected']))
           {
             $c13y_display['correction_msg'] = $c13y['correction_msg'];
           }

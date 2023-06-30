@@ -199,7 +199,7 @@ function get_sync_metadata(array $infos): false|array
     {
       $type = $image_size[2];
 
-      if (IMAGETYPE_TIFF_MM == $type or IMAGETYPE_TIFF_II == $type)
+      if (IMAGETYPE_TIFF_MM == $type || IMAGETYPE_TIFF_II == $type)
       {
         // in case of TIFF files, we want to use the original file and not
         // the representative for EXIF/IPTC, but we need the representative
@@ -221,7 +221,7 @@ function get_sync_metadata(array $infos): false|array
     $height = (int) $xmlattributes->height;
     $vb = (string) $xmlattributes->viewBox;
 
-    if (isset($width) and $width != "")
+    if (isset($width) && $width != "")
     {
       $infos['width'] = $width;
     } elseif (isset($vb))
@@ -229,7 +229,7 @@ function get_sync_metadata(array $infos): false|array
       $infos['width'] = explode(" ", $vb)[2];
     }
 
-    if (isset($height) and $height != "")
+    if (isset($height) && $height != "")
     {
       $infos['height'] = $height;
     } elseif (isset($vb))

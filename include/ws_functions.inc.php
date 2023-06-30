@@ -157,7 +157,7 @@ function ws_std_get_urls($image_row): array
   foreach($derivatives as $type=>$derivative)
   {
     $size = $derivative->get_size();
-    $size != null or $size=array(null,null);
+    $size != null || $size=array(null,null);
     $derivatives_arr[$type] = array('url' => $derivative->get_url(), 'width'=>$size[0], 'height'=>$size[1] );
   }
   $ret['derivatives'] = $derivatives_arr;

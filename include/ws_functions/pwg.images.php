@@ -414,7 +414,7 @@ SELECT id, name, permalink, uppercats, global_rank, commentable
   }
   usort($related_categories, 'global_rank_compare');
 
-  if (empty($related_categories) and !is_admin())
+  if (empty($related_categories) && !is_admin())
   {
     // photo might be in the lounge? or simply orphan. A standard user should not get
     // info. An admin should still be able to get info.
@@ -480,7 +480,7 @@ SELECT COUNT(id) AS nb_comments
   list($nb_comments) = query2array($query, null, 'nb_comments');
   $nb_comments = (int)$nb_comments;
 
-  if ($nb_comments>0 and $params['comments_per_page']>0)
+  if ($nb_comments>0 && $params['comments_per_page']>0)
   {
     $query = '
 SELECT id, date, author, content
@@ -502,7 +502,7 @@ SELECT id, date, author, content
   $comment_post_data = null;
   if ($is_commentable and
       (!is_a_guest()
-        or (is_a_guest() and $conf['comments_forall'] )
+        || (is_a_guest() && $conf['comments_forall'] )
       )
     )
   {
@@ -1153,7 +1153,7 @@ SELECT id, name, permalink
   }
 
   // and now, let's create tag associations
-  if (isset($params['tag_ids']) and !empty($params['tag_ids']))
+  if (isset($params['tag_ids']) && !empty($params['tag_ids']))
   {
     set_tags(
       explode(',', $params['tag_ids']),
@@ -1260,7 +1260,7 @@ SELECT COUNT(*)
     array('id' => $image_id)
     );
 
-  if (isset($params['tags']) and !empty($params['tags']))
+  if (isset($params['tags']) && !empty($params['tags']))
   {
     include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
@@ -1717,7 +1717,7 @@ SELECT COUNT(*)
   $logger->debug(__FUNCTION__.' image_id after add_uploaded_file = '.$image_id);
 
   // and now, let's create tag associations
-  if (isset($params['tag_ids']) and !empty($params['tag_ids']))
+  if (isset($params['tag_ids']) && !empty($params['tag_ids']))
   {
     set_tags(
       explode(',', $params['tag_ids']),
@@ -1755,7 +1755,7 @@ SELECT COUNT(*)
   invalidate_user_cache();
 
   // trick to bypass get_sql_condition_FandF
-  if (!empty($params['level']) and $params['level'] > $user['level'])
+  if (!empty($params['level']) && $params['level'] > $user['level'])
   {
     // this will not persist
     $user['level'] = $params['level'];
@@ -2046,7 +2046,7 @@ SELECT
 
     foreach ($files as $path)
     {
-      if (is_file($path) and !unlink($path))
+      if (is_file($path) && !unlink($path))
       {
         $ok = false;
         trigger_error('"'.$path.'" cannot be removed', E_USER_WARNING);

@@ -108,7 +108,7 @@ $form_param['ip'] = $_GET['filter_ip'] ?? $form['ip'] ?? null;
 $form_param['image_id'] = $_GET['filter_image_id'] ?? $form['image_id'] ?? null;
 $form_param['user_id'] = isset($_GET['filter_user_id']) ? $_GET['filter_user_id'] : "-1";
 
-if (isset($_GET['filter_ip']) or isset($_GET['filter_image_id']) or isset($_GET['filter_user_id']))
+if (isset($_GET['filter_ip']) || isset($_GET['filter_image_id']) || isset($_GET['filter_user_id']))
 {
   $form['start'] = '';
 }

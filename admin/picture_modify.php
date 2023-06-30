@@ -54,7 +54,7 @@ if (isset($_GET['delete']))
   // 2. else use the first reachable linked category
   // 3. redirect to gallery root
 
-  if (isset($_GET['cat_id']) and !empty($_GET['cat_id']))
+  if (isset($_GET['cat_id']) && !empty($_GET['cat_id']))
   {
     redirect(
       make_index_url(
@@ -306,7 +306,7 @@ $intro_vars = array(
   'is_svg'=> (strtoupper(end($extTab)) == 'SVG'),
   );
 
-if ($conf['rate'] and !empty($row['rating_score']))
+if ($conf['rate'] && !empty($row['rating_score']))
 {
   $query = '
 SELECT
@@ -412,7 +412,7 @@ $authorizeds = array_diff(
   );
 
 if (isset($_GET['cat_id'])
-    and in_array($_GET['cat_id'], $authorizeds))
+    && in_array($_GET['cat_id'], $authorizeds))
 {
   $url_img = make_picture_url(
     array(
@@ -437,7 +437,7 @@ else
   }
 }
 
-if (isset($url_img) and $user['level'] >= $page['image']['level'])
+if (isset($url_img) && $user['level'] >= $page['image']['level'])
 {
   $template->assign( 'U_JUMPTO', $url_img ); 
 }

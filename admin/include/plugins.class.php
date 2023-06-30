@@ -140,7 +140,7 @@ class plugins
   {
     global $conf;
 
-    if (!$conf['enable_extensions_install'] and 'delete' == $action)
+    if (!$conf['enable_extensions_install'] && 'delete' == $action)
     {
       die('Piwigo extensions install/update/delete system is disabled');
     }
@@ -162,7 +162,7 @@ class plugins
     switch ($action)
     {
       case 'install':
-        if (!empty($crt_db_plugin) or !isset($this->fs_plugins[$plugin_id]))
+        if (!empty($crt_db_plugin) || !isset($this->fs_plugins[$plugin_id]))
         {
           break;
         }
@@ -250,7 +250,7 @@ UPDATE '. PLUGINS_TABLE .'
         break;
 
       case 'deactivate':
-        if (!isset($crt_db_plugin) or $crt_db_plugin['state'] != 'active')
+        if (!isset($crt_db_plugin) || $crt_db_plugin['state'] != 'active')
         {
           $activity_details['result'] = 'error';
           break;
@@ -342,7 +342,7 @@ DELETE FROM '. PLUGINS_TABLE .'
     $dir = opendir(PHPWG_PLUGINS_PATH);
     while ($file = readdir($dir))
     {
-      if ($file!='.' and $file!='..')
+      if ($file!='.' && $file!='..')
       {
         if (preg_match('/^[a-zA-Z0-9-_]+$/', $file))
         {
@@ -363,8 +363,8 @@ DELETE FROM '. PLUGINS_TABLE .'
   {
     $path = PHPWG_PLUGINS_PATH.$plugin_id;
 
-    if (is_dir($path) and !is_link($path)
-        and file_exists($path.'/main.inc.php')
+    if (is_dir($path) && !is_link($path)
+        && file_exists($path.'/main.inc.php')
         )
     {
       $plugin = array(
@@ -421,7 +421,7 @@ DELETE FROM '. PLUGINS_TABLE .'
           $plugin['hasSettings'] = true;
         }
       }
-      if (!empty($plugin['uri']) and strpos($plugin['uri'] , 'extension_view.php?eid='))
+      if (!empty($plugin['uri']) && strpos($plugin['uri'] , 'extension_view.php?eid='))
       {
         list( , $extension) = explode('extension_view.php?eid=', $plugin['uri']);
         if (is_numeric($extension)) $plugin['extension'] = $extension;
@@ -472,7 +472,7 @@ DELETE FROM '. PLUGINS_TABLE .'
 
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php?category_id='. $conf['pem_plugins_category'] .'&format=php';
-    if (fetchRemote($url, $result) and $pem_versions = unserialize($result))
+    if (fetchRemote($url, $result) && $pem_versions = unserialize($result))
     {
       $i = 0;
 
@@ -593,8 +593,8 @@ DELETE FROM '. PLUGINS_TABLE .'
    */
   public function get_incompatible_plugins(bool $actualize=false): mixed
   {
-    if (isset($_SESSION['incompatible_plugins']) and !$actualize
-      and $_SESSION['incompatible_plugins']['~~expire~~'] > time())
+    if (isset($_SESSION['incompatible_plugins']) && !$actualize
+      && $_SESSION['incompatible_plugins']['~~expire~~'] > time())
     {
       return $_SESSION['incompatible_plugins'];
     }
@@ -649,9 +649,9 @@ DELETE FROM '. PLUGINS_TABLE .'
       foreach ($this->fs_plugins as $plugin_id => $fs_plugin)
       {
         if (isset($fs_plugin['extension'])
-          and !in_array($plugin_id, $this->default_plugins)
-          and $fs_plugin['version'] != 'auto'
-          and (!isset($server_plugins[$fs_plugin['extension']]) or !in_array($fs_plugin['version'], $server_plugins[$fs_plugin['extension']])))
+          && !in_array($plugin_id, $this->default_plugins)
+          && $fs_plugin['version'] != 'auto'
+          && (!isset($server_plugins[$fs_plugin['extension']]) || !in_array($fs_plugin['version'], $server_plugins[$fs_plugin['extension']])))
         {
           $_SESSION['incompatible_plugins'][$plugin_id] = $fs_plugin['version'];
         }
@@ -704,7 +704,7 @@ DELETE FROM '. PLUGINS_TABLE .'
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
+      if ($handle = fopen($archive, 'wb') && fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -714,8 +714,8 @@ DELETE FROM '. PLUGINS_TABLE .'
           {
             // we search main.inc.php in archive
             if (basename($file['filename']) == 'main.inc.php'
-              and (!isset($main_filepath)
-              or strlen($file['filename']) < strlen($main_filepath)))
+              && (!isset($main_filepath)
+              || strlen($file['filename']) < strlen($main_filepath)))
             {
               $main_filepath = $file['filename'];
             }
@@ -750,8 +750,8 @@ DELETE FROM '. PLUGINS_TABLE .'
                 }
               }
               if (file_exists($extract_path.'/obsolete.list')
-                and $old_files = file($extract_path.'/obsolete.list', FILE_IGNORE_NEW_LINES)
-                and !empty($old_files))
+                && $old_files = file($extract_path.'/obsolete.list', FILE_IGNORE_NEW_LINES)
+                && !empty($old_files))
               {
                 $old_files[] = 'obsolete.list';
                 $logger->debug(__FUNCTION__.', $old_files = {'.join('},{', $old_files).'}');
@@ -772,7 +772,7 @@ DELETE FROM '. PLUGINS_TABLE .'
 
                   // make sure the obsolete file is withing the extension directory, prevent traversal path
                   $realpath = realpath($path);
-                  if ($realpath === false or !str_starts_with($realpath, $extract_path_realpath))
+                  if ($realpath === false || !str_starts_with($realpath, $extract_path_realpath))
                   {
                     continue;
                   }
@@ -813,7 +813,7 @@ DELETE FROM '. PLUGINS_TABLE .'
     $file = PHPWG_ROOT_PATH.'install/obsolete_extensions.list';
     $merged_extensions = array();
 
-    if (file_exists($file) and $obsolete_ext = file($file, FILE_IGNORE_NEW_LINES) and !empty($obsolete_ext))
+    if (file_exists($file) && $obsolete_ext = file($file, FILE_IGNORE_NEW_LINES) && !empty($obsolete_ext))
     {
       foreach ($obsolete_ext as $ext)
       {

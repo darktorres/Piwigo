@@ -211,7 +211,7 @@ SELECT id
   $query.= (empty($extra_images_where_sql) ? '' : " \nAND (".$extra_images_where_sql.')').'
   GROUP BY id';
   
-  if ($mode=='AND' and count($tag_ids)>1)
+  if ($mode=='AND' && count($tag_ids)>1)
   {
     $query .= '
   HAVING COUNT(DISTINCT tag_id)='.count($tag_ids);

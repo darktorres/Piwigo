@@ -12,7 +12,7 @@ if (!defined('PHPWG_ROOT_PATH'))
 }
 else
 {
-  if (!defined('PHPWG_IN_UPGRADE') or !PHPWG_IN_UPGRADE)
+  if (!defined('PHPWG_IN_UPGRADE') || !PHPWG_IN_UPGRADE)
   {
     die ('Hacking attempt!');
   }

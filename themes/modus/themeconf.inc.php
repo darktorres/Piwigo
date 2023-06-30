@@ -430,7 +430,7 @@ function modus_picture_content($content, $element_info): mixed
 			if (!$size)
 				break;
 
-			if ($size[0] <= $available_size[0] and $size[1] <= $available_size[1])
+			if ($size[0] <= $available_size[0] && $size[1] <= $available_size[1])
 				$selected_derivative = $derivative;
 			else
 			{
@@ -469,7 +469,7 @@ function modus_picture_content($content, $element_info): mixed
 				$size = $derivative->get_size();
 				if (!$size)
 					break;
-				if ($size[0] <= $available_size[0] and $size[1] <= $available_size[1])
+				if ($size[0] <= $available_size[0] && $size[1] <= $available_size[1])
 					$next_best = $derivative;
 				else
 				{

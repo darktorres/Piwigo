@@ -23,9 +23,9 @@ foreach ($related_categories as $category)
   }
 }
 
-if ( $page['show_comments'] and isset( $_POST['content'] ) )
+if ( $page['show_comments'] && isset( $_POST['content'] ) )
 {
-  if ( is_a_guest() and !$conf['comments_forall'] )
+  if ( is_a_guest() && !$conf['comments_forall'] )
   {
     die ('Session expired');
   }
@@ -192,7 +192,7 @@ SELECT
             'comment_to_edit'=>$row['id'],
             )
           );
-          if (isset($edit_comment) and ($row['id'] == $edit_comment))
+          if (isset($edit_comment) && ($row['id'] == $edit_comment))
           {
             $tpl_comment['IN_EDIT'] = true;
             $key = get_ephemeral_key(2, $page['image_id']);
@@ -227,7 +227,7 @@ SELECT
   {
     $show_add_comment_form = false;
   }
-  if (is_a_guest() and !$conf['comments_forall'])
+  if (is_a_guest() && !$conf['comments_forall'])
   {
     $show_add_comment_form = false;
   }
@@ -244,7 +244,7 @@ SELECT
         'AUTHOR_MANDATORY' => $conf['comments_author_mandatory'],
         'AUTHOR' =>           '',
         'WEBSITE_URL' =>      '',
-        'SHOW_EMAIL' =>       !is_classic_user() or empty($user['email']),
+        'SHOW_EMAIL' =>       !is_classic_user() || empty($user['email']),
         'EMAIL_MANDATORY' =>  $conf['comments_email_mandatory'],
         'EMAIL' =>            '',
         'SHOW_WEBSITE' =>     $conf['comments_enable_website'],

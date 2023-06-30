@@ -50,7 +50,7 @@ DELETE FROM '.CADDIE_TABLE.'
     redirect(get_root_url().'admin.php?page='.$_GET['page']);
   }
 
-  if ('delete_orphans' == $_GET['action'] and isset($_GET['nb_orphans_deleted']))
+  if ('delete_orphans' == $_GET['action'] && isset($_GET['nb_orphans_deleted']))
   {
     check_input_parameter('nb_orphans_deleted', $_GET, false, '/^\d+$/');
 
@@ -65,7 +65,7 @@ DELETE FROM '.CADDIE_TABLE.'
     }
   }
 
-  if ('sync_md5sum' == $_GET['action'] and isset($_GET['nb_md5sum_added']))
+  if ('sync_md5sum' == $_GET['action'] && isset($_GET['nb_md5sum_added']))
   {
     check_input_parameter('nb_md5sum_added', $_GET, false, '/^\d+$/');
     if ($_GET['nb_md5sum_added'] > 0)
@@ -116,7 +116,7 @@ if (isset($_POST['submitFilter']))
         $has_options = true;
       }
 
-      if (!$has_options or isset($_POST['filter_duplicates_filename']))
+      if (!$has_options || isset($_POST['filter_duplicates_filename']))
       {
         $_SESSION['bulk_manager_filter']['duplicates_filename'] = true;
       }
@@ -139,7 +139,7 @@ if (isset($_POST['submitFilter']))
   {
     $_SESSION['bulk_manager_filter']['tags'] = get_tag_ids($_POST['filter_tags'], false);
 
-    if (isset($_POST['tag_mode']) and in_array($_POST['tag_mode'], array('AND', 'OR')))
+    if (isset($_POST['tag_mode']) && in_array($_POST['tag_mode'], array('AND', 'OR')))
     {
       $_SESSION['bulk_manager_filter']['tag_mode'] = $_POST['tag_mode'];
     }
@@ -619,9 +619,9 @@ $page['cat_elements_id'] = empty($current_set) ? array() : $current_set;
 // and $page['nb_images'] next elements
 
 if (!isset($_REQUEST['start'])
-    or !is_numeric($_REQUEST['start'])
-    or $_REQUEST['start'] < 0
-    or (isset($_REQUEST['display']) and 'all' == $_REQUEST['display']))
+    || !is_numeric($_REQUEST['start'])
+    || $_REQUEST['start'] < 0
+    || (isset($_REQUEST['display']) && 'all' == $_REQUEST['display']))
 {
   $page['start'] = 0;
 }
@@ -720,11 +720,11 @@ foreach ($ratios as $ratio)
   {
     $ratio_categories['portrait'][] = $ratio;
   }
-  elseif ($ratio >= 0.95 and $ratio <= 1.05)
+  elseif ($ratio >= 0.95 && $ratio <= 1.05)
   {
     $ratio_categories['square'][] = $ratio;
   }
-  elseif ($ratio > 1.05 and $ratio < 2)
+  elseif ($ratio > 1.05 && $ratio < 2)
   {
     $ratio_categories['landscape'][] = $ratio;
   }

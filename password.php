@@ -64,7 +64,7 @@ function process_password_request(): bool
 
   // password request is not possible for guest/generic users
   $status = $userdata['status'];
-  if (is_a_guest($status) or is_generic($status))
+  if (is_a_guest($status) || is_generic($status))
   {
     $page['errors'][] = l10n('Password reset is not allowed for this user');
     return false;
@@ -188,7 +188,7 @@ SELECT
         return false;
       }
 
-      if (is_a_guest($row['status']) or is_generic($row['status']))
+      if (is_a_guest($row['status']) || is_generic($row['status']))
       {
         $page['errors'][] = l10n('Password reset is not allowed for this user');
         return false;
@@ -279,12 +279,12 @@ if (isset($_POST['submit']))
 // +-----------------------------------------------------------------------+
 
 // a connected user can't reset the password from a mail
-if (isset($_GET['key']) and !is_a_guest())
+if (isset($_GET['key']) && !is_a_guest())
 {
   unset($_GET['key']);
 }
 
-if (isset($_GET['key']) and !isset($_POST['submit']))
+if (isset($_GET['key']) && !isset($_POST['submit']))
 {
   $user_id = check_password_reset_key($_GET['key']);
   if (is_numeric($user_id))
@@ -316,12 +316,12 @@ if (!isset($page['action']))
   }
 }
 
-if ('reset' == $page['action'] and !isset($_GET['key']) and (is_a_guest() or is_generic()))
+if ('reset' == $page['action'] && !isset($_GET['key']) && (is_a_guest() || is_generic()))
 {
   redirect(get_gallery_home_url());
 }
 
-if ('lost' == $page['action'] and !is_a_guest())
+if ('lost' == $page['action'] && !is_a_guest())
 {
   redirect(get_gallery_home_url());
 }

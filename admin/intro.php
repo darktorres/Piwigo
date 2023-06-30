@@ -25,7 +25,7 @@ check_status(ACCESS_ADMINISTRATOR);
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['action']) and 'hide_newsletter_subscription' == $_GET['action'])
+if (isset($_GET['action']) && 'hide_newsletter_subscription' == $_GET['action'])
 {
   userprefs_update_param('show_newsletter_subscription', 'false');
   exit();
@@ -81,7 +81,7 @@ fs_quick_check();
 
 $template->set_filenames(array('intro' => 'intro.tpl'));
 
-if ($conf['show_newsletter_subscription'] and userprefs_get_param('show_newsletter_subscription', true)) {
+if ($conf['show_newsletter_subscription'] && userprefs_get_param('show_newsletter_subscription', true)) {
   $template->assign(
     array(
       'EMAIL' => $user['email'],
@@ -197,7 +197,7 @@ if ($conf['show_piwigo_latest_news'])
 {
   $latest_news = get_piwigo_news();
 
-  if (isset($latest_news['id']) and $latest_news['posted_on'] > time()-60*60*24*30)
+  if (isset($latest_news['id']) && $latest_news['posted_on'] > time()-60*60*24*30)
   {
     $page['messages'][] = sprintf(
       '%s <a href="%s" title="%s" target="_blank"><i class="icon-bell"></i> %s</a>',
@@ -242,7 +242,7 @@ while ($mondays < $nb_weeks)
 $week_number = array_reverse($week_number);
 $date_string = $date->format('Y-m-d');
 
-if (!isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime('5 minutes ago'))
+if (!isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime('5 minutes ago'))
 {
   $start_time = get_moment();
 

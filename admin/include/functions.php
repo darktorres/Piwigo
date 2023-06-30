@@ -72,7 +72,7 @@ SELECT id
   delete_elements($element_ids);
 
   // now, should we delete photos that are virtually linked to the category?
-  if ('delete_orphans' == $photo_deletion_mode or 'force_delete' == $photo_deletion_mode)
+  if ('delete_orphans' == $photo_deletion_mode || 'force_delete' == $photo_deletion_mode)
   {
     $query = '
 SELECT
@@ -223,7 +223,7 @@ SELECT
     {
       foreach ($files as $path)
       {
-        if (is_file($path) and !unlink($path))
+        if (is_file($path) && !unlink($path))
         {
           $ok = false;
           trigger_error('"'.$path.'" cannot be removed', E_USER_WARNING);
@@ -610,7 +610,7 @@ function get_fs_directories($path, bool $recursive = true): array
     {
       while (($node = readdir($contents)) !== false)
       {
-        if (is_dir($path.'/'.$node) and !isset($exclude_folders[$node]))
+        if (is_dir($path.'/'.$node) && !isset($exclude_folders[$node]))
         {
           $dirs[] = $path.'/'.$node;
           if ($recursive)
@@ -716,7 +716,7 @@ SELECT id, id_uppercat, uppercats, `rank`, global_rank
       str_replace(',', '.', $cat['uppercats'] )
       );
 
-    if ($cat['rank_changed'] or $new_global_rank !== $cat['global_rank'])
+    if ($cat['rank_changed'] || $new_global_rank !== $cat['global_rank'])
     {
       $datas[] = array(
           'id' => $id,
@@ -922,8 +922,8 @@ SELECT
       $ref_cat_id = $top_category['id'];
 
       if (!empty($top_category['id_uppercat'])
-          and isset($parent_cats[ $top_category['id_uppercat'] ])
-          and 'private' == $parent_cats[ $top_category['id_uppercat'] ]['status'])
+          && isset($parent_cats[ $top_category['id_uppercat'] ])
+          && 'private' == $parent_cats[ $top_category['id_uppercat'] ]['status'])
       {
         $ref_cat_id = $top_category['id_uppercat'];
       }
@@ -966,7 +966,7 @@ DELETE
  */
 function get_uppercat_ids(array $cat_ids): array
 {
-  if (!is_array($cat_ids) or count($cat_ids) < 1)
+  if (!is_array($cat_ids) || count($cat_ids) < 1)
   {
     return array();
   }
@@ -1139,7 +1139,7 @@ function get_fs(string $path, bool $recursive = true): array
     {
       while (($node = readdir($contents)) !== false)
       {
-        if ($node == '.' or $node == '..') continue;
+        if ($node == '.' || $node == '..') continue;
 
         if (is_file($path.'/'.$node))
         {
@@ -1165,7 +1165,7 @@ function get_fs(string $path, bool $recursive = true): array
             $fs['elements'][] = $path.'/'.$node;
           }
         }
-        elseif (is_dir($path.'/'.$node) and $node != 'pwg_high' and $recursive)
+        elseif (is_dir($path.'/'.$node) && $node != 'pwg_high' && $recursive)
         {
           $subdirs[] = $node;
         }
@@ -1461,7 +1461,7 @@ SELECT MAX(`rank`) AS max_rank
     );
 
   // is the album commentable?
-  if (isset($options['commentable']) and is_bool($options['commentable']))
+  if (isset($options['commentable']) && is_bool($options['commentable']))
   {
     $insert['commentable'] = $options['commentable'];
   }
@@ -1474,7 +1474,7 @@ SELECT MAX(`rank`) AS max_rank
   // is the album temporarily locked? (only visible by administrators,
   // whatever permissions) (may be overwritten if parent album is not
   // visible)
-  if (isset($options['visible']) and is_bool($options['visible']))
+  if (isset($options['visible']) && is_bool($options['visible']))
   {
     $insert['visible'] = $options['visible'];
   }
@@ -1485,7 +1485,7 @@ SELECT MAX(`rank`) AS max_rank
   $insert['visible'] = boolean_to_string($insert['visible']);
 
   // is the album private? (may be overwritten if parent album is private)
-  if (isset($options['status']) and 'private' == $options['status'])
+  if (isset($options['status']) && 'private' == $options['status'])
   {
     $insert['status'] = 'private';
   }
@@ -1500,7 +1500,7 @@ SELECT MAX(`rank`) AS max_rank
     $insert['comment'] = $conf['allow_html_descriptions'] ? $options['comment'] : strip_tags($options['comment']);
   }
 
-  if (!empty($parent_id) and is_numeric($parent_id))
+  if (!empty($parent_id) && is_numeric($parent_id))
   {
     $query = '
 SELECT id, uppercats, global_rank, visible, status
@@ -1547,7 +1547,7 @@ SELECT id, uppercats, global_rank, visible, status
 
   update_global_rank();
 
-  if ('private' == $insert['status'] and !empty($insert['id_uppercat']) and ((isset($options['inherit']) and $options['inherit']) or $conf['inheritance_by_default']) )
+  if ('private' == $insert['status'] && !empty($insert['id_uppercat']) && ((isset($options['inherit']) && $options['inherit']) || $conf['inheritance_by_default']) )
   {
     $query = '
       SELECT group_id
@@ -1607,7 +1607,7 @@ function set_tags(array $tags, int $image_id): void
  */
 function add_tags(array $tags, array $images): void
 {
-  if (count($tags) == 0 or count($images) == 0)
+  if (count($tags) == 0 || count($images) == 0)
   {
     return;
   }
@@ -1826,7 +1826,7 @@ DELETE
  */
 function get_image_tag_ids(array $image_ids): array
 {
-  if (!is_array($image_ids) and is_int($image_ids))
+  if (!is_array($image_ids) && is_int($image_ids))
   {
     $images_ids = array($image_ids);
   }
@@ -1976,7 +1976,7 @@ SELECT
 
     $images[] = $row['image_id'];
 
-    if (!isset($rows[$idx+1]) or $rows[$idx+1]['category_id'] != $row['category_id'])
+    if (!isset($rows[$idx+1]) || $rows[$idx+1]['category_id'] != $row['category_id'])
     {
       // if we're at the end of the loop OR if category changes
       associate_images_to_categories($images, array($row['category_id']));
@@ -2015,7 +2015,7 @@ DELETE
 function associate_images_to_categories(array $images, array $categories)
 {
   if (count($images) == 0
-      or count($categories) == 0)
+      || count($categories) == 0)
   {
     return false;
   }
@@ -2117,7 +2117,7 @@ DELETE '.IMAGE_CATEGORY_TABLE.'.*
   WHERE id IN ('.implode(',', $images).')
 ';
 
-  if (is_array($categories) and count($categories) > 0)
+  if (is_array($categories) && count($categories) > 0)
   {
     $query.= '
     AND category_id NOT IN ('.implode(',', $categories).')
@@ -2129,7 +2129,7 @@ DELETE '.IMAGE_CATEGORY_TABLE.'.*
 ;';
   pwg_query($query);
 
-  if (is_array($categories) and count($categories) > 0)
+  if (is_array($categories) && count($categories) > 0)
   {
     associate_images_to_categories($images, $categories);
   }
@@ -2245,14 +2245,14 @@ function get_extents(string $start=''): array
 
   while (($file = readdir($dir)) !== false)
   {
-    if ( $file == '.' or $file == '..' or $file == '.svn') continue;
+    if ( $file == '.' || $file == '..' || $file == '.svn') continue;
     $path = $start . '/' . $file;
     if (is_dir($path))
     {
       $extents = array_merge($extents, get_extents($path));
     }
-    elseif ( !is_link($path) and file_exists($path)
-            and get_extension($path) == 'tpl' )
+    elseif ( !is_link($path) && file_exists($path)
+            && get_extension($path) == 'tpl' )
     {
       $extents[] = substr($path, 21);
     }
@@ -2365,7 +2365,7 @@ function fetchRemote(string $src, mixed &$dest, array $get_data=array(), array $
   }
 
   // Initialize $dest
-  is_resource($dest) or $dest = '';
+  is_resource($dest) || $dest = '';
 
   // Try curl to read remote file
   if (function_exists('curl_init') && function_exists('curl_exec'))
@@ -2395,7 +2395,7 @@ function fetchRemote(string $src, mixed &$dest, array $get_data=array(), array $
     $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    if ($content !== false and $status >= 200 and $status < 400)
+    if ($content !== false && $status >= 200 && $status < 400)
     {
       if (preg_match('/Location:\s+?(.+)/', substr($content, 0, $header_length), $m))
       {
@@ -2784,7 +2784,7 @@ function add_permission_on_category(array|int $category_ids, array|int $user_ids
   }
 
   // check for emptiness
-  if (count($category_ids) == 0 or count($user_ids) == 0)
+  if (count($category_ids) == 0 || count($user_ids) == 0)
   {
     return;
   }
@@ -2905,8 +2905,8 @@ function clear_derivative_cache(array|string $types='all'): void
     while (($node = readdir($contents)) !== false)
     {
       if ($node != '.'
-          and $node != '..'
-          and is_dir(PHPWG_ROOT_PATH.PWG_DERIVATIVE_DIR.$node))
+          && $node != '..'
+          && is_dir(PHPWG_ROOT_PATH.PWG_DERIVATIVE_DIR.$node))
       {
         clear_derivative_cache_rec(PHPWG_ROOT_PATH.PWG_DERIVATIVE_DIR.$node, $pattern);
       }
@@ -2928,7 +2928,7 @@ function clear_derivative_cache_rec($path, $pattern)
   {
     while (($node = readdir($contents)) !== false)
     {
-      if ($node == '.' or $node == '..')
+      if ($node == '.' || $node == '..')
         continue;
       if (is_dir($path.'/'.$node))
       {
@@ -3015,9 +3015,9 @@ function get_dirs(string $directory): array
     while ($file = readdir($opendir))
     {
       if ($file != '.'
-          and $file != '..'
-          and is_dir($directory.'/'.$file)
-          and $file != '.svn')
+          && $file != '..'
+          && is_dir($directory.'/'.$file)
+          && $file != '.svn')
       {
         $sub_dirs[] = $file;
       }
@@ -3041,7 +3041,7 @@ function deltree(string $path, string $trash_path=null)
     $fh = opendir($path);
     while ($file = readdir($fh))
     {
-      if ($file != '.' and $file != '..')
+      if ($file != '.' && $file != '..')
       {
         $pathfile = $path . '/' . $file;
         if (is_dir($pathfile))
@@ -3256,7 +3256,7 @@ function save_images_order(int $category_id, array $images): void
  */
 function update_images_lastmodified(array $image_ids): void
 {
-  if (!is_array($image_ids) and is_int($image_ids))
+  if (!is_array($image_ids) && is_int($image_ids))
   {
     $images_ids = array($image_ids);
   }
@@ -3358,7 +3358,7 @@ function get_cache_size_derivatives($path): array
     {
       while (($node = readdir($contents)) !== false)
       {
-        if ($node == '.' or $node == '..') continue;
+        if ($node == '.' || $node == '..') continue;
 
         if (is_file($path.'/'.$node))
         {
@@ -3469,7 +3469,7 @@ function get_piwigo_news()
   $news = null;
 
   $cache_path = PHPWG_ROOT_PATH.conf_get_param('data_location').'cache/piwigo_latest_news-'.$lang_info['code'].'.cache.php';
-  if (!is_file($cache_path) or filemtime($cache_path) < strtotime('24 hours ago'))
+  if (!is_file($cache_path) || filemtime($cache_path) < strtotime('24 hours ago'))
   {
     $url = PHPWG_URL.'/ws.php?method=porg.news.getLatest&format=json';
 

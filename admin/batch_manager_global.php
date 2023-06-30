@@ -119,7 +119,7 @@ DELETE
 
   elseif ('del_tags' == $action)
   {
-    if (isset($_POST['del_tags']) and count($_POST['del_tags']) > 0)
+    if (isset($_POST['del_tags']) && count($_POST['del_tags']) > 0)
     {
       $taglist_before = get_image_tag_ids($collection);
 
@@ -198,7 +198,7 @@ DELETE
     }
 
     elseif (isset($_SESSION['bulk_manager_filter']['category'])
-        and $_POST['move'] != $_SESSION['bulk_manager_filter']['category'])
+        && $_POST['move'] != $_SESSION['bulk_manager_filter']['category'])
     {
       $redirect = true;
     }
@@ -360,7 +360,7 @@ DELETE
   // delete
   elseif ('delete' == $action)
   {
-    if (isset($_POST['confirm_deletion']) and 1 == $_POST['confirm_deletion'])
+    if (isset($_POST['confirm_deletion']) && 1 == $_POST['confirm_deletion'])
     {
       // now done with ajax calls, with blocks
       // $deleted_count = delete_elements($collection, true);
@@ -675,7 +675,7 @@ if (count($page['cat_elements_id']) > 0)
 
   $is_category = false;
   if (isset($_SESSION['bulk_manager_filter']['category'])
-      and !isset($_SESSION['bulk_manager_filter']['category_recursive']))
+      && !isset($_SESSION['bulk_manager_filter']['category_recursive']))
   {
     $is_category = true;
   }
@@ -683,8 +683,8 @@ if (count($page['cat_elements_id']) > 0)
   // If using the 'duplicates' filter,
   // order by the fields that are used to find duplicates.
   if (isset($_SESSION['bulk_manager_filter']['prefilter'])
-      and 'duplicates' === $_SESSION['bulk_manager_filter']['prefilter']
-      and isset($duplicates_on_fields))
+      && 'duplicates' === $_SESSION['bulk_manager_filter']['prefilter']
+      && isset($duplicates_on_fields))
   {
     // The $duplicates_on_fields variable is defined in ./batch_manager.php
     $order_by_fields = array_merge( $duplicates_on_fields, array( 'id' ) );

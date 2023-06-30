@@ -32,7 +32,7 @@ function get_cat_display_name(array $cat_informations, ?string $url=''): string
 
   foreach ($cat_informations as $cat)
   {
-    is_array($cat) or trigger_error(
+    is_array($cat) || trigger_error(
         'get_cat_display_name wrong type for category ', E_USER_WARNING
       );
 
@@ -139,7 +139,7 @@ SELECT id, name, permalink
       $output.= '<span>'.$conf['level_separator'].'</span>';
     }
 
-    if ( !isset($url) or $single_link )
+    if ( !isset($url) || $single_link )
     {
       $output.= $cat['name'];
     }
@@ -164,7 +164,7 @@ SELECT id, name, permalink
     }
   }
 
-  if ($single_link and isset($single_url))
+  if ($single_link && isset($single_url))
   {
     $output.= '</a>';
   }
@@ -263,7 +263,7 @@ function access_denied(): void
       get_root_url().'identification.php?redirect='
       .urlencode(urlencode($_SERVER['REQUEST_URI']));
 
-  if ( isset($user) and !is_a_guest() )
+  if ( isset($user) && !is_a_guest() )
   {
     set_status_header(401);
 
@@ -274,7 +274,7 @@ function access_denied(): void
     echo str_repeat( ' ', 512); //IE6 doesn't error output if below a size
     exit();
   }
-  elseif (!$conf['guest_access'] and is_a_guest())
+  elseif (!$conf['guest_access'] && is_a_guest())
   {
     redirect_http($login_url);
   }
@@ -360,7 +360,7 @@ function fatal_error(string $msg, string $title=null, bool $show_trace=true): vo
   }
 
   $btrace_msg = '';
-  if ($show_trace and function_exists('debug_backtrace'))
+  if ($show_trace && function_exists('debug_backtrace'))
   {
     $bt = debug_backtrace();
     for ($i=1; $i<count($bt); $i++)
@@ -614,12 +614,12 @@ function get_thumbnail_title(array $info, string $title, string $comment=''): st
     $details[] = $info['hit'].' '.strtolower(l10n('Visits'));
   }
 
-  if ($conf['rate'] and !empty($info['rating_score']))
+  if ($conf['rate'] && !empty($info['rating_score']))
   {
     $details[] = strtolower(l10n('Rating score')).' '.$info['rating_score'];
   }
 
-  if (isset($info['nb_comments']) and $info['nb_comments'] != 0)
+  if (isset($info['nb_comments']) && $info['nb_comments'] != 0)
   {
     $details[] = l10n_dec('%d comment', '%d comments', $info['nb_comments']);
   }

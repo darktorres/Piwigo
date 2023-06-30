@@ -98,7 +98,7 @@ SELECT
   }
 
   if (isset($search['fields']['user'])
-      and $search['fields']['user'] != -1)
+      && $search['fields']['user'] != -1)
   {
     $clauses[] = 'user_id = '.$search['fields']['user'];
   }
@@ -473,7 +473,7 @@ function history_remove_summarized_column(): void
 {
   global $conf;
 
-  if (isset($conf['history_summarized_dropped']) and $conf['history_summarized_dropped'])
+  if (isset($conf['history_summarized_dropped']) && $conf['history_summarized_dropped'])
   {
     return;
   }

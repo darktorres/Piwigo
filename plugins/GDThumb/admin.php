@@ -11,8 +11,8 @@ function int_delete_gdthumb_cache($pattern): void
   if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)):
     while (($node = readdir($contents)) !== false):
       if ($node != '.'
-          and $node != '..'
-          and is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)):
+          && $node != '..'
+          && is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)):
         clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
       endif;
     endwhile;

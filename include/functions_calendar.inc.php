@@ -112,7 +112,7 @@ WHERE id IN (' . implode(',',$page['items']) .')';
   $views = array(CAL_VIEW_LIST,CAL_VIEW_CALENDAR);
 
   // Retrieve calendar field
-  isset( $fields[ $page['chronology_field'] ] ) or fatal_error('bad chronology field');
+  isset( $fields[ $page['chronology_field'] ] ) || fatal_error('bad chronology field');
 
   // Retrieve style
   if ( !isset( $styles[ $page['chronology_style'] ] ) )
@@ -202,7 +202,7 @@ WHERE id IN (' . implode(',',$page['items']) .')';
     {
       foreach ($views as $view)
       {
-        if ( $style_data['view_calendar'] or $view != CAL_VIEW_CALENDAR)
+        if ( $style_data['view_calendar'] || $view != CAL_VIEW_CALENDAR)
         {
           $selected = false;
 
@@ -226,7 +226,7 @@ WHERE id IN (' . implode(',',$page['items']) .')';
                 )
              );
 
-          if ($style==$cal_style and $view==$page['chronology_view'] )
+          if ($style==$cal_style && $view==$page['chronology_view'] )
           {
             $selected = true;
           }
@@ -264,7 +264,7 @@ WHERE id IN (' . implode(',',$page['items']) .')';
     else
     {
       if ( count($page['chronology_date'])==0
-           or in_array('any', $page['chronology_date']) )
+           || in_array('any', $page['chronology_date']) )
       {// selected period is very big so we show newest first
         $order = ' DESC, ';
       }

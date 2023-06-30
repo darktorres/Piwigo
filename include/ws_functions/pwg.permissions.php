@@ -90,7 +90,7 @@ SELECT group_id, cat_id
   {
     if (isset($params['group_id']))
     {
-      if (empty($cat['groups']) or count(array_intersect($cat['groups'], $params['group_id'])) == 0)
+      if (empty($cat['groups']) || count(array_intersect($cat['groups'], $params['group_id'])) == 0)
       {
         unset($perms[$cat_id]);
         continue;
@@ -99,8 +99,8 @@ SELECT group_id, cat_id
     if (isset($params['user_id']))
     {
       if (
-        (empty($cat['users_indirect']) or count(array_intersect($cat['users_indirect'], $params['user_id'])) == 0)
-        and (empty($cat['users']) or count(array_intersect($cat['users'], $params['user_id'])) == 0)
+        (empty($cat['users_indirect']) || count(array_intersect($cat['users_indirect'], $params['user_id'])) == 0)
+        && (empty($cat['users']) || count(array_intersect($cat['users'], $params['user_id'])) == 0)
       ) {
         unset($perms[$cat_id]);
         continue;

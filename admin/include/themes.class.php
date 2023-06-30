@@ -105,7 +105,7 @@ class themes
   {
     global $conf;
 
-    if (!$conf['enable_extensions_install'] and 'delete' == $action)
+    if (!$conf['enable_extensions_install'] && 'delete' == $action)
     {
       die('Piwigo extensions install/update/delete system is disabled');
     }
@@ -147,8 +147,8 @@ class themes
         }
 
         if ($this->fs_themes[$theme_id]['mobile']
-            and !empty($conf['mobile_theme'])
-            and $conf['mobile_theme'] != $theme_id)
+            && !empty($conf['mobile_theme'])
+            && $conf['mobile_theme'] != $theme_id)
         {
           $errors[] = l10n('You can activate only one mobile theme.');
           break;
@@ -303,7 +303,7 @@ DELETE
 
     foreach ($this->fs_themes as $test_child)
     {
-      if (isset($test_child['parent']) and $test_child['parent'] == $theme_id)
+      if (isset($test_child['parent']) && $test_child['parent'] == $theme_id)
       {
         $children[] = $test_child['name'];
       }
@@ -388,12 +388,12 @@ SELECT
 
     while ($file = readdir($dir))
     {
-      if ($file!='.' and $file!='..')
+      if ($file!='.' && $file!='..')
       {
         $path = PHPWG_THEMES_PATH.$file;
         if (is_dir($path)
-            and preg_match('/^[a-zA-Z0-9-_]+$/', $file)
-            and file_exists($path.'/themeconf.inc.php')
+            && preg_match('/^[a-zA-Z0-9-_]+$/', $file)
+            && file_exists($path.'/themeconf.inc.php')
             )
         {
           $theme = array(
@@ -435,7 +435,7 @@ SELECT
           {
             $theme['author uri'] = trim($val[1]);
           }
-          if (!empty($theme['uri']) and strpos($theme['uri'] , 'extension_view.php?eid='))
+          if (!empty($theme['uri']) && strpos($theme['uri'] , 'extension_view.php?eid='))
           {
             list( , $extension) = explode('extension_view.php?eid=', $theme['uri']);
             if (is_numeric($extension)) $theme['extension'] = $extension;
@@ -522,7 +522,7 @@ SELECT
     $version = PHPWG_VERSION;
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (fetchRemote($url, $result, $get_data) and $pem_versions = unserialize($result))
+    if (fetchRemote($url, $result, $get_data) && $pem_versions = unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
@@ -633,7 +633,7 @@ SELECT
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
+      if ($handle = fopen($archive, 'wb') && fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -643,8 +643,8 @@ SELECT
           {
             // we search main.inc.php in archive
             if (basename($file['filename']) == 'themeconf.inc.php'
-              and (!isset($main_filepath)
-              or strlen($file['filename']) < strlen($main_filepath)))
+              && (!isset($main_filepath)
+              || strlen($file['filename']) < strlen($main_filepath)))
             {
               $main_filepath = $file['filename'];
             }
@@ -683,8 +683,8 @@ SELECT
                 }
               }
               if (file_exists($extract_path.'/obsolete.list')
-                and $old_files = file($extract_path.'/obsolete.list', FILE_IGNORE_NEW_LINES)
-                and !empty($old_files))
+                && $old_files = file($extract_path.'/obsolete.list', FILE_IGNORE_NEW_LINES)
+                && !empty($old_files))
               {
                 $old_files[] = 'obsolete.list';
 
@@ -706,7 +706,7 @@ SELECT
 
                   // make sure the obsolete file is withing the extension directory, prevent traversal path
                   $realpath = realpath($path);
-                  if ($realpath === false or !str_starts_with($realpath, $extract_path_realpath))
+                  if ($realpath === false || !str_starts_with($realpath, $extract_path_realpath))
                   {
                     continue;
                   }

@@ -79,7 +79,7 @@ function get_iptc_data(string $filename, array $map, string $array_sep=','): arr
 function clean_iptc_value(string $value): string
 {
   // strip leading zeros (weird Kodak Scanner software)
-  while ( isset($value[0]) and $value[0] == chr(0))
+  while ( isset($value[0]) && $value[0] == chr(0))
   {
     $value = substr($value, 1);
   }
@@ -100,7 +100,7 @@ function clean_iptc_value(string $value): string
       else
       {
         $input_encoding = 'iso-8859-1';
-        if (function_exists('iconv') or function_exists('mb_convert_encoding'))
+        if (function_exists('iconv') || function_exists('mb_convert_encoding'))
         {
           // using windows-1252 because it supports additional characters
           // such as "oe" in a single character (ligature). About the
@@ -177,8 +177,8 @@ function get_exif_data(string $filename, array $map): array
     if (count($gps_exif) == 4)
     {
       if (
-        is_array($gps_exif['GPSLatitude'])  and in_array($gps_exif['GPSLatitudeRef'], array('S', 'N')) and
-        is_array($gps_exif['GPSLongitude']) and in_array($gps_exif['GPSLongitudeRef'], array('W', 'E'))
+        is_array($gps_exif['GPSLatitude'])  && in_array($gps_exif['GPSLatitudeRef'], array('S', 'N')) and
+        is_array($gps_exif['GPSLongitude']) && in_array($gps_exif['GPSLongitudeRef'], array('W', 'E'))
         )
       {
         $result['latitude'] = parse_exif_gps_data($gps_exif['GPSLatitude'], $gps_exif['GPSLatitudeRef']);
@@ -222,7 +222,7 @@ function parse_exif_gps_data(array $raw, string $ref): float|int|string
   $v = $raw[0] + $raw[1]/60 + $raw[2]/3600;
 
   $ref = strtoupper($ref);
-  if ($ref == 'S' or $ref == 'W') $v= -$v;
+  if ($ref == 'S' || $ref == 'W') $v= -$v;
 
   return $v;
 }

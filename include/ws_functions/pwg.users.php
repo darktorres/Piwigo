@@ -154,14 +154,14 @@ function ws_users_getList(array $params, &$service): PwgError|array
 
     // if registration_date_string or registration_date_since is requested,
     // then registration_date is automatically added
-    if (isset($params['display']['registration_date_string']) or isset($params['display']['registration_date_since']))
+    if (isset($params['display']['registration_date_string']) || isset($params['display']['registration_date_since']))
     {
       $params['display']['registration_date'] = true;
     }
 
     // if last_visit_string or last_visit_since is requested, then
     // last_visit is automatically added
-    if (isset($params['display']['last_visit_string']) or isset($params['display']['last_visit_since']))
+    if (isset($params['display']['last_visit_string']) || isset($params['display']['last_visit_since']))
     {
       $params['display']['last_visit'] = true;
     }
@@ -275,7 +275,7 @@ SELECT DISTINCT ';
         $last_visit = $cur_user['last_visit'] ?? '';
         $users[ $cur_user['id'] ]['last_visit'] = $last_visit;
 
-        if (!get_boolean($cur_user['last_visit_from_history']) and empty($last_visit))
+        if (!get_boolean($cur_user['last_visit_from_history']) && empty($last_visit))
         {
           $last_visit = get_user_last_visit_from_history($cur_user['id'], true);
           $users[ $cur_user['id'] ]['last_visit'] = $last_visit;
@@ -317,7 +317,7 @@ SELECT DISTINCT ';
         $last_visit = $cur_user['last_visit'];
         $users[ $cur_user['id'] ]['last_visit'] = $last_visit;
 
-        if (!get_boolean($cur_user['last_visit_from_history']) and empty($last_visit))
+        if (!get_boolean($cur_user['last_visit_from_history']) && empty($last_visit))
         {
           $last_visit = get_user_last_visit_from_history($cur_user['id'], true);
           $users[ $cur_user['id'] ]['last_visit'] = $last_visit;
@@ -517,7 +517,7 @@ function ws_users_setInfo(array $params, $service): mixed
     return new PwgError(403, 'Invalid security token');
   }
 
-  if (isset($params['username']) and strlen(str_replace( " ", "",  $params['username'])) == 0) {
+  if (isset($params['username']) && strlen(str_replace( " ", "",  $params['username'])) == 0) {
     return new PwgError(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
   }
 
@@ -538,7 +538,7 @@ function ws_users_setInfo(array $params, $service): mixed
     if (!empty($params['username']))
     {
       $user_id = get_userid($params['username']);
-      if ($user_id and $user_id != $params['user_id'][0])
+      if ($user_id && $user_id != $params['user_id'][0])
       {
         return new PwgError(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
       }
@@ -587,7 +587,7 @@ SELECT
 
   if (!empty($params['status']))
   {
-    if (in_array($params['status'], array('webmaster', 'admin')) and !is_webmaster() )
+    if (in_array($params['status'], array('webmaster', 'admin')) && !is_webmaster() )
     {
       return new PwgError(403, 'Only webmasters can grant "webmaster/admin" status');
     }
@@ -622,7 +622,7 @@ SELECT
     $update_status = $params['status'];
   }
 
-  if (!empty($params['level']) or $params['level']===0)
+  if (!empty($params['level']) || $params['level']===0)
   {
     if ( !in_array($params['level'], $conf['available_permission_levels']) )
     {
@@ -654,27 +654,27 @@ SELECT
     $updates_infos['nb_image_page'] = $params['nb_image_page'];
   }
 
-  if (!empty($params['recent_period']) or $params['recent_period']===0)
+  if (!empty($params['recent_period']) || $params['recent_period']===0)
   {
     $updates_infos['recent_period'] = $params['recent_period'];
   }
 
-  if (!empty($params['expand']) or $params['expand']===false)
+  if (!empty($params['expand']) || $params['expand']===false)
   {
     $updates_infos['expand'] = boolean_to_string($params['expand']);
   }
 
-  if (!empty($params['show_nb_comments']) or $params['show_nb_comments']===false)
+  if (!empty($params['show_nb_comments']) || $params['show_nb_comments']===false)
   {
     $updates_infos['show_nb_comments'] = boolean_to_string($params['show_nb_comments']);
   }
 
-  if (!empty($params['show_nb_hits']) or $params['show_nb_hits']===false)
+  if (!empty($params['show_nb_hits']) || $params['show_nb_hits']===false)
   {
     $updates_infos['show_nb_hits'] = boolean_to_string($params['show_nb_hits']);
   }
 
-  if (!empty($params['enabled_high']) or $params['enabled_high']===false)
+  if (!empty($params['enabled_high']) || $params['enabled_high']===false)
   {
     $updates_infos['enabled_high'] = boolean_to_string($params['enabled_high']);
   }
@@ -696,7 +696,7 @@ SELECT
     deactivate_password_reset_key($params['user_id'][0]);
   }
 
-  if (isset($update_status) and count($params['user_id_for_status']) > 0)
+  if (isset($update_status) && count($params['user_id_for_status']) > 0)
   {
     $query = '
 UPDATE '. USER_INFOS_TABLE .' SET

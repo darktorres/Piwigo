@@ -249,7 +249,7 @@ class PwgRestEncoder extends PwgResponseEncoder
     {
       if (is_numeric($name))
         continue;
-      if ($skip_underscore and $name[0]=='_')
+      if ($skip_underscore && $name[0]=='_')
         continue;
       if ( is_null($value) )
         continue; // null means we dont put it
@@ -272,7 +272,7 @@ class PwgRestEncoder extends PwgResponseEncoder
     {
       if (is_numeric($name))
         continue;
-      if ($skip_underscore and $name[0]=='_')
+      if ($skip_underscore && $name[0]=='_')
         continue;
       if ( is_null($value) )
         continue; // null means we dont put it

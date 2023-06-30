@@ -89,7 +89,7 @@ SELECT id, file, path, representative_ext
       )
     );
 
-  if ('users' == $_POST['who'] and isset($_POST['users']) and count($_POST['users']) > 0)
+  if ('users' == $_POST['who'] && isset($_POST['users']) && count($_POST['users']) > 0)
   {
     check_input_parameter('users', $_POST, true, PATTERN_ID);
 
@@ -152,7 +152,7 @@ SELECT
     
     $page['infos'][] = $message;
   }
-  elseif ('group' == $_POST['who'] and !empty($_POST['group']))
+  elseif ('group' == $_POST['who'] && !empty($_POST['group']))
   {
     check_input_parameter('group', $_POST, false, PATTERN_ID);
     
@@ -274,7 +274,7 @@ if ('private' == $category['status'])
 {
   $user_ids_access_indirect = array();
   
-  if (isset($group_ids) and count($group_ids) > 0)
+  if (isset($group_ids) && count($group_ids) > 0)
   {
     $query = '
 SELECT

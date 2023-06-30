@@ -219,7 +219,7 @@ final class ImageStdParams
   {
     $params->use_watermark = !empty(self::$watermark->file) &&
         (self::$watermark->min_size[0]<=$params->sizing->ideal_size[0]
-        or self::$watermark->min_size[1]<=$params->sizing->ideal_size[1] );
+        || self::$watermark->min_size[1]<=$params->sizing->ideal_size[1] );
   }
 
   /**

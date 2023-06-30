@@ -243,7 +243,7 @@ function trigger_notify(string $event): void
 {
   global $pwg_event_handlers;
 
-  if (isset($pwg_event_handlers['trigger']) and $event!='trigger')
+  if (isset($pwg_event_handlers['trigger']) && $event!='trigger')
   {// debugging - avoid recursive calls
     trigger_notify('trigger',
       array('type'=>'action', 'event'=>$event, 'data'=>null)

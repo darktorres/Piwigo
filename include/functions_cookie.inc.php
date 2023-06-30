@@ -32,7 +32,7 @@ function cookie_path(): string
     // cookie to the path shown in the browser otherwise it will be discarded.
     if
       (
-        isset($_SERVER['PATH_INFO']) and !empty($_SERVER['PATH_INFO']) and
+        isset($_SERVER['PATH_INFO']) && !empty($_SERVER['PATH_INFO']) and
         ($_SERVER['REDIRECT_URL'] !== $_SERVER['PATH_INFO']) and
         (str_ends_with($_SERVER['REDIRECT_URL'], $_SERVER['PATH_INFO']))
       )
@@ -53,7 +53,7 @@ function cookie_path(): string
   $scr = substr($scr,0,strrpos( $scr,'/'));
 
   // add a trailing '/' if needed
-  if ((strlen($scr) == 0) or ($scr[strlen($scr)-1] !== '/'))
+  if ((strlen($scr) == 0) || ($scr[strlen($scr)-1] !== '/'))
   {
     $scr .= '/';
   }
@@ -86,7 +86,7 @@ function cookie_path(): string
  */
 function pwg_set_cookie_var(string $var, mixed $value, int $expire=null): bool
 {
-  if ($value==null or $expire===0)
+  if ($value==null || $expire===0)
   {
     unset($_COOKIE['pwg_'.$var]);
     return setcookie('pwg_'.$var, '', 0, cookie_path());

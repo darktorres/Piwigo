@@ -182,7 +182,7 @@ SELECT COUNT(*)
     $updates['name'] = $params['name'];
   }
 
-  if (!empty($params['is_default']) or $params['is_default']===false)
+  if (!empty($params['is_default']) || $params['is_default']===false)
   {
     $updates['is_default'] = boolean_to_string($params['is_default']);
   }

@@ -59,7 +59,7 @@ if (count($pictures) > 0)
         ($_GET['slideshow'] ?? ''))
     );
 
-  if ($conf['activate_comments'] and $user['show_nb_comments'])
+  if ($conf['activate_comments'] && $user['show_nb_comments'])
   {
     $query = '
 SELECT image_id, COUNT(*) AS nb_comments

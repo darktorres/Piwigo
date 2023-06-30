@@ -38,7 +38,7 @@ $redirect_to = '';
 if ( !empty($_GET['redirect']) )
 {
   $redirect_to = urldecode($_GET['redirect']);
-  if ( $conf['guest_access'] and !isset($_GET['hide_redirect_error']))
+  if ( $conf['guest_access'] && !isset($_GET['hide_redirect_error']))
   {
     $page['errors'][] = l10n('You are not authorized to access the requested page');
   }
@@ -58,7 +58,7 @@ if (isset($_POST['login']))
     }
     
     $redirect_to = isset($_POST['redirect']) ? urldecode($_POST['redirect']) : '';
-    $remember_me = isset($_POST['remember_me']) and $_POST['remember_me']==1;
+    $remember_me = isset($_POST['remember_me']) && $_POST['remember_me']==1;
 
     if ( try_log_user($_POST['username'], $_POST['password'], $remember_me) )
     {

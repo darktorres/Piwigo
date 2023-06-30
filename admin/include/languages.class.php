@@ -33,7 +33,7 @@ class languages
   {
     global $conf;
 
-    if (!$conf['enable_extensions_install'] and 'delete' == $action)
+    if (!$conf['enable_extensions_install'] && 'delete' == $action)
     {
       die('Piwigo extensions install/update/delete system is disabled');
     }
@@ -134,12 +134,12 @@ UPDATE '.USER_INFOS_TABLE.'
     $dir = opendir(PHPWG_ROOT_PATH.'language');
     while ($file = readdir($dir))
     {
-      if ($file!='.' and $file!='..')
+      if ($file!='.' && $file!='..')
       {
         $path = PHPWG_ROOT_PATH.'language/'.$file;
-        if (is_dir($path) and !is_link($path)
-            and preg_match('/^[a-zA-Z0-9-_]+$/', $file )
-            and file_exists($path.'/common.lang.php')
+        if (is_dir($path) && !is_link($path)
+            && preg_match('/^[a-zA-Z0-9-_]+$/', $file )
+            && file_exists($path.'/common.lang.php')
             )
         {
           $language = array(
@@ -172,7 +172,7 @@ UPDATE '.USER_INFOS_TABLE.'
           {
             $language['author uri'] = trim($val[1]);
           }
-          if (!empty($language['uri']) and strpos($language['uri'] , 'extension_view.php?eid='))
+          if (!empty($language['uri']) && strpos($language['uri'] , 'extension_view.php?eid='))
           {
             list( , $extension) = explode('extension_view.php?eid=', $language['uri']);
             if (is_numeric($extension)) $language['extension'] = $extension;
@@ -222,7 +222,7 @@ UPDATE '.USER_INFOS_TABLE.'
     $version = PHPWG_VERSION;
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (fetchRemote($url, $result, $get_data) and $pem_versions = unserialize($result))
+    if (fetchRemote($url, $result, $get_data) && $pem_versions = unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
@@ -312,7 +312,7 @@ UPDATE '.USER_INFOS_TABLE.'
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
+      if ($handle = fopen($archive, 'wb') && fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -322,8 +322,8 @@ UPDATE '.USER_INFOS_TABLE.'
           {
             // we search common.lang.php in archive
             if (basename($file['filename']) == 'common.lang.php'
-              and (!isset($main_filepath)
-              or strlen($file['filename']) < strlen($main_filepath)))
+              && (!isset($main_filepath)
+              || strlen($file['filename']) < strlen($main_filepath)))
             {
               $main_filepath = $file['filename'];
             }
@@ -369,8 +369,8 @@ UPDATE '.USER_INFOS_TABLE.'
                   }
                 }
                 if (file_exists($extract_path.'/obsolete.list')
-                  and $old_files = file($extract_path.'/obsolete.list', FILE_IGNORE_NEW_LINES)
-                  and !empty($old_files))
+                  && $old_files = file($extract_path.'/obsolete.list', FILE_IGNORE_NEW_LINES)
+                  && !empty($old_files))
                 {
                   $old_files[] = 'obsolete.list';
                   $logger->debug(__FUNCTION__.', $old_files = {'.join('},{', $old_files).'}');
@@ -391,7 +391,7 @@ UPDATE '.USER_INFOS_TABLE.'
 
                     // make sure the obsolete file is withing the extension directory, prevent traversal path
                     $realpath = realpath($path);
-                    if ($realpath === false or !str_starts_with($realpath, $extract_path_realpath))
+                    if ($realpath === false || !str_starts_with($realpath, $extract_path_realpath))
                     {
                       continue;
                     }

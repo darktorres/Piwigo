@@ -53,7 +53,7 @@ class updates
     $_SESSION['need_update'.PHPWG_VERSION] = null;
 
     if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches)
-      and fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid((string)rand(), true)), $result))
+      && fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid((string)rand(), true)), $result))
     {
       $all_versions = explode("\n", $result);
       $new_version = trim($all_versions[0]);
@@ -182,7 +182,7 @@ class updates
       }
       elseif (
         $conf['update_notify_reminder_period'] > 0
-        and strtotime($last_notification) < strtotime($conf['update_notify_reminder_period'].' seconds ago')
+        && strtotime($last_notification) < strtotime($conf['update_notify_reminder_period'].' seconds ago')
         )
       {
         $notify = true;
@@ -246,7 +246,7 @@ class updates
     // Retrieve PEM versions
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (fetchRemote($url, $result, $get_data) and $pem_versions = unserialize($result))
+    if (fetchRemote($url, $result, $get_data) && $pem_versions = unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
@@ -364,7 +364,7 @@ class updates
 
       foreach($fs_ext as $ext_id => $fs_ext)
       {
-        if (isset($fs_ext['extension']) and isset($server_ext[$fs_ext['extension']]))
+        if (isset($fs_ext['extension']) && isset($server_ext[$fs_ext['extension']]))
         {
           $ext_info = $server_ext[$fs_ext['extension']];
 
@@ -401,7 +401,7 @@ class updates
         foreach($this->$type->$fs as $ext_id => $fs_ext)
         {
           if (isset($_SESSION['extensions_need_update'][$type][$ext_id])
-            and safe_version_compare($fs_ext['version'], $_SESSION['extensions_need_update'][$type][$ext_id], '>='))
+            && safe_version_compare($fs_ext['version'], $_SESSION['extensions_need_update'][$type][$ext_id], '>='))
           {
             // Extension have been upgraded
             $this->check_extensions();
@@ -424,9 +424,9 @@ class updates
       $default = 'default_'.$type;
       foreach ($this->$type->$fs as $ext_id => $ext)
       {
-        if (isset($ext['extension']) and $id == $ext['extension']
-          and !in_array($ext_id, $this->$default)
-          and !in_array($ext['extension'], $this->merged_extensions))
+        if (isset($ext['extension']) && $id == $ext['extension']
+          && !in_array($ext_id, $this->$default)
+          && !in_array($ext['extension'], $this->merged_extensions))
         {
           $this->missing[$type][] = $ext;
           break;
@@ -465,8 +465,8 @@ class updates
   public static function process_obsolete_list($file): void
   {
     if (file_exists(PHPWG_ROOT_PATH.$file)
-      and $old_files = file(PHPWG_ROOT_PATH.$file, FILE_IGNORE_NEW_LINES)
-      and !empty($old_files))
+      && $old_files = file(PHPWG_ROOT_PATH.$file, FILE_IGNORE_NEW_LINES)
+      && !empty($old_files))
     {
       $old_files[] = $file;
       foreach($old_files as $old_file)
@@ -495,7 +495,7 @@ class updates
   {
     global $page, $conf, $template;
 
-    if ($check_current_version and !version_compare($upgrade_to, PHPWG_VERSION, '>'))
+    if ($check_current_version && !version_compare($upgrade_to, PHPWG_VERSION, '>'))
     {
       // TODO why redirect to a plugin page? maybe a remaining code from when
       // the update system was provided as a plugin?
@@ -534,7 +534,7 @@ class updates
       {
         $chunk_num++;
         if (fetchRemote(PHPWG_URL.'/download/dlcounter.php?code='.$dl_code.'&chunk_num='.$chunk_num, $result)
-          and $input = unserialize($result))
+          && $input = unserialize($result))
         {
           if (0 == $input['remaining'])
           {
@@ -565,13 +565,13 @@ class updates
             {
               // Try to change chmod and extract
               if (chmod(PHPWG_ROOT_PATH.$extract['filename'], 0777)
-                and ($res = $zip->extract(PCLZIP_OPT_BY_NAME, $remove_path.'/'.$extract['filename'],
+                && ($res = $zip->extract(PCLZIP_OPT_BY_NAME, $remove_path.'/'.$extract['filename'],
                                           PCLZIP_OPT_PATH, PHPWG_ROOT_PATH,
                                           PCLZIP_OPT_REMOVE_PATH, $remove_path,
                                           PCLZIP_OPT_SET_CHMOD, 0755,
                                           PCLZIP_OPT_REPLACE_NEWER))
-                and isset($res[0]['status'])
-                and $res[0]['status'] == 'ok')
+                && isset($res[0]['status'])
+                && $res[0]['status'] == 'ok')
               {
                 continue;
               }

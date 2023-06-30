@@ -36,7 +36,7 @@ function get_absolute_root_url(bool $with_scheme=true): string
   // TODO - add HERE the possibility to call PWG functions from external scripts
 
   // Support X-Forwarded-Proto header for HTTPS detection in PHP
-  if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) and 'https' == $_SERVER['HTTP_X_FORWARDED_PROTO'])
+  if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 'https' == $_SERVER['HTTP_X_FORWARDED_PROTO'])
   {
     $_SERVER['HTTPS'] = 'on';
   }
@@ -46,7 +46,7 @@ function get_absolute_root_url(bool $with_scheme=true): string
   {
     $is_https = false;
     if (isset($_SERVER['HTTPS']) &&
-      ((strtolower($_SERVER['HTTPS']) == 'on') or ($_SERVER['HTTPS'] == 1)))
+      ((strtolower($_SERVER['HTTPS']) == 'on') || ($_SERVER['HTTPS'] == 1)))
     {
       $is_https = true;
       $url .= 'https://';
@@ -82,7 +82,7 @@ function get_absolute_root_url(bool $with_scheme=true): string
         $url_port = ':'.$conf['url_port'];
       }
 
-      if (!empty($url_port) and strrchr($url, ':') != $url_port)
+      if (!empty($url_port) && strrchr($url, ':') != $url_port)
       {
         $url .= $url_port;
       }
@@ -255,7 +255,7 @@ function make_picture_url(array $params): string
       if ( isset($params['image_file']) )
       {
         $fname_wo_ext = get_filename_wo_extension($params['image_file']);
-        if ( ord($fname_wo_ext)>ord('9') or !preg_match('/^\d+(-|$)/', $fname_wo_ext) )
+        if ( ord($fname_wo_ext)>ord('9') || !preg_match('/^\d+(-|$)/', $fname_wo_ext) )
         {
           $url .= $fname_wo_ext;
           break;
@@ -296,7 +296,7 @@ function add_well_known_params_in_url($url, $params)
     $url.= '/flat';
   }
 
-  if (isset($params['start']) and $params['start'] > 0)
+  if (isset($params['start']) && $params['start'] > 0)
   {
     $url.= '/start-'.$params['start'];
   }
@@ -350,11 +350,11 @@ function make_section_in_url(array $params): string
       }
       else
       {
-        isset($params['category']['name']) or trigger_error(
+        isset($params['category']['name']) || trigger_error(
             'make_section_in_url category name not set', E_USER_WARNING
             );
 
-        array_key_exists('permalink', $params['category']) or trigger_error(
+        array_key_exists('permalink', $params['category']) || trigger_error(
             'make_section_in_url category permalink not set', E_USER_WARNING
             );
 
@@ -475,10 +475,10 @@ function parse_section_url(array $tokens, int &$next_token): array
 
       if (
         str_starts_with($tokens[$next_token], 'created-')
-        or str_starts_with($tokens[$next_token], 'posted-')
-        or str_starts_with($tokens[$next_token], 'start-')
-        or str_starts_with($tokens[$next_token], 'startcat-')
-        or 'flat' == $tokens[$next_token]
+        || str_starts_with($tokens[$next_token], 'posted-')
+        || str_starts_with($tokens[$next_token], 'start-')
+        || str_starts_with($tokens[$next_token], 'startcat-')
+        || 'flat' == $tokens[$next_token]
       )
       {
         break;
@@ -504,11 +504,11 @@ function parse_section_url(array $tokens, int &$next_token): array
         $maybe_permalinks = array();
         $current_token = $next_token;
         while ( isset($tokens[$current_token])
-            and !str_starts_with($tokens[$current_token], 'created-')
-            and !str_starts_with($tokens[$current_token], 'posted-')
-            and !str_starts_with($tokens[$next_token], 'start-')
-            and !str_starts_with($tokens[$next_token], 'startcat-')
-            and $tokens[$current_token] != 'flat')
+            && !str_starts_with($tokens[$current_token], 'created-')
+            && !str_starts_with($tokens[$current_token], 'posted-')
+            && !str_starts_with($tokens[$next_token], 'start-')
+            && !str_starts_with($tokens[$next_token], 'startcat-')
+            && $tokens[$current_token] != 'flat')
         {
           if (empty($maybe_permalinks))
           {
@@ -592,11 +592,11 @@ function parse_section_url(array $tokens, int &$next_token): array
     while (isset($tokens[$i]))
     {
       if (str_starts_with($tokens[$i], 'created-')
-           or str_starts_with($tokens[$i], 'posted-')
-           or str_starts_with($tokens[$i], 'start-') )
+           || str_starts_with($tokens[$i], 'posted-')
+           || str_starts_with($tokens[$i], 'start-') )
         break;
 
-      if ( $conf['tag_url_style'] != 'tag' and preg_match('/^(\d+)(?:-(.*)|)$/', $tokens[$i], $matches) )
+      if ( $conf['tag_url_style'] != 'tag' && preg_match('/^(\d+)(?:-(.*)|)$/', $tokens[$i], $matches) )
       {
         $requested_tag_ids[] = $matches[1];
       }
@@ -701,7 +701,7 @@ function parse_well_known_params_url($tokens, &$i): array
       // indicate a special list of images
       $page['flat'] = true;
     }
-    elseif (str_starts_with($tokens[$i], 'created-') or str_starts_with($tokens[$i], 'posted-'))
+    elseif (str_starts_with($tokens[$i], 'created-') || str_starts_with($tokens[$i], 'posted-'))
     {
       $chronology_tokens = explode('-', $tokens[$i] );
 
@@ -871,7 +871,7 @@ function get_gallery_home_url()
   global $conf;
   if (!empty($conf['gallery_url']))
   {
-    if (url_is_remote($conf['gallery_url']) or $conf['gallery_url'][0]=='/' )
+    if (url_is_remote($conf['gallery_url']) || $conf['gallery_url'][0]=='/' )
     {
       return $conf['gallery_url'];
     }
@@ -913,7 +913,7 @@ function get_query_string_diff(array $rejects=array(), bool $escape=true): strin
 function url_is_remote(string $url): bool
 {
   if ( strncmp($url, 'http://', 7)==0
-    or strncmp($url, 'https://', 8)==0 )
+    || strncmp($url, 'https://', 8)==0 )
   {
     return true;
   }

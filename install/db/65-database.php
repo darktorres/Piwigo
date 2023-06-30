@@ -26,7 +26,7 @@ function upgrade65_change_table_to_blob($table, $field_definitions): void
   $changes=array();
   foreach( $field_definitions as $row)
   {
-    if ( !isset($row['Collation']) or $row['Collation']=='NULL' )
+    if ( !isset($row['Collation']) || $row['Collation']=='NULL' )
       continue;
     list ($type) = explode('(', $row['Type']);
     if (!isset($types[$type]))
@@ -52,7 +52,7 @@ function upgrade65_change_table_to_charset($table, $field_definitions, $db_chars
   $changes=array();
   foreach( $field_definitions as $row)
   {
-    if ( !isset($row['Collation']) or $row['Collation']=='NULL' )
+    if ( !isset($row['Collation']) || $row['Collation']=='NULL' )
       continue;
     $query = $row['Field'].' '.$row['Type'];
     $query .= ' CHARACTER SET '.$db_charset;
@@ -174,7 +174,7 @@ SELECT language FROM '.USER_INFOS_TABLE.'
     $field_definitions=array();
     while ( $row=pwg_db_fetch_assoc($result) )
     {
-      if ( !isset($row['Collation']) or $row['Collation']=='NULL' )
+      if ( !isset($row['Collation']) || $row['Collation']=='NULL' )
         continue;
       $field_definitions[] = $row;
     }
@@ -269,7 +269,7 @@ define(\'DB_COLLATE\',  \'\');';
   define('DB_CHARSET',  $db_charset);
   define('DB_COLLATE',  '');
 
-  if ( version_compare(mysql_get_server_info(), '4.1.0', '>=') and DB_CHARSET!='' )
+  if ( version_compare(mysql_get_server_info(), '4.1.0', '>=') && DB_CHARSET!='' )
   {
     pwg_query('SET NAMES "'.DB_CHARSET.'"');
   }
