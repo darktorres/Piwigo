@@ -178,7 +178,7 @@ foreach (array('date_available', 'date_creation') as $datefield)
       );
   }
   elseif (isset($search['fields'][ $keys['before'] ])
-          and isset($search['fields'][ $keys['after'] ]))
+          && isset($search['fields'][ $keys['after'] ]))
   {
     $template->assign(
       strtoupper($datefield),

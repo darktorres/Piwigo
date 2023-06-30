@@ -33,7 +33,7 @@ $page['start'] = $page['startcat'] = 0;
 // some ISPs set PATH_INFO to empty string or to SCRIPT_FILENAME while in the
 // default apache implementation it is not set
 if ( !$conf['question_mark_in_urls'] and
-     isset($_SERVER["PATH_INFO"]) and !empty($_SERVER["PATH_INFO"]) )
+     isset($_SERVER["PATH_INFO"]) && !empty($_SERVER["PATH_INFO"]) )
 {
   $rewritten = $_SERVER["PATH_INFO"];
   $rewritten = str_replace('//', '/', $rewritten);
@@ -88,7 +88,7 @@ if (script_basename() == 'picture')
   else
   {
     preg_match('/^(\d+-)?(.*)?$/', $token, $matches);
-    if (isset($matches[1]) and is_numeric($matches[1]=rtrim($matches[1],'-')) )
+    if (isset($matches[1]) && is_numeric($matches[1]=rtrim($matches[1],'-')) )
     {
       $page['image_id'] = $matches[1];
       if ( !empty($matches[2]) )
@@ -125,12 +125,12 @@ if ( !isset($page['section']) )
     case 'index':
     {
       // No section defined, go to random url
-      if ( !empty($conf['random_index_redirect']) and empty($tokens[$next_token]) )
+      if ( !empty($conf['random_index_redirect']) && empty($tokens[$next_token]) )
       {
         $random_index_redirect = array();
         foreach ($conf['random_index_redirect'] as $random_url => $random_url_condition)
         {
-          if (empty($random_url_condition) or eval($random_url_condition))
+          if (empty($random_url_condition) || eval($random_url_condition))
           {
             $random_index_redirect[] = $random_url;
           }
@@ -152,8 +152,8 @@ if ( !isset($page['section']) )
 $page = array_merge( $page, parse_well_known_params_url( $tokens, $next_token) );
 
 //access a picture only by id, file or id-file without given section
-if ( script_basename()=='picture' and 'categories'==$page['section'] and
-      !isset($page['category']) and !isset($page['chronology_field']) )
+if ( script_basename()=='picture' && 'categories'==$page['section'] and
+      !isset($page['category']) && !isset($page['chronology_field']) )
 {
   $page['flat'] = true;
 }
@@ -165,7 +165,7 @@ $page['nb_image_page'] = $user['nb_image_page'];
 // if flat mode is active, we must consider the image set as a standard set
 // and not as a category set because we can't use the #image_category.rank :
 // displayed images are not directly linked to the displayed category
-if ('categories' == $page['section'] and !isset($page['flat']))
+if ('categories' == $page['section'] && !isset($page['flat']))
 {
   $conf['order_by'] = $conf['order_by_inside_category'];
 }
@@ -248,14 +248,14 @@ if ('categories' == $page['section'])
   elseif
     (
       $page['startcat'] == 0 and
-      (!isset($page['chronology_field'])) and // otherwise the calendar will requery all subitems
+      (!isset($page['chronology_field'])) && // otherwise the calendar will requery all subitems
       (
         (isset($page['category'])) or
         (isset($page['flat']))
       )
     )
   {
-    if ( !empty($page['category']['image_order']) and !isset($page['super_order_by']) )
+    if ( !empty($page['category']['image_order']) && !isset($page['super_order_by']) )
     {
       $conf[ 'order_by' ] = ' ORDER BY '.$page['category']['image_order'];
     }
@@ -588,8 +588,8 @@ if (isset($page['title']))
 // add meta robots noindex, nofollow to avoid unnecesary robot crawls
 $page['meta_robots']=array();
 if ( isset($page['chronology_field'])
-      or ( isset($page['flat']) and isset($page['category']) )
-      or 'list'==$page['section'] or 'recent_pics'==$page['section'] )
+      || ( isset($page['flat']) && isset($page['category']) )
+      || 'list'==$page['section'] || 'recent_pics'==$page['section'] )
 {
   $page['meta_robots']=array('noindex'=>1, 'nofollow'=>1);
 }
@@ -614,7 +614,7 @@ if ( $filter['enabled'] )
 }
 
 // see if we need a redirect because of a permalink
-if ( 'categories'==$page['section'] and isset($page['category']) and !isset($page['combined_categories']))
+if ( 'categories'==$page['section'] && isset($page['category']) && !isset($page['combined_categories']))
 {
   $need_redirect=false;
   if ( empty($page['category']['permalink']) )

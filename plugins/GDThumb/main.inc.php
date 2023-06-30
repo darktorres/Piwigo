@@ -134,7 +134,7 @@ function GDThumb_process_thumb($tpl_vars, $pictures): mixed
     $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom(9999, $confTemp['height']));
   endif;
 
-  if ($confTemp['big_thumb'] and !empty($tpl_vars[0])):
+  if ($confTemp['big_thumb'] && !empty($tpl_vars[0])):
     if (($confTemp['method'] == "slide") || ($confTemp['method'] == "square")):
       $derivative_params = ImageStdParams::get_custom(2 * $confTemp['height'] + $confTemp['margin'], 9999);
     else:
@@ -166,7 +166,7 @@ function GDThumb_process_category($tpl_vars): mixed
     $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom(9999, $confTemp['height']));
   endif;
 
-  if ($confTemp['big_thumb'] and !empty($tpl_vars[0])):
+  if ($confTemp['big_thumb'] && !empty($tpl_vars[0])):
     $id = $tpl_vars[0]["representative_picture_id"];
     if (($id) && ($rep = $tpl_vars[0]["representative"])):
       if (($confTemp['method'] == "slide") || ($confTemp['method'] == "square")):

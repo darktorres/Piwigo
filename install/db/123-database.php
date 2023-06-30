@@ -114,7 +114,7 @@ $types[IMG_THUMB] = $thumb;
 
 // slightly enlarge XSS to be bigger than thumbnail size (but smaller than XS)
 if ($dbconf['upload_form_thumb_maxwidth'] >= $types[IMG_XXSMALL]->sizing->ideal_size[0]
-    or $dbconf['upload_form_thumb_maxheight'] >= $types[IMG_XXSMALL]->sizing->ideal_size[1])
+    || $dbconf['upload_form_thumb_maxheight'] >= $types[IMG_XXSMALL]->sizing->ideal_size[1])
 {
   $xxs_maxwidth = $types[IMG_XXSMALL]->sizing->ideal_size[0];
   if ($dbconf['upload_form_thumb_maxwidth'] >= $xxs_maxwidth)

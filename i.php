@@ -12,8 +12,8 @@ const PHPWG_ROOT_PATH = './';
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
-defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'].'i/');
+defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
+defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'].'i/');
 
 file_exists(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php') && include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 
@@ -64,7 +64,7 @@ function mkgetdir(string $dir): bool
     }
 
     $file = $dir.'/index.htm';
-    file_exists($file) or file_put_contents( $file, 'Not allowed!' );
+    file_exists($file) || file_put_contents( $file, 'Not allowed!' );
   }
   if ( !is_writable($dir) )
   {
@@ -185,7 +185,7 @@ function parse_request(): void
   global $conf, $page;
 
   if ( !$conf['question_mark_in_urls'] and
-       isset($_SERVER["PATH_INFO"]) and !empty($_SERVER["PATH_INFO"]) )
+       isset($_SERVER["PATH_INFO"]) && !empty($_SERVER["PATH_INFO"]) )
   {
     $req = $_SERVER["PATH_INFO"];
     $req = str_replace('//', '/', $req);
@@ -252,11 +252,11 @@ function parse_request(): void
     $params = $page['derivative_params'] = parse_custom_params($deriv);
     ImageStdParams::apply_global($params);
 
-    if ($params->sizing->ideal_size[0] < 20 or $params->sizing->ideal_size[1] < 20)
+    if ($params->sizing->ideal_size[0] < 20 || $params->sizing->ideal_size[1] < 20)
     {
       ierror('Invalid size', 400);
     }
-    if ($params->sizing->max_crop < 0 or $params->sizing->max_crop > 1)
+    if ($params->sizing->max_crop < 0 || $params->sizing->max_crop > 1)
     {
       ierror('Invalid crop', 400);
     }
@@ -368,7 +368,7 @@ function send_derivative($expires): void
 {
   global $page;
 
-  if (isset($_GET['ajaxload']) and $_GET['ajaxload'] == 'true')
+  if (isset($_GET['ajaxload']) && $_GET['ajaxload'] == 'true')
   {
     include_once(PHPWG_ROOT_PATH.'include/functions_cookie.inc.php');
     include_once(PHPWG_ROOT_PATH.'include/functions_url.inc.php');
@@ -461,7 +461,7 @@ elseif ( $now > (max($src_mtime, $params->last_mod_time) + 24*3600) )
 if (!$need_generate)
 {
   if ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] )
-    and strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $derivative_mtime)
+    && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $derivative_mtime)
   {// send the last mod time of the file back
     header('Last-Modified: '.gmdate('D, d M Y H:i:s', $derivative_mtime).' GMT', true, 304);
     header('Expires: '.gmdate('D, d M Y H:i:s', time()+10*24*3600).' GMT', true, 304);
@@ -584,7 +584,7 @@ if ($params->will_watermark($d_size))
   $wm = ImageStdParams::get_watermark();
   $wm_image = new pwg_image(PHPWG_ROOT_PATH.$wm->file);
   $wm_size = array($wm_image->get_width(),$wm_image->get_height());
-  if ($d_size[0]<$wm_size[0] or $d_size[1]<$wm_size[1])
+  if ($d_size[0]<$wm_size[0] || $d_size[1]<$wm_size[1])
   {
     $wm_scaling_params = SizingParams::classic($d_size[0], $d_size[1]);
     $wm_scaling_params->compute($wm_size, null, $tmp, $wm_scaled_size);

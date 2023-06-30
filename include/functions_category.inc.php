@@ -69,7 +69,7 @@ FROM '.CATEGORIES_TABLE.' INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.'
   ON id = cat_id and user_id = '.$user['id'];
 
   // Always expand when filter is activated
-  if (!$user['expand'] and !$filter['enabled'])
+  if (!$user['expand'] && !$filter['enabled'])
   {
     $where = '
 (id_uppercat is NULL';
@@ -166,7 +166,7 @@ SELECT *
   {
     // If the field is true or false, the variable is transformed into a
     // boolean value.
-    if ($v == 'true' or $v == 'false')
+    if ($v == 'true' || $v == 'false')
     {
       $cat[$k] = get_boolean($v);
     }
@@ -307,7 +307,7 @@ SELECT DISTINCT(id)
   foreach ($ids as $num => $category_id)
   {
     is_numeric($category_id)
-      or trigger_error(
+      || trigger_error(
         'get_subcat_ids expecting numeric, not '.gettype($category_id),
         E_USER_WARNING
       );
@@ -387,7 +387,7 @@ function get_display_images_count(int $cat_nb_images, int $cat_count_images, int
 
   if ($cat_count_images > 0)
   {
-    if ($cat_nb_images > 0 and $cat_nb_images < $cat_count_images)
+    if ($cat_nb_images > 0 && $cat_nb_images < $cat_count_images)
     {
       $display_text.= get_display_images_count($cat_nb_images, $cat_nb_images, 0, $short_message, $separator).$separator;
       $cat_count_images-= $cat_nb_images;
@@ -397,7 +397,7 @@ function get_display_images_count(int $cat_nb_images, int $cat_count_images, int
     //at least one image direct or indirect
     $display_text.= l10n_dec('%d photo', '%d photos', $cat_count_images);
 
-    if ($cat_count_categories == 0 or $cat_nb_images == $cat_count_images)
+    if ($cat_count_categories == 0 || $cat_nb_images == $cat_count_images)
     {
       //no descendant categories or descendants do not contain images
       if (!$short_message)
@@ -546,7 +546,7 @@ FROM '.CATEGORIES_TABLE.' as c
       $parent['count_images'] += $cat['nb_images'];
       $parent['count_categories']++;
 
-      if ((empty($parent['max_date_last'])) or ($parent['max_date_last'] < $cat['date_last']))
+      if ((empty($parent['max_date_last'])) || ($parent['max_date_last'] < $cat['date_last']))
       {
         $parent['max_date_last'] = $cat['date_last'];
       }
@@ -644,7 +644,7 @@ SELECT id
   $query.= (empty($extra_images_where_sql) ? '' : " \nAND (".$extra_images_where_sql.')').'
   GROUP BY id';
 
-  if ($mode=='AND' and count($cat_ids)>1)
+  if ($mode=='AND' && count($cat_ids)>1)
   {
     $query .= '
   HAVING COUNT(DISTINCT category_id)='.count($cat_ids);
@@ -797,7 +797,7 @@ SELECT
     // 3. number of sub-albums containing photos
     //
     // Option 3 seems more appropriate here.
-    if (!empty($cat['id_uppercat']) and ($cats[$idx]['count_images'] ?? 0) > 0)
+    if (!empty($cat['id_uppercat']) && ($cats[$idx]['count_images'] ?? 0) > 0)
     {
       foreach (array_slice(explode(',', $cat['uppercats']), 0, -1) as $uppercat_id)
       {

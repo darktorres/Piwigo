@@ -58,7 +58,7 @@ $tab_codes = array_map(
   $tabs
   );
 
-if (isset($_GET['tab']) and in_array($_GET['tab'], $tab_codes))
+if (isset($_GET['tab']) && in_array($_GET['tab'], $tab_codes))
 {
   $page['tab'] = $_GET['tab'];
 }

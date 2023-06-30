@@ -68,7 +68,7 @@ function ws_plugins_performAction(array $params, $service): true|PwgError
     return new PwgError(403, l10n('Webmaster status is required.'));
   }
 
-  if (!$conf['enable_extensions_install'] and 'delete' == $params['action'])
+  if (!$conf['enable_extensions_install'] && 'delete' == $params['action'])
   {
     return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
   }
@@ -112,7 +112,7 @@ function ws_themes_performAction(array $params, $service): true|PwgError
     return new PwgError(403, 'Invalid security token');
   }
 
-  if (!$conf['enable_extensions_install'] and 'delete' == $params['action'])
+  if (!$conf['enable_extensions_install'] && 'delete' == $params['action'])
   {
     return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
   }
@@ -187,7 +187,7 @@ function ws_extensions_update(array $params, $service): PwgError|string
   {
     if (
       isset($extension->db_plugins_by_id[$extension_id])
-      and $extension->db_plugins_by_id[$extension_id]['state'] == 'active'
+      && $extension->db_plugins_by_id[$extension_id]['state'] == 'active'
       )
     {
       $extension->perform_action('deactivate', $extension_id);
@@ -281,7 +281,7 @@ function ws_extensions_ignoreupdate(array $params, $service): true|PwgError
   // Reset ignored extension
   if ($params['reset'])
   {
-    if (!empty($params['type']) and isset($conf['updates_ignored'][ $params['type'] ]))
+    if (!empty($params['type']) && isset($conf['updates_ignored'][ $params['type'] ]))
     {
       $conf['updates_ignored'][$params['type']] = array();
     }
@@ -299,7 +299,7 @@ function ws_extensions_ignoreupdate(array $params, $service): true|PwgError
     return true;
   }
 
-  if (empty($params['id']) or empty($params['type']) or !in_array($params['type'], array('plugins', 'themes', 'languages')))
+  if (empty($params['id']) || empty($params['type']) || !in_array($params['type'], array('plugins', 'themes', 'languages')))
   {
     return new PwgError(403, 'Invalid parameters');
   }

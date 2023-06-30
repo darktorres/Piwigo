@@ -75,8 +75,8 @@ SELECT
 
     $order_by = ws_std_image_sql_order($params, 'i.');
     if ( empty($order_by)
-          and count($params['cat_id'])==1
-          and isset($cats[ $params['cat_id'][0] ]['image_order'])
+          && count($params['cat_id'])==1
+          && isset($cats[ $params['cat_id'][0] ]['image_order'])
         )
     {
       $order_by = $cats[ $params['cat_id'][0] ]['image_order'];
@@ -355,7 +355,7 @@ SELECT
     }
     else
     { // searching a random representant among representant of sub-categories
-      if ($row['count_categories']>0 and $row['count_images']>0)
+      if ($row['count_categories']>0 && $row['count_images']>0)
       {
         $query = '
 SELECT representative_picture_id
@@ -382,7 +382,7 @@ SELECT representative_picture_id
 
     if (isset($image_id))
     {
-      if ($conf['representative_cache_on_subcats'] and $row['user_representative_picture_id'] != $image_id)
+      if ($conf['representative_cache_on_subcats'] && $row['user_representative_picture_id'] != $image_id)
       {
         $user_representative_updates_for[ $row['id'] ] = $image_id;
       }
@@ -433,7 +433,7 @@ SELECT id, path, representative_ext, level
             // searching a random representant among elements in sub-categories
             $image_id = get_random_image_in_category($category);
 
-            if (isset($image_id) and !in_array($image_id, $image_ids))
+            if (isset($image_id) && !in_array($image_id, $image_ids))
             {
               $new_image_ids[] = $image_id;
             }
@@ -468,7 +468,7 @@ SELECT id, path, representative_ext
   // compared to code in include/category_cats, we only persist the new
   // user_representative if we have used $user['id'] and not the guest id,
   // or else the real guest may see thumbnail that he should not
-  if (!$params['public'] and count($user_representative_updates_for))
+  if (!$params['public'] && count($user_representative_updates_for))
   {
     $updates = array();
 
@@ -495,7 +495,7 @@ SELECT id, path, representative_ext
   {
     foreach ($categories as $category)
     {
-      if ($category['id'] == $cat['id'] and isset($category['representative_picture_id']))
+      if ($category['id'] == $cat['id'] && isset($category['representative_picture_id']))
       {
         $cat['tn_url'] = $thumbnail_src_of[$category['representative_picture_id']];
       }
@@ -551,7 +551,7 @@ SELECT category_id, COUNT(*) AS counter
 SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, status
   FROM '. CATEGORIES_TABLE;
 
-  if (isset($params["search"]) and $params['search'] != "") 
+  if (isset($params["search"]) && $params['search'] != "") 
   {
     $query .= '
   WHERE name LIKE \'%'.pwg_db_real_escape_string($params["search"]).'%\'
@@ -636,14 +636,14 @@ function ws_categories_add(array $params, &$service): PwgError|array
 
   global $conf;
 
-  if (!empty($params['position']) and in_array($params['position'], array('first','last')))
+  if (!empty($params['position']) && in_array($params['position'], array('first','last')))
   {
     //TODO make persistent with user prefs
     $conf['newcat_default_position'] = $params["position"];
   }
 
   $options = array();
-  if (!empty($params['status']) and in_array($params['status'], array('private','public')))
+  if (!empty($params['status']) && in_array($params['status'], array('private','public')))
   {
     $options['status'] = $params['status'];
   }
@@ -804,13 +804,13 @@ SELECT *
 
   foreach (array('visible', 'commentable') as $param_name)
   {
-    if (isset($params[$param_name]) and !preg_match('/^(true|false)$/i', $params[$param_name]))
+    if (isset($params[$param_name]) && !preg_match('/^(true|false)$/i', $params[$param_name]))
     {
       return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid param '.$param_name.' : '.$params[$param_name]);
     }
   }
 
-  if (!empty($params['visible']) and ($params['visible'] != $category['visible']))
+  if (!empty($params['visible']) && ($params['visible'] != $category['visible']))
   {
     include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
     set_cat_visible(array($params['category_id']), $params['visible']);
@@ -942,7 +942,7 @@ SELECT COUNT(*)
 ;';
   list($nb_images) = pwg_db_fetch_row(pwg_query($query));
 
-  if (!$conf['allow_random_representative'] and $nb_images != 0)
+  if (!$conf['allow_random_representative'] && $nb_images != 0)
   {
     return new PwgError(401, 'not permitted');
   }

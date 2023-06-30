@@ -29,7 +29,7 @@ include(PHPWG_ROOT_PATH.'include/page_header.php');
 if
   (
     isset($_GET['page'])
-    and preg_match('/^[a-z_]*$/', $_GET['page'])
+    && preg_match('/^[a-z_]*$/', $_GET['page'])
   )
 {
   $help_content = load_language(
@@ -61,7 +61,7 @@ $template->assign(
     'HELP_CONTENT' => $help_content
   ));
 
-if (isset($_GET['output']) and 'content_only' == $_GET['output'])
+if (isset($_GET['output']) && 'content_only' == $_GET['output'])
 {
   echo $help_content;
   exit();

@@ -62,7 +62,7 @@ function get_upload_form_config(): array
  */
 function save_upload_form_config($data, array &$errors=array(), array &$form_errors=array()): bool
 {
-  if (!is_array($data) or empty($data))
+  if (!is_array($data) || empty($data))
   {
     return false;
   }
@@ -92,7 +92,7 @@ function save_upload_form_config($data, array &$errors=array(), array &$form_err
         'value' => boolean_to_string($value)
         );
     }
-    elseif ($upload_form_config[$field]['can_be_null'] and empty($value))
+    elseif ($upload_form_config[$field]['can_be_null'] && empty($value))
     {
       $updates[] = array(
         'param' => $field,
@@ -105,7 +105,7 @@ function save_upload_form_config($data, array &$errors=array(), array &$form_err
       $max = $upload_form_config[$field]['max'];
       $pattern = $upload_form_config[$field]['pattern'];
 
-      if (preg_match($pattern, $value) and $value >= $min and $value <= $max)
+      if (preg_match($pattern, $value) && $value >= $min && $value <= $max)
       {
          $updates[] = array(
           'param' => $field,
@@ -231,7 +231,7 @@ SELECT
     {
       $file_path.= 'jpg';
     }
-    elseif (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types'])
+    elseif (isset($conf['upload_form_all_types']) && $conf['upload_form_all_types'])
     {
       $original_extension = strtolower(get_extension($original_filename));
 
@@ -380,7 +380,7 @@ SELECT
     }
   }
 
-  if (isset($categories) and count($categories) > 0)
+  if (isset($categories) && count($categories) > 0)
   {
     if ($conf['lounge_active'])
     {
@@ -393,7 +393,7 @@ SELECT
   }
 
   // update metadata from the uploaded file (exif/iptc)
-  if ($conf['use_exif'] and !function_exists('exif_read_data'))
+  if ($conf['use_exif'] && !function_exists('exif_read_data'))
   {
     $conf['use_exif'] = false;
   }
@@ -746,7 +746,7 @@ function need_resize($image_filepath, $max_width, $max_height): bool
   // invert width and height.
   list($width, $height) = getimagesize($image_filepath);
 
-  if ($width > $max_width or $height > $max_height)
+  if ($width > $max_width || $height > $max_height)
   {
     return true;
   }
@@ -778,7 +778,7 @@ function is_valid_image_extension($extension): array
 {
   global $conf;
   
-  if (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types'])
+  if (isset($conf['upload_form_all_types']) && $conf['upload_form_all_types'])
   {
     $extensions = $conf['file_ext'];
   }

@@ -29,7 +29,7 @@ if (!empty($_POST))
 // |                            variables init                             |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['user_id']) and is_numeric($_GET['user_id']))
+if (isset($_GET['user_id']) && is_numeric($_GET['user_id']))
 {
   $page['user'] = $_GET['user_id'];
 }
@@ -43,8 +43,8 @@ else
 // +-----------------------------------------------------------------------+
 
 if (isset($_POST['falsify'])
-    and isset($_POST['cat_true'])
-    and count($_POST['cat_true']) > 0)
+    && isset($_POST['cat_true'])
+    && count($_POST['cat_true']) > 0)
 {
   // if you forbid access to a category, all sub-categories become
   // automatically forbidden
@@ -57,8 +57,8 @@ DELETE FROM '.USER_ACCESS_TABLE.'
   pwg_query($query);
 }
 elseif (isset($_POST['trueify'])
-    and isset($_POST['cat_false'])
-    and count($_POST['cat_false']) > 0)
+    && isset($_POST['cat_false'])
+    && count($_POST['cat_false']) > 0)
 {
   add_permission_on_category($_POST['cat_false'], $page['user']);
 }

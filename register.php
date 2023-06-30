@@ -57,7 +57,7 @@ if (isset($_POST['submit']))
   if (count($page['errors']) == 0)
   {
     // email notification
-    if (isset($_POST['send_password_by_mail']) and email_check_format($_POST['mail_address']))
+    if (isset($_POST['send_password_by_mail']) && email_check_format($_POST['mail_address']))
     {
       $_SESSION['page_infos'][] = l10n('Successfully registered, you will soon receive an email with your connection settings. Welcome!');
     }

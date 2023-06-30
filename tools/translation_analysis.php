@@ -78,7 +78,7 @@ foreach ($languages as $language)
           continue;
         }
 
-        if (isset($validated_keys[$language]) and in_array($key, $validated_keys[$language]))
+        if (isset($validated_keys[$language]) && in_array($key, $validated_keys[$language]))
         {
           continue;
         }
@@ -100,7 +100,7 @@ foreach ($languages as $language)
 
       echo '<h3>'.$file.'.lang.php</h3>';
       
-      if ('' != $output_missing or '' != $output_duplicated)
+      if ('' != $output_missing || '' != $output_duplicated)
       {
         $output = '';
         if ('' != $output_missing)

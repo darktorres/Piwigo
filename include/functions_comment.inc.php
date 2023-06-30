@@ -76,7 +76,7 @@ function insert_user_comment(array &$comm, string $key, array|null &$infos): str
    );
 
   $infos = array();
-  if (!$conf['comments_validation'] or is_admin())
+  if (!$conf['comments_validation'] || is_admin())
   {
     $comment_action='validate'; //one of validate, moderate, reject
   }
@@ -181,7 +181,7 @@ SELECT COUNT(*) AS user_exists
   }
   $anonymous_id = implode('.', $ip_components);
 
-  if ($comment_action!='reject' and $conf['anti-flood_time']>0 and !is_admin())
+  if ($comment_action!='reject' && $conf['anti-flood_time']>0 && !is_admin())
   { // anti-flood system
     $reference_date = pwg_db_get_flood_period_expression($conf['anti-flood_time']);
 
@@ -235,7 +235,7 @@ INSERT INTO '.COMMENTS_TABLE.'
     invalidate_user_cache_nb_comments();
 
     if ( ($conf['email_admin_on_comment'] && 'validate' == $comment_action)
-        or ($conf['email_admin_on_comment_validation'] and 'moderate' == $comment_action))
+        || ($conf['email_admin_on_comment_validation'] && 'moderate' == $comment_action))
     {
       include_once(PHPWG_ROOT_PATH.'include/functions_mail.inc.php');
 
@@ -335,7 +335,7 @@ function update_user_comment(array $comment, string $post_key): string
   {
     $comment_action='reject';
   }
-  elseif (!$conf['comments_validation'] or is_admin()) // should the updated comment must be validated
+  elseif (!$conf['comments_validation'] || is_admin()) // should the updated comment must be validated
   {
     $comment_action='validate'; //one of validate, moderate, reject
   }
@@ -389,7 +389,7 @@ $user_where_clause.'
     $result = pwg_query($query);
 
     // mail admin and ask to validate the comment
-    if ($result and $conf['email_admin_on_comment_validation'] and 'moderate' == $comment_action)
+    if ($result && $conf['email_admin_on_comment_validation'] && 'moderate' == $comment_action)
     {
       include_once(PHPWG_ROOT_PATH.'include/functions_mail.inc.php');
 
@@ -434,8 +434,8 @@ function email_admin(string $action, array $comment): void
   global $conf;
 
   if (!in_array($action, array('edit', 'delete'))
-      or (($action=='edit') and !$conf['email_admin_on_comment_edition'])
-      or (($action=='delete') and !$conf['email_admin_on_comment_deletion']))
+      || (($action=='edit') && !$conf['email_admin_on_comment_edition'])
+      || (($action=='delete') && !$conf['email_admin_on_comment_deletion']))
   {
     return;
   }

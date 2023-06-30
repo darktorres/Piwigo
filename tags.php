@@ -78,7 +78,7 @@ if ($page['display_mode'] == 'letters') {
     if ($tag_letter !== $current_letter)
     {
       if ($current_column<$conf['tag_letters_column_number']
-          and $current_tag_idx > $current_column*$nb_tags/$conf['tag_letters_column_number'] )
+          && $current_tag_idx > $current_column*$nb_tags/$conf['tag_letters_column_number'] )
       {
         $letter['CHANGE_COLUMN'] = true;
         $current_column++;

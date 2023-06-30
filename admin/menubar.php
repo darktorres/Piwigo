@@ -83,7 +83,7 @@ foreach ($reg_blocks as $id => $block)
 }
 
 
-if ( isset($_POST['submit']) and is_webmaster())
+if ( isset($_POST['submit']) && is_webmaster())
 {
   foreach ( $mb_conf as $id => $pos )
   {

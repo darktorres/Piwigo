@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-defined('PHPWG_ROOT_PATH') or trigger_error('Hacking attempt!', E_USER_ERROR);
+defined('PHPWG_ROOT_PATH') || trigger_error('Hacking attempt!', E_USER_ERROR);
 
 include_once(PHPWG_ROOT_PATH.'include/ws_core.inc.php');
 include_once(PHPWG_ROOT_PATH.'include/ws_functions.inc.php');
@@ -22,7 +22,7 @@ if ( isset($_GET['format']) )
   $responseFormat = $_GET['format'];
 }
 
-if ( !isset($responseFormat) and isset($requestFormat) )
+if ( !isset($responseFormat) && isset($requestFormat) )
 {
   $responseFormat = $requestFormat;
 }

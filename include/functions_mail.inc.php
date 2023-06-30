@@ -237,7 +237,7 @@ function switch_lang_to(string $language): void
 
   // Treatment with current user
   // Language of current user is saved (it's considered OK on firt call)
-  if (!isset($switch_lang['initialisation']) and !isset($switch_lang['language'][$user['language']]))
+  if (!isset($switch_lang['initialisation']) && !isset($switch_lang['language'][$user['language']]))
   {
     $switch_lang['initialisation'] = true;
     $switch_lang['language'][$user['language']]['lang_info'] = $lang_info;
@@ -328,14 +328,14 @@ function switch_lang_back(): void
  */
 function pwg_mail_notification_admins(array|string $subject, array|string $content, bool $send_technical_details=true, $group_id=null): bool
 {
-  if (empty($subject) or empty($content))
+  if (empty($subject) || empty($content))
   {
     return false;
   }
 
   global $conf, $user;
 
-  if (is_array($subject) or is_array($content))
+  if (is_array($subject) || is_array($content))
   {
     switch_lang_to(get_default_language());
 
@@ -396,7 +396,7 @@ function pwg_mail_notification_admins(array|string $subject, array|string $conte
  */
 function pwg_mail_admins(array $args=array(), array $tpl=array(), bool $exclude_current_user=true, bool $only_webmasters=false, $group_id=null): bool
 {
-  if (empty($args['content']) and empty($tpl))
+  if (empty($args['content']) && empty($tpl))
   {
     return false;
   }
@@ -476,7 +476,7 @@ SELECT
  */
 function pwg_mail_group(int $group_id, array $args=array(), array $tpl=array()): bool|int
 {  
-  if (empty($group_id) or ( empty($args['content']) and empty($tpl) ))
+  if (empty($group_id) || ( empty($args['content']) && empty($tpl) ))
   {
     return false;
   }
@@ -600,7 +600,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
 {
   global $conf, $conf_mail, $lang_info, $page;
 
-  if (empty($to) and empty($args['Cc']) and empty($args['Bcc']))
+  if (empty($to) && empty($args['Cc']) && empty($args['Bcc']))
   {
     return true;
   }
@@ -672,7 +672,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
   }
 
   // theme
-  if (empty($args['theme']) or !in_array($args['theme'], array('clear','dark')))
+  if (empty($args['theme']) || !in_array($args['theme'], array('clear','dark')))
   {
     $args['theme'] = $conf_mail['mail_theme'];
   }
@@ -684,7 +684,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
   }
   
   // try to decompose subject like "[....] ...."
-  if (!isset($args['mail_title']) and !isset($args['mail_subtitle']))
+  if (!isset($args['mail_title']) && !isset($args['mail_subtitle']))
   {
     if (preg_match('#^\[(.*)\](.*)$#',  $args['subject'], $matches))
     {
@@ -708,7 +708,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
   }
 
   $content_type_list = array();
-  if ($conf_mail['mail_allow_html'] and $args['email_format'] != 'text/plain')
+  if ($conf_mail['mail_allow_html'] && $args['email_format'] != 'text/plain')
   {
     $content_type_list[] = 'text/html';
   }
@@ -784,7 +784,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
     // Content
     // Stored in a temp variable, if a content template is used it will be assigned
     // to the $CONTENT template variable, otherwise it will be appened to the mail
-    if ($args['content_format'] == 'text/plain' and $content_type == 'text/html')
+    if ($args['content_format'] == 'text/plain' && $content_type == 'text/html')
     {
       // convert plain text to html
       $mail_content =
@@ -798,7 +798,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
           ).
         '</p>';
     }
-    elseif ($args['content_format'] == 'text/html' and $content_type == 'text/plain')
+    elseif ($args['content_format'] == 'text/html' && $content_type == 'text/plain')
     {
       // convert html text to plain text
       $mail_content = strip_tags($args['content']);
@@ -880,7 +880,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
     $mail->Host = $smtp_host;
     $mail->Port = $smtp_port;
 
-    if (!empty($conf_mail['smtp_secure']) and in_array($conf_mail['smtp_secure'], array('ssl', 'tls')))
+    if (!empty($conf_mail['smtp_secure']) && in_array($conf_mail['smtp_secure'], array('ssl', 'tls')))
     {
       $mail->SMTPSecure = $conf_mail['smtp_secure'];
     }
@@ -899,7 +899,7 @@ function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bo
   if ($pre_result)
   {
     $ret = $mail->send();
-    if (!$ret and (!ini_get('display_errors') or is_admin()))
+    if (!$ret && (!ini_get('display_errors') || is_admin()))
     {
       trigger_error('Mailer Error: ' . $mail->ErrorInfo, E_USER_WARNING);
     }

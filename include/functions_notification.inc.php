@@ -316,8 +316,8 @@ function news_exists(string $start=null, string $end=null): bool
           (nb_new_comments($start, $end) > 0) or
           (nb_new_elements($start, $end) > 0) or
           (nb_updated_categories($start, $end) > 0) or
-          ((is_admin()) and (nb_unvalidated_comments($start, $end) > 0)) or
-          ((is_admin()) and (nb_new_users($start, $end) > 0)));
+          ((is_admin()) && (nb_unvalidated_comments($start, $end) > 0)) or
+          ((is_admin()) && (nb_new_users($start, $end) > 0)));
 }
 
 /**
@@ -335,7 +335,7 @@ function add_news_line(array &$news, int $count, string $singular_key, string $p
   if ($count > 0)
   {
     $line = l10n_dec($singular_key, $plural_key, $count);
-    if ($add_url and !empty($url) )
+    if ($add_url && !empty($url) )
     {
       $line = '<a href="'.$url.'">'.$line.'</a>';
     }
@@ -505,7 +505,7 @@ function get_recent_post_dates_array(array $args): array
  * @param array $date_detail returned value of get_recent_post_dates()
  * @param null $auth_key
  * @return string
- * @todo clean up HTML output, currently messy and invalid !
+ * @todo clean up HTML output, currently messy && invalid !
  */
 function get_html_description_recent_post_date(array $date_detail, $auth_key=null): string
 {

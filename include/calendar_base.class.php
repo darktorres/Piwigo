@@ -165,7 +165,7 @@ abstract class CalendarBase
 
     $nav_bar_datas=array();
 
-    if ($conf['calendar_show_empty'] and $show_empty and !empty($labels) )
+    if ($conf['calendar_show_empty'] && $show_empty && !empty($labels) )
     {
       foreach ($labels as $item => $label)
       {
@@ -209,7 +209,7 @@ abstract class CalendarBase
 
     }
 
-    if ($conf['calendar_show_any'] and $show_any and count($items)>1 and
+    if ($conf['calendar_show_any'] && $show_any && count($items)>1 and
           count($date_components)<count($this->calendar_levels)-1 )
     {
       $url = duplicate_index_url(

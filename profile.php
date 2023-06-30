@@ -118,18 +118,18 @@ function save_profile_from_post($userdata, &$errors)
     unset($_POST['username']);
   }
 
-  if ($conf['allow_user_customization'] or defined('IN_ADMIN'))
+  if ($conf['allow_user_customization'] || defined('IN_ADMIN'))
   {
     $int_pattern = '/^\d+$/';
     if (empty($_POST['nb_image_page'])
-        or (!preg_match($int_pattern, $_POST['nb_image_page'])))
+        || (!preg_match($int_pattern, $_POST['nb_image_page'])))
     {
       $errors[] = l10n('The number of photos per page must be a not null scalar');
     }
 
     // periods must be integer values, they represents number of days
     if (!preg_match($int_pattern, $_POST['recent_period'])
-        or $_POST['recent_period'] < 0)
+        || $_POST['recent_period'] < 0)
     {
       $errors[] = l10n('Recent period must be a positive integer value') ;
     }
@@ -209,7 +209,7 @@ function save_profile_from_post($userdata, &$errors)
       // username is updated only if allowed
       if (!empty($_POST['username']))
       {
-        if ($_POST['username'] != $userdata['username'] and get_userid($_POST['username']))
+        if ($_POST['username'] != $userdata['username'] && get_userid($_POST['username']))
         {
           $page['errors'][] = l10n('this login is already used');
           unset($_POST['redirect']);
@@ -259,7 +259,7 @@ function save_profile_from_post($userdata, &$errors)
       $activity_details_tables[] = 'users';
     }
 
-    if ($conf['allow_user_customization'] or defined('IN_ADMIN'))
+    if ($conf['allow_user_customization'] || defined('IN_ADMIN'))
     {
       // update user "additional" informations (specific to Piwigo)
       $fields = array(
@@ -337,7 +337,7 @@ function load_profile_in_template(string $url_action, string $url_redirect, arra
 
   foreach (get_languages() as $language_code => $language_name)
   {
-    if (isset($_POST['submit']) or $userdata['language'] == $language_code)
+    if (isset($_POST['submit']) || $userdata['language'] == $language_code)
     {
       $template->assign('language_selection', $language_code);
     }

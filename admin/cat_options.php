@@ -33,8 +33,8 @@ if (!empty($_POST))
 
 
 if (isset($_POST['falsify'])
-    and isset($_POST['cat_true'])
-    and count($_POST['cat_true']) > 0)
+    && isset($_POST['cat_true'])
+    && count($_POST['cat_true']) > 0)
 {
   switch ($_GET['section'])
   {
@@ -73,8 +73,8 @@ UPDATE '.CATEGORIES_TABLE.'
   pwg_activity('album', $_POST['cat_true'], 'edit', array('section'=>$_GET['section'], 'action'=>'falsify'));
 }
 elseif (isset($_POST['trueify'])
-         and isset($_POST['cat_false'])
-         and count($_POST['cat_false']) > 0)
+         && isset($_POST['cat_false'])
+         && count($_POST['cat_false']) > 0)
 {
   switch ($_GET['section'])
   {

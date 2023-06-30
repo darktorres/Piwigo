@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-defined('PHPWG_ROOT_PATH') or trigger_error('Hacking attempt!', E_USER_ERROR);
+defined('PHPWG_ROOT_PATH') || trigger_error('Hacking attempt!', E_USER_ERROR);
 
 // determine the initial instant to indicate the generation time of this page
 $t2 = microtime(true);
@@ -21,7 +21,7 @@ $t2 = microtime(true);
 // but function get_magic_quotes_gpc was always replying false.
 // Since php 8 the function get_magic_quotes_gpc is also removed
 // but we stil want to sanitize user input variables.
-if(!function_exists('get_magic_quotes_gpc') or !get_magic_quotes_gpc() )
+if(!function_exists('get_magic_quotes_gpc') || !get_magic_quotes_gpc() )
 {
   /**
    * @param $v
@@ -72,7 +72,7 @@ $filter = array();
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
+defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 file_exists(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php') && include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 if (!defined('PHPWG_INSTALLED'))
@@ -121,7 +121,7 @@ $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] .
 
 if (!$conf['check_upgrade_feed'])
 {
-  if (!isset($conf['piwigo_db_version']) or $conf['piwigo_db_version'] != get_branch_from_version(PHPWG_VERSION))
+  if (!isset($conf['piwigo_db_version']) || $conf['piwigo_db_version'] != get_branch_from_version(PHPWG_VERSION))
   {
     redirect(get_root_url().'upgrade.php');
   }
@@ -174,7 +174,7 @@ else {
 }
 const PHPWG_URL = 'https://' . PHPWG_DOMAIN;
 
-if(isset($conf['alternative_pem_url']) and $conf['alternative_pem_url']!='')
+if(isset($conf['alternative_pem_url']) && $conf['alternative_pem_url']!='')
 {
   define('PEM_URL', $conf['alternative_pem_url']);
 }
@@ -185,7 +185,7 @@ else
 
 // language files
 load_language('common.lang');
-if ( is_admin() || (defined('IN_ADMIN') and IN_ADMIN) )
+if ( is_admin() || (defined('IN_ADMIN') && IN_ADMIN) )
 {
   load_language('admin.lang');
 }
@@ -201,7 +201,7 @@ if (is_a_guest())
 
 // in case an auth key was provided and is no longer valid, we must wait to
 // be here, with language loaded, to prepare the message
-if (isset($page['auth_key_invalid']) and $page['auth_key_invalid'])
+if (isset($page['auth_key_invalid']) && $page['auth_key_invalid'])
 {
   $page['errors'][] =
     l10n('Your authentication key is no longer valid.')
@@ -210,14 +210,14 @@ if (isset($page['auth_key_invalid']) and $page['auth_key_invalid'])
 }
 
 // template instance
-if (defined('IN_ADMIN') and IN_ADMIN )
+if (defined('IN_ADMIN') && IN_ADMIN )
 {// Admin template
   $template = new Template(PHPWG_ROOT_PATH.'admin/themes', userprefs_get_param('admin_theme', 'roma'));
 }
 else
 { // Classic template
   $theme = $user['theme'];
-  if (script_basename() != 'ws' and mobile_theme())
+  if (script_basename() != 'ws' && mobile_theme())
   {
     $theme = $conf['mobile_theme'];
   }
@@ -240,7 +240,7 @@ if ($conf['gallery_locked'])
 {
   $header_msgs[] = l10n('The gallery is locked for maintenance. Please, come back later.');
 
-  if ( script_basename() != 'identification' and !is_admin() )
+  if ( script_basename() != 'identification' && !is_admin() )
   {
     set_status_header(503, 'Service Unavailable');
     header('Retry-After: 900');
@@ -267,7 +267,7 @@ if (count($header_msgs) > 0)
   $header_msgs=array();
 }
 
-if (!empty($conf['filter_pages']) and get_filter_page_value('used'))
+if (!empty($conf['filter_pages']) && get_filter_page_value('used'))
 {
   include(PHPWG_ROOT_PATH.'include/filter.inc.php');
 }

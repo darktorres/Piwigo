@@ -67,7 +67,7 @@ SELECT COUNT(*)
 
   $uagent_obj = new uagent_info();
   // To see the mobile app promote, the account must have 2 weeks ancient, 3 albums created and 30 photos uploaded
-  $template->assign("PROMOTE_MOBILE_APPS", (!$uagent_obj->DetectIos() and strtotime($register_date) < strtotime('2 weeks ago') and $nb_cats >= 3 and $nb_images >= 30));
+  $template->assign("PROMOTE_MOBILE_APPS", (!$uagent_obj->DetectIos() && strtotime($register_date) < strtotime('2 weeks ago') && $nb_cats >= 3 && $nb_images >= 30));
 } 
 else
 {

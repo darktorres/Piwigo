@@ -11,7 +11,7 @@ $user['id'] = $conf['guest_id'];
 
 if (isset($_COOKIE[session_name()]))
 {
-  if (isset($_GET['act']) and $_GET['act'] == 'logout')
+  if (isset($_GET['act']) && $_GET['act'] == 'logout')
   { // logout
     logout_user();
     redirect(get_gallery_home_url());
@@ -58,10 +58,10 @@ if (isset($_GET['auth']))
 
 if (
   defined('IN_WS')
-  and isset($_REQUEST['method'])
-  and 'pwg.images.uploadAsync' == $_REQUEST['method']
-  and isset($_POST['username'])
-  and isset($_POST['password'])
+  && isset($_REQUEST['method'])
+  && 'pwg.images.uploadAsync' == $_REQUEST['method']
+  && isset($_POST['username'])
+  && isset($_POST['password'])
 )
 {
   if (!try_log_user($_POST['username'], $_POST['password'], false))
@@ -73,9 +73,9 @@ if (
 }
 
 $user = build_user( $user['id'],
-          !(( defined('IN_ADMIN') and IN_ADMIN )) // use cache ?
+          !(( defined('IN_ADMIN') && IN_ADMIN )) // use cache ?
          );
-if ($conf['browser_language'] and (is_a_guest() or is_generic()) and $language = get_browser_language())
+if ($conf['browser_language'] && (is_a_guest() || is_generic()) && $language = get_browser_language())
 {
   $user['language'] = $language;
 }

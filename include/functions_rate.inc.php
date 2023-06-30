@@ -23,16 +23,16 @@ function rate_picture(int $image_id, float $rate): false|array
   global $conf, $user;
 
   if (!isset($rate)
-      or !$conf['rate']
-      or !preg_match('/^[0-9]+$/', (string)$rate)
-      or !in_array($rate, $conf['rate_items']))
+      || !$conf['rate']
+      || !preg_match('/^[0-9]+$/', (string)$rate)
+      || !in_array($rate, $conf['rate_items']))
   {
     return false;
   }
 
   $user_anonymous = !is_autorize_status(ACCESS_CLASSIC);
 
-  if ($user_anonymous and !$conf['rate_anonymous'])
+  if ($user_anonymous && !$conf['rate_anonymous'])
   {
     return false;
   }

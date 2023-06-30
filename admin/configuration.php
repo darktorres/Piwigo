@@ -149,7 +149,7 @@ if (isset($_POST['submit']))
   {
     case 'main' :
     {
-      if ( !isset($conf['order_by_custom']) and !isset($conf['order_by_inside_category_custom']) )
+      if ( !isset($conf['order_by_custom']) && !isset($conf['order_by_inside_category_custom']) )
       {
         if ( !empty($_POST['order_by']) )
         {
@@ -158,7 +158,7 @@ if (isset($_POST['submit']))
           $used = array();
           foreach ($_POST['order_by'] as $i => $val)
           {
-            if (empty($val) or isset($used[$val]))
+            if (empty($val) || isset($used[$val]))
             {
               unset($_POST['order_by'][$i]);
             }
@@ -239,8 +239,8 @@ if (isset($_POST['submit']))
       // the number of comments per page must be an integer between 5 and 50
       // included
       if (!preg_match($int_pattern, $_POST['nb_comment_page'])
-           or $_POST['nb_comment_page'] < 5
-           or $_POST['nb_comment_page'] > 50)
+           || $_POST['nb_comment_page'] < 5
+           || $_POST['nb_comment_page'] > 50)
       {
         $page['errors'][] = l10n('The number of comments a page must be between 5 and 50 included.');
       }
@@ -258,7 +258,7 @@ if (isset($_POST['submit']))
     case 'display' :
     {
       if (!preg_match($int_pattern, $_POST['nb_categories_page'])
-            or $_POST['nb_categories_page'] < 4)
+            || $_POST['nb_categories_page'] < 4)
       {
         $page['errors'][] = l10n('The number of albums a page must be above 4.');
       }
@@ -277,7 +277,7 @@ if (isset($_POST['submit']))
   }
 
   // updating configuration if no error found
-  if (!in_array($page['section'], array('sizes', 'watermark')) and count($page['errors']) == 0 and is_webmaster())
+  if (!in_array($page['section'], array('sizes', 'watermark')) && count($page['errors']) == 0 && is_webmaster())
   {
     //echo '<pre>'; print_r($_POST); echo '</pre>';
     $result = pwg_query('SELECT param FROM '.CONFIG_TABLE);
@@ -312,7 +312,7 @@ WHERE param = \''.$row['param'].'\'
 }
 
 // restore default derivatives settings
-if ('sizes' == $page['section'] and isset($_GET['action']) and 'restore_settings' == $_GET['action'])
+if ('sizes' == $page['section'] && isset($_GET['action']) && 'restore_settings' == $_GET['action'])
 {
   ImageStdParams::set_and_save( ImageStdParams::get_default_sizes() );
   pwg_query('DELETE FROM '.CONFIG_TABLE.' WHERE param = \'disabled_derivatives\'');
@@ -359,7 +359,7 @@ switch ($page['section'])
         include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR. 'config/config.inc.php');
       }
 
-      return isset($conf['order_by']) or isset($conf['order_by_inside_category']);
+      return isset($conf['order_by']) || isset($conf['order_by_inside_category']);
     }
 
     if (order_by_is_local())
@@ -367,7 +367,7 @@ switch ($page['section'])
       $page['warnings'][] = l10n('You have specified <i>$conf[\'order_by\']</i> in your local configuration file, this parameter in deprecated, please remove it or rename it into <i>$conf[\'order_by_custom\']</i> !');
     }
 
-    if ( isset($conf['order_by_custom']) or isset($conf['order_by_inside_category_custom']) )
+    if ( isset($conf['order_by_custom']) || isset($conf['order_by_inside_category_custom']) )
     {
       $order_by = array('');
       $template->assign('ORDER_BY_IS_CUSTOM', true);
@@ -602,23 +602,23 @@ switch ($page['section'])
       $wm = ImageStdParams::get_watermark();
 
       $position = 'custom';
-      if ($wm->xpos == 0 and $wm->ypos == 0)
+      if ($wm->xpos == 0 && $wm->ypos == 0)
       {
         $position = 'topleft';
       }
-      if ($wm->xpos == 100 and $wm->ypos == 0)
+      if ($wm->xpos == 100 && $wm->ypos == 0)
       {
         $position = 'topright';
       }
-      if ($wm->xpos == 50 and $wm->ypos == 50)
+      if ($wm->xpos == 50 && $wm->ypos == 50)
       {
         $position = 'middle';
       }
-      if ($wm->xpos == 0 and $wm->ypos == 100)
+      if ($wm->xpos == 0 && $wm->ypos == 100)
       {
         $position = 'bottomleft';
       }
-      if ($wm->xpos == 100 and $wm->ypos == 100)
+      if ($wm->xpos == 100 && $wm->ypos == 100)
       {
         $position = 'bottomright';
       }

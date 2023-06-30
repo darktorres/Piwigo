@@ -74,7 +74,7 @@ while ($row = pwg_db_fetch_assoc($result))
   { // searching a random representant among elements in sub-categories
     $image_id = get_random_image_in_category($row);
   }
-  elseif ($row['count_categories']>0 and $row['count_images']>0)
+  elseif ($row['count_categories']>0 && $row['count_images']>0)
   { // searching a random representant among representant of sub-categories
     $query = '
 SELECT representative_picture_id
@@ -103,7 +103,7 @@ SELECT representative_picture_id
 
   if (isset($image_id))
   {
-    if ($conf['representative_cache_on_subcats'] and $row['user_representative_picture_id'] != $image_id)
+    if ($conf['representative_cache_on_subcats'] && $row['user_representative_picture_id'] != $image_id)
     {
       $user_representative_updates_for[ $row['id'] ] = $image_id;
     }
@@ -182,7 +182,7 @@ SELECT *
           // searching a random representant among elements in sub-categories
           $image_id = get_random_image_in_category($category);
 
-          if (isset($image_id) and !in_array($image_id, $image_ids))
+          if (isset($image_id) && !in_array($image_id, $image_ids))
           {
             $new_image_ids[] = $image_id;
           }

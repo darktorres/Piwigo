@@ -99,7 +99,7 @@ SELECT id, path, representative_ext, width, height, rotation
         }
       }
 
-      if (count($urls)>=$max_urls and !$is_last)
+      if (count($urls)>=$max_urls && !$is_last)
       {
         break;
       }
@@ -108,7 +108,7 @@ SELECT id, path, representative_ext, width, height, rotation
     {
       $start_id = 0;
     }
-  } while (count($urls)<$max_urls and $start_id);
+  } while (count($urls)<$max_urls && $start_id);
 
   $ret = array();
   if ($start_id)
@@ -220,8 +220,8 @@ function ws_getCacheSize(array $params, &$service): array
     exec('du -sk '.$path_cache, $return_array_cache);
     if (
       is_array($return_array_cache)
-      and !empty($return_array_cache[0])
-      and preg_match('/^(\d+)\s/', $return_array_cache[0], $matches_cache)
+      && !empty($return_array_cache[0])
+      && preg_match('/^(\d+)\s/', $return_array_cache[0], $matches_cache)
     )
     {
       $infos['cache_size'] = $matches_cache[1] * 1024;
@@ -252,8 +252,8 @@ function ws_getCacheSize(array $params, &$service): array
     exec('du -sk '.$path_template_c, $return_array_template_c);
     if (
       is_array($return_array_template_c)
-      and !empty($return_array_template_c[0])
-      and preg_match('/^(\d+)\s/', $return_array_template_c[0], $matches_template_c)
+      && !empty($return_array_template_c[0])
+      && preg_match('/^(\d+)\s/', $return_array_template_c[0], $matches_template_c)
     )
     {
       $infos['tsizes'] = $matches_template_c[1] * 1024;
@@ -410,7 +410,7 @@ function ws_session_getStatus(array $params, &$service): array
 
   // Piwigo Remote Sync does not support receiving the available sizes
   $piwigo_remote_sync_agent = 'Apache-HttpClient/';
-  if (!isset($_SERVER['HTTP_USER_AGENT']) or !str_starts_with($_SERVER['HTTP_USER_AGENT'], $piwigo_remote_sync_agent))
+  if (!isset($_SERVER['HTTP_USER_AGENT']) || !str_starts_with($_SERVER['HTTP_USER_AGENT'], $piwigo_remote_sync_agent))
   {
     $res['available_sizes'] = array_keys(ImageStdParams::get_defined_type_map());
   }
@@ -615,7 +615,7 @@ function ws_history_log($params, &$service): void
 {
   global $logger, $page;
 
-  if (!empty($params['section']) and in_array($params['section'], get_enums(HISTORY_TABLE, 'section')))
+  if (!empty($params['section']) && in_array($params['section'], get_enums(HISTORY_TABLE, 'section')))
   {
     $page['section'] = $params['section'];
   }
@@ -625,7 +625,7 @@ function ws_history_log($params, &$service): void
     $page['category'] = array('id' => $params['cat_id']);
   }
 
-  if (!empty($params['tags_string']) and preg_match('/^\d+(,\d+)*$/', $params['tags_string']))
+  if (!empty($params['tags_string']) && preg_match('/^\d+(,\d+)*$/', $params['tags_string']))
   {
     $page['tag_ids'] = explode(',', $params['tags_string']);
   }
@@ -645,7 +645,7 @@ function ws_history_search($param, &$service): array
 
   global $conf;
 
-  if (isset($_GET['start']) and is_numeric($_GET['start']))
+  if (isset($_GET['start']) && is_numeric($_GET['start']))
   {
     $page['start'] = $_GET['start'];
   }
@@ -728,7 +728,7 @@ function ws_history_search($param, &$service): array
   $search['fields']['display_thumbnail'] = $param['display_thumbnail'];
   // Display choise are also save to one cookie
   if (!empty($param['display_thumbnail'])
-      and isset($display_thumbnails[$param['display_thumbnail']]))
+      && isset($display_thumbnails[$param['display_thumbnail']]))
   {
     $cookie_val = $param['display_thumbnail'];
   }
@@ -905,7 +905,7 @@ SELECT
 
   foreach ($history_lines as $line)
   {
-    if (isset($line['image_type']) and $line['image_type'] == 'high')
+    if (isset($line['image_type']) && $line['image_type'] == 'high')
     {
       $summary['total_filesize'] += intval($image_infos[$line['image_id']]['filesize']);
     }
@@ -922,7 +922,7 @@ SELECT
 
     $i++;
 
-    if ($i <= $first_line and $i >= $last_line)
+    if ($i <= $first_line && $i >= $last_line)
     {
       continue;
     }

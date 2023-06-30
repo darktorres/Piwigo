@@ -69,7 +69,7 @@ SELECT permalink
   if ($save)
   {
     $old_cat_id = get_cat_id_from_old_permalink($permalink);
-    if ( isset($old_cat_id) and $old_cat_id!=$cat_id )
+    if ( isset($old_cat_id) && $old_cat_id!=$cat_id )
     {
       $page['errors'][] = 
         sprintf( 
@@ -124,7 +124,7 @@ function set_cat_permalink(int $cat_id, string $permalink, bool $save )
   $sanitized_permalink = trim($sanitized_permalink, '/');
   $sanitized_permalink = str_replace('//', '/', $sanitized_permalink);
   if ( $sanitized_permalink != $permalink 
-      or preg_match( '#^(\d)+(-.*)?$#', $permalink) )
+      || preg_match( '#^(\d)+(-.*)?$#', $permalink) )
   {
     $page['errors'][] = '{'.$permalink.'} '.l10n('The permalink name must be composed of a-z, A-Z, 0-9, "-", "_" or "/". It must not be numeric or start with number followed by "-"');
     return false;
@@ -151,7 +151,7 @@ function set_cat_permalink(int $cat_id, string $permalink, bool $save )
 
   // check if the new permalink was historically used
   $old_cat_id = get_cat_id_from_old_permalink($permalink);
-  if ( isset($old_cat_id) and $old_cat_id!=$cat_id )
+  if ( isset($old_cat_id) && $old_cat_id!=$cat_id )
   {
     $page['errors'][] = 
       sprintf( 

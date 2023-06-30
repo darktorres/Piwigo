@@ -131,10 +131,10 @@ UPDATE '.USER_FEED_TABLE.'
   }
 }
 
-if ( !empty($feed_id) and empty($news) )
+if ( !empty($feed_id) && empty($news) )
 {// update the last check from time to time to avoid deletion by maintenance tasks
   if ( !isset($feed_row['last_check'])
-    or time()-datetime_to_ts($feed_row['last_check']) > 30*24*3600 )
+    || time()-datetime_to_ts($feed_row['last_check']) > 30*24*3600 )
   {
     $query = '
 UPDATE '.USER_FEED_TABLE.'

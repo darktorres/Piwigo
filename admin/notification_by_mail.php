@@ -202,7 +202,7 @@ function render_global_customize_mail_content($customize_mail_content): mixed
 {
   global $conf;
 
-  if ($conf['nbm_send_html_mail'] and !(str_starts_with($customize_mail_content, '<')))
+  if ($conf['nbm_send_html_mail'] && !(str_starts_with($customize_mail_content, '<')))
   {
     // On HTML mail, detects if the content are HTML format.
     // If it's plain text format, convert content to readable HTML
@@ -243,10 +243,10 @@ function do_action_send_mail_notification(string $action = 'list_to_send', array
     $data_users = get_user_notifications('send', $check_key_list);
 
     // List all if it's define on options or on timeout
-    $is_list_all_without_test = ($env_nbm['is_sendmail_timeout'] or $conf['nbm_list_all_enabled_users_to_send']);
+    $is_list_all_without_test = ($env_nbm['is_sendmail_timeout'] || $conf['nbm_list_all_enabled_users_to_send']);
 
     // Check if exist news to list user or send mails
-    if ((!$is_list_all_without_test) or ($is_action_send))
+    if ((!$is_list_all_without_test) || ($is_action_send))
     {
       if (count($data_users) > 0)
       {
@@ -276,13 +276,13 @@ function do_action_send_mail_notification(string $action = 'list_to_send', array
 
         foreach ($data_users as $nbm_user)
         {
-          if ((!$is_action_send) and check_sendmail_timeout())
+          if ((!$is_action_send) && check_sendmail_timeout())
           {
             // Stop fill list on 'list_to_send', if the quota is override
             $page['infos'][] = $msg_break_timeout;
             break;
           }
-          if (($is_action_send) and check_sendmail_timeout())
+          if (($is_action_send) && check_sendmail_timeout())
           {
             // Stop fill list on 'send', if the quota is override
             $page['errors'][] = $msg_break_timeout;
@@ -366,7 +366,7 @@ function do_action_send_mail_notification(string $action = 'list_to_send', array
                 );
               }
 
-              if ($conf['nbm_send_html_mail'] and $conf['nbm_send_recent_post_dates'])
+              if ($conf['nbm_send_html_mail'] && $conf['nbm_send_recent_post_dates'])
               {
                 $recent_post_dates = get_recent_post_dates_array(
                   $conf['recent_post_dates']['NBM']);
@@ -505,7 +505,7 @@ trigger_notify('nbm_event_handler_added');
 // +-----------------------------------------------------------------------+
 // | Insert new users with mails                                           |
 // +-----------------------------------------------------------------------+
-if (!isset($_POST) or (count($_POST) ==0))
+if (!isset($_POST) || (count($_POST) ==0))
 {
   // No insert data in post mode
   insert_new_data_user_mail_notification();
@@ -552,13 +552,13 @@ switch ($page['mode'])
   }
   case 'subscribe' :
   {
-    if (isset($_POST['falsify']) and isset($_POST['cat_true']))
+    if (isset($_POST['falsify']) && isset($_POST['cat_true']))
     {
       $check_key_treated = unsubscribe_notification_by_mail(true, $_POST['cat_true']);
       do_timeout_treatment('cat_true', $check_key_treated);
     }
     else
-    if (isset($_POST['trueify']) and isset($_POST['cat_false']))
+    if (isset($_POST['trueify']) && isset($_POST['cat_false']))
     {
       $check_key_treated = subscribe_notification_by_mail(true, $_POST['cat_false']);
       do_timeout_treatment('cat_false', $check_key_treated);
@@ -568,7 +568,7 @@ switch ($page['mode'])
 
   case 'send' :
   {
-    if (isset($_POST['send_submit']) and isset($_POST['send_selection']) and isset($_POST['send_customize_mail_content']))
+    if (isset($_POST['send_submit']) && isset($_POST['send_selection']) && isset($_POST['send_customize_mail_content']))
     {
       $check_key_treated = do_action_send_mail_notification('send', $_POST['send_selection'], stripslashes($_POST['send_customize_mail_content']));
       do_timeout_treatment('send_selection', $check_key_treated);
@@ -665,7 +665,7 @@ switch ($page['mode'])
       if (get_boolean($nbm_user['enabled']))
       {
         $opt_true[ $nbm_user['check_key'] ] = stripslashes($nbm_user['username']).'['.$nbm_user['mail_address'].']';
-        if ((isset($_POST['falsify']) and isset($_POST['cat_true']) and in_array($nbm_user['check_key'], $_POST['cat_true'])))
+        if ((isset($_POST['falsify']) && isset($_POST['cat_true']) && in_array($nbm_user['check_key'], $_POST['cat_true'])))
         {
           $opt_true_selected[] = $nbm_user['check_key'];
         }
@@ -673,7 +673,7 @@ switch ($page['mode'])
       else
       {
         $opt_false[ $nbm_user['check_key'] ] = stripslashes($nbm_user['username']).'['.$nbm_user['mail_address'].']';
-        if (isset($_POST['trueify']) and isset($_POST['cat_false']) and in_array($nbm_user['check_key'], $_POST['cat_false']))
+        if (isset($_POST['trueify']) && isset($_POST['cat_false']) && in_array($nbm_user['check_key'], $_POST['cat_false']))
         {
           $opt_false_selected[] = $nbm_user['check_key'];
         }
@@ -706,15 +706,15 @@ switch ($page['mode'])
       foreach ($data_users as $nbm_user)
       {
         if (
-            (!$must_repost) or // Not timeout, normal treatment
-            (($must_repost) and in_array($nbm_user['check_key'], $_POST['send_selection']))  // Must be repost, show only user to send
+            (!$must_repost) || // Not timeout, normal treatment
+            (($must_repost) && in_array($nbm_user['check_key'], $_POST['send_selection']))  // Must be repost, show only user to send
             )
         {
           $tpl_var['users'][] = 
             array(
               'ID' => $nbm_user['check_key'],
               'CHECKED' =>  ( // not check if not selected,  on init select<all
-                              isset($_POST['send_selection']) and // not init
+                              isset($_POST['send_selection']) && // not init
                               !in_array($nbm_user['check_key'], $_POST['send_selection']) // not selected
                             )   ? '' : 'checked="checked"',
               'USERNAME'=> stripslashes($nbm_user['username']),

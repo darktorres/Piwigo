@@ -36,7 +36,7 @@ if (!is_writable($themes_dir))
 // |                       perform installation                            |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['revision']) and isset($_GET['extension']))
+if (isset($_GET['revision']) && isset($_GET['extension']))
 {
   if (!is_webmaster())
   {

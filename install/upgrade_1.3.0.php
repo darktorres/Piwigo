@@ -17,7 +17,7 @@ if (!defined('PHPWG_ROOT_PATH'))
 }
 else
 {
-  if (!defined('PHPWG_IN_UPGRADE') or !PHPWG_IN_UPGRADE)
+  if (!defined('PHPWG_IN_UPGRADE') || !PHPWG_IN_UPGRADE)
   {
     die ('Hacking attempt!');
   }
@@ -71,7 +71,7 @@ SELECT id, id_uppercat
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result))
 {
-  if (!isset($row['id_uppercat']) or $row['id_uppercat'] == '')
+  if (!isset($row['id_uppercat']) || $row['id_uppercat'] == '')
   {
     $row['id_uppercat'] = 'NULL';
   }
@@ -87,7 +87,7 @@ foreach (array_keys($id_uppercats) as $id)
   $uppercats = array();
   
   $uppercats[] = $id;
-  while (isset($id_uppercats[$id]) and $id_uppercats[$id] != 'NULL')
+  while (isset($id_uppercats[$id]) && $id_uppercats[$id] != 'NULL')
   {
     $uppercats[] = $id_uppercats[$id];
     $id = $id_uppercats[$id];

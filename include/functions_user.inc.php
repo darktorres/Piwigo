@@ -34,7 +34,7 @@ function validate_mail_address(int|null $user_id, string $mail_address)
     return l10n('mail address must be like xxx@yyy.eee (example : jack@altern.org)');
   }
 
-  if (defined("PHPWG_INSTALLED") and !empty($mail_address))
+  if (defined("PHPWG_INSTALLED") && !empty($mail_address))
   {
     $query = '
 SELECT count(*)
@@ -208,14 +208,14 @@ SELECT id
     }
 
     $override = array();
-    if ($conf['browser_language'] and $language = get_browser_language())
+    if ($conf['browser_language'] && $language = get_browser_language())
     {
       $override['language'] = $language;
     }
     
     create_user_infos($user_id, $override);
 
-    if ($notify_admin and 'none' != $conf['email_admin_on_new_user'])
+    if ($notify_admin && 'none' != $conf['email_admin_on_new_user'])
     {
       include_once(PHPWG_ROOT_PATH.'include/functions_mail.inc.php');
       $admin_url = get_absolute_root_url().'admin.php?page=user_list&username='.$login;
@@ -241,7 +241,7 @@ SELECT id
         );
     }
 
-    if ($notify_user and email_check_format($mail_address))
+    if ($notify_user && email_check_format($mail_address))
     {
       include_once(PHPWG_ROOT_PATH.'include/functions_mail.inc.php');
 
@@ -303,7 +303,7 @@ function build_user(int $user_id, bool $use_cache=true): array
   $user['id'] = $user_id;
   $user = array_merge( $user, getuserdata($user_id, $use_cache) );
 
-  if ($user['id'] == $conf['guest_id'] and $user['status'] <> 'guest')
+  if ($user['id'] == $conf['guest_id'] && $user['status'] <> 'guest')
   {
     $user['status'] = 'guest';
     $user['internal_status']['guest_must_be_guest'] = true;
@@ -312,7 +312,7 @@ function build_user(int $user_id, bool $use_cache=true): array
   // Check user theme. 2 possible problems:
   // 1. the user_infos.theme was not found in the themes table, thus themes.name is null
   // 2. the theme is not really installed on the filesystem
-  if (!isset($user['theme_name']) or !check_theme_installed($user['theme']))
+  if (!isset($user['theme_name']) || !check_theme_installed($user['theme']))
   {
     $user['theme'] = get_default_theme();
     $user['theme_name'] = $user['theme'];
@@ -411,8 +411,8 @@ SELECT
   if ($use_cache)
   {
     if (!isset($userdata['need_update'])
-        or !is_bool($userdata['need_update'])
-        or $userdata['need_update'])
+        || !is_bool($userdata['need_update'])
+        || $userdata['need_update'])
     {
       $userdata['cache_update_time'] = time();
 
@@ -734,7 +734,7 @@ SELECT *
     }
   }
 
-  if (is_array($cache['default_user']) and $convert_str)
+  if (is_array($cache['default_user']) && $convert_str)
   {
     $default_user = $cache['default_user'];
     foreach ($default_user as &$value)
@@ -767,7 +767,7 @@ SELECT *
 function get_default_user_value(string $value_name, mixed $default): mixed
 {
   $default_user = get_default_user_info();
-  if ($default_user === false or empty($default_user[$value_name]))
+  if ($default_user === false || empty($default_user[$value_name]))
   {
     return $default;
   }
@@ -984,7 +984,7 @@ function log_user(int $user_id, bool $remember_me): void
 {
   global $conf, $user;
 
-  if ($remember_me and $conf['authorize_remembering'])
+  if ($remember_me && $conf['authorize_remembering'])
   {
     $now = time();
     $key = calculate_auto_login_key($user_id, $now, $username);
@@ -1035,13 +1035,13 @@ function auto_login(): bool
   {
     $cookie = explode('-', stripslashes($_COOKIE[$conf['remember_me_name']]));
     if ( count($cookie)===3
-        and is_numeric($cookie[0]) /*user id*/
-        and is_numeric($cookie[1]) /*time*/
-        and time()-$conf['remember_me_length']<=$cookie[1]
-        and time()>=$cookie[1] /*cookie generated in the past*/ )
+        && is_numeric($cookie[0]) /*user id*/
+        && is_numeric($cookie[1]) /*time*/
+        && time()-$conf['remember_me_length']<=$cookie[1]
+        && time()>=$cookie[1] /*cookie generated in the past*/ )
     {
       $key = calculate_auto_login_key( $cookie[0], $cookie[1], $username );
-      if ($key!==false and $key===$cookie[2])
+      if ($key!==false && $key===$cookie[2])
       {
         log_user($cookie[0], true);
         trigger_notify('login_success', stripslashes($username));
@@ -1126,7 +1126,7 @@ SELECT '.$conf['user_fields']['id'].' AS id,
 ;';
 
   $row = pwg_db_fetch_assoc(pwg_query($query));
-  if (isset($row['id']) and $conf['password_verify']($password, $row['password'], $row['id']))
+  if (isset($row['id']) && $conf['password_verify']($password, $row['password'], $row['id']))
   {
     $user_found = true;
   }
@@ -1142,7 +1142,7 @@ SELECT '.$conf['user_fields']['id'].' AS id,
     ;';
 
     $row = pwg_db_fetch_assoc(pwg_query($query));
-    if (isset($row['id']) and $conf['password_verify']($password, $row['password'], $row['id']))
+    if (isset($row['id']) && $conf['password_verify']($password, $row['password'], $row['id']))
     {
       $user_found = true;
     }
@@ -1369,14 +1369,14 @@ function can_manage_comment(string $action, int $comment_author_id): bool
     return true;
   }
 
-  if ('edit' == $action and $conf['user_can_edit_comment'])
+  if ('edit' == $action && $conf['user_can_edit_comment'])
   {
     if ($comment_author_id == $user['id']) {
       return true;
     }
   }
 
-  if ('delete' == $action and $conf['user_can_delete_comment'])
+  if ('delete' == $action && $conf['user_can_delete_comment'])
   {
     if ($comment_author_id == $user['id']) {
       return true;
@@ -1441,7 +1441,7 @@ function get_sql_condition_FandF(
       case 'forbidden_images':
         if (
             !empty($user['image_access_list'])
-            or $user['image_access_type']!='NOT IN'
+            || $user['image_access_type']!='NOT IN'
             )
         {
           $table_prefix=null;
@@ -1457,7 +1457,7 @@ function get_sql_condition_FandF(
           {
             $sql_list[]=$table_prefix.'level<='.$user['level'];
           }
-          elseif ( !empty($user['image_access_list']) and !empty($user['image_access_type']) )
+          elseif ( !empty($user['image_access_list']) && !empty($user['image_access_type']) )
           {
             $sql_list[]=$field_name.' '.$user['image_access_type']
                 .' ('.$user['image_access_list'].')';
@@ -1480,7 +1480,7 @@ function get_sql_condition_FandF(
     $sql = $force_one_condition ? '1 = 1' : '';
   }
 
-  if (isset($prefix_condition) and !empty($sql))
+  if (isset($prefix_condition) && !empty($sql))
   {
     $sql = $prefix_condition.' '.$sql;
   }

@@ -108,7 +108,7 @@ if (isset($_POST['submit']))
   }
 
   // shall we simulate only
-  if (isset($_POST['simulate']) and $_POST['simulate'] == 1)
+  if (isset($_POST['simulate']) && $_POST['simulate'] == 1)
   {
     $simulate = true;
   }
@@ -122,7 +122,7 @@ if (isset($_POST['submit']))
 // |                      directories / categories                         |
 // +-----------------------------------------------------------------------+
 if (isset($_POST['submit'])
-    and ($_POST['sync'] == 'dirs' or $_POST['sync'] == 'files'))
+    && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'files'))
 {
   $counts['new_categories'] = 0;
   $counts['del_categories'] = 0;
@@ -133,8 +133,8 @@ if (isset($_POST['submit'])
 
 
 if (isset($_POST['submit'])
-    and ($_POST['sync'] == 'dirs' or $_POST['sync'] == 'files')
-    and !$general_failure)
+    && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'files')
+    && !$general_failure)
 {
   $start = get_moment();
   // which categories to update ?
@@ -143,9 +143,9 @@ SELECT id, uppercats, global_rank, status, visible
   FROM '.CATEGORIES_TABLE.'
   WHERE dir IS NOT NULL
     AND site_id = '.$site_id;
-  if (isset($_POST['cat']) and is_numeric($_POST['cat']))
+  if (isset($_POST['cat']) && is_numeric($_POST['cat']))
   {
-    if (isset($_POST['subcats-included']) and $_POST['subcats-included'] == 1)
+    if (isset($_POST['subcats-included']) && $_POST['subcats-included'] == 1)
     {
       $query.= '
     AND uppercats '.DB_REGEX_OPERATOR.' \'(^|,)'.$_POST['cat'].'(,|$)\'
@@ -165,7 +165,7 @@ SELECT id, uppercats, global_rank, status, visible
   $db_fulldirs = get_fulldirs(array_keys($db_categories));
 
   // what is the base directory to search file system sub-directories ?
-  if (isset($_POST['cat']) and is_numeric($_POST['cat']))
+  if (isset($_POST['cat']) && is_numeric($_POST['cat']))
   {
     $basedir = $db_fulldirs[$_POST['cat']];
   }
@@ -199,7 +199,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
   while ($row = pwg_db_fetch_assoc($result))
   {
     // for the id_uppercat NULL, we write 'NULL' and not the empty string
-    if (!isset($row['id_uppercat']) or $row['id_uppercat'] == '')
+    if (!isset($row['id_uppercat']) || $row['id_uppercat'] == '')
     {
       $row['id_uppercat'] = 'NULL';
     }
@@ -222,7 +222,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
   // $db_fulldirs doesn't include any subdirectories and $fs_fulldirs does
   // So $fs_fulldirs will be limited to the selected basedir
   // (if that one is in $fs_fulldirs)
-  if (!isset($_POST['subcats-included']) or $_POST['subcats-included'] != 1)
+  if (!isset($_POST['subcats-included']) || $_POST['subcats-included'] != 1)
   {
     $fs_fulldirs = array_intersect($fs_fulldirs, array_keys($db_fulldirs));
   }
@@ -308,7 +308,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
       pwg_activity('album', $category_ids, 'add', array('sync'=>true));
 
       $category_up=implode(',',array_unique($category_up));
-      if ($conf['inheritance_by_default'] and !empty($category_up))
+      if ($conf['inheritance_by_default'] && !empty($category_up))
       {
         $query = '
           SELECT *
@@ -361,7 +361,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
           {
             $parent_id= $db_categories[$parent_id]['parent'];
           }
-          if ($db_categories[$ids]['status']=='private' and !is_null($parent_id))
+          if ($db_categories[$ids]['status']=='private' && !is_null($parent_id))
           {
             if (isset($granted_grps[$parent_id]))
             {
@@ -442,8 +442,8 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
 // +-----------------------------------------------------------------------+
 // |                           files / elements                            |
 // +-----------------------------------------------------------------------+
-if (isset($_POST['submit']) and $_POST['sync'] == 'files'
-      and !$general_failure)
+if (isset($_POST['submit']) && $_POST['sync'] == 'files'
+      && !$general_failure)
 {
   $start_files = get_moment();
   $start= $start_files;
@@ -643,7 +643,7 @@ SELECT *
       pwg_activity('photo', $caddiables, 'add', array('sync'=>true));
 
       // add new photos to caddie
-      if (isset($_POST['add_to_caddie']) and $_POST['add_to_caddie'] == 1)
+      if (isset($_POST['add_to_caddie']) && $_POST['add_to_caddie'] == 1)
       {
         fill_caddie($caddiables);
       }
@@ -700,8 +700,8 @@ DELETE
 // |                          synchronize files                            |
 // +-----------------------------------------------------------------------+
 if (isset($_POST['submit'])
-    and ($_POST['sync'] == 'dirs' or $_POST['sync'] == 'files')
-    and !$general_failure )
+    && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'files')
+    && !$general_failure )
 {
   if (!$simulate)
   {
@@ -725,7 +725,7 @@ if (isset($_POST['submit'])
     if (isset($_POST['cat']))
     {
       $opts['category_id'] = $_POST['cat'];
-      if (!isset($_POST['subcats-included']) or $_POST['subcats-included'] != 1)
+      if (!isset($_POST['subcats-included']) || $_POST['subcats-included'] != 1)
       {
         $opts['recursive'] = false;
       }
@@ -752,7 +752,7 @@ if (isset($_POST['submit'])
     } // end foreach file
 
     $counts['upd_elements'] = count($datas);
-    if (!$simulate and count($datas)>0 )
+    if (!$simulate && count($datas)>0 )
     {
       mass_updates(
         IMAGES_TABLE,
@@ -774,7 +774,7 @@ if (isset($_POST['submit'])
 // |                          synchronize files                            |
 // +-----------------------------------------------------------------------+
 if (isset($_POST['submit'])
-    and ($_POST['sync'] == 'dirs' or $_POST['sync'] == 'files'))
+    && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'files'))
 {
   $template->assign(
     'update_result',
@@ -791,8 +791,8 @@ if (isset($_POST['submit'])
 // +-----------------------------------------------------------------------+
 // |                          synchronize metadata                         |
 // +-----------------------------------------------------------------------+
-if (isset($_POST['submit']) and isset($_POST['sync_meta'])
-         and !$general_failure)
+if (isset($_POST['submit']) && isset($_POST['sync_meta'])
+         && !$general_failure)
 {
   // sync only never synchronized files ?
   $opts['only_new'] = !isset($_POST['meta_all']);
@@ -803,7 +803,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
   {
     $opts['category_id'] = $_POST['cat'];
     // recursive ?
-    if (!isset($_POST['subcats-included']) or $_POST['subcats-included'] != 1)
+    if (!isset($_POST['subcats-included']) || $_POST['subcats-included'] != 1)
     {
       $opts['recursive'] = false;
     }
@@ -900,7 +900,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
 // +-----------------------------------------------------------------------+
 $template->set_filenames(array('update'=>'site_update.tpl'));
 $result_title = '';
-if (isset($simulate) and $simulate)
+if (isset($simulate) && $simulate)
 {
   $result_title.= '['.l10n('Simulation').'] ';
 }
@@ -908,7 +908,7 @@ if (isset($simulate) and $simulate)
 // used_metadata string is displayed to inform admin which metadata will be
 // used from files for synchronization
 $used_metadata = implode( ', ', $site_reader->get_metadata_attributes());
-if ($site_is_remote and !isset($_POST['submit']) )
+if ($site_is_remote && !isset($_POST['submit']) )
 {
   $used_metadata.= ' + ...';
 }
@@ -932,15 +932,15 @@ if (isset($_POST['submit']))
   $tpl_introduction = array(
       'sync'  => $_POST['sync'],
       'sync_meta'  => isset($_POST['sync_meta']),
-      'display_info' => isset($_POST['display_info']) and $_POST['display_info']==1,
-      'add_to_caddie' => isset($_POST['add_to_caddie']) and $_POST['add_to_caddie']==1,
-      'subcats_included' => isset($_POST['subcats-included']) and $_POST['subcats-included']==1,
+      'display_info' => isset($_POST['display_info']) && $_POST['display_info']==1,
+      'add_to_caddie' => isset($_POST['add_to_caddie']) && $_POST['add_to_caddie']==1,
+      'subcats_included' => isset($_POST['subcats-included']) && $_POST['subcats-included']==1,
       'privacy_level_selected' => (int)$_POST['privacy_level'],
       'meta_all'  => isset($_POST['meta_all']),
       'meta_empty_overrides'  => isset($_POST['meta_empty_overrides']),
     );
 
-  if (isset($_POST['cat']) and is_numeric($_POST['cat']))
+  if (isset($_POST['cat']) && is_numeric($_POST['cat']))
   {
     $cat_selected = array($_POST['cat']);
   }
@@ -1011,8 +1011,8 @@ if (count($errors) > 0)
 }
 
 if (count($infos) > 0
-    and isset($_POST['display_info'])
-    and $_POST['display_info'] == 1)
+    && isset($_POST['display_info'])
+    && $_POST['display_info'] == 1)
 {
   foreach ($infos as $info)
   {

@@ -181,7 +181,7 @@ class BlockManager
 
     foreach ($this->display_blocks as $id=>$block)
     {
-      if (empty($block->raw_content) and empty($block->template))
+      if (empty($block->raw_content) && empty($block->template))
       {
         $this->hide_block($id);
       }

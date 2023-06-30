@@ -49,7 +49,7 @@ if (!in_array($conf['comments_page_nb_comments'], $items_number))
 
   foreach ($items_number as $number)
   {
-    if ($number > $conf['comments_page_nb_comments'] or ($number == 'all' and !$is_inserted))
+    if ($number > $conf['comments_page_nb_comments'] || ($number == 'all' && !$is_inserted))
     {
       $items_number_new[] = $conf['comments_page_nb_comments'];
       $is_inserted = true;
@@ -89,7 +89,7 @@ else
 //
 $page['sort_by'] = 'date';
 // if the form was submitted, it overloads default behaviour
-if (isset($_GET['sort_by']) and isset($sort_by[$_GET['sort_by']]) )
+if (isset($_GET['sort_by']) && isset($sort_by[$_GET['sort_by']]) )
 {
   $page['sort_by'] = $_GET['sort_by'];
 }
@@ -98,7 +98,7 @@ if (isset($_GET['sort_by']) and isset($sort_by[$_GET['sort_by']]) )
 //
 $page['sort_order'] = 'DESC';
 // if the form was submitted, it overloads default behaviour
-if (isset($_GET['sort_order']) and isset($sort_order[$_GET['sort_order']]))
+if (isset($_GET['sort_order']) && isset($sort_order[$_GET['sort_order']]))
 {
   $page['sort_order'] = $_GET['sort_order'];
 }
@@ -110,7 +110,7 @@ if (isset($_GET['items_number']))
 {
   $page['items_number'] = $_GET['items_number'];
 }
-if ( !is_numeric($page['items_number']) and $page['items_number']!='all' )
+if ( !is_numeric($page['items_number']) && $page['items_number']!='all' )
 {
   $page['items_number'] = 10;
 }
@@ -118,7 +118,7 @@ if ( !is_numeric($page['items_number']) and $page['items_number']!='all' )
 $page['where_clauses'] = array();
 
 // which category to filter on ?
-if (isset($_GET['cat']) and 0 != $_GET['cat'])
+if (isset($_GET['cat']) && 0 != $_GET['cat'])
 {
   check_input_parameter('cat', $_GET, false, PATTERN_ID);
 
@@ -496,7 +496,7 @@ SELECT *
           )
         );
 
-      if (isset($edit_comment) and ($comment['comment_id'] == $edit_comment))
+      if (isset($edit_comment) && ($comment['comment_id'] == $edit_comment))
       {
         $tpl_comment['IN_EDIT'] = true;
         $key = get_ephemeral_key(2, $comment['image_id']);

@@ -185,19 +185,19 @@ class Template
     else
       $this->set_template_dir($root);
 
-    if (isset($lang_info['code']) and !isset($lang_info['jquery_code']))
+    if (isset($lang_info['code']) && !isset($lang_info['jquery_code']))
     {
       $lang_info['jquery_code'] = $lang_info['code'];
     }
 
-    if (isset($lang_info['jquery_code']) and !isset($lang_info['plupload_code']))
+    if (isset($lang_info['jquery_code']) && !isset($lang_info['plupload_code']))
     {
       $lang_info['plupload_code'] = str_replace('-', '_', $lang_info['jquery_code']);
     }
     
     $this->smarty->assign('lang_info', $lang_info);
 
-    if (!defined('IN_ADMIN') and isset($conf['extents_for_templates']))
+    if (!defined('IN_ADMIN') && isset($conf['extents_for_templates']))
     {
       $tpl_extents = $conf['extents_for_templates'];
       $this->set_extents($tpl_extents, './template-extension/', true, $theme);
@@ -220,7 +220,7 @@ class Template
 
     $themeconf = $this->load_themeconf($root.'/'.$theme);
 
-    if (isset($themeconf['parent']) and $themeconf['parent'] != $theme)
+    if (isset($themeconf['parent']) && $themeconf['parent'] != $theme)
     {
       $this->set_theme(
         $root,
@@ -235,7 +235,7 @@ class Template
       'id' => $theme,
       'load_css' => $load_css,
     );
-    if (!empty($themeconf['local_head']) and $load_local_head)
+    if (!empty($themeconf['local_head']) && $load_local_head)
     {
       $tpl_var['local_head'] = realpath($root.'/'.$theme.'/'.$themeconf['local_head'] );
     }
@@ -390,10 +390,10 @@ class Template
         return false;
       }
 
-      if ((stripos(implode('',array_keys($_GET)), '/'.$param) !== false or $param == 'N/A')
-        and ($thm == $theme or $thm == 'N/A')
-        and (!isset($this->extents[$handle]) or $overwrite)
-        and file_exists($dir . $filename))
+      if ((stripos(implode('',array_keys($_GET)), '/'.$param) !== false || $param == 'N/A')
+        && ($thm == $theme || $thm == 'N/A')
+        && (!isset($this->extents[$handle]) || $overwrite)
+        && file_exists($dir . $filename))
       {
         $this->extents[$handle] = realpath($dir . $filename);
       }
@@ -515,7 +515,7 @@ class Template
     $this->load_external_filters($handle);
 
     global $conf, $lang_info;
-    if ( $conf['compiled_template_cache_language'] and isset($lang_info['code']) )
+    if ( $conf['compiled_template_cache_language'] && isset($lang_info['code']) )
     {
       $this->smarty->compile_id .= '_'.$lang_info['code'];
     }
@@ -803,15 +803,15 @@ class Template
    */
   public function func_define_derivative(array $params, Smarty_Internal_Template $smarty): void
   {
-    !empty($params['name']) or fatal_error('define_derivative missing name');
+    !empty($params['name']) || fatal_error('define_derivative missing name');
     if (isset($params['type']))
     {
       $derivative = ImageStdParams::get_by_type($params['type']);
       $smarty->assign( $params['name'], $derivative);
       return;
     }
-    !empty($params['width']) or fatal_error('define_derivative missing width');
-    !empty($params['height']) or fatal_error('define_derivative missing height');
+    !empty($params['width']) || fatal_error('define_derivative missing width');
+    !empty($params['height']) || fatal_error('define_derivative missing height');
 
     $w = intval($params['width']);
     $h = intval($params['height']);
@@ -833,9 +833,9 @@ class Template
       if ($crop)
       {
         $minw = empty($params['min_width']) ? $w : intval($params['min_width']);
-        $minw <= $w or fatal_error('define_derivative invalid min_width');
+        $minw <= $w || fatal_error('define_derivative invalid min_width');
         $minh = empty($params['min_height']) ? $h : intval($params['min_height']);
-        $minh <= $h or fatal_error('define_derivative invalid min_height');
+        $minh <= $h || fatal_error('define_derivative invalid min_height');
       }
     }
 
@@ -1565,7 +1565,7 @@ class ScriptLoader
       foreach ($require as $id)
       {
         if(!isset($this->registered_scripts[$id]))
-          $this->load_known_required_script($id, 1) or fatal_error("inline script not found require $id");
+          $this->load_known_required_script($id, 1) || fatal_error("inline script not found require $id");
         $s = $this->registered_scripts[$id];
         if($s->load_mode==2)
           $s->load_mode=1; // until now the implementation does not allow executing inline script depending on another async script
@@ -1600,7 +1600,7 @@ class ScriptLoader
       $this->registered_scripts[$id] = $script;
 
       // Load or modify all UI core files
-      if ($id == 'jquery.ui' and $script->path == self::$known_paths['jquery.ui'])
+      if ($id == 'jquery.ui' && $script->path == self::$known_paths['jquery.ui'])
       {
         foreach (self::$ui_core_dependencies as $script_id => $required_ids)
           $this->add($script_id, $load_mode, $required_ids, null, $version);
@@ -1730,7 +1730,7 @@ class ScriptLoader
             $scripts[$precedent]->load_mode = $load;
             $changed = true;
           }
-          if ($load==2 && $scripts[$precedent]->load_mode==2 && ($scripts[$precedent]->is_remote() or !$conf['template_combine_files']) )
+          if ($load==2 && $scripts[$precedent]->load_mode==2 && ($scripts[$precedent]->is_remote() || !$conf['template_combine_files']) )
           {// we are async -> a predecessor cannot be async unlesss it can be merged; otherwise script execution order is not guaranteed
             $scripts[$precedent]->load_mode = 1;
             $changed = true;
@@ -1790,7 +1790,7 @@ class ScriptLoader
    */
   private function load_known_required_script(string $id, int $load_mode): bool
   {
-    if ( isset(self::$known_paths[$id]) or strncmp($id, 'jquery.ui.', 10)==0  )
+    if ( isset(self::$known_paths[$id]) || strncmp($id, 'jquery.ui.', 10)==0  )
     {
       $this->add($id, $load_mode, array(), null);
       return true;
@@ -1813,7 +1813,7 @@ class ScriptLoader
       trigger_error("Undefined script $script_id is required by someone", E_USER_WARNING);
       return 0;
     }
-    $recursion_limiter<5 or fatal_error("combined script circular dependency");
+    $recursion_limiter<5 || fatal_error("combined script circular dependency");
     $script = $this->registered_scripts[$script_id];
     if (isset($script->extra['order']))
       return $script->extra['order'];
@@ -1837,7 +1837,7 @@ class ScriptLoader
     $ret = $s1->extra['order'] - $s2->extra['order'];
     if ($ret) return $ret;
 
-    if ($s1->extra['order']==0 and ($s1->is_remote() xor $s2->is_remote()) )
+    if ($s1->extra['order']==0 && ($s1->is_remote() xor $s2->is_remote()) )
     {
       return $s1->is_remote() ? -1 : 1;
     }
@@ -2053,7 +2053,7 @@ final class FileCombiner
    */
   private static function process_js(string $js, string $file): string
   {
-    if (!str_contains($file, '.min') and !str_contains($file, '.packed') )
+    if (!str_contains($file, '.min') && !str_contains($file, '.packed') )
     {
       try { $js = JShrink\Minifier::minify($js); } catch(Exception $e) {}
     }
@@ -2072,7 +2072,7 @@ final class FileCombiner
   private static function process_css(string $css, string $file, string &$header): string
   {
     $css = self::process_css_rec($css, dirname($file), $header);
-    if (!str_contains($file, '.min') and version_compare(PHP_VERSION, '5.2.4', '>='))
+    if (!str_contains($file, '.min') && version_compare(PHP_VERSION, '5.2.4', '>='))
     {
       $cssMin = new tubalmartin\CssMin\Minifier();
       $css = $cssMin->run($css);
@@ -2119,8 +2119,8 @@ final class FileCombiner
         
         if (
           str_contains($match[1], '..') // Possible attempt to get out of Piwigo's dir
-          or str_contains($match[1], '://') // Remote URL
-          or !is_readable(PHPWG_ROOT_PATH . $dir . '/' . $match[1])
+          || str_contains($match[1], '://') // Remote URL
+          || !is_readable(PHPWG_ROOT_PATH . $dir . '/' . $match[1])
           )
         {
           // If anything is suspicious, don't try to process the

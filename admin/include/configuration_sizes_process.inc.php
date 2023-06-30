@@ -36,7 +36,7 @@ foreach ($original_fields as $field)
 
 save_upload_form_config($updates, $page['errors'], $errors);
 
-if ($_POST['resize_quality'] < 50 or $_POST['resize_quality'] > 98)
+if ($_POST['resize_quality'] < 50 || $_POST['resize_quality'] > 98)
 {
   $errors['resize_quality'] = '[50..98]';
 }
@@ -102,13 +102,13 @@ foreach(ImageStdParams::get_all_types() as $type)
   else
   {
     $v = intval($pderivative['w']);
-    if ($v <= 0 or $v <= $prev_w)
+    if ($v <= 0 || $v <= $prev_w)
     {
       $errors[$type]['w'] = '>'.$prev_w;
     }
 
     $v = intval($pderivative['h']);
-    if ($v <= 0 or $v <= $prev_h)
+    if ($v <= 0 || $v <= $prev_h)
     {
       $errors[$type]['h'] = '>'.$prev_h;
     }
@@ -163,14 +163,14 @@ if (count($errors) == 0)
         $old_params = $enabled[$type];
         $same = true;
         if (!size_equals($old_params->sizing->ideal_size, $new_params->sizing->ideal_size)
-            or $old_params->sizing->max_crop != $new_params->sizing->max_crop)
+            || $old_params->sizing->max_crop != $new_params->sizing->max_crop)
         {
           $same = false;
         }
 
         if ($same
-            and $new_params->sizing->max_crop != 0
-            and !size_equals($old_params->sizing->min_size, $new_params->sizing->min_size))
+            && $new_params->sizing->max_crop != 0
+            && !size_equals($old_params->sizing->min_size, $new_params->sizing->min_size))
         {
           $same = false;
         }

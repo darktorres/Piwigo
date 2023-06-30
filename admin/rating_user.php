@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-defined('PHPWG_ROOT_PATH') or die ("Hacking attempt!");
+defined('PHPWG_ROOT_PATH') || die ("Hacking attempt!");
 
 include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
 $tabsheet = new tabsheet();
@@ -230,7 +230,7 @@ function last_rate_compare($a, $b): int
 }
 
 $order_by_index=4;
-if (isset($_GET['order_by']) and is_numeric($_GET['order_by']))
+if (isset($_GET['order_by']) && is_numeric($_GET['order_by']))
 {
   $order_by_index = $_GET['order_by'];
 }

@@ -47,7 +47,7 @@ class PwgError
    */
   public function __construct($code, $codeText)
   {
-    if ($code>=400 and $code<600)
+    if ($code>=400 && $code<600)
     {
       set_status_header($code, $codeText);
     }
@@ -125,9 +125,9 @@ class PwgNamedStruct
       $this->_xmlAttributes = array();
       foreach ($this->_content as $key=>$value)
       {
-        if (!empty($key) and (is_scalar($value) or is_null($value)) )
+        if (!empty($key) && (is_scalar($value) || is_null($value)) )
         {
-          if ( empty($xmlElements) or !in_array($key,$xmlElements) )
+          if ( empty($xmlElements) || !in_array($key,$xmlElements) )
           {
             $this->_xmlAttributes[$key]=1;
           }
@@ -421,7 +421,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
    */
   public static function isPost(): bool
   {
-    return isset($HTTP_RAW_POST_DATA) or !empty($_POST);
+    return isset($HTTP_RAW_POST_DATA) || !empty($_POST);
   }
 
   /**
@@ -494,7 +494,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
         {
           if (
             ($value = filter_var($value, FILTER_VALIDATE_FLOAT)) === false
-            or ( isset($opts['options']['min_range']) and $value < $opts['options']['min_range'] )
+            || ( isset($opts['options']['min_range']) && $value < $opts['options']['min_range'] )
           ) {
             return new PwgError(WS_ERR_INVALID_PARAM, $name.' must only contain'.$msg.' floats' );
           }
@@ -522,7 +522,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
       {
         if (
           ($param = filter_var($param, FILTER_VALIDATE_FLOAT)) === false
-          or ( isset($opts['options']['min_range']) and $param < $opts['options']['min_range'] )
+          || ( isset($opts['options']['min_range']) && $param < $opts['options']['min_range'] )
         ) {
           return new PwgError(WS_ERR_INVALID_PARAM, $name.' must be a'.$msg.' float' );
         }
@@ -557,12 +557,12 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
       return new PwgError(WS_ERR_INVALID_METHOD, 'Method name is not valid');
     }
     
-    if ( isset($method['options']['post_only']) and $method['options']['post_only'] and !self::isPost() )
+    if ( isset($method['options']['post_only']) && $method['options']['post_only'] && !self::isPost() )
     {
       return new PwgError(405, 'This method requires HTTP POST');
     }
     
-    if ( isset($method['options']['admin_only']) and $method['options']['admin_only'] and !is_admin() )
+    if ( isset($method['options']['admin_only']) && $method['options']['admin_only'] && !is_admin() )
     {
       return new PwgError(401, 'Access denied');
     }
@@ -592,7 +592,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
         }
       }
       // parameter provided but empty
-      elseif ( $params[$name]==='' and !self::hasFlag($flags, WS_PARAM_OPTIONAL) )
+      elseif ( $params[$name]==='' && !self::hasFlag($flags, WS_PARAM_OPTIONAL) )
       {
         $missing_params[] = $name;
       }
@@ -601,7 +601,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
       {
         $the_param = $params[$name];
         
-        if ( is_array($the_param) and !self::hasFlag($flags, WS_PARAM_ACCEPT_ARRAY) )
+        if ( is_array($the_param) && !self::hasFlag($flags, WS_PARAM_ACCEPT_ARRAY) )
         {
           return new PwgError(WS_ERR_INVALID_PARAM, $name.' must be scalar' );
         }
@@ -619,7 +619,7 @@ Request format: ".$this->_requestFormat." Response format: ".$this->_responseFor
           }
         }
         
-        if ( isset($options['maxValue']) and $the_param>$options['maxValue'])
+        if ( isset($options['maxValue']) && $the_param>$options['maxValue'])
         {
           $the_param = $options['maxValue'];
         }

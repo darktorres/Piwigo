@@ -13,7 +13,7 @@ if (!defined('PHPWG_ROOT_PATH'))
 
 include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 
-if (isset($_GET['start']) and is_numeric($_GET['start']))
+if (isset($_GET['start']) && is_numeric($_GET['start']))
 {
   $page['start'] = $_GET['start'];
 }
@@ -115,7 +115,7 @@ while ($row = pwg_db_fetch_assoc($result))
   }
 }
 
-if (!isset($_GET['filter']) and $nb_pending > 0)
+if (!isset($_GET['filter']) && $nb_pending > 0)
 {
   $page['filter'] = 'pending';
 }
@@ -124,7 +124,7 @@ else
   $page['filter'] = 'all';
 }
 
-if (isset($_GET['filter']) and 'pending' == $_GET['filter'])
+if (isset($_GET['filter']) && 'pending' == $_GET['filter'])
 {
   $page['filter'] = $_GET['filter'];
 }

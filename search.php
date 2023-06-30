@@ -30,7 +30,7 @@ if (isset($_POST['submit']))
   }  
   
   if (isset($_POST['search_allwords'])
-      and !preg_match('/^\s*$/', $_POST['search_allwords']))
+      && !preg_match('/^\s*$/', $_POST['search_allwords']))
   {
     check_input_parameter('mode', $_POST, false, '/^(OR|AND)$/');
     check_input_parameter('fields', $_POST, true, '/^(name|comment|file)$/');
@@ -75,7 +75,7 @@ if (isset($_POST['submit']))
       );
   }
 
-  if (isset($_POST['authors']) and is_array($_POST['authors']) and count($_POST['authors']) > 0)
+  if (isset($_POST['authors']) && is_array($_POST['authors']) && count($_POST['authors']) > 0)
   {
     $authors = array();
 
@@ -154,7 +154,7 @@ INSERT INTO '.SEARCH_TABLE.'
   }
 }
 //----------------------------------------------------------------- redirection
-if (isset($_POST['submit']) and count($page['errors']) == 0)
+if (isset($_POST['submit']) && count($page['errors']) == 0)
 {
   redirect(
     make_index_url(

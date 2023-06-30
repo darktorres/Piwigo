@@ -200,7 +200,7 @@ function check_upgrade_access_rights(): void
 {
   global $conf, $page, $current_release;
 
-  if (version_compare($current_release, '2.0', '>=') and isset($_COOKIE[session_name()]))
+  if (version_compare($current_release, '2.0', '>=') && isset($_COOKIE[session_name()]))
   {
     // Check if user is already connected as webmaster
     session_start();
@@ -214,7 +214,7 @@ SELECT status
       pwg_query($query);
 
       $row = pwg_db_fetch_assoc(pwg_query($query));
-      if (isset($row['status']) and $row['status'] == 'webmaster')
+      if (isset($row['status']) && $row['status'] == 'webmaster')
       {
         define('PHPWG_IN_UPGRADE', true);
         return;
@@ -222,7 +222,7 @@ SELECT status
     }
   }
 
-  if (!isset($_POST['username']) or !isset($_POST['password']))
+  if (!isset($_POST['username']) || !isset($_POST['password']))
   {
     return;
   }
@@ -265,7 +265,7 @@ WHERE '.$conf['user_fields']['username'].'=\''.$username.'\'
   {
     $page['errors'][] = l10n('Invalid password!');
   }
-  elseif ($row['status'] != 'admin' and $row['status'] != 'webmaster')
+  elseif ($row['status'] != 'admin' && $row['status'] != 'webmaster')
   {
     $page['errors'][] = l10n('You do not have access rights to run upgrade');
   }
@@ -291,7 +291,7 @@ function get_available_upgrade_ids(): array
     while (($node = readdir($contents)) !== false)
     {
       if (is_file($upgrades_path.'/'.$node)
-          and preg_match('/^(.*?)-database\.php$/', $node, $match))
+          && preg_match('/^(.*?)-database\.php$/', $node, $match))
       {
         $available_upgrade_ids[] = $match[1];
       }
