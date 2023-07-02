@@ -537,7 +537,8 @@ $conf['template_combine_files'] = false;
 // this permit to show the php errors reporting (see INI 'error_reporting'
 // for possible values)
 // gives an empty value '' to deactivate
-$conf['show_php_errors'] = E_ALL;
+// TODO: showing warnings/errors break js scripts
+$conf['show_php_errors'] = ''; // E_ALL
 
 // This sets the display_errors php option to true, so php errors and warning
 // messages are shown in the browser. If this is false, the error messages are
