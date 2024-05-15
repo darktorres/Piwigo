@@ -64,7 +64,7 @@
 	</a>
 {/if}
 {if isset($U_SLIDESHOW_STOP) }
-        <a href="{$U_SLIDESHOW_STOP}" title="{'stop the slideshow'|@translate}">
+        <a href="{$U_SLIDESHOW_STOP}" title="{'Stop the slideshow'|@translate}">
             <i class="fas fa-stop" aria-hidden="true"></i>
         </a>
 {/if}

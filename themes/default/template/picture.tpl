@@ -74,8 +74,8 @@ function changeImgSrc(url,typeSave,typeMap)
 {/strip}
 {/if}
 {strip}{if isset($U_SLIDESHOW_START)}
-	<a href="{$U_SLIDESHOW_START}" title="{'slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
-		<span class="pwg-icon pwg-icon-slideshow"></span><span class="pwg-button-text">{'slideshow'|@translate}</span>
+	<a href="{$U_SLIDESHOW_START}" title="{'Slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+		<span class="pwg-icon pwg-icon-slideshow"></span><span class="pwg-button-text">{'Slideshow'|@translate}</span>
 	</a>
 {/if}{/strip}
 {strip}{if isset($U_METADATA)}
@@ -110,12 +110,12 @@ jQuery().ready(function() {
 {if isset($PLUGIN_PICTURE_BUTTONS)}{foreach from=$PLUGIN_PICTURE_BUTTONS item=button}{$button}{/foreach}{/if}
 {if isset($PLUGIN_PICTURE_ACTIONS)}{$PLUGIN_PICTURE_ACTIONS}{/if}
 {strip}{if isset($favorite)}
-	<a href="{$favorite.U_FAVORITE}" title="{if $favorite.IS_FAVORITE}{'delete this photo from your favorites'|@translate}{else}{'add this photo to your favorites'|@translate}{/if}" class="pwg-state-default pwg-button" rel="nofollow">
+	<a href="{$favorite.U_FAVORITE}" title="{if $favorite.IS_FAVORITE}{'Delete this photo from your favorites'|@translate}{else}{'Add this photo to your favorites'|@translate}{/if}" class="pwg-state-default pwg-button" rel="nofollow">
 		<span class="pwg-icon pwg-icon-favorite-{if $favorite.IS_FAVORITE}del{else}add{/if}"></span><span class="pwg-button-text">{'Favorites'|@translate}</span>
 	</a>
 {/if}{/strip}
 {strip}{if isset($U_SET_AS_REPRESENTATIVE)}
-	<a id="cmdSetRepresentative" href="{$U_SET_AS_REPRESENTATIVE}" title="{'set as album representative'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+	<a id="cmdSetRepresentative" href="{$U_SET_AS_REPRESENTATIVE}" title="{'Set as album representative'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
 		<span class="pwg-icon pwg-icon-representative"></span><span class="pwg-button-text">{'representative'|@translate}</span>
 	</a>
 {/if}{/strip}
@@ -156,7 +156,7 @@ y.callService(
 {/if}
 {if isset($U_SLIDESHOW_STOP)}
 <p>
-	[ <a href="{$U_SLIDESHOW_STOP}">{'stop the slideshow'|@translate}</a> ]
+	[ <a href="{$U_SLIDESHOW_STOP}">{'Stop the slideshow'|@translate}</a> ]
 </p>
 {/if}
 
