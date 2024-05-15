@@ -2,7 +2,7 @@
 
 INSERT INTO piwigo_config (param,value,comment) VALUES ('activate_comments','false','Global parameter for usage of comments system');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('allow_user_customization','true','allow users to customize their gallery?');
-INSERT INTO piwigo_config (param,value,comment) VALUES ('allow_user_registration','true','allow visitors to register?');
+INSERT INTO piwigo_config (param,value,comment) VALUES ('allow_user_registration','false','allow visitors to register?');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('blk_menubar','','Menubar options');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('c13y_ignore',null,'List of ignored anomalies');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('comments_author_mandatory','false','Comment author is mandatory');
@@ -43,8 +43,8 @@ INSERT INTO piwigo_config (param,value,comment) VALUES ('nbm_send_recent_post_da
 INSERT INTO piwigo_config (param,value,comment) VALUES ('nb_categories_page','12','Param for categories pagination');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('nb_comment_page','10','number of comments to display on each page');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('obligatory_user_mail_address','false','Mail address is obligatory for users');
-INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by','ORDER BY file ASC, id ASC','default photo order');
-INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by_inside_category','ORDER BY file ASC, id ASC','default photo order inside category');
+INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by','ORDER BY date_creation DESC','default photo order');
+INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by_inside_category','ORDER BY date_creation DESC','default photo order inside category');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('original_resize','false','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('original_resize_maxheight','2016','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('original_resize_maxwidth','2016','');
@@ -62,14 +62,14 @@ INSERT INTO piwigo_config (param,value,comment) VALUES ('picture_navigation_thum
 INSERT INTO piwigo_config (param,value,comment) VALUES ('picture_representative_icon','true','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('picture_sizes_icon','true','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('picture_slideshow_icon','true','Display slideshow icon on picture page');
-INSERT INTO piwigo_config (param,value,comment) VALUES ('rate','false','Rating pictures feature is enabled');
+INSERT INTO piwigo_config (param,value,comment) VALUES ('rate','true','Rating pictures feature is enabled');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('rate_anonymous','true','Rating pictures feature is also enabled for visitors');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('show_mobile_app_banner_in_admin','true','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('show_mobile_app_banner_in_gallery','false','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('updates_ignored','a:3:{s:7:"plugins";a:0:{}s:6:"themes";a:0:{}s:9:"languages";a:0:{}}','Extensions ignored for update');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('user_can_delete_comment','false','administrators can allow user delete their own comments');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('user_can_edit_comment','false','administrators can allow user edit their own comments');
-INSERT INTO piwigo_config (param,value,comment) VALUES ('week_starts_on','monday','Monday may not be the first day of the week');
+INSERT INTO piwigo_config (param,value,comment) VALUES ('week_starts_on','sunday','Monday may not be the first day of the week');
 
 INSERT INTO piwigo_plugins (`id`,`state`,`version`) VALUES ('GDThumb','inactive','1.0.26');
 INSERT INTO piwigo_config (`param`,`value`,`comment`) VALUES ('gdThumb','a:13:{s:6:\"height\";s:3:\"200\";s:6:\"margin\";s:2:\"10\";s:13:\"nb_image_page\";s:2:\"80\";s:9:\"big_thumb\";b:0;s:16:\"big_thumb_noinpw\";b:0;s:15:\"cache_big_thumb\";b:1;s:15:\"normalize_title\";s:3:\"off\";s:6:\"method\";s:6:\"resize\";s:16:\"thumb_mode_album\";s:4:\"hide\";s:16:\"thumb_mode_photo\";s:4:\"hide\";s:14:\"thumb_metamode\";s:4:\"hide\";s:11:\"no_wordwrap\";b:0;s:13:\"thumb_animate\";b:0;}',NULL);
