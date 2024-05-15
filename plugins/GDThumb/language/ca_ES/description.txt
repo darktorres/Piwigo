@@ -1,0 +1,1 @@
+Mostra les miniatures com a mosaic.

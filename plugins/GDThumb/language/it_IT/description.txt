@@ -1,0 +1,1 @@
+Visualizza miniature come mosaico.
