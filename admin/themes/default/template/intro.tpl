@@ -238,9 +238,15 @@ let str_size = "";
 
   <div class="storage-chart">
     {foreach from=$STORAGE_CHART_DATA key=type item=value}
-      <span data-type="storage-{$type}" style="width:{$value/$STORAGE_TOTAL*100}%"> 
+      {if $STORAGE_TOTAL > 0}
+        <span data-type="storage-{$type}" style="width:{$value/$STORAGE_TOTAL*100}%"> 
         <p>{round($value/$STORAGE_TOTAL*100)}%</p>
       </span>  
+      {else}
+        <span data-type="storage-{$type}" style="width:{0}%"> 
+        <p>{0}%</p>
+      </span>  
+      {/if}
     {/foreach}
   </div>
 
