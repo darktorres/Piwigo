@@ -33,13 +33,13 @@
 <div id="imageToolBar">
 	<div class="actionButtons">
 {if isset($U_SLIDESHOW_START)}
-		<a href="{$U_SLIDESHOW_START}" title="{'slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
-			<span class="pwg-icon pwg-icon-slideshow">&nbsp;</span><span class="pwg-button-text">{'slideshow'|@translate}</span>
+		<a href="{$U_SLIDESHOW_START}" title="{'Slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+			<span class="pwg-icon pwg-icon-slideshow">&nbsp;</span><span class="pwg-button-text">{'Slideshow'|@translate}</span>
 		</a>
 {/if}
 {if isset($U_SLIDESHOW_STOP)}
-		<a href="{$U_SLIDESHOW_STOP}" title="{'stop the slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
-			<span class="pwg-icon pwg-icon-slideshow">&nbsp;</span><span class="pwg-button-text">{'stop the slideshow'|@translate}</span>
+		<a href="{$U_SLIDESHOW_STOP}" title="{'Stop the slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+			<span class="pwg-icon pwg-icon-slideshow">&nbsp;</span><span class="pwg-button-text">{'Stop the slideshow'|@translate}</span>
 		</a>
 {/if}
 {if isset($U_METADATA)}
@@ -54,13 +54,13 @@
 {/if}
 {if isset($PLUGIN_PICTURE_ACTIONS)}{$PLUGIN_PICTURE_ACTIONS}{/if}
 {if isset($favorite)}
-		<a href="{$favorite.U_FAVORITE}" title="{if $favorite.IS_FAVORITE}{'delete this photo from your favorites'|@translate}{else}{'add this photo to your favorites'|@translate}{/if}" class="pwg-state-default pwg-button" rel="nofollow">
+		<a href="{$favorite.U_FAVORITE}" title="{if $favorite.IS_FAVORITE}{'Delete this photo from your favorites'|@translate}{else}{'Add this photo to your favorites'|@translate}{/if}" class="pwg-state-default pwg-button" rel="nofollow">
 			<span class="pwg-icon pwg-icon-favorite-{if $favorite.IS_FAVORITE}del{else}add{/if}">&nbsp;</span><span class="pwg-button-text">{'Favorites'|@translate}</span>
 		</a>
 {/if}
 {if isset($U_SET_AS_REPRESENTATIVE)}
-		<a href="{$U_SET_AS_REPRESENTATIVE}" title="{'set as category representative'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
-			<span class="pwg-icon pwg-icon-representative">&nbsp;</span><span class="pwg-button-text">{'representative'|@translate}</span>
+		<a href="{$U_SET_AS_REPRESENTATIVE}" title="{'Set as category representative'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+			<span class="pwg-icon pwg-icon-representative">&nbsp;</span><span class="pwg-button-text">{'Representative'|@translate}</span>
 		</a>
 {/if}
 {if isset($U_ADMIN)}
@@ -102,7 +102,7 @@ y.callService(
 
 {if isset($U_SLIDESHOW_STOP) }
 <p>
-  [ <a href="{$U_SLIDESHOW_STOP}">{'stop the slideshow'|@translate}</a> ]
+  [ <a href="{$U_SLIDESHOW_STOP}">{'Stop the slideshow'|@translate}</a> ]
 </p>
 {/if}
 

@@ -69,27 +69,27 @@
 		</a></li>
 {/if}
 {if isset($U_SLIDESHOW)}
-		<li id="cmdSlideshow">{strip}<a href="{$U_SLIDESHOW}" title="{'slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
-			<span class="pwg-icon pwg-icon-slideshow"></span><span class="pwg-button-text">{'slideshow'|@translate}</span>
+		<li id="cmdSlideshow">{strip}<a href="{$U_SLIDESHOW}" title="{'Slideshow'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+			<span class="pwg-icon pwg-icon-slideshow"></span><span class="pwg-button-text">{'Slideshow'|@translate}</span>
 		</a>{/strip}</li>
 {/if}
 {if isset($U_MODE_FLAT)}
-		<li>{strip}<a href="{$U_MODE_FLAT}" title="{'display all photos in all sub-albums'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
-			<span class="pwg-icon pwg-icon-category-view-flat"></span><span class="pwg-button-text">{'display all photos in all sub-albums'|@translate}</span>
+		<li>{strip}<a href="{$U_MODE_FLAT}" title="{'Display all photos in all sub-albums'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+			<span class="pwg-icon pwg-icon-category-view-flat"></span><span class="pwg-button-text">{'Display all photos in all sub-albums'|@translate}</span>
 		</a>{/strip}</li>
 {/if}
 {if isset($U_MODE_NORMAL)}
-		<li>{strip}<a href="{$U_MODE_NORMAL}" title="{'return to normal view mode'|@translate}" class="pwg-state-default pwg-button">
-			<span class="pwg-icon pwg-icon-category-view-normal"></span><span class="pwg-button-text">{'return to normal view mode'|@translate}</span>
+		<li>{strip}<a href="{$U_MODE_NORMAL}" title="{'Return to normal view mode'|@translate}" class="pwg-state-default pwg-button">
+			<span class="pwg-icon pwg-icon-category-view-normal"></span><span class="pwg-button-text">{'Return to normal view mode'|@translate}</span>
 		</a>{/strip}</li>
 {/if}
 {if isset($U_MODE_POSTED)}
-		<li>{strip}<a href="{$U_MODE_POSTED}" title="{'display a calendar by posted date'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+		<li>{strip}<a href="{$U_MODE_POSTED}" title="{'Display a calendar by posted date'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
 			<span class="pwg-icon pwg-icon-calendar"></span><span class="pwg-button-text">{'Calendar'|@translate}</span>
 		</a>{/strip}</li>
 {/if}
 {if isset($U_MODE_CREATED)}
-		<li>{strip}<a href="{$U_MODE_CREATED}" title="{'display a calendar by creation date'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
+		<li>{strip}<a href="{$U_MODE_CREATED}" title="{'Display a calendar by creation date'|@translate}" class="pwg-state-default pwg-button" rel="nofollow">
 			<span class="pwg-icon pwg-icon-camera-calendar"></span><span class="pwg-button-text">{'Calendar'|@translate}</span>
 		</a>{/strip}</li>
 {/if}

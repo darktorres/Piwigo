@@ -75,22 +75,22 @@
 {/if}
 {if isset($U_SLIDESHOW)}
                     <li class="nav-item">
-                        <a class="nav-link" href="{if $theme_config->photoswipe}javascript:;{else}{$U_SLIDESHOW}{/if}" id="startSlideshow" title="{'slideshow'|@translate}" rel="nofollow">
-                            <i class="fas fa-play fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2 text-capitalize">{'slideshow'|@translate}</span>
+                        <a class="nav-link" href="{if $theme_config->photoswipe}javascript:;{else}{$U_SLIDESHOW}{/if}" id="startSlideshow" title="{'Slideshow'|@translate}" rel="nofollow">
+                            <i class="fas fa-play fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2 text-capitalize">{'Slideshow'|@translate}</span>
                         </a>
                     </li>
 {/if}
 {if isset($U_MODE_FLAT)}
                     <li class="nav-item">
-                        {strip}<a class="nav-link" href="{$U_MODE_FLAT}" title="{'display all photos in all sub-albums'|@translate}" rel="nofollow">
-                            <i class="fas fa-th-large fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2">{'display all photos in all sub-albums'|@translate}</span>
+                        {strip}<a class="nav-link" href="{$U_MODE_FLAT}" title="{'Display all photos in all sub-albums'|@translate}" rel="nofollow">
+                            <i class="fas fa-th-large fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2">{'Display all photos in all sub-albums'|@translate}</span>
                         </a>{/strip}
                     </li>
 {/if}
 {if isset($U_MODE_NORMAL)}
                     <li class="nav-item">
-                        {strip}<a class="nav-link" href="{$U_MODE_NORMAL}" title="{'return to normal view mode'|@translate}">
-                            <i class="fas fa-home fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2">{'return to normal view mode'|@translate}</span>
+                        {strip}<a class="nav-link" href="{$U_MODE_NORMAL}" title="{'Return to normal view mode'|@translate}">
+                            <i class="fas fa-home fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2">{'Return to normal view mode'|@translate}</span>
                         </a>{/strip}
                     </li>
 {/if}
@@ -101,13 +101,13 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
 {if isset($U_MODE_POSTED)}
-                            <a class="dropdown-item" href="{$U_MODE_POSTED}" title="{'display a calendar by posted date'|@translate}" rel="nofollow">
-                                <i class="fas fa-share-alt fa-fw" aria-hidden="true"></i> {'display a calendar by posted date'|@translate}
+                            <a class="dropdown-item" href="{$U_MODE_POSTED}" title="{'Display a calendar by posted date'|@translate}" rel="nofollow">
+                                <i class="fas fa-share-alt fa-fw" aria-hidden="true"></i> {'Display a calendar by posted date'|@translate}
                             </a>
 {/if}
 {if isset($U_MODE_CREATED)}
-                            <a class="dropdown-item" href="{$U_MODE_CREATED}" title="{'display a calendar by creation date'|@translate}" rel="nofollow">
-                                <i class="fas fa-camera-retro fa-fw" aria-hidden="true"></i> {'display a calendar by creation date'|@translate}
+                            <a class="dropdown-item" href="{$U_MODE_CREATED}" title="{'Display a calendar by creation date'|@translate}" rel="nofollow">
+                                <i class="fas fa-camera-retro fa-fw" aria-hidden="true"></i> {'Display a calendar by creation date'|@translate}
                             </a>
 {/if}
                         </div>
