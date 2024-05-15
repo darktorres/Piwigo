@@ -217,7 +217,8 @@ function ws_getCacheSize(array $params, &$service): array
   $infos['cache_size'] = null;
   if (function_exists('exec'))
   {
-    exec('du -sk '.$path_cache, $return_array_cache);
+    // TODO: add wsl such as "wsl du -sk ..."
+    exec('du -sk '.$path_cache, $return_array_cache); // TODO: check exec return
     if (
       is_array($return_array_cache)
       && !empty($return_array_cache[0])
@@ -249,7 +250,8 @@ function ws_getCacheSize(array $params, &$service): array
   $infos['tsizes'] = null;
   if (function_exists('exec'))
   {
-    exec('du -sk '.$path_template_c, $return_array_template_c);
+    // TODO: add wsl such as "wsl du -sk ..."
+    exec('du -sk '.$path_template_c, $return_array_template_c); // TODO: check exec return
     if (
       is_array($return_array_template_c)
       && !empty($return_array_template_c[0])

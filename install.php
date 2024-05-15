@@ -218,7 +218,7 @@ if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<'))
 }
 
 //----------------------------------------------------- template initialization
-$template = new Template(PHPWG_ROOT_PATH.'admin/themes', 'clear');
+$template = new Template(PHPWG_ROOT_PATH.'admin/themes', 'clear'); // TODO: fix dark theme (roma)
 $template->set_filenames( array('install' => 'install.tpl') );
 if (!isset($step))
 {

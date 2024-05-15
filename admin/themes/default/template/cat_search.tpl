@@ -150,7 +150,8 @@ $('.search-input').focus();
 </div>
 
 <div class="search-album-ghost">
-  <span>{'No research in progress'|@translate}</span>
+{* TODO: Change 'research' to 'search' *}
+  <span>{'No research in progress'|@translate}</span> 
 </div>
 
 <div class="search-album-elem-template" style="display:none">
