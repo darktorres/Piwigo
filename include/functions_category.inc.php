@@ -216,7 +216,7 @@ function get_category_preferred_image_orders()
   global $conf, $page;
 
   return trigger_change('get_category_preferred_image_orders', array(
-    array(l10n('Default'),                        '',                     true),
+    array(l10n('Default'),                        'date_available DESC',  true),
     array(l10n('Photo title, A &rarr; Z'),        'name ASC',             true),
     array(l10n('Photo title, Z &rarr; A'),        'name DESC',            true),
     array(l10n('Date created, new &rarr; old'),   'date_creation DESC',   true),
