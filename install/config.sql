@@ -43,8 +43,8 @@ INSERT INTO piwigo_config (param,value,comment) VALUES ('nbm_send_recent_post_da
 INSERT INTO piwigo_config (param,value,comment) VALUES ('nb_categories_page','12','Param for categories pagination');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('nb_comment_page','10','number of comments to display on each page');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('obligatory_user_mail_address','false','Mail address is obligatory for users');
-INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by','ORDER BY date_available DESC, file ASC, id ASC','default photo order');
-INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by_inside_category','ORDER BY date_available DESC, file ASC, id ASC','default photo order inside category');
+INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by','ORDER BY file ASC, id ASC','default photo order');
+INSERT INTO piwigo_config (param,value,comment) VALUES ('order_by_inside_category','ORDER BY file ASC, id ASC','default photo order inside category');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('original_resize','false','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('original_resize_maxheight','2016','');
 INSERT INTO piwigo_config (param,value,comment) VALUES ('original_resize_maxwidth','2016','');
