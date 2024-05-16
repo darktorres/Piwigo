@@ -42,7 +42,7 @@ endif;
 
 add_event_handler('init', 'GDThumb_init');
 add_event_handler('loc_begin_index', 'GDThumb_index', 60);
-add_event_handler('loc_end_index_category_thumbnails', 'GDThumb_process_category', 50, 2);
+// add_event_handler('loc_end_index_category_thumbnails', 'GDThumb_process_category', 50, 2);
 add_event_handler('get_admin_plugin_menu_links', 'GDThumb_admin_menu');
 add_event_handler('loc_end_index', 'GDThumb_remove_thumb_size');
 
