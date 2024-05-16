@@ -25,10 +25,10 @@ class Inflector_fr
 
     $this->pluralizers = array_reverse(array( '/$/' => 's',
       '/(bijou|caillou|chou|genou|hibou|joujou|pou|au|eu|eau)$/' => '\1x',
-      '/(bleu|émeu|landau|lieu|pneu|sarrau)$/' => '\1s',
+      '/(bleu|Ã©meu|landau|lieu|pneu|sarrau)$/' => '\1s',
       '/al$/' => 'aux',
       '/ail$/' => 'ails',
-      '/(b|cor|ém|gemm|soupir|trav|vant|vitr)ail$/' => '\1aux',
+      '/(b|cor|Ã©m|gemm|soupir|trav|vant|vitr)ail$/' => '\1aux',
       '/(s|x|z)$/' => '\1',
     ));
 
@@ -37,7 +37,7 @@ class Inflector_fr
       '/(bijou|caillou|chou|genou|hibou|joujou|pou|au|eu|eau)x$/' => '\1',
       '/(journ|chev)aux$/' => '\1al',
       '/ails$/' => 'ail',
-      '/(b|cor|ém|gemm|soupir|trav|vant|vitr)aux$/' => '\1ail',
+      '/(b|cor|Ã©m|gemm|soupir|trav|vant|vitr)aux$/' => '\1ail',
     ));
   }
 
