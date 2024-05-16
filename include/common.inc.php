@@ -225,7 +225,7 @@ if (isset($page['auth_key_invalid']) && $page['auth_key_invalid']) {
 if (defined('IN_ADMIN') && IN_ADMIN) {// Admin template
     $template = new Template(PHPWG_ROOT_PATH . 'admin/themes', userprefs_get_param(
         'admin_theme',
-        'clear'
+        'roma'
     ));
 } else { // Classic template
     $theme = $user['theme'];
