@@ -75,3 +75,6 @@ INSERT INTO piwigo_plugins (`id`,`state`,`version`) VALUES ('GDThumb','inactive'
 INSERT INTO piwigo_config (`param`,`value`,`comment`) VALUES ('gdThumb','a:13:{s:6:\"height\";s:3:\"200\";s:6:\"margin\";s:2:\"10\";s:13:\"nb_image_page\";s:2:\"80\";s:9:\"big_thumb\";b:0;s:16:\"big_thumb_noinpw\";b:0;s:15:\"cache_big_thumb\";b:1;s:15:\"normalize_title\";s:3:\"off\";s:6:\"method\";s:6:\"resize\";s:16:\"thumb_mode_album\";s:4:\"hide\";s:16:\"thumb_mode_photo\";s:4:\"hide\";s:14:\"thumb_metamode\";s:4:\"hide\";s:11:\"no_wordwrap\";b:0;s:13:\"thumb_animate\";b:0;}',NULL);
 
 INSERT INTO piwigo_plugins (`id`,`state`,`version`) VALUES ('rv_tscroller','active','12.a');
+
+INSERT INTO piwigo_themes (`id`, `version`, `name`) VALUES ('modus', '13.7.0', 'modus');
+INSERT INTO piwigo_config (`param`,`value`,`comment`) VALUES ('modus_theme','a:5:{s:4:\"skin\";s:9:\"newspaper\";s:16:\"album_thumb_size\";i:250;s:17:\"index_photo_deriv\";s:6:\"2small\";s:22:\"index_photo_deriv_hdpi\";s:6:\"xsmall\";s:19:\"display_page_banner\";b:0;}',NULL);
