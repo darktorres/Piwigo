@@ -147,9 +147,8 @@ function modus_combinable_preparse($template)
     global $conf, $template;
     include_once(__DIR__ . '/functions.inc.php');
 
-    try {
+    if (! isset($template->smarty->registered_plugins['modifier']['cssGradient'])) {
         $template->smarty->registerPlugin('modifier', 'cssGradient', 'modus_css_gradient');
-    } catch (SmartyException $smartyException) {
     }
 
     include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
@@ -166,9 +165,9 @@ function modus_combinable_preparse($template)
 $this->smarty->registerPlugin('function', 'cssResolution', 'modus_css_resolution');
 function modus_css_resolution($params)
 {
-    $base = @$params['base'];
-    $min = @$params['min'];
-    $max = @$params['max'];
+    $base = ($params['base'] ?? null);
+    $min = ($params['min'] ?? null);
+    $max = ($params['max'] ?? null);
 
     $rules = [];
     if (! empty($base)) {
