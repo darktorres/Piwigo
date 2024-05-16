@@ -78,8 +78,8 @@ async function runPuppeteerScript(): Promise<void> {
   await page.click("#content > p > a"); // go to homepage
   await page.waitForSelector("#deactivate > a");
   await page.click("#deactivate > a"); // deactivate empty gallery message
-  await page.waitForSelector("#mbIdentification > dd > ul > li:nth-child(3) > a");
-  await page.click("#mbIdentification > dd > ul > li:nth-child(3) > a"); // admin button
+  await page.waitForSelector("#menubar > dl:nth-child(6) > dt > a:nth-child(4)");
+  await page.click("#menubar > dl:nth-child(6) > dt > a:nth-child(4)"); // admin button
   await page.waitForSelector("#content > p > span > a.newsletter-hide");
   await page.click("#content > p > span > a.newsletter-hide"); // hide subscribe to newsletter button
   await page.waitForSelector("#content > p > a");
@@ -192,10 +192,10 @@ async function runPuppeteerScript(): Promise<void> {
   // Gallery
   await page.waitForSelector("#pwgHead > a");
   await page.click("#pwgHead > a"); // go to homepage
-  await page.waitForSelector("#content > ul > li > div > div.illustration > a");
-  await page.click("#content > ul > li > div > div.illustration > a"); // open album
-  await page.waitForSelector("#thumbnails > li:nth-child(1) > span > span.wrap2 > a");
-  await page.click("#thumbnails > li:nth-child(1) > span > span.wrap2 > a");
+  await page.waitForSelector("#rv-at > li > a");
+  await page.click("#rv-at > li > a"); // open album
+  await page.waitForSelector("#thumbnails > li:nth-child(1) > a");
+  await page.click("#thumbnails > li:nth-child(1) > a");
 
   // const pages: string[] = await readPageUrlsFromFile(path.join(import.meta.dirname, "pages.txt"));
 
