@@ -486,14 +486,14 @@ else
         get_l10n_args('Don\'t hesitate to consult our forums for any help: %s', PHPWG_URL),
         );
         
-      pwg_mail(
-        $admin_mail,
-        array(
-          'subject' => l10n('Just another Piwigo gallery'),
-          'content' => l10n_args($keyargs_content),
-          'content_format' => 'text/plain',
-          )
-        );
+      // pwg_mail(
+      //   $admin_mail,
+      //   array(
+      //     'subject' => l10n('Just another Piwigo gallery'),
+      //     'content' => l10n_args($keyargs_content),
+      //     'content_format' => 'text/plain',
+      //     )
+      //   );
     }
   }
 }
