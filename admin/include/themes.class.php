@@ -37,7 +37,7 @@ class DummyTheme_maintain extends ThemeMaintain
     public function delete()
     {
         if (is_callable('theme_delete')) {
-            return theme_delete($this->theme_id);
+            return theme_delete();
         }
 
         return null;
@@ -400,7 +400,7 @@ SELECT
                         global $conf;
                         $theme['screenshot'] =
                           PHPWG_ROOT_PATH . 'admin/themes/'
-                          . userprefs_get_param('admin_theme', 'clear')
+                          . userprefs_get_param('admin_theme', 'roma')
                           . '/images/missing_screenshot.png'
                         ;
                     }
