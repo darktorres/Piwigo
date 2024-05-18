@@ -1139,7 +1139,13 @@ class image_vips implements imageInterface
   public function __construct(string $source_filepath)
   {
     // putenv('VIPS_WARNING=0');
-    $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), array('access' => 'sequential'));
+
+    try {
+      $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), array('access' => 'sequential'));
+    } catch (\Throwable $th) {
+      error_log('image_vips::construct();' . $source_filepath . ';' . $th->getMessage());
+    }
+
     $this->source_filepath = realpath($source_filepath);
   }
 
@@ -1250,7 +1256,13 @@ class image_vips implements imageInterface
   public function write($destination_filepath): true
   {
     $dest = pathinfo($destination_filepath);
-    $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);
+
+    try {
+      $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);
+    } catch (\Throwable $th) {
+      error_log('image_vips::write();' . $destination_filepath . ';' . $th->getMessage());
+    }
+
     return true;
   }
 }
