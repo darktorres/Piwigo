@@ -2515,7 +2515,7 @@ function get_groupname(int $group_id): false|string
   $query = '
 SELECT name
   FROM '.GROUPS_TABLE.'
-  WHERE id = '.intval($group_id).'
+  WHERE id = '.$group_id.'
 ;';
   $result = pwg_query($query);
   if (pwg_db_num_rows($result) > 0)

@@ -1465,7 +1465,7 @@ function get_quick_search_results_no_cache($q, $options)
   $scopes[] = new QSearchScope('author', array(), true);
   $scopes[] = new QNumericRangeScope('width', array());
   $scopes[] = new QNumericRangeScope('height', array());
-  $scopes[] = new QNumericRangeScope('ratio', array(), false, 0.001);
+  $scopes[] = new QNumericRangeScope('ratio', array(), false, (int)0.001);
   $scopes[] = new QNumericRangeScope('size', array());
   $scopes[] = new QNumericRangeScope('filesize', array());
   $scopes[] = new QNumericRangeScope('hits', array('hit', 'visit', 'visits'));
@@ -1524,11 +1524,11 @@ function get_quick_search_results_no_cache($q, $options)
 
   $ids = qsearch_eval($expression, $qsr, $tmp, $search_results['qs']['unmatched_terms']);
 
-  $debug[] = "<!--\nparsed: ".htmlspecialchars($expression);
+  $debug[] = "<!--\nparsed: ".htmlspecialchars((string)$expression);
   $debug[] = count($expression->stokens).' tokens';
   for ($i=0; $i<count($expression->stokens); $i++)
   {
-    $debug[] = htmlspecialchars($expression->stokens[$i]).': '.count($qsr->tag_ids[$i]).' tags, '.count($qsr->tag_iids[$i]).' tiids, '.count($qsr->images_iids[$i]).' iiids, '.count($qsr->iids[$i]).' iids'
+    $debug[] = htmlspecialchars((string)($expression->stokens[$i])).': '.count($qsr->tag_ids[$i]).' tags, '.count($qsr->tag_iids[$i]).' tiids, '.count($qsr->images_iids[$i]).' iiids, '.count($qsr->iids[$i]).' iids'
       .' modifier:'.dechex($expression->stoken_modifiers[$i])
       .( !empty($expression->stokens[$i]->variants) ? ' variants: '.htmlspecialchars(implode(', ',$expression->stokens[$i]->variants)): '');
   }
