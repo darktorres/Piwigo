@@ -12,7 +12,7 @@
                 <div class="form-group row">
                     <label for="username" class="col-12 col-md-3 col-form-label">{'Username'|@translate}</label>
                     <div class="col-12 col-md-4">
-                        <input id="username" class="form-control-plaintext" type="text" value="{$USERNAME}" readonly/>
+                        <input id="username" class="form-control-plaintext" type="text" value="{$USERNAME}" readonly autocomplete="username"/>
                     </div>
                 </div>
 {if not $SPECIAL_USER} {* can modify password + email*}

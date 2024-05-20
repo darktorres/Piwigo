@@ -1026,7 +1026,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * @see http://www.smarty.net/manual/en/advanced.features.prefilters.php
    *
    * @param string $handle
-   * @param Callable $callback
+   * @param callable $callback
    * @param int $weight
    */
   public function set_prefilter(string $handle, callable $callback, int $weight=50): void
@@ -1041,7 +1041,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * @see http://www.smarty.net/manual/en/advanced.features.postfilters.php
    *
    * @param string $handle
-   * @param Callable $callback
+   * @param callable $callback
    * @param int $weight
    */
   public function set_postfilter(string $handle, callable $callback, int $weight=50): void
@@ -1056,7 +1056,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * @see http://www.smarty.net/manual/en/advanced.features.outputfilters.php
    *
    * @param string $handle
-   * @param Callable $callback
+   * @param callable $callback
    * @param int $weight
    */
   public function set_outputfilter(string $handle, callable $callback, int $weight=50): void
