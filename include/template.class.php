@@ -679,7 +679,7 @@ class Template
                     'AAAA_DEBUG_TOTAL_TIME__' => get_elapsed_time($t2, get_moment()),
                 ]
             );
-            (new Smarty_Internal_Debug())->display_debug($this->smarty);
+            // (new Smarty_Internal_Debug())->display_debug($this->smarty);
         }
     }
 
