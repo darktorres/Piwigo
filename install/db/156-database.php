@@ -13,7 +13,7 @@ if (!defined('PHPWG_ROOT_PATH'))
 
 $upgrade_description = 'bug fixing, change column type for activity.occured_on';
 
-$row = pwg_db_fetch_assoc(pwg_query('SHOW COLUMNS FROM `'.PREFIX_TABLE.'activity` LIKE "occured_on";'));
+$row = pwg_db_fetch_assoc(pwg_query('SHOW COLUMNS FROM '.PREFIX_TABLE.'activity LIKE "occured_on";'));
 if (!preg_match('/^TIMESTAMP/i', $row['Type']))
 {
   $query = 'ALTER TABLE `'.PREFIX_TABLE.'activity` CHANGE `occured_on` `occured_on` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;';
