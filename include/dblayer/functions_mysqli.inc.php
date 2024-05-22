@@ -355,10 +355,10 @@ UPDATE '.protect_column_name($tablename).'
       }
     }
 
-    $temporary_tablename = $tablename.'_'.micro_seconds();
+    $temporary_tablename = str_replace('`', '', $tablename).'_'.micro_seconds();
 
     $query = '
-CREATE TABLE '.$temporary_tablename.'
+CREATE TABLE '.protect_column_name($temporary_tablename).'
 (
   '.implode(",\n  ", $columns).',
   UNIQUE KEY the_key ('.implode(',', $dbfields['primary']).')
@@ -609,7 +609,7 @@ function do_maintenance_all_tables()
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_row($result))
   {
-    $all_tables[] = $row[0];
+    $all_tables[] = '`'.$row[0].'`';
   }
 
   // Repair all tables

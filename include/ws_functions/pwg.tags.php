@@ -233,7 +233,7 @@ function ws_tags_add($params, &$service)
 
   $query = '
 SELECT name, url_name 
-FROM `'.TAGS_TABLE.'`
+FROM '.TAGS_TABLE.'
 WHERE id = '.$creation_output['id'].';';
 
 $new_tag = query2array($query);
@@ -257,7 +257,7 @@ function ws_tags_delete($params, &$service)
 
 $query = '
 SELECT COUNT(*)
-  FROM `'. TAGS_TABLE .'`
+  FROM '. TAGS_TABLE .'
   WHERE id in ('.implode(',', $params['tag_id']) .')
 ;';
   list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -293,7 +293,7 @@ function ws_tags_rename($params, &$service)
   // does the tag exist ?
   $query = '
 SELECT COUNT(*)
-  FROM `'. TAGS_TABLE .'`
+  FROM '. TAGS_TABLE .'
   WHERE id = '. $tag_id .'
 ;';
   list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -356,7 +356,7 @@ function ws_tags_duplicate($params, &$service)
   // does the tag exist ?
   $query = '
 SELECT COUNT(*)
-  FROM `'. TAGS_TABLE .'`
+  FROM '. TAGS_TABLE .'
   WHERE id = '. $tag_id .'
 ;';
   list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -367,7 +367,7 @@ SELECT COUNT(*)
 
   $query = '
 SELECT COUNT(*)
-  FROM `'. TAGS_TABLE .'`
+  FROM '. TAGS_TABLE .'
   WHERE name = "'. $copy_name .'"
 ;';
   list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -439,7 +439,7 @@ function ws_tags_merge($params, &$service)
 
   $query = '
 SELECT COUNT(*)
-  FROM `'. TAGS_TABLE .'`
+  FROM '. TAGS_TABLE .'
   WHERE id in ('.implode(',', $all_tags) .')
 ;';
   list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -454,7 +454,7 @@ SELECT COUNT(*)
 
   $query = '
 SELECT DISTINCT(image_id) 
-  FROM `'. IMAGE_TAG_TABLE .'` 
+  FROM '. IMAGE_TAG_TABLE .' 
   WHERE 
     tag_id IN ('.implode(',', $merge_tag) .')
 ;';
@@ -462,7 +462,7 @@ SELECT DISTINCT(image_id)
 
   $query = '
 SELECT image_id 
-  FROM `'. IMAGE_TAG_TABLE .'` 
+  FROM '. IMAGE_TAG_TABLE .' 
   WHERE tag_id = '.$params['destination_tag_id'].'
 ;';
 
