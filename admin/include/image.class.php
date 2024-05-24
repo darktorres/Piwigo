@@ -677,11 +677,11 @@ class image_ext_imagick implements imageInterface
 
         $dest = pathinfo((string) $destination_filepath);
         $exec .= ' "' . realpath($dest['dirname']) . '/' . $dest['basename'] . '" 2>&1';
-        $logger->debug($exec, 'i.php');
+        $logger->debug($exec);
         @exec($exec, $returnarray);
 
         if (is_array($returnarray) && ($returnarray !== [])) {
-            $logger->error('', 'i.php', $returnarray);
+            $logger->error('', $returnarray);
             foreach ($returnarray as $line) {
                 trigger_error($line, E_USER_WARNING);
             }

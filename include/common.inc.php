@@ -109,7 +109,6 @@ include(PHPWG_ROOT_PATH . 'include/constants.php');
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 include(PHPWG_ROOT_PATH . 'include/template.class.php');
 include(PHPWG_ROOT_PATH . 'include/cache.class.php');
-include(PHPWG_ROOT_PATH . 'include/Logger.class.php');
 
 $persistent_cache = new PersistentFileCache();
 
@@ -127,17 +126,8 @@ try {
 
 load_conf_from_db();
 
-$logger = new Logger([
-    'directory' => PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'],
-    'severity' => $conf['log_level'],
-    // we use an hashed filename to prevent direct file access, and we salt with
-    // the db_password instead of secret_key because the log must be usable in i.php
-    // (secret_key is in the database)
-    'filename' => 'log_' . date('Y-m-d') . '_' . sha1(
-        date('Y-m-d') . $conf['db_password']
-    ) . '.txt',
-    'globPattern' => 'log_*.txt',
-    'archiveDays' => $conf['log_archive_days'],
+$logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
+    'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
 ]);
 
 if (! $conf['check_upgrade_feed'] && (! isset($conf['piwigo_db_version']) || $conf['piwigo_db_version'] != get_branch_from_version(

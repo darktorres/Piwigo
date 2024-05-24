@@ -18,17 +18,8 @@ defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_locati
 
 @include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
 
-include(PHPWG_ROOT_PATH . 'include/Logger.class.php');
-
-$logger = new Logger([
-    'directory' => PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'],
-    'severity' => $conf['log_level'],
-    // we use an hashed filename to prevent direct file access, and we salt with
-    // the db_password instead of secret_key because the log must be usable in i.php
-    // (secret_key is in the database)
-    'filename' => 'log_' . date('Y-m-d') . '_' . sha1(
-        date('Y-m-d') . $conf['db_password']
-    ) . '.txt',
+$logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
+    'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
 ]);
 
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
@@ -45,7 +36,7 @@ function ierror($msg, $code)
 
         // default url is on html format
         $url = html_entity_decode((string) $msg);
-        $logger->debug($code . ' ' . $url, 'i.php', [
+        $logger->debug($code . ' ' . $url, [
             'url' => $_SERVER['REQUEST_URI'],
         ]);
         header('Request-URI: ' . $url);
@@ -65,7 +56,7 @@ function ierror($msg, $code)
 
     //todo improve
     echo $msg;
-    $logger->error($code . ' ' . $msg, 'i.php', [
+    $logger->error($code . ' ' . $msg, [
         'url' => $_SERVER['REQUEST_URI'],
     ]);
     exit;
@@ -369,7 +360,7 @@ try {
         $conf['db_base']
     );
 } catch (Exception $exception) {
-    $logger->error($exception->getMessage(), 'i.php');
+    $logger->error($exception->getMessage());
 }
 
 [$conf['derivatives']] = pwg_db_fetch_row(
@@ -462,7 +453,7 @@ SELECT *
             ierror('Db file path not found', 404);
         }
     } catch (Exception $e) {
-        $logger->error($e->getMessage(), 'i.php');
+        $logger->error($e->getMessage());
     }
 } else {
     $page['rotation_angle'] = 0;
@@ -586,8 +577,8 @@ $timing['send'] = time_step($step);
 
 $timing['total'] = time_step($begin);
 
-if ($logger->severity() >= Logger::DEBUG) {
-    $logger->debug('', 'i.php', [
+if ($conf['log_level'] >= Psr\Log\LogLevel::DEBUG) {
+    $logger->debug('', [
         'src_path' => basename($page['src_path']),
         'derivative_path' => basename($page['derivative_path']),
         'o_size' => $o_size[0] . ' ' . $o_size[1] . ' ' . ($o_size[0] * $o_size[1]),
