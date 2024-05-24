@@ -39,15 +39,8 @@ if (isset($conf['session_save_handler']) && $conf['session_save_handler'] == 'db
  */
 function generate_key(
     $size
-): string {
-    include_once(PHPWG_ROOT_PATH . 'include/random_compat/random.php');
-
-    try {
-        $bytes = random_bytes($size + 10);
-    } catch (Exception) {
-        include_once(PHPWG_ROOT_PATH . 'include/srand.php');
-        $bytes = secure_random_bytes($size + 10);
-    }
+) {
+    $bytes = random_bytes($size + 10);
 
     return substr(
         str_replace(
