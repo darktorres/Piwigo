@@ -22,7 +22,7 @@
     <label>
       {'Username or email'|@translate}
       <br>
-      <input type="text" id="username_or_email" name="username_or_email" size="100" maxlength="100"{if isset($username_or_email)} value="{$username_or_email}"{/if}>
+      <input type="text" id="username_or_email" name="username_or_email" size="100" maxlength="100"{if isset($username_or_email)} value="{$username_or_email}"{/if} autocomplete="email">
     </label>
   </p>
 
@@ -35,7 +35,7 @@
     <label>
       {'New password'|@translate}
       <br>
-      <input type="password" name="use_new_pwd" id="use_new_pwd" value="">
+      <input type="password" name="use_new_pwd" id="use_new_pwd" value="" autocomplete="new-password">
     </label>
   </p>
 
@@ -43,7 +43,7 @@
     <label>
       {'Confirm Password'|@translate}
       <br>
-      <input type="password" name="passwordConf" id="passwordConf" value="">
+      <input type="password" name="passwordConf" id="passwordConf" value="" autocomplete="new-password">
     </label>
   </p>
 </fieldset>
