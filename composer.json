@@ -4,11 +4,13 @@
     "require": {
         "php": "^8.3",
         "ahand/mobileesp": "dev-master",
+        "cweagans/composer-patches": "^2.0",
         "katzgrau/klogger": "^1.2",
         "openpsa/universalfeedcreator": "^v1.8.4.1",
         "pclzip/pclzip": "^2.8",
         "pelago/emogrifier": "^7.0",
         "phpmailer/phpmailer": "^6.7",
+        "smarty/smarty": "^4.3",
         "tedivm/jshrink": "^1.4",
         "tubalmartin/cssmin": "^4.1"
     },
@@ -21,6 +23,13 @@
     "config": {
         "allow-plugins": {
             "cweagans/composer-patches": true
+        }
+    },
+    "extra": {
+        "patches": {
+            "smarty/smarty": {
+                "Patch strftime": "patches/strftime.patch"
+            }
         }
     }
 }
