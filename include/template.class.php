@@ -51,8 +51,6 @@ function customErrorHandler(
 
 set_error_handler('customErrorHandler');
 
-require_once( PHPWG_ROOT_PATH .'include/smarty/libs/Smarty.class.php');
-
 /** default rank for buttons */
 define('BUTTONS_RANK_NEUTRAL', 50);
 
@@ -165,6 +163,9 @@ class Template
     $this->smarty->registerPlugin('modifier', 'explode', array('Template', 'mod_explode') );
     $this->smarty->registerPlugin('modifier', 'ternary', array('Template', 'mod_ternary') );
     $this->smarty->registerPlugin('modifier', 'get_extent', array($this, 'get_extent') );
+    $this->smarty->registerPlugin('modifier', 'count', 'count' );
+    $this->smarty->registerPlugin('modifier', 'strpos', 'strpos' );
+    $this->smarty->registerPlugin('modifier', 'is_admin', 'is_admin' );
     $this->smarty->registerPlugin('block', 'html_head', array($this, 'block_html_head') );
     $this->smarty->registerPlugin('block', 'html_style', array($this, 'block_html_style') );
     $this->smarty->registerPlugin('function', 'combine_script', array($this, 'func_combine_script') );
