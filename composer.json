@@ -1,5 +1,6 @@
 {
     "require": {
-        "ahand/mobileesp": "dev-master"
+        "ahand/mobileesp": "dev-master",
+        "katzgrau/klogger": "^1.2"
     }
 }

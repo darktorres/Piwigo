@@ -186,7 +186,7 @@ function get_regular_search_results($search, $images_where='')
 {
   global $conf, $logger;
 
-  $logger->debug(__FUNCTION__, 'search', $search);
+  $logger->debug(__FUNCTION__, $search);
 
   $forbidden = get_sql_condition_FandF(
         array
