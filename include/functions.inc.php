@@ -2214,7 +2214,6 @@ function get_device()
     $device = pwg_get_session_var('device');
 
     if ($device === null) {
-        include_once(PHPWG_ROOT_PATH . 'include/mdetect.php');
         $uagent_obj = new uagent_info();
         if ($uagent_obj->DetectSmartphone()) {
             $device = 'mobile';
