@@ -964,7 +964,7 @@ $(document).ready(function() {
     </div>
     <div class="AddUserInputContainer">
       <label class="user-property-label AddUserLabelUsername">{'Username'|@translate}
-        <input class="user-property-input" />
+        <input class="user-property-input" autocomplete="off"/>
       </label>
     </div>
 
@@ -982,7 +982,7 @@ $(document).ready(function() {
 
     <div class="AddUserInputContainer">
       <label class="user-property-label AddUserLabelEmail">{'Email'|@translate}
-        <input class="user-property-input" />
+        <input class="user-property-input" autocomplete="off"/>
       </label>
     </div>
 
