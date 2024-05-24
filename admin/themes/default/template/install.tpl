@@ -228,12 +228,12 @@ jQuery().ready(function(){ldelim}
     </tr>
     <tr>
       <td class="fieldname">{'User'|@translate}</td>
-      <td><input type="text" name="dbuser" value="root" required></td>
+      <td><input type="text" name="dbuser" value="root" required autocomplete="username"></td>
       <td class="fielddesc">{'user login given by your host provider'|@translate}</td>
     </tr>
     <tr>
       <td class="fieldname">{'Password'|@translate}</td>
-      <td><input type="password" name="dbpasswd" value="1234"></td>
+      <td><input type="password" name="dbpasswd" value="1234" autocomplete="current-password"></td>
       <td class="fielddesc">{'user password given by your host provider'|@translate}</td>
     </tr>
     <tr>
@@ -250,22 +250,22 @@ jQuery().ready(function(){ldelim}
   <table class="table2">
     <tr>
       <td style="width: 30%;" class="fieldname">{'Username'|@translate}</td>
-      <td><input type="text" name="admin_name" value="darktorres" required></td>
+      <td><input type="text" name="admin_name" value="darktorres" required autocomplete="username"></td>
       <td class="fielddesc">{'It will be shown to the visitors. It is necessary for website administration'|@translate}</td>
     </tr>
     <tr>
       <td class="fieldname">{'Password'|@translate}</td>
-      <td><input type="password" name="admin_pass1" value="1234" required></td>
+      <td><input type="password" name="admin_pass1" value="1234" required autocomplete="new-password"></td>
       <td class="fielddesc">{'Keep it confidential, it enables you to access administration panel'|@translate}</td>
     </tr>
     <tr>
       <td class="fieldname">{'Password [confirm]'|@translate}</td>
-      <td><input type="password" name="admin_pass2" value="1234" required></td>
+      <td><input type="password" name="admin_pass2" value="1234" required autocomplete="new-password"></td>
       <td class="fielddesc">{'verification'|@translate}</td>
     </tr>
     <tr>
       <td class="fieldname">{'Email address'|@translate}</td>
-      <td><input type="text" name="admin_mail" id="admin_mail" value="torres.dark@gmail.com" required></td>
+      <td><input type="text" name="admin_mail" id="admin_mail" value="torres.dark@gmail.com" required autocomplete="email"></td>
       <td class="fielddesc">{'Visitors will be able to contact site administrator with this mail'|@translate}</td>
     </tr>
     <tr>
