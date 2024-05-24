@@ -5,12 +5,26 @@
     "require": {
         "php": "^8.3",
         "ahand/mobileesp": "dev-master",
+        "cweagans/composer-patches": "^2.0.0-beta2",
         "katzgrau/klogger": "^1.2.2",
         "openpsa/universalfeedcreator": "^v1.9",
         "pclzip/pclzip": "^2.8.2",
         "pelago/emogrifier": "^7.2",
         "phpmailer/phpmailer": "^6.9.2",
+        "smarty/smarty": "^4.5.3",
         "tedivm/jshrink": "^1.7",
         "tubalmartin/cssmin": "^4.1.1"
+    },
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true
+        }
+    },
+    "extra": {
+        "patches": {
+            "smarty/smarty": {
+                "Patch strftime": "patches/strftime.patch"
+            }
+        }
     }
 }
