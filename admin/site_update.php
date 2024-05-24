@@ -529,7 +529,7 @@ SELECT id, path
             $existing_ids[] = $db_elements_flip[$path];
         }
 
-        $logger->debug('existing_ids', 'sync', $existing_ids);
+        $logger->debug('existing_ids', $existing_ids);
 
         if ($existing_ids !== []) {
             $db_formats = [];
@@ -552,7 +552,7 @@ SELECT *
             // first we search the formats that were removed
             foreach ($db_formats as $image_id => $formats) {
                 $image_formats_to_delete = array_diff_key($formats, $fs[$db_elements[$image_id]]['formats']);
-                $logger->debug('image_formats_to_delete', 'sync', $image_formats_to_delete);
+                $logger->debug('image_formats_to_delete', $image_formats_to_delete);
                 foreach ($image_formats_to_delete as $ext => $format_id) {
                     $formats_to_delete[] = $format_id;
 
@@ -573,7 +573,7 @@ SELECT *
                 }
 
                 $image_formats_to_insert = array_diff_key($fs[$path]['formats'], $formats);
-                $logger->debug('image_formats_to_insert', 'sync', $image_formats_to_insert);
+                $logger->debug('image_formats_to_insert', $image_formats_to_insert);
                 foreach ($image_formats_to_insert as $ext => $filesize) {
                     $insert_formats[] = [
                         'image_id' => $image_id,
