@@ -968,7 +968,7 @@ $(document).ready(function() {
     </div>
     <div class="AddUserInputContainer">
       <label class="user-property-label AddUserLabelUsername">{'Username'|@translate}
-        <input class="user-property-input" />
+        <input class="user-property-input" autocomplete="off"/>
       </label>
     </div>
 
@@ -977,7 +977,7 @@ $(document).ready(function() {
         <label for="AddUserPassword" class="user-property-label AddUserLabelPassword">{'Password'|@translate}</label>
         <span id="show_password" class="icon-eye"></span>
       </div>
-      <input id="AddUserPassword" class="user-property-input" type="password"/>
+      <input id="AddUserPassword" class="user-property-input" type="password" autocomplete="new-password"/>
 
       <div class="AddUserGenPassword">
         <span class="icon-dice-solid"></span><span>{'Generate random password'|@translate}</span>
@@ -986,7 +986,7 @@ $(document).ready(function() {
 
     <div class="AddUserInputContainer">
       <label class="user-property-label AddUserLabelEmail">{'Email'|@translate}
-        <input class="user-property-input" />
+        <input class="user-property-input" autocomplete="off"/>
       </label>
     </div>
 
