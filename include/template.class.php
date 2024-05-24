@@ -2213,14 +2213,13 @@ final class FileCombiner
         $file
     ) {
         if (! str_contains($file, '.min') && ! str_contains($file, '.packed')) {
-            require_once(PHPWG_ROOT_PATH . 'include/jshrink.class.php');
             try {
                 $js = JShrink\Minifier::minify($js);
             } catch (Exception) {
             }
         }
 
-        return trim($js, " \t\r\n;") . ";\n";
+        return trim((string) $js, " \t\r\n;") . ";\n";
     }
 
     /**
