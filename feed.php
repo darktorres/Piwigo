@@ -87,12 +87,9 @@ check_status(ACCESS_GUEST);
 
 [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
-include_once(PHPWG_ROOT_PATH . 'include/feedcreator.class.php');
-
 set_make_full_url();
 
 $rss = new UniversalFeedCreator();
-$rss->encoding = 'utf-8';
 $rss->title = $conf['gallery_title'];
 $rss->title .= ' (as ' . stripslashes((string) $user['username']) . ')';
 
