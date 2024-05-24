@@ -28,7 +28,7 @@ class smartpocket_maintain extends ThemeMaintain
 
             conf_update_param('smartpocket', $config, true);
         }
-        
+
         $this->installed = true;
     }
 

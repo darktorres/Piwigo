@@ -43,14 +43,14 @@ class SPThumbPicker
             if ($params->max_height() < $height || $params->sizing->max_crop) {
                 continue;
             }
-            
+
             if ($params->max_height() > 3 * $height) {
                 break;
             }
-            
+
             $this->candidates[] = $params;
         }
-        
+
         $this->default = ImageStdParams::get_custom($height * 3, $height, 1, 0, $height);
         $this->height = $height;
     }
@@ -66,11 +66,11 @@ class SPThumbPicker
                 break;
             }
         }
-        
+
         if (! $ok) {
             $deriv = new DerivativeImage($this->default, $src_image);
         }
-        
+
         return $deriv;
     }
 }
@@ -158,7 +158,7 @@ if (! function_exists('add_menu_on_public_pages')) {
     if (defined('IN_ADMIN') && IN_ADMIN) {
         return false;
     }
-    
+
     add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20);
 
     function add_menu_on_public_pages()
@@ -167,7 +167,7 @@ if (! function_exists('add_menu_on_public_pages')) {
             return false;
         }
 
-         # The current page has already the menu
+        # The current page has already the menu
         global $template, $page, $conf;
         if (isset($page['body_id']) && $page['body_id'] == 'thePicturePage') {
             $template->set_filenames([
