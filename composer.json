@@ -3,6 +3,7 @@
         "ahand/mobileesp": "dev-master",
         "katzgrau/klogger": "^1.2",
         "openpsa/universalfeedcreator": "^v1.8.4.1",
-        "pclzip/pclzip": "^2.8"
+        "pclzip/pclzip": "^2.8",
+        "pelago/emogrifier": "^7.0"
     }
 }
