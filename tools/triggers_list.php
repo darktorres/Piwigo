@@ -1043,10 +1043,10 @@ array(
 </div> <!-- the_footer -->
 
 
-<script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+<script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
   
-<script type="text/javascript">
+<script>
 var oTable = $('#list').dataTable({
   "bJQueryUI": true,
   "aaSorting": [ [0,'asc'] ],
