@@ -568,7 +568,7 @@ class Template
           foreach ($scripts as $script)
           {
               $content[]=
-                  '<script type="text/javascript" src="'
+                  '<script src="'
                   . self::make_script_src($script)
                   .'"></script>';
           }
@@ -912,13 +912,13 @@ class Template
       foreach ($scripts[0] as $script)
       {
         $content[]=
-          '<script type="text/javascript" src="'
+          '<script src="'
           . self::make_script_src($script)
           .'"></script>';
       }
       if (count($this->scriptLoader->inline_scripts))
       {
-        $content[]= '<script type="text/javascript">//<![CDATA[
+        $content[]= '<script>//<![CDATA[
 ';
         $content = array_merge($content, $this->scriptLoader->inline_scripts);
         $content[]= '//]]></script>';
@@ -926,7 +926,7 @@ class Template
 
       if (count($scripts[1]))
       {
-        $content[]= '<script type="text/javascript">';
+        $content[]= '<script>';
         $content[]= '(function() {
 var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTagName(\'script\').length-1];';
         foreach ($scripts[1] as $id => $script)

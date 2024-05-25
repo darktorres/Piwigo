@@ -23,7 +23,7 @@
 
 {combine_script id='jquery' path='themes/default/js/jquery.min.js'}
 {literal}
-<script type="text/javascript">
+<script>
 $(document).ready(function() {
   $("a.externalLink").click(function() {
     window.open($(this).attr("href"));

@@ -58,7 +58,7 @@
 <!-- END get_combined -->
 
 <!--[if lt IE 7]>
-<script type="text/javascript" src="{$ROOT_URL}themes/default/js/pngfix.js"></script>
+<script src="{$ROOT_URL}themes/default/js/pngfix.js"></script>
 <![endif]-->
 
 {if not empty($head_elements)}
