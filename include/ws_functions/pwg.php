@@ -240,7 +240,7 @@ function ws_getCacheSize(array $params, &$service): array
 
   foreach(array_keys($infos['msizes']) as $size_type)
   {
-    $infos['msizes'][$size_type] += $msizes[derivative_to_url($size_type)];
+    $infos['msizes'][$size_type] += $msizes[derivative_to_url($size_type)] ?? 0;
     $all += $infos['msizes'][$size_type];
   }
   $infos['msizes']['all'] = $all;
@@ -1006,7 +1006,7 @@ SELECT
       .'" alt="'.$image_title.'" title="'.$image_title.'">';
     }
 
-    $sorted_members[$user_name] += 1;
+    $sorted_members[$user_name] = ($sorted_members[$user_name] ?? 0) + 1;
 
     $result[] = 
       array(

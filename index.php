@@ -202,8 +202,8 @@ if ( empty($page['is_external']) )
       !isset($page['chronology_field']) && isset($page['qsearch_details']) )
   {
     $cats = array_merge(
-        (array)$page['qsearch_details']['matching_cats_no_images'],
-        (array)$page['qsearch_details']['matching_cats'] );
+        ($page['qsearch_details']['matching_cats_no_images']) ?? [],
+        $page['qsearch_details']['matching_cats'] );
     if (count($cats))
     {
       usort($cats, 'name_compare');
