@@ -22,6 +22,9 @@ if (isset($conf['modus_theme']) && ! is_array($conf['modus_theme'])) {
 
 if (! empty($_GET['skin']) && ! preg_match('/[^a-zA-Z0-9_-]/', (string) $_GET['skin'])) {
     $conf['modus_theme']['skin'] = $_GET['skin'];
+} else {
+    include_once(__DIR__ . '/functions.inc.php');
+    $conf['modus_theme'] = modus_get_default_config();
 }
 
 // we're mainly interested in an override of the colorscheme
