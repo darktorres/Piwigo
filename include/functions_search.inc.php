@@ -32,6 +32,8 @@ SELECT rules
 ;';
   list($serialized_rules) = pwg_db_fetch_row(pwg_query($query));
 
+  if ($serialized_rules === null) { return []; }
+
   return unserialize($serialized_rules ?? '');
 }
 

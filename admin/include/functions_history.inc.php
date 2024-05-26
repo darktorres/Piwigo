@@ -343,7 +343,7 @@ SELECT *
     $time_tokens = explode('-', (string)$time_key);
 
     $inserts[] = array(
-      'year'     => $time_tokens[0],
+      'year'     => $time_tokens[0] ?? null,
       'month'    => $time_tokens[1] ?? null,
       'day'      => $time_tokens[2] ?? null,
       'hour'     => $time_tokens[3] ?? null,

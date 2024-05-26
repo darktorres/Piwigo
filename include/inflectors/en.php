@@ -11,6 +11,8 @@ class Inflector_en
   private $exceptions;
   private $pluralizers;
   private $singularizers;
+  private array $er2ing;
+  private array $ing2er;
 
   function __construct()
   {
@@ -99,7 +101,7 @@ class Inflector_en
 
     $lword = strtolower($word);
 
-    $rc = @$this->exceptions[$lword];
+    $rc = ($this->exceptions[$lword]) ?? null;
     if ( isset($rc) )
     {
       if (!empty($rc))

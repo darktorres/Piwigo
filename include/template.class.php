@@ -1877,12 +1877,24 @@ final class FileCombiner
    */
   public static function clear_combined_files(): void
   {
-    $dir = opendir(PHPWG_ROOT_PATH.PWG_COMBINED_DIR);
+    $combinedDir = PHPWG_ROOT_PATH . PWG_COMBINED_DIR;
+
+    if (!is_dir($combinedDir)) {
+        throw new Exception("Combined directory does not exist: $combinedDir");
+    }
+
+    $dir = opendir($combinedDir);
+
+    if (!$dir) {
+        throw new Exception("Failed to open directory: $combinedDir");
+    }
+
     while ($file = readdir($dir))
     {
       if ( get_extension($file)=='js' || get_extension($file)=='css')
-        unlink(PHPWG_ROOT_PATH.PWG_COMBINED_DIR.$file);
+        unlink($combinedDir.$file);
     }
+    
     closedir($dir);
   }
 

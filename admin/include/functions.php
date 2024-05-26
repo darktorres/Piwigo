@@ -2315,7 +2315,7 @@ function cat_admin_access(int $category_id): bool
 
   // $filter['visible_categories'] and $filter['visible_images']
   // are not used because it's not necessary (filter <> restriction)
-  if (in_array($category_id, explode(',', $user['forbidden_categories'])))
+  if (in_array($category_id, explode(',', $user['forbidden_categories'] ?? '')))
   {
     return false;
   }

@@ -41,7 +41,7 @@ else
 $elements_per_page=10;
 if (isset($_GET['display']) && is_numeric($_GET['display']))
 {
-  $elements_per_page = $_GET['display'];
+  $elements_per_page = (int)$_GET['display'];
 }
 
 $order_by_index=0;
@@ -119,7 +119,7 @@ $template->assign(
   array(
     'navbar' => create_navigation_bar(
       PHPWG_ROOT_PATH.'admin.php'.get_query_string_diff(array('start','del')),
-      $nb_images,
+      (int)$nb_images,
       $start,
       $elements_per_page
       ),

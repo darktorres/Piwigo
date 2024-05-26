@@ -702,12 +702,12 @@ function dateDiff(DateTime $date1, DateTime $date2): DateInterval|stdClass
 /**
  * converts a string into a DateTime object
  *
- * @param int|string $original timestamp or datetime string
+ * @param int|string|null $original timestamp or datetime string
  * @param string|null $format input format respecting date() syntax
  * @return DateTime|false
  * @throws Exception
  */
-function str2DateTime(int|string $original, string $format=null): DateTime|false
+function str2DateTime(int|string|null $original, string $format=null): DateTime|false
 {
   if (empty($original))
   {
@@ -759,14 +759,14 @@ function str2DateTime(int|string $original, string $format=null): DateTime|false
 /**
  * returns a formatted and localized date for display
  *
- * @param int|string $original timestamp or datetime string
+ * @param int|string|null $original timestamp or datetime string
  * @param array|null $show list of components displayed, default is ['day_name', 'day', 'month', 'year']
  *    THIS PARAMETER IS PLANNED TO CHANGE
  * @param string|null $format input format respecting date() syntax
  * @return string
  * @throws Exception
  */
-function format_date(int|string $original, array $show=null, string $format=null): string
+function format_date(int|string|null $original, array $show=null, string $format=null): string
 {
   global $lang;
 
@@ -849,7 +849,7 @@ function format_fromto(string $from, string $to, bool $full=false): string
 /**
  * Works out the time since the given date
  *
- * @param int|string $original timestamp or datetime string
+ * @param int|string|null $original timestamp or datetime string
  * @param string $stop year,month,week,day,hour,minute,second
  * @param string|null $format input format respecting date() syntax
  * @param bool $with_text append "ago" or "in the future"
@@ -858,7 +858,7 @@ function format_fromto(string $from, string $to, bool $full=false): string
  * @return string
  * @throws Exception
  */
-function time_since(int|string $original, string $stop='minute', string $format=null, bool $with_text=true, bool $with_week=true, bool $only_last_unit=false): string
+function time_since(int|string|null $original, string $stop='minute', string $format=null, bool $with_text=true, bool $with_week=true, bool $only_last_unit=false): string
 {
   $date = str2DateTime($original, $format);
 
@@ -1925,14 +1925,14 @@ function verify_ephemeral_key(string $key, string $aditionnal_data_to_hash = '')
  * return an array which will be sent to template to display navigation bar
  *
  * @param string $url base url of all links
- * @param $nb_element
+ * @param int $nb_element
  * @param int $start
  * @param int $nb_element_page
  * @param bool $clean_url
  * @param string $param_name
  * @return array
  */
-function create_navigation_bar(string $url, $nb_element, int $start, int $nb_element_page, bool $clean_url = false, string $param_name='start'): array
+function create_navigation_bar(string $url, int $nb_element, int $start, int $nb_element_page, bool $clean_url = false, string $param_name='start'): array
 {
   global $conf;
 
