@@ -10,79 +10,99 @@ import path from "path";
 import { gray, cyan, magenta, red, yellow } from "colorette";
 import { execSync } from "child_process";
 import { JSDOM } from "jsdom";
-import { MultiBar, Presets } from "cli-progress";
+import { MultiBar, Presets, SingleBar } from "cli-progress";
 
 const parallel = process.argv.includes("--parallel");
-const save = process.argv.includes("--save");
-const compare = process.argv.includes("--compare");
 
-// Delete the _data folder before starting Puppeteer operations
-clearDirectoryExcept(path.resolve(import.meta.dirname, "../../_data"), path.resolve(import.meta.dirname, "../../_data/i")).catch((err) =>
-  console.error("Error during operation:", err)
-);
+const firstCommitArg = process.argv.find((arg) => arg.startsWith("--firstCommit="));
+const firstCommit = firstCommitArg ? firstCommitArg.split("=")[1] : null;
 
-if (save) {
+const lastCommitArg = process.argv.find((arg) => arg.startsWith("--lastCommit="));
+const lastCommit = lastCommitArg ? lastCommitArg.split("=")[1] : null;
+
+const runPuppeteerScript = async (commitDetails: { date: string; message: string }) => {
+  // Delete the _data folder before starting Puppeteer operations
+  clearDirectoryExcept(path.resolve(import.meta.dirname, "../../_data"), path.resolve(import.meta.dirname, "../../_data/i")).catch((err) =>
+    console.error("Error during operation:", err)
+  );
+
   await clearDirectoryExcept(path.resolve(import.meta.dirname, "./bef_pages")).catch((err) => console.error("Error during operation:", err));
-}
 
-if (compare) {
-  await clearDirectoryExcept(path.resolve(import.meta.dirname, "./aft_pages")).catch((err) => console.error("Error during operation:", err));
-}
+  const browser: Browser = await puppeteer.launch({
+    headless: true,
+    defaultViewport: { width: 1280, height: 1024 },
+    devtools: false,
+  });
+  const page: Page = await browser.newPage();
 
-const browser: Browser = await puppeteer.launch({
-  headless: true,
-  defaultViewport: { width: 1280, height: 1024 },
-  devtools: false,
-});
-const page: Page = await browser.newPage();
+  const pages: string[] = await readPageUrlsFromFile(path.join(import.meta.dirname, "pages.txt"));
+  const multiBar = new MultiBar({ forceRedraw: true }, Presets.shades_classic);
+  const totalSteps = pages.length;
+  const progressBar = multiBar.create(totalSteps, 0);
 
-const pages: string[] = await readPageUrlsFromFile(path.join(import.meta.dirname, "pages.txt"));
-const multiBar = new MultiBar({ forceRedraw: true }, Presets.shades_classic);
-const totalSteps = pages.length;
-const progressBar = multiBar.create(totalSteps, 0);
-
-if (save) {
   page
     .on("console", handleConsoleMessage)
     .on("pageerror", ({ message }) => console.log(red(message)))
     //.on('response', response => console.log(green(`${response.status()} ${response.url()}`)))
     .on("requestfailed", (request) => console.log(magenta(`${request.failure()?.errorText} ${request.url()}`)));
-}
 
-// Enable request interception
-await page.setRequestInterception(true);
-page.on("request", handleRequest);
+  // Enable request interception
+  await page.setRequestInterception(true);
+  page.on("request", handleRequest);
 
-//console.log(`\nLoaded http://localhost/Piwigo2/identification.php`);
+  //console.log(`\nLoaded http://localhost/Piwigo2/identification.php`);
 
-// Navigate to the login page
-await page.goto("http://localhost/Piwigo2/identification.php", { waitUntil: "networkidle0" });
+  // Navigate to the login page
+  await page.goto("http://localhost/Piwigo2/identification.php", { waitUntil: "networkidle0" });
 
-// Fill in the username and password
-await page.type("#username", "darktorres");
-await page.type("#password", "1234");
+  // Fill in the username and password
+  await page.type("#username", "darktorres");
+  await page.type("#password", "1234");
 
-// Click the login button and wait for navigation
-await page.click("#content > form > p:nth-child(2) > input[type=submit]:nth-child(2)");
+  // Click the login button and wait for navigation
+  await page.click("#content > form > p:nth-child(2) > input[type=submit]:nth-child(2)");
 
-// Now you are logged in, perform any actions you need to do after login
+  // Now you are logged in, perform any actions you need to do after login
 
-if (parallel) {
-  const pageLoadPromises = pages.map(async (url) => await loadPage(browser, url));
-  await Promise.all(pageLoadPromises);
-} else {
-  for (const url of pages) {
-    // console.log(`\nLoaded ${url}`);
-    const fullUrl = `http://localhost/Piwigo2/${url}`;
-    await page.goto(fullUrl, { waitUntil: "networkidle0" });
-    progressBar.increment();
-    await savePageContent(page, url);
+  if (parallel) {
+    const pageLoadPromises = pages.map(async (url) => await loadPage(browser, url, progressBar, commitDetails));
+    await Promise.all(pageLoadPromises);
+  } else {
+    for (const url of pages) {
+      // console.log(`\nLoaded ${url}`);
+      const fullUrl = `http://localhost/Piwigo2/${url}`;
+      await page.goto(fullUrl, { waitUntil: "networkidle0" });
+      progressBar.increment();
+      await savePageContent(page, url, commitDetails);
+    }
   }
-}
 
-multiBar.update();
-multiBar.stop();
-await browser.close();
+  multiBar.update();
+  multiBar.stop();
+  await browser.close();
+};
+
+const main = async () => {
+  // Validate first and last commit arguments
+  if (!firstCommit || !lastCommit) {
+    console.error("Please provide --firstCommit and --lastCommit arguments.");
+    process.exit(1);
+  }
+
+  // Get commit hashes to iterate over
+  const commits = getCommitHashes(firstCommit, lastCommit);
+
+  for (const commit of commits) {
+    console.log(`Checking out commit: ${commit}`);
+    execShellCommand(`git checkout ${commit}`);
+    await runPuppeteerScript(getCommitDetails(commit));
+  }
+
+  // Checkout back to the last commit or the branch you started from
+  execShellCommand(`git checkout ${lastCommit}`);
+};
+
+main().catch((err) => console.error("Error during operation:", err));
 
 // ===================================== END MAIN ===========================================
 
@@ -103,59 +123,30 @@ async function sanitizeFilename(url: string): Promise<string> {
   return url.replace(/[^a-z0-9]/gi, "_").toLowerCase();
 }
 
-async function savePageContent(page: Page, url: string): Promise<void> {
-  const sanitizedUrl = await sanitizeFilename(url);
-  const savedFilename = path.join(import.meta.dirname, `./bef_pages/${sanitizedUrl}.html`);
-  const currentFilename = path.join(import.meta.dirname, `./aft_pages/${sanitizedUrl}.html`);
+async function savePageContent(page: Page, url: string, commitDetails: { date: string; message: string }): Promise<void> {
+  const content = await page.content();
+  const safeMessage = commitDetails.message.replace(/[<>:"\/\\|?*]+/g, ""); // Remove invalid characters
+  const dirName = `${commitDetails.date} ${safeMessage}`;
+  const dirPath = path.join(import.meta.dirname, dirName);
+  // await fs.ensureDir(dirPath);
+  const filePath = path.join(dirPath, encodeURIComponent(url));
+  await fs.outputFile(filePath, content);
 
-  if (save) {
-    // TODO: add a 'ready' variable to pages to waitFor so all js has run
-    // const watchDog = page.waitForFunction('window.status === "ready"');
-    // await watchDog;
+  // const sanitizedUrl = await sanitizeFilename(url);
+  // const savedFilename = path.join(import.meta.dirname, `./bef_pages/${sanitizedUrl}.html`);
+  // const currentFilename = path.join(import.meta.dirname, `./aft_pages/${sanitizedUrl}.html`);
 
-    const content = await page.content();
+  // // TODO: add a 'ready' variable to pages to waitFor so all js has run
+  // // const watchDog = page.waitForFunction('window.status === "ready"');
+  // // await watchDog;
 
-    if (!fs.existsSync(path.join(import.meta.dirname, "./bef_pages"))) {
-      fs.mkdirSync(path.join(import.meta.dirname, "./bef_pages"));
-    }
+  // const content = await page.content();
 
-    fs.writeFileSync(savedFilename, content);
-  }
+  // if (!fs.existsSync(path.join(import.meta.dirname, "./bef_pages"))) {
+  //   fs.mkdirSync(path.join(import.meta.dirname, "./bef_pages"));
+  // }
 
-  if (compare) {
-    // TODO: add a 'ready' variable to pages to waitFor so all js has run
-    // const watchDog = page.waitForFunction('window.status === "ready"');
-    // await watchDog;
-    const content = await page.content();
-
-    if (!fs.existsSync(path.join(import.meta.dirname, "./aft_pages"))) {
-      fs.mkdirSync(path.join(import.meta.dirname, "./aft_pages"));
-    }
-
-    fs.writeFileSync(currentFilename, content);
-
-    const equivalent = await compareHTMLFiles(savedFilename, currentFilename);
-
-    if (equivalent) {
-      // console.log(`The HTML files for ${url} are equivalent.`);
-    } else {
-      console.log(`Differences found in ${url}.`);
-
-      const diffCommand = `git diff --no-index --color-words ${savedFilename} ${currentFilename} 2>NUL`;
-
-      try {
-        execSync(diffCommand);
-      } catch (error: any) {
-        if (error.status === 1) {
-          console.log(error.stdout.toString());
-        } else if (error.status === 2) {
-          console.error(`Error during diff operation for ${url}:`, error.message);
-        } else {
-          console.error(`Unexpected error during diff operation for ${url}:`, error);
-        }
-      }
-    }
-  }
+  // fs.writeFileSync(savedFilename, content);
 }
 
 async function handleRequest(interceptedRequest: HTTPRequest): Promise<void> {
@@ -280,22 +271,45 @@ async function compareHTMLFiles(filePath1: string, filePath2: string): Promise<b
   return await elementsAreEquivalent(doc1, doc2);
 }
 
-async function loadPage(browser: Browser, url: string): Promise<void> {
+async function loadPage(browser: Browser, url: string, progressBar: SingleBar, commitDetails: { date: string; message: string }): Promise<void> {
   try {
     const page: Page = await browser.newPage();
+
+    page
+      .on("console", handleConsoleMessage)
+      .on("pageerror", ({ message }) => console.log(red(message)))
+      //.on('response', response => console.log(green(`${response.status()} ${response.url()}`)))
+      .on("requestfailed", (request) => console.log(magenta(`${request.failure()?.errorText} ${request.url()}`)));
+
     const fullUrl = `http://localhost/Piwigo2/${url}`;
-    if (save) {
-      page
-        .on("console", handleConsoleMessage)
-        .on("pageerror", ({ message }) => console.log(red(message)))
-        //.on('response', response => console.log(green(`${response.status()} ${response.url()}`)))
-        .on("requestfailed", (request) => console.log(magenta(`${request.failure()?.errorText} ${request.url()}`)));
-    }
     await page.goto(fullUrl, { waitUntil: "networkidle0" });
     progressBar.increment();
-    await savePageContent(page, url);
+    await savePageContent(page, url, commitDetails);
     await page.close();
   } catch (error) {
     console.error(`Failed to load ${url}: ${error}`);
   }
 }
+
+// Function to execute shell commands
+const execShellCommand = (cmd: string): string => {
+  try {
+    return execSync(cmd, { stdio: "inherit" }).toString().trim();
+  } catch (error) {
+    console.error(`Error executing command: ${cmd}`, error);
+    process.exit(1);
+  }
+};
+
+// Function to get all commit hashes between firstCommit and lastCommit
+const getCommitHashes = (firstCommit: string, lastCommit: string): string[] => {
+  const result = execSync(`git rev-list ${firstCommit}..${lastCommit}`).toString().trim();
+  return result.split("\n").reverse(); // Reverse to process commits from first to last
+};
+
+// Function to get commit date and message
+const getCommitDetails = (commitHash: string): { date: string; message: string } => {
+  const date = execShellCommand(`git show -s --format=%ci ${commitHash}`);
+  const message = execShellCommand(`git show -s --format=%s ${commitHash}`);
+  return { date, message };
+};
