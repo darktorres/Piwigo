@@ -25,7 +25,7 @@ $(".delete-site-button").each(function() {
 {if not empty($remote_output)}
 <div class="remoteOutput">
   <ul>
-    {foreach from=$remote_output item=remote_line}
+    {foreach $remote_output as $remote_line}
     <li class="{$remote_line.CLASS}">{$remote_line.CONTENT}</li>
     {/foreach}
   </ul>
@@ -48,7 +48,7 @@ $(".delete-site-button").each(function() {
     {/if}
     {if not empty($site.plugin_links)}
         <br>
-      {foreach from=$site.plugin_links item=plugin_link}
+      {foreach $site.plugin_links as $plugin_link}
         [<a href="{$plugin_link.U_HREF}" title='{$plugin_link.U_HINT}'>{$plugin_link.U_CAPTION}</a>]
       {/foreach}
     {/if}
