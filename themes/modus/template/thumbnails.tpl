@@ -101,7 +101,7 @@
 .thumbLegend {ldelim}font-size: 90%}
 {/if}
 {/html_style}
-{foreach from=$thumbnails item=thumbnail}
+{foreach $thumbnails as $thumbnail}
 	<li>
 	<span class="wrap1">
 		<span class="wrap2">
