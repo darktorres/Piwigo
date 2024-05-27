@@ -201,7 +201,7 @@ usersCache.selectize(jQuery('select.UserSearch'));
     {assign var='color_tab' value=["icon-red", "icon-blue", "icon-yellow", "icon-purple", "icon-green"]}
 
     {if not empty($groups)}
-    {foreach from=$groups item=group name=group_loop}
+    {foreach $groups as $group}
       {assign var='color_id' value=$group.ID%5}
       {groupContent 
         grp_id=$group.ID 

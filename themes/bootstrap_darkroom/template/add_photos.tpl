@@ -476,7 +476,7 @@ p#uploadModeInfos {text-align:left;margin-top:1em;font-size:90%;color:#999;}
 {if count($setup_errors) > 0}
 <div class="errors">
   <ul>
-  {foreach from=$setup_errors item=error}
+  {foreach $setup_errors as $error}
     <li>{$error}</li>
   {/foreach}
   </ul>
@@ -486,7 +486,7 @@ p#uploadModeInfos {text-align:left;margin-top:1em;font-size:90%;color:#999;}
   {if count($setup_warnings) > 0}
 <div class="warnings">
   <ul>
-    {foreach from=$setup_warnings item=warning}
+    {foreach $setup_warnings as $warning}
     <li>{$warning}</li>
     {/foreach}
   </ul>
@@ -499,7 +499,7 @@ p#uploadModeInfos {text-align:left;margin-top:1em;font-size:90%;color:#999;}
 <fieldset>
   <legend>{'Uploaded Photos'|@translate}</legend>
   <div>
-  {foreach from=$thumbnails item=thumbnail}
+  {foreach $thumbnails as $thumbnail}
     <a href="{$thumbnail.link}"  class="{if isset($thumbnail.lightbox)}colorboxThumb{else}externalLink{/if}">
       <img src="{$thumbnail.src}" alt="{$thumbnail.file}" title="{$thumbnail.title}" class="thumbnail">
     </a>

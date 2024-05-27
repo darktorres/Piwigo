@@ -7,7 +7,7 @@
 <link rel="shortcut icon" type="image/x-icon" href="{$ROOT_URL}{$themeconf.icon_dir}/favicon.ico">
 
 {get_combined_css}
-{foreach from=$themes item=theme}
+{foreach $themes as $theme}
 {if $theme.load_css}
 {combine_css path="admin/themes/`$theme.id`/theme.css" order=-10}
 {/if}
@@ -178,7 +178,7 @@ jQuery().ready(function(){ldelim}
 {if isset($errors)}
 <div class="errors">
   <ul>
-    {foreach from=$errors item=error}
+    {foreach $errors as $error}
     <li>{$error}</li>
     {/foreach}
   </ul>
@@ -188,7 +188,7 @@ jQuery().ready(function(){ldelim}
 {if isset($infos)}
 <div class="infos">
   <ul>
-    {foreach from=$infos item=info}
+    {foreach $infos as $info}
     <li>{$info}</li>
     {/foreach}
   </ul>

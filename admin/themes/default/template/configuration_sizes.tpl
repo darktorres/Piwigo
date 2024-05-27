@@ -136,7 +136,7 @@ $(".restore-settings-button").each(function() {
     </div>
 
     <table style="margin:0">
-    {foreach from=$derivatives item=d key=type}
+    {foreach $derivatives as $type => $d}
       <tr>
         <td>
           <label>

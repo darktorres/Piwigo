@@ -84,7 +84,7 @@ $('#theImage img').bind('swipeleft swiperight', function (event) {
     <div class="col-lg-10 col-md-12 mx-auto">
       <div id="thumbnailCarousel" class="slick-carousel{if $theme_config->slick_centered} center{/if}">
   {assign var=idx value=0}
-  {foreach from=$thumbnails item=thumbnail}
+  {foreach $thumbnails as $thumbnail}
   {assign var=derivative value=$pwg->derivative($derivative_params_square, $thumbnail.src_image)}
   {if !$theme_config->slick_infinite}
     {assign var=derivative_medium value=$pwg->derivative($derivative_params_medium, $thumbnail.src_image)}
@@ -110,7 +110,7 @@ $('#theImage img').bind('swipeleft swiperight', function (event) {
   {if $theme_config->photoswipe && $theme_config->slick_infinite}
   <div id="photoSwipeData" class="d-none">
     {assign var=idx value=0}
-    {foreach from=$thumbnails item=thumbnail}
+    {foreach $thumbnails as $thumbnail}
     {assign var=derivative_medium value=$pwg->derivative($derivative_params_medium, $thumbnail.src_image)}
     {assign var=derivative_large value=$pwg->derivative($derivative_params_large, $thumbnail.src_image)}
     {assign var=derivative_xxlarge value=$pwg->derivative($derivative_params_xxlarge, $thumbnail.src_image)}

@@ -81,7 +81,7 @@ let str_size_type = "MB";
 let size_nb = 0;
 let str_size = "";
 {/literal}
-{foreach from=$STORAGE_CHART_DATA key=type item=value}
+{foreach $STORAGE_CHART_DATA as $type => $value}
   size = {$value};
   str_size_type_string = size > 1000000 ? str_gb : str_mb;
   size_nb = size > 1000000 ? (size / 1000000).toFixed(2) : (size / 1000).toFixed(0);
@@ -186,9 +186,9 @@ let str_size = "";
 
   <div class="chart-title"> {"Activity peak in the last weeks"|@translate}</div>
   <div class="activity-chart" style="grid-template-rows: repeat({count($ACTIVITY_CHART_DATA) + 1}, 5vw);">
-    {foreach from=$ACTIVITY_CHART_DATA item=WEEK_ACTIVITY key=WEEK_NUMBER}
+    {foreach $ACTIVITY_CHART_DATA as $WEEK_NUMBER => $WEEK_ACTIVITY}
       <div id="week-{$WEEK_NUMBER}-legend" class="row-legend"><div>{'Week %d'|@translate:$ACTIVITY_WEEK_NUMBER[$WEEK_NUMBER]}</div></div>
-      {foreach from=$WEEK_ACTIVITY item=SIZE key=DAY_NUMBER}
+      {foreach $WEEK_ACTIVITY as $DAY_NUMBER => $SIZE}
         <span>
           {if $SIZE != 0}
           {assign var='SIZE_IN_UNIT' value=$SIZE/$ACTIVITY_CHART_NUMBER_SIZES * 5 + 1}
@@ -201,7 +201,7 @@ let str_size = "";
               <span class="tooltip-date">{$ACTIVITY_LAST_WEEKS[$WEEK_NUMBER][$DAY_NUMBER]["date"]}</span>
             </span>
             <span class="tooltip-details">
-            {foreach from=$ACTIVITY_LAST_WEEKS[$WEEK_NUMBER][$DAY_NUMBER]["details"] item=actions key=cat}
+            {foreach $ACTIVITY_LAST_WEEKS[$WEEK_NUMBER][$DAY_NUMBER]["details"] as $cat => $actions}
               <span class="tooltip-details-cont">
                 {if $cat == "Group"} <span class="icon-group icon-purple tooltip-details-title">{$cat|translate}</span>
                 {elseif $cat == "User"} <span class="icon-users icon-purple tooltip-details-title"> {$cat|translate}</span>
@@ -210,7 +210,7 @@ let str_size = "";
                 {elseif $cat == "Tag"} <span class="icon-tags icon-green tooltip-details-title">{$cat|translate} </span>
                 {else} <span class="tooltip-details-title"> {$cat|translate} </span> {/if}
 
-                {foreach from=$actions item=number key=action}
+                {foreach $actions as $action => $number}
                   {if $action == "Edit"} <span class="icon-pencil tooltip-detail" title="{"%s editions"|@translate:$number}">{$number}</span>
                   {elseif $action == "Add"} <span class="icon-plus tooltip-detail" title="{"%s additions"|@translate:$number}">{$number}</span>
                   {elseif $action == "Delete"} <span class="icon-trash tooltip-detail" title="{"%s deletions"|@translate:$number}">{$number}</span>
@@ -229,7 +229,7 @@ let str_size = "";
       {/foreach}
     {/foreach}
     <div></div>
-    {foreach from=$DAY_LABELS item=day}
+    {foreach $DAY_LABELS as $day}
       <div class="col-legend">{$day} <div class="line-vertical" style="height: {count($ACTIVITY_CHART_DATA)*100 - 50}%;"></div></div>
     {/foreach}
   </div>
@@ -237,7 +237,7 @@ let str_size = "";
   <div class="chart-title"> {'Storage'|translate} <span class="chart-title-infos"> {'%s MB used'|translate:(round($STORAGE_TOTAL/1000, 0))} </span></div>
 
   <div class="storage-chart">
-    {foreach from=$STORAGE_CHART_DATA key=type item=value}
+    {foreach $STORAGE_CHART_DATA as $type => $value}
       {if $STORAGE_TOTAL > 0}
         <span data-type="storage-{$type}" style="width:{$value/$STORAGE_TOTAL*100}%"> 
         <p>{round($value/$STORAGE_TOTAL*100)}%</p>
@@ -251,13 +251,13 @@ let str_size = "";
   </div>
 
   <div class="storage-tooltips">
-    {foreach from=$STORAGE_CHART_DATA key=type item=value}
+    {foreach $STORAGE_CHART_DATA as $type => $value}
       <p id="storage-{$type}" class="tooltip"><b>{$type|translate}</b></p>
     {/foreach}
   </div>
 
   <div class="storage-chart-legend">
-    {foreach from=$STORAGE_CHART_DATA item=i key=type}
+    {foreach $STORAGE_CHART_DATA as $type => $i}
       <div><span></span> <p>{$type|translate}</p></div>
     {/foreach}
   </div>
