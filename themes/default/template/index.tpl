@@ -93,7 +93,7 @@
 			<span class="pwg-icon pwg-icon-camera-calendar"></span><span class="pwg-button-text">{'Calendar'|@translate}</span>
 		</a>{/strip}</li>
 {/if}
-{if !empty($PLUGIN_INDEX_BUTTONS)}{foreach from=$PLUGIN_INDEX_BUTTONS item=button}<li>{$button}</li>{/foreach}{/if}
+{if !empty($PLUGIN_INDEX_BUTTONS)}{foreach $PLUGIN_INDEX_BUTTONS as $button}<li>{$button}</li>{/foreach}{/if}
 {if !empty($PLUGIN_INDEX_ACTIONS)}{$PLUGIN_INDEX_ACTIONS}{/if}
 	</ul>
 
@@ -102,7 +102,7 @@
 {if isset($chronology_views)}
 <div class="calendarViews">{'View'|@translate}:
 	<a id="calendarViewSwitchLink" href="#">
-	{foreach from=$chronology_views item=view}{if $view.SELECTED}{$view.CONTENT}{/if}{/foreach}
+	{foreach $chronology_views as $view}{if $view.SELECTED}{$view.CONTENT}{/if}{/foreach}
 	</a>
 	<div id="calendarViewSwitchBox" class="switchBox">
 		{foreach from=$chronology_views item=view name=loop}{if !$smarty.foreach.loop.first}<br>{/if}
