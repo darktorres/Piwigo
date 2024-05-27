@@ -49,7 +49,7 @@ jQuery('.thumbnail').tipTip({
     {if !empty($thumbnails)}
     <p>{'Drag to re-order'|@translate}</p>
     <ul class="thumbnails">
-      {foreach from=$thumbnails item=thumbnail}
+      {foreach $thumbnails as $thumbnail}
       <li class="rank-of-image">
         <img src="{$thumbnail.TN_SRC}" class="thumbnail" alt="{$thumbnail.NAME|@replace:'"':' '}" title="{$thumbnail.NAME|@replace:'"':' '}"  style="width:{$thumbnail.SIZE[0]}px; height:{$thumbnail.SIZE[1]}px; ">
         <input type="text" name="rank_of_image[{$thumbnail.ID}]" value="{$thumbnail.RANK}" style="display:none">
@@ -83,7 +83,7 @@ jQuery('.thumbnail').tipTip({
         {'automatic order'|@translate}
       </label>
       <div id="image_order_user_define_options">
-      {foreach from=$image_order item=order}
+      {foreach $image_order as $order}
       <p class="field">
         <select name="image_order[]">
           {html_options options=$image_order_options selected=$order}

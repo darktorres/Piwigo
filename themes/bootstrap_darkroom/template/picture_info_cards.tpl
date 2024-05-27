@@ -42,7 +42,7 @@
                 <dd class="col-sm-7">
                   <form action="{$rating.F_ACTION}" method="post" id="rateForm" style="margin:0;">
                     <div>
-                      {foreach from=$rating.marks item=mark name=rate_loop}
+                      {foreach $rating.marks as $mark}
                       {if isset($rating.USER_RATE) && $mark==$rating.USER_RATE}
                       <span class="rateButtonStarFull" data-value="{$mark}"></span>
                       {else}
@@ -168,7 +168,7 @@
                       {$available_permission_levels[$current.level]}
                     </button>
                     <div class="dropdown-menu" role="menu" aria-labelledby="dropdownPermissions">
-{foreach from=$available_permission_levels item=label key=level}
+{foreach $available_permission_levels as $level => $label}
                       <a id="permission-{$level}" class="dropdown-item permission-li {if $current.level == $level} active{/if}" href="javascript:setPrivacyLevel({$current.id},{$level},'{$label}')">{$label}</a>
 {/foreach}
                     </div>
@@ -185,7 +185,7 @@
         <div class="card-body">
           <h5 class="card-title">{'Tags'|@translate}</h5>
             <div id="Tags" class="imageInfo">
-              {foreach from=$related_tags item=tag name=tag_loop}<a class="btn btn-primary btn-raised mr-1" href="{$tag.URL}">{$tag.name}</a>{/foreach}
+              {foreach $related_tags as $tag}<a class="btn btn-primary btn-raised mr-1" href="{$tag.URL}">{$tag.name}</a>{/foreach}
             </div>
         </div>
       </div>
@@ -289,8 +289,8 @@ $('#show_exif_data').on('click', function() {
 });
 {/footer_script}
           <div id="full_exif_data" class="d-none flex-column mt-2">
-{foreach from=$metadata item=meta}
-{foreach from=$meta.lines item=value key=label}
+{foreach $metadata as $meta}
+{foreach $meta.lines as $label => $value}
             <div>
               <dl class="row mb-0">
                 <dt class="col-sm-6">{$label}</dt>

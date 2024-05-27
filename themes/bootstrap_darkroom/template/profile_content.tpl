@@ -89,7 +89,7 @@
                 </div>
                 <label class="col-12 col-lg-4 form-check-label float-left pl-0">{'Expand all albums'|@translate}</label>
                 <div class="col-12 col-lg-8">
-{foreach from=$radio_options key=option item=value}
+{foreach $radio_options as $option => $value}
                     <div class="form-check form-check-inline radio">
                         <label for="expand" class="form-check-label">
                           <input name="expand" type="radio" class="form-check-input" value="{$option}" {if $option === $EXPAND}checked="checked"{/if}>
@@ -101,7 +101,7 @@
 {if $ACTIVATE_COMMENTS}
                 <label class="col-12 col-lg-4 form-check-label float-left pl-0">{'Show number of comments'|@translate}</label>
                 <div class="col-12 col-lg-8">
-{foreach from=$radio_options key=option item=value}
+{foreach $radio_options as $option => $value}
                     <div class="form-check form-check-inline radio">
                         <label for="show_nb_comments" class="form-check-label">
                           <input name="show_nb_comments" type="radio" class="form-check-input" value="{$option}" {if $option === $NB_COMMENTS}checked="checked"{/if}>
@@ -113,7 +113,7 @@
 {/if}
                 <label class="col-12 col-lg-4 form-check-label float-left pl-0">{'Show number of hits'|@translate}</label>
                 <div class="col-12 col-lg-8">
-{foreach from=$radio_options key=option item=value}
+{foreach $radio_options as $option => $value}
                     <div class="form-check form-check-inline radio">
                         <label for="show_nb_hits" class="form-check-label">
                           <input name="show_nb_hits" type="radio" class="form-check-input" value="{$option}" {if $option === $NB_HITS}checked="checked"{/if}>
