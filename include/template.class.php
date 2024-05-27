@@ -1288,31 +1288,6 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
 class PwgTemplateAdapter
 {
   /**
-   * @deprecated use "translate" modifier
-   */
-  public function l10n($text): string
-  {
-    return l10n($text);
-  }
-
-  /**
-   * @deprecated use "translate_dec" modifier
-   */
-  public function l10n_dec($s, $p, $v): string
-  {
-    return l10n_dec($s, $p, $v);
-  }
-
-  /**
-   * @deprecated use "translate" or "sprintf" modifier
-   */
-  public function sprintf()
-  {
-    $args = func_get_args();
-    return call_user_func_array('sprintf',  $args );
-  }
-
-  /**
    * @param DerivativeParams|string $type
    * @param SrcImage|array $img
    * @return DerivativeImage
