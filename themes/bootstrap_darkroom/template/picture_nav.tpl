@@ -42,7 +42,7 @@
                         <i class="far fa-image fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2">{'Photo sizes'|@translate}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" role="menu">
-{foreach from=$current.unique_derivatives item=derivative key=derivative_type}
+{foreach $current.unique_derivatives as $derivative_type => $derivative}
                         <a id="derivative{$derivative->get_type()}" class="dropdown-item derivative-li{if $derivative->get_type() == $current.selected_derivative->get_type()} active{/if}" href="javascript:changeImgSrc('{$derivative->get_url()|@escape:javascript}','{$derivative_type}','{$derivative->get_type()}')" rel="nofollow">
                                 {$derivative->get_type()|@translate}<span class="derivativeSizeDetails"> ({$derivative->get_size_hr()})</span>
                         </a>
@@ -80,7 +80,7 @@
                         <i class="fas fa-download fa-fw" aria-hidden="true"></i><span class="d-lg-none ml-2">{'Download this file'|@translate}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-{foreach from=$current.formats item=format}
+{foreach $current.formats as $format}
                         <li class="dropdown-item"><a href="{$format.download_url}" rel="nofollow">{$format.label}<span class="downloadformatDetails"> ({$format.filesize})</span></a></li>
   {/foreach}
                     </ul>
@@ -126,7 +126,7 @@
                     </a>
                 </li>
 {/if}
-{if isset($PLUGIN_PICTURE_BUTTONS)}{foreach from=$PLUGIN_PICTURE_BUTTONS item=button}{$button}{/foreach}{/if}
+{if isset($PLUGIN_PICTURE_BUTTONS)}{foreach $PLUGIN_PICTURE_BUTTONS as $button}{$button}{/foreach}{/if}
 {if isset($PLUGIN_PICTURE_ACTIONS)}{$PLUGIN_PICTURE_ACTIONS}{/if}
             </ul>
         </div>
