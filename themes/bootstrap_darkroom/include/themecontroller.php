@@ -167,7 +167,7 @@ class ThemeController {
 
   /**
    * @return void
-   * @throws \SmartyException
+   * @throws \Smarty\Exception
    */
   public function registerPictureTemplates(): void
     {

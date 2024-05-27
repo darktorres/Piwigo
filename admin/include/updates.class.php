@@ -489,7 +489,7 @@ class updates
    * @param $step
    * @param bool $check_current_version
    * @return void
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public static function upgrade_to($upgrade_to, &$step, bool $check_current_version=true): void
   {

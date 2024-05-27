@@ -35,7 +35,7 @@ check_input_parameter('action', $_GET, false, '/^(lost|reset|none)$/');
  * @return bool (true if email was sent, false otherwise)
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function process_password_request(): bool
 {

@@ -56,7 +56,7 @@ const BUTTONS_RANK_NEUTRAL = 50;
  */
 class Template
 {
-  public Smarty $smarty;
+  public Smarty\Smarty $smarty;
   public string $output = '';
 
   public array $files = array(); // Hash of filenames for each template handle
@@ -80,17 +80,15 @@ class Template
    * @param string $theme
    * @param string $path
    * @param string $root
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function __construct(string $root=".", string $theme="", string $path="template")
   {
     global $conf, $lang_info;
 
-    SmartyException::$escape = false;
-
     $this->scriptLoader = new ScriptLoader();
     $this->cssLoader = new CssLoader();
-    $this->smarty = new Smarty();
+    $this->smarty = new Smarty\Smarty();
     $this->smarty->debugging = $conf['debug_template'];
     if (!$this->smarty->debugging)
     {
@@ -438,7 +436,7 @@ class Template
    * @param string $varname
    * @param string $handle
    * @return true
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function assign_var_from_handle(string $varname, string $handle): true
   {
@@ -500,7 +498,7 @@ class Template
    * @param string $handle
    * @param bool $return
    * @return null|string
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function parse(string $handle, bool $return=false): ?string
   {
@@ -538,7 +536,7 @@ class Template
    * then sends the output to the browser.
    *
    * @param string $handle
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function pparse(string $handle): void
   {
@@ -799,9 +797,9 @@ class Template
    *    - crop (optional, used if type is empty)
    *    - min_height (optional, used with crop)
    *    - min_height (optional, used with crop)
-   * @param Smarty_Internal_Template $smarty
+   * @param Smarty\Template $smarty
    */
-  public function func_define_derivative(array $params, Smarty_Internal_Template $smarty): void
+  public function func_define_derivative(array $params, Smarty\Template $smarty): void
   {
     !empty($params['name']) || fatal_error('define_derivative missing name');
     if (isset($params['type']))
@@ -885,7 +883,7 @@ class Template
    *
    * @param array $params
    *    - load (required)
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function func_get_combined_scripts(array $params): string
   {
@@ -1069,7 +1067,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * Register the filters for the tpl file.
    *
    * @param string $handle
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function load_external_filters(string $handle): void
   {
@@ -1113,13 +1111,13 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * @toto : description of Template::prefilter_white_space
    *
    * @param string $source
-   * @param Smarty_Internal_Template $smarty
+   * @param Smarty\Template $smarty
    * @return string
    */
-  public static function prefilter_white_space(string $source, Smarty_Internal_Template $smarty): string
+  public static function prefilter_white_space(string $source, Smarty\Template $smarty): string
   {
-    $ld = $smarty->left_delimiter;
-    $rd = $smarty->right_delimiter;
+    $ld = $smarty->getLeftDelimiter();
+    $rd = $smarty->getRightDelimiter();
     $ldq = preg_quote($ld, '#');
     $rdq = preg_quote($rd, '#');
 
@@ -1142,10 +1140,10 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * Postfilter used when $conf['compiled_template_cache_language'] is true.
    *
    * @param string $source
-   * @param Smarty_Internal_Template $smarty
+   * @param Smarty\Template $smarty
    * @return string
    */
-  public static function postfilter_language(string $source, Smarty_Internal_Template $smarty): string
+  public static function postfilter_language(string $source, Smarty\Template $smarty): string
   {
     // replaces echo PHP_STRING_LITERAL; with the string literal value
     return preg_replace_callback(
@@ -1158,10 +1156,10 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * Prefilter used to add theme local CSS files.
    *
    * @param string $source
-   * @param Smarty_Internal_Template $smarty
+   * @param Smarty\Template $smarty
    * @return string
    */
-  public static function prefilter_local_css(string $source, Smarty_Internal_Template $smarty): string
+  public static function prefilter_local_css(string $source, Smarty\Template $smarty): string
   {
     $css = array();
     foreach ($smarty->getTemplateVars('themes') as $theme)
@@ -1420,7 +1418,7 @@ class CssLoader
 
   /**
    * @return Combinable[] array of combined CSS.
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function get_css(): array
   {
@@ -1608,7 +1606,7 @@ class ScriptLoader
    * Returns combined scripts loaded in header.
    *
    * @return Combinable[]
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function get_head_scripts(): array
   {
@@ -1637,7 +1635,7 @@ class ScriptLoader
    * Returns combined scripts loaded in footer.
    *
    * @return array
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function get_footer_scripts(): array
   {
@@ -1674,7 +1672,7 @@ class ScriptLoader
    * @param Script[] $scripts
    * @param int $load_mode
    * @return Combinable[]
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   private static function do_combine(array $scripts, int $load_mode): array
   {
@@ -1890,7 +1888,7 @@ final class FileCombiner
 
   /**
    * @return Combinable[]
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function combine(): array
   {
@@ -1939,7 +1937,7 @@ final class FileCombiner
    * @param array $pending
    * @param string[] $key
    * @param bool $force
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   private function flush_pending(array &$result, array &$pending, array $key, bool $force): void
   {
@@ -1984,7 +1982,7 @@ final class FileCombiner
    *                       the minified file (only used when
    *                       $return_content===true)
    * @return null|string
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   private function process_combinable(Combinable $combinable, bool $return_content, bool $force, string &$header): ?string
   {

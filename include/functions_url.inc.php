@@ -456,7 +456,7 @@ function make_section_in_url(array $params): string
  * @param array $tokens of url tokens to parse
  * @param int $next_token the index in the array of url tokens; in/out
  * @return array
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function parse_section_url(array $tokens, int &$next_token): array
 {

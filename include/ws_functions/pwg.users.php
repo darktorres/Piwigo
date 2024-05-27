@@ -366,7 +366,7 @@ SELECT DISTINCT ';
  * @option string email (optional)
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function ws_users_add(array $params, $service): mixed
 {

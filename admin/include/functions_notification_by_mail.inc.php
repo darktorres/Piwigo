@@ -259,7 +259,7 @@ function end_users_env_nbm(): void
  * @param $nbm_user
  * @param $is_action_send
  * @return void
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function set_user_on_env_nbm($nbm_user, $is_action_send): void
 {
@@ -409,7 +409,7 @@ function assign_vars_nbm_mail_content($nbm_user): void
  * @param bool $is_subscribe
  * @param array $check_key_list
  * @return array
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
  */
@@ -572,7 +572,7 @@ function do_subscribe_unsubscribe_notification_by_mail($is_admin_request, bool $
  * @param $is_admin_request
  * @param array $check_key_list
  * @return array
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
  */
@@ -592,7 +592,7 @@ function unsubscribe_notification_by_mail($is_admin_request, array $check_key_li
  * @param $is_admin_request
  * @param array $check_key_list
  * @return array
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
  */

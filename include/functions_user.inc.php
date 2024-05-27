@@ -121,7 +121,7 @@ function search_case_username(string $username): string
  * @return int|false user id or false
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function register_user(string $login, string $password, string $mail_address, bool $notify_admin=true, array|null &$errors = array(), bool $notify_user=false): false|int
 {
@@ -1040,7 +1040,7 @@ function auto_login(): bool
         && time()-$conf['remember_me_length']<=$cookie[1]
         && time()>=$cookie[1] /*cookie generated in the past*/ )
     {
-      $key = calculate_auto_login_key( $cookie[0], $cookie[1], $username );
+      $key = calculate_auto_login_key( (int)$cookie[0], (int)$cookie[1], $username );
       if ($key!==false && $key===$cookie[2])
       {
         log_user($cookie[0], true);

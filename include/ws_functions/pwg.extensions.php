@@ -148,7 +148,7 @@ function ws_themes_performAction(array $params, $service): true|PwgError
  * @option string revision
  * @option string pwg_token
  * @option bool reactivate (optional - undocumented)
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function ws_extensions_update(array $params, $service): PwgError|string
 {

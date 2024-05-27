@@ -62,7 +62,7 @@ function user_comment_check(string $action, array $comment): string
  * @return string validate, moderate, reject
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function insert_user_comment(array &$comm, string $key, array|null &$infos): string
 {
@@ -273,7 +273,7 @@ INSERT INTO '.COMMENTS_TABLE.'
  * @return bool false if nothing deleted
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function delete_user_comment(array|int $comment_id): bool
 {
@@ -322,7 +322,7 @@ $user_where_clause.'
  * @return string validate, moderate, reject
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 
 function update_user_comment(array $comment, string $post_key): string
@@ -427,7 +427,7 @@ $user_where_clause.'
  * @param array $comment
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function email_admin(string $action, array $comment): void
 {

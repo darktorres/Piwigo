@@ -387,7 +387,7 @@ add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDL
  * @param $content
  * @param $element_info
  * @return mixed|string|null
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function modus_picture_content($content, $element_info): mixed
 {

@@ -170,7 +170,7 @@ class BlockManager
    *
    * @param string $var
    * @param string $file
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public function apply(string $var, string $file): void
   {

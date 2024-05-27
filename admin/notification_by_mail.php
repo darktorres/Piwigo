@@ -104,7 +104,7 @@ function get_tab_status($mode): int
  */
 /**
  * @return void
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
  */
@@ -224,7 +224,7 @@ function render_global_customize_mail_content($customize_mail_content): mixed
  * @param array $check_key_list
  * @param string $customize_mail_content
  * @return array
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
  */

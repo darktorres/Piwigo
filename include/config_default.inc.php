@@ -18,6 +18,10 @@ if (!extension_loaded('gd')) {
   die('PHP extension "gd" is not loaded');
 }
 
+if (!extension_loaded('intl')) {
+  die('PHP extension "intl" is not loaded');
+}
+
 if (!extension_loaded('mbstring')) {
   die('PHP extension "mbstring" is not loaded');
 }

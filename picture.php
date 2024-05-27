@@ -141,7 +141,7 @@ trigger_notify('loc_begin_picture');
  * @param $content
  * @param $element_info
  * @return mixed|string|null
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function default_picture_content($content, $element_info): mixed
 {

@@ -1007,7 +1007,7 @@ function redirect_http(string $url ): void
  * @param string $msg
  * @param int $refresh_time
  * @return void
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function redirect_html(string $url , string $msg = '', int $refresh_time = 0): void
 {
@@ -1058,7 +1058,7 @@ function redirect_html(string $url , string $msg = '', int $refresh_time = 0): v
  * @param string $msg
  * @param int $refresh_time
  * @return void
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function redirect(string $url , string $msg = '', int $refresh_time = 0): void
 {
@@ -2036,7 +2036,7 @@ function get_icon(string|null $date, bool $is_child_date = false): false|array
  * else pwg_token is compare to server token
  *
  * @return void access denied if token given is not equal to server token
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function check_pwg_token(): void
 {
