@@ -627,7 +627,7 @@ if (!isset($_REQUEST['start'])
 }
 else
 {
-  $page['start'] = $_REQUEST['start'];
+  $page['start'] = (int)$_REQUEST['start'];
 }
 
 
