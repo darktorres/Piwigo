@@ -2,7 +2,7 @@
     <a href="{$block->data.link}" class="nav-link{if count($block->data.album) > 0} dropdown-toggle" data-toggle="dropdown{/if}">{$block->data.name}</a>
     <div class="dropdown-menu dropdown-menu-right" role="menu">
 {assign var='ref_level' value=0}
-{foreach from=$block->data.album item=cat}
+{foreach $block->data.album as $cat}
         <a class="dropdown-item{if $cat.SELECTED} active{/if}" data-level="{($cat.LEVEL -1)}" href="{$cat.URL}">
             {$cat.NAME}
 {if $cat.count_images > 0}

@@ -71,7 +71,7 @@ let plugin_filter = searchParams.get('filter');
 
 <div class="pluginContainer {if $view_selector == 'classic'} classic-form {elseif $view_selector == 'line'} line-form {elseif $view_selector == 'compact'} compact-form {else} {/if}">
 
-{foreach from=$plugins item=plugin name=plugins_loop}
+{foreach $plugins as $plugin}
 
   {if not empty($plugin.AUTHOR)}
     {if not empty($plugin.AUTHOR_URL)}
