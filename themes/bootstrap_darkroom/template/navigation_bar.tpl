@@ -8,7 +8,7 @@
         <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-backward" title="{'Previous'|@translate}"></i></a></li>
 {/if}
 {assign var='prev_page' value=0}
-{foreach from=$navbar.pages key=page item=url}
+{foreach $navbar.pages as $page => $url}
 {if $page == $navbar.CURRENT_PAGE}
         <li class="page-item active"><a class="page-link" href="#">{$page}</a></li>
 {else}

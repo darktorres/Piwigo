@@ -188,7 +188,7 @@ if (!$.cookie("pwg_tags_per_page")) {
 </div>
 
 <div class='tag-container' data-tags='{$data|@json_encode|escape:html}' data-per_page={$per_page}>
-  {foreach from=$first_tags item=tag}
+  {foreach $first_tags as $tag}
   <div class='tag-box' data-id='{$tag.id}' data-selected='0'>
   {if isset($tag.counter)}
     {tagContent 

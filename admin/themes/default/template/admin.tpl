@@ -149,7 +149,7 @@ jQuery(document).ready(function() {
   <div class="errors">
     <i class="eiw-icon icon-cancel"></i>
     <ul>
-      {foreach from=$errors item=error}
+      {foreach $errors as $error}
       <li>{$error}</li>
       {/foreach}
     </ul>
@@ -160,7 +160,7 @@ jQuery(document).ready(function() {
   <div class="infos">
     <i class="eiw-icon icon-ok"></i>
     <ul>
-      {foreach from=$infos item=info}
+      {foreach $infos as $info}
       <li>{$info}</li>
       {/foreach}
     </ul>
@@ -171,7 +171,7 @@ jQuery(document).ready(function() {
   <div class="warnings">
     <i class="eiw-icon icon-attention"></i>
     <ul>
-      {foreach from=$warnings item=warning}
+      {foreach $warnings as $warning}
       <li>{$warning}</li>
       {/foreach}
     </ul>
@@ -182,7 +182,7 @@ jQuery(document).ready(function() {
   <div class="messages">
     <i class="eiw-icon icon-info-circled-1"></i>
     <ul>
-      {foreach from=$messages item=message}
+      {foreach $messages as $message}
       <li>{$message}</li>
       {/foreach}
     </ul>
