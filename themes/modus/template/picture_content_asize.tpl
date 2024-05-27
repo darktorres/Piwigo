@@ -29,7 +29,7 @@ cp: '{$COOKIE_PATH|@escape:'javascript'}'
     {/if}
 {/if}
 
-{foreach from=$current.unique_derivatives item=derivative key=derivative_type}{strip}
+{foreach $current.unique_derivatives as $derivative_type => $derivative}{strip}
 <map name="map{$derivative->get_type()}">
 {assign var='size' value=$derivative->get_size()}
 {if isset($previous)}

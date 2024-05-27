@@ -372,7 +372,7 @@ var sliders = {
           <p>{'Predefined filter'|@translate}</p>
           <a href="#" class="removeFilter" title="{'remove this filter'|@translate}"><span>[x]</span></a>
           <select name="filter_prefilter">
-            {foreach from=$prefilters item=prefilter}
+            {foreach $prefilters as $prefilter}
               {assign 'optionClass' ''}
               {if $prefilter.ID eq 'no_album'}{assign 'optionClass' 'icon-heart-broken'}{/if}
               {if $prefilter.ID eq 'caddie'}{assign 'optionClass' 'icon-flag'}{/if}
@@ -592,7 +592,7 @@ UL.thumbnails SPAN.wrap2 {ldelim}
   height: {$thumb_params->max_height()+25}px;
 }
 		{/html_style}
-		{foreach from=$thumbnails item=thumbnail}
+		{foreach $thumbnails as $thumbnail}
 		{assign var='isSelected' value=$thumbnail.id|@in_array:$selection}
 		<li{if $isSelected} class="thumbSelected"{/if}>
 			<span class="wrap1">
@@ -667,7 +667,7 @@ UL.thumbnails SPAN.wrap2 {ldelim}
     		<option value="delete_derivatives">{'Delete multiple size images'|@translate}</option>
     		<option value="generate_derivatives">{'Generate multiple size images'|@translate}</option>
       {if !empty($element_set_global_plugins_actions)}
-        {foreach from=$element_set_global_plugins_actions item=action}
+        {foreach $element_set_global_plugins_actions as $action}
           <option value="{$action.ID}">{$action.NAME}</option>
         {/foreach}
       {/if}
@@ -717,7 +717,7 @@ UL.thumbnails SPAN.wrap2 {ldelim}
   {if !empty($associated_tags)}
         <select data-selectize="tags" name="del_tags[]" multiple style="width:400px;"
           placeholder="{'Type in a search term'|translate}">
-        {foreach from=$associated_tags item=tag}
+        {foreach $associated_tags as $tag}
           <option value="{$tag.id}">{$tag.name}</option>
         {/foreach}
         </select>
@@ -766,7 +766,7 @@ UL.thumbnails SPAN.wrap2 {ldelim}
           <a href="javascript:selectGenerateDerivNone()">{'None'|@translate}</a>
         </div>
         <br>
-        {foreach from=$generate_derivatives_types key=type item=disp}
+        {foreach $generate_derivatives_types as $type => $disp}
           <label class="font-checkbox"><span class="icon-check"></span><input type="checkbox" name="generate_derivatives_type[]" value="{$type}"> {$disp}</label>
         {/foreach}
       </div>
@@ -778,14 +778,14 @@ UL.thumbnails SPAN.wrap2 {ldelim}
           <a href="javascript:selectDelDerivNone()">{'None'|@translate}</a>
         </div>
         <br>
-        {foreach from=$del_derivatives_types key=type item=disp}
+        {foreach $del_derivatives_types as $type => $disp}
           <label class="font-checkbox"><span class="icon-check"></span><input type="checkbox" name="del_derivatives_type[]" value="{$type}"> {$disp}</label>
         {/foreach}
       </div>
 
       <!-- plugins -->
   {if !empty($element_set_global_plugins_actions)}
-    {foreach from=$element_set_global_plugins_actions item=action}
+    {foreach $element_set_global_plugins_actions as $action}
       <div id="action_{$action.ID}" class="bulkAction">
       {if !empty($action.CONTENT)}{$action.CONTENT}{/if}
       </div>

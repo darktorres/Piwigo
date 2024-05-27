@@ -27,7 +27,7 @@
               coll_nb_images = "coll_nb_images"
             }
             {if $block->data.collections}
-            {foreach from=$block->data.collections item=col}{strip}
+            {foreach $block->data.collections as $col}{strip}
                 {collectionsMenuItem
                   coll_id = $col.id
                   coll_name = $col.name
