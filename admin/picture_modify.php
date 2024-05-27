@@ -301,7 +301,7 @@ $intro_vars = array(
   'added_by' => l10n('Added by %s', $row['added_by']),
   'size' => l10n('%s pixels, %.2f MB', $row['width'].'&times;'.$row['height'], $row['filesize']/1024),
   'stats' => l10n('Visited %d times', $row['hit']),
-  'id' => l10n($row['id']),
+  'id' => l10n((string)$row['id']),
   'ext' => l10n('%s file type',strtoupper(end($extTab))),
   'is_svg'=> (strtoupper(end($extTab)) == 'SVG'),
   );
