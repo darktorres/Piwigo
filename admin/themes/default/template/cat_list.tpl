@@ -35,7 +35,7 @@ jQuery(document).ready(function(){
     </form>
   </div>
   {if count($categories)}
-  {foreach from=$categories item=category}
+  {foreach $categories as $category}
   <div class="categoryBox{if $category.IS_VIRTUAL} virtual_cat{/if}" id="cat_{$category.ID}">
 
     <div class="albumTop">

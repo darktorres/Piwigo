@@ -182,19 +182,19 @@ $(document).ready( function(){
 	<th class="dtc_stat">{'Variation'|@translate}</th>
 	<th class="dtc_stat">{'Consensus deviation'|@translate|@replace:' ':'<br>'}</th>
 	<th class="dtc_stat">{'Consensus deviation'|@translate|@replace:' ':'<br>'} {$CONSENSUS_TOP_NUMBER}</th>
-{foreach from=$available_rates item=rate}
+{foreach $available_rates as $rate}
 	<th class="dtc_rate">{$rate}</th>
 {/foreach}
 	<th class="dtc_del"></th>
 </tr>
 </thead>
-{foreach from=$ratings item=rating key=user}
+{foreach $ratings as $user => $rating}
 <tr data-usr='{ldelim}"uid":{$rating.uid},"aid":"{$rating.aid}"}'>
 {strip}
 <td class=usr>{$user}</td><td title="First: {$rating.first_date}">{$rating.last_date}</td>
 <td>{$rating.count}</td><td>{$rating.avg|@number_format:2}</td>
 <td>{$rating.cv|@number_format:3}</td><td>{$rating.cd|@number_format:3}</td><td>{if !empty($rating.cdtop)}{$rating.cdtop|@number_format:3}{/if}</td>
-{foreach from=$rating.rates item=rates key=rate}
+{foreach $rating.rates as $rate => $rates}
 <td>{if !empty($rates)}
 {capture assign=rate_over}{foreach $rates as $rate_arr}{if $rate_arr@index>29}{break}{/if}<img src="{$image_urls[$rate_arr.id].tn}" alt="thumb-{$rate_arr.id}" width="{$TN_WIDTH}" height="{$TN_WIDTH}">{/foreach}{/capture}
 <a title="{$rate_over|@htmlspecialchars}">{$rates|@count}</a>
