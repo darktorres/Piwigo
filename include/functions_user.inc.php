@@ -1029,18 +1029,7 @@ function auto_login()
 function pwg_password_hash(
     $password
 ) {
-    global $pwg_hasher;
-
-    if (empty($pwg_hasher)) {
-        require_once(PHPWG_ROOT_PATH . 'include/passwordhash.class.php');
-
-        // We use the portable hash feature from phpass because we can't be sure
-        // Piwigo runs on PHP 5.3+ (and won't run on an older version in the
-        // future)
-        $pwg_hasher = new PasswordHash(13, true);
-    }
-
-    return $pwg_hasher->HashPassword($password);
+    return password_hash($password, PASSWORD_DEFAULT);
 }
 
 /**
@@ -1051,49 +1040,13 @@ function pwg_password_hash(
  *
  * @param string $password plain text
  * @param string $hash may be md5 or phpass hashed password
- * @param integer $user_id only useful to update password hash from md5 to phpass
  * @return bool
  */
 function pwg_password_verify(
     $password,
-    $hash,
-    $user_id = null
+    $hash
 ) {
-    global $conf, $pwg_hasher;
-
-    // If the password has not been hashed with the current algorithm.
-    if (! str_starts_with($hash, '$P')) {
-        $check = empty($conf['pass_convert']) ? $hash == md5($password) : $hash == $conf['pass_convert']($password);
-        if ($check) {
-            if (! isset($user_id) || $conf['external_authentification']) {
-                return true;
-            }
-
-            // Rehash using new hash.
-            $hash = pwg_password_hash($password);
-
-            single_update(
-                USERS_TABLE,
-                [
-                    'password' => $hash,
-                ],
-                [
-                    'id' => $user_id,
-                ]
-            );
-        }
-    }
-
-    // If the stored hash is longer than an MD5, presume the
-    // new style phpass portable hash.
-    if (empty($pwg_hasher)) {
-        require_once(PHPWG_ROOT_PATH . 'include/passwordhash.class.php');
-
-        // We use the portable hash feature
-        $pwg_hasher = new PasswordHash(13, true);
-    }
-
-    return $pwg_hasher->CheckPassword($password, $hash);
+    return password_verify($password, $hash);
 }
 
 /**
