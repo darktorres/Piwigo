@@ -1,7 +1,7 @@
 <dt>{if $IS_RELATED}{'Related tags'|@translate}{else}{'Tags'|@translate}{/if}</dt>
 <dd>
 	<div id="menuTagCloud">
-		{foreach from=$block->data item=tag}
+		{foreach $block->data as $tag}
 		<span>{strip}
 			<a class="tagLevel {if isset($tag.level)}{$tag.level}{/if}" href=
 			{if isset($tag.U_ADD)}

@@ -116,7 +116,7 @@ jQuery(document).ready(function() {
 
 <fieldset class="fieldsetModusConfig"><legend class="legendModusConfig">{'Skin'|translate}</legend>
   <div class="themeBoxes font-checkbox">
-  {foreach from=$available_skins item=skin_name key=skin_code}
+  {foreach $available_skins as $skin_code => $skin_name}
     <div class="{if $skin_code==$SKIN}themeDefault{/if} themeBoxModusConfig">
       <label class="font-checkbox">
         <div class="themeNameModusConfig">
