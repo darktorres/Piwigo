@@ -1511,6 +1511,7 @@ class ScriptLoader
   private static array $known_paths = array(
       'core.scripts' => 'themes/default/js/scripts.js',
       'jquery' => 'themes/default/js/jquery.min.js',
+      'jquery-migrate'=> 'themes/default/js/jquery-migrate.js',
       'jquery.ui' => 'themes/default/js/ui/minified/jquery.ui.core.min.js',
       'jquery.ui.effect' => 'themes/default/js/ui/minified/jquery.ui.effect.min.js',
     );
@@ -1793,6 +1794,11 @@ class ScriptLoader
     if ( isset(self::$known_paths[$id]) || strncmp($id, 'jquery.ui.', 10)==0  )
     {
       $this->add($id, $load_mode, array(), null);
+
+      if ($id == 'jquery') {
+        $this->add('jquery-migrate', $load_mode, array(), null);
+      }
+
       return true;
     }
     return false;
