@@ -13,7 +13,7 @@
 {* basically a copy of menubar.tpl with manual inclusion of menubar_xxx.tpl *}
 {if !empty($blocks)}
 <aside id=menubar>
-	{foreach from=$blocks key=id item=block}{if ($id!="mbIdentification" && $id!="mbMenu")}
+	{foreach $blocks as $id => $block}{if ($id!="mbIdentification" && $id!="mbMenu")}
 	<dl id={$id}>
 		{if $id=="mbLinks"}
 {* ============ mbLinks ========== *}
@@ -23,7 +23,7 @@
 <dt><a>{'Links'|@translate}</a></dt>
 <dd>
 	<ul>{strip}
-		{foreach from=$block->data item=link}
+		{foreach $block->data as $link}
 			<li>
 				<a href="{$link.URL}" class="external"{if isset($link.new_window)} onclick="window.open(this.href, '{$link.new_window.NAME}','{$link.new_window.FEATURES}'); return false;"{/if}>
 				{$link.LABEL}
@@ -39,7 +39,7 @@
 <dt><a>{'Related tags'|@translate}</a></dt>
 <dd>
 	<div id=menuTagCloud>
-		{foreach from=$block->data item=tag}{strip}
+		{foreach $block->data as $tag}{strip}
 			<a class="tagLevel{if isset($tag.level)}{$tag.level}{/if}" href=
 			{if isset($tag.U_ADD)}
 				"{$tag.U_ADD}" title="{$tag.counter|@translate_dec:'%d photo is also linked to current tags':'%d photos are also linked to current tags'}" rel=nofollow>+
@@ -56,12 +56,12 @@
 <dt><a>{'Explore'|@translate}</a></dt>
 <dd>
 	<ul>{strip}
-		{foreach from=$block->data item=link}
+		{foreach $block->data as $link}
 		<li><a href="{$link.URL}" title="{$link.TITLE}"{if isset($link.REL)} {$link.REL}{/if}>{$link.NAME}</a></li>
 		{/foreach}
 		{if isset($blocks.mbMenu)}
 		<hr>
-		{foreach from=$blocks.mbMenu->data item=link}{if is_array($link)}
+		{foreach $blocks.mbMenu->data as $link}{if is_array($link)}
 		<li><a href="{$link.URL}" title="{if isset($link.TITLE)}{$link.TITLE}{/if}"{if isset($link.REL)} {$link.REL}{/if}>{$link.NAME}</a>{if isset($link.COUNTER)} ({$link.COUNTER}){/if}</li>
 		{/if}{/foreach}
 		{/if}

@@ -21,7 +21,7 @@
 {/if}
 {/if}
 {/html_style}
-{foreach from=$thumbnails item=thumbnail}
+{foreach $thumbnails as $thumbnail}
 {assign var=derivative value=$pwg->derivative($derivative_params, $thumbnail.src_image)}
 <li>
 	<span class="wrap1">

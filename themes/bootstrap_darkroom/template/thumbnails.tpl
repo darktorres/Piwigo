@@ -12,7 +12,7 @@
 {/if}
 {define_derivative name='derivative_params' width=$width height=$height crop=true}
 {assign var=idx value=0+$START_ID}
-{foreach from=$thumbnails item=thumbnail}
+{foreach $thumbnails as $thumbnail}
 {assign var=derivative value=$pwg->derivative($derivative_params, $thumbnail.src_image)}
 {include file="grid_classes.tpl" width=$rwidth height=$rheight}
 <div class="col-outer {if isset($smarty.cookies.view) and $smarty.cookies.view == 'list'}col-12{else}{$col_class}{/if}" data-grid-classes="{$col_class}">
