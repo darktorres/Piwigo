@@ -59,7 +59,7 @@ function GDThumb_init(): void
 
 /**
  * @return void
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function GDThumb_index(): void
 {

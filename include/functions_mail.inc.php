@@ -201,7 +201,7 @@ function get_clean_recipients_list(mixed $data): array
  *
  * @param string $email_format - text/html or text/plain
  * @return Template
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function &get_mail_template(string $email_format): Template
 {
@@ -324,7 +324,7 @@ function switch_lang_back(): void
  * @return bool
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function pwg_mail_notification_admins(array|string $subject, array|string $content, bool $send_technical_details=true, $group_id=null): bool
 {
@@ -391,7 +391,7 @@ function pwg_mail_notification_admins(array|string $subject, array|string $conte
  *
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @see pwg_mail()
  */
 function pwg_mail_admins(array $args=array(), array $tpl=array(), bool $exclude_current_user=true, bool $only_webmasters=false, $group_id=null): bool
@@ -471,7 +471,7 @@ SELECT
  * @return bool|int
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @see pwg_mail()
  */
 function pwg_mail_group(int $group_id, array $args=array(), array $tpl=array()): bool|int
@@ -594,7 +594,7 @@ SELECT
  * @return bool
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function pwg_mail(array|string $to, array $args=array(), array $tpl=array()): bool
 {

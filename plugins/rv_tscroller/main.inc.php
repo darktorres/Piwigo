@@ -126,7 +126,7 @@ jQuery('.navigationBar').hide();");
   /**
    * @param $thumbs
    * @return void
-   * @throws SmartyException
+   * @throws Smarty\Exception
    */
   public static function on_index_thumbnails_ajax($thumbs): void
 {

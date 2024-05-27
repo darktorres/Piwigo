@@ -284,7 +284,7 @@ function remove_chunks(string $original_sum, string $type): void
  * @option string key
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
- * @throws SmartyException
+ * @throws Smarty\Exception
  */
 function ws_images_addComment(array $params, $service): PwgError|array
 {

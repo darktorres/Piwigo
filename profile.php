@@ -83,7 +83,7 @@ SELECT '.implode(',', $fields).'
  * @param $userdata
  * @param $errors
  * @return bool|void
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws \Symfony\Component\CssSelector\Exception\ParseException
  */

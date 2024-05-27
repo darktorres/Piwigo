@@ -288,7 +288,7 @@ function access_denied(): void
  * Exits the current script with 403 code.
  * @param string $msg
  * @param string|null $alternate_url redirect to this url
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @todo nice display if $template loaded
  *
  */
@@ -308,7 +308,7 @@ function page_forbidden(string $msg, string $alternate_url=null): void
  * Exits the current script with 400 code.
  * @param string $msg
  * @param string|null $alternate_url redirect to this url
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @todo nice display if $template loaded
  *
  */
@@ -328,7 +328,7 @@ function bad_request(string $msg, string $alternate_url=null): void
  * Exits the current script with 404 code.
  * @param string $msg
  * @param string|null $alternate_url redirect to this url
- * @throws SmartyException
+ * @throws Smarty\Exception
  * @todo nice display if $template loaded
  *
  */
