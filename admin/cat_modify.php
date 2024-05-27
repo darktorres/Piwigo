@@ -160,6 +160,7 @@ else
 }
 
 //----------------------------------------------------- template initialization
+$template->smarty->registerPlugin('modifier', 'cat_admin_access', 'cat_admin_access');
 $template->set_filename( 'album_properties', 'cat_modify.tpl');
 
 $base_url = get_root_url().'admin.php?page=';

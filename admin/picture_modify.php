@@ -463,5 +463,6 @@ trigger_notify('loc_end_picture_modify');
 
 //----------------------------------------------------------- sending html code
 
+$template->smarty->registerPlugin('modifier', 'url_is_remote', 'url_is_remote');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'picture_modify');
 
