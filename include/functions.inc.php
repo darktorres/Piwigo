@@ -1262,10 +1262,10 @@ function l10n(string $key): string
  *
  * @param string $singular_key
  * @param string $plural_key
- * @param int|string $decimal
+ * @param int|string|null $decimal
  * @return string
  */
-function l10n_dec(string $singular_key, string $plural_key, int|string $decimal): string
+function l10n_dec(string $singular_key, string $plural_key, int|string|null $decimal=0): string
 {
   global $lang_info;
 
