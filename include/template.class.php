@@ -159,12 +159,12 @@ class Template
     $this->smarty->registerPlugin('modifier', 'array_key_exists', 'array_key_exists');
     $this->smarty->registerPlugin('block', 'html_head', array($this, 'block_html_head') );
     $this->smarty->registerPlugin('block', 'html_style', array($this, 'block_html_style') );
+    $this->smarty->registerPlugin('block', 'footer_script', array($this, 'block_footer_script') );
     $this->smarty->registerPlugin('function', 'combine_script', array($this, 'func_combine_script') );
     $this->smarty->registerPlugin('function', 'get_combined_scripts', array($this, 'func_get_combined_scripts') );
     $this->smarty->registerPlugin('function', 'combine_css', array($this, 'func_combine_css') );
     $this->smarty->registerPlugin('function', 'define_derivative', array($this, 'func_define_derivative') );
     $this->smarty->registerPlugin('compiler', 'get_combined_css', array($this, 'func_get_combined_css') );
-    $this->smarty->registerPlugin('block', 'footer_script', array($this, 'block_footer_script') );
     $this->smarty->registerFilter('pre', array('Template', 'prefilter_white_space') );
     if ( $conf['compiled_template_cache_language'] )
     {
