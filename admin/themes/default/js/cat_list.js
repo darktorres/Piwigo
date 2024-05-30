@@ -416,7 +416,7 @@ function removeIconDesc() {
 }
 
 function removeHoverEffect(e) {
-    e.unbind('mouseenter').unbind('mouseleave');
+    e.off('mouseenter').off('mouseleave');
 }
 
 function AddHoverOnAlbumActions() {

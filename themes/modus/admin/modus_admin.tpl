@@ -80,11 +80,11 @@
 
 {footer_script}
 jQuery(document).ready(function() {
-  jQuery('#modus-config input[type=checkbox]').change(function() {
+  jQuery('#modus-config input[type=checkbox]').on("change", function() {
     jQuery(this).prev().toggleClass('icon-check icon-check-empty');
   });
 
-  jQuery('input[name=use_album_square_thumbs]').change(function() {
+  jQuery('input[name=use_album_square_thumbs]').on("change", function() {
     jQuery('#album_square_thumbs').toggle();
   });
 
@@ -102,7 +102,7 @@ jQuery(document).ready(function() {
   });
   jQuery(".themeBoxes a").colorbox({ rel:'group1' });
 
-  jQuery("input[name='skin']").change(function() {
+  jQuery("input[name='skin']").on("change", function() {
     jQuery("input[name='skin']").parents(".themeBoxModusConfig").removeClass("themeDefault");
     jQuery(this).parents(".themeBoxModusConfig").addClass("themeDefault");
   });

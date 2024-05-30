@@ -106,13 +106,13 @@ jQuery(document).ready(function(){
     })
   })
 
-  jQuery("#uploadWarningsSummary a.showInfo").click(function() {
+  jQuery("#uploadWarningsSummary a.showInfo").on("click", function() {
     jQuery("#uploadWarningsSummary").hide();
     jQuery("#uploadWarnings").show();
     return false;
   });
 
-  jQuery("#showPermissions").click(function() {
+  jQuery("#showPermissions").on("click", function() {
     jQuery(this).parent(".showFieldset").hide();
     jQuery("#permissions").show();
     return false;
@@ -275,7 +275,7 @@ jQuery(document).ready(function(){
         }
 
         // warn user if she wants to leave page while upload is running
-        jQuery(window).bind('beforeunload', function() {
+        jQuery(window).on('beforeunload', function() {
           return "{/literal}{'Upload in progress'|translate|escape}{literal}";
         });
 
@@ -305,7 +305,7 @@ jQuery(document).ready(function(){
         // hide item line
         jQuery('#'+file.id).hide();
 
-        let data = jQuery.parseJSON(info.response);
+        let data = JSON.parse(info.response);
       
         jQuery("#uploadedPhotos").parent("fieldset").show();
       
@@ -326,7 +326,7 @@ jQuery(document).ready(function(){
       Error: function(up, error) {
         // Called when file has finished uploading
         //console.log('[Error] error: ', error);
-        var piwigoApiResponse = jQuery.parseJSON(error.response);
+        var piwigoApiResponse = JSON.parse(error.response);
 
         jQuery(".errors ul").append('<li>'+piwigoApiResponse.message+'</li>');
         jQuery(".errors").show();
@@ -382,7 +382,7 @@ jQuery(document).ready(function(){
         jQuery('#uploadingActions').hide();
 
         // user can safely leave page without warning
-        jQuery(window).unbind('beforeunload');
+        jQuery(window).off('beforeunload');
       }
     }
 	});

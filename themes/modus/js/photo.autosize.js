@@ -114,7 +114,7 @@ $(document).ready( function() {
 			rvas_choose();
 	});
 
-	$("#theMainImage").click( function(e) {
+	$("#theMainImage").on("click", function(e) {
 		if (!$(this).attr("usemap") && e.clientY) {
 			var pct = (e.pageX - $(this).offset().left) / $(this).width()
 				, clientY = e.pageY - $(this).offset().top;

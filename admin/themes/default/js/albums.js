@@ -151,7 +151,7 @@ $(document).ready(() => {
         name : $(".RenameAlbumLabelUsername input").val(),
       },
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         $("#cat-"+catToEdit).find(".move-cat-title-container p.move-cat-title").html($(".RenameAlbumLabelUsername input").val());
         $("#cat-"+catToEdit).find(".move-cat-title-container p.move-cat-title").attr('title', $(".RenameAlbumLabelUsername input").val());
         closeRenameAlbumPopIn();
@@ -199,7 +199,7 @@ $(document).ready(() => {
         position : newAlbumPosition
       },
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         var parent_node = $('.tree').tree('getNodeById', newAlbumParent);
         
         if (data.stat == "ok") {
@@ -244,14 +244,14 @@ $(document).ready(() => {
             });
           } 
           
-          $(".move-cat-add").unbind("click").on("click", function () {
+          $(".move-cat-add").off("click").on("click", function () {
             openAddAlbumPopIn($(this).data("aid"));
             $(".AddAlbumSubmit").data("a-parent", $(this).data("aid"));
           });
           $(".move-cat-delete").on("click", function () {
             triggerDeleteAlbum($(this).data("id"));
           });
-          $(".move-cat-title-container").unbind("click").on("click", function () {
+          $(".move-cat-title-container").off("click").on("click", function () {
             openRenameAlbumPopIn($(this).find(".move-cat-title").attr("title"));
             $(".RenameAlbumSubmit").data("cat_id", $(this).attr('data-id'));
           });
@@ -287,8 +287,8 @@ $(document).ready(() => {
     triggerDeleteAlbum($(this).data("id"));
   });
 
-  $('.user-list-checkbox').unbind("change").change(checkbox_change);
-  $('.user-list-checkbox').unbind("click").click(checkbox_click);
+  $('.user-list-checkbox').off("change").on("change", checkbox_change);
+  $('.user-list-checkbox').off("click").on("click", checkbox_click);
 
   if (!light_album_manager) {
     $('.tiptip').tipTip({
@@ -434,7 +434,7 @@ function openAddAlbumPopIn(parentAlbumId) {
   $(".AddAlbumLabelUsername .user-property-input").val('');
   $(".AddAlbumLabelUsername .user-property-input").focus();
 
-  $("#AddAlbum").unbind('keyup');
+  $("#AddAlbum").off('keyup');
   $("#AddAlbum").on('keyup', function (e) {
     // 13 is 'Enter'
     if(e.keyCode === 13) {
@@ -457,7 +457,7 @@ function openRenameAlbumPopIn(replacedAlbumName) {
   $(".RenameAlbumLabelUsername .user-property-input").val(replacedAlbumName);
   $(".RenameAlbumLabelUsername .user-property-input").focus();
 
-  $(document).unbind("keypress").on('keypress',function(e) {
+  $(document).off("keypress").on('keypress',function(e) {
     if(e.which == 13) {
       $(".RenameAlbumSubmit").trigger("click");
     }
@@ -514,7 +514,7 @@ function openDeleteAlbumPopIn(cat_to_delete) {
   }
 
   // Actually delete
-  $(".DeleteAlbumSubmit").unbind("click").on("click", function () {
+  $(".DeleteAlbumSubmit").off("click").on("click", function () {
     $.ajax({
       url: "ws.php?format=json&method=pwg.categories.delete",
       type: "POST",
@@ -534,7 +534,7 @@ function openDeleteAlbumPopIn(cat_to_delete) {
         $(".move-cat-delete").on("click", function () {
           triggerDeleteAlbum($(this).data("id"));
         });
-        $(".move-cat-title-container").unbind("click").on("click", function () {
+        $(".move-cat-title-container").off("click").on("click", function () {
           openRenameAlbumPopIn($(this).find(".move-cat-title").attr("title"));
           $(".RenameAlbumSubmit").data("cat_id", $(this).attr('data-id'));
         });
@@ -685,7 +685,7 @@ function applyMove(event) {
     setSubcatsBadge(previous_parent);
     setSubcatsBadge($('.tree').tree('getNodeById', moveParent));
 
-    $(".move-cat-add").unbind("click").on("click", function () {
+    $(".move-cat-add").off("click").on("click", function () {
       openAddAlbumPopIn($(this).data("aid"));
       $(".AddAlbumSubmit").data("a-parent", $(this).data("aid"));
     });
@@ -705,7 +705,7 @@ function applyMove(event) {
   })
     .catch(function (message) {
       console.log('An error has occured : ' + message );
-      $(".move-cat-add").unbind("click").on("click", function () {
+      $(".move-cat-add").off("click").on("click", function () {
         openAddAlbumPopIn($(this).data("aid"));
         $(".AddAlbumSubmit").data("a-parent", $(this).data("aid"));
       });
@@ -750,7 +750,7 @@ function changeParent(node, parent, rank) {
         oldParent = node.parent
       },
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         if (data.stat === "ok") {
           changeRank(node, rank)
           res();
@@ -775,7 +775,7 @@ function changeRank(node, rank) {
         rank : rank
       },
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         if (data.stat === "ok") {
           res();
         } else {

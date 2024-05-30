@@ -42,7 +42,7 @@ jQuery().ready(function(){
 {/if}
 {literal}
 
-  jQuery('.newsletter-subscription a').click(function() {
+  jQuery('.newsletter-subscription a').on("click", function() {
     jQuery('.newsletter-subscription').hide();
 
     jQuery.ajax({
@@ -64,7 +64,7 @@ $('.storage-chart span').each(function () {
   let tooltip = $('.storage-tooltips #'+$(this).data('type'));
   let left = $(this).position().left + $(this).width()/2 - tooltip.innerWidth()/2;
   tooltip.css('left', left+"px")
-  $(this).hover(function() {
+  $(this).on("mouseenter mouseleave", function() {
     tooltip.toggle();
   });
 });
