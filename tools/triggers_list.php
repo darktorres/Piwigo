@@ -1060,7 +1060,7 @@ var oTable = $('#list').dataTable({
 
 // search input
 $("tfoot td").each(function (i) {
-  $('select', this).change(function () {
+  $('select', this).on("change", function () {
     oTable.fnFilter($(this).val(), i);
   });
   $('input', this).keyup(function () {
@@ -1088,7 +1088,7 @@ $("tfoot input").blur(function (i) {
   }
 });
 
-$("tfoot select").change(function () {
+$("tfoot select").on("change", function () {
   if ($(this).val() == "") {
     $(this).addClass("search_input");
   }

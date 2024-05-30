@@ -679,7 +679,7 @@ $(document).ready(function () {
     jQuery('.user-selecter').selectize();
     jQuery(".user-selecter")[0].selectize.setValue(null);
 
-    jQuery(".cancel-icon").click(function() {
+    jQuery(".cancel-icon").on("click", function() {
       jQuery(".user-selecter")[0].selectize.clear(true);
       $(".line").css('display', 'flex');
     });

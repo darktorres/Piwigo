@@ -55,7 +55,7 @@ if (window.jQuery) {
 			ob.hoverIntent_t = clearTimeout(ob.hoverIntent_t);
 			// compare mouse positions to see if they've crossed the threshold
 			if ( ( Math.abs(pX-cX) + Math.abs(pY-cY) ) < cfg.sensitivity ) {
-				$(ob).unbind("mousemove",track);
+				$(ob).off("mousemove",track);
 				// set hoverIntent state to true (so mouseOut can be called)
 				ob.hoverIntent_s = 1;
 				return cfg.over.apply(ob,[ev]);
@@ -88,7 +88,7 @@ if (window.jQuery) {
 				// set "previous" X and Y position based on initial entry point
 				pX = ev.pageX; pY = ev.pageY;
 				// update "current" X and Y position based on mousemove
-				$(ob).bind("mousemove",track);
+				$(ob).on("mousemove",track);
 				// start polling interval (self-calling timeout) to compare mouse coordinates over time
 				if (ob.hoverIntent_s != 1) { 
 					ob.hoverIntent_t = setTimeout( function(){compare(ev,ob);} , cfg.interval );}
@@ -96,7 +96,7 @@ if (window.jQuery) {
 			// else e.type == "mouseleave"
 			} else {
 				// unbind expensive mousemove event
-				$(ob).unbind("mousemove",track);
+				$(ob).off("mousemove",track);
 				// if hoverIntent state is true, then call the mouseOut function after the specified delay
 				if (ob.hoverIntent_s == 1) { ob.hoverIntent_t = setTimeout( function(){delay(ev,ob);} , cfg.timeout );}
 			}
@@ -104,7 +104,7 @@ if (window.jQuery) {
 
 
 		// bind the function to the two event listeners
-		//radu return this.bind('mouseenter',handleHover).bind('mouseleave',handleHover);
+		//radu return this.on('mouseenter',handleHover).on('mouseleave',handleHover);
 		return jQuery( this.context ).on( 'mouseenter mouseleave', this.selector, handleHover );
 	};
 })(jQuery);

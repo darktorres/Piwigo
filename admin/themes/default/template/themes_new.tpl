@@ -1,7 +1,7 @@
 {include file='include/colorbox.inc.tpl'} 
 {footer_script}{literal}
 
-$(window).bind("load", function() {
+$(window).on("load", function() {
   $('.themeBox').each(function() {
 
     let screenImage = $(this).find(".preview-box img");

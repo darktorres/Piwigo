@@ -1043,7 +1043,7 @@ function auto_login(): bool
       $key = calculate_auto_login_key( (int)$cookie[0], (int)$cookie[1], $username );
       if ($key!==false && $key===$cookie[2])
       {
-        log_user($cookie[0], true);
+        log_user((int)$cookie[0], true);
         trigger_notify('login_success', stripslashes($username));
         return true;
       }
@@ -1567,11 +1567,11 @@ SELECT
  * Creates an authentication key.
  *
  * @param int $user_id
- * @param null $user_status
+ * @param mixed $user_status
  * @return array|false
  * @throws Exception
  */
-function create_user_auth_key(int $user_id, $user_status=null): array|false
+function create_user_auth_key(int $user_id, mixed $user_status=null): array|false
 {
   global $conf;
 

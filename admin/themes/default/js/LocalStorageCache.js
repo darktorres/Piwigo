@@ -134,13 +134,19 @@
         if ((value = $(this).data('value'))) {
           options.value = value;
         }
-        if (options.value != undefined) {
-          $.each(value, $.proxy(function(i, cat) {
-            if ($.isNumeric(cat))
+        if (options.value !== undefined) {
+          function isNumeric(value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+          }
+        
+          value.forEach(function(cat) {
+            // Maintain the context of 'this' using 'bind'
+            if (isNumeric(cat)) {
               this.selectize.addItem(cat);
-            else
+            } else {
               this.selectize.addItem(cat.id);
-          }, this));
+            }
+          }.bind(this));
         }
         
         // set default

@@ -9,7 +9,7 @@ const cat_nav = '{$CATEGORIES_NAV|escape:javascript}';
 jQuery(document).ready(function() {
   $("h1").append(' <span style="letter-spacing:0">'+cat_nav+'</span>');
 
-  jQuery("input[name=who]").change(function () {
+  jQuery("input[name=who]").on("change", function () {
     checkWhoOptions();
   });
 
@@ -25,7 +25,7 @@ jQuery(document).ready(function() {
     plugins: ['remove_button']
   });
 
-  jQuery("form#categoryNotify").submit(function(e) {
+  jQuery("form#categoryNotify").on("submit",function(e) {
     var who_selected = false;
     var who_option = jQuery("input[name=who]:checked").val();
 

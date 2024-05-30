@@ -880,7 +880,7 @@
         }).addClass('ord-'+ord);
 
         if (Touch.support) {
-          jq.bind('touchstart.jcrop', Touch.createDragger(ord));
+          jq.on('touchstart.jcrop', Touch.createDragger(ord));
         }
 
         $hdl_holder.append(jq);
@@ -1081,7 +1081,7 @@
       //}}}
 
       // This is a hack for iOS5 to support drag/move touch functionality
-      $(document).bind('touchstart.jcrop-ios',function(e) {
+      $(document).on('touchstart.jcrop-ios',function(e) {
         if ($(e.currentTarget).hasClass('jcrop-tracker')) e.stopPropagation();
       });
 
@@ -1092,7 +1092,7 @@
       });
 
       if (Touch.support) {
-        $track.bind('touchstart.jcrop', Touch.createDragger('move'));
+        $track.on('touchstart.jcrop', Touch.createDragger('move'));
       }
 
       $img_holder.append($track);
@@ -1136,13 +1136,13 @@
 
         if (touch)
           $(document)
-            .bind('touchmove.jcrop', trackTouchMove)
-            .bind('touchend.jcrop', trackTouchEnd);
+            .on('touchmove.jcrop', trackTouchMove)
+            .on('touchend.jcrop', trackTouchEnd);
 
         else if (trackDoc)
           $(document)
-            .bind('mousemove.jcrop',trackMove)
-            .bind('mouseup.jcrop',trackUp);
+            .on('mousemove.jcrop',trackMove)
+            .on('mouseup.jcrop',trackUp);
       } 
       //}}}
       function toBack() //{{{
@@ -1150,7 +1150,7 @@
         $trk.css({
           zIndex: 290
         });
-        $(document).unbind('.jcrop');
+        $(document).off('.jcrop');
       } 
       //}}}
       function trackMove(e) //{{{
@@ -1534,7 +1534,7 @@
     //}}}
     //}}}
 
-    if (Touch.support) $trk.bind('touchstart.jcrop', Touch.newSelection);
+    if (Touch.support) $trk.on('touchstart.jcrop', Touch.newSelection);
 
     $hdl_holder.hide();
     interfaceUpdate(true);
@@ -1576,7 +1576,7 @@
       }
     };
 
-    if (is_msie) $div.bind('selectstart', function () { return false; });
+    if (is_msie) $div.on('selectstart', function () { return false; });
 
     $origimg.data('Jcrop', api);
     return api;
@@ -1620,21 +1620,21 @@
 
     function completeCheck(){
       if (img.complete) {
-        $img.unbind('.jcloader');
+        $img.off('.jcloader');
         if ($.isFunction(success)) success.call(img);
       }
       else window.setTimeout(completeCheck,50);
     }
 
     $img
-      .bind('load.jcloader',completeCheck)
-      .bind('error.jcloader',function(e){
-        $img.unbind('.jcloader');
+      .on('load.jcloader',completeCheck)
+      .on('error.jcloader',function(e){
+        $img.off('.jcloader');
         if ($.isFunction(error)) error.call(img);
       });
 
     if (img.complete && $.isFunction(success)){
-      $img.unbind('.jcloader');
+      $img.off('.jcloader');
       success.call(img);
     }
   };

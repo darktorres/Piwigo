@@ -21,20 +21,20 @@ $(() => {
     });
 
     // invoke buttons
-    $("#invokeMethod").click(function () {
+    $("#invokeMethod").on("click", function () {
         invokeMethod($("#methodName").html(), false);
         return false;
     });
-    $("#invokeMethodBlank").click(function () {
+    $("#invokeMethodBlank").on("click", function () {
         invokeMethod($("#methodName").html(), true);
         return false;
     });
 
     // resizable iframe
-    $("#increaseIframe").click(function () {
+    $("#increaseIframe").on("click", function () {
         $("#resultWrapper").css('height', $("#resultWrapper").height() + 100);
     });
-    $("#decreaseIframe").click(function () {
+    $("#decreaseIframe").on("click", function () {
         if ($("#resultWrapper").height() > 200) {
             $("#resultWrapper").css('height', $("#resultWrapper").height() - 100);
         }
@@ -71,7 +71,7 @@ $(() => {
     // parse Piwigo JSON
     function parsePwgJSON(json) {
         try {
-            resp = jQuery.parseJSON(json);
+            resp = JSON.parse(json);
             if (resp == null | resp.result == null | resp.stat == null | resp.stat != 'ok') {
                 throw new Error();
             }
@@ -107,7 +107,7 @@ $(() => {
                 $("#methodsList").html(displayMethodNode(methodTree, [])).show();
 
                 // trigger method selection
-                $("#methodsList .method-link").click(function () {
+                $("#methodsList .method-link").on("click", function () {
                     selectMethod($(this).data('method'));
                 });
 

@@ -530,12 +530,12 @@ jQuery(document).ready(function () {
         }
 
         let myplugin = jQuery(this);
-        myplugin.find(".showOptions").click(function () {
+        myplugin.find(".showOptions").on("click", function () {
             myplugin.find(".PluginOptionsBlock").toggle();
         });
     });
 
-    jQuery("div.deactivate_all a").click(function () {
+    jQuery("div.deactivate_all a").on("click", function () {
         $.confirm({
         title: deactivate_all_msg,
         buttons: {
@@ -737,7 +737,7 @@ jQuery(document).ready(function () {
     }
 });
 
-$(document).mouseup(function (e) {
+$(document).on("mouseup", function (e) {
   e.stopPropagation();
   $(".pluginBox").each(function () {
     if ($(this).find(".showOptions").has(e.target).length === 0) {

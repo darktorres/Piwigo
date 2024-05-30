@@ -185,7 +185,7 @@
 				onChangeMonthYear: function (year, month, dp_inst) {
 					// Update the time as well : this prevents the time from disappearing from the $input field.
 					tp_inst._updateDateTime(dp_inst);
-					if ($.isFunction(tp_inst._defaults.evnts.onChangeMonthYear)) {
+					if (typeof tp_inst._defaults.evnts.onChangeMonthYear === "function") {
 						tp_inst._defaults.evnts.onChangeMonthYear.call($input[0], year, month, dp_inst, tp_inst);
 					}
 				},
@@ -267,7 +267,7 @@
 			if (tp_inst._defaults.altField) {
 				tp_inst.$altInput = $(tp_inst._defaults.altField).css({
 					cursor: 'pointer'
-				}).focus(function () {
+				}).on("focus", function () {
 					$input.trigger("focus");
 				});
 			}
@@ -292,7 +292,7 @@
 			if (tp_inst._defaults.maxDateTime !== undefined && tp_inst._defaults.maxDateTime instanceof Date) {
 				tp_inst._defaults.maxDate = new Date(tp_inst._defaults.maxDateTime.getTime());
 			}
-			tp_inst.$input.bind('focus', function () {
+			tp_inst.$input.on('focus', function () {
 				tp_inst._onFocus();
 			});
 
@@ -435,7 +435,7 @@
 							marginLeft: o.isRTL ? '0' : ((size / (-2 * gridSize[litem])) + "%"),
 							marginRight: o.isRTL ? ((size / (-2 * gridSize[litem])) + "%") : '0',
 							borderCollapse: 'collapse'
-						}).find("td").click(function (e) {
+						}).find("td").on("click", function (e) {
 								var $t = $(this),
 									h = $t.html(),
 									n = parseInt(h.replace(/[^0-9]/g), 10),
@@ -486,7 +486,7 @@
 						selectLocalTimezone(tp_inst);
 					}
 				}
-				this.timezone_select.change(function () {
+				this.timezone_select.on("change", function () {
 					tp_inst._onTimeChange();
 					tp_inst._onSelectHandler();
 				});

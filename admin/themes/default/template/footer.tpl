@@ -39,7 +39,7 @@ jQuery('.tiptip').tipTip({
   fadeOut: 200
 });
 
-jQuery('a.externalLink').click(function() {
+jQuery('a.externalLink').on("click", function() {
   window.open(jQuery(this).attr("href"));
   return false;
 });
