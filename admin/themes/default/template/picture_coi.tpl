@@ -1,7 +1,7 @@
 {html_head}
 <link rel="stylesheet" type="text/css" href="themes/default/js/plugins/jquery.Jcrop.css" />
 {/html_head}
-{combine_script id='jquery.jcrop' load='footer' require='jquery' path='themes/default/js/plugins/jquery.Jcrop.min.js'}
+{combine_script id='jquery.jcrop' load='footer' require='jquery' path='themes/default/js/plugins/jquery.Jcrop.js'}
 
 <form method="post">
 
