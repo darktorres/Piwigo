@@ -88,12 +88,12 @@ class RVTS
 	$template->func_combine_script( array(
 			'id'=> 'jquery',
 			'load'=> 'footer',
-			'path'=> 'themes/default/js/jquery.min.js',
+			'path'=> 'themes/default/js/jquery.js',
 		));
 	$template->func_combine_script( array(
 			'id'=> $my_base_name,
 			'load'=> 'async',
-			'path'=> 'plugins/'.$my_base_name.'/rv_tscroller.min.js',
+			'path'=> 'plugins/'.$my_base_name.'/rv_tscroller.js',
 			'require' => 'jquery',
 			'version' => RVTS_VERSION,
 		));
@@ -155,7 +155,7 @@ jQuery('.navigationBar').hide();");
 		$template->func_combine_script( array(
 			'id'=> $my_base_name,
 			'load'=> 'async',
-			'path'=> 'plugins/'.$my_base_name.'/rv_tscroller.min.js',
+			'path'=> 'plugins/'.$my_base_name.'/rv_tscroller.js',
 			'require' => $req,
 			'version' => RVTS_VERSION,
 		));

@@ -17,7 +17,7 @@
 {get_combined_scripts load='header'}
 <!-- END get_combined_scripts -->
 
-{combine_script id='jquery' path='themes/default/js/jquery.min.js'}
+{combine_script id='jquery' path='themes/default/js/jquery.js'}
 {literal}
 <script>
 $(document).ready(function() {

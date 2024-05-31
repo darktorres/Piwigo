@@ -1483,10 +1483,10 @@ class ScriptLoader
 
   private static array $known_paths = array(
       'core.scripts' => 'themes/default/js/scripts.js',
-      'jquery' => 'themes/default/js/jquery.min.js',
+      'jquery' => 'themes/default/js/jquery.js',
       'jquery-migrate'=> 'themes/default/js/jquery-migrate.js',
-      'jquery.ui' => 'themes/default/js/ui/minified/jquery.ui.core.min.js',
-      'jquery.ui.effect' => 'themes/default/js/ui/minified/jquery.ui.effect.min.js',
+      'jquery.ui' => 'themes/default/js/ui/jquery.ui.core.js',
+      'jquery.ui.effect' => 'themes/default/js/ui/jquery.ui.effect.js',
     );
 
   private static array $ui_core_dependencies = array(
@@ -1736,7 +1736,7 @@ class ScriptLoader
         $required_ids = array('jquery', 'jquery.ui.effect');
 
         if ( empty($script->path) )
-          $script->path = dirname(self::$known_paths['jquery.ui.effect'])."/$id.min.js";
+          $script->path = dirname(self::$known_paths['jquery.ui.effect'])."/$id.js";
       }
       elseif ( strncmp($id, 'jquery.ui.', 10)==0 )
       {
@@ -1744,7 +1744,7 @@ class ScriptLoader
           $required_ids = array_merge(array('jquery', 'jquery.ui'), array_keys(self::$ui_core_dependencies));
 
         if ( empty($script->path) )
-          $script->path = dirname(self::$known_paths['jquery.ui'])."/$id.min.js";
+          $script->path = dirname(self::$known_paths['jquery.ui'])."/$id.js";
       }
 
       foreach ($required_ids as $required_id)
