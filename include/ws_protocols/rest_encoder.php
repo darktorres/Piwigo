@@ -93,20 +93,6 @@ class PwgXmlWriter
   }
 
   /**
-   * @param $value
-   * @return void
-   */
-  public function write_cdata($value): void
-  {
-    $this->_end_prev(false);
-    $value = (string)$value;
-    $this->_output(
-      '<![CDATA['
-      . str_replace(']]>', ']]&gt;', $value)
-      . ']]>' );
-  }
-
-  /**
    * @param $name
    * @param $value
    * @return void
