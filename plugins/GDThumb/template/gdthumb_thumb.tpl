@@ -66,6 +66,7 @@
 {combine_script id='gdthumb' require='jquery,jquery.ba-resize' path=$GDThumb.GDTHUMB_ROOT|cat:"/js/gdthumb.js" load="footer"}
 
 {footer_script require="gdthumb"}
+<script>
 
   {if isset($has_cats)}
   {else}
@@ -79,6 +80,7 @@ $(function() {
   GDThumb.setup('{$GDThumb.method}', {$GDThumb.height}, {$GDThumb.margin}, false, big_thumb, {$GDThumb.big_thumb_noinpw});
 });
   {/if}
+</script>
 {/footer_script}
 
 {html_head}

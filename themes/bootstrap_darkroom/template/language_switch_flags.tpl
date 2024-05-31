@@ -20,7 +20,9 @@
 
 {* move to main navbar to avoid scrolling issues in navmenu on mobile devices *}
 {footer_script require='jquery'}{strip}
+<script>
 $(document).ready(function() {
   $('#languageSwitch').appendTo('#navbar-menubar>ul.navbar-nav');
 });
+</script>
 {/strip}{/footer_script}

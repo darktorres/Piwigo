@@ -1,6 +1,7 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
 {footer_script require='jquery.ui'}{literal}
+<script>
 jQuery(document).ready(function(){
 	jQuery(".menuPos").hide();
 	jQuery(".drag_button").show();
@@ -25,6 +26,7 @@ jQuery(document).ready(function(){
 		}
 	});
 });
+</script>
 {/literal}{/footer_script}
 
 {html_style}

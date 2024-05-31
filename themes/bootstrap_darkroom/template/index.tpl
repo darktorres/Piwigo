@@ -174,9 +174,11 @@
     <!-- Start of categories -->
 {$CATEGORIES}
 {footer_script require='jquery'}{strip}
+<script>
 $(document).ready(function() {
   $('#content .col-outer .card-body:has(> .card-title)').equalHeights();
 });
+</script>
 {/strip}{/footer_script}
     <!-- End of categories -->
 {/if}
@@ -212,7 +214,11 @@ $(document).ready(function() {
 {if !empty($THUMBNAILS)}
         <!-- Start of thumbnails -->
         <div id="thumbnails" class="row">{$THUMBNAILS}</div>
-{footer_script require='jquery'}{literal}$(document).ready(function(){$('#content img').load(function(){$('#content .col-inner').equalHeights()})});{/literal}{/footer_script}
+{footer_script require='jquery'}{literal}
+<script>
+$(document).ready(function(){$('#content img').load(function(){$('#content .col-inner').equalHeights()})});
+</script>
+{/literal}{/footer_script}
 {if $theme_config->photoswipe}
         <div id="photoSwipeData">
 {assign var=idx value=0}
@@ -226,7 +232,8 @@ $(document).ready(function() {
 {include file='_photoswipe_js.tpl' selector='#photoSwipeData'}
         </div>
 {footer_script require='jquery' require='photoswipe'}{strip}
-$('#startSlideshow').on('click touchstart', function() {
+<script>
+    $('#startSlideshow').on('click touchstart', function() {
    startPhotoSwipe(0);
    $('.pswp__button--autoplay')[0].click();
 });
@@ -269,9 +276,11 @@ $(document).ajaxComplete(function() {
 });
 {/if}
 {/if}
+</script>
 {/strip}{/footer_script}
 {/if}
 {footer_script require="jquery"}{strip}
+<script>
 {if !isset($loaded_plugins['piwigo-videojs']) && (isset($GThumb) || isset($GDThumb))}
 function addVideoIndicator() {
   $('img.thumbnail[src*="pwg_representative"]').each(function() {
@@ -289,6 +298,7 @@ $('.card-thumbnail').find('img[src*="pwg_representative"]').each(function() {
   $(this).closest('div').append('<i class="fas fa-file-video fa-2x video-indicator" aria-hidden="true" style="position: absolute; top: 10px; left: 10px; z-index: 100; color: #fff;"></i>');
 });
 {/if}
+</script>
 {/strip}{/footer_script}
         <!-- End of thumbnails -->
 {/if}

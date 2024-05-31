@@ -2,6 +2,7 @@
 {include file='include/datepicker.inc.tpl'}
 
 {footer_script}
+<script>
 jQuery(function(){ {* <!-- onLoad needed to wait localization loads --> *}
   jQuery('[data-datepicker]').pwgDatepicker();
 });
@@ -51,6 +52,7 @@ const str_contact_form = '{'Contact Form'|@translate}';
 const str_edit_img = '{'Edit photo'|@translate}';
 
 const guest_id = {$guest_id};
+</script>
 {/footer_script}
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
@@ -238,6 +240,7 @@ const guest_id = {$guest_id};
 {combine_script id='jquery.geoip' load='async' path='admin/themes/default/js/jquery.geoip.js'}
 
 {footer_script}{literal}
+<script>
 jQuery(document).ready( function() {
   jQuery(".IP").one( "mouseenter", function(){
   	var that = $(this);
@@ -279,6 +282,7 @@ jQuery(document).ready( function() {
     return false;
   });
 });
+</script>
 {/literal}{/footer_script}
 
 <style>

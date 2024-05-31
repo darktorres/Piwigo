@@ -1,6 +1,7 @@
 {combine_css path="themes/bootstrap_darkroom/node_modules/selectize/dist/css/selectize.bootstrap3.css"}
 {combine_script id='jquery.selectize' load='footer' require='jquery' path="themes/bootstrap_darkroom/node_modules/selectize/dist/js/standalone/selectize.js"}
 {footer_script require='jquery'}
+<script>
     jQuery(document).ready(function() {
     jQuery("#authors, #tags, #categories").each(function() {
     jQuery(this).selectize({
@@ -9,6 +10,7 @@
     });
     })
     });
+</script>
 {/footer_script}
 
 <nav class="navbar navbar-contextual navbar-expand-lg {$theme_config->navbar_contextual_style} {$theme_config->navbar_contextual_bg} sticky-top mb-5">

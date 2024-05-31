@@ -6,6 +6,7 @@
 {combine_script id='jquery.tipTip' load='footer' path='themes/default/js/plugins/jquery.tipTip.js'}
 
 {footer_script}
+<script>
 const has_images_associated_outside = '{"delete album and all %d photos, even the %d associated to other albums"|@translate|escape:javascript}';
 const has_images_becomming_orphans = '{'delete album and the %d orphan photos'|@translate|escape:javascript}';
 const has_images_recursives = '{'delete only album, not photos'|@translate|escape:javascript}';
@@ -37,6 +38,7 @@ str_already_in_related_cats = '{'This albums is already in related categories li
 str_album_comment_allow = '{'Comments allowed for sub-albums'|@translate}';
 str_album_comment_disallow = '{'Comments disallowed for sub-albums'|@translate}';
 str_root = '{'Root'|@translate}';
+</script>
 {/footer_script}
 
 <div class="cat-modify">

@@ -1,5 +1,6 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 {footer_script require='jquery.ui'}
+<script>
 
 const cat_nav = '{$CATEGORIES_NAV|escape:javascript}';
 
@@ -41,6 +42,7 @@ jQuery('.thumbnail').tipTip({
 'fadeOut' : 200
 });
 }); 
+</script>
 {/footer_script}
 
 <form action="{$F_ACTION}" method="post">

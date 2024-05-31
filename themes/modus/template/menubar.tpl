@@ -1,4 +1,5 @@
 {footer_script require='jquery'}
+<script>
 		var h = jQuery("#theHeader div.banner").css("height");
 		var d = jQuery("#menuSwitcher").css("padding-top");
 
@@ -7,6 +8,7 @@
 				jQuery("#menuSwitcher").css("padding-top",parseInt(h)+parseInt(d));
 			};
 		});
+</script>
 {/footer_script}
 
 

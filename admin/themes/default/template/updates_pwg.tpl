@@ -1,4 +1,5 @@
 {footer_script}
+<script>
 jQuery(document).ready(function() {
 	jQuery('input[name="submit"]').on("click", function() {
     if(!confirm('{'Are you sure?'|@translate}'))
@@ -10,6 +11,7 @@ jQuery(document).ready(function() {
     jQuery('[name="submit"]').attr('disabled', !this.checked);
   });
 });
+</script>
 {/footer_script}
 
 {html_head}

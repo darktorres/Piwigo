@@ -4,11 +4,13 @@
 {combine_script id='jquery.cookie' path='themes/default/js/jquery.cookie.js' load='footer'}
 
 {footer_script require='jquery.ui'}{literal}
+<script>
 jQuery(document).ready(function(){
   $(".addAlbumHead").on("click", function () {
     $(".addAlbum input[name=virtual_name]").focus();
   })
 });
+</script>
 {/literal}{/footer_script}
 
 <div class="selectedAlbum cat-list-album-path">

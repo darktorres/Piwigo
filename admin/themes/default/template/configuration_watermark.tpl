@@ -1,6 +1,7 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
 {footer_script}
+<script>
 (function(){
   function onWatermarkChange() {
     var val = jQuery("#wSelect").val();
@@ -34,6 +35,7 @@
 		return false;
   });
 }());
+</script>
 {/footer_script}
 
 <form method="post" action="{$F_ACTION}" class="properties" enctype="multipart/form-data">

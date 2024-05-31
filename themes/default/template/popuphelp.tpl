@@ -15,10 +15,12 @@
 </p>
 
 {footer_script require='jquery'}
+<script>
 if (window.opener || window.name) {
 	jQuery("#closeLink").show();
 	jQuery("#homeLink").hide();
 }
+</script>
 {/footer_script}
 </div> <!-- content -->
 

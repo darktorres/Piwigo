@@ -5,6 +5,7 @@
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {footer_script}
+<script>
 const cat_nav = '{$CATEGORIES_NAV|escape:javascript}';
 (function(){
 {* <!-- GROUPS --> *}
@@ -52,6 +53,7 @@ jQuery("#selectStatus").on("change", function() {
 $(document).ready(function () {
   $("h1").append(' <span style="letter-spacing:0">'+cat_nav+'</span>');
 })
+</script>
 {/footer_script}
 
 <form action="{$F_ACTION}" method="post" id="categoryPermissions">

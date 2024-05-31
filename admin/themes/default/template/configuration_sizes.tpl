@@ -2,6 +2,7 @@
 {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 {footer_script}
+<script>
 
 
 const title_msg = '{'Are you sure you want to restore to default settings?'|@translate|@escape:javascript}';
@@ -66,6 +67,7 @@ $(".restore-settings-button").each(function() {
 		return false;
   });
 })();
+</script>
 {/footer_script}
 
 {html_style}

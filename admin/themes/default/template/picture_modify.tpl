@@ -11,6 +11,7 @@
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 
 {footer_script}
+<script>
 (function(){
 {* <!-- CATEGORIES --> *}
 var categoriesCache = new CategoriesCache({
@@ -90,6 +91,7 @@ $('#action-delete-picture').on('click', function() {
 {/literal}
 
 }());
+</script>
 {/footer_script}
 
 {combine_script id='picture_modify' load='footer' path='admin/themes/default/js/picture_modify.js'}

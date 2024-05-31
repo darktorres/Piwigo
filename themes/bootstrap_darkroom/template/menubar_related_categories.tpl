@@ -14,6 +14,7 @@
     </div>
 </li>
 {footer_script require='jquery'}{strip}
+<script>
 $('#relatedCategoriesDropdownMenu').on('show.bs.dropdown', function() {
   $(this).find('.dropdown-item').each(function() {
     var level = $(this).data('level');
@@ -23,4 +24,5 @@ $('#relatedCategoriesDropdownMenu').on('show.bs.dropdown', function() {
     }
   });
 });
+</script>
 {/strip}{/footer_script}

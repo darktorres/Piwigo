@@ -1,6 +1,7 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
 {footer_script}
+<script>
 (function(){
   var targets = {
     'input[name="comments_validation"]' : '#email_admin_on_comment_validation',
@@ -28,6 +29,7 @@
     check_activate_comments();
   });
 }());
+</script>
 {/footer_script}
 
 <form method="post" action="{$F_ACTION}" class="properties">

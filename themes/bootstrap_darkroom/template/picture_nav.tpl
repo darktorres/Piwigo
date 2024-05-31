@@ -10,6 +10,7 @@
             <ul class="navbar-nav">
 {if isset($current.unique_derivatives) && count($current.unique_derivatives)>1}
 {footer_script require='jquery'}{strip}
+<script>
     function changeImgSrc(url,typeSave,typeMap) {
         var theImg = document.getElementById("theMainImage");
         if (theImg) {
@@ -41,6 +42,7 @@
         jQuery('#derivative'+typeMap).addClass('active');
         document.cookie = 'picture_deriv='+typeSave+';path={$COOKIE_PATH}';
     }
+</script>
 {/strip}{/footer_script}
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" title="{'Photo sizes'|@translate}">
@@ -115,6 +117,7 @@
 {/if}
 {if isset($U_CADDIE)}
 {footer_script}{strip}
+<script>
     function addToCadie(aElement, rootUrl, id) {
         if (aElement.disabled) return;
         aElement.disabled=true;
@@ -124,6 +127,7 @@
             onSuccess: function(result) { aElement.disabled = false; }
         });
     }
+</script>
 {/strip}{/footer_script}
                 <li class="nav-item">
                     <a class="nav-link" href="{$U_CADDIE}" onclick="addToCadie(this, '{$ROOT_URL}', {$current.id}); return false;" title="{'Add to caddie'|@translate}" rel="nofollow">

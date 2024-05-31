@@ -3,6 +3,7 @@
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {footer_script}
+<script>
 
 const cat_nav = '{$CATEGORIES_NAV|escape:javascript}';
 
@@ -45,6 +46,7 @@ jQuery(document).ready(function() {
     }
   });
 });
+</script>
 {/footer_script}
 
 {html_style}

@@ -2,6 +2,7 @@
 {combine_css path="themes/bootstrap_darkroom/node_modules/slick-carousel/slick/slick-theme.css" order=-21}
 {combine_script id="slick.carousel" require="jquery" path="themes/bootstrap_darkroom/node_modules/slick-carousel/slick/slick.js" load="footer"}
 {footer_script require='jquery' require="slick.carousel"}{strip}
+<script>
 $(document).ready(function(){
   $('#thumbnailCarousel').slick({
     infinite: {if $theme_config->slick_infinite}true{else}false{/if},
@@ -57,4 +58,5 @@ $(document).ready(function(){
   var currentThumbnailIndex = $('#thumbnailCarousel .thumbnail-active:not(.slick-cloned)').data('slick-index');
   $('#thumbnailCarousel').slick('goTo', currentThumbnailIndex, true);
 });
+</script>
 {/strip}{/footer_script}

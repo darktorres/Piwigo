@@ -1,6 +1,7 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
 {footer_script}
+<script>
 $(document).ready(() => {
   $("h1").append("<span class='badge-number'>"+{$nb_cats}+"</span>");
 });
@@ -133,6 +134,7 @@ function resultAppear(result) {
 
 updateSearch();
 $('.search-input').focus();
+</script>
 {/literal}
 {/footer_script}
 

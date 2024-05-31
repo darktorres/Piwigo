@@ -58,6 +58,7 @@
 {combine_script id='gdthumb' require='jquery,jquery.ba-resize' path=$GDThumb.GDTHUMB_ROOT|cat:"/js/gdthumb.js" load="footer"}
 
 {footer_script require="gdthumb"}
+<script>
 $(function() {
   {if isset($GDThumb_big)}
   {assign var=gt_size value=$GDThumb_big->get_size()}
@@ -67,4 +68,5 @@ $(function() {
   {/if}
   GDThumb.setup('{$GDThumb.method}', {$GDThumb.height}, {$GDThumb.margin}, true, big_thumb, {$GDThumb.big_thumb_noinpw});
 });
+</script>
 {/footer_script}

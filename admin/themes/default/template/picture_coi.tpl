@@ -34,6 +34,7 @@
 </form>
 
 {footer_script}
+<script>
 {literal}
 function from_coi(f, total) {
 	return f*total;
@@ -67,5 +68,6 @@ jQuery("#jcrop").Jcrop( {
 	}
 {/if}
 );
+</script>
 {/footer_script}
 

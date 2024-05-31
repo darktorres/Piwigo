@@ -1,4 +1,5 @@
 {footer_script}
+<script>
 $('#syncFiles label').on("click", function () {
   if ($("input[value='files']:checked").val()) {
     $("input[value='files']").closest("li").find("ul").show();
@@ -7,6 +8,7 @@ $('#syncFiles label').on("click", function () {
   }
 })
 
+</script>
 {/footer_script}
 
 <div class="selectedAlbum site-url-path">

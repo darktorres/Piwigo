@@ -52,6 +52,7 @@
                       {strip}{combine_script id='core.scripts' path='themes/default/js/scripts.js' load='async'}
                       {combine_script id='rating' require='core.scripts' path='themes/bootstrap_darkroom/js/rating.js' load='async'}
                       {footer_script require='jquery'}
+                      <script>
                            var _pwgRatingAutoQueue = _pwgRatingAutoQueue||[];
                            _pwgRatingAutoQueue.push( { rootUrl: '{$ROOT_URL}', image_id: {$current.id},
                                     onSuccess : function(rating) {
@@ -73,6 +74,7 @@
                                            });
                                    }
                            });
+                      </script>
                       {/footer_script}
                       {/strip}
                     </div>
@@ -144,6 +146,7 @@
 {if $display_info.privacy_level and isset($available_permission_levels)}
 {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'}
 {footer_script require='jquery'}{strip}
+<script>
     function setPrivacyLevel(id, level, label) {
     (new PwgWS('{$ROOT_URL}')).callService(
         "pwg.images.setPrivacyLevel", { image_id:id, level:level},
@@ -158,6 +161,7 @@
         }
     );
     }
+</script>
 {/strip}{/footer_script}
             <div id="Privacy" class="imageInfo">
               <dl class="row mb-0">
@@ -278,6 +282,7 @@
           </div>
           <button id="show_exif_data" class="btn btn-primary btn-raised mt-1" style="text-transform: none;"><i class="fas fa-info mr-1"></i> {'Show EXIF data'|@translate}</button>
 {footer_script require='jquery'}
+<script>
 $('#show_exif_data').on('click', function() {
   if ($('#full_exif_data').hasClass('d-none')) {
     $('#full_exif_data').addClass('d-flex').removeClass('d-none');
@@ -287,6 +292,7 @@ $('#show_exif_data').on('click', function() {
     $('#show_exif_data').html('<i class="fas fa-info mr-1"></i> {"Show EXIF data"|@translate}');
   }
 });
+</script>
 {/footer_script}
           <div id="full_exif_data" class="d-none flex-column mt-2">
 {foreach $metadata as $meta}
