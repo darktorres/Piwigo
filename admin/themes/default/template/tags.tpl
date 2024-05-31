@@ -1,4 +1,5 @@
 {footer_script}
+<script>
 var pwg_token = "{$PWG_TOKEN}";
 var orphan_tag_names = {$orphan_tag_names_array};
 var str_delete = '{'Delete tag "%s"?'|@translate}';
@@ -34,6 +35,7 @@ $(document).ready(function() {
   $("h1").append('<span class="badge-number">{$total}</span>');
 });
 
+</script>
 {/footer_script}
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
@@ -45,9 +47,11 @@ $(document).ready(function() {
 {combine_script id='jquery.cookie' path='themes/default/js/jquery.cookie.js' load='footer'}
 
 {footer_script}
+<script>
 if (!$.cookie("pwg_tags_per_page")) {
   $.cookie("pwg_tags_per_page", "100");
 }
+</script>
 {/footer_script}
 
 <meta http-equiv='cache-control' content='no-cache'>

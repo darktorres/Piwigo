@@ -91,6 +91,7 @@
     </div>
 {strip}
 {footer_script}
+<script>
 document.onkeydown = function(e){
 	e=e||window.event;
 	if (e.altKey) return true;
@@ -123,5 +124,6 @@ document.onkeydown = function(e){
 	if (url) { window.location=url.replace("&amp;","&"); return false;}
 	return true;
 }
+</script>
 {/footer_script}
 {/strip}

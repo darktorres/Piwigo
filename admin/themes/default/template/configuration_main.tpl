@@ -2,6 +2,7 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
 {footer_script require='jquery'}
+<script>
 (function(){
   var targets = {
     'input[name="rate"]' : '#rate_anonymous',
@@ -74,6 +75,7 @@ jQuery("input[name='email_admin_on_new_user_filter']").on("change", function() {
 
   jQuery('#email_admin_on_new_user_filter_group_options').toggle('group' == val);
 });
+</script>
 {/footer_script}
 
 <form method="post" action="{$F_ACTION}" class="properties">

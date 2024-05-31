@@ -1,9 +1,11 @@
 {include file='include/colorbox.inc.tpl'}
 
 {footer_script}{literal}
+<script>
 jQuery().ready(function(){
   jQuery(".illustration a").colorbox({rel:'group1'});
 });
+</script>
 {/literal}{/footer_script}
 
 {html_head}{literal}

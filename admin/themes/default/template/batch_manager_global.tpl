@@ -19,6 +19,7 @@
 {combine_script id='batchManagerGlobal' load='async' require='jquery,datepicker,jquery.colorbox,addAlbum,doubleSlider' path='admin/themes/default/js/batchManagerGlobal.js'}
 
 {footer_script}
+<script>
 var lang = {
 	Cancel: '{'Cancel'|translate|escape:'javascript'}',
 	deleteProgressMessage: "{'Deletion in progress'|translate|escape:'javascript'}",
@@ -338,6 +339,7 @@ var sliders = {
   }
 };
 
+</script>
 {/footer_script}
 
 {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}

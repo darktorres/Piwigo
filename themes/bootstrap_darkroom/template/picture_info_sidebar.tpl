@@ -1,5 +1,7 @@
 {footer_script require='jquery'}
+<script>
 {literal}$(document).ready(function() { $("#wrapper").css({"position":"relative","overflow-x":"hidden"}); });{/literal}
+</script>
 {/footer_script}
 <div id="sidebar">
     <div id="info-content" class="info">
@@ -100,6 +102,7 @@
                         {strip}{combine_script id='core.scripts' path='themes/default/js/scripts.js' load='async'}
                         {combine_script id='rating' require='core.scripts' path='themes/bootstrap_darkroom/js/rating.js' load='async'}
                         {footer_script require='jquery'}
+                        <script>
                                 var _pwgRatingAutoQueue = _pwgRatingAutoQueue||[];
                                 _pwgRatingAutoQueue.push( { rootUrl: '{$ROOT_URL}', image_id: {$current.id},
                                         onSuccess : function(rating) {
@@ -121,6 +124,7 @@
                                                 });
                                         }
                                 });
+                        </script>
                         {/footer_script}
                         {/strip}
                         </div>
@@ -131,6 +135,7 @@
 {if $display_info.privacy_level and isset($available_permission_levels)}
 {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'}
 {footer_script require='jquery'}{strip}
+<script>
     function setPrivacyLevel(id, level, label) {
     (new PwgWS('{$ROOT_URL}')).callService(
         "pwg.images.setPrivacyLevel", { image_id:id, level:level},
@@ -146,6 +151,7 @@
     );
     }
     (SwitchBox=window.SwitchBox||[]).push("#privacyLevelLink", "#privacyLevelBox");
+</script>
 {/strip}{/footer_script}
             <div id="Privacy" class="imageInfo">
                 <dt>{'Who can see this photo?'|@translate}</dt>

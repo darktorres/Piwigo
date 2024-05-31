@@ -5,6 +5,7 @@
   {if $theme_config->comments_type == 'disqus' and !empty($shortname)}
       <div id="disqus_thread"></div>
 {footer_script}{strip}
+<script>
 var disqus_shortname = '{/strip}{$shortname}{strip}';
 
 (function() {
@@ -12,6 +13,7 @@ var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.as
 dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
 (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 })();
+</script>
 {/strip}
 {/footer_script}
   {else}

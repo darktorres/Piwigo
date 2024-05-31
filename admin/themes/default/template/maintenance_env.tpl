@@ -3,10 +3,12 @@
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10}
  {* order 10 is required, see issue 1080 *}
 {footer_script}
+<script>
 const no_time_elapsed = "{"right now"|@translate}";
 const no_active_plugin = "{"No plugin activated"|@translate}";
 const error_occured = "{"an error happened"|@translate}";
 const unit_MB = "{"%s MB"|@translate}"
+</script>
 {/footer_script}
 
 <fieldset id="environment">

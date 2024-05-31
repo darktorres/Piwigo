@@ -3,6 +3,7 @@
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10} {* order 10 is required, see issue 1080 *}
 {footer_script}
+<script>
 const confirm_msg = '{"Yes, I am sure"|@translate}';
 const cancel_msg = "{"No, I have changed my mind"|@translate}";
 const no_time_elapsed = "{"right now"|@translate}";
@@ -114,6 +115,7 @@ $(".delete-size-check").on("click",  function () {
 
 })
 
+</script>
 {/footer_script}
 
 {combine_script id='ajax' load='footer' path='admin/themes/default/js/maintenance.js'}

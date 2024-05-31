@@ -1,15 +1,18 @@
 {footer_script}{literal}
+<script>
 jQuery(document).ready(function(){
   jQuery("#showCreateSite a").on("click", function(){
     jQuery("#showCreateSite").hide();
     jQuery("#createSite").show();
   });
 });
+</script>
 {/literal}{/footer_script}
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 {footer_script}
+<script>
 const title_msg = '{'Are you sure you want to delete this site?'|@translate|@escape:'javascript'}';
 const confirm_msg = '{"Yes, I am sure"|@translate}';
 const cancel_msg = "{"No, I have changed my mind"|@translate}";
@@ -20,6 +23,7 @@ $(".delete-site-button").each(function() {
     alert_cancel: cancel_msg
   });
 });
+</script>
 {/footer_script}
 
 {if not empty($remote_output)}

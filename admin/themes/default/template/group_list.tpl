@@ -1,5 +1,6 @@
 {include file='include/colorbox.inc.tpl'}
 {footer_script}
+<script>
 var pwg_token = "{$PWG_TOKEN}";
 var str_member_default = "{'member'|@translate|@escape:'javascript'}"
 var str_members_default = "{'members'|@translate|@escape:'javascript'}"
@@ -46,6 +47,7 @@ var usersCache = new UsersCache({
 
 usersCache.selectize(jQuery('select.UserSearch'));
 {* temporary fix for #1283 (end) *}
+</script>
 {/footer_script}
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}

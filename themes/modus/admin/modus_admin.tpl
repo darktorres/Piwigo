@@ -79,6 +79,7 @@
 
 
 {footer_script}
+<script>
 jQuery(document).ready(function() {
   jQuery('#modus-config input[type=checkbox]').on("change", function() {
     jQuery(this).prev().toggleClass('icon-check icon-check-empty');
@@ -107,6 +108,7 @@ jQuery(document).ready(function() {
     jQuery(this).parents(".themeBoxModusConfig").addClass("themeDefault");
   });
 });
+</script>
 {/footer_script}
 
 <h2>{'Modus theme config'|translate}</h2>

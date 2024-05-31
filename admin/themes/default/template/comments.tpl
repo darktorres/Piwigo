@@ -1,4 +1,5 @@
 {footer_script}
+<script>
 jQuery(document).ready(function(){
   $("h1").append("<span class='badge-number'>"+{$nb_total}+"</span>");
 
@@ -43,6 +44,7 @@ jQuery(document).ready(function(){
   });
 
 });
+</script>
 {/footer_script}
 
 <div class="commentFilter">

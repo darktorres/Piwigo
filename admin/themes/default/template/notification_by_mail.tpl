@@ -1,6 +1,7 @@
 
 {include file='include/autosize.inc.tpl'}
 {footer_script}{literal}
+<script>
 jQuery(document).ready(function(){
 
 	jQuery("#checkAllLink").on("click", function () {
@@ -14,6 +15,7 @@ jQuery(document).ready(function(){
 	});
 
 });
+</script>
 {/literal}{/footer_script}
 
 <form method="post" name="notification_by_mail" id="notification_by_mail" action="{$F_ACTION}">

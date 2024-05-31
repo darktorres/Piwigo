@@ -15,6 +15,7 @@
   </div>
 {if get_device() != 'desktop' }
 {footer_script require="jquery"}{strip}
+<script>
 $('#theImage img').on('swipeleft swiperight', function (event) {
    if (event.type == 'swipeleft') {
        $('#navigationButtons a#navNextPicture i').click();
@@ -24,6 +25,7 @@ $('#theImage img').on('swipeleft swiperight', function (event) {
        return;
    }
 });
+</script>
 {/strip}{/footer_script}
 {/if}
 

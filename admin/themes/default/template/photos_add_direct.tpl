@@ -28,6 +28,7 @@
 {/html_style}
 
 {footer_script}
+<script>
 
 const formatMode = {if $DISPLAY_FORMATS}true{else}false{/if};
 const haveFormatsOriginal = {if $HAVE_FORMATS_ORIGINAL}true{else}false{/if};
@@ -388,6 +389,7 @@ jQuery(document).ready(function(){
 	});
 {/literal}
 });
+</script>
 {/footer_script}
 
 <div id="photosAddContent">

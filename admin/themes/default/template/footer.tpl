@@ -33,6 +33,7 @@
 
 {combine_script id='jquery.tipTip' load='footer' path='themes/default/js/plugins/jquery.tipTip.js'}
 {footer_script require='jquery.tipTip'}
+<script>
 jQuery('.tiptip').tipTip({
   delay: 0,
   fadeIn: 200,
@@ -43,6 +44,7 @@ jQuery('a.externalLink').on("click", function() {
   window.open(jQuery(this).attr("href"));
   return false;
 });
+</script>
 {/footer_script}
 
 <!-- BEGIN get_combined -->

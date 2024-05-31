@@ -135,6 +135,7 @@ input[type="text"]:focus, input[type="password"]:focus, select:focus {
 {combine_script id='jquery.cluetip' load='async' require='jquery' path='themes/default/js/plugins/jquery.cluetip.js'}
 
 {footer_script require='jquery.cluetip'}
+<script>
 jQuery().ready(function(){
 	jQuery('.cluetip').cluetip({
 		width: 300,
@@ -142,6 +143,7 @@ jQuery().ready(function(){
 		positionBy: 'bottomTop'
 	});
 });
+</script>
 {/footer_script}
 
 

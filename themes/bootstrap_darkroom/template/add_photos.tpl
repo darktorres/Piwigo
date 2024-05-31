@@ -19,6 +19,7 @@
 {combine_script id='piecon' load='footer' path='themes/default/js/plugins/piecon.js'}
 
 {footer_script}
+<script>
 var rootUrl = "{get_absolute_root_url()}";
 {literal}
 jQuery(document).ready(function(){
@@ -374,6 +375,7 @@ var limit_storage = {$limit_storage};
     }
   });
 });
+</script>
 {/literal}{/footer_script}
 
 {literal}
@@ -625,6 +627,7 @@ p#uploadModeInfos {text-align:left;margin-top:1em;font-size:90%;color:#999;}
 
 {* Community specific *}
 {footer_script}{literal}
+<script>
 jQuery(document).ready(function(){
   jQuery("a.colorboxThumb").colorbox({rel:"colorboxThumb"});
 
@@ -633,4 +636,5 @@ jQuery(document).ready(function(){
     return false;
   });
 });
+</script>
 {/literal}{/footer_script}

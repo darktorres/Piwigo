@@ -3,6 +3,7 @@
 {combine_css path="themes/default/js/plugins/jquery.jgrowl.css"}
 
 {footer_script require='jquery.ui,jquery.ajaxmanager,jquery.jgrowl'}
+<script>
 var pwg_token = '{$PWG_TOKEN}';
 var extType = '{$EXT_TYPE}';
 var confirmMsg  = '{'Are you sure?'|@translate|@escape:'javascript'}';
@@ -127,12 +128,14 @@ function autoupdate_bar_toggle(i) {
 }
 
 checkFieldsets();
+</script>
 {/literal}
 {/footer_script}
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 {footer_script}
+<script>
 
 const are_you_sure_msg  = '{'Are you sure?'|@translate|@escape:'javascript'}';
 const confirm_msg = '{"Yes, I am sure"|@translate}';
@@ -156,6 +159,7 @@ $("#update_all").on("click", function() {
       ...jConfirm_confirm_options
     });
 })
+</script>
 {/footer_script}
 
 {if $isWebmaster == 1}
