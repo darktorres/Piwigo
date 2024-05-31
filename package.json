@@ -1,0 +1,21 @@
+{
+  "name": "piwigo2",
+  "version": "1.0.0",
+  "description": "<img src=\"https://piwigo.org/plugins/piwigo-piwigodotorg/images/piwigo.org.svg\" width=\"200\" alt=\"Piwigo logo\">",
+  "main": "index.php",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node .\\tests\\dist\\run-tests.mjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.3.0",
+    "eslint": "^9.3.0",
+    "eslint-plugin-jquery": "^1.5.1",
+    "globals": "^15.3.0"
+  }
+}
