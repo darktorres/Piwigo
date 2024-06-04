@@ -478,11 +478,11 @@ function removeSelectedItem(id) {
 
       if (selected.length >= maxItemDisplayed) {
         let i = 0;
-        isNotCreate = true
+        let isNotCreate = true
         while (i<selected.length && isNotCreate) {
             if ($('.selection-mode-tag .tag-list div[data-id='+selected[i]+']').length == 0) {
               isNotCreate = false;
-              indexOfTag = dataTags.findIndex(tag => tag.id == selected[i])
+              let indexOfTag = dataTags.findIndex(tag => tag.id == selected[i])
               createSelectionItem(selected[i], dataTags[indexOfTag].name);
             }
             i++;
@@ -513,7 +513,7 @@ function updateMergeItems () {
 let mergeOption = false;
 
 function updateSelectionContent() {
-  number = selected.length;
+  let number = selected.length;
   if (number == 0) {
     mergeOption = false;
     $('#nothing-selected').show();
@@ -573,9 +573,9 @@ $('#selectAll').on('click', function() {
 });
 
 function selectAll(data) {
-  promises = [];
+  let promises = [];
   data.forEach((tag) => {
-    promises.push(new Promise((res, rej) => {
+    promises.push(new Promise((res) => {
       $('.tag-box[data-id='+tag.id+']').attr('data-selected', 1);
       addSelectedItem(tag.id);
       res();
@@ -618,7 +618,7 @@ $('#selectInvert').on('click', function() {
 
 function selectInvert(data) {
   data.forEach((tag) => {
-    tagBox = $('.tag-box[data-id='+tag.id+']');
+    let tagBox = $('.tag-box[data-id='+tag.id+']');
     if (tagBox.attr('data-selected') == 1) {
       tagBox.attr('data-selected', '0');
       removeSelectedItem(tag.id)
@@ -677,7 +677,7 @@ function removeSelectedTags() {
         },
         success: function (raw_data) {
           raw_data = raw_data.slice(raw_data.search('{'));
-          if (JSON.parse(raw_data).stat = 'ok') {
+          if (JSON.parse(raw_data).stat == 'ok') {
             selected.forEach(function(id) {
               $('.tag-box[data-id='+id+']').remove();
             })
@@ -704,20 +704,20 @@ function removeSelectedTags() {
 
 //Merge Tags
 $('.ConfirmMergeButton').on('click',() => {
-  dest_id = $('#MergeOptionsChoices').val();
+  let dest_id = $('#MergeOptionsChoices').val();
   mergeGroups(dest_id, selected)
 })
 
 function mergeGroups(destination_id, merge_ids) {
 
-  destination_name = $('.tag-box[data-id='+destination_id+'] .tag-name').html();
-  merge_name = [];
+  let destination_name = $('.tag-box[data-id='+destination_id+'] .tag-name').html();
+  let merge_name = [];
 
   merge_ids.forEach((id) =>{
     merge_name.push($('.tag-box[data-id='+id+'] .tag-name').html());
   })
   
-  str_message = window.translations.str_merged_into
+  let str_message = window.translations.str_merged_into
     .replace('%s1', tagListToString(merge_name))
     .replace('%s2', destination_name)
 
@@ -734,7 +734,7 @@ function mergeGroups(destination_id, merge_ids) {
         },
         success: function (raw_data) {
           raw_data = raw_data.slice(raw_data.search('{'));
-          data = JSON.parse(raw_data);
+          let data = JSON.parse(raw_data);
           if (data.stat === "ok") {
             data.result.deleted_tag.forEach((id) => {
               if (data.result.destination_tag != id) {
@@ -744,14 +744,14 @@ function mergeGroups(destination_id, merge_ids) {
               }
             })
             if (data.result.images_in_merged_tag.length > 0) {
-              tagBox = $('.tag-box[data-id='+data.result.destination_tag+']')
+              let tagBox = $('.tag-box[data-id='+data.result.destination_tag+']')
               tagBox.find('.dropdown-option.view,'+ 
               '.dropdown-option.manage,'+
               '.tag-dropdown-header i').show();
               $('.tag-dropdown-header i').html(window.translations.str_number_photos.replace('%d', data.result.images_in_merged_tag.length));
 
               // Update data
-              index = dataTags.findIndex((tag) => tag.id == data.result.destination_tag);
+              let index = dataTags.findIndex((tag) => tag.id == data.result.destination_tag);
               dataTags[index].counter = data.result.images_in_merged_tag.length;
             }
             $(".tag-box").attr("data-selected", '0');
@@ -888,7 +888,7 @@ function updatePaginationMenu() {
 }
 
 function createPaginationMenu() {
-  nbPage = getNumberPages();
+  let nbPage = getNumberPages();
 
   appendPaginationItem(1);
 
@@ -980,7 +980,7 @@ function updatePage() {
         } else if (dataToDisplay.length > tagBoxes.length) {
           for (let j = boxToRecycle; j < dataToDisplay.length; j++) {
             let tag = dataToDisplay[j];
-            newTag = createTagBox(tag.id, tag.name, tag.url_name, tag.counter);
+            let newTag = createTagBox(tag.id, tag.name, tag.url_name, tag.counter);
             newTag.css('opacity', 0);
             $('.tag-container').append(newTag);
             setupTagbox(newTag);
