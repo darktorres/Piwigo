@@ -1,4 +1,4 @@
-{combine_script id='jquery.dataTables' load='footer' path='themes/default/js/plugins/jquery.dataTables.js'}
+{* {combine_script id='jquery.dataTables' load='footer' path='themes/default/js/plugins/jquery.dataTables.js'} *}
 {html_style}
 .sorting { background: url({$ROOT_URL}themes/default/js/plugins/datatables/images/sort_both.png) no-repeat center right; cursor:pointer; }
 .sorting_asc { background: url({$ROOT_URL}themes/default/js/plugins/datatables/images/sort_asc.png) no-repeat center right; }
@@ -37,7 +37,8 @@ body .ui-tooltip {
 
 {/html_style}
 {footer_script}
-<script>
+<script type="module">
+import './node_modules/jquery-migrate/dist/jquery-migrate.js';
 $(document).ready(function() {
   $('h1').append("<span class='badge-number'>{$NB_ELEMENTS}</span>")
 });
@@ -72,13 +73,14 @@ $(document).ready(function() {
 	<input type="hidden" name="page" value="rating_user">
 </fieldset>
 </form>
-{combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{* {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'} *}
+{* {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'} *}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
-{combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'}
-{combine_script id='jquery.geoip' load='async' path='admin/themes/default/js/jquery.geoip.js'}
+{* {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'} *}
+{* {combine_script id='jquery.geoip' load='async' path='admin/themes/default/js/jquery.geoip.js'} *}
 {footer_script}
-<script>
+<script type="module">
+import './themes/default/js/plugins/jquery.dataTables.js';
 jQuery('#rateTable').dataTable({
 	dom : '<"dtBar"filp>rt<"dtBar"ilp>',
 	pageLength: 100,
@@ -210,9 +212,11 @@ $(document).ready( function(){
 {/foreach}
 </table>
 
-{combine_script id='jquery.ui' load='footer'}
-{footer_script require='jquery.ui'}
-<script>
+{* {combine_script id='jquery.ui' load='footer'} *}
+{* {footer_script require='jquery.ui'} *}
+{footer_script}
+<script type="module">
+import './node_modules/jquery-ui/dist/jquery-ui.js';
 jQuery(document).ready(function(){
 	jQuery("#rateTable").tooltip({
 		items: ".usr,[title]",

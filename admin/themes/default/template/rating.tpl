@@ -1,11 +1,14 @@
-{combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
+{* {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'} *}
+{* {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'} *}
 
-{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
+{* {combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'} *}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {footer_script}
-<script>
+<script type="module">
+import './admin/themes/default/js/common.js';
+import './admin/themes/default/js/LocalStorageCache.js';
+import './themes/default/js/selectize.js';
 {* <!-- CATEGORIES --> *}
 var categoriesCache = new CategoriesCache({
   serverKey: '{$CACHE_KEYS.categories}',
@@ -120,9 +123,10 @@ $(document).ready(function() {
 </tr>
 {/foreach}{*images*}
 </table>
-{combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'}
+{* {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'} *}
 {footer_script}
-<script>
+<script type="module">
+import './themes/default/js/scripts.js';
 function del(node,id,uid,aid){
 	var tr = jQuery(node).parents("tr").first().fadeTo(1000, 0.4),
 		data = {
