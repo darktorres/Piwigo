@@ -1,7 +1,8 @@
 {include file='include/colorbox.inc.tpl'}
 
 {footer_script}{literal}
-<script>
+<script type="module">
+import './themes/default/js/plugins/jquery.colorbox.js';
 jQuery().ready(function(){
   jQuery(".illustration a").colorbox({rel:'group1'});
 });
