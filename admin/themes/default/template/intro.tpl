@@ -1,9 +1,12 @@
 {include file='include/colorbox.inc.tpl'}
 
-{combine_script id='jquery.cluetip' load='async' require='jquery' path='themes/default/js/plugins/jquery.cluetip.js'}
+{* {combine_script id='jquery.cluetip' load='async' require='jquery' path='themes/default/js/plugins/jquery.cluetip.js'} *}
 
-{footer_script require='jquery.cluetip'}
-<script>
+{* {footer_script require='jquery.cluetip'} *}
+{footer_script}
+<script type="module">
+import './themes/default/js/plugins/jquery.cluetip.js';
+
 var piwigo_need_update_msg = '<a href="admin.php?page=updates">{'A new version of Piwigo is available.'|@translate|@escape:"javascript"} <i class="icon-right"></i></a>';
 var ext_need_update_msg = '<a href="admin.php?page=updates&amp;tab=ext">{'Some upgrades are available for extensions.'|@translate|@escape:"javascript"} <i class="icon-right"></i></a>';
 const str_gb_used = "{'%s GB used'|translate}";
@@ -30,8 +33,8 @@ jQuery().ready(function(){
     success: function (data) {
       if (data['stat'] != 'ok')
         return;
-      piwigo_update = data['result']['piwigo_need_update'];
-      ext_update = data['result']['ext_need_update']
+      let piwigo_update = data['result']['piwigo_need_update'];
+      let ext_update = data['result']['ext_need_update']
       if ((piwigo_update || ext_update) && !jQuery(".warnings").is('div'))
         jQuery(".eiw").prepend('<div class="warnings"><i class="eiw-icon icon-attention"></i><ul></ul></div>');
       if (piwigo_update)
@@ -84,7 +87,7 @@ let str_size = "";
 {/literal}
 {foreach $STORAGE_CHART_DATA as $type => $value}
   size = {$value};
-  str_size_type_string = size > 1000000 ? str_gb : str_mb;
+  let str_size_type_string = size > 1000000 ? str_gb : str_mb;
   size_nb = size > 1000000 ? (size / 1000000).toFixed(2) : (size / 1000).toFixed(0);
   str_size = " : " + str_size_type_string.replace("%s", size_nb);
 

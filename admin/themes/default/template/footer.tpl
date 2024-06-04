@@ -31,9 +31,12 @@
 </div>{* <!-- the_page --> *}
 
 
-{combine_script id='jquery.tipTip' load='footer' path='themes/default/js/plugins/jquery.tipTip.js'}
-{footer_script require='jquery.tipTip'}
-<script>
+{* {combine_script id='jquery.tipTip' load='footer' path='themes/default/js/plugins/jquery.tipTip.js'} *}
+{* {footer_script require='jquery.tipTip'} *}
+{footer_script}
+<script type="module">
+import './themes/default/js/plugins/jquery.tipTip.js';
+
 jQuery('.tiptip').tipTip({
   delay: 0,
   fadeIn: 200,

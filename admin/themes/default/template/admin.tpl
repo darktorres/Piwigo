@@ -1,5 +1,7 @@
 {footer_script}
-<script>
+<script type="module">
+import './node_modules/jquery-migrate/dist/jquery-migrate.js';
+
 jQuery.fn.lightAccordion = function(options) {
   var settings = $.extend({
     header: 'dt',
@@ -139,7 +141,9 @@ jQuery(document).ready(function() {
   {if isset($U_HELP)}
   {include file='include/colorbox.inc.tpl'}
 {footer_script}
-<script>
+<script type="module">
+import './node_modules/jquery-migrate/dist/jquery-migrate.js';
+
   jQuery('.help-popin').colorbox({ width:"500px" });
 </script>
 {/footer_script}
