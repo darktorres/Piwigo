@@ -1,4 +1,6 @@
- /*
+import '../../../../node_modules/jquery-migrate/dist/jquery-migrate.js';
+
+/*
  * TipTip
  * Copyright 2010 Drew Wilson
  * www.drewwilson.com

@@ -44,12 +44,12 @@ jQuery.fn.fontCheckbox = function() {
 // init fontChecbox everywhere
 jQuery('.font-checkbox').fontCheckbox();
 
-function array_delete(arr, item) {
+export function array_delete(arr, item) {
   var i = arr.indexOf(item);
   if (i != -1) arr.splice(i, 1);
 }
 
-function str_repeat(i, m) {
+export function str_repeat(i, m) {
   for (var o = []; m > 0; o[--m] = i);
   return o.join('');
 }
@@ -77,13 +77,13 @@ if (!Array.prototype.indexOf)
   };
 }
 
-function getRandomInt(min, max) {
+export function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function sprintf() {
+export function sprintf() {
   var i = 0, a, f = arguments[i++], o = [], m, p, c, x, s = '';
   while (f) {
     if (m = /^[^\x25]+/.exec(f)) {
@@ -143,7 +143,7 @@ $('.search-input').on('input', function() {
 })
 
 // Class to implement a temporary state and reverse it
-class TemporaryState {
+export class TemporaryState {
   constructor() {
     //Arrays to reverse changes
     this.attrChanges = []; //Attribute changes : {object(s), attribute, value}
@@ -249,7 +249,7 @@ class TemporaryState {
   }
 }
 
-const jConfirm_alert_options = {
+export const jConfirm_alert_options = {
   icon: 'icon-ok',
   titleClass: "jconfirmAlert",
   theme:"modern",
@@ -263,7 +263,7 @@ const jConfirm_alert_options = {
   typeAnimated: false,
 }
 
-const jConfirm_confirm_options = {
+export const jConfirm_confirm_options = {
   draggable: false,
   titleClass: "jconfirmDeleteConfirm",
   theme: "modern",
@@ -276,7 +276,7 @@ const jConfirm_confirm_options = {
   typeAnimated: false,
 }
 
-const jConfirm_warning_options = {
+export const jConfirm_warning_options = {
   icon: "icon-attention",
   draggable: false,
   titleClass: "jconfirmWarning jconfirmAlert",
@@ -292,7 +292,7 @@ const jConfirm_warning_options = {
   typeAnimated: false,
 }
 
-const jConfirm_confirm_with_content_options = {
+export const jConfirm_confirm_with_content_options = {
   draggable: false,
   theme: "modern",
   animation: "zoom",
@@ -335,5 +335,3 @@ jQuery.fn.pwg_jconfirm_follow_href = function({
     return (false);
   });
 }
-
-export { sprintf };

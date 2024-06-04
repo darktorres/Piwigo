@@ -1,3 +1,5 @@
+import * as common from './common.js';
+
 //Get the data
 var dataTags = $('.tag-container').data('tags');
 
@@ -7,11 +9,11 @@ $('#select-100').prop('checked', true)
 //Orphan tags
 $('.info-warning p a').on('click', () => {
   let url = $('.info-warning p a').data('url');
-  let tags = orphan_tag_names;
-  let str_orphans = str_orphan_tags.replace('%s1', tags.length).replace('%s2', tags.join(', '));
+  let tags = window.translations.orphan_tag_names;
+  let str_orphans = window.translations.str_orphan_tags.replace('%s1', tags.length).replace('%s2', tags.join(', '));
   $.confirm({
     content : str_orphans,
-    title : str_delete_orphan_tags,
+    title : window.translations.str_delete_orphan_tags,
     draggable: false,
     theme: "modern",
     animation: "zoom",
@@ -23,14 +25,14 @@ $('.info-warning p a').on('click', () => {
     typeAnimated: false,
     buttons: {
       delete : {
-        text:str_delete_them,
+        text: window.translations.str_delete_them,
         btnClass: 'btn-red',
         action: function() {
           window.location.href = url.replace(/amp;/g, '');
         }
       },
       keep : {
-        text:str_keep_them,
+        text: window.translations.str_keep_them,
         action: function() {
           $('.info-warning').hide();
         }
@@ -48,16 +50,16 @@ function createTagBox(id, name, url_name, count) {
     .replace(/%name%/g, unescape(name))
     .replace('%U_VIEW%', u_view)
     .replace('%U_EDIT%', u_edit)
-  newTag = $('<div class="tag-box" data-id='+id+' data-selected="0">'+html+'</div>');
+  let newTag = $('<div class="tag-box" data-id='+id+' data-selected="0">'+html+'</div>');
   if ($("#toggleSelectionMode").is(":checked")) {
     newTag.addClass('selection');
     newTag.find(".in-selection-mode").show();
   }
   if (count > 0) {
     newTag.find('.dropdown-option.view, .dropdown-option.manage').css('display', 'block');
-    newTag.find('.tag-dropdown-header i').html(str_number_photos.replace('%d', count));
+    newTag.find('.tag-dropdown-header i').html(window.translations.str_number_photos.replace('%d', count));
   } else {
-    newTag.find('.tag-dropdown-header i').html(str_no_photos);
+    newTag.find('.tag-dropdown-header i').html(window.translations.str_no_photos);
   }
   return newTag;
 }
@@ -77,9 +79,9 @@ function recycleTagBox(tagBox, id, name, url_name, count) {
   
   if (count > 0) {
     tagBox.find('.dropdown-option.view, .dropdown-option.manage').css('display', 'block');
-    tagBox.find('.tag-dropdown-header i').html(str_number_photos.replace('%d', count));
+    tagBox.find('.tag-dropdown-header i').html(window.translations.str_number_photos.replace('%d', count));
   } else {
-    tagBox.find('.tag-dropdown-header i').html(str_no_photos);
+    tagBox.find('.tag-dropdown-header i').html(window.translations.str_no_photos);
   }
 }
 
@@ -132,12 +134,12 @@ $(".TagSubmit").on('click', function () {
 $('#add-tag').submit(function (e) {
   e.preventDefault();
   if ($('#add-tag-input').val() != "") {
-    loadState = new TemporaryState();
+    let loadState = new common.TemporaryState();
     loadState.removeClass($('#add-tag .icon-validate'),'icon-plus');
     loadState.changeHTML($('#add-tag .icon-validate') , "<i class='icon-spin6 animate-spin'> </i>")
     loadState.changeAttribute($('#add-tag .icon-validate'), 'style','pointer-event:none')
     addTag($('#add-tag-input').val()).then(function () {
-      showMessage(str_tag_created.replace('%s', $('#add-tag-input').val()));
+      showMessage(window.translations.str_tag_created.replace('%s', $('#add-tag-input').val()));
       $('#add-tag-input').val("");
       $('#add-tag').removeClass('input-mode');
       $("#search-tag .search-input").trigger("input");
@@ -164,9 +166,9 @@ function addTag(name) {
         name: name
       },
       success: function (raw_data) {
-        data = JSON.parse(raw_data);
+        let data = JSON.parse(raw_data);
         if (data.stat === "ok") {
-          newTag = createTagBox(data.result.id, data.result.name, data.result.url_name, 0);
+          let newTag = createTagBox(data.result.id, data.result.name, data.result.url_name, 0);
           $('.tag-container').prepend(newTag);
           setupTagbox(newTag);
           updateSearchInfo();
@@ -180,7 +182,7 @@ function addTag(name) {
           updateBadge();
           resolve();
         } else {
-          reject(str_already_exist.replace('%s', name));
+          reject(window.translations.str_already_exist.replace('%s', name));
         }
       },
       error : function (err) {
@@ -236,27 +238,27 @@ function setupTagbox(tagBox) {
   //Delete Tag
   tagBox.find('.dropdown-option.delete').on('click', function () {
     $.confirm({
-      title: str_delete.replace("%s",tagBox.find('.tag-name').html()),
+      title: window.translations.str_delete.replace("%s",tagBox.find('.tag-name').html()),
       buttons: {
         confirm: {
-          text: str_yes_delete_confirmation,
+          text: window.translations.str_yes_delete_confirmation,
           btnClass: 'btn-red',
           action: function () {
             removeTag(tagBox.data('id'), tagBox.find('.tag-name').html());
           },
         },
         cancel: {
-          text: str_no_delete_confirmation
+          text: window.translations.str_no_delete_confirmation
         }
       },
-      ...jConfirm_confirm_options
+      ...common.jConfirm_confirm_options
     })
   })
 
   //Duplicate Tag
   tagBox.find('.dropdown-option.duplicate').on('click', function () {
     duplicateTag(tagBox.data('id'), tagBox.find('.tag-name').html()).then((data) => {
-      showMessage(str_tag_created.replace('%s',data.result.name))
+      showMessage(window.translations.str_tag_created.replace('%s',data.result.name))
     })
   })
 
@@ -266,11 +268,11 @@ function set_up_popin(id, tagName) {
 
   $(".RenameTagPopInContainer").find(".tag-property-input").attr("id", id);
 
-  $(".AddIconTitle span").html(str_tag_rename.replace("%s", tagName))
+  $(".AddIconTitle span").html(window.translations.str_tag_rename.replace("%s", tagName))
   $(".ClosePopIn, .TagCancel").on('click', function () {
     rename_tag_close()
   });
-  $(".TagSubmit").html(str_yes_rename_confirmation);
+  $(".TagSubmit").html(window.translations.str_yes_rename_confirmation);
   $(".RenameTagPopInContainer").find(".tag-property-input").val(tagName);
 }
 
@@ -285,23 +287,23 @@ function rename_tag_open() {
 
 function removeTag(id, name) {
   $.alert({
-      title : str_tag_deleted.replace("%s",name),
+      title : window.translations.str_tag_deleted.replace("%s",name),
       content: function() {
       return jQuery.ajax({
         url: "ws.php?format=json&method=pwg.tags.delete",
         type: "POST",
         data: {
           tag_id: id,
-          pwg_token: pwg_token
+          pwg_token: window.translations.pwg_token
         },
         success: function (raw_data) {
-          data = JSON.parse(raw_data);
+          let data = JSON.parse(raw_data);
           
           if (data.stat === "ok") {
             $('.tag-box[data-id='+id+']').remove();
             //Update data
             dataTags = dataTags.filter((tag) => tag.id != id);
-            showMessage(str_tag_deleted.replace('%s', name));
+            showMessage(window.translations.str_tag_deleted.replace('%s', name));
             updateBadge();
             updateSearchInfo();
             updatePaginationMenu();
@@ -311,7 +313,7 @@ function removeTag(id, name) {
         }
       })
     },
-    ...jConfirm_alert_options
+    ...common.jConfirm_alert_options
   });
 }
 
@@ -323,10 +325,10 @@ function renameTag(id, new_name) {
       data: {
         tag_id: id, 
         new_name: new_name,
-        pwg_token: pwg_token
+        pwg_token: window.translations.pwg_token
       },
       success: function (raw_data) {
-        data = JSON.parse(raw_data);
+        let data = JSON.parse(raw_data);
         console.log(data);
         if (data.stat === "ok") {
           $('.tag-box[data-id='+id+'] p, .tag-box[data-id='+id+'] .tag-dropdown-header b').html(data.result.name);
@@ -335,13 +337,13 @@ function renameTag(id, new_name) {
           $('.dropdown-option.view').attr('href', u_view);
 
           //Update the data
-          index = dataTags.findIndex((tag) => tag.id == id);
+          let index = dataTags.findIndex((tag) => tag.id == id);
           dataTags[index].name = data.result.name;
           dataTags[index].url_name = data.result.url_name;
 
           resolve(data);
         } else {
-          reject(str_already_exist.replace('%s', new_name))
+          reject(window.translations.str_already_exist.replace('%s', new_name))
         }
       },
       error:function(XMLHttpRequest) {
@@ -353,10 +355,10 @@ function renameTag(id, new_name) {
 
 function duplicateTag(id, name) {
   return new Promise((resolve, reject) => {
-    copy_name = name + str_copy;
+    let copy_name = name + window.translations.str_copy;
 
     let name_exist = function(name) {
-      exist = false;
+      let exist = false;
       $(".tag-box .tag-name").each(function () {
         if ($(this).html() === name)
           exist = true
@@ -367,7 +369,7 @@ function duplicateTag(id, name) {
     let i = 1;
     while (name_exist(copy_name)) 
     {
-      copy_name = name + str_other_copy.replace("%s", i++)
+      copy_name = name + window.translations.str_other_copy.replace("%s", i++)
     }
 
     jQuery.ajax({
@@ -376,17 +378,17 @@ function duplicateTag(id, name) {
       data: {
         tag_id : id,
         copy_name: copy_name, 
-        pwg_token: pwg_token
+        pwg_token: window.translations.pwg_token
       },
       success: function (raw_data) {
-        data = JSON.parse(raw_data);
+        let data = JSON.parse(raw_data);
         if (data.stat === "ok") {
-          newTag = createTagBox(data.result.id, data.result.name, data.result.url_name, data.result.count);
+          let newTag = createTagBox(data.result.id, data.result.name, data.result.url_name, data.result.count);
           newTag.insertAfter($('.tag-box[data-id='+id+']'));
           setupTagbox(newTag);
 
           //Update Data
-          index = dataTags.findIndex((tag) => tag.id == id);
+          let index = dataTags.findIndex((tag) => tag.id == id);
           dataTags.splice(index+1, 0, {
             name: data.result.name,
             id: data.result.id,
@@ -409,7 +411,7 @@ function duplicateTag(id, name) {
  Selection mode
 -------*/
 var selected = [];
-maxItemDisplayed = 5;
+let maxItemDisplayed = 5;
 
 $("#toggleSelectionMode").prop("checked", false)
 $("#toggleSelectionMode").on("click", function () {
@@ -447,7 +449,7 @@ function addSelectedItem(id) {
     if (selected.length > maxItemDisplayed) {
       $('.selection-other-tags').show();
       let numberDisplayed = $('.selection-mode-tag .tag-list div').length;
-      $('.selection-other-tags').html(str_and_others_tags.replace('%s', selected.length - numberDisplayed))
+      $('.selection-other-tags').html(window.translations.str_and_others_tags.replace('%s', selected.length - numberDisplayed))
     } else {
       $('.selection-other-tags').hide();
       if (dataTags.findIndex(tag => tag.id == id) > -1) {
@@ -489,7 +491,7 @@ function removeSelectedItem(id) {
     } 
 
     let numberDisplayed = $('.selection-mode-tag .tag-list div').length;
-    $('.selection-other-tags').html(str_and_others_tags.replace('%s', selected.length - numberDisplayed))
+    $('.selection-other-tags').html(window.translations.str_and_others_tags.replace('%s', selected.length - numberDisplayed))
     if (selected.length - numberDisplayed <= 0) {
       $('.selection-other-tags').hide();
     }
@@ -508,7 +510,7 @@ function updateMergeItems () {
   })
 }
 
-mergeOption = false;
+let mergeOption = false;
 
 function updateSelectionContent() {
   number = selected.length;
@@ -552,15 +554,15 @@ $('#selectAll').on('click', function() {
   updateSelectionContent();
   if (selected.length < dataTags.length) {
     showSelectMessage(
-      str_selection_done.replace('%d', $('.tag-box').length), 
-      str_select_all_tag.replace('%d', dataTags.length), 
+      window.translations.str_selection_done.replace('%d', $('.tag-box').length), 
+      window.translations.str_select_all_tag.replace('%d', dataTags.length), 
       function() {
       $('.tag-select-message a').html("");
       $('.tag-select-message div').html("<i class='icon-spin6 animate-spin'> </i>");
       setTimeout(() => {
         selectAll(dataTags).then(() => {
           updateSelectionContent();
-          showSelectMessage(str_tag_selected.replace(/%d/g, selected.length), str_clear_selection, function() {
+          showSelectMessage(window.translations.str_tag_selected.replace(/%d/g, selected.length), window.translations.str_clear_selection, function() {
             selectNone();
             $('.tag-select-message').slideUp();
           })
@@ -640,20 +642,20 @@ $('#DeleteSelectionMode').on('click', function() {
   })
 
   $.confirm({
-    title: str_delete_tags.replace("%s",tagListToString(names)),
+    title: window.translations.str_delete_tags.replace("%s",tagListToString(names)),
     buttons: {
         confirm: {
-          text: str_yes_delete_confirmation,
+          text: window.translations.str_yes_delete_confirmation,
           btnClass: 'btn-red',
           action: function () {
             removeSelectedTags();
           }
         },
         cancel: {
-          text: str_no_delete_confirmation
+          text: window.translations.str_no_delete_confirmation
         }
     },
-    ...jConfirm_confirm_options
+    ...common.jConfirm_confirm_options
   });
 })
 
@@ -664,13 +666,13 @@ function removeSelectedTags() {
   })
 
   $.alert({
-    title : str_tags_deleted.replace("%s",tagListToString(names)),
+    title : window.translations.str_tags_deleted.replace("%s",tagListToString(names)),
     content: function() {
       return jQuery.ajax({
         url: "ws.php?format=json&method=pwg.tags.delete",
         type: "POST",
         data: {
-          'pwg_token': pwg_token,
+          'pwg_token': window.translations.pwg_token,
           'tag_id': selected
         },
         success: function (raw_data) {
@@ -696,7 +698,7 @@ function removeSelectedTags() {
         }
       })
     },
-    ...jConfirm_alert_options
+    ...common.jConfirm_alert_options
   });
 }
 
@@ -715,7 +717,7 @@ function mergeGroups(destination_id, merge_ids) {
     merge_name.push($('.tag-box[data-id='+id+'] .tag-name').html());
   })
   
-  str_message = str_merged_into
+  str_message = window.translations.str_merged_into
     .replace('%s1', tagListToString(merge_name))
     .replace('%s2', destination_name)
 
@@ -726,7 +728,7 @@ function mergeGroups(destination_id, merge_ids) {
         url: "ws.php?format=json&method=pwg.tags.merge",
         type: "POST",
         data: {
-          'pwg_token': pwg_token,
+          'pwg_token': window.translations.pwg_token,
           'destination_tag_id': destination_id,
           'merge_tag_id': merge_ids
         },
@@ -746,7 +748,7 @@ function mergeGroups(destination_id, merge_ids) {
               tagBox.find('.dropdown-option.view,'+ 
               '.dropdown-option.manage,'+
               '.tag-dropdown-header i').show();
-              $('.tag-dropdown-header i').html(str_number_photos.replace('%d', data.result.images_in_merged_tag.length));
+              $('.tag-dropdown-header i').html(window.translations.str_number_photos.replace('%d', data.result.images_in_merged_tag.length));
 
               // Update data
               index = dataTags.findIndex((tag) => tag.id == data.result.destination_tag);
@@ -763,7 +765,7 @@ function mergeGroups(destination_id, merge_ids) {
         }
       })
     },
-    ...jConfirm_alert_options
+    ...common.jConfirm_alert_options
   });
 }
 
@@ -771,7 +773,7 @@ function tagListToString(list) {
   if (list.length > 5) {
     return list.slice(0,5).join(', ') 
       + ' '
-      + str_and_others_tags.replace('%s', list.length - 5);
+      + window.translations.str_and_others_tags.replace('%s', list.length - 5);
   } else {
     return list.join(', ');
   }
@@ -936,7 +938,7 @@ function updateArrows() {
 }
 
 function getNumberPages() {
-  dataVisible = dataTags.filter(isDataSearched).length;
+  let dataVisible = dataTags.filter(isDataSearched).length;
   return Math.floor((dataVisible - 1) / per_page) + 1;
 }
 
@@ -957,14 +959,14 @@ function movePage(toRigth = true) {
 
 function updatePage() {
   return new Promise((resolve, reject) => {
-    newPage = actualPage;
-    dataToDisplay = tagToDisplay();
-    tagBoxes = $('.tag-box');
+    let newPage = actualPage;
+    let dataToDisplay = tagToDisplay();
+    let tagBoxes = $('.tag-box');
     $('.pageLoad').fadeIn();;
     $('.tag-box').animate({opacity:0}, 500).promise().then(() => {
 
       let displayTags = new Promise((res, rej) => {
-        boxToRecycle = Math.min(dataToDisplay.length, tagBoxes.length);
+        let boxToRecycle = Math.min(dataToDisplay.length, tagBoxes.length);
 
         for (let i = 0; i < boxToRecycle; i++) {
           let tag = dataToDisplay[i];
@@ -1039,9 +1041,9 @@ function updateSearchInfo () {
   if ($('.search-input').val() != '') { 
     let number = dataTags.filter(isDataSearched).length;   
     if (number > 1) {
-      $('.search-info').html(str_tags_found.replace('%d', number));
+      $('.search-info').html(window.translations.str_tags_found.replace('%d', number));
     } else {
-      $('.search-info').html(str_tag_found.replace('%d', number));
+      $('.search-info').html(window.translations.str_tag_found.replace('%d', number));
     }
   } else {
     $('.search-info').html('');

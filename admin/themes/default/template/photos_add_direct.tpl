@@ -29,7 +29,7 @@
 
 {footer_script}
 <script type="module">
-import { sprintf } from './admin/themes/default/js/common.js';
+import * as common from './admin/themes/default/js/common.js';
 import './themes/default/js/plugins/plupload/jquery.plupload.queue/jquery.plupload.queue.js';
 
 {if "PHPWG_ROOT_PATH"|@constant|@cat:$plupload_i18n|@file_exists}
@@ -366,14 +366,14 @@ jQuery(document).ready(function(){
         jQuery("#uploadForm, #permissions, .showFieldset").hide();
 
         const infoText = formatMode?
-          sprintf(formatsUploaded_label, uploadedPhotos.length, [...new Set(files.map(f => f.format_of))].length)
-          : sprintf(photosUploaded_label, uploadedPhotos.length)
+          common.sprintf(formatsUploaded_label, uploadedPhotos.length, [...new Set(files.map(f => f.format_of))].length)
+          : common.sprintf(photosUploaded_label, uploadedPhotos.length)
 
         jQuery(".infos").append('<ul><li>'+infoText+'</li></ul>');
 
 
         if (!formatMode) {
-          let html = sprintf(
+          let html = common.sprintf(
             albumSummary_label,
             '<a href="admin.php?page=album-'+uploadCategory.id+'">'+uploadCategory.label+'</a>',
             parseInt(uploadCategory.nb_photos)
@@ -389,7 +389,7 @@ jQuery(document).ready(function(){
         // (and remove useless code from admin/photos_add_direct.php)
 
         jQuery(".batchLink").attr("href", "admin.php?page=photos_add&section=direct&batch="+uploadedPhotos.join(","));
-        jQuery(".batchLink").html(sprintf(batch_Label, uploadedPhotos.length));
+        jQuery(".batchLink").html(common.sprintf(batch_Label, uploadedPhotos.length));
 
         jQuery(".afterUploadActions").show();
         jQuery('#uploadingActions').hide();

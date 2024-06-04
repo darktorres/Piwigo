@@ -6,9 +6,9 @@
 
 {footer_script}
 <script type="module">
-import './admin/themes/default/js/common.js';
+import * as common from './admin/themes/default/js/common.js';
 import './admin/themes/default/js/LocalStorageCache.js';
-import './themes/default/js/selectize.js';
+import './themes/default/js/plugins/selectize.js';
 {* <!-- CATEGORIES --> *}
 var categoriesCache = new CategoriesCache({
   serverKey: '{$CACHE_KEYS.categories}',

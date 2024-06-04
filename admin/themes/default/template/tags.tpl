@@ -1,35 +1,39 @@
 {footer_script}
-<script>
-var pwg_token = "{$PWG_TOKEN}";
-var orphan_tag_names = {$orphan_tag_names_array};
-var str_delete = '{'Delete tag "%s"?'|@translate}';
-var str_delete_tags = '{'Delete tags \{%s\}?'|@translate}';
-var str_yes_delete_confirmation = "{'Yes, delete'|@translate}";
-var str_no_delete_confirmation = "{"No, I have changed my mind"|@translate}";
-var str_yes_rename_confirmation = "{'Yes, rename'|@translate}";
-var str_tag_deleted = '{'Tag "%s" succesfully deleted'|@translate}';
-var str_tags_deleted = '{'Tags \{%s\} succesfully deleted'|@translate}';
-var str_already_exist = '{'Tag "%s" already exists'|@translate}';
-var str_tag_created = '{'Tag "%s" created'|@translate}';
-var str_tag_renamed = '{'Tag "%s1" renamed in "%s2"'|@translate}';
-var str_tag_rename = '{'Rename "%s"'|@translate}';
-var str_delete_orphan_tags = '{'Delete orphan tags ?'|@translate}';
-var str_orphan_tags = '{'You have %s1 orphan : %s2'|@translate}';
-var str_delete_them = '{'Delete them'|@translate}';
-var str_keep_them = '{'Keep them'|@translate}';
-var str_copy = '{' (copy)'|@translate}';
-var str_other_copy = '{' (copy %s)'|@translate}';
-var str_merged_into = '{'Tag(s) \{%s1\} succesfully merged into "%s2"'|@translate}';
-var str_and_others_tags = '{'and %s others'|@translate}';
-var str_others_tags_available = '{'%s other tags available...'|@translate}'
-var str_number_photos = '{'%d photos'}'
-var str_no_photos = '{'no photo'}'
-var str_select_all_tag = '{'Select all %d tags'|@translate}';
-var str_clear_selection = '{'Clear Selection'|@translate}';
-var str_selection_done = '{'The %d tags on this page are selected'|@translate}';
-var str_tag_selected = '{'<b>%d</b> tag selected'|@translate}';
-var str_tags_found = '{'<b>%d</b> tags found'|@translate}';
-var str_tag_found = '{'<b>%d</b> tag found'|@translate}';
+<script type="module">
+import './node_modules/jquery-migrate/dist/jquery-migrate.js';
+
+window.translations = {
+  pwg_token: "{$PWG_TOKEN}",
+  orphan_tag_names: {$orphan_tag_names_array},
+  str_delete: '{'Delete tag "%s"?'|@translate}',
+  str_delete_tags: '{'Delete tags \{%s\}?'|@translate}',
+  str_yes_delete_confirmation: "{'Yes, delete'|@translate}",
+  str_no_delete_confirmation: "{"No, I have changed my mind"|@translate}",
+  str_yes_rename_confirmation: "{'Yes, rename'|@translate}",
+  str_tag_deleted: '{'Tag "%s" succesfully deleted'|@translate}',
+  str_tags_deleted: '{'Tags \{%s\} succesfully deleted'|@translate}',
+  str_already_exist: '{'Tag "%s" already exists'|@translate}',
+  str_tag_created: '{'Tag "%s" created'|@translate}',
+  str_tag_renamed: '{'Tag "%s1" renamed in "%s2"'|@translate}',
+  str_tag_rename: '{'Rename "%s"'|@translate}',
+  str_delete_orphan_tags: '{'Delete orphan tags ?'|@translate}',
+  str_orphan_tags: '{'You have %s1 orphan : %s2'|@translate}',
+  str_delete_them: '{'Delete them'|@translate}',
+  str_keep_them: '{'Keep them'|@translate}',
+  str_copy: '{' (copy)'|@translate}',
+  str_other_copy: '{' (copy %s)'|@translate}',
+  str_merged_into: '{'Tag(s) \{%s1\} succesfully merged into "%s2"'|@translate}',
+  str_and_others_tags: '{'and %s others'|@translate}',
+  str_others_tags_available: '{'%s other tags available...'|@translate}',
+  str_number_photos: '{'%d photos'}',
+  str_no_photos: '{'no photo'}',
+  str_select_all_tag: '{'Select all %d tags'|@translate}',
+  str_clear_selection: '{'Clear Selection'|@translate}',
+  str_selection_done: '{'The %d tags on this page are selected'|@translate}',
+  str_tag_selected: '{'<b>%d</b> tag selected'|@translate}',
+  str_tags_found: '{'<b>%d</b> tags found'|@translate}',
+  str_tag_found: '{'<b>%d</b> tag found'|@translate}'
+};
 
 $(document).ready(function() {
   $("h1").append('<span class="badge-number">{$total}</span>');
@@ -38,16 +42,21 @@ $(document).ready(function() {
 </script>
 {/footer_script}
 
-{combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{* {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'} *}
+{* {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'} *}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10} {* order 10 is required, see issue 1080 *}
-{combine_script id='tiptip' load='header' path='themes/default/js/plugins/jquery.tipTip.js'}
-{combine_script id='tags' load='footer' path='admin/themes/default/js/tags.js'}
-{combine_script id='jquery.cookie' path='themes/default/js/jquery.cookie.js' load='footer'}
+{* {combine_script id='tiptip' load='header' path='themes/default/js/plugins/jquery.tipTip.js'} *}
+{* {combine_script id='tags' load='footer' path='admin/themes/default/js/tags.js'} *}
+{* {combine_script id='jquery.cookie' path='themes/default/js/jquery.cookie.js' load='footer'} *}
 
 {footer_script}
-<script>
+<script type="module">
+import * as common from './admin/themes/default/js/common.js';
+import './themes/default/js/plugins/jquery-confirm.js';
+import './themes/default/js/plugins/jquery.tipTip.js';
+import './admin/themes/default/js/tags.js';
+import './themes/default/js/jquery.cookie.js';
 if (!$.cookie("pwg_tags_per_page")) {
   $.cookie("pwg_tags_per_page", "100");
 }
