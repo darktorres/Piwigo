@@ -1,3 +1,5 @@
+import '../../../../node_modules/jquery-migrate/dist/jquery-migrate.js';
+
 /**
  * sifter.js
  * Copyright (c) 2013 Brian Reavis & contributors
@@ -20,9 +22,15 @@
 	} else if (typeof exports === 'object') {
 		module.exports = factory();
 	} else {
+		// Ensure `root` is defined as the global object
+		if (!root) {
+			root = (typeof self === 'object' && self.self === self && self) ||
+					(typeof global === 'object' && global.global === global && global) ||
+					this;
+		}
 		root.Sifter = factory();
 	}
-}(this, function() {
+}(typeof self !== 'undefined' ? self : this, function() {
 
 	/**
 	 * Textually searches arrays and hashes of objects
@@ -470,9 +478,15 @@
 	} else if (typeof exports === 'object') {
 		module.exports = factory();
 	} else {
+		// Ensure `root` is defined as the global object
+		if (!root) {
+			root = (typeof self === 'object' && self.self === self && self) ||
+					(typeof global === 'object' && global.global === global && global) ||
+					this;
+		}
 		root.MicroPlugin = factory();
 	}
-}(this, function() {
+}(typeof self !== 'undefined' ? self : this, function() {
 	var MicroPlugin = {};
 
 	MicroPlugin.mixin = function(Interface) {
@@ -609,9 +623,15 @@
 	} else if (typeof exports === 'object') {
 		module.exports = factory(require('jquery'), require('sifter'), require('microplugin'));
 	} else {
+		// Ensure `root` is defined as the global object
+		if (!root) {
+			root = (typeof self === 'object' && self.self === self && self) ||
+					(typeof global === 'object' && global.global === global && global) ||
+					this;
+		}
 		root.Selectize = factory(root.jQuery, root.Sifter, root.MicroPlugin);
 	}
-}(this, function($, Sifter, MicroPlugin) {
+}(typeof self !== 'undefined' ? self : this, function($, Sifter, MicroPlugin) {
 	'use strict';
 
 	var highlight = function($element, pattern) {

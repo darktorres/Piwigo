@@ -1,34 +1,46 @@
-{combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.plupload' load='footer' require='jquery' path='themes/default/js/plugins/plupload/plupload.full.js'}
-{combine_script id='jquery.plupload.queue' load='footer' require='jquery' path='themes/default/js/plugins/plupload/jquery.plupload.queue/jquery.plupload.queue.js'}
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{* {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'} *}
+{* {combine_script id='jquery.plupload' load='footer' require='jquery' path='themes/default/js/plugins/plupload/plupload.full.js'} *}
+{* {combine_script id='jquery.plupload.queue' load='footer' require='jquery' path='themes/default/js/plugins/plupload/jquery.plupload.queue/jquery.plupload.queue.js'} *}
+{* {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'} *}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 
 {combine_css path="themes/default/js/plugins/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css"}
 
 {assign var="plupload_i18n" value="themes/default/js/plugins/plupload/i18n/`$lang_info.plupload_code`.js"}
-{if "PHPWG_ROOT_PATH"|@constant|@cat:$plupload_i18n|@file_exists}
-  {combine_script id="plupload_i18n-`$lang_info.plupload_code`" load="footer" path=$plupload_i18n require="jquery.plupload.queue"}
-{/if}
+{* {if "PHPWG_ROOT_PATH"|@constant|@cat:$plupload_i18n|@file_exists} *}
+  {* {combine_script id="plupload_i18n-`$lang_info.plupload_code`" load="footer" path=$plupload_i18n require="jquery.plupload.queue"} *}
+{* {/if} *}
 
 {include file='include/colorbox.inc.tpl'}
 {if !$DISPLAY_FORMATS}
   {include file='include/add_album.inc.tpl'}
 {/if}
 
-{combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
+{* {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'} *}
 
-{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
+{* {combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'} *}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
-{combine_script id='piecon' load='footer' path='themes/default/js/plugins/piecon.js'}
+{* {combine_script id='piecon' load='footer' path='themes/default/js/plugins/piecon.js'} *}
 
 {html_style}
 .addAlbumFormParent { display: none; } /* specific to this page, do not move in theme.css */
 {/html_style}
 
 {footer_script}
-<script>
+<script type="module">
+import { sprintf } from './admin/themes/default/js/common.js';
+import './themes/default/js/plugins/plupload/jquery.plupload.queue/jquery.plupload.queue.js';
+
+{if "PHPWG_ROOT_PATH"|@constant|@cat:$plupload_i18n|@file_exists}
+  import "./themes/default/js/plugins/plupload/i18n/{$lang_info.plupload_code}.js";
+{/if}
+
+import './themes/default/js/plugins/jquery-confirm.js';
+import './admin/themes/default/js/LocalStorageCache.js';
+import './themes/default/js/plugins/selectize.js';
+import './themes/default/js/plugins/piecon.js';
+import './admin/themes/default/js/addAlbum.js';
 
 const formatMode = {if $DISPLAY_FORMATS}true{else}false{/if};
 const haveFormatsOriginal = {if $HAVE_FORMATS_ORIGINAL}true{else}false{/if};
@@ -186,7 +198,7 @@ jQuery(document).ready(function(){
 
       FilesAdded: async function(up, files) {
         // Création de la liste avec plupload_id : image_name
-        fileNames = {};
+        let fileNames = {};
         files.forEach((file) => {
           fileNames[file.id] = file.name;
         });
@@ -310,7 +322,7 @@ jQuery(document).ready(function(){
       
         jQuery("#uploadedPhotos").parent("fieldset").show();
       
-        html = '<a href="admin.php?page=photo-'+data.result.image_id+'" style="position : relative" target="_blank">';
+        let html = '<a href="admin.php?page=photo-'+data.result.image_id+'" style="position : relative" target="_blank">';
         html += '<img src="'+data.result.square_src+'" class="thumbnail" title="'+data.result.name+'">';
         if (formatMode) html += '<div class="format-ext-name" title="'+file.name+'"><span>'+file.name.slice(file.name.indexOf('.'))+'</span></div>';
         html += '</a> ';
@@ -361,7 +373,7 @@ jQuery(document).ready(function(){
 
 
         if (!formatMode) {
-          html = sprintf(
+          let html = sprintf(
             albumSummary_label,
             '<a href="admin.php?page=album-'+uploadCategory.id+'">'+uploadCategory.label+'</a>',
             parseInt(uploadCategory.nb_photos)

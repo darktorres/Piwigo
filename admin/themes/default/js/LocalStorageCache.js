@@ -1,3 +1,5 @@
+import '../../../../themes/default/js/plugins/selectize.js';
+
 (function($, exports) {
   "use strict";
   

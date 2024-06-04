@@ -1,3 +1,5 @@
+import '../../../../node_modules/jquery-migrate/dist/jquery-migrate.js';
+
 jQuery.fn.fontCheckbox = function() {
   /* checkbox */
   this.find('input[type=checkbox]').each(function() {
@@ -333,3 +335,5 @@ jQuery.fn.pwg_jconfirm_follow_href = function({
     return (false);
   });
 }
+
+export { sprintf };

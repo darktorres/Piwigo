@@ -1,8 +1,10 @@
+import '../../../../themes/default/js/plugins/jquery.colorbox.js';
+
 jQuery.fn.pwgAddAlbum = function(options) {
   options = options || {};
 
   var $popup = jQuery('#addAlbumForm'),
-      $albumParent = $popup.find('[name="category_parent"]')
+      $albumParent = $popup.find('[name="category_parent"]'),
       $button = jQuery(this),
       $target = jQuery('[name="'+ $button.data('addAlbum') +'"]'),
       cache = $target.data('cache');
