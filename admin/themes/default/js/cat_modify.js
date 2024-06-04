@@ -473,7 +473,7 @@ function checkAlbumLock() {
 
 // Parent album popin functions
 
-function fill_results(cats) {
+export function fill_results(cats) {
   $("#searchResult").empty();
   cats.forEach(cat => {
     $("#searchResult").append(

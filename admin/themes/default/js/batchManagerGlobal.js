@@ -90,7 +90,7 @@ jQuery(document).ready(function() {
 					}
 
 					for (var i=first; i<=last;i++) {
-						input = $(inputs[i]);
+						let input = $(inputs[i]);
 						$(input).prop('checked', last_clickedstatus).trigger("change");
 						if (last_clickedstatus)
 						{

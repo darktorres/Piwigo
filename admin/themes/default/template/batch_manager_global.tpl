@@ -100,7 +100,7 @@ $(document).ready(function() {
     }
 
     $("#applyOnDetails").text(
-      sprintf(
+      common.sprintf(
         applyOnDetails_pattern,
         nbSelected
       )
@@ -109,7 +109,7 @@ $(document).ready(function() {
     // display the number of currently selected photos in the "Selection" fieldset
     if (nbSelected == 0) {
       $("#selectedMessage").text(
-        sprintf(
+        common.sprintf(
           selectedMessage_none,
           nb_thumbs_set
         )
@@ -117,7 +117,7 @@ $(document).ready(function() {
     }
     else if (nbSelected == nb_thumbs_set) {
       $("#selectedMessage").text(
-        sprintf(
+        common.sprintf(
           selectedMessage_all,
           nb_thumbs_set
         )
@@ -125,7 +125,7 @@ $(document).ready(function() {
     }
     else {
       $("#selectedMessage").text(
-        sprintf(
+        common.sprintf(
           selectedMessage_pattern,
           nbSelected,
           nb_thumbs_set

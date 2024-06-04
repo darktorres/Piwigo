@@ -1,14 +1,16 @@
-function set_up_popin() {
+import * as cat_modify from './cat_modify.js';
+
+export function set_up_popin() {
   $(".ClosePopIn").on('click', function () {
     linked_albums_close();
   });
 }
 
-function linked_albums_close() {
+export function linked_albums_close() {
   $("#addLinkedAlbum").fadeOut();
 }
 
-function linked_albums_open() {
+export function linked_albums_open() {
   $("#addLinkedAlbum").fadeIn();
   $(".search-input").val("");
   $(".search-input").focus();
@@ -16,7 +18,7 @@ function linked_albums_open() {
   $(".limitReached").html(str_no_search_in_progress);
 }
 
-function linked_albums_search(searchText) {
+export function linked_albums_search(searchText) {
   $(".linkedAlbumPopInContainer .searching").show();
   $.ajax({
     url: "ws.php?format=json&method=pwg.categories.getAdminList",
@@ -32,8 +34,8 @@ function linked_albums_search(searchText) {
     success: function (raw_data) {
       $(".linkedAlbumPopInContainer .searching").hide();
 
-      categories = raw_data.result.categories;
-      fill_results(categories);
+      let categories = raw_data.result.categories;
+      cat_modify.fill_results(categories);
 
       if (raw_data.result.limit_reached) {
         $(".limitReached").html(str_result_limit.replace("%d", categories.length));
