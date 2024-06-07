@@ -1,3 +1,5 @@
+import '../../../../node_modules/jquery-migrate/dist/jquery-migrate.js';
+
 (function($) {
 
     /*

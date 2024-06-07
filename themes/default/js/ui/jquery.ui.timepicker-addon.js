@@ -1,3 +1,5 @@
+import '../../../../node_modules/jquery-ui/dist/jquery-ui.js';
+
 /*! jQuery Timepicker Addon - v1.4.4 - 2014-03-29
 * http://trentrichardson.com/examples/timepicker
 * Copyright (c) 2014 Trent Richardson; Licensed MIT */

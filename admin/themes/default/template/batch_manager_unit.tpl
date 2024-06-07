@@ -2,13 +2,29 @@
 {include file='include/datepicker.inc.tpl'}
 {include file='include/colorbox.inc.tpl'}
 
-{combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
+{* {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'} *}
 
-{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
+{* {combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'} *}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {footer_script}
-<script>
+<script type="module">
+import './themes/default/js/ui/jquery.ui.timepicker-addon.js';
+{assign var="datepicker_language" value="themes/default/js/ui/i18n/jquery.ui.datepicker-`$lang_info.jquery_code`.js"}
+{if "PHPWG_ROOT_PATH"|@constant|@cat:$datepicker_language|@file_exists}
+  import './themes/default/js/ui/i18n/jquery.ui.datepicker-{$lang_info.jquery_code}.js';
+  {$require=$require|cat:",jquery.ui.datepicker-`$lang_info.jquery_code`"}
+{/if}
+{assign var="timepicker_language" value="themes/default/js/ui/i18n/jquery.ui.timepicker-`$lang_info.jquery_code`.js"}
+{if "PHPWG_ROOT_PATH"|@constant|@cat:$datepicker_language|@file_exists}
+  import './themes/default/js/ui/i18n/jquery.ui.timepicker-{$lang_info.jquery_code}.js';
+  {$require=$require|cat:",jquery.ui.timepicker-`$lang_info.jquery_code`"}
+{/if}
+import './admin/themes/default/js/datepicker.js';
+import './themes/default/js/plugins/jquery.colorbox.js';
+import './admin/themes/default/js/LocalStorageCache.js';
+import './themes/default/js/plugins/selectize.js';
+
 (function(){
 {* <!-- TAGS --> *}
 var tagsCache = new TagsCache({
