@@ -576,6 +576,7 @@ function getAllSubAlbumsFromNode(node, nb_sub_cats) {
 }
 
 function setSubcatsBadge(node) {
+  if (node == null) { return; }
   if (node.children.length != 0) {
     $("#cat-"+node.id).find(".nb-subcats").text(node.children.length).show(100);
   } else {
