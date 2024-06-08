@@ -1,63 +1,95 @@
-{footer_script}
-<script>
-var data = {json_encode($album_data)};
-var pwg_token = "{$PWG_TOKEN}";
-var str_show_sub = "{'Show sub-albums'|@translate}";
-var str_hide_sub = "{'Hide sub-albums'|@translate}";
-var str_manage_sub_album = "{'Manage sub-albums'|@translate}";
-var str_apply_order_raw = "{'apply automatic sort order'|translate}";
-var str_apply_order = str_apply_order_raw.charAt(0).toUpperCase() + str_apply_order_raw.slice(1);
-var str_edit = "{'Edit album'|@translate}";
-var str_are_you_sure = "{'The status of the album \'%s\' and its sub-albums will change to private. Are you sure?'|@translate}";
-var str_yes_change_parent = "{'Yes change parent anyway'|@translate}";
-var str_no_change_parent = "{'No, don\'t move this album here'|@translate}";
-var str_root = "{'Root'|@translate}";
-var openCat = {$open_cat};
-var nb_albums = {$nb_albums};
-var light_album_manager = {$light_album_manager};
+{* {footer_script}
+<script type="module">
+window.data = {json_encode($album_data)};
+window.pwg_token = "{$PWG_TOKEN}";
+window.str_show_sub = "{'Show sub-albums'|@translate}";
+window.str_hide_sub = "{'Hide sub-albums'|@translate}";
+window.str_manage_sub_album = "{'Manage sub-albums'|@translate}";
+window.str_apply_order_raw = "{'apply automatic sort order'|translate}";
+window.str_apply_order = str_apply_order_raw.charAt(0).toUpperCase() + str_apply_order_raw.slice(1);
+window.str_edit = "{'Edit album'|@translate}";
+window.str_are_you_sure = "{'The status of the album \'%s\' and its sub-albums will change to private. Are you sure?'|@translate}";
+window.str_yes_change_parent = "{'Yes change parent anyway'|@translate}";
+window.str_no_change_parent = "{'No, don\'t move this album here'|@translate}";
+window.str_root = "{'Root'|@translate}";
+window.openCat = {$open_cat};
+window.nb_albums = {$nb_albums};
+window.light_album_manager = {$light_album_manager};
 
-var x_nb_subcats = "{'%d sub-albums'|@translate}";
-var x_nb_images = "{'%d photos'|@translate}";
-var x_nb_sub_photos = "{'%d pictures in sub-albums'|@translate}";
+window.x_nb_subcats = "{'%d sub-albums'|@translate}";
+window.x_nb_images = "{'%d photos'|@translate}";
+window.x_nb_sub_photos = "{'%d pictures in sub-albums'|@translate}";
 
-var delay_autoOpen = {$delay_before_autoOpen}
+window.delay_autoOpen = {$delay_before_autoOpen}
 </script>
-{/footer_script}
+{/footer_script} *}
 
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{* {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'} *}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
-{combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
+{* {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'} *}
 {combine_css path="themes/default/js/plugins/jqtree.css"}
-{combine_script id='jtree' load='footer' path='themes/default/js/plugins/tree.jquery.js'}
+{* {combine_script id='jtree' load='footer' path='themes/default/js/plugins/tree.jquery.js'} *}
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10} {* order 10 is required, see issue 1080 *}
 
 {footer_script}
-<script>
-const delete_album_with_name = '{'Delete album "%s".'|@translate|escape:javascript}';
-const delete_album_with_subs = '{'Delete album "%s" and its %d sub-albums.'|@translate|escape:javascript}'
-const has_images_associated_outside = '{"delete album and all %d photos, even the %d associated to other albums"|@translate|escape:javascript}';
-const has_images_becomming_orphans = '{'delete album and the %d orphan photos'|@translate|escape:javascript}';
-const has_images_recursives = '{'delete only album, not photos'|@translate|escape:javascript}';
-const rename_item = '{'Rename "%s"'|@translate|escape:javascript}';
+<script type="module">
+// import './node_modules/jquery/dist/jquery.js';
+// import './node_modules/jquery-migrate/dist/jquery-migrate.js';
+// import './themes/default/js/plugins/jquery-confirm.js';
+// import * as common from './admin/themes/default/js/common.js';
+// import './themes/default/js/plugins/tree.jquery.js';
+// import './themes/default/js/plugins/jquery.tipTip.js';
 
-const str_add_album = '{'Add Album'|@translate|escape:javascript}';
-const str_edit_album = '{'Edit album'|@translate|escape:javascript}';
-const str_add_photo = '{'Add Photos'|@translate|escape:javascript}';
-const str_visit_gallery = '{'Visit Gallery'|@translate|escape:javascript}';
-const str_sort_order = '{'Automatic sort order'|@translate|escape:javascript}';
-const str_delete_album = '{'Delete album'|@translate|escape:javascript}';
-const str_root_order = '{'Apply to root albums'|@translate|escape:javascript}';
-str_sub_album_order = '{'Apply to direct sub-albums'|@translate|escape:javascript}';
-str_album_name_empty = '{'Album name must not be empty'|@translate|escape:javascript}'
+window.data = {json_encode($album_data)};
+window.pwg_token = "{$PWG_TOKEN}";
+window.str_show_sub = "{'Show sub-albums'|@translate}";
+window.str_hide_sub = "{'Hide sub-albums'|@translate}";
+window.str_manage_sub_album = "{'Manage sub-albums'|@translate}";
+window.str_apply_order_raw = "{'apply automatic sort order'|translate}";
+window.str_apply_order = str_apply_order_raw.charAt(0).toUpperCase() + str_apply_order_raw.slice(1);
+window.str_edit = "{'Edit album'|@translate}";
+window.str_are_you_sure = "{'The status of the album \'%s\' and its sub-albums will change to private. Are you sure?'|@translate}";
+window.str_yes_change_parent = "{'Yes change parent anyway'|@translate}";
+window.str_no_change_parent = "{'No, don\'t move this album here'|@translate}";
+window.str_root = "{'Root'|@translate}";
+window.openCat = {$open_cat};
+window.nb_albums = {$nb_albums};
+window.light_album_manager = {$light_album_manager};
 
-const add_album_root_title = '{'Create a new album at root'|@translate|escape:javascript}';
-const add_sub_album_of = '{'Create a sub-album of "%s"'|@translate|escape:javascript}';
+window.x_nb_subcats = "{'%d sub-albums'|@translate}";
+window.x_nb_images = "{'%d photos'|@translate}";
+window.x_nb_sub_photos = "{'%d pictures in sub-albums'|@translate}";
+
+window.delay_autoOpen = {$delay_before_autoOpen}
+
+window.delete_album_with_name = '{'Delete album "%s".'|@translate|escape:javascript}';
+window.delete_album_with_subs = '{'Delete album "%s" and its %d sub-albums.'|@translate|escape:javascript}'
+window.has_images_associated_outside = '{"delete album and all %d photos, even the %d associated to other albums"|@translate|escape:javascript}';
+window.has_images_becomming_orphans = '{'delete album and the %d orphan photos'|@translate|escape:javascript}';
+window.has_images_recursives = '{'delete only album, not photos'|@translate|escape:javascript}';
+window.rename_item = '{'Rename "%s"'|@translate|escape:javascript}';
+
+window.str_add_album = '{'Add Album'|@translate|escape:javascript}';
+window.str_edit_album = '{'Edit album'|@translate|escape:javascript}';
+window.str_add_photo = '{'Add Photos'|@translate|escape:javascript}';
+window.str_visit_gallery = '{'Visit Gallery'|@translate|escape:javascript}';
+window.str_sort_order = '{'Automatic sort order'|@translate|escape:javascript}';
+window.str_delete_album = '{'Delete album'|@translate|escape:javascript}';
+window.str_root_order = '{'Apply to root albums'|@translate|escape:javascript}';
+window.str_sub_album_order = '{'Apply to direct sub-albums'|@translate|escape:javascript}';
+window.str_album_name_empty = '{'Album name must not be empty'|@translate|escape:javascript}'
+
+window.add_album_root_title = '{'Create a new album at root'|@translate|escape:javascript}';
+window.add_sub_album_of = '{'Create a sub-album of "%s"'|@translate|escape:javascript}';
+
+// await import('./admin/themes/default/js/albums.js');
+import'./admin/themes/default/js/albums.js';
 </script>
 {/footer_script}
 
-{combine_script id='jquery.tipTip' load='footer' path='themes/default/js/plugins/jquery.tipTip.js'}
+{* {combine_script id='jquery.tipTip' load='footer' path='themes/default/js/plugins/jquery.tipTip.js'} *}
 
-{combine_script id='albums' load='footer' path='admin/themes/default/js/albums.js'}
+{* {combine_script id='albums' load='footer' path='admin/themes/default/js/albums.js'} *}
 
 <div class="cat-move-order-popin">
   <div class="order-popin-container">
