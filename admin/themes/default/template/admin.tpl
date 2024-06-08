@@ -1,5 +1,6 @@
 {footer_script}
 <script type="module">
+import './node_modules/jquery/dist/jquery.js';
 import './node_modules/jquery-migrate/dist/jquery-migrate.js';
 
 jQuery.fn.lightAccordion = function(options) {
@@ -142,6 +143,7 @@ jQuery(document).ready(function() {
   {include file='include/colorbox.inc.tpl'}
 {footer_script}
 <script type="module">
+import './node_modules/jquery/dist/jquery.js';
 import './node_modules/jquery-migrate/dist/jquery-migrate.js';
 
   jQuery('.help-popin').colorbox({ width:"500px" });

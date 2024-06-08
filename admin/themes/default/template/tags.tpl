@@ -1,5 +1,6 @@
 {footer_script}
 <script type="module">
+import './node_modules/jquery/dist/jquery.js';
 import './node_modules/jquery-migrate/dist/jquery-migrate.js';
 
 window.translations = {

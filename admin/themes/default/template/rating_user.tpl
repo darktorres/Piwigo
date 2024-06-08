@@ -38,6 +38,7 @@ body .ui-tooltip {
 {/html_style}
 {footer_script}
 <script type="module">
+import './node_modules/jquery/dist/jquery.js';
 import './node_modules/jquery-migrate/dist/jquery-migrate.js';
 $(document).ready(function() {
   $('h1').append("<span class='badge-number'>{$NB_ELEMENTS}</span>")
