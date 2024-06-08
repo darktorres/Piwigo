@@ -32,7 +32,7 @@ SELECT rules
 ;';
   list($serialized_rules) = pwg_db_fetch_row(pwg_query($query));
 
-  return unserialize($serialized_rules);
+  return unserialize($serialized_rules ?? '');
 }
 
 /**
@@ -166,7 +166,7 @@ function get_sql_search_clause($search)
 
   $where_separator =
     implode(
-      "\n    ".$search['mode'].' ',
+      "\n    ".($search['mode'] ?? '').' ',
       $clauses
       );
 

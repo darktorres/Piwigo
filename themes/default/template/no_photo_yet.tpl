@@ -129,10 +129,10 @@ border:2px solid #dddddd;
 
 <form method="post" action="{$U_LOGIN}" id="quickconnect">
 {'Username'|@translate}
-<br><input type="text" name="username">
+<br><input type="text" name="username" autocomplete="username">
 <br>
 <br>{'Password'|@translate}
-<br><input type="password" name="password">
+<br><input type="password" name="password" autocomplete="current-password">
 
 <p><input class="submit" type="submit" name="login" value="{'Login'|@translate}"></p>
 

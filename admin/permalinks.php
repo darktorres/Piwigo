@@ -42,7 +42,7 @@ function parse_sort_variables(
     $url = $base_url;
     $disp = '↓'; // TODO: an small image is better
 
-    if ( $field !== @$_GET[$get_param] )
+    if ( $field !== ($_GET[$get_param] ?? null) )
     {
       if ( !isset($default_field) or $default_field!=$field )
       { // the first should be the default

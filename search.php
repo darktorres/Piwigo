@@ -185,10 +185,10 @@ $template->assign(
     'U_HELP' => PHPWG_ROOT_PATH.'popuphelp.php?page=search',
 
     'month_list' => $month_list,
-    'START_DAY_SELECTED' => @$_POST['start_day'],
-    'START_MONTH_SELECTED' => @$_POST['start_month'],
-    'END_DAY_SELECTED' => @$_POST['end_day'],
-    'END_MONTH_SELECTED' => @$_POST['end_month'],
+    'START_DAY_SELECTED' => $_POST['start_day'] ?? null,
+    'START_MONTH_SELECTED' => $_POST['start_month'] ?? null,
+    'END_DAY_SELECTED' => $_POST['end_day'] ?? null,
+    'END_MONTH_SELECTED' => $_POST['end_month'] ?? null,
     )
   );
 

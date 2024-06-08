@@ -993,7 +993,7 @@ function get_formatted_date(date_str) {
     }
     let first_part = date_str.split(' ')[0];
     let formatted = first_part.split('-').join('/');
-    console.log(formatted);
+    // console.log(formatted);
     return (formatted);
 }
 
@@ -1022,7 +1022,7 @@ function set_selected_groups(groups) {
 }
 
 function fill_user_edit_summary(user_to_edit, pop_in, isGuest) {
-    console.log(isGuest);
+    // console.log(isGuest);
     if (isGuest) {
       pop_in.find('.user-property-initials span').removeClass(color_icons.join(' ')).addClass(color_icons[user_to_edit.id % 5]);
     } else {

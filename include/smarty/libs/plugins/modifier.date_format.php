@@ -70,16 +70,17 @@ function smarty_modifier_date_format($string, $format = null, $default_date = ''
             );
             if (strpos($format, '%e') !== false) {
                 $_win_from[] = '%e';
-                $_win_to[] = sprintf('%\' 2d', date('j', $timestamp));
+                $_win_to[] = sprintf('%\' 2d', (new DateTime())->setTimestamp($timestamp)->format('j'));
             }
             if (strpos($format, '%l') !== false) {
                 $_win_from[] = '%l';
-                $_win_to[] = sprintf('%\' 2d', date('h', $timestamp));
+                $_win_to[] = sprintf('%\' 2d', (new DateTime())->setTimestamp($timestamp)->format('h'));
             }
             $format = str_replace($_win_from, $_win_to, $format);
         }
-        // @ to suppress deprecation errors when running in PHP8.1 or higher.
-        return @strftime($format, $timestamp);
+        $dateTime = new DateTime();
+        $dateTime->setTimestamp($timestamp);
+        return $dateTime->format($format);
     } else {
         return date($format, $timestamp);
     }

@@ -171,7 +171,7 @@ async function loadPage(browser, url, progressBar, counter, commitMessage) {
             .on("pageerror", ({ message }) => console.log(red(message)))
             //.on('response', response => console.log(green(`${response.status()} ${response.url()}`)))
             .on("requestfailed", (request) => console.log(magenta(`${request.failure()?.errorText} ${request.url()}`)));
-        // console.log(`\nLoaded ${url}`);
+        console.log(`\nLoaded ${url}`);
         const fullUrl = `http://localhost/Piwigo2/${url}`;
         await page.goto(fullUrl, { waitUntil: "networkidle0" });
         progressBar.increment();

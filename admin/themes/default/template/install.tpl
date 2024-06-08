@@ -233,7 +233,7 @@ jQuery().ready(function(){ldelim}
     </tr>
     <tr>
       <td class="fieldname">{'Password'|@translate}</td>
-      <td><input type="password" name="dbpasswd" value=""></td>
+      <td><input type="password" name="dbpasswd" value="" autocomplete="new-password"></td>
       <td class="fielddesc">{'user password given by your host provider'|@translate}</td>
     </tr>
     <tr>
@@ -260,12 +260,12 @@ jQuery().ready(function(){ldelim}
     </tr>
     <tr>
       <td class="fieldname">{'Password'|@translate}</td>
-      <td><input type="password" name="admin_pass1" value="" required></td>
+      <td><input type="password" name="admin_pass1" value="" required autocomplete="new-password"></td>
       <td class="fielddesc">{'Keep it confidential, it enables you to access administration panel'|@translate}</td>
     </tr>
     <tr>
       <td class="fieldname">{'Password [confirm]'|@translate}</td>
-      <td><input type="password" name="admin_pass2" value="" required></td>
+      <td><input type="password" name="admin_pass2" value="" required autocomplete="new-password"></td>
       <td class="fielddesc">{'verification'|@translate}</td>
     </tr>
     <tr>

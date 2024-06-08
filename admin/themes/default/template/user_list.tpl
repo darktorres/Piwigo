@@ -418,7 +418,7 @@ $(document).ready(function() {
           <div id="action_group_associate" class="bulkAction">
             <div class="user-action-select-container">
               <select class="user-action-select" name="associate">
-                {html_options options=$association_options selected=$associate_selected}
+                {html_options options=$association_options selected=$associate_selected|default:''}
               </select>
             </div>
           </div>
@@ -427,7 +427,7 @@ $(document).ready(function() {
           <div id="action_group_dissociate" class="bulkAction">
             <div class="user-action-select-container">
               <select class="user-action-select" name="dissociate">
-                {html_options options=$association_options selected=$dissociate_selected}
+                {html_options options=$association_options selected=$dissociate_selected|default:''}
               </select>
             </div>
           </div>
@@ -973,7 +973,7 @@ $(document).ready(function() {
         <label for="AddUserPassword" class="user-property-label AddUserLabelPassword">{'Password'|@translate}</label>
         <span id="show_password" class="icon-eye"></span>
       </div>
-      <input id="AddUserPassword" class="user-property-input" type="password"/>
+      <input id="AddUserPassword" class="user-property-input" type="password" autocomplete="new-password"/>
 
       <div class="AddUserGenPassword">
         <span class="icon-dice-solid"></span><span>{'Generate random password'|@translate}</span>
