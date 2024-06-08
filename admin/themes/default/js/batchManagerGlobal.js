@@ -55,10 +55,10 @@ $("#removeFilters").on("click", function() {
 	return false;
 });
 
-$('[data-slider=widths]').pwgDoubleSlider(sliders.widths);
-$('[data-slider=heights]').pwgDoubleSlider(sliders.heights);
-$('[data-slider=ratios]').pwgDoubleSlider(sliders.ratios);
-$('[data-slider=filesizes]').pwgDoubleSlider(sliders.filesizes);
+$('[data-slider=widths]').pwgDoubleSlider(window.sliders.widths);
+$('[data-slider=heights]').pwgDoubleSlider(window.sliders.heights);
+$('[data-slider=ratios]').pwgDoubleSlider(window.sliders.ratios);
+$('[data-slider=filesizes]').pwgDoubleSlider(window.sliders.filesizes);
 
 
 $(document).on("mouseup", function (e) {
@@ -127,7 +127,7 @@ jQuery('.thumbnails img').tipTip({
 
 jQuery('[data-datepicker]').pwgDatepicker({
 	showTimepicker: true,
-	cancelButton: lang.Cancel
+	cancelButton: window.lang.Cancel
 });
 
 jQuery('[data-add-album]').pwgAddAlbum();
@@ -180,7 +180,7 @@ function progress_end() {
 
 function progress(success) {
 
-  percent = parseInt(derivatives.done / derivatives.total * 100);
+  let percent = parseInt(derivatives.done / derivatives.total * 100);
   jQuery('#uploadingActions .progressbar').width(percent.toString()+'%');
 	if (success !== undefined) {
 		var type = success ? 'regenerateSuccess': 'regenerateError',
@@ -205,7 +205,7 @@ function getDerivativeUrls() {
   jQuery('.permitActionListButton').hide();
   jQuery('#confirmDel').hide();
   jQuery('#regenerationMsg').show();
-  jQuery('#regenerationText').html(lang.generateMsg);
+  jQuery('#regenerationText').html(window.lang.generateMsg);
   progress_start();
 	jQuery.ajax( {
 		type: "POST",
@@ -256,6 +256,8 @@ function selectDelDerivNone() {
 	$('#action_delete_derivatives input[name="del_derivatives_type[]"]').prop("checked", false).trigger("change");
 }
 
+var elements;
+
 /* sync metadatas or delete photos by blocks, with progress bar */
 jQuery('#applyAction').on("click", function(e) {
   if (typeof(elements) != "undefined") {
@@ -265,11 +267,11 @@ jQuery('#applyAction').on("click", function(e) {
   if (jQuery('[name="selectAction"]').val() == 'metadata') {
     e.stopPropagation();
     jQuery('.bulkAction').hide();
-    jQuery('#regenerationText').html(lang.syncProgressMessage);
+    jQuery('#regenerationText').html(window.lang.syncProgressMessage);
     elements = Array();
 
     if (jQuery('input[name=setSelected]').is(':checked')) {
-      elements = all_elements;
+      elements = window.all_elements;
     }
     else {
       jQuery('input[name="selection[]"]').filter(':checked').each(function() {
@@ -277,20 +279,20 @@ jQuery('#applyAction').on("click", function(e) {
       });
     }
 
-    progressBar_max = elements.length;
-    var todo = 0;
+    let progressBar_max = elements.length;
+    let todo = 0;
     var syncBlockSize = Math.min(
       Number((elements.length/2).toFixed()),
       1000
     );
-    var image_ids = Array();
+    let image_ids = Array();
 
     jQuery('#applyActionBlock').hide();
     jQuery('.permitActionListButton').hide();
     jQuery('#confirmDel').hide();
     jQuery('#regenerationMsg').show();
     progress_bar_start();
-    for (i=0;i<elements.length;i++) {
+    for (let i=0;i<elements.length;i++) {
       image_ids.push(elements[i]);
       if (i % syncBlockSize != syncBlockSize - 1 && i != elements.length - 1) {
         continue;
@@ -350,7 +352,7 @@ jQuery('#applyAction').on("click", function(e) {
   elements = Array();
 
   if (jQuery('input[name=setSelected]').is(':checked')) {
-    elements = all_elements;
+    elements = window.all_elements;
   }
   else {
     jQuery('input[name="selection[]"]').filter(':checked').each(function() {
@@ -358,21 +360,21 @@ jQuery('#applyAction').on("click", function(e) {
     });
   }
 
-  progressBar_max = elements.length;
-  var todo = 0;
+  let progressBar_max = elements.length;
+  let todo = 0;
   var deleteBlockSize = Math.min(
     Number((elements.length/2).toFixed()),
     1000
   );
-  var image_ids = Array();
+  let image_ids = Array();
 
   jQuery('#applyActionBlock').hide();
   jQuery('.permitActionListButton').hide();
   jQuery('#confirmDel').hide();
-  jQuery('#regenerationText').html(lang.deleteProgressMessage);
+  jQuery('#regenerationText').html(window.lang.deleteProgressMessage);
   jQuery('#regenerationMsg').show();
   progress_bar_start();
-  for (i=0;i<elements.length;i++) {
+  for (let i=0;i<elements.length;i++) {
     image_ids.push(elements[i]);
     if (i % deleteBlockSize != deleteBlockSize - 1 && i != elements.length - 1) {
       continue;
@@ -426,7 +428,7 @@ function progress_bar_end() {
 }
 
 function progress_bar(val, max, success) {
-  percent = parseInt(val / max * 100);
+  let percent = parseInt(val / max * 100);
   jQuery('#uploadingActions .progressbar').width(percent.toString()+'%');
   if (val == max)
     jQuery('#applyAction').trigger("click");

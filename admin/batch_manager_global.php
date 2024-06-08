@@ -47,7 +47,7 @@ if (isset($_POST['nb_photos_deleted']))
 
   // let's fake a collection (we don't know the image_ids so we use "null", we only
   // care about the number of items here)
-  $collection = array_fill(0, $_POST['nb_photos_deleted'], null);
+  $collection = array_fill(0, (int)$_POST['nb_photos_deleted'], null);
 }
 elseif (isset($_POST['setSelected']))
 {

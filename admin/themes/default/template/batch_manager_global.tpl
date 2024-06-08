@@ -2,25 +2,42 @@
 {include file='include/colorbox.inc.tpl' load_mode='async'}
 {include file='include/add_album.inc.tpl' load_mode='async'}
 
-{combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
+{* {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'} *}
 
-{combine_script id='jquery.ui' require='jquery' load='async' path='themes/default/js/ui/jquery-ui.js'}
+{* {combine_script id='jquery.ui' require='jquery' load='async' path='themes/default/js/ui/jquery-ui.js'} *}
 {combine_css path='themes/default/js/ui/jquery-ui.css'}
-{combine_script id='doubleSlider' load='async' require='jquery.ui' path='admin/themes/default/js/doubleSlider.js'}
+{* {combine_script id='doubleSlider' load='async' require='jquery.ui' path='admin/themes/default/js/doubleSlider.js'} *}
 
-{combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
+{* {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'} *}
 
-{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
+{* {combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'} *}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
-{combine_script id='jquery.progressBar' load='async' path='themes/default/js/plugins/jquery.progressbar.js'}
-{combine_script id='jquery.ajaxmanager' load='async' path='themes/default/js/plugins/jquery.ajaxmanager.js'}
+{* {combine_script id='jquery.progressBar' load='async' path='themes/default/js/plugins/jquery.progressbar.js'} *}
+{* {combine_script id='jquery.ajaxmanager' load='async' path='themes/default/js/plugins/jquery.ajaxmanager.js'} *}
 
-{combine_script id='batchManagerGlobal' load='async' require='jquery,datepicker,jquery.colorbox,addAlbum,doubleSlider' path='admin/themes/default/js/batchManagerGlobal.js'}
+{* {combine_script id='batchManagerGlobal' load='async' require='jquery,datepicker,jquery.colorbox,addAlbum,doubleSlider' path='admin/themes/default/js/batchManagerGlobal.js'} *}
 
 {footer_script}
-<script>
-var lang = {
+<script type="module">
+import './node_modules/jquery/dist/jquery.js';
+import './node_modules/jquery-migrate/dist/jquery-migrate.js';
+import './node_modules/jquery-ui/dist/jquery-ui.js';
+import './themes/default/js/ui/jquery.ui.timepicker-addon.js';
+import './admin/themes/default/js/datepicker.js';
+import './themes/default/js/plugins/jquery.colorbox.js';
+import './admin/themes/default/js/addAlbum.js';
+import * as common from './admin/themes/default/js/common.js';
+import './admin/themes/default/js/doubleSlider.js';
+import './admin/themes/default/js/LocalStorageCache.js';
+import './themes/default/js/plugins/selectize.js';
+import './themes/default/js/plugins/jquery.progressbar.js';
+import './themes/default/js/plugins/jquery.ajaxmanager.js';
+import './themes/default/js/plugins/jquery-confirm.js';
+import './themes/default/js/plugins/jquery.ajaxmanager.js';
+import './themes/default/js/scripts.js';
+
+window.lang = {
 	Cancel: '{'Cancel'|translate|escape:'javascript'}',
 	deleteProgressMessage: "{'Deletion in progress'|translate|escape:'javascript'}",
 	syncProgressMessage: "{'Synchronization in progress'|translate|escape:'javascript'}",
@@ -31,7 +48,7 @@ var lang = {
 jQuery(document).ready(function() {
 
   {* <!-- TAGS --> *}
-  var tagsCache = new TagsCache({
+  window.tagsCache = new TagsCache({
     serverKey: '{$CACHE_KEYS.tags}',
     serverId: '{$CACHE_KEYS._hash}',
     rootUrl: '{$ROOT_URL}'
@@ -48,7 +65,7 @@ jQuery(document).ready(function() {
     rootUrl: '{$ROOT_URL}'
   });
   
-  var associated_categories = {$associated_categories|@json_encode};
+  window.associated_categories = {$associated_categories|@json_encode};
 
   categoriesCache.selectize(jQuery('[data-selectize=categories]'), {
     filter: function(categories, options) {
@@ -71,14 +88,14 @@ jQuery(document).ready(function() {
 
 });
 
-var nb_thumbs_page = {$nb_thumbs_page};
-var nb_thumbs_set = {$nb_thumbs_set};
-var applyOnDetails_pattern = "{'on the %d selected photos'|@translate}";
-var all_elements = [{if !empty($all_elements)}{$all_elements|@join:','}{/if}];
+window.nb_thumbs_page = {$nb_thumbs_page};
+window.nb_thumbs_set = {$nb_thumbs_set};
+window.applyOnDetails_pattern = "{'on the %d selected photos'|@translate}";
+window.all_elements = [{if !empty($all_elements)}{$all_elements|@join:','}{/if}];
 
-var selectedMessage_pattern = "{'%d of %d photos selected'|@translate}";
-var selectedMessage_none = "{'No photo selected, %d photos in current set'|@translate}";
-var selectedMessage_all = "{'All %d photos are selected'|@translate}";
+window.selectedMessage_pattern = "{'%d of %d photos selected'|@translate}";
+window.selectedMessage_none = "{'No photo selected, %d photos in current set'|@translate}";
+window.selectedMessage_all = "{'All %d photos are selected'|@translate}";
 
 $(document).ready(function() {
   function checkPermitAction() {
@@ -301,7 +318,7 @@ $(document).ready(function() {
 });
 
 {*<!-- sliders config -->*}
-var sliders = {
+window.sliders = {
   widths: {
     values: [{$dimensions.widths}],
     selected: {
@@ -339,10 +356,11 @@ var sliders = {
   }
 };
 
+await import('./admin/themes/default/js/batchManagerGlobal.js');
 </script>
 {/footer_script}
 
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{* {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'} *}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10} {* order 10 is required, see issue 1080 *}
 
@@ -496,7 +514,7 @@ var sliders = {
           <a href="#" class="removeFilter" title="{'remove this filter'|translate}"><span>[x]</span></a>
           <input name="q" size=40 value="{$filter.search.q|default:''|stripslashes|htmlspecialchars}">
           <a href="admin/popuphelp.php?page=quick_search" onclick="popuphelp(this.href);return false;" title="{'Help'|@translate}"><span class="icon-help-circled">{'Search tips'|translate}</span></a>
-          {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'}
+          {* {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'} *}
   {if (isset($no_search_results))}
   <div>{'No results for'|@translate} :
     <em><strong>
