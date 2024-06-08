@@ -350,7 +350,7 @@ switch ($page['section'])
     {
       $conf = array();
       include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-      @include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+      file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
       if (isset($conf['local_dir_site']))
       {
         @include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR. 'config/config.inc.php');
@@ -402,7 +402,7 @@ switch ($page['section'])
     SELECT
         id,
         name
-      FROM '.GROUPS_TABLE.'
+      FROM `'.GROUPS_TABLE.'`
     ;';
     $groups = query2array($query, 'id', 'name');
     natcasesort($groups);
@@ -523,7 +523,7 @@ switch ($page['section'])
 
       // derivatives = multiple size
       $enabled = ImageStdParams::get_defined_type_map();
-      $disabled = @unserialize(@$conf['disabled_derivatives']);
+      $disabled = unserialize($conf['disabled_derivatives'] ?? '') ?? false;
       if ($disabled === false)
       {
         $disabled = array();

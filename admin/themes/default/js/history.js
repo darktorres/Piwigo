@@ -47,7 +47,7 @@ $(document).ready(() => {
   });
 
   $('.date-end').on("change", function () {
-    console.log($('.date-end input[name="end"]').attr("value"));
+    // console.log($('.date-end input[name="end"]').attr("value"));
     if (current_param.end != $('.date-end input[name="end"]').attr("value")) {
       console.log("HERE");
       current_param.end = $('.date-end input[name="end"]').attr("value");
@@ -180,7 +180,7 @@ function fillSummaryResult(summary) {
 }
 
 function showResults(doShow) {
-  console.log("EMPTY");
+  // console.log("EMPTY");
   if (doShow) {
     $(".search-summary").show();
     $(".container").show();

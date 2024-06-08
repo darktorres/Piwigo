@@ -1223,7 +1223,7 @@ function l10n($key)
 {
   global $lang, $conf;
 
-  if ( ($val=@$lang[$key]) === null)
+  if ( ($val=$lang[$key] ?? null) === null)
   {
     if ($conf['debug_l10n'] and !isset($lang[$key]) and !empty($key))
     {
@@ -1690,13 +1690,13 @@ function load_language($filename, $dirname = '', $options = array())
   global $user, $language_files;
 
   // keep trace of plugins loaded files for switch_lang_to() function
-  if (!empty($dirname) && !empty($filename) && !@$options['return']
+  if (!empty($dirname) && !empty($filename) && !($options['return'] ?? false)
     && !isset($language_files[$dirname][$filename]))
   {
     $language_files[$dirname][$filename] = $options;
   }
 
-  if (!@$options['return'])
+  if (!($options['return'] ?? false))
   {
     $filename .= '.php';
   }
@@ -1733,7 +1733,7 @@ function load_language($filename, $dirname = '', $options = array())
     }
     $languages[] = $options['force_fallback'];
   }
-  if (!@$options['no_fallback'])
+  if (!($options['no_fallback'] ?? false))
   { // default language
     $languages[] = $default_language;
   }
@@ -1745,7 +1745,7 @@ function load_language($filename, $dirname = '', $options = array())
   $selected_language = '';
   foreach ($languages as $language)
   {
-    $f = @$options['local'] ?
+    $f = ($options['local'] ?? false) ?
       $dirname.$language.'.'.$filename:
       $dirname.$language.'/'.$filename;
 
@@ -1759,7 +1759,7 @@ function load_language($filename, $dirname = '', $options = array())
   
   if (!empty($source_file))
   {
-    if (!@$options['return'])
+    if (!($options['return'] ?? false))
     {
       // load forced fallback
       if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language)
@@ -1769,8 +1769,8 @@ function load_language($filename, $dirname = '', $options = array())
 
       // load language content
       @include($source_file);
-      $load_lang = @$lang;
-      $load_lang_info = @$lang_info;
+      $load_lang = $lang ?? null;
+      $load_lang_info = $lang_info ?? array();
 
       // access already existing values
       global $lang, $lang_info;

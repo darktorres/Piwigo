@@ -321,6 +321,9 @@ class pwg_image
     {
       return false;
     }
+    if (empty($conf['ext_imagick_dir'])) {
+      return false;
+    }
     @exec($conf['ext_imagick_dir'].'convert -version', $returnarray);
     if (is_array($returnarray) and !empty($returnarray[0]) and preg_match('/ImageMagick/i', $returnarray[0]))
     {

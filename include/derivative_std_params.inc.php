@@ -146,7 +146,7 @@ final class ImageStdParams
   static function load_from_db()
   {
     global $conf;
-    $arr = @unserialize($conf['derivatives']);
+    $arr = @unserialize($conf['derivatives'] ?? '');
     if (false!==$arr)
     {
       self::$type_map = $arr['d'];

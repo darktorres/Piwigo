@@ -131,7 +131,7 @@ WHERE '.$where.'
       $row['icon_ts'] = get_icon($row['max_date_last'], $child_date_last);
     }
     $cats[] = $row;
-    if ($row['id']==@$page['category']['id']) //save the number of subcats for later optim
+    if ($row['id']===($page['category']['id'] ?? null)) //save the number of subcats for later optim
       $page['category']['count_categories'] = $row['count_categories'];
   }
   usort($cats, 'global_rank_compare');
@@ -736,7 +736,7 @@ function get_related_categories_menu($items, $excluded_cat_ids=array())
   {
     foreach (explode(',', $cat['uppercats']) as $uppercat)
     {
-      @$cat_ids[$uppercat]++;
+      $cat_ids[$uppercat] = ($cat_ids[$uppercat] ?? 0) + 1;
     }
   }
 

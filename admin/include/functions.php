@@ -2421,10 +2421,17 @@ function fetchRemote($src, &$dest, $get_data=array(), $post_data=array(), $user_
   // Try file_get_contents to read remote file
   if (ini_get('allow_url_fopen'))
   {
+    if (strpos($src, 'format=php') !== false) {
+      $headers = "Content-type: application/x-www-form-urlencoded\r\n";
+    } else {
+      $headers = "";
+    }
+
     $opts = array(
       'http' => array(
         'method' => $method,
         'user_agent' => $user_agent,
+        'header' => $headers
       )
     );
     if ($method == 'POST')

@@ -11,9 +11,9 @@
 (function(){
 {* <!-- TAGS --> *}
 var tagsCache = new TagsCache({
-  serverKey: '{$CACHE_KEYS.tags}',
-  serverId: '{$CACHE_KEYS._hash}',
-  rootUrl: '{$ROOT_URL}'
+  serverKey: '{$CACHE_KEYS.tags|default:''}',
+  serverId: '{$CACHE_KEYS._hash|default:''}',
+  rootUrl: '{$ROOT_URL|default:''}'
 });
 
 tagsCache.selectize(jQuery('[data-selectize=tags]'), { lang: {
