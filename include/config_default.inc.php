@@ -39,6 +39,7 @@ if (!extension_loaded('openssl')) {
 }
 
 require_once PHPWG_ROOT_PATH . '/vendor/autoload.php';
+use function PHP81_BC\strftime;
 
 /**
  *                           configuration page
