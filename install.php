@@ -452,7 +452,7 @@ else
     register_shutdown_function('session_write_close');
     
     $user = build_user(1);
-    log_user($user['id'], false);
+    log_user((int)$user['id'], false);
     
     // newsletter subscription
     if ($is_newsletter_subscribe)
