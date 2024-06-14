@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "322ee7509a8cca67c222b6f9bf6cd85a",
+    "content-hash": "40a9267093cf979c01979b6ede1b911b",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -923,7 +923,69 @@
             "time": "2018-01-15T15:26:51+00:00"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "symplify/easy-coding-standard",
+            "version": "12.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/easy-coding-standard/easy-coding-standard.git",
+                "reference": "095fe591b2e51fd84edd21b8c9be74402eadc50e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/easy-coding-standard/easy-coding-standard/zipball/095fe591b2e51fd84edd21b8c9be74402eadc50e",
+                "reference": "095fe591b2e51fd84edd21b8c9be74402eadc50e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "conflict": {
+                "friendsofphp/php-cs-fixer": "<3.46",
+                "phpcsstandards/php_codesniffer": "<3.8",
+                "symplify/coding-standard": "<12.1"
+            },
+            "suggest": {
+                "ext-dom": "Needed to support checkstyle output format in class CheckstyleOutputFormatter"
+            },
+            "bin": [
+                "bin/ecs"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Use Coding Standard with 0-knowledge of PHP-CS-Fixer and PHP_CodeSniffer",
+            "keywords": [
+                "Code style",
+                "automation",
+                "fixer",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/easy-coding-standard/easy-coding-standard/issues",
+                "source": "https://github.com/easy-coding-standard/easy-coding-standard/tree/12.2.1"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/rectorphp",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/tomasvotruba",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-06-02T01:25:21+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "beta",
     "stability-flags": {
