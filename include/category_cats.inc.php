@@ -84,7 +84,7 @@ SELECT representative_picture_id
 ;';
         $subresult = pwg_query($query);
         if (pwg_db_num_rows($subresult) > 0) {
-            list($image_id) = pwg_db_fetch_row($subresult);
+            [$image_id] = pwg_db_fetch_row($subresult);
         }
     }
 
@@ -246,7 +246,7 @@ if (count($categories) > 0) {
         $tpl_var = array_merge($category, [
             'ID' => $category['id'] /*obsolete*/,
             'representative' => $representative_infos,
-            'TN_ALT' => strip_tags($category['name']),
+            'TN_ALT' => strip_tags((string) $category['name']),
 
             'URL' => make_index_url(
                 [

@@ -60,7 +60,7 @@ SELECT id, keywords
 ;';
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
-        foreach (preg_split('/[,]+/', $row['keywords']) as $keyword) {
+        foreach (preg_split('/[,]+/', (string) $row['keywords']) as $keyword) {
             if (! isset($tag_id[$keyword])) {
                 $tag_id[$keyword] = $current_id++;
             }
@@ -344,14 +344,14 @@ SELECT value
   FROM ' . PREFIX_TABLE . 'config
   WHERE param=\'gallery_title\'
 ;';
-list($t) = array_from_query($query, 'value');
+[$t] = array_from_query($query, 'value');
 
 $query = '
 SELECT value
   FROM ' . PREFIX_TABLE . 'config
   WHERE param=\'gallery_description\'
 ;';
-list($d) = array_from_query($query, 'value');
+[$d] = array_from_query($query, 'value');
 
 $page_banner = '<h1>' . $t . '</h1><p>' . $d . '</p>';
 $page_banner = addslashes($page_banner);

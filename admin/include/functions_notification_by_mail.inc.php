@@ -44,7 +44,7 @@ from
 where
   check_key = \'' . $key . '\';';
 
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return $key;
         }
@@ -73,9 +73,7 @@ function check_sendmail_timeout()
 function quote_check_key_list(
     $check_key_list = []
 ) {
-    return array_map(function ($s) {
-        return '\'' . $s . '\'';
-    }, $check_key_list);
+    return array_map(fn ($s) => '\'' . $s . '\'', $check_key_list);
 }
 
 /*
@@ -262,7 +260,11 @@ function inc_mail_sent_success($nbm_user)
     global $page, $env_nbm;
 
     ++$env_nbm['sent_mail_count'];
-    $page['infos'][] = sprintf($env_nbm['msg_info'], stripslashes($nbm_user['username']), $nbm_user['mail_address']);
+    $page['infos'][] = sprintf(
+        $env_nbm['msg_info'],
+        stripslashes((string) $nbm_user['username']),
+        $nbm_user['mail_address']
+    );
 }
 
 /*
@@ -277,7 +279,7 @@ function inc_mail_sent_failed($nbm_user)
     ++$env_nbm['error_on_mail_count'];
     $page['errors'][] = sprintf(
         $env_nbm['msg_error'],
-        stripslashes($nbm_user['username']),
+        stripslashes((string) $nbm_user['username']),
         $nbm_user['mail_address']
     );
 }
@@ -326,7 +328,7 @@ function assign_vars_nbm_mail_content($nbm_user)
 
     $env_nbm['mail_template']->assign(
         [
-            'USERNAME' => stripslashes($nbm_user['username']),
+            'USERNAME' => stripslashes((string) $nbm_user['username']),
 
             'SEND_AS_NAME' => $env_nbm['send_as_name'],
 
@@ -421,7 +423,7 @@ function do_subscribe_unsubscribe_notification_by_mail(
 
                 $ret = pwg_mail(
                     [
-                        'name' => stripslashes($nbm_user['username']),
+                        'name' => stripslashes((string) $nbm_user['username']),
                         'email' => $nbm_user['mail_address'],
                     ],
                     [
@@ -450,12 +452,16 @@ function do_subscribe_unsubscribe_notification_by_mail(
                     'enabled' => $enabled_value,
                 ];
                 ++$updated_data_count;
-                $page['infos'][] = sprintf($msg_info, stripslashes($nbm_user['username']), $nbm_user['mail_address']);
+                $page['infos'][] = sprintf(
+                    $msg_info,
+                    stripslashes((string) $nbm_user['username']),
+                    $nbm_user['mail_address']
+                );
             } else {
                 ++$error_on_updated_data_count;
                 $page['errors'][] = sprintf(
                     $msg_error,
-                    stripslashes($nbm_user['username']),
+                    stripslashes((string) $nbm_user['username']),
                     $nbm_user['mail_address']
                 );
             }

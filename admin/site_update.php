@@ -32,13 +32,13 @@ $query = '
 SELECT galleries_url
   FROM ' . SITES_TABLE . '
   WHERE id = ' . $site_id;
-list($site_url) = pwg_db_fetch_row(pwg_query($query));
+[$site_url] = pwg_db_fetch_row(pwg_query($query));
 if (! isset($site_url)) {
     die('site ' . $site_id . ' does not exist');
 }
 $site_is_remote = url_is_remote($site_url);
 
-list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 define('CURRENT_DATE', $dbnow);
 
 $error_labels = [
@@ -213,7 +213,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
         $fs_fulldirs,
         array_keys($db_fulldirs)
     ) as $fulldir) {
-        $dir = basename($fulldir);
+        $dir = basename((string) $fulldir);
         if (preg_match($conf['sync_chars_regex'], $dir)) {
             $insert = [
                 'id' => $next_id++,
@@ -226,8 +226,8 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
                 'visible' => boolean_to_string($conf['newcat_default_visible']),
             ];
 
-            if (isset($db_fulldirs[dirname($fulldir)])) {
-                $parent = $db_fulldirs[dirname($fulldir)];
+            if (isset($db_fulldirs[dirname((string) $fulldir)])) {
+                $parent = $db_fulldirs[dirname((string) $fulldir)];
 
                 $insert['id_uppercat'] = $parent;
                 $insert['uppercats'] =
@@ -257,7 +257,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
             $db_categories[$insert['id']] =
               [
                   'id' => $insert['id'],
-                  'parent' => (isset($parent)) ? $parent : null,
+                  'parent' => $parent ?? null,
                   'status' => $insert['status'],
                   'visible' => $insert['visible'],
                   'uppercats' => $insert['uppercats'],
@@ -788,7 +788,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
                         $tags_of[$id] = [];
                     }
 
-                    foreach (explode(',', $data[$key]) as $tag_name) {
+                    foreach (explode(',', (string) $data[$key]) as $tag_name) {
                         $tags_of[$id][] = tag_id_from_tag_name($tag_name);
                     }
                 }

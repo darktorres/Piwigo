@@ -108,7 +108,7 @@ if (isset($_POST['submit'])) {
     if ($conf['allow_html_descriptions']) {
         $data['comment'] = @$_POST['description'];
     } else {
-        $data['comment'] = strip_tags(@$_POST['description']);
+        $data['comment'] = strip_tags((string) @$_POST['description']);
     }
 
     if (! empty($_POST['date_creation'])) {
@@ -217,7 +217,7 @@ if (in_array(
     $row['rotation'],
     [1, 3]
 )) {
-    list($row['width'], $row['height']) = [$row['height'], $row['width']];
+    [$row['width'], $row['height']] = [$row['height'], $row['width']];
 }
 
 $template->assign(
@@ -235,7 +235,7 @@ $template->assign(
 
         'NAME' =>
           isset($_POST['name']) ?
-            stripslashes($_POST['name']) : @$row['name'],
+            stripslashes((string) $_POST['name']) : @$row['name'],
 
         'TITLE' => render_element_name($row),
 
@@ -248,16 +248,16 @@ $template->assign(
         'REGISTRATION_DATE' => format_date($row['date_available']),
 
         'AUTHOR' => htmlspecialchars(
-            isset($_POST['author'])
-              ? stripslashes($_POST['author'])
-              : (empty($row['author']) ? '' : $row['author'])
+            (string) (isset($_POST['author'])
+              ? stripslashes((string) $_POST['author'])
+              : (empty($row['author']) ? '' : $row['author']))
         ),
 
         'DATE_CREATION' => $row['date_creation'],
 
         'DESCRIPTION' =>
-          htmlspecialchars(isset($_POST['description']) ?
-          stripslashes($_POST['description']) : (empty($row['comment']) ? '' : $row['comment'])),
+          htmlspecialchars((string) (isset($_POST['description']) ?
+          stripslashes((string) $_POST['description']) : (empty($row['comment']) ? '' : $row['comment']))),
 
         'F_ACTION' =>
             get_root_url() . 'admin.php'
@@ -276,7 +276,7 @@ while ($user_row = pwg_db_fetch_assoc($result)) {
     $row['added_by'] = $user_row['username'];
 }
 
-$extTab = explode('.', $row['file']);
+$extTab = explode('.', (string) $row['file']);
 
 $intro_vars = [
     'file' => l10n('%s', $row['file']),
@@ -297,7 +297,7 @@ SELECT
   FROM ' . RATE_TABLE . '
   WHERE element_id = ' . $_GET['image_id'] . '
 ;';
-    list($row['nb_rates']) = pwg_db_fetch_row(pwg_query($query));
+    [$row['nb_rates']] = pwg_db_fetch_row(pwg_query($query));
 
     $intro_vars['stats'] .= ', ' . sprintf(
         l10n('Rated %d times, score : %.2f'),
@@ -330,7 +330,7 @@ if (in_array(get_extension($row['path']), $conf['picture_ext'])) {
 }
 
 // image level options
-$selected_level = isset($_POST['level']) ? $_POST['level'] : $row['level'];
+$selected_level = $_POST['level'] ?? $row['level'];
 $template->assign(
     [
         'level_options' => get_privacy_level_options(),

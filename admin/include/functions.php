@@ -522,7 +522,7 @@ function categories_integrity()
     ];
 
     foreach ($related_columns as $fullcol) {
-        list($table, $column) = explode('.', $fullcol);
+        [$table, $column] = explode('.', $fullcol);
 
         $query = '
 SELECT
@@ -559,7 +559,7 @@ function get_fs_directories(
     global $conf;
 
     $dirs = [];
-    $path = rtrim($path, '/');
+    $path = rtrim((string) $path, '/');
 
     $exclude_folders = array_merge(
         $conf['sync_exclude_folders'],
@@ -668,9 +668,7 @@ SELECT id, id_uppercat, uppercats, `rank`, global_rank
 
     $datas = [];
 
-    $cat_map_callback = function ($m) use ($cat_map) {
-        return $cat_map[$m[1]]['rank'];
-    };
+    $cat_map_callback = fn ($m) => $cat_map[$m[1]]['rank'];
 
     foreach ($cat_map as $id => $cat) {
         $new_global_rank = preg_replace_callback(
@@ -830,7 +828,7 @@ SELECT
             $is_top = true;
 
             if (! empty($cat['id_uppercat'])) {
-                foreach (explode(',', $cat['uppercats']) as $id_uppercat) {
+                foreach (explode(',', (string) $cat['uppercats']) as $id_uppercat) {
                     if (isset($top_categories[$id_uppercat])) {
                         $is_top = false;
                         break;
@@ -931,7 +929,7 @@ SELECT uppercats
     while ($row = pwg_db_fetch_assoc($result)) {
         $uppercats = array_merge(
             $uppercats,
-            explode(',', $row['uppercats'])
+            explode(',', (string) $row['uppercats'])
         );
     }
     $uppercats = array_unique($uppercats);
@@ -978,7 +976,7 @@ SELECT image_id
   ORDER BY ' . DB_RANDOM_FUNCTION . '()
   LIMIT 1
 ;';
-        list($representative) = pwg_db_fetch_row(pwg_query($query));
+        [$representative] = pwg_db_fetch_row(pwg_query($query));
 
         $datas[] = [
             'id' => $category_id,
@@ -1036,9 +1034,7 @@ SELECT id, uppercats, site_id
     $categories = query2array($query);
 
     // filling $cat_fulldirs
-    $cat_dirs_callback = function ($m) use ($cat_dirs) {
-        return $cat_dirs[$m[1]];
-    };
+    $cat_dirs_callback = fn ($m) => $cat_dirs[$m[1]];
 
     $cat_fulldirs = [];
     foreach ($categories as $category) {
@@ -1304,14 +1300,14 @@ SELECT uppercats
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $new_parent . '
 ;';
-        list($new_parent_uppercats) = pwg_db_fetch_row(pwg_query($query));
+        [$new_parent_uppercats] = pwg_db_fetch_row(pwg_query($query));
 
         foreach ($categories as $category) {
             // technically, you can't move a category with uppercats 12,125,13,14
             // into a new parent category with uppercats 12,125,13,14,24
             if (preg_match(
                 '/^' . $category['uppercats'] . '(,|$)/',
-                $new_parent_uppercats
+                (string) $new_parent_uppercats
             )) {
                 $page['errors'][] = l10n('You cannot move an album in its own sub album');
                 return;
@@ -1343,7 +1339,7 @@ SELECT status
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $new_parent . '
 ;';
-        list($parent_status) = pwg_db_fetch_row(pwg_query($query));
+        [$parent_status] = pwg_db_fetch_row(pwg_query($query));
     }
 
     if ($parent_status == 'private') {
@@ -1437,7 +1433,9 @@ SELECT MAX(`rank`) AS max_rank
 
     // any description for this album?
     if (isset($options['comment'])) {
-        $insert['comment'] = $conf['allow_html_descriptions'] ? $options['comment'] : strip_tags($options['comment']);
+        $insert['comment'] = $conf['allow_html_descriptions'] ? $options['comment'] : strip_tags(
+            (string) $options['comment']
+        );
     }
 
     if (! empty($parent_id) and is_numeric($parent_id)) {
@@ -1472,7 +1470,7 @@ SELECT id, uppercats, global_rank, visible, status
 
     // we have then to add the virtual category
     single_insert(CATEGORIES_TABLE, $insert);
-    $inserted_id = pwg_db_insert_id(CATEGORIES_TABLE);
+    $inserted_id = pwg_db_insert_id();
 
     single_update(
         CATEGORIES_TABLE,
@@ -1691,7 +1689,7 @@ SELECT id
                     ]
                 );
 
-                $page['tag_id_from_tag_name_cache'][$tag_name] = pwg_db_insert_id(TAGS_TABLE);
+                $page['tag_id_from_tag_name_cache'][$tag_name] = pwg_db_insert_id();
 
                 invalidate_user_cache_nb_tags();
 
@@ -1808,7 +1806,7 @@ function compare_image_tag_lists(
     foreach ($taglist_after as $image_id => $list_after) {
         sort($list_after);
 
-        $list_before = isset($taglist_before[$image_id]) ? $taglist_before[$image_id] : [];
+        $list_before = $taglist_before[$image_id] ?? [];
         sort($list_before);
 
         if ($list_after != $list_before) {
@@ -1862,7 +1860,7 @@ function empty_lounge(
     global $logger;
 
     if (isset($conf['empty_lounge_running'])) {
-        list($running_exec_id, $running_exec_start_time) = explode('-', $conf['empty_lounge_running']);
+        [$running_exec_id, $running_exec_start_time] = explode('-', (string) $conf['empty_lounge_running']);
         if (time() - $running_exec_start_time > 60) {
             $logger->debug(
                 __FUNCTION__ . ', exec=' . $running_exec_id . ', timeout stopped by another call to the function'
@@ -1883,10 +1881,10 @@ INSERT IGNORE
 ;';
     pwg_query($query);
 
-    list($empty_lounge_running) = pwg_db_fetch_row(
+    [$empty_lounge_running] = pwg_db_fetch_row(
         pwg_query('SELECT value FROM ' . CONFIG_TABLE . ' WHERE param = "empty_lounge_running"')
     );
-    list($running_exec_id) = explode('-', $empty_lounge_running);
+    [$running_exec_id] = explode('-', (string) $empty_lounge_running);
 
     if ($running_exec_id != $exec_id) {
         $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ', skip');
@@ -2222,7 +2220,7 @@ SELECT id
             ]
         );
 
-        $inserted_id = pwg_db_insert_id(TAGS_TABLE);
+        $inserted_id = pwg_db_insert_id();
 
         return [
             'info' => l10n('Tag "%s" was added', stripslashes($tag_name)),
@@ -2252,7 +2250,7 @@ function cat_admin_access(
     // are not used because it's not necessary (filter <> restriction)
     if (in_array(
         $category_id,
-        @explode(',', $user['forbidden_categories'])
+        @explode(',', (string) $user['forbidden_categories'])
     )) {
         return false;
     }
@@ -2300,7 +2298,7 @@ function fetchRemote(
     $method = empty($post_data) ? 'GET' : 'POST';
     $request = empty($post_data) ? '' : http_build_query($post_data, '', '&');
     if (! empty($get_data)) {
-        $src .= strpos($src, '?') === false ? '?' : '&';
+        $src .= ! str_contains($src, '?') ? '?' : '&';
         $src .= http_build_query($get_data, '', '&');
     }
 
@@ -2344,7 +2342,7 @@ function fetchRemote(
 
     // Try file_get_contents to read remote file
     if (ini_get('allow_url_fopen')) {
-        if (strpos($src, 'format=php') !== false) {
+        if (str_contains($src, 'format=php')) {
             $headers = "Content-type: application/x-www-form-urlencoded\r\n";
         } else {
             $headers = '';
@@ -2371,7 +2369,7 @@ function fetchRemote(
     // Try fsockopen to read remote file
     $src = parse_url($src);
     $host = $src['host'];
-    $path = isset($src['path']) ? $src['path'] : '/';
+    $path = $src['path'] ?? '/';
     $path .= isset($src['query']) ? '?' . $src['query'] : '';
 
     if (($s = @fsockopen($host, 80, $errno, $errstr, 5)) === false) {
@@ -2443,7 +2441,7 @@ SELECT name
 ;';
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) > 0) {
-        list($groupname) = pwg_db_fetch_row($result);
+        [$groupname] = pwg_db_fetch_row($result);
     } else {
         return false;
     }
@@ -2458,7 +2456,7 @@ function delete_groups($group_ids)
         return false;
     }
 
-    if (preg_match('/^group:(\d+)$/', conf_get_param('email_admin_on_new_user', 'undefined'), $matches)) {
+    if (preg_match('/^group:(\d+)$/', (string) conf_get_param('email_admin_on_new_user', 'undefined'), $matches)) {
         foreach ($group_ids as $group_id) {
             if ($group_id == $matches[1]) {
                 conf_update_param('email_admin_on_new_user', 'all', true);
@@ -2525,12 +2523,12 @@ SELECT ' . $conf['user_fields']['username'] . '
 ;';
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) > 0) {
-        list($username) = pwg_db_fetch_row($result);
+        [$username] = pwg_db_fetch_row($result);
     } else {
         return false;
     }
 
-    return stripslashes($username);
+    return stripslashes((string) $username);
 }
 
 /**
@@ -2892,10 +2890,10 @@ function delete_element_derivatives(
     if (! empty($infos['representative_ext'])) {
         $path = original_to_representative($path, $infos['representative_ext']);
     }
-    if (substr_compare($path, '../', 0, 3) == 0) {
-        $path = substr($path, 3);
+    if (substr_compare((string) $path, '../', 0, 3) == 0) {
+        $path = substr((string) $path, 3);
     }
-    $dot = strrpos($path, '.');
+    $dot = strrpos((string) $path, '.');
     if ($type == 'all') {
         $pattern = '-*';
     } else {
@@ -2960,7 +2958,7 @@ function deltree($path, $trash_path = null)
             if (! is_dir($trash_path)) {
                 @mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
             }
-            while ($r = $trash_path . '/' . md5(uniqid(rand(), true))) {
+            while ($r = $trash_path . '/' . md5(uniqid(random_int(0, mt_getrandmax()), true))) {
                 if (! is_dir($r)) {
                     @rename($path, $r);
                     break;
@@ -3003,7 +3001,7 @@ function get_admin_client_cache_keys(
     }
 
     $keys = [
-        '_hash' => md5(get_absolute_root_url()),
+        '_hash' => md5((string) get_absolute_root_url()),
     ];
 
     foreach ($requested as $item) {
@@ -3015,7 +3013,7 @@ SELECT CONCAT(
   )
   FROM `' . $tables[$item] . '`
 ;';
-        list($keys[$item]) = pwg_db_fetch_row(pwg_query($query));
+        [$keys[$item]] = pwg_db_fetch_row(pwg_query($query));
     }
 
     return $keys;
@@ -3351,7 +3349,7 @@ function get_piwigo_news()
         if (fetchRemote($url, $content)) {
             $all_news = [];
 
-            $porg_news_getLatest = json_decode($content, true);
+            $porg_news_getLatest = json_decode((string) $content, true);
 
             if (isset($porg_news_getLatest['result'])) {
                 $topic = $porg_news_getLatest['result'];

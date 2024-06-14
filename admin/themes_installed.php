@@ -145,7 +145,7 @@ function cmp($a, $b)
     }
 
     if ($a['STATE'] == $b['STATE']) {
-        return strcasecmp($a['NAME'], $b['NAME']);
+        return strcasecmp((string) $a['NAME'], (string) $b['NAME']);
     }
 
     return $s[$a['STATE']] >= $s[$b['STATE']] ? 1 : -1;

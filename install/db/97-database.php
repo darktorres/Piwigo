@@ -21,7 +21,7 @@ SELECT
   WHERE user_id = ' . $conf['default_user_id'] . '
 ;';
 $result = pwg_query($query);
-list($theme, $language) = pwg_db_fetch_row($result);
+[$theme, $language] = pwg_db_fetch_row($result);
 
 $data = [
     'user_id' => $conf['default_user_id'],

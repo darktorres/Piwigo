@@ -200,7 +200,7 @@ function consensus_dev_compare($a, $b)
 
 function last_rate_compare($a, $b)
 {
-    return -strcmp($a['last_date'], $b['last_date']);
+    return -strcmp((string) $a['last_date'], (string) $b['last_date']);
 }
 
 $order_by_index = 4;
@@ -231,7 +231,7 @@ SELECT
     COUNT(*)
   FROM ' . RATE_TABLE .
 ';';
-list($nb_elements) = pwg_db_fetch_row(pwg_query($query));
+[$nb_elements] = pwg_db_fetch_row(pwg_query($query));
 
 $template->assign([
     'F_ACTION' => get_root_url() . 'admin.php',

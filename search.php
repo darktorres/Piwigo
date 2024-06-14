@@ -28,7 +28,7 @@ if (isset($_POST['submit'])) {
     }
 
     if (isset($_POST['search_allwords'])
-        and ! preg_match('/^\s*$/', $_POST['search_allwords'])) {
+        and ! preg_match('/^\s*$/', (string) $_POST['search_allwords'])) {
         check_input_parameter('mode', $_POST, false, '/^(OR|AND)$/');
         check_input_parameter('fields', $_POST, true, '/^(name|comment|file)$/');
 
@@ -74,7 +74,7 @@ if (isset($_POST['submit'])) {
         $authors = [];
 
         foreach ($_POST['authors'] as $author) {
-            $authors[] = strip_tags($author);
+            $authors[] = strip_tags((string) $author);
         }
 
         $search['fields']['author'] = [
@@ -135,7 +135,7 @@ INSERT INTO ' . SEARCH_TABLE . '
 ;';
         pwg_query($query);
 
-        $search_id = pwg_db_insert_id(SEARCH_TABLE);
+        $search_id = pwg_db_insert_id();
     } else {
         $page['errors'][] = l10n('Empty query. No criteria has been entered.');
     }

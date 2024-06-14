@@ -9,6 +9,7 @@
 
 class PwgJsonEncoder extends PwgResponseEncoder
 {
+    #[\Override]
     public function encodeResponse($response)
     {
         if ($response instanceof PwgError) {
@@ -29,6 +30,7 @@ class PwgJsonEncoder extends PwgResponseEncoder
         );
     }
 
+    #[\Override]
     public function getContentType()
     {
         return 'text/plain';

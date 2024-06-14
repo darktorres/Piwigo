@@ -426,15 +426,16 @@ if ($conf['enable_synchronization']) {
 
 function UC_name_compare($a, $b)
 {
-    return strcmp(strtolower($a['NAME']), strtolower($b['NAME']));
+    return strcmp(strtolower((string) $a['NAME']), strtolower((string) $b['NAME']));
 }
 
 $prefilters = trigger_change('get_batch_manager_prefilters', $prefilters);
 
 // Sort prefilters by localized name.
-usort($prefilters, function ($a, $b) {
-    return strcmp(strtolower($a['NAME']), strtolower($b['NAME']));
-});
+usort(
+    $prefilters,
+    fn ($a, $b) => strcmp(strtolower((string) $a['NAME']), strtolower((string) $b['NAME']))
+);
 
 $template->assign(
     [
@@ -484,9 +485,7 @@ foreach ($conf['available_permission_levels'] as $level) {
 $template->assign(
     [
         'filter_level_options' => $level_options,
-        'filter_level_options_selected' => isset($_SESSION['bulk_manager_filter']['level'])
-        ? $_SESSION['bulk_manager_filter']['level']
-        : 0,
+        'filter_level_options_selected' => $_SESSION['bulk_manager_filter']['level'] ?? 0,
     ]
 );
 

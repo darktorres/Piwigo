@@ -29,13 +29,13 @@ trigger_notify('loc_begin_identification');
 // security (level 1): the redirect must occur within Piwigo, so the
 // redirect param must start with the relative home url
 if (isset($_POST['redirect'])) {
-    $_POST['redirect_decoded'] = urldecode($_POST['redirect']);
+    $_POST['redirect_decoded'] = urldecode((string) $_POST['redirect']);
 }
 check_input_parameter('redirect_decoded', $_POST, false, '{^' . preg_quote(cookie_path()) . '}');
 
 $redirect_to = '';
 if (! empty($_GET['redirect'])) {
-    $redirect_to = urldecode($_GET['redirect']);
+    $redirect_to = urldecode((string) $_GET['redirect']);
     if ($conf['guest_access'] and ! isset($_GET['hide_redirect_error'])) {
         $page['errors'][] = l10n('You are not authorized to access the requested page');
     }
@@ -51,7 +51,7 @@ if (isset($_POST['login'])) {
             $_POST['username'] = search_case_username($_POST['username']);
         }
 
-        $redirect_to = isset($_POST['redirect']) ? urldecode($_POST['redirect']) : '';
+        $redirect_to = isset($_POST['redirect']) ? urldecode((string) $_POST['redirect']) : '';
         $remember_me = isset($_POST['remember_me']) and $_POST['remember_me'] == 1;
 
         if (try_log_user($_POST['username'], $_POST['password'], $remember_me)) {
@@ -70,7 +70,7 @@ if (isset($_POST['login'])) {
             redirect(
                 empty($redirect_to)
                   ? get_gallery_home_url()
-                  : substr($root_url, 0, strlen($root_url) - strlen(cookie_path())) . $redirect_to
+                  : substr((string) $root_url, 0, strlen((string) $root_url) - strlen(cookie_path())) . $redirect_to
             );
         } else {
             $page['errors'][] = l10n('Invalid username or password!');

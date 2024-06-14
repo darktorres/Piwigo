@@ -19,32 +19,32 @@ class ThemeController
             'local' => true,
         ]);
 
-        add_event_handler('init', [$this, 'assignConfig']);
-        add_event_handler('init', [$this, 'setInitValues']);
+        add_event_handler('init', $this->assignConfig(...));
+        add_event_handler('init', $this->setInitValues(...));
 
         if ($this->config->bootstrap_theme === 'darkroom' || $this->config->bootstrap_theme === 'material' || $this->config->bootstrap_theme === 'bootswatch') {
             $this->config->bootstrap_theme = 'bootstrap-darkroom';
             $this->config->save();
-            add_event_handler('loc_begin_page_header', [$this, 'showUpgradeWarning']);
+            add_event_handler('loc_begin_page_header', $this->showUpgradeWarning(...));
         }
 
         $shortname = $this->config->comments_disqus_shortname;
         if ($this->config->comments_type == 'disqus' && ! empty($shortname)) {
-            add_event_handler('blockmanager_apply', [$this, 'hideMenus']);
+            add_event_handler('blockmanager_apply', $this->hideMenus(...));
         }
 
-        add_event_handler('loc_begin_page_header', [$this, 'checkIfHomepage']);
-        add_event_handler('loc_after_page_header', [$this, 'stripBreadcrumbs']);
-        add_event_handler('format_exif_data', [$this, 'exifReplacements']);
-        add_event_handler('loc_end_picture', [$this, 'registerPictureTemplates'], 1000);
-        add_event_handler('loc_begin_index_thumbnails', [$this, 'returnPageStart']);
+        add_event_handler('loc_begin_page_header', $this->checkIfHomepage(...));
+        add_event_handler('loc_after_page_header', $this->stripBreadcrumbs(...));
+        add_event_handler('format_exif_data', $this->exifReplacements(...));
+        add_event_handler('loc_end_picture', $this->registerPictureTemplates(...), 1000);
+        add_event_handler('loc_begin_index_thumbnails', $this->returnPageStart(...));
 
         if ($this->config->slick_enabled === true || $this->config->photoswipe === true) {
-            add_event_handler('loc_end_picture', [$this, 'getAllThumbnailsInCategory']);
+            add_event_handler('loc_end_picture', $this->getAllThumbnailsInCategory(...));
             // also needed on index.tpl for compatibility with GThumb+/GDThumb
             add_event_handler(
                 'loc_end_index',
-                [$this, 'getAllThumbnailsInCategory']
+                $this->getAllThumbnailsInCategory(...)
             );
         }
     }
@@ -181,9 +181,9 @@ class ThemeController
             $title = $section_title;
         }
         if (! empty($title)) {
-            $splt = strpos($title, '[');
+            $splt = strpos((string) $title, '[');
             if ($splt) {
-                $title_links = substr($title, 0, $splt);
+                $title_links = substr((string) $title, 0, $splt);
                 $title = $title_links;
             }
 

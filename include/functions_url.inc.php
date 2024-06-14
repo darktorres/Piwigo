@@ -17,7 +17,7 @@ function get_root_url()
     global $page;
     if (($root_url = $page['root_path'] ?? null) === null) {// TODO - add HERE the possibility to call PWG functions from external scripts
         $root_url = PHPWG_ROOT_PATH;
-        if (strncmp($root_url, './', 2) == 0) {
+        if (str_starts_with($root_url, './')) {
             return substr($root_url, 2);
         }
     }
@@ -43,7 +43,7 @@ function get_absolute_root_url(
     if ($with_scheme) {
         $is_https = false;
         if (isset($_SERVER['HTTPS']) &&
-          ((strtolower($_SERVER['HTTPS']) == 'on') or ($_SERVER['HTTPS'] == 1))) {
+          ((strtolower((string) $_SERVER['HTTPS']) == 'on') or ($_SERVER['HTTPS'] == 1))) {
             $is_https = true;
             $url .= 'https://';
         } else {
@@ -95,7 +95,7 @@ function add_url_params(
         foreach ($params as $param => $val) {
             if ($is_first) {
                 $is_first = false;
-                $url .= (strpos($url, '?') === false) ? '?' : $arg_separator;
+                $url .= (! str_contains($url, '?')) ? '?' : $arg_separator;
             } else {
                 $url .= $arg_separator;
             }
@@ -419,7 +419,7 @@ function parse_section_url(
     &$next_token
 ) {
     $page = [];
-    if (strncmp(@$tokens[$next_token], 'categor', 7) == 0) {
+    if (str_starts_with((string) @$tokens[$next_token], 'categor')) {
         $page['section'] = 'categories';
         $next_token++;
 
@@ -432,16 +432,16 @@ function parse_section_url(
             }
 
             if (
-                strpos($tokens[$next_token], 'created-') === 0
-                or strpos($tokens[$next_token], 'posted-') === 0
-                or strpos($tokens[$next_token], 'start-') === 0
-                or strpos($tokens[$next_token], 'startcat-') === 0
+                str_starts_with((string) $tokens[$next_token], 'created-')
+                or str_starts_with((string) $tokens[$next_token], 'posted-')
+                or str_starts_with((string) $tokens[$next_token], 'start-')
+                or str_starts_with((string) $tokens[$next_token], 'startcat-')
                 or $tokens[$next_token] == 'flat'
             ) {
                 break;
             }
 
-            if (preg_match('/^(\d+)(?:-(.+))?$/', $tokens[$next_token], $matches)) {
+            if (preg_match('/^(\d+)(?:-(.+))?$/', (string) $tokens[$next_token], $matches)) {
                 if (isset($matches[2])) {
                     $page['hit_by']['cat_url_name'] = $matches[2];
                 }
@@ -456,10 +456,10 @@ function parse_section_url(
                 $maybe_permalinks = [];
                 $current_token = $next_token;
                 while (isset($tokens[$current_token])
-                    and strpos($tokens[$current_token], 'created-') !== 0
-                    and strpos($tokens[$current_token], 'posted-') !== 0
-                    and strpos($tokens[$next_token], 'start-') !== 0
-                    and strpos($tokens[$next_token], 'startcat-') !== 0
+                    and ! str_starts_with((string) $tokens[$current_token], 'created-')
+                    and ! str_starts_with((string) $tokens[$current_token], 'posted-')
+                    and ! str_starts_with((string) $tokens[$next_token], 'start-')
+                    and ! str_starts_with((string) $tokens[$next_token], 'startcat-')
                     and $tokens[$current_token] != 'flat') {
                     if (empty($maybe_permalinks)) {
                         $maybe_permalinks[] = $tokens[$current_token];
@@ -524,13 +524,17 @@ function parse_section_url(
         $requested_tag_url_names = [];
 
         while (isset($tokens[$i])) {
-            if (strpos($tokens[$i], 'created-') === 0
-                 or strpos($tokens[$i], 'posted-') === 0
-                 or strpos($tokens[$i], 'start-') === 0) {
+            if (str_starts_with((string) $tokens[$i], 'created-')
+                 or str_starts_with((string) $tokens[$i], 'posted-')
+                 or str_starts_with((string) $tokens[$i], 'start-')) {
                 break;
             }
 
-            if ($conf['tag_url_style'] != 'tag' and preg_match('/^(\d+)(?:-(.*)|)$/', $tokens[$i], $matches)) {
+            if ($conf['tag_url_style'] != 'tag' and preg_match(
+                '/^(\d+)(?:-(.*)|)$/',
+                (string) $tokens[$i],
+                $matches
+            )) {
                 $requested_tag_ids[] = $matches[1];
             } else {
                 $requested_tag_url_names[] = $tokens[$i];
@@ -566,7 +570,7 @@ function parse_section_url(
         $page['section'] = 'search';
         $next_token++;
 
-        preg_match('/(\d+)/', @$tokens[$next_token], $matches);
+        preg_match('/(\d+)/', (string) @$tokens[$next_token], $matches);
         if (! isset($matches[1])) {
             bad_request('search identifier is missing');
         }
@@ -585,10 +589,10 @@ function parse_section_url(
         }
         // With pictures list
         else {
-            if (! preg_match('/^\d+(,\d+)*$/', $tokens[$next_token])) {
+            if (! preg_match('/^\d+(,\d+)*$/', (string) $tokens[$next_token])) {
                 bad_request('wrong format on list GET parameter');
             }
-            foreach (explode(',', $tokens[$next_token]) as $image_id) {
+            foreach (explode(',', (string) $tokens[$next_token]) as $image_id) {
                 $page['list'][] = $image_id;
             }
         }
@@ -610,8 +614,11 @@ function parse_well_known_params_url(
         if ($tokens[$i] == 'flat') {
             // indicate a special list of images
             $page['flat'] = true;
-        } elseif (strpos($tokens[$i], 'created-') === 0 or strpos($tokens[$i], 'posted-') === 0) {
-            $chronology_tokens = explode('-', $tokens[$i]);
+        } elseif (str_starts_with((string) $tokens[$i], 'created-') or str_starts_with(
+            (string) $tokens[$i],
+            'posted-'
+        )) {
+            $chronology_tokens = explode('-', (string) $tokens[$i]);
 
             $page['chronology_field'] = $chronology_tokens[0];
 
@@ -641,9 +648,9 @@ function parse_well_known_params_url(
                     }
                 }
             }
-        } elseif (preg_match('/^start-(\d+)/', $tokens[$i], $matches)) {
+        } elseif (preg_match('/^start-(\d+)/', (string) $tokens[$i], $matches)) {
             $page['start'] = $matches[1];
-        } elseif (preg_match('/^startcat-(\d+)/', $tokens[$i], $matches)) {
+        } elseif (preg_match('/^startcat-(\d+)/', (string) $tokens[$i], $matches)) {
             $page['startcat'] = $matches[1];
         }
         $i++;
@@ -778,7 +785,7 @@ function get_query_string_diff(
         return '';
     }
 
-    parse_str($_SERVER['QUERY_STRING'], $vars);
+    parse_str((string) $_SERVER['QUERY_STRING'], $vars);
 
     $vars = array_diff_key($vars, array_flip($rejects));
 
@@ -794,8 +801,8 @@ function get_query_string_diff(
 function url_is_remote(
     $url
 ) {
-    if (strncmp($url, 'http://', 7) == 0
-      or strncmp($url, 'https://', 8) == 0) {
+    if (str_starts_with($url, 'http://')
+      or str_starts_with($url, 'https://')) {
         return true;
     }
     return false;

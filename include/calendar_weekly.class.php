@@ -18,6 +18,7 @@ class CalendarWeekly extends CalendarBase
      * Initialize the calendar
      * @param string $inner_sql
      */
+    #[\Override]
     public function initialize($inner_sql)
     {
         parent::initialize($inner_sql);
@@ -56,6 +57,7 @@ class CalendarWeekly extends CalendarBase
      *
      * @return boolean false indicates that thumbnails where not included
      */
+    #[\Override]
     public function generate_category_content()
     {
         global $conf, $page;
@@ -79,6 +81,7 @@ class CalendarWeekly extends CalendarBase
      * @param int $max_levels (e.g. 2=only year and month)
      * @return string
      */
+    #[\Override]
     public function get_date_where(
         $max_levels = 3
     ) {

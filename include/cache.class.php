@@ -40,15 +40,14 @@ abstract class PersistentCache
     );
 
     /**
-    Sets a key/value pair in the persistent cache.
-    @param string $key - it should be the return value of make_key function
-    @param mixed $value
-    @param int $lifetime
-    @return false on error
+        Sets a key/value pair in the persistent cache.
+        @param string $key - it should be the return value of make_key function
+        @param int $lifetime
+        @return false on error
      */
     abstract public function set(
         $key,
-        $value,
+        mixed $value,
         $lifetime = null
     );
 
@@ -74,6 +73,7 @@ class PersistentFileCache extends PersistentCache
         $this->dir = PHPWG_ROOT_PATH . $conf['data_location'] . 'cache/';
     }
 
+    #[\Override]
     public function get($key, &$value)
     {
         $loaded = file_exists($this->dir . $key . '.cache') ? file_get_contents($this->dir . $key . '.cache') : false;
@@ -86,13 +86,14 @@ class PersistentFileCache extends PersistentCache
         return false;
     }
 
+    #[\Override]
     public function set($key, $value, $lifetime = null)
     {
         if ($lifetime === null) {
             $lifetime = $this->default_lifetime;
         }
 
-        if (rand() % 97 == 0) {
+        if (random_int(0, mt_getrandmax()) % 97 == 0) {
             $this->purge(false);
         }
 
@@ -111,6 +112,7 @@ class PersistentFileCache extends PersistentCache
         return true;
     }
 
+    #[\Override]
     public function purge($all)
     {
         $files = glob($this->dir . '*.cache');

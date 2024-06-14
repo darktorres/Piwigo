@@ -176,18 +176,18 @@ if (isset($_POST['submitFilter'])) {
 // filters from url
 elseif (isset($_GET['filter'])) {
     if (! is_array($_GET['filter'])) {
-        $_GET['filter'] = explode(',', $_GET['filter']);
+        $_GET['filter'] = explode(',', (string) $_GET['filter']);
     }
 
     $_SESSION['bulk_manager_filter'] = [];
 
     foreach ($_GET['filter'] as $filter) {
-        list($type, $value) = explode('-', $filter, 2);
+        [$type, $value] = explode('-', (string) $filter, 2);
 
         switch ($type) {
             case 'prefilter':
                 if (preg_match('/^duplicates-?/', $value)) {
-                    list(, $duplicate_field) = explode('-', $value, 2);
+                    [, $duplicate_field] = explode('-', $value, 2);
                     $_SESSION['bulk_manager_filter']['prefilter'] = 'duplicates';
 
                     if (in_array($duplicate_field, ['filename', 'checksum', 'date', 'dimensions'])) {
@@ -231,19 +231,16 @@ elseif (isset($_GET['filter'])) {
                     $values = explode('..', substr($part, 1));
                     if (isset($dim_map[$part[0]])) {
                         $type = $dim_map[$part[0]];
-                        list(
-                            $_SESSION['bulk_manager_filter']['dimension']['min_' . $type],
-                            $_SESSION['bulk_manager_filter']['dimension']['max_' . $type]
-                        ) = $values;
+                        [$_SESSION['bulk_manager_filter']['dimension']['min_' . $type], $_SESSION['bulk_manager_filter']['dimension']['max_' . $type]] = $values;
                     }
                 }
                 break;
 
             case 'filesize':
-                list(
-                    $_SESSION['bulk_manager_filter']['filesize']['min'],
-                    $_SESSION['bulk_manager_filter']['filesize']['max']
-                ) = explode('..', $value);
+                [$_SESSION['bulk_manager_filter']['filesize']['min'], $_SESSION['bulk_manager_filter']['filesize']['max']] = explode(
+                    '..',
+                    $value
+                );
                 break;
 
             default:
@@ -402,7 +399,7 @@ SELECT
             $ids = [];
 
             foreach ($array_of_ids_string as $ids_string) {
-                $ids_string = rtrim($ids_string, ',');
+                $ids_string = rtrim((string) $ids_string, ',');
                 $ids = array_merge($ids, explode(',', $ids_string));
             }
 
@@ -440,7 +437,7 @@ SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $_SESSION['bulk_manager_filter']['category'] . '
 ;';
-    list($counter) = pwg_db_fetch_row(pwg_query($query));
+    [$counter] = pwg_db_fetch_row(pwg_query($query));
     if ($counter == 0) {
         unset($_SESSION['bulk_manager_filter']);
         redirect(get_root_url() . 'admin.php?page=' . $_GET['page']);
@@ -537,7 +534,7 @@ SELECT id
 }
 
 if (isset($_SESSION['bulk_manager_filter']['search']) &&
-    strlen($_SESSION['bulk_manager_filter']['search']['q'])) {
+    strlen((string) $_SESSION['bulk_manager_filter']['search']['q'])) {
     include_once(PHPWG_ROOT_PATH . 'include/functions_search.inc.php');
     $res = get_quick_search_results_no_cache($_SESSION['bulk_manager_filter']['search']['q'], [
         'permissions' => false,
@@ -670,9 +667,7 @@ foreach (array_keys($ratio_categories) as $type) {
 
 // selected=bound if nothing selected
 foreach (array_keys($dimensions['bounds']) as $type) {
-    $dimensions['selected'][$type] = isset($_SESSION['bulk_manager_filter']['dimension'][$type])
-      ? $_SESSION['bulk_manager_filter']['dimension'][$type]
-      : $dimensions['bounds'][$type]
+    $dimensions['selected'][$type] = $_SESSION['bulk_manager_filter']['dimension'][$type] ?? $dimensions['bounds'][$type]
     ;
 }
 
@@ -718,9 +713,7 @@ $filesize['bounds'] = [
 
 // selected=bound if nothing selected
 foreach (array_keys($filesize['bounds']) as $type) {
-    $filesize['selected'][$type] = isset($_SESSION['bulk_manager_filter']['filesize'][$type])
-      ? $_SESSION['bulk_manager_filter']['filesize'][$type]
-      : $filesize['bounds'][$type]
+    $filesize['selected'][$type] = $_SESSION['bulk_manager_filter']['filesize'][$type] ?? $filesize['bounds'][$type]
     ;
 }
 

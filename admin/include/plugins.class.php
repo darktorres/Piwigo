@@ -13,6 +13,7 @@
  */
 class DummyPlugin_maintain extends PluginMaintain
 {
+    #[\Override]
     public function install($plugin_version, &$errors = [])
     {
         if (is_callable('plugin_install')) {
@@ -20,6 +21,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function activate($plugin_version, &$errors = [])
     {
         if (is_callable('plugin_activate')) {
@@ -27,6 +29,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function deactivate()
     {
         if (is_callable('plugin_deactivate')) {
@@ -34,6 +37,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function uninstall()
     {
         if (is_callable('plugin_uninstall')) {
@@ -41,6 +45,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function update($old_version, $new_version, &$errors = [])
     {
     }
@@ -150,7 +155,7 @@ UPDATE ' . PLUGINS_TABLE . '
             case 'activate':
                 if (! isset($crt_db_plugin)) {
                     $errors = $this->perform_action('install', $plugin_id);
-                    list($crt_db_plugin) = get_db_plugins(null, $plugin_id);
+                    [$crt_db_plugin] = get_db_plugins(null, $plugin_id);
                     load_conf_from_db();
                 } elseif ($crt_db_plugin['state'] == 'active') {
                     break;
@@ -321,7 +326,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 }
             }
             if (! empty($plugin['uri']) and strpos($plugin['uri'], 'extension_view.php?eid=')) {
-                list(, $extension) = explode('extension_view.php?eid=', $plugin['uri']);
+                [, $extension] = explode('extension_view.php?eid=', $plugin['uri']);
                 if (is_numeric($extension)) {
                     $plugin['extension'] = $extension;
                 }
@@ -350,7 +355,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 $this->sort_plugins_by_state();
                 break;
             case 'author':
-                uasort($this->fs_plugins, [$this, 'plugin_author_compare']);
+                uasort($this->fs_plugins, $this->plugin_author_compare(...));
                 break;
             case 'id':
                 uksort($this->fs_plugins, 'strcasecmp');
@@ -446,7 +451,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
             'format' => 'php',
             'last_revision_only' => 'true',
             'version' => implode(',', $versions_to_check),
-            'lang' => substr($user['language'], 0, 2),
+            'lang' => substr((string) $user['language'], 0, 2),
             'get_nb_downloads' => 'true',
         ];
 
@@ -545,16 +550,16 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 krsort($this->server_plugins);
                 break;
             case 'revision':
-                usort($this->server_plugins, [$this, 'extension_revision_compare']);
+                usort($this->server_plugins, $this->extension_revision_compare(...));
                 break;
             case 'name':
-                uasort($this->server_plugins, [$this, 'extension_name_compare']);
+                uasort($this->server_plugins, $this->extension_name_compare(...));
                 break;
             case 'author':
-                uasort($this->server_plugins, [$this, 'extension_author_compare']);
+                uasort($this->server_plugins, $this->extension_author_compare(...));
                 break;
             case 'downloads':
-                usort($this->server_plugins, [$this, 'extension_downloads_compare']);
+                usort($this->server_plugins, $this->extension_downloads_compare(...));
                 break;
         }
     }
@@ -586,9 +591,9 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 if ($list = $zip->listContent()) {
                     foreach ($list as $file) {
                         // we search main.inc.php in archive
-                        if (basename($file['filename']) == 'main.inc.php'
+                        if (basename((string) $file['filename']) == 'main.inc.php'
                           and (! isset($main_filepath)
-                          or strlen($file['filename']) < strlen($main_filepath))) {
+                          or strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
                             $main_filepath = $file['filename'];
                         }
                     }
@@ -596,7 +601,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                     $logger->debug(__FUNCTION__ . ', $main_filepath = ' . $main_filepath);
 
                     if (isset($main_filepath)) {
-                        $root = dirname($main_filepath); // main.inc.php path in archive
+                        $root = dirname((string) $main_filepath); // main.inc.php path in archive
                         if ($action == 'upgrade') {
                             $plugin_id = $dest;
                         } else {
@@ -640,7 +645,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                                     $realpath = realpath(
                                         $path
                                     );
-                                    if ($realpath === false or strpos($realpath, $extract_path_realpath) !== 0) {
+                                    if ($realpath === false or ! str_starts_with($realpath, $extract_path_realpath)) {
                                         continue;
                                     }
 
@@ -701,12 +706,12 @@ DELETE FROM ' . PLUGINS_TABLE . '
 
     public function extension_name_compare($a, $b)
     {
-        return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
+        return strcmp(strtolower((string) $a['extension_name']), strtolower((string) $b['extension_name']));
     }
 
     public function extension_author_compare($a, $b)
     {
-        $r = strcasecmp($a['author_name'], $b['author_name']);
+        $r = strcasecmp((string) $a['author_name'], (string) $b['author_name']);
         if ($r == 0) {
             return $this->extension_name_compare($a, $b);
         }
@@ -715,7 +720,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
 
     public function plugin_author_compare($a, $b)
     {
-        $r = strcasecmp($a['author'], $b['author']);
+        $r = strcasecmp((string) $a['author'], (string) $b['author']);
         if ($r == 0) {
             return name_compare($a, $b);
         }

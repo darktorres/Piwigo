@@ -45,8 +45,10 @@ class PwgError
 
     private $_codeText;
 
-    public function __construct($code, $codeText)
-    {
+    public function __construct(
+        $code,
+        $codeText
+    ) {
         if ($code >= 400 and $code < 600) {
             set_status_header($code, $codeText);
         }
@@ -74,25 +76,20 @@ class PwgError
 class PwgNamedArray
 {
     /*private*/
-    public $_content;
-
-    /*private*/
-    public $_itemName;
-
-    /*private*/
     public $_xmlAttributes;
 
     /**
      * Constructs a named array
-     * @param arr $arr (keys must be consecutive integers starting at 0)
-     * @param string $itemName xml element name for values of arr (e.g. image)
+     * @param arr $_content (keys must be consecutive integers starting at 0)
+     * @param string $_itemName xml element name for values of arr (e.g. image)
      * @param array $xmlAttributes of sub-item attributes that will be encoded as
      *      xml attributes instead of xml child elements
      */
-    public function __construct($arr, $itemName, $xmlAttributes = [])
-    {
-        $this->_content = $arr;
-        $this->_itemName = $itemName;
+    public function __construct(
+        public $_content,
+        public $_itemName,
+        $xmlAttributes = []
+    ) {
         $this->_xmlAttributes = array_flip($xmlAttributes);
     }
 }
@@ -103,9 +100,6 @@ class PwgNamedArray
  */
 class PwgNamedStruct
 {
-    /*private*/
-    public $_content;
-
     /*private*/
     public $_xmlAttributes;
 
@@ -118,9 +112,11 @@ class PwgNamedStruct
      *    encoded as xml attributes (if null - automatically prefer xml attributes
      *    whenever possible)
      */
-    public function __construct($content, $xmlAttributes = null, $xmlElements = null)
-    {
-        $this->_content = $content;
+    public function __construct(
+        public $_content,
+        $xmlAttributes = null,
+        $xmlElements = null
+    ) {
         if (isset($xmlAttributes)) {
             $this->_xmlAttributes = array_flip($xmlAttributes);
         } else {
@@ -155,10 +151,9 @@ abstract class PwgRequestHandler
 abstract class PwgResponseEncoder
 {
     /** encodes the web service response to the appropriate output format
-     * @param mixed $response the unencoded result of a service method call
      */
     abstract public function encodeResponse(
-        $response
+        mixed $response
     );
 
     /** default "Content-Type" http header for this kind of response format
@@ -195,7 +190,7 @@ abstract class PwgResponseEncoder
     private static function flatten(&$value)
     {
         if (is_object($value)) {
-            $class = strtolower(@get_class($value));
+            $class = strtolower(@$value::class);
             if ($class == 'pwgnamedarray') {
                 $value = $value->_content;
             }
@@ -307,7 +302,6 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     /**
      * Registers a web service method.
      * @param string $methodName - the name of the method as seen externally
-     * @param mixed $callback - php method to be invoked internally
      * @param array $params - map of allowed parameter names with options
      *    @option mixed default (optional)
      *    @option int flags (optional)
@@ -325,7 +319,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
      */
     public function addMethod(
         $methodName,
-        $callback,
+        mixed $callback,
         $params = [],
         $description = '',
         $include_file = '',
@@ -377,13 +371,13 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     public function getMethodDescription($methodName)
     {
         $desc = @$this->_methods[$methodName]['description'];
-        return isset($desc) ? $desc : '';
+        return $desc ?? '';
     }
 
     public function getMethodSignature($methodName)
     {
         $signature = @$this->_methods[$methodName]['signature'];
-        return isset($signature) ? $signature : [];
+        return $signature ?? [];
     }
 
     /**
@@ -392,7 +386,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     public function getMethodOptions($methodName)
     {
         $options = @$this->_methods[$methodName]['options'];
-        return isset($options) ? $options : [];
+        return $options ?? [];
     }
 
     public static function isPost()
@@ -581,9 +575,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     ) {
         $methods = array_filter(
             $service->_methods,
-            function ($m) {
-                return empty($m['options']['hidden']) || ! $m['options']['hidden'];
-            }
+            fn ($m) => empty($m['options']['hidden']) || ! $m['options']['hidden']
         );
         return [
             'methods' => new PwgNamedArray(array_keys($methods), 'method'),

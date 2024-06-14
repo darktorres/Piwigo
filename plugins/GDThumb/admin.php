@@ -27,11 +27,11 @@ function delete_gdthumb_cache($height)
 global $template, $conf, $page;
 
 load_language('plugin.lang', GDTHUMB_PATH);
-include(dirname(__FILE__) . '/config_default.inc.php');
+include(__DIR__ . '/config_default.inc.php');
 $params = $conf['gdThumb'];
 
 if (isset($_GET['getMissingDerivative'])) {
-    list($max_id, $image_count) = pwg_db_fetch_row(pwg_query('SELECT MAX(id)+1, COUNT(*) FROM ' . IMAGES_TABLE));
+    [$max_id, $image_count] = pwg_db_fetch_row(pwg_query('SELECT MAX(id)+1, COUNT(*) FROM ' . IMAGES_TABLE));
     $start_id = intval($_POST['prev_page']);
     $max_urls = intval($_POST['max_urls']);
     if ($start_id <= 0) {
@@ -177,7 +177,7 @@ if (isset($_POST['submit'])) {
 $css_file = str_replace(
     '/./',
     '/',
-    dirname(dirname(dirname(__FILE__))) . '/' . GDTHEME_PATH . 'admin/css/styles.css'
+    dirname(__FILE__, 3) . '/' . GDTHEME_PATH . 'admin/css/styles.css'
 );
 if (@file_exists($css_file)):
     $custom_css = 'yes';
@@ -219,6 +219,6 @@ $template->assign(
 );
 
 $template->set_filenames([
-    'plugin_admin_content' => dirname(__FILE__) . '/template/admin.tpl',
+    'plugin_admin_content' => __DIR__ . '/template/admin.tpl',
 ]);
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugin_admin_content');

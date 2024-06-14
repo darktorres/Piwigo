@@ -86,7 +86,7 @@ SELECT id, file, path, representative_ext
                     ],
                 ]
             ),
-            'CPL_CONTENT' => empty($_POST['mail_content']) ? '' : stripslashes($_POST['mail_content']),
+            'CPL_CONTENT' => empty($_POST['mail_content']) ? '' : stripslashes((string) $_POST['mail_content']),
         ],
     ];
 
@@ -162,7 +162,7 @@ SELECT
   FROM `' . GROUPS_TABLE . '`
   WHERE id = ' . $_POST['group'] . '
 ;';
-        list($group_name) = pwg_db_fetch_row(pwg_query($query));
+        [$group_name] = pwg_db_fetch_row(pwg_query($query));
 
         $page['infos'][] = l10n('An information email was sent to group "%s"', $group_name);
     }

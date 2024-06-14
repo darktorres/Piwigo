@@ -295,8 +295,7 @@ SET
   show_nb_comments = '" . boolean_to_string($conf['show_nb_comments']) . "',
   show_nb_hits = '" . boolean_to_string($conf['show_nb_hits']) . "',
   enabled_high = '" . boolean_to_string(
-      (isset($conf['newuser_default_enabled_high']) ?
-        $conf['newuser_default_enabled_high'] : true)
+      ($conf['newuser_default_enabled_high'] ?? true)
   ) .
   "'
 WHERE

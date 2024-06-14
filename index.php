@@ -204,7 +204,7 @@ if (empty($page['is_external'])) {
         }
 
         if (empty($page['items'])) {
-            $template->append('no_search_results', htmlspecialchars($page['qsearch_details']['q']));
+            $template->append('no_search_results', htmlspecialchars((string) $page['qsearch_details']['q']));
         } elseif (! empty($page['qsearch_details']['unmatched_terms'])) {
             $template->assign(
                 'no_search_results',
@@ -222,7 +222,7 @@ if (empty($page['is_external'])) {
         $order_idx = pwg_get_session_var('image_order', 0);
 
         // get first order field and direction
-        $first_order = substr($conf['order_by'], 9);
+        $first_order = substr((string) $conf['order_by'], 9);
         if (($pos = strpos($first_order, ',')) !== false) {
             $first_order = substr($first_order, 0, $pos);
         }

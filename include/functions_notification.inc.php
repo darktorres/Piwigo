@@ -159,7 +159,7 @@ function custom_notification_query(
                     break;
             }
             $query = 'SELECT COUNT(DISTINCT ' . $field_id . ') ' . $query . ';';
-            list($count) = pwg_db_fetch_row(pwg_query($query));
+            [$count] = pwg_db_fetch_row(pwg_query($query));
             return $count;
             break;
 
@@ -636,7 +636,7 @@ if (! function_exists('strptime')) {
         if ($fmt != '%Y-%m-%d %H:%M:%S') {
             die('Invalid strptime format ' . $fmt);
         }
-        list($y, $m, $d, $H, $M, $S) = preg_split('/[-: ]/', $date);
+        [$y, $m, $d, $H, $M, $S] = preg_split('/[-: ]/', (string) $date);
         $res = localtime(mktime($H, $M, $S, $m, $d, $y), true);
         return $res;
     }
