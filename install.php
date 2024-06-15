@@ -114,7 +114,7 @@ if (!empty($_GET['dl']) && file_exists(PHPWG_ROOT_PATH.$conf['data_location'].'p
 } 
 
 // Obtain various vars
-$dbhost = (!empty($_POST['dbhost'])) ? $_POST['dbhost'] : 'localhost';
+$dbhost = (!empty($_POST['dbhost'])) ? $_POST['dbhost'] : '';
 $dbuser = (!empty($_POST['dbuser'])) ? $_POST['dbuser'] : '';
 $dbpasswd = (!empty($_POST['dbpasswd'])) ? $_POST['dbpasswd'] : '';
 $dbname = (!empty($_POST['dbname'])) ? $_POST['dbname'] : '';
