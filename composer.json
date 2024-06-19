@@ -30,6 +30,7 @@
     "require-dev": {
         "symplify/easy-coding-standard": "^12.2",
         "rector/rector": "^1.1",
-        "vimeo/psalm": "^5.24"
+        "vimeo/psalm": "^5.24",
+        "phpstan/phpstan": "^1.11"
     }
 }
