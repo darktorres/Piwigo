@@ -137,7 +137,7 @@ jQuery(document).ready(function() {
   {$TABSHEET}
   {/if}
   {if isset($U_HELP)}
-  {include file='include/colorbox.inc.tpl'}
+  {include file='inc/colorbox.inc.tpl'}
 {footer_script}
 <script>
   jQuery('.help-popin').colorbox({ width:"500px" });

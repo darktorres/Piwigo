@@ -1,5 +1,5 @@
 {if empty($load_mode)}{$load_mode='footer'}{/if}
-{include file='include/colorbox.inc.tpl' load_mode=$load_mode}
+{include file='inc/colorbox.inc.tpl' load_mode=$load_mode}
 
 {combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}

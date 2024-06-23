@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -22,7 +22,7 @@ check_status(ACCESS_ADMINISTRATOR);
 
 check_input_parameter('display', $_GET, false, PATTERN_ID);
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 $tabsheet = new tabsheet();
 $tabsheet->set_id('rating');
 $tabsheet->select('rating');

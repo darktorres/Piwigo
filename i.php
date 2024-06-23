@@ -12,14 +12,14 @@ declare(strict_types=1);
 const PHPWG_ROOT_PATH = './';
 
 // fast bootstrap - no db connection
-include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
+include(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
 if (file_exists(
     PHPWG_ROOT_PATH . 'local/config/config.inc.php'
 )) {
     include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
 
-include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
+include(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
@@ -314,8 +314,8 @@ function send_derivative($expires): void
     global $page;
 
     if (isset($_GET['ajaxload']) && $_GET['ajaxload'] == 'true') {
-        include_once(PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php');
-        include_once(PHPWG_ROOT_PATH . 'include/functions_url.inc.php');
+        include_once(PHPWG_ROOT_PATH . 'inc/functions_cookie.inc.php');
+        include_once(PHPWG_ROOT_PATH . 'inc/functions_url.inc.php');
 
         echo json_encode([
             'url' => embellish_url(get_absolute_root_url() . $page['derivative_path']),
@@ -357,9 +357,9 @@ foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $
     $timing[$k] = '';
 }
 
-include_once(PHPWG_ROOT_PATH . '/include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
-include_once(PHPWG_ROOT_PATH . '/include/derivative_params.inc.php');
-include_once(PHPWG_ROOT_PATH . '/include/derivative_std_params.inc.php');
+include_once(PHPWG_ROOT_PATH . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+include_once(PHPWG_ROOT_PATH . '/inc/derivative_params.inc.php');
+include_once(PHPWG_ROOT_PATH . '/inc/derivative_std_params.inc.php');
 
 try {
     pwg_db_connect(
@@ -424,7 +424,7 @@ if (! $need_generate) {
     exit;
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/image.class.php');
 $page['coi'] = null;
 if (! str_contains($page['src_location'], '/pwg_representative/')
     && ! str_contains($page['src_location'], 'themes/')

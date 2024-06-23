@@ -60,7 +60,7 @@ class RVTS
             $page['root_path'] = get_absolute_root_url(false);
             $page['body_id'] = 'scroll';
             global $user, $template, $conf;
-            include(PHPWG_ROOT_PATH . 'include/category_default.inc.php');
+            include(PHPWG_ROOT_PATH . 'inc/category_default.inc.php');
         }
     }
 

@@ -9,17 +9,17 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'include/functions_plugins.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_user.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_session.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_category.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_html.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_tag.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_url.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative_params.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative_std_params.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_plugins.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_user.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_cookie.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_session.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_category.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_html.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_tag.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_url.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/derivative_params.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/derivative_std_params.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/derivative.inc.php');
 
 /**
  * returns the current microsecond since Unix epoch
@@ -610,12 +610,12 @@ INSERT INTO ' . HISTORY_TABLE . '
 
     $history_id = pwg_db_insert_id();
     if ($history_id % 1000 == 0) {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
+        include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_history.inc.php');
         history_summarize(50000);
     }
 
     if ($conf['history_autopurge_every'] > 0 && $history_id % $conf['history_autopurge_every'] == 0) {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
+        include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_history.inc.php');
         history_autopurge();
     }
 
@@ -1106,7 +1106,7 @@ function redirect_html(
         'redirect' => 'redirect.tpl',
     ]);
 
-    include(PHPWG_ROOT_PATH . 'include/page_header.php');
+    include(PHPWG_ROOT_PATH . 'inc/page_header.php');
 
     $template->set_filenames([
         'redirect' => 'redirect.tpl',
@@ -1115,7 +1115,7 @@ function redirect_html(
 
     $template->parse('redirect');
 
-    include(PHPWG_ROOT_PATH . 'include/page_tail.php');
+    include(PHPWG_ROOT_PATH . 'inc/page_tail.php');
 
     exit();
 }
@@ -2317,7 +2317,7 @@ SELECT
         $age = strtotime((string) $voyager['dbnow']) - strtotime((string) $voyager['date_available']);
 
         if ($age > $conf['lounge_max_duration']) {
-            include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+            include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
             empty_lounge();
         }
     }

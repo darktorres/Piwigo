@@ -13,7 +13,7 @@ defined(
     'PHPWG_ROOT_PATH'
 ) || die('Hacking attempt!');
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 $tabsheet = new tabsheet();
 $tabsheet->set_id('rating');
 $tabsheet->select('rating_user');

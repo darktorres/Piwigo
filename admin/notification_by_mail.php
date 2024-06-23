@@ -17,12 +17,12 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_notification_by_mail.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_notification.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_notification_by_mail.inc.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
+include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_notification.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |

@@ -15,7 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'convert 2.3 resize settings into 2.4 derivative settings';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 $dbconf = [];
 $conf_orig = $conf;

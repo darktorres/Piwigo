@@ -10,8 +10,8 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 const PHPWG_ROOT_PATH = './';
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_notification.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_notification.inc.php');
 
 // +-----------------------------------------------------------------------+
 // |                               functions                               |

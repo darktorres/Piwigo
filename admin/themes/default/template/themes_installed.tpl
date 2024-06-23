@@ -1,4 +1,4 @@
-{include file='include/colorbox.inc.tpl'} 
+{include file='inc/colorbox.inc.tpl'} 
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 {combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}

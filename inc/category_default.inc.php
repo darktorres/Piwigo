@@ -148,4 +148,4 @@ $template->assign('thumbnails', $tpl_thumbnails_var);
 $template->assign_var_from_handle('THUMBNAILS', 'index_thumbnails');
 unset($pictures, $selection, $tpl_thumbnails_var);
 $template->clear_assign('thumbnails');
-pwg_debug('end include/category_default.inc.php');
+pwg_debug('end inc/category_default.inc.php');

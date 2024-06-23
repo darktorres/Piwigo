@@ -1,5 +1,5 @@
 
-{include file='include/autosize.inc.tpl'}
+{include file='inc/autosize.inc.tpl'}
 {footer_script}{literal}
 <script>
 jQuery(document).ready(function(){

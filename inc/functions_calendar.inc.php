@@ -115,7 +115,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     $cal_style = $page['chronology_style'];
     $classname = $styles[$cal_style]['classname'];
 
-    include(PHPWG_ROOT_PATH . 'include/' . $styles[$cal_style]['include']);
+    include(PHPWG_ROOT_PATH . 'inc/' . $styles[$cal_style]['include']);
     $calendar = new $classname();
 
     // Retrieve view

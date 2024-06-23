@@ -166,7 +166,7 @@ function begin_users_env_nbm(
 ): void {
     global $user, $lang, $lang_info, $conf, $env_nbm;
 
-    // Save $user, $lang_info and $lang arrays (include/user.inc.php has been executed)
+    // Save $user, $lang_info and $lang arrays (inc/user.inc.php has been executed)
     $env_nbm['save_user'] = $user;
     // Save current language to stack, necessary because $user change during NBM
     switch_lang_to($user['language']);
@@ -200,7 +200,7 @@ function end_users_env_nbm(): void
 {
     global $user, $lang, $lang_info, $env_nbm;
 
-    // Restore $user, $lang_info and $lang arrays (include/user.inc.php has been executed)
+    // Restore $user, $lang_info and $lang arrays (inc/user.inc.php has been executed)
     $user = $env_nbm['save_user'];
     // Restore current language to stack, necessary because $user change during NBM
     switch_lang_back();

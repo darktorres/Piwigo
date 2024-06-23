@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 const PHPWG_ROOT_PATH = './';
 session_cache_limiter('public');
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
@@ -107,7 +107,7 @@ if (! $is_admin_download && pwg_db_num_rows(pwg_query($query)) < 1) {
     do_error(401, 'Access denied');
 }
 
-include_once(PHPWG_ROOT_PATH . 'include/functions_picture.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions_picture.inc.php');
 $file = '';
 switch ($_GET['part']) {
     case 'e':

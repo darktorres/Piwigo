@@ -14,7 +14,7 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 const PHPWG_ROOT_PATH = './';
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 
 /**
  * search an available feed_id
@@ -92,14 +92,14 @@ $template->assign(
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
 if (! isset($themeconf['hide_menu_on']) || ! in_array('theNotificationPage', $themeconf['hide_menu_on'])) {
-    include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
+    include(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
 }
 
 // +-----------------------------------------------------------------------+
 // |                           html code display                           |
 // +-----------------------------------------------------------------------+
-include(PHPWG_ROOT_PATH . 'include/page_header.php');
+include(PHPWG_ROOT_PATH . 'inc/page_header.php');
 trigger_notify('loc_end_notification');
 flush_page_messages();
 $template->pparse('notification');
-include(PHPWG_ROOT_PATH . 'include/page_tail.php');
+include(PHPWG_ROOT_PATH . 'inc/page_tail.php');

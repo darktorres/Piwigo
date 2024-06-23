@@ -19,7 +19,7 @@ if (! defined('PHPWG_IN_UPGRADE') || ! PHPWG_IN_UPGRADE) {
 
 $last_time = get_moment();
 
-// will the user have to edit include/config_local.inc.php for
+// will the user have to edit inc/config_local.inc.php for
 // prefix_thumbnail configuration parameter
 $query = '
 SELECT value
@@ -183,7 +183,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $datas[] = $row;
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 mass_inserts(
     USER_INFOS_TABLE,
     [

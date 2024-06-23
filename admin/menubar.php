@@ -36,13 +36,13 @@ function make_consecutive(&$orders, int $step = 50): void
     }
 }
 
-include_once(PHPWG_ROOT_PATH . 'include/block.class.php');
+include_once(PHPWG_ROOT_PATH . 'inc/block.class.php');
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 $my_base_url = get_root_url() . 'admin.php?page=';
 

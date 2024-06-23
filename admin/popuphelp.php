@@ -16,7 +16,7 @@ declare(strict_types=1);
 const PHPWG_ROOT_PATH = '../';
 const PWG_HELP = true;
 const IN_ADMIN = true;
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -72,4 +72,4 @@ if (isset($_GET['output']) && $_GET['output'] == 'content_only') {
 
 $template->pparse('popuphelp');
 
-include(PHPWG_ROOT_PATH . 'include/page_tail.php');
+include(PHPWG_ROOT_PATH . 'inc/page_tail.php');

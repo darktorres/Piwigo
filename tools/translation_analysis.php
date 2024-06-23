@@ -10,7 +10,7 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 const PHPWG_ROOT_PATH = '../';
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 include_once(PHPWG_ROOT_PATH . 'tools/language/translation_validated.inc.php');
 $languages = array_keys(get_languages());
 sort($languages);

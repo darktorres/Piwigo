@@ -15,7 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'rename language no_NO into nb_NO';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 $query = '
 UPDATE ' . USER_INFOS_TABLE . '

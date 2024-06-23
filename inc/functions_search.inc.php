@@ -1407,7 +1407,7 @@ function get_quick_search_results_no_cache(
     // get inflections for terms
     $inflector = null;
     $lang_code = substr(get_default_language(), 0, 2);
-    include_once(PHPWG_ROOT_PATH . 'include/inflectors/' . $lang_code . '.php');
+    include_once(PHPWG_ROOT_PATH . 'inc/inflectors/' . $lang_code . '.php');
     $class_name = 'Inflector_' . $lang_code;
     if (class_exists($class_name)) {
         $inflector = new $class_name();

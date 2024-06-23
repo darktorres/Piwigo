@@ -153,7 +153,7 @@ str_root = '{'Root'|@translate}';
         <div class="icon-pencil" id="cat-parent">{$CATEGORIES_PARENT_NAV}</div>
       </div>
 
-      {include file='include/album_selector.inc.tpl' 
+      {include file='inc/album_selector.inc.tpl' 
         title={'New parent album'|@translate}
         searchPlaceholder={'Search'|@translate}
         show_root_btn=true
