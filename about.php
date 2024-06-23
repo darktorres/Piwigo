@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\trigger_notify;
+use const Piwigo\inc\ACCESS_GUEST;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

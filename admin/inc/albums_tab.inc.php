@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_root_url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,11 +15,9 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-
 $my_base_url = get_root_url() . 'admin.php?page=';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('albums');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();

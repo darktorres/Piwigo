@@ -2,6 +2,26 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\DerivativeImage;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\create_navigation_bar;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\delete_user_comment;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\validate_user_comment;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\PATTERN_ID;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -74,11 +94,9 @@ $template->assign(
 // | Tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-
 $my_base_url = get_root_url() . 'admin.php?page=';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('comments');
 $tabsheet->select('');
 $tabsheet->assign();

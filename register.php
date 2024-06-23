@@ -2,6 +2,24 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\email_check_format;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\get_ephemeral_key;
+use function Piwigo\inc\get_userid;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\log_user;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\page_forbidden;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\register_user;
+use function Piwigo\inc\set_status_header;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\verify_ephemeral_key;
+use const Piwigo\inc\ACCESS_FREE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

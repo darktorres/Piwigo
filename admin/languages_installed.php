@@ -2,6 +2,18 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Languages;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_default_language;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\redirect;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -21,15 +33,13 @@ if (! is_webmaster()) {
     );
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
-
 $template->set_filenames([
     'languages' => 'languages_installed.tpl',
 ]);
 
 $base_url = get_root_url() . 'admin.php?page=' . $page['page'];
 
-$languages = new languages();
+$languages = new Languages();
 $languages->get_db_languages();
 
 //--------------------------------------------------perform requested actions

@@ -2,6 +2,16 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use const Piwigo\inc\DbLayer\DB_RANDOM_FUNCTION;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -126,7 +136,7 @@ SELECT
 }
 
 if ($page['section'] == 'recent_cats') {
-    usort($categories, 'global_rank_compare');
+    usort($categories, '\Piwigo\inc\global_rank_compare');
 }
 
 if ($categories !== []) {
@@ -265,7 +275,7 @@ if ($categories !== []) {
             ),
             'DESCRIPTION' =>
               trigger_change(
-                  'render_category_literal_description',
+                  '\Piwigo\inc\render_category_literal_description',
                   trigger_change(
                       'render_category_description',
                       $category['comment'],

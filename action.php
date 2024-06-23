@@ -2,6 +2,31 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\SrcImage;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_element_path;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\get_filename_wo_extension;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\original_to_format;
+use function Piwigo\inc\original_to_representative;
+use function Piwigo\inc\pwg_log;
+use function Piwigo\inc\set_status_header;
+use function Piwigo\inc\url_is_remote;
+use const Piwigo\inc\ACCESS_GUEST;
+use const Piwigo\inc\IMG_XXLARGE;
+use const Piwigo\inc\PATTERN_ID;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

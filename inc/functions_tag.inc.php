@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_update;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -98,7 +105,7 @@ SELECT *
         $tags[] = $row;
     }
 
-    usort($tags, 'tag_alpha_compare');
+    usort($tags, '\Piwigo\inc\tag_alpha_compare');
 
     return $tags;
 }
@@ -260,7 +267,7 @@ SELECT t.*, count(*) AS counter
         $tags[] = $row;
     }
 
-    usort($tags, 'tag_alpha_compare');
+    usort($tags, '\Piwigo\inc\tag_alpha_compare');
     return $tags;
 }
 

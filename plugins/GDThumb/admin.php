@@ -2,6 +2,21 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+use function Piwigo\admin\inc\clear_derivative_cache_rec;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\redirect;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }

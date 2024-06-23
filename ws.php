@@ -2,6 +2,24 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\page_forbidden;
+use const Piwigo\inc\ACCESS_FREE;
+use const Piwigo\inc\IMG_THUMB;
+use const Piwigo\inc\WS_PARAM_ACCEPT_ARRAY;
+use const Piwigo\inc\WS_PARAM_FORCE_ARRAY;
+use const Piwigo\inc\WS_PARAM_OPTIONAL;
+use const Piwigo\inc\WS_TYPE_BOOL;
+use const Piwigo\inc\WS_TYPE_FLOAT;
+use const Piwigo\inc\WS_TYPE_ID;
+use const Piwigo\inc\WS_TYPE_INT;
+use const Piwigo\inc\WS_TYPE_NOTNULL;
+use const Piwigo\inc\WS_TYPE_POSITIVE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -851,7 +869,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.getAdminList',
-        'ws_categories_getAdminList',
+        '\Piwigo\inc\ws_functions\ws_categories_getAdminList',
         [
             'search' => [
                 'default' => null,
@@ -1002,7 +1020,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.getAdminList',
-        'ws_tags_getAdminList',
+        '\Piwigo\inc\ws_functions\ws_tags_getAdminList',
         null,
         '<b>Admin only.</b>',
         $ws_functions_root . 'pwg.tags.php',
@@ -1397,7 +1415,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.extensions.checkUpdates',
-        'ws_extensions_checkupdates',
+        '\Piwigo\inc\ws_functions\ws_extensions_checkupdates',
         null,
         'Checks if piwigo or extensions are up to date.',
         $ws_functions_root . 'pwg.extensions.php',

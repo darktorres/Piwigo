@@ -2,6 +2,18 @@
 
 declare(strict_types=1);
 
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\duplicate_index_url;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\script_basename;
+use const Piwigo\inc\EVENT_HANDLER_PRIORITY_NEUTRAL;
+
 /*
 Plugin Name: RV Thumb Scroller
 Version: 12.a

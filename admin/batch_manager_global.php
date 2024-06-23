@@ -2,6 +2,52 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+use function Piwigo\admin\inc\add_tags;
+use function Piwigo\admin\inc\associate_images_to_categories;
+use function Piwigo\admin\inc\compare_image_tag_lists;
+use function Piwigo\admin\inc\delete_element_derivatives;
+use function Piwigo\admin\inc\get_admin_client_cache_keys;
+use function Piwigo\admin\inc\get_image_tag_ids;
+use function Piwigo\admin\inc\get_tag_ids;
+use function Piwigo\admin\inc\get_taglist;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\move_images_to_categories;
+use function Piwigo\admin\inc\update_images_lastmodified;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\create_navigation_bar;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\fill_caddie;
+use function Piwigo\inc\get_cat_info;
+use function Piwigo\inc\get_common_tags;
+use function Piwigo\inc\get_name_from_file;
+use function Piwigo\inc\get_privacy_level_options;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\render_element_name;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\IMG_CUSTOM;
+use const Piwigo\inc\IMG_LARGE;
+use const Piwigo\inc\IMG_SQUARE;
+use const Piwigo\inc\PATTERN_ID;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -573,7 +619,6 @@ $template->assign(
 );
 
 // metadata
-include_once(PHPWG_ROOT_PATH . 'admin/site_reader_local.php');
 $site_reader = new LocalSiteReader('./');
 $used_metadata = implode(', ', $site_reader->get_metadata_attributes());
 

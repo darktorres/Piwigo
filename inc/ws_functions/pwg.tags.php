@@ -2,6 +2,38 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc\ws_functions;
+
+use Piwigo\inc\Error;
+use Piwigo\inc\NamedArray;
+use Piwigo\inc\NamedStruct;
+use function Piwigo\admin\inc\create_tag;
+use function Piwigo\admin\inc\delete_tags;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_insert;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\find_tags;
+use function Piwigo\inc\get_all_tags;
+use function Piwigo\inc\get_available_tags;
+use function Piwigo\inc\get_image_ids_for_tags;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_user_favorites;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\make_picture_url;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\ws_std_get_image_xml_attributes;
+use function Piwigo\inc\ws_std_get_tag_xml_attributes;
+use function Piwigo\inc\ws_std_get_urls;
+use function Piwigo\inc\ws_std_image_sql_filter;
+use function Piwigo\inc\ws_std_image_sql_order;
+use const Piwigo\inc\WS_ERR_INVALID_PARAM;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -22,7 +54,7 @@ function ws_tags_getList(
     if ($params['sort_by_counter']) {
         usort($tags, fn ($a, $b) => -$a['counter'] + $b['counter']);
     } else {
-        usort($tags, 'tag_alpha_compare');
+        usort($tags, '\Piwigo\inc\tag_alpha_compare');
     }
 
     $counter = count($tags);
@@ -39,7 +71,7 @@ function ws_tags_getList(
     }
 
     return [
-        'tags' => new PwgNamedArray(
+        'tags' => new NamedArray(
             $tags,
             'tag',
             ws_std_get_tag_xml_attributes()
@@ -60,7 +92,7 @@ function ws_tags_getAdminList(
     &$service
 ): array {
     return [
-        'tags' => new PwgNamedArray(
+        'tags' => new NamedArray(
             get_all_tags(),
             'tag',
             ws_std_get_tag_xml_attributes()
@@ -189,16 +221,16 @@ SELECT *
                 ];
             }
 
-            $image['tags'] = new PwgNamedArray($image_tags, 'tag', ws_std_get_tag_xml_attributes());
+            $image['tags'] = new NamedArray($image_tags, 'tag', ws_std_get_tag_xml_attributes());
             $images[] = $image;
         }
 
-        usort($images, 'rank_compare');
+        usort($images, '\Piwigo\inc\rank_compare');
         unset($rank_of);
     }
 
     return [
-        'paging' => new PwgNamedStruct(
+        'paging' => new NamedStruct(
             [
                 'page' => $params['page'],
                 'per_page' => $params['per_page'],
@@ -206,7 +238,7 @@ SELECT *
                 'total_count' => $count_set,
             ]
         ),
-        'images' => new PwgNamedArray(
+        'images' => new NamedArray(
             $images,
             'image',
             ws_std_get_image_xml_attributes()
@@ -222,13 +254,13 @@ SELECT *
 function ws_tags_add(
     array $params,
     &$service
-): PwgError|array {
+): Error|array {
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     $creation_output = create_tag($params['name']);
 
     if (isset($creation_output['error'])) {
-        return new PwgError(WS_ERR_INVALID_PARAM, $creation_output['error']);
+        return new Error(WS_ERR_INVALID_PARAM, $creation_output['error']);
     }
 
     pwg_activity('tag', $creation_output['id'], 'add');
@@ -248,12 +280,12 @@ WHERE id = ' . $creation_output['id'] . ';';
     ];
 }
 
-function ws_tags_delete($params, &$service): PwgError|array
+function ws_tags_delete($params, &$service): Error|array
 {
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $query = '
@@ -263,7 +295,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($params['tag_id'])) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
     }
 
     $tag_ids = $params['tag_id'];
@@ -281,12 +313,12 @@ SELECT COUNT(*)
 
 }
 
-function ws_tags_rename($params, &$service): PwgError|array
+function ws_tags_rename($params, &$service): Error|array
 {
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $tag_id = $params['tag_id'];
@@ -300,7 +332,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
 
     $query = '
@@ -313,7 +345,7 @@ SELECT name
     $update = [];
 
     if (in_array($tag_name, $existing_names)) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already token');
+        return new Error(WS_ERR_INVALID_PARAM, 'This name is already token');
     } elseif (! empty($tag_name)) {
         $update = [
             'name' => addslashes((string) $tag_name),
@@ -339,13 +371,13 @@ SELECT name
     ];
 }
 
-function ws_tags_duplicate($params, &$service): PwgError|array
+function ws_tags_duplicate($params, &$service): Error|array
 {
 
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $tag_id = $params['tag_id'];
@@ -359,7 +391,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
 
     $query = '
@@ -369,7 +401,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already taken.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This name is already taken.');
     }
 
     single_insert(
@@ -421,11 +453,11 @@ SELECT image_id
     ];
 }
 
-function ws_tags_merge($params, &$service): PwgError|array
+function ws_tags_merge($params, &$service): Error|array
 {
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $all_tags = $params['merge_tag_id'];
@@ -441,7 +473,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($all_tags)) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
     }
 
     $image_in_merge_tags = [];

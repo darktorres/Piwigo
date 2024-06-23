@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -13,95 +18,6 @@ declare(strict_types=1);
 const PHPWG_PLUGINS_PATH = PHPWG_ROOT_PATH . 'plugins/';
 /** default priority for plugins handlers */
 const EVENT_HANDLER_PRIORITY_NEUTRAL = 50;
-
-/**
- * Used to declare maintenance methods of a plugin.
- */
-class PluginMaintain
-{
-    public function __construct(
-        protected string $plugin_id
-    ) {
-    }
-
-    /**
-     * @param array $errors - used to return error messages
-     */
-    public function install(
-        string $plugin_version,
-        array &$errors = [
-        ]
-    ) {
-    }
-
-    /**
-     * @param array $errors - used to return error messages
-     */
-    public function activate(
-        string $plugin_version,
-        array &$errors = [
-        ]
-    ) {
-    }
-
-    public function deactivate()
-    {
-    }
-
-    public function uninstall()
-    {
-    }
-
-    /**
-     * @param array $errors - used to return error messages
-     */
-    public function update(
-        string $old_version,
-        string $new_version,
-        array &$errors = [
-        ]
-    ) {
-    }
-
-    /**
-     * @removed 2.7
-     */
-    public function autoUpdate(): void
-    {
-        if (is_admin() && ! defined('IN_WS')) {
-            trigger_error('Function PluginMaintain::autoUpdate deprecated', E_USER_WARNING);
-        }
-    }
-}
-
-/**
- * Used to declare maintenance methods of a theme.
- */
-class ThemeMaintain
-{
-    public function __construct(
-        protected string $theme_id
-    ) {
-    }
-
-    /**
-     * @param array $errors - used to return error messages
-     */
-    public function activate(
-        string $theme_version,
-        array &$errors = [
-        ]
-    ) {
-    }
-
-    public function deactivate()
-    {
-    }
-
-    public function delete()
-    {
-    }
-}
 
 /**
  * Register an event handler.

@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_date_to_ts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -13,12 +20,12 @@ if (isset($conf['session_save_handler'])
   && ($conf['session_save_handler'] == 'db')
   && defined('PHPWG_INSTALLED')) {
     session_set_save_handler(
-        'pwg_session_open',
-        'pwg_session_close',
-        'pwg_session_read',
-        'pwg_session_write',
-        'pwg_session_destroy',
-        'pwg_session_gc'
+        '\Piwigo\inc\pwg_session_open',
+        '\Piwigo\inc\pwg_session_close',
+        '\Piwigo\inc\pwg_session_read',
+        '\Piwigo\inc\pwg_session_write',
+        '\Piwigo\inc\pwg_session_destroy',
+        '\Piwigo\inc\pwg_session_gc'
     );
 
     if (function_exists('ini_set')) {

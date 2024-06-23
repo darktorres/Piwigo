@@ -2,6 +2,18 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\get_admin_client_cache_keys;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\l10n;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

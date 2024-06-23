@@ -2,6 +2,61 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\admin\inc\assign_vars_nbm_mail_content;
+use function Piwigo\admin\inc\begin_users_env_nbm;
+use function Piwigo\admin\inc\check_sendmail_timeout;
+use function Piwigo\admin\inc\display_counter_info;
+use function Piwigo\admin\inc\do_subscribe_unsubscribe_notification_by_mail;
+use function Piwigo\admin\inc\end_users_env_nbm;
+use function Piwigo\admin\inc\find_available_check_key;
+use function Piwigo\admin\inc\get_user_notifications;
+use function Piwigo\admin\inc\inc_mail_sent_failed;
+use function Piwigo\admin\inc\inc_mail_sent_success;
+use function Piwigo\admin\inc\quote_check_key_list;
+use function Piwigo\admin\inc\set_user_on_env_nbm;
+use function Piwigo\admin\inc\subscribe_notification_by_mail;
+use function Piwigo\admin\inc\unset_user_on_env_nbm;
+use function Piwigo\admin\inc\unsubscribe_notification_by_mail;
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\create_user_auth_key;
+use function Piwigo\inc\dbLayer\get_boolean;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_gallery_home_url;
+use function Piwigo\inc\get_html_description_recent_post_date;
+use function Piwigo\inc\get_moment;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_recent_post_dates_array;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_title_recent_post_date;
+use function Piwigo\inc\is_autorize_status;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\news;
+use function Piwigo\inc\news_exists;
+use function Piwigo\inc\pwg_mail;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\set_make_full_url;
+use function Piwigo\inc\time_since;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\unset_make_full_url;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\ACCESS_WEBMASTER;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -19,7 +74,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_notification_by_mail.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 include_once(PHPWG_ROOT_PATH . 'inc/functions_notification.inc.php');
 include_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
@@ -522,7 +576,7 @@ $template->assign(
 
 if (is_autorize_status(ACCESS_WEBMASTER)) {
     // TabSheet
-    $tabsheet = new tabsheet();
+    $tabsheet = new Tabsheet();
     $tabsheet->set_id('nbm');
     $tabsheet->select($page['mode']);
     $tabsheet->assign();

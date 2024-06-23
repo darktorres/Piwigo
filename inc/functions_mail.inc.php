@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use PHPMailer\PHPMailer\PHPMailer;
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,7 +12,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use PHPMailer\PHPMailer\PHPMailer;
+use function Piwigo\inc\dbLayer\query2array;
 
 /**
  * Returns the name of the mail sender
@@ -824,7 +827,7 @@ function pwg_mail(
 function move_css_to_body(
     string $content
 ): string {
-    return Pelago\Emogrifier\CssInliner::fromHtml($content)->inlineCss()->render();
+    return \Pelago\Emogrifier\CssInliner::fromHtml($content)->inlineCss()->render();
 }
 
 /**

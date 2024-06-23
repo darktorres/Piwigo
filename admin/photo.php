@@ -2,6 +2,19 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\admin\inc\get_image_infos;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\PATTERN_ID;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -40,15 +53,13 @@ SELECT *
 // | Tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-
 $page['tab'] = 'properties';
 
 if (isset($_GET['tab'])) {
     $page['tab'] = $_GET['tab'];
 }
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('photo');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();

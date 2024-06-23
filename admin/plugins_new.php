@@ -2,6 +2,23 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Plugins;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_branch_from_version;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\time_since;
+use const Piwigo\inc\ACTIVITY_SYSTEM_PLUGIN;
+use const Piwigo\inc\PHPWG_VERSION;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -17,15 +34,13 @@ if (! $conf['enable_extensions_install']) {
     die('Piwigo extensions install/update system is disabled');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
-
 $template->set_filenames([
     'plugins' => 'plugins_new.tpl',
 ]);
 
 $base_url = get_root_url() . 'admin.php?page=' . $page['page'] . '&tab=' . $page['tab'];
 
-$plugins = new plugins();
+$plugins = new Plugins();
 
 //------------------------------------------------------automatic installation
 if (isset($_GET['revision']) && isset($_GET['extension'])) {

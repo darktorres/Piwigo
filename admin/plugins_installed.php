@@ -2,6 +2,19 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Plugins;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\userprefs_get_param;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,8 +25,6 @@ declare(strict_types=1);
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
-
-include_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
 
 $template->set_filenames([
     'plugins' => 'plugins_installed.tpl',
@@ -33,7 +44,7 @@ $base_url = get_root_url() . 'admin.php?page=' . $page['page'];
 $pwg_token = get_pwg_token();
 $action_url = $base_url . '&amp;plugin=' . '%s' . '&amp;pwg_token=' . $pwg_token;
 
-$plugins = new plugins();
+$plugins = new Plugins();
 
 //--------------------------------------------------------Incompatible Plugins
 if (isset($_GET['incompatible_plugins'])) {
@@ -180,7 +191,7 @@ function cmp($a, $b): bool|int
 }
 
 // Stoped plugin sorting for new plugin manager
-// usort($tpl_plugins, 'cmp');
+// usort($tpl_plugins, '\Piwigo\admin\cmp');
 
 $template->assign(
     [

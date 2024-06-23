@@ -2,6 +2,16 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\redirect;
+use const Piwigo\inc\ACCESS_GUEST;
+use const Piwigo\inc\DbLayer\DB_RANDOM_FUNCTION;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

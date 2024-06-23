@@ -2,6 +2,18 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_exif_data;
+use function Piwigo\inc\get_iptc_data;
+use function Piwigo\inc\original_to_representative;
+use const Piwigo\inc\DbLayer\DB_REGEX_OPERATOR;
+use const Piwigo\inc\DbLayer\MASS_UPDATES_SKIP_EMPTY;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -68,7 +80,7 @@ function get_sync_exif_data(
         if (in_array($pwg_key, ['date_creation', 'date_available'])) {
             if (is_numeric($value) && (int) $value == $value) {
                 // UNIX timestamp
-                $exif[$pwg_key] = DateTime::createFromFormat('U', $value)->format('Y-m-d H:i:s');
+                $exif[$pwg_key] = \DateTime::createFromFormat('U', $value)->format('Y-m-d H:i:s');
 
                 if ($exif[$pwg_key] === '0000-00-00' || ! validateDate($exif[$pwg_key])) {
                     $exif[$pwg_key] = null;
@@ -106,7 +118,7 @@ function get_sync_exif_data(
 
 function validateDate($date, string $format = 'Y-m-d H:i:s'): bool
 {
-    $d = DateTime::createFromFormat($format, $date);
+    $d = \DateTime::createFromFormat($format, $date);
     return $d && $d->format($format) == $date;
 }
 

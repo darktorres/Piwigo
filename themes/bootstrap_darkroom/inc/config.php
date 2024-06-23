@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BootstrapDarkroom;
 
+use function Piwigo\inc\conf_update_param;
+
 class Config
 {
     public const CONF_PARAM = 'bootstrap_darkroom';

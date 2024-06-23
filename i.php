@@ -2,6 +2,26 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use Piwigo\admin\inc\Image;
+use Piwigo\inc\DerivativeParams;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SizingParams;
+use function Piwigo\inc\char_to_fraction;
+use function Piwigo\inc\dbLayer\pwg_db_close;
+use function Piwigo\inc\dbLayer\pwg_db_connect;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\derivative_to_url;
+use function Piwigo\inc\embellish_url;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\mkgetdir;
+use const Piwigo\inc\IMG_CUSTOM;
+use const Piwigo\inc\IMG_XXLARGE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -30,7 +50,7 @@ if (file_exists(
     include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
 }
 
-$logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
+$logger = new \Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
 ]);
 
@@ -357,9 +377,9 @@ foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $
     $timing[$k] = '';
 }
 
-include_once(PHPWG_ROOT_PATH . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
-include_once(PHPWG_ROOT_PATH . '/inc/derivative_params.inc.php');
-include_once(PHPWG_ROOT_PATH . '/inc/derivative_std_params.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/SizingParams.php');
+include_once(PHPWG_ROOT_PATH . 'inc/ImageStdParams.php');
 
 try {
     pwg_db_connect(
@@ -368,7 +388,7 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $exception) {
+} catch (\Exception $exception) {
     $logger->error($exception->getMessage());
 }
 
@@ -424,7 +444,6 @@ if (! $need_generate) {
     exit;
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/image.class.php');
 $page['coi'] = null;
 if (! str_contains($page['src_location'], '/pwg_representative/')
     && ! str_contains($page['src_location'], 'themes/')
@@ -444,26 +463,26 @@ SELECT *
             $page['coi'] = $row['coi'];
 
             if (! isset($row['rotation'])) {
-                $page['rotation_angle'] = pwg_image::get_rotation_angle($page['src_path']);
+                $page['rotation_angle'] = Image::get_rotation_angle($page['src_path']);
 
                 single_update(
                     $prefixeTable . 'images',
                     [
-                        'rotation' => pwg_image::get_rotation_code_from_angle($page['rotation_angle']),
+                        'rotation' => Image::get_rotation_code_from_angle($page['rotation_angle']),
                     ],
                     [
                         'id' => $row['id'],
                     ]
                 );
             } else {
-                $page['rotation_angle'] = pwg_image::get_rotation_angle_from_code($row['rotation']);
+                $page['rotation_angle'] = Image::get_rotation_angle_from_code($row['rotation']);
             }
         }
 
         if (! $row) {
             ierror('Db file path not found', 404);
         }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         $logger->error($e->getMessage());
     }
 } else {
@@ -488,7 +507,7 @@ if (! mkgetdir(dirname($page['derivative_path']))) {
 ignore_user_abort(true);
 set_time_limit(0);
 
-$image = new pwg_image($page['src_path']);
+$image = new Image($page['src_path']);
 $timing['load'] = time_step($step);
 
 $changes = 0;
@@ -524,7 +543,7 @@ if ($params->sharpen) {
 
 if ($params->will_watermark($d_size)) {
     $wm = ImageStdParams::get_watermark();
-    $wm_image = new pwg_image(PHPWG_ROOT_PATH . $wm->file);
+    $wm_image = new Image(PHPWG_ROOT_PATH . $wm->file);
     $wm_size = [$wm_image->get_width(), $wm_image->get_height()];
     if ($d_size[0] < $wm_size[0] || $d_size[1] < $wm_size[1]) {
         $wm_scaling_params = SizingParams::classic($d_size[0], $d_size[1]);
@@ -588,7 +607,7 @@ $timing['send'] = time_step($step);
 
 $timing['total'] = time_step($begin);
 
-if ($conf['log_level'] >= Psr\Log\LogLevel::DEBUG) {
+if ($conf['log_level'] >= \Psr\Log\LogLevel::DEBUG) {
     $logger->debug('', [
         'src_path' => basename($page['src_path']),
         'derivative_path' => basename($page['derivative_path']),

@@ -2,6 +2,53 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc\ws_functions;
+
+use Piwigo\inc\Error;
+use Piwigo\inc\NamedArray;
+use Piwigo\inc\NamedStruct;
+use function Piwigo\admin\inc\delete_user;
+use function Piwigo\admin\inc\get_username;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\inc\check_user_favorites;
+use function Piwigo\inc\create_user_auth_key;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\get_boolean;
+use function Piwigo\inc\dbLayer\get_enums;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_insert;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\deactivate_password_reset_key;
+use function Piwigo\inc\deactivate_user_auth_keys;
+use function Piwigo\inc\delete_user_sessions;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_languages;
+use function Piwigo\inc\get_pwg_themes;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\get_user_last_visit_from_history;
+use function Piwigo\inc\get_userid;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\register_user;
+use function Piwigo\inc\time_since;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\userprefs_update_param;
+use function Piwigo\inc\validate_mail_address;
+use function Piwigo\inc\ws_std_get_image_xml_attributes;
+use function Piwigo\inc\ws_std_get_urls;
+use function Piwigo\inc\ws_std_image_sql_order;
+use const Piwigo\inc\PATTERN_ORDER;
+use const Piwigo\inc\WS_ERR_INVALID_PARAM;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -30,11 +77,11 @@ declare(strict_types=1);
 function ws_users_getList(
     array $params,
     &$service
-): PwgError|array {
+): Error|array {
     global $conf;
 
     if (! preg_match(PATTERN_ORDER, (string) $params['order'])) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
+        return new Error(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
     }
 
     $where_clauses = ['1=1'];
@@ -96,7 +143,7 @@ function ws_users_getList(
 
     if (! empty($params['min_level'])) {
         if (! in_array($params['min_level'], $conf['available_permission_levels'])) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
 
         $where_clauses[] = 'ui.level >= ' . $params['min_level'];
@@ -104,7 +151,7 @@ function ws_users_getList(
 
     if (! empty($params['max_level'])) {
         if (! in_array($params['max_level'], $conf['available_permission_levels'])) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
 
         $where_clauses[] = 'ui.level <= ' . $params['max_level'];
@@ -334,14 +381,14 @@ SELECT DISTINCT ';
         $method_result = $users_id_arr;
     } else {
         $method_result = [
-            'paging' => new PwgNamedStruct(
+            'paging' => new NamedStruct(
                 [
                     'page' => $params['page'],
                     'per_page' => $params['per_page'],
                     'count' => count($users),
                 ]
             ),
-            'users' => new PwgNamedArray(array_values($users), 'user'),
+            'users' => new NamedArray(array_values($users), 'user'),
         ];
     }
 
@@ -364,17 +411,17 @@ function ws_users_add(
     $service
 ): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     if (strlen(str_replace(' ', '', $params['username'])) == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
+        return new Error(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
     }
 
     global $conf;
 
     if ($conf['double_password_type_in_admin'] && $params['password'] != $params['password_confirm']) {
-        return new PwgError(WS_ERR_INVALID_PARAM, l10n('The passwords do not match'));
+        return new Error(WS_ERR_INVALID_PARAM, l10n('The passwords do not match'));
     }
 
     $user_id = register_user(
@@ -387,7 +434,7 @@ function ws_users_add(
     );
 
     if (! $user_id) {
-        return new PwgError(WS_ERR_INVALID_PARAM, $errors[0]);
+        return new Error(WS_ERR_INVALID_PARAM, $errors[0]);
     }
 
     return $service->invoke('pwg.users.getList', [
@@ -404,15 +451,15 @@ function ws_users_add(
 function ws_users_getAuthKey(
     array $params,
     &$service
-): PwgError|array {
+): Error|array {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $authkey = create_user_auth_key($params['user_id']);
 
     if ($authkey === false) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'invalid user_id');
+        return new Error(WS_ERR_INVALID_PARAM, 'invalid user_id');
     }
 
     return $authkey;
@@ -427,9 +474,9 @@ function ws_users_getAuthKey(
 function ws_users_delete(
     array $params,
     &$service
-): PwgError|string {
+): Error|string {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     global $conf, $user;
@@ -494,11 +541,11 @@ function ws_users_setInfo(
     $service
 ): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     if (isset($params['username']) && strlen(str_replace(' ', '', $params['username'])) == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
+        return new Error(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
     }
 
     global $conf, $user;
@@ -510,17 +557,17 @@ function ws_users_setInfo(
 
     if (count($params['user_id']) == 1) {
         if (get_username($params['user_id'][0]) === false) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'This user does not exist.');
+            return new Error(WS_ERR_INVALID_PARAM, 'This user does not exist.');
         }
 
         if (! empty($params['username'])) {
             $user_id = get_userid($params['username']);
             if ($user_id && $user_id != $params['user_id'][0]) {
-                return new PwgError(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
+                return new Error(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
             }
 
             if ($params['username'] != strip_tags((string) $params['username'])) {
-                return new PwgError(WS_ERR_INVALID_PARAM, l10n('html tags are not allowed in login'));
+                return new Error(WS_ERR_INVALID_PARAM, l10n('html tags are not allowed in login'));
             }
 
             $updates[$conf['user_fields']['username']] = $params['username'];
@@ -528,7 +575,7 @@ function ws_users_setInfo(
 
         if (! empty($params['email'])) {
             if (($error = validate_mail_address($params['user_id'][0], $params['email'])) != '') {
-                return new PwgError(WS_ERR_INVALID_PARAM, $error);
+                return new Error(WS_ERR_INVALID_PARAM, $error);
             }
 
             $updates[$conf['user_fields']['email']] = $params['email'];
@@ -553,7 +600,7 @@ SELECT
                 );
 
                 if (in_array($params['user_id'][0], $password_protected_users)) {
-                    return new PwgError(403, 'Only webmasters can change password of other "webmaster/admin" users');
+                    return new Error(403, 'Only webmasters can change password of other "webmaster/admin" users');
                 }
             }
 
@@ -563,11 +610,11 @@ SELECT
 
     if (! empty($params['status'])) {
         if (in_array($params['status'], ['webmaster', 'admin']) && ! is_webmaster()) {
-            return new PwgError(403, 'Only webmasters can grant "webmaster/admin" status');
+            return new Error(403, 'Only webmasters can grant "webmaster/admin" status');
         }
 
         if (! in_array($params['status'], ['guest', 'generic', 'normal', 'admin', 'webmaster'])) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid status');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid status');
         }
 
         $protected_users = [
@@ -599,7 +646,7 @@ SELECT
 
     if (! empty($params['level']) || $params['level'] === 0) {
         if (! in_array($params['level'], $conf['available_permission_levels'])) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
 
         $updates_infos['level'] = $params['level'];
@@ -607,7 +654,7 @@ SELECT
 
     if (! empty($params['language'])) {
         if (! in_array($params['language'], array_keys(get_languages()))) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid language');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid language');
         }
 
         $updates_infos['language'] = $params['language'];
@@ -615,7 +662,7 @@ SELECT
 
     if (! empty($params['theme'])) {
         if (! in_array($params['theme'], array_keys(get_pwg_themes()))) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid theme');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid theme');
         }
 
         $updates_infos['theme'] = $params['theme'];
@@ -760,7 +807,7 @@ function ws_users_preferences_set(
     global $user;
 
     if (! preg_match('/^[a-zA-Z0-9_-]+$/', (string) $params['param'])) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid param name #' . $params['param'] . '#');
+        return new Error(WS_ERR_INVALID_PARAM, 'Invalid param name #' . $params['param'] . '#');
     }
 
     $value = stripslashes((string) $params['value']);
@@ -781,11 +828,11 @@ function ws_users_preferences_set(
 function ws_users_favorites_add(
     array $params,
     &$service
-): true|PwgError {
+): true|Error {
     global $user;
 
     if (is_a_guest()) {
-        return new PwgError(403, 'User must be logged in.');
+        return new Error(403, 'User must be logged in.');
     }
 
     // does the image really exist?
@@ -796,7 +843,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(404, 'image_id not found');
+        return new Error(404, 'image_id not found');
     }
 
     single_insert(
@@ -821,11 +868,11 @@ SELECT COUNT(*)
 function ws_users_favorites_remove(
     array $params,
     &$service
-): true|PwgError {
+): true|Error {
     global $user;
 
     if (is_a_guest()) {
-        return new PwgError(403, 'User must be logged in.');
+        return new Error(403, 'User must be logged in.');
     }
 
     // does the image really exist?
@@ -836,7 +883,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(404, 'image_id not found');
+        return new Error(404, 'image_id not found');
     }
 
     $query = '
@@ -909,14 +956,14 @@ SELECT
     $images = array_slice($images, $params['per_page'] * $params['page'], $params['per_page']);
 
     return [
-        'paging' => new PwgNamedStruct(
+        'paging' => new NamedStruct(
             [
                 'page' => $params['page'],
                 'per_page' => $params['per_page'],
                 'count' => $count,
             ]
         ),
-        'images' => new PwgNamedArray(
+        'images' => new NamedArray(
             $images,
             'image',
             ws_std_get_image_xml_attributes()

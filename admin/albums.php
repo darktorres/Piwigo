@@ -2,6 +2,24 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\save_categories_order;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\remove_accents;
+use function Piwigo\inc\time_since;
+use function Piwigo\inc\trigger_change;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -206,7 +224,7 @@ function assocToOrderedTree($assocT): array
         $orderedTree[] = $orderedCat;
     }
 
-    usort($orderedTree, 'cmpCat');
+    usort($orderedTree, '\Piwigo\admin\cmpCat');
     return $orderedTree;
 }
 

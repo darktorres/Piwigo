@@ -2,14 +2,27 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_get_hour;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\prepend_append_array_items;
+use function Piwigo\inc\trigger_notify;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
 // | For copyright and license information, please view the COPYING.txt    |
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
-
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 /**
  * Init tabsheet for history pages
@@ -20,7 +33,7 @@ function history_tabsheet(): void
     global $page, $link_start;
 
     // TabSheet
-    $tabsheet = new tabsheet();
+    $tabsheet = new Tabsheet();
     $tabsheet->set_id('history');
     $tabsheet->select($page['page']);
     $tabsheet->assign();

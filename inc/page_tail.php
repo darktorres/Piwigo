@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use Piwigo\admin\inc\Updates;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -46,13 +50,11 @@ if (! is_a_guest()) {
 //     $check_for_updates = true;
 //   }
 
-//   if ($check_for_updates)
-//   {
-//     include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-//     include_once(PHPWG_ROOT_PATH.'admin/inc/updates.class.php');
-//     $updates = new updates();
-//     $updates->notify_piwigo_new_versions();
-//   }
+//     if ($check_for_updates) {
+//         include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+//         $updates = new Updates();
+//         $updates->notify_piwigo_new_versions();
+//     }
 // }
 
 //------------------------------------------------------------- generation time

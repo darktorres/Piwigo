@@ -2,6 +2,19 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\IMG_SQUARE;
+use const Piwigo\inc\PATTERN_ID;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

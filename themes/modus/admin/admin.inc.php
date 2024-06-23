@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
@@ -9,7 +15,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
 global $template;
 
 include_once(dirname(__FILE__, 2) . '/functions.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 $default_conf = modus_get_default_config();
 
@@ -65,7 +70,7 @@ $tab_codes = array_map(
 
 $page['tab'] = isset($_GET['tab']) && in_array($_GET['tab'], $tab_codes) ? $_GET['tab'] : $tabs[0]['code'];
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 foreach ($tabs as $tab) {
     $tabsheet->add(
         $tab['code'],

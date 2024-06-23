@@ -2,6 +2,19 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\history_summarize;
+use function Piwigo\admin\inc\history_tabsheet;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -107,25 +120,25 @@ ORDER BY
   month DESC';
 
     if ($last !== 'all') {
-        $date = new DateTime();
+        $date = new \DateTime();
         $limit = ($last - 1) * 12 + $date->format('n') - 1;
         $query .=
 ' LIMIT ' . $limit;
         $result = query2array($query . ';');
-        $lastDate = $date->sub(new DateInterval('P' . ($last - 1) . 'Y' . ($date->format('n') - 1) . 'M'));
-        return set_missing_values('month', $result, $lastDate, new DateTime());
+        $lastDate = $date->sub(new \DateInterval('P' . ($last - 1) . 'Y' . ($date->format('n') - 1) . 'M'));
+        return set_missing_values('month', $result, $lastDate, new \DateTime());
     }
 
     if (count(query2array($query . ';')) > 1) {
         return set_missing_values('month', query2array($query . ';'));
     }
 
-    $last_year_date = new DateTime();
+    $last_year_date = new \DateTime();
     return set_missing_values(
         'month',
         query2array($query . ';'),
-        $last_year_date->sub(new DateInterval('P1Y')),
-        new DateTime()
+        $last_year_date->sub(new \DateInterval('P1Y')),
+        new \DateTime()
     );
 
 }
@@ -133,13 +146,13 @@ ORDER BY
 function get_month_stats(): array
 {
     $result = [];
-    $date = new DateTime();
+    $date = new \DateTime();
     $date_last_month = clone $date;
     $date_last_year = clone $date;
     $months = [];
 
-    $date_last_month->sub(new DateInterval('P1M'));
-    $date_last_year->sub(new DateInterval('P1Y'));
+    $date_last_month->sub(new \DateInterval('P1M'));
+    $date_last_year->sub(new \DateInterval('P1Y'));
     $query = '
 SELECT
   year,
@@ -166,7 +179,7 @@ ORDER BY
         $months[$date->format('Y/m/1')][] = $value;
     }
 
-    $actual_date = new DateTime();
+    $actual_date = new \DateTime();
     if (! isset($months[$actual_date->format('Y/m/1')])) {
         $months[$actual_date->format('Y/m/1')][] = [
             'year' => $actual_date->format('Y'),
@@ -178,14 +191,14 @@ ORDER BY
     }
 
     foreach ($months as $key => $val) {
-        $lastDate = new DateTime($key);
-        $lastDate = $lastDate->add(new DateInterval('P1M'));
-        $lastDate = $lastDate->sub(new DateInterval('P1D'));
-        if ($lastDate > new DateTime()) {
-            $lastDate = new DateTime();
+        $lastDate = new \DateTime($key);
+        $lastDate = $lastDate->add(new \DateInterval('P1M'));
+        $lastDate = $lastDate->sub(new \DateInterval('P1D'));
+        if ($lastDate > new \DateTime()) {
+            $lastDate = new \DateTime();
         }
 
-        $result['month'][] = set_missing_values('day', $val, new DateTime($key), $lastDate);
+        $result['month'][] = set_missing_values('day', $val, new \DateTime($key), $lastDate);
     }
 
     $query = '
@@ -276,7 +289,7 @@ function set_missing_values(
     //Fill an empty array with all the dates
     while ($date <= $date_end) {
         $result[$date->format($date_format)] = 0;
-        $date->add(new DateInterval($date_add));
+        $date->add(new \DateInterval($date_add));
     }
 
     //Overload with database rows
@@ -292,7 +305,7 @@ function set_missing_values(
 }
 
 //Get a DateTime object for a database row
-function get_date_object($row): DateTime
+function get_date_object($row): \DateTime
 {
     $date_string = $row['year'];
     if ($row['month'] != null) {
@@ -307,37 +320,37 @@ function get_date_object($row): DateTime
         $date_string .= '-1';
     }
 
-    return new DateTime($date_string);
+    return new \DateTime($date_string);
 }
 
 // +-----------------------------------------------------------------------+
 // | Send data to template                                                 |
 // +-----------------------------------------------------------------------+
 
-$actual_date = new DateTime();
-$actual_date->add(new DateInterval('PT1S'));
+$actual_date = new \DateTime();
+$actual_date->add(new \DateInterval('PT1S'));
 
-$first_date = new DateTime();
+$first_date = new \DateTime();
 $last_hours = set_missing_values(
     'hour',
     get_last(72, 'hour'),
-    $first_date->sub(new DateInterval('P3D')),
+    $first_date->sub(new \DateInterval('P3D')),
     $actual_date
 );
 
-$first_date = new DateTime();
+$first_date = new \DateTime();
 $last_days = set_missing_values(
     'day',
     get_last(90, 'day'),
-    $first_date->sub(new DateInterval('P90D')),
+    $first_date->sub(new \DateInterval('P90D')),
     $actual_date
 );
 
-$first_date = new DateTime();
+$first_date = new \DateTime();
 $last_months = set_missing_values(
     'month',
     get_last(60, 'month'),
-    $first_date->sub(new DateInterval('P60M')),
+    $first_date->sub(new \DateInterval('P60M')),
     $actual_date
 );
 
@@ -347,12 +360,12 @@ if (count(get_last()) > 1) {
         get_last()
     );
 } else {
-    $last_year_date = new DateTime();
+    $last_year_date = new \DateTime();
     $last_years = set_missing_values(
         'year',
         get_last(),
-        $last_year_date->sub(new DateInterval('P1Y')),
-        new DateTime()
+        $last_year_date->sub(new \DateInterval('P1Y')),
+        new \DateTime()
     );
 }
 

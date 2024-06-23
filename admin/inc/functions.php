@@ -2,6 +2,52 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\conf_delete_param;
+use function Piwigo\inc\conf_get_param;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\create_user_infos;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_concat;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_insert;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\delete_user_sessions;
+use function Piwigo\inc\derivative_to_url;
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\generate_key;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\get_element_path;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\mkgetdir;
+use function Piwigo\inc\original_to_format;
+use function Piwigo\inc\original_to_representative;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\url_is_remote;
+use const Piwigo\inc\DbLayer\DB_RANDOM_FUNCTION;
+use const Piwigo\inc\IMG_CUSTOM;
+use const Piwigo\inc\MKGETDIR_DIE_ON_ERROR;
+use const Piwigo\inc\MKGETDIR_PROTECT_HTACCESS;
+use const Piwigo\inc\MKGETDIR_RECURSIVE;
+use const Piwigo\inc\PHPWG_URL;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -823,7 +869,7 @@ SELECT
   WHERE id IN (' . implode(',', $categories) . ')
 ;';
         $all_categories = query2array($query);
-        usort($all_categories, 'global_rank_compare');
+        usort($all_categories, '\Piwigo\inc\global_rank_compare');
 
         foreach ($all_categories as $cat) {
             $is_top = true;
@@ -2570,9 +2616,9 @@ function get_taglist(
         }
     }
 
-    usort($taglist, 'tag_alpha_compare');
+    usort($taglist, '\Piwigo\inc\tag_alpha_compare');
     if ($altlist !== []) {
-        usort($altlist, 'tag_alpha_compare');
+        usort($altlist, '\Piwigo\inc\tag_alpha_compare');
         $taglist = array_merge($taglist, $altlist);
     }
 

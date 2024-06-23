@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -55,7 +57,7 @@ if (defined('IN_WS')
     false
 )) {
     include_once(PHPWG_ROOT_PATH . 'inc/ws_init.inc.php');
-    $service->sendResponse(new PwgError(999, 'Invalid username/password'));
+    $service->sendResponse(new Error(999, 'Invalid username/password'));
     exit();
 }
 

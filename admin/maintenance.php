@@ -2,6 +2,16 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -14,7 +24,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/image.class.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -30,7 +39,6 @@ if (isset($_GET['action'])) {
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 $my_base_url = get_root_url() . 'admin.php?page=';
 
 if (isset($_GET['tab'])) {
@@ -40,7 +48,7 @@ if (isset($_GET['tab'])) {
     $page['tab'] = 'actions';
 }
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('maintenance');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();

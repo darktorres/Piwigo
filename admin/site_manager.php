@@ -2,6 +2,25 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\admin\inc\delete_site;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\url_is_remote;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -40,10 +59,9 @@ $template->set_filenames([
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 $my_base_url = get_root_url() . 'admin.php?page=';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('site_update');
 $tabsheet->select('site_maager');
 $tabsheet->assign();

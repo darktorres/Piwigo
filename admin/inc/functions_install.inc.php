@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_check_version;
+use function Piwigo\inc\dbLayer\pwg_db_connect;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -50,8 +57,7 @@ function execute_sqlfile(
  */
 function activate_core_themes(): void
 {
-    include_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
-    $themes = new themes();
+    $themes = new Themes();
     foreach (array_keys($themes->fs_themes) as $theme_id) {
         if (in_array($theme_id, ['modus', 'smartpocket'])) {
             $themes->perform_action('activate', $theme_id);
@@ -64,9 +70,7 @@ function activate_core_themes(): void
  */
 function activate_core_plugins(): void
 {
-    include_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
-
-    $plugins = new plugins();
+    $plugins = new Plugins();
 
     foreach (array_keys($plugins->fs_plugins) as $plugin_id) {
         if (in_array($plugin_id, [])) {
@@ -93,7 +97,7 @@ function install_db_connect(
             $_POST['dbname']
         );
         pwg_db_check_version();
-    } catch (Exception $exception) {
+    } catch (\Exception $exception) {
         $errors[] = l10n($exception->getMessage());
     }
 }

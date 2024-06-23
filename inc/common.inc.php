@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\admin\inc\check_upgrade_feed;
+use function Piwigo\inc\dbLayer\my_error;
+use function Piwigo\inc\dbLayer\pwg_db_connect;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -38,15 +44,15 @@ if (! function_exists(
     }
 
     if (is_array($_GET)) {
-        array_walk_recursive($_GET, 'sanitize_mysql_kv');
+        array_walk_recursive($_GET, '\Piwigo\inc\sanitize_mysql_kv');
     }
 
     if (is_array($_POST)) {
-        array_walk_recursive($_POST, 'sanitize_mysql_kv');
+        array_walk_recursive($_POST, '\Piwigo\inc\sanitize_mysql_kv');
     }
 
     if (is_array($_COOKIE)) {
-        array_walk_recursive($_COOKIE, 'sanitize_mysql_kv');
+        array_walk_recursive($_COOKIE, '\Piwigo\inc\sanitize_mysql_kv');
     }
 }
 
@@ -109,8 +115,6 @@ if ($conf['session_gc_probability'] > 0) {
 
 include(PHPWG_ROOT_PATH . 'inc/constants.php');
 include(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
-include(PHPWG_ROOT_PATH . 'inc/template.class.php');
-include(PHPWG_ROOT_PATH . 'inc/cache.class.php');
 
 $persistent_cache = new PersistentFileCache();
 
@@ -122,13 +126,13 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $exception) {
+} catch (\Exception $exception) {
     my_error(l10n($exception->getMessage()), true);
 }
 
 load_conf_from_db();
 
-$logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
+$logger = new \Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
 ]);
 
@@ -278,7 +282,7 @@ if (isset($conf['header_notes'])) {
 // default event handlers
 add_event_handler(
     'render_category_literal_description',
-    'render_category_literal_description'
+    '\Piwigo\inc\render_category_literal_description'
 );
 if (! $conf['allow_html_descriptions']) {
     add_event_handler('render_category_description', 'nl2br');
@@ -289,7 +293,7 @@ add_event_handler('render_comment_author', 'strip_tags');
 add_event_handler('render_tag_url', 'str2url');
 add_event_handler(
     'blockmanager_register_blocks',
-    'register_default_menubar_blocks',
+    '\Piwigo\inc\register_default_menubar_blocks',
     EVENT_HANDLER_PRIORITY_NEUTRAL - 1
 );
 if (! empty($conf['original_url_protection'])) {

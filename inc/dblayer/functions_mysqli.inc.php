@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc\DbLayer;
+
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\micro_seconds;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -41,13 +47,13 @@ function pwg_db_connect(
         [$host, $port] = explode(':', $host);
     }
 
-    $mysqli = new mysqli($host, $user, $password, '', $port, $socket);
+    $mysqli = new \mysqli($host, $user, $password, '', $port, $socket);
     if (mysqli_connect_error()) {
-        throw new Exception("Can't connect to server");
+        throw new \Exception("Can't connect to server");
     }
 
-    if ($database !== '' && $database !== '0' && ! $mysqli->select_db($database)) {
-        throw new Exception('Connection to server succeed, but it was impossible to connect to database');
+    if (! empty($database) && ! $mysqli->select_db($database)) {
+        throw new \Exception('Connection to server succeed, but it was impossible to connect to database');
     }
 
     // MySQL 5.7 default settings forbid to select a colum that is not in the
@@ -98,7 +104,7 @@ function pwg_get_db_version(): string
 /**
  * Execute a query
  */
-function pwg_query(string $query): mysqli_result|bool
+function pwg_query(string $query): \mysqli_result|bool
 {
     global $mysqli, $conf, $page, $debug, $t2;
 

@@ -2,6 +2,18 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\get_boolean;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use const Piwigo\inc\DbLayer\DB_RANDOM_FUNCTION;
+use const Piwigo\inc\DbLayer\DB_REGEX_OPERATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -134,7 +146,7 @@ WHERE ' . $where . '
         }
     }
 
-    usort($cats, 'global_rank_compare');
+    usort($cats, '\Piwigo\inc\global_rank_compare');
 
     // Update filtered data
     if (function_exists('update_cats_with_filtered_data')) {
@@ -279,7 +291,7 @@ function display_select_cat_wrapper(
     $fullname = true
 ): void {
     $categories = query2array($query);
-    usort($categories, 'global_rank_compare');
+    usort($categories, '\Piwigo\inc\global_rank_compare');
     display_select_categories($categories, $selecteds, $blockname, $fullname);
 }
 
@@ -511,7 +523,7 @@ FROM ' . CATEGORIES_TABLE . ' as c
     // it is important to logically sort the albums because some operations
     // (like removal) rely on this logical order. Child album doesn't always
     // have a bigger id than its parent (if it was moved afterwards).
-    uasort($cats, 'global_rank_compare');
+    uasort($cats, '\Piwigo\inc\global_rank_compare');
 
     foreach ($cats as $cat) {
         if (! isset($cat['id_uppercat'])) {
@@ -730,7 +742,7 @@ SELECT
   WHERE id IN (' . implode(',', array_keys($cat_ids)) . ')
 ;';
     $cats = query2array($query);
-    usort($cats, 'global_rank_compare');
+    usort($cats, '\Piwigo\inc\global_rank_compare');
 
     $index_of_cat = [];
 

@@ -2,6 +2,25 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\SrcImage;
+use function Piwigo\admin\inc\get_image_infos;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\userprefs_get_param;
+use const Piwigo\inc\IMG_SQUARE;
+use const Piwigo\inc\PATTERN_ID;
+use const Piwigo\inc\PHPWG_URL;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -65,7 +84,7 @@ SELECT COUNT(*)
 ;';
     [$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
-    $uagent_obj = new uagent_info();
+    $uagent_obj = new \uagent_info();
     // To see the mobile app promote, the account must have 2 weeks ancient, 3 albums created and 30 photos uploaded
     $template->assign(
         'PROMOTE_MOBILE_APPS',

@@ -1,4 +1,24 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\DerivativeParams;
+use Piwigo\inc\ImageRect;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\cookie_path;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_device;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\time_since;
+use const Piwigo\inc\EVENT_HANDLER_PRIORITY_NEUTRAL;
+use const Piwigo\inc\IMG_SQUARE;
+use const Piwigo\inc\IMG_THUMB;
 
 /*
 Theme Name: modus

@@ -2,6 +2,23 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_insert;
+use function Piwigo\inc\dbLayer\single_update;
+
+require_once __DIR__ . '/functions_plugins.inc.php';
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -852,7 +869,7 @@ function create_user_infos(
             }
 
             $insert = array_merge(
-                array_map('pwg_db_real_escape_string', $default_user),
+                array_map('\Piwigo\inc\DbLayer\pwg_db_real_escape_string', $default_user),
                 [
                     'user_id' => $user_id,
                     'status' => $status,
@@ -1016,7 +1033,7 @@ function try_log_user(
     return trigger_change('try_log_user', false, $username, $password, $remember_me);
 }
 
-add_event_handler('try_log_user', 'pwg_login');
+add_event_handler('try_log_user', '\Piwigo\inc\pwg_login');
 
 /**
  * Default method for user login, can be overwritten with 'try_log_user' trigger.

@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\BlockManager;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -28,7 +37,7 @@ function abs_fn_cmp($a, $b): float|int
 
 function make_consecutive(&$orders, int $step = 50): void
 {
-    uasort($orders, 'abs_fn_cmp');
+    uasort($orders, '\Piwigo\admin\abs_fn_cmp');
     $crt = 1;
     foreach ($orders as $id => $pos) {
         $orders[$id] = $step * ($pos < 0 ? -$crt : $crt);
@@ -36,17 +45,13 @@ function make_consecutive(&$orders, int $step = 50): void
     }
 }
 
-include_once(PHPWG_ROOT_PATH . 'inc/block.class.php');
-
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-
 $my_base_url = get_root_url() . 'admin.php?page=';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('menus');
 $tabsheet->select('');
 $tabsheet->assign();

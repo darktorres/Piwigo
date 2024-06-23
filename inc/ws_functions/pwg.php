@@ -2,6 +2,47 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc\ws_functions;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\Error;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\NamedArray;
+use Piwigo\inc\SrcImage;
+use function Piwigo\admin\inc\get_admins;
+use function Piwigo\admin\inc\get_cache_size_derivatives;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\get_enums;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_changes;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\derivative_to_url;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\logout_user;
+use function Piwigo\inc\make_picture_url;
+use function Piwigo\inc\pwg_log;
+use function Piwigo\inc\pwg_set_cookie_var;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\try_log_user;
+use function Piwigo\inc\update_rating_score;
+use function Piwigo\inc\ws_std_image_sql_filter;
+use const Piwigo\inc\IMG_SQUARE;
+use const Piwigo\inc\PHPWG_VERSION;
+use const Piwigo\inc\WS_ERR_INVALID_PARAM;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -20,7 +61,7 @@ declare(strict_types=1);
 function ws_getMissingDerivatives(
     array $params,
     &$service
-): PwgError|array {
+): Error|array {
     global $conf;
 
     if (empty($params['types'])) {
@@ -28,7 +69,7 @@ function ws_getMissingDerivatives(
     } else {
         $types = array_intersect(array_keys(ImageStdParams::get_defined_type_map()), $params['types']);
         if (count($types) == 0) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid types');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid types');
         }
     }
 
@@ -181,7 +222,7 @@ function ws_getInfos(
     }
 
     return [
-        'infos' => new PwgNamedArray($output, 'item'),
+        'infos' => new NamedArray($output, 'item'),
     ];
 }
 
@@ -259,7 +300,7 @@ function ws_getCacheSize(
     conf_update_param('cache_sizes', $output, true);
 
     return [
-        'infos' => new PwgNamedArray($output, 'item'),
+        'infos' => new NamedArray($output, 'item'),
     ];
 }
 
@@ -340,12 +381,12 @@ DELETE FROM ' . RATE_TABLE . '
 function ws_session_login(
     array $params,
     &$service
-): true|PwgError {
+): true|Error {
     if (try_log_user($params['username'], $params['password'], false)) {
         return true;
     }
 
-    return new PwgError(999, 'Invalid username/password');
+    return new Error(999, 'Invalid username/password');
 }
 
 /**
@@ -729,7 +770,7 @@ SELECT rules
         $page['search'],
         $types
     );
-    usort($data, 'history_compare');
+    usort($data, '\Piwigo\admin\inc\history_compare');
 
     $page['nb_lines'] = count($data);
 

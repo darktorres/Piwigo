@@ -2,6 +2,25 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\display_select_cat_wrapper;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\get_available_tags;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_notify;
+use const Piwigo\inc\ACCESS_GUEST;
+use const Piwigo\inc\PATTERN_ID;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -187,7 +206,7 @@ $template->assign(
 $available_tags = get_available_tags();
 
 if ($available_tags !== []) {
-    usort($available_tags, 'tag_alpha_compare');
+    usort($available_tags, '\Piwigo\inc\tag_alpha_compare');
 
     $template->assign('TAGS', $available_tags);
 }

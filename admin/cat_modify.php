@@ -2,6 +2,30 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\get_admin_client_cache_keys;
+use function Piwigo\admin\inc\get_category_representant_properties;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\time_since;
+use function Piwigo\inc\trigger_notify;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\IMG_SMALL;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

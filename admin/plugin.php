@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use function Piwigo\inc\check_status;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\PHPWG_PLUGINS_PATH;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

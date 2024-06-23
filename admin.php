@@ -2,6 +2,29 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use function Piwigo\admin\inc\fs_quick_check;
+use function Piwigo\admin\inc\get_active_menu;
+use function Piwigo\admin\inc\get_orphans;
+use function Piwigo\admin\inc\get_photos_no_md5sum;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\pwg_URL;
+use function Piwigo\admin\inc\sync_users;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\get_gallery_home_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\userprefs_get_param;
+use function Piwigo\inc\userprefs_update_param;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -18,7 +41,6 @@ const IN_ADMIN = true;
 
 include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_plugins.inc.php');
 include_once(PHPWG_ROOT_PATH . 'admin/inc/add_core_tabs.inc.php');
 
 trigger_notify('loc_begin_admin');

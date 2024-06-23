@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\get_root_url;
+use const Piwigo\inc\PHPWG_PLUGINS_PATH;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

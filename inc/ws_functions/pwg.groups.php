@@ -2,6 +2,27 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc\ws_functions;
+
+use Piwigo\inc\Error;
+use Piwigo\inc\NamedArray;
+use Piwigo\inc\NamedStruct;
+use function Piwigo\admin\inc\delete_groups;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_insert;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\pwg_activity;
+use const Piwigo\inc\PATTERN_ORDER;
+use const Piwigo\inc\WS_ERR_INVALID_PARAM;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -18,9 +39,9 @@ declare(strict_types=1);
 function ws_groups_getList(
     array $params,
     &$service
-): PwgError|array {
+): Error|array {
     if (! preg_match(PATTERN_ORDER, (string) $params['order'])) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
+        return new Error(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
     }
 
     $where_clauses = ['1=1'];
@@ -49,12 +70,12 @@ SELECT
     $groups = query2array($query);
 
     return [
-        'paging' => new PwgNamedStruct([
+        'paging' => new NamedStruct([
             'page' => $params['page'],
             'per_page' => $params['per_page'],
             'count' => count($groups),
         ]),
-        'groups' => new PwgNamedArray($groups, 'group'),
+        'groups' => new NamedArray($groups, 'group'),
     ];
 }
 
@@ -78,11 +99,11 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
     }
 
     if (strlen(str_replace(' ', '', $params['name'])) == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
+        return new Error(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
     }
 
     // creating the group
@@ -111,9 +132,9 @@ SELECT COUNT(*)
 function ws_groups_delete(
     array $params,
     &$service
-): PwgError|PwgNamedArray {
+): Error|PwgNamedArray {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
@@ -121,7 +142,7 @@ function ws_groups_delete(
 
     invalidate_user_cache();
 
-    return new PwgNamedArray($groupnames, 'group_deleted');
+    return new NamedArray($groupnames, 'group_deleted');
 }
 
 /**
@@ -136,11 +157,11 @@ function ws_groups_setInfo(
     $service
 ): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     if (isset($params['name']) && strlen(str_replace(' ', '', $params['name'])) == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
+        return new Error(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
     }
 
     $updates = [];
@@ -153,7 +174,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
     if (! empty($params['name'])) {
@@ -168,7 +189,7 @@ SELECT COUNT(*)
 ;';
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count != 0) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
+            return new Error(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
         }
 
         $updates['name'] = $params['name'];
@@ -204,7 +225,7 @@ function ws_groups_addUser(
     $service
 ): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     // does the group exist ?
@@ -215,7 +236,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
     $inserts = [];
@@ -252,10 +273,10 @@ SELECT COUNT(*)
 function ws_groups_merge(
     array $params,
     $service
-): PwgError|array {
+): Error|array {
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $all_groups = $params['merge_group_id'];
@@ -274,7 +295,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($all_groups)) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'All groups does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'All groups does not exist.');
     }
 
     $user_in_merge_groups = [];
@@ -350,7 +371,7 @@ function ws_groups_duplicate(
 ): mixed {
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $query = '
@@ -360,7 +381,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
     }
 
     $query = '
@@ -370,7 +391,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
     $query = '
@@ -443,7 +464,7 @@ function ws_groups_deleteUser(
     $service
 ): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     // does the group exist ?
@@ -454,7 +475,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
+        return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
     $query = '

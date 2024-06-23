@@ -2,6 +2,20 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\my_error;
+use function Piwigo\inc\dbLayer\pwg_db_check_version;
+use function Piwigo\inc\dbLayer\pwg_db_connect;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\l10n;
+use const Piwigo\inc\PHPWG_DEFAULT_TEMPLATE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -159,8 +173,7 @@ SELECT
             [$counter] = pwg_db_fetch_row(pwg_query($query));
             if ($counter < 1) {
                 // we need to activate theme first
-                include_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
-                $themes = new themes();
+                $themes = new Themes();
                 $themes->perform_action('activate', PHPWG_DEFAULT_TEMPLATE);
             }
 
@@ -302,7 +315,7 @@ function upgrade_db_connect(): void
             $conf['db_base']
         );
         pwg_db_check_version();
-    } catch (Exception $exception) {
+    } catch (\Exception $exception) {
         my_error(l10n($exception->getMessage()), true);
     }
 }

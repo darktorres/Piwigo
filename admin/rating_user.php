@@ -2,6 +2,22 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_autorize_status;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_picture_url;
+use const Piwigo\inc\ACCESS_CLASSIC;
+use const Piwigo\inc\IMG_SQUARE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -13,8 +29,7 @@ defined(
     'PHPWG_ROOT_PATH'
 ) || die('Hacking attempt!');
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('rating');
 $tabsheet->select('rating_user');
 $tabsheet->assign();

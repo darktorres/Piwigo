@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -38,7 +44,7 @@ SELECT *
         $pictures[] = $row;
     }
 
-    usort($pictures, 'rank_compare');
+    usort($pictures, '\Piwigo\inc\rank_compare');
     unset($rank_of);
 }
 

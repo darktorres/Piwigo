@@ -2,6 +2,25 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+use function Piwigo\admin\inc\save_images_order;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_cat_info;
+use function Piwigo\inc\get_filename_wo_extension;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\IMG_SQUARE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

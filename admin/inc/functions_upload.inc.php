@@ -2,6 +2,36 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin\inc;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\SrcImage;
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\conf_get_param;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_insert;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\get_filename_wo_extension;
+use function Piwigo\inc\get_name_from_file;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\original_to_representative;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\secure_directory;
+use function Piwigo\inc\set_make_full_url;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\unset_make_full_url;
+use const Piwigo\inc\IMG_MEDIUM;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,7 +40,6 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/image.class.php');
 
 // add default event handler for image and thumbnail resize
 // add_event_handler('upload_image_resize', 'pwg_image_resize');
@@ -234,14 +263,14 @@ SELECT
         $representative_ext = null;
     }
 
-    if (pwg_image::get_library() != 'gd' && $conf['original_resize']) {
+    if (Image::get_library() != 'gd' && $conf['original_resize']) {
         $need_resize = need_resize(
             $file_path,
             $conf['original_resize_maxwidth'],
             $conf['original_resize_maxheight']
         );
         if ($need_resize) {
-            $img = new pwg_image($file_path);
+            $img = new Image($file_path);
 
             $img->pwg_resize(
                 $file_path,
@@ -257,8 +286,8 @@ SELECT
 
     // we need to save the rotation angle in the database to compute
     // width/height of "multisizes"
-    $rotation_angle = pwg_image::get_rotation_angle($file_path);
-    $rotation = pwg_image::get_rotation_code_from_angle($rotation_angle);
+    $rotation_angle = Image::get_rotation_angle($file_path);
+    $rotation = Image::get_rotation_code_from_angle($rotation_angle);
 
     $file_infos = pwg_image_infos($file_path);
 
@@ -463,7 +492,7 @@ function upload_file_pdf($representative_ext, $file_path): mixed
         return $representative_ext;
     }
 
-    if (pwg_image::get_library() != 'ext_imagick') {
+    if (Image::get_library() != 'ext_imagick') {
         return $representative_ext;
     }
 
@@ -513,7 +542,7 @@ function upload_file_tiff($representative_ext, $file_path): mixed
         return $representative_ext;
     }
 
-    if (pwg_image::get_library() != 'ext_imagick') {
+    if (Image::get_library() != 'ext_imagick') {
         return $representative_ext;
     }
 

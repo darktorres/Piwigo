@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use function Piwigo\inc\pwg_set_session_var;
+
 /*
 Theme Name: Bootstrap Darkroom
 Version: 2.5.17

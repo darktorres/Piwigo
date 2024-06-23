@@ -2,6 +2,23 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\admin\inc\delete_orphan_tags;
+use function Piwigo\admin\inc\get_orphan_tags;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_change;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -20,11 +37,9 @@ check_status(ACCESS_ADMINISTRATOR);
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-
 $my_base_url = get_root_url() . 'admin.php?page=';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('tags');
 $tabsheet->select('');
 $tabsheet->assign();
@@ -143,7 +158,7 @@ while ($tag = pwg_db_fetch_assoc($result)) {
     $all_tags[] = $tag;
 }
 
-usort($all_tags, 'tag_alpha_compare');
+usort($all_tags, '\Piwigo\inc\tag_alpha_compare');
 
 $template->assign(
     [

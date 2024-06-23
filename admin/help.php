@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\trigger_notify;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,7 +19,6 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -22,7 +30,7 @@ $selected = null;
 
 $selected = $_GET['section'] ?? 'add_photos';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('help');
 $tabsheet->select($selected);
 $tabsheet->assign();

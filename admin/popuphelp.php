@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\trigger_change;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

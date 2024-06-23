@@ -2,6 +2,28 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\create_virtual_category;
+use function Piwigo\admin\inc\delete_categories;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\update_global_rank;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_cat_display_name_from_id;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use const Piwigo\inc\ACCESS_ADMINISTRATOR;
+use const Piwigo\inc\PATTERN_ID;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

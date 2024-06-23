@@ -2,6 +2,19 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc\ws_functions;
+
+use Piwigo\inc\Error;
+use Piwigo\inc\NamedArray;
+use function Piwigo\admin\inc\add_permission_on_category;
+use function Piwigo\admin\inc\get_uppercat_ids;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_subcat_ids;
+use const Piwigo\inc\WS_ERR_INVALID_PARAM;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -19,10 +32,10 @@ declare(strict_types=1);
 function ws_permissions_getList(
     array $params,
     &$service
-): array|PwgError {
+): array|Error {
     $my_params = array_intersect(array_keys($params), ['cat_id', 'group_id', 'user_id']);
     if (count($my_params) > 1) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Too many parameters, provide cat_id OR user_id OR group_id');
+        return new Error(WS_ERR_INVALID_PARAM, 'Too many parameters, provide cat_id OR user_id OR group_id');
     }
 
     $cat_filter = '';
@@ -109,7 +122,7 @@ SELECT group_id, cat_id
     unset($cat);
 
     return [
-        'categories' => new PwgNamedArray(
+        'categories' => new NamedArray(
             array_values($perms),
             'category',
             ['id']
@@ -130,7 +143,7 @@ function ws_permissions_add(
     $service
 ): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
@@ -194,7 +207,7 @@ function ws_permissions_remove(
     $service
 ): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');

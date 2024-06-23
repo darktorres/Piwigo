@@ -2,6 +2,40 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\deactivate_password_reset_key;
+use function Piwigo\inc\deactivate_user_auth_keys;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\generate_key;
+use function Piwigo\inc\get_gallery_home_url;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_userid;
+use function Piwigo\inc\get_userid_by_email;
+use function Piwigo\inc\getuserdata;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\is_generic;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_mail;
+use function Piwigo\inc\pwg_password_hash;
+use function Piwigo\inc\pwg_password_verify;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\set_make_full_url;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\unset_make_full_url;
+use const Piwigo\inc\ACCESS_FREE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -2,6 +2,23 @@
 
 declare(strict_types=1);
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\cookie_path;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\get_gallery_home_url;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\search_case_username;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\try_log_user;
+use const Piwigo\inc\ACCESS_FREE;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
