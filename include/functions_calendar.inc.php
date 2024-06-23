@@ -33,7 +33,7 @@ INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id';
                 explode(',', (string) $user['forbidden_categories'])
             );
 
-            if (empty($sub_ids)) {
+            if ($sub_ids === []) {
                 return; // nothing to do
             }
             $inner_sql .= '
@@ -100,7 +100,9 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     $views = [CAL_VIEW_LIST, CAL_VIEW_CALENDAR];
 
     // Retrieve calendar field
-    isset($fields[$page['chronology_field']]) or fatal_error('bad chronology field');
+    if (! isset($fields[$page['chronology_field']])) {
+        fatal_error('bad chronology field');
+    }
 
     // Retrieve style
     if (! isset($styles[$page['chronology_style']])) {
@@ -114,13 +116,11 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
 
     // Retrieve view
 
-    if (! isset($page['chronology_view']) or
-         ! in_array($page['chronology_view'], $views)) {
+    if (! isset($page['chronology_view']) || ! in_array($page['chronology_view'], $views)) {
         $page['chronology_view'] = CAL_VIEW_LIST;
     }
 
-    if ($page['chronology_view'] == CAL_VIEW_CALENDAR and
-          ! $styles[$cal_style]['view_calendar']) {
+    if ($page['chronology_view'] == CAL_VIEW_CALENDAR && ! $styles[$cal_style]['view_calendar']) {
         $page['chronology_view'] = CAL_VIEW_LIST;
     }
 
@@ -133,7 +133,8 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     }
 
     $any_count = 0;
-    for ($i = 0; $i < count($page['chronology_date']); $i++) {
+    $counter = count($page['chronology_date']);
+    for ($i = 0; $i < $counter; $i++) {
         if ($page['chronology_date'][$i] == 'any') {
             if ($page['chronology_view'] == CAL_VIEW_CALENDAR) {// we dont allow any in calendar view
                 while ($i < count($page['chronology_date'])) {
@@ -170,7 +171,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
 
         foreach ($styles as $style => $style_data) {
             foreach ($views as $view) {
-                if ($style_data['view_calendar'] or $view != CAL_VIEW_CALENDAR) {
+                if ($style_data['view_calendar'] || $view !== CAL_VIEW_CALENDAR) {
                     $selected = false;
 
                     if ($style != $cal_style) {
@@ -189,7 +190,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
                         ]
                     );
 
-                    if ($style == $cal_style and $view == $page['chronology_view']) {
+                    if ($style == $cal_style && $view == $page['chronology_view']) {
                         $selected = true;
                     }
 
@@ -223,15 +224,10 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
         if (isset($page['super_order_by'])) {
             $order_by = $conf['order_by'];
         } else {
-            if (count($page['chronology_date']) == 0
-                 or in_array(
-                     'any',
-                     $page['chronology_date']
-                 )) {// selected period is very big so we show newest first
-                $order = ' DESC, ';
-            } else {// selected period is small (month,week) so we show oldest first
-                $order = ' ASC, ';
-            }
+            $order = count($page['chronology_date']) == 0 || in_array(
+                'any',
+                $page['chronology_date']
+            ) ? ' DESC, ' : ' ASC, ';
             $order_by = str_replace(
                 'ORDER BY ',
                 'ORDER BY ' . $calendar->date_field . $order,
@@ -240,8 +236,9 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
         }
 
         if ($page['section'] == 'categories' && ! isset($page['category'])
-          && (count($page['chronology_date']) == 0
-                or ($page['chronology_date'][0] == 'any' && count($page['chronology_date']) == 1))
+          && (count($page['chronology_date']) == 0 || $page['chronology_date'][0] == 'any' && count(
+              $page['chronology_date']
+          ) == 1)
         ) {
             $cache_key = $persistent_cache->make_key($user['id'] . $user['cache_update_time']
               . $calendar->date_field . $order_by);

@@ -12,14 +12,14 @@ define('PHPWG_ROOT_PATH', './');
 // load config file
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
+defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 $config_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
 $config_file_contents = @file_get_contents($config_file);
 if ($config_file_contents === false) {
     die('Cannot load ' . $config_file);
 }
-$php_end_tag = strrpos($config_file_contents, '?' . '>');
+$php_end_tag = strrpos($config_file_contents, '?>');
 if ($php_end_tag === false) {
     die('Cannot find php end tag in ' . $config_file);
 }
@@ -127,7 +127,7 @@ if (isset($_GET['language'])) {
     $language = 'en_UK';
     // Try to get browser language
     foreach ($languages->fs_languages as $language_code => $fs_language) {
-        if (substr((string) $language_code, 0, 2) == @substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
+        if (substr((string) $language_code, 0, 2) === @substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
             $language = $language_code;
             break;
         }
@@ -235,7 +235,7 @@ if ($has_remote_site) {
     $step = 3;
     updates::upgrade_to('2.3.4', $step, false);
 
-    if (! empty($page['errors'])) {
+    if (isset($page['errors']) && $page['errors'] !== []) {
         echo '<ul>';
         foreach ($page['errors'] as $error) {
             echo '<li>' . $error . '</li>';
@@ -256,21 +256,16 @@ $columns_of = get_columns_of($tables);
 // find the current release
 if (! in_array('param', $columns_of[PREFIX_TABLE . 'config'])) {
     // we're in branch 1.3, important upgrade, isn't it?
-    if (in_array(PREFIX_TABLE . 'user_category', $tables)) {
-        $current_release = '1.3.1';
-    } else {
-        $current_release = '1.3.0';
-    }
+    $current_release = in_array(
+        PREFIX_TABLE . 'user_category',
+        $tables
+    ) ? '1.3.1' : '1.3.0';
 } elseif (! in_array(PREFIX_TABLE . 'user_cache', $tables)) {
     $current_release = '1.4.0';
 } elseif (! in_array(PREFIX_TABLE . 'tags', $tables)) {
     $current_release = '1.5.0';
 } elseif (! in_array(PREFIX_TABLE . 'plugins', $tables)) {
-    if (! in_array('auto_login_key', $columns_of[PREFIX_TABLE . 'user_infos'])) {
-        $current_release = '1.6.0';
-    } else {
-        $current_release = '1.6.2';
-    }
+    $current_release = in_array('auto_login_key', $columns_of[PREFIX_TABLE . 'user_infos']) ? '1.6.2' : '1.6.0';
 } elseif (! in_array('md5sum', $columns_of[PREFIX_TABLE . 'images'])) {
     $current_release = '1.7.0';
 } elseif (! in_array(PREFIX_TABLE . 'themes', $tables)) {
@@ -339,8 +334,7 @@ if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
 
 check_upgrade_access_rights();
 
-if ((isset($_POST['submit']) or isset($_GET['now']))
-  and check_upgrade()) {
+if ((isset($_POST['submit']) || isset($_GET['now'])) && check_upgrade()) {
     $upgrade_file = PHPWG_ROOT_PATH . 'install/upgrade_' . $current_release . '.php';
     if (is_file($upgrade_file)) {
         // reset SQL counters
@@ -353,7 +347,7 @@ if ((isset($_POST['submit']) or isset($_GET['now']))
         conf_update_param('piwigo_db_version', get_branch_from_version(PHPWG_VERSION));
 
         // Something to add in database.inc.php?
-        if (! empty($mysql_changes)) {
+        if ($mysql_changes !== []) {
             $config_file_contents =
               substr($config_file_contents, 0, $php_end_tag) . "\r\n"
               . implode("\r\n", $mysql_changes) . "\r\n"

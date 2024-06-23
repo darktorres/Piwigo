@@ -37,11 +37,7 @@ check_input_parameter(
     '/^[a-z]+$/i'
 );
 
-if (! isset($_GET['section'])) {
-    $page['section'] = 'main';
-} else {
-    $page['section'] = $_GET['section'];
-}
+$page['section'] = $_GET['section'] ?? 'main';
 
 $main_checkboxes = [
     'allow_user_registration',
@@ -152,7 +148,7 @@ if (isset($_POST['submit'])) {
     switch ($page['section']) {
         case 'main':
 
-            if (! isset($conf['order_by_custom']) and ! isset($conf['order_by_inside_category_custom'])) {
+            if (! isset($conf['order_by_custom']) && ! isset($conf['order_by_inside_category_custom'])) {
                 if (! empty($_POST['order_by'])) {
                     check_input_parameter(
                         'order_by',
@@ -163,13 +159,13 @@ if (isset($_POST['submit'])) {
 
                     $used = [];
                     foreach ($_POST['order_by'] as $i => $val) {
-                        if (empty($val) or isset($used[$val])) {
+                        if (empty($val) || isset($used[$val])) {
                             unset($_POST['order_by'][$i]);
                         } else {
                             $used[$val] = true;
                         }
                     }
-                    if (! count($_POST['order_by'])) {
+                    if (count($_POST['order_by']) === 0) {
                         $page['errors'][] = l10n('No order field selected');
                     } else {
                         // limit to the number of available parameters
@@ -206,12 +202,10 @@ if (isset($_POST['submit'])) {
                 $_POST['email_admin_on_new_user'] = 'none';
             } elseif ($_POST['email_admin_on_new_user_filter'] == 'all') {
                 $_POST['email_admin_on_new_user'] = 'all';
+            } elseif (empty($_POST['email_admin_on_new_user_filter_group'])) {
+                $_POST['email_admin_on_new_user'] = 'all';
             } else {
-                if (empty($_POST['email_admin_on_new_user_filter_group'])) {
-                    $_POST['email_admin_on_new_user'] = 'all';
-                } else {
-                    $_POST['email_admin_on_new_user'] = 'group:' . $_POST['email_admin_on_new_user_filter_group'];
-                }
+                $_POST['email_admin_on_new_user'] = 'group:' . $_POST['email_admin_on_new_user_filter_group'];
             }
 
             foreach ($main_checkboxes as $checkbox) {
@@ -233,9 +227,10 @@ if (isset($_POST['submit'])) {
 
             // the number of comments per page must be an integer between 5 and 50
             // included
-            if (! preg_match($int_pattern, (string) $_POST['nb_comment_page'])
-                 or $_POST['nb_comment_page'] < 5
-                 or $_POST['nb_comment_page'] > 50) {
+            if (! preg_match(
+                $int_pattern,
+                (string) $_POST['nb_comment_page']
+            ) || $_POST['nb_comment_page'] < 5 || $_POST['nb_comment_page'] > 50) {
                 $page['errors'][] = l10n('The number of comments a page must be between 5 and 50 included.');
             }
             foreach ($comments_checkboxes as $checkbox) {
@@ -250,8 +245,10 @@ if (isset($_POST['submit'])) {
 
         case 'display':
 
-            if (! preg_match($int_pattern, (string) $_POST['nb_categories_page'])
-                  or $_POST['nb_categories_page'] < 4) {
+            if (! preg_match(
+                $int_pattern,
+                (string) $_POST['nb_categories_page']
+            ) || $_POST['nb_categories_page'] < 4) {
                 $page['errors'][] = l10n('The number of albums a page must be above 4.');
             }
             foreach ($display_checkboxes as $checkbox) {
@@ -259,26 +256,24 @@ if (isset($_POST['submit'])) {
             }
             foreach ($display_info_checkboxes as $checkbox) {
                 $_POST['picture_informations'][$checkbox] =
-                  empty($_POST['picture_informations'][$checkbox]) ? false : true;
+                  ! empty($_POST['picture_informations'][$checkbox]);
             }
             $_POST['picture_informations'] = addslashes(serialize($_POST['picture_informations']));
             break;
     }
 
     // updating configuration if no error found
-    if (! in_array($page['section'], ['sizes', 'watermark']) and count(
+    if (! in_array($page['section'], ['sizes', 'watermark']) && count(
         $page['errors']
-    ) == 0 and is_webmaster()) {
+    ) == 0 && is_webmaster()) {
         //echo '<pre>'; print_r($_POST); echo '</pre>';
         $result = pwg_query('SELECT param FROM ' . CONFIG_TABLE);
         while ($row = pwg_db_fetch_assoc($result)) {
             if (isset($_POST[$row['param']])) {
                 $value = $_POST[$row['param']];
 
-                if ($row['param'] == 'gallery_title') {
-                    if (! $conf['allow_html_descriptions']) {
-                        $value = strip_tags((string) $value);
-                    }
+                if ($row['param'] == 'gallery_title' && ! $conf['allow_html_descriptions']) {
+                    $value = strip_tags((string) $value);
                 }
 
                 $query = '
@@ -300,7 +295,7 @@ WHERE param = \'' . $row['param'] . '\'
 }
 
 // restore default derivatives settings
-if ($page['section'] == 'sizes' and isset($_GET['action']) and $_GET['action'] == 'restore_settings') {
+if ($page['section'] == 'sizes' && isset($_GET['action']) && $_GET['action'] == 'restore_settings') {
     ImageStdParams::set_and_save(ImageStdParams::get_default_sizes());
     pwg_query('DELETE FROM ' . CONFIG_TABLE . ' WHERE param = \'disabled_derivatives\'');
     clear_derivative_cache();
@@ -342,14 +337,16 @@ switch ($page['section']) {
         {
             $conf = [];
             include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-            file_exists(
+            if (file_exists(
                 PHPWG_ROOT_PATH . 'local/config/config.inc.php'
-            ) && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+            )) {
+                include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+            }
             if (isset($conf['local_dir_site'])) {
                 @include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
             }
 
-            return isset($conf['order_by']) or isset($conf['order_by_inside_category']);
+            return isset($conf['order_by']) || isset($conf['order_by_inside_category']);
         }
 
         if (order_by_is_local()) {
@@ -358,7 +355,7 @@ switch ($page['section']) {
             );
         }
 
-        if (isset($conf['order_by_custom']) or isset($conf['order_by_inside_category_custom'])) {
+        if (isset($conf['order_by_custom']) || isset($conf['order_by_inside_category_custom'])) {
             $order_by = [''];
             $template->assign('ORDER_BY_IS_CUSTOM', true);
         } else {
@@ -492,7 +489,7 @@ switch ($page['section']) {
         // we only load the derivatives if it was not already loaded: it occurs
         // when submitting the form and an error remains
         if (! isset($page['sizes_loaded_in_tpl'])) {
-            $is_gd = (pwg_image::get_library() == 'gd') ? true : false;
+            $is_gd = pwg_image::get_library() == 'gd';
             $template->assign('is_gd', $is_gd);
             $template->assign(
                 'sizes',
@@ -524,8 +521,8 @@ switch ($page['section']) {
             foreach (ImageStdParams::get_all_types() as $type) {
                 $tpl_var = [];
 
-                $tpl_var['must_square'] = ($type == IMG_SQUARE ? true : false);
-                $tpl_var['must_enable'] = ($type == IMG_SQUARE || $type == IMG_THUMB || $type == $conf['derivative_default_size']) ? true : false;
+                $tpl_var['must_square'] = ($type == IMG_SQUARE);
+                $tpl_var['must_enable'] = $type == IMG_SQUARE || $type == IMG_THUMB || $type == $conf['derivative_default_size'];
 
                 if ($params = @$enabled[$type]) {
                     $tpl_var['enabled'] = true;
@@ -582,19 +579,19 @@ switch ($page['section']) {
             $wm = ImageStdParams::get_watermark();
 
             $position = 'custom';
-            if ($wm->xpos == 0 and $wm->ypos == 0) {
+            if ($wm->xpos == 0 && $wm->ypos == 0) {
                 $position = 'topleft';
             }
-            if ($wm->xpos == 100 and $wm->ypos == 0) {
+            if ($wm->xpos == 100 && $wm->ypos == 0) {
                 $position = 'topright';
             }
-            if ($wm->xpos == 50 and $wm->ypos == 50) {
+            if ($wm->xpos == 50 && $wm->ypos == 50) {
                 $position = 'middle';
             }
-            if ($wm->xpos == 0 and $wm->ypos == 100) {
+            if ($wm->xpos == 0 && $wm->ypos == 100) {
                 $position = 'bottomleft';
             }
-            if ($wm->xpos == 100 and $wm->ypos == 100) {
+            if ($wm->xpos == 100 && $wm->ypos == 100) {
                 $position = 'bottomright';
             }
 

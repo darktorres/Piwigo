@@ -36,7 +36,7 @@ check_input_parameter('redirect_decoded', $_POST, false, '{^' . preg_quote(cooki
 $redirect_to = '';
 if (! empty($_GET['redirect'])) {
     $redirect_to = urldecode((string) $_GET['redirect']);
-    if ($conf['guest_access'] and ! isset($_GET['hide_redirect_error'])) {
+    if ($conf['guest_access'] && ! isset($_GET['hide_redirect_error'])) {
         $page['errors'][] = l10n('You are not authorized to access the requested page');
     }
 }
@@ -52,7 +52,9 @@ if (isset($_POST['login'])) {
         }
 
         $redirect_to = isset($_POST['redirect']) ? urldecode((string) $_POST['redirect']) : '';
-        $remember_me = isset($_POST['remember_me']) and $_POST['remember_me'] == 1;
+        if ($remember_me = isset($_POST['remember_me'])) {
+            $_POST['remember_me'] == 1;
+        }
 
         if (try_log_user($_POST['username'], $_POST['password'], $remember_me)) {
             // security (level 2): force redirect within Piwigo. We redirect to
@@ -68,7 +70,7 @@ if (isset($_POST['login'])) {
             $root_url = get_absolute_root_url();
 
             redirect(
-                empty($redirect_to)
+                $redirect_to === '' || $redirect_to === '0'
                   ? get_gallery_home_url()
                   : substr((string) $root_url, 0, strlen((string) $root_url) - strlen(cookie_path())) . $redirect_to
             );
@@ -108,7 +110,7 @@ if (! $conf['gallery_locked']) {
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) or ! in_array(
+if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) || ! in_array(
     'theIdentificationPage',
     $themeconf['hide_menu_on']
 ))) {

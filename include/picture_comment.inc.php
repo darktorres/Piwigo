@@ -21,8 +21,8 @@ foreach ($related_categories as $category) {
     }
 }
 
-if ($page['show_comments'] and isset($_POST['content'])) {
-    if (is_a_guest() and ! $conf['comments_forall']) {
+if ($page['show_comments'] && isset($_POST['content'])) {
+    if (is_a_guest() && ! $conf['comments_forall']) {
         die('Session expired');
     }
 
@@ -68,12 +68,7 @@ if ($page['show_comments'] and isset($_POST['content'])) {
 }
 
 if ($page['show_comments']) {
-    if (! is_admin()) {
-        $validated_clause = '  AND validated = \'true\'';
-    } else {
-        $validated_clause = '';
-    }
-
+    $validated_clause = is_admin() ? '' : '  AND validated = \'true\'';
     // number of comments for this picture
     $query = '
 SELECT
@@ -83,12 +78,10 @@ SELECT
     . $validated_clause . '
 ;';
     $row = pwg_db_fetch_assoc(pwg_query($query));
-
     // navigation bar creation
     if (! isset($page['start'])) {
         $page['start'] = 0;
     }
-
     $navigation_bar = create_navigation_bar(
         duplicate_picture_url([], ['start']),
         $row['nb_comments'],
@@ -96,14 +89,12 @@ SELECT
         $conf['nb_comment_page'],
         true // We want a clean URL
     );
-
     $template->assign(
         [
             'COMMENT_COUNT' => $row['nb_comments'],
             'navbar' => $navigation_bar,
         ]
     );
-
     if ($row['nb_comments'] > 0) {
         // comments order (get, session, conf)
         if (! empty($_GET['comments_order']) && in_array(
@@ -184,7 +175,7 @@ SELECT
                         'comment_to_edit' => $row['id'],
                     ]
                 );
-                if (isset($edit_comment) and ($row['id'] == $edit_comment)) {
+                if (isset($edit_comment) && $row['id'] == $edit_comment) {
                     $tpl_comment['IN_EDIT'] = true;
                     $key = get_ephemeral_key(2, $page['image_id']);
                     $tpl_comment['KEY'] = $key;
@@ -210,15 +201,13 @@ SELECT
             $template->append('comments', $tpl_comment);
         }
     }
-
     $show_add_comment_form = true;
     if (isset($edit_comment)) {
         $show_add_comment_form = false;
     }
-    if (is_a_guest() and ! $conf['comments_forall']) {
+    if (is_a_guest() && ! $conf['comments_forall']) {
         $show_add_comment_form = false;
     }
-
     if ($show_add_comment_form) {
         $key = get_ephemeral_key(3, $page['image_id']);
 
@@ -230,7 +219,7 @@ SELECT
             'AUTHOR_MANDATORY' => $conf['comments_author_mandatory'],
             'AUTHOR' => '',
             'WEBSITE_URL' => '',
-            'SHOW_EMAIL' => ! is_classic_user() or empty($user['email']),
+            'SHOW_EMAIL' => ! is_classic_user() || empty($user['email']),
             'EMAIL_MANDATORY' => $conf['comments_email_mandatory'],
             'EMAIL' => '',
             'SHOW_WEBSITE' => $conf['comments_enable_website'],

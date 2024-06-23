@@ -87,14 +87,14 @@ SELECT id, path, representative_ext, width, height, rotation
                 }
             }
 
-            if (count($urls) >= $max_urls and ! $is_last) {
+            if (count($urls) >= $max_urls && ! $is_last) {
                 break;
             }
         }
         if ($is_last) {
             $start_id = 0;
         }
-    } while (count($urls) < $max_urls and $start_id);
+    } while (count($urls) < $max_urls && $start_id);
 
     $ret = [];
     if ($start_id) {
@@ -201,9 +201,11 @@ function ws_getCacheSize(
     if (function_exists('exec')) {
         @exec('du -sk ' . $path_cache, $return_array_cache);
         if (
-            is_array($return_array_cache)
-            and ! empty($return_array_cache[0])
-            and preg_match('/^(\d+)\s/', $return_array_cache[0], $matches_cache)
+            is_array($return_array_cache) && ! empty($return_array_cache[0]) && preg_match(
+                '/^(\d+)\s/',
+                $return_array_cache[0],
+                $matches_cache
+            )
         ) {
             $infos['cache_size'] = $matches_cache[1] * 1024;
         }
@@ -230,9 +232,11 @@ function ws_getCacheSize(
     if (function_exists('exec')) {
         @exec('du -sk ' . $path_template_c, $return_array_template_c);
         if (
-            is_array($return_array_template_c)
-            and ! empty($return_array_template_c[0])
-            and preg_match('/^(\d+)\s/', $return_array_template_c[0], $matches_template_c)
+            is_array($return_array_template_c) && ! empty($return_array_template_c[0]) && preg_match(
+                '/^(\d+)\s/',
+                $return_array_template_c[0],
+                $matches_template_c
+            )
         ) {
             $infos['tsizes'] = $matches_template_c[1] * 1024;
         }
@@ -283,7 +287,7 @@ SELECT id
             'user_id' => $user['id'],
         ];
     }
-    if (count($datas)) {
+    if ($datas !== []) {
         mass_inserts(
             CADDIE_TABLE,
             ['element_id', 'user_id'],
@@ -377,7 +381,7 @@ function ws_session_getStatus(
 
     // Piwigo Remote Sync does not support receiving the available sizes
     $piwigo_remote_sync_agent = 'Apache-HttpClient/';
-    if (! isset($_SERVER['HTTP_USER_AGENT']) or ! str_starts_with(
+    if (! isset($_SERVER['HTTP_USER_AGENT']) || ! str_starts_with(
         (string) $_SERVER['HTTP_USER_AGENT'],
         $piwigo_remote_sync_agent
     )) {
@@ -505,7 +509,7 @@ SELECT
 
     $username_of = [];
     $user_id_list = [];
-    if (count($user_ids) > 0) {
+    if ($user_ids !== []) {
         $query = '
 SELECT
     `' . $conf['user_fields']['id'] . '` AS user_id,
@@ -569,7 +573,7 @@ function ws_history_log($params, &$service)
 {
     global $logger, $page;
 
-    if (! empty($params['section']) and in_array($params['section'], get_enums(HISTORY_TABLE, 'section'))) {
+    if (! empty($params['section']) && in_array($params['section'], get_enums(HISTORY_TABLE, 'section'))) {
         $page['section'] = $params['section'];
     }
 
@@ -579,7 +583,7 @@ function ws_history_log($params, &$service)
         ];
     }
 
-    if (! empty($params['tags_string']) and preg_match('/^\d+(,\d+)*$/', (string) $params['tags_string'])) {
+    if (! empty($params['tags_string']) && preg_match('/^\d+(,\d+)*$/', (string) $params['tags_string'])) {
         $page['tag_ids'] = explode(',', (string) $params['tags_string']);
     }
 
@@ -598,11 +602,7 @@ function ws_history_search($param, &$service)
 
     global $conf;
 
-    if (isset($_GET['start']) and is_numeric($_GET['start'])) {
-        $page['start'] = $_GET['start'];
-    } else {
-        $page['start'] = 0;
-    }
+    $page['start'] = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['start'] : 0;
 
     $types = array_merge(['none'], get_enums(HISTORY_TABLE, 'image_type'));
 
@@ -675,8 +675,7 @@ function ws_history_search($param, &$service)
 
     $search['fields']['display_thumbnail'] = $param['display_thumbnail'];
     // Display choise are also save to one cookie
-    if (! empty($param['display_thumbnail'])
-        and isset($display_thumbnails[$param['display_thumbnail']])) {
+    if (! empty($param['display_thumbnail']) && isset($display_thumbnails[$param['display_thumbnail']])) {
         $cookie_val = $param['display_thumbnail'];
     } else {
         $cookie_val = null;
@@ -743,7 +742,7 @@ SELECT rules
         $user_ids[$row['user_id']] = 1;
 
         if (isset($row['category_id'])) {
-            array_push($category_ids, $row['category_id']);
+            $category_ids[] = $row['category_id'];
         }
 
         if (isset($row['image_id'])) {
@@ -758,7 +757,7 @@ SELECT rules
     }
 
     // prepare reference data (users, tags, categories...)
-    if (count($user_ids) > 0) {
+    if ($user_ids !== []) {
         $query = '
 SELECT ' . $conf['user_fields']['id'] . ' AS id
      , ' . $conf['user_fields']['username'] . ' AS username
@@ -773,7 +772,7 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id
         }
     }
 
-    if (count($category_ids) > 0) {
+    if ($category_ids !== []) {
         $query = '
 SELECT id, uppercats
   FROM ' . CATEGORIES_TABLE . '
@@ -798,7 +797,7 @@ SELECT id, uppercats
         }
     }
 
-    if (count($image_ids) > 0) {
+    if ($image_ids !== []) {
         $query = '
 SELECT
     id,
@@ -839,7 +838,7 @@ SELECT
     $sorted_members = [];
 
     foreach ($history_lines as $line) {
-        if (isset($line['image_type']) and $line['image_type'] == 'high') {
+        if (isset($line['image_type']) && $line['image_type'] == 'high') {
             $summary['total_filesize'] += @intval($image_infos[$line['image_id']]['filesize']);
         }
 
@@ -853,7 +852,7 @@ SELECT
 
         $i++;
 
-        if ($i <= $first_line and $i >= $last_line) {
+        if ($i <= $first_line && $i >= $last_line) {
             continue;
         }
 
@@ -928,33 +927,30 @@ SELECT
 
         @++$sorted_members[$user_name];
 
-        array_push(
-            $result,
-            [
-                'DATE' => format_date($line['date']),
-                'TIME' => $line['time'],
-                'USER' => $user_string,
-                'USERNAME' => $user_name,
-                'USERID' => $line['user_id'],
-                'IP' => $line['IP'],
-                'IMAGE' => $image_string,
-                'IMAGENAME' => $image_title,
-                'IMAGEID' => $image_id,
-                'EDIT_IMAGE' => $image_edit_string,
-                'TYPE' => $line['image_type'],
-                'SECTION' => $line['section'],
-                'FULL_CATEGORY_PATH' => isset($full_cat_path[$line['category_id']]) ? strip_tags(
-                    (string) $full_cat_path[$line['category_id']]
-                ) : l10n(
-                    'Root'
-                ) . $line['category_id'],
-                'CATEGORY' => $name_of_category[$line['category_id']] ?? l10n(
-                    'Root'
-                ) . $line['category_id'],
-                'TAGS' => explode(',', $tag_names),
-                'TAGIDS' => explode(',', (string) $tag_ids),
-            ]
-        );
+        $result[] = [
+            'DATE' => format_date($line['date']),
+            'TIME' => $line['time'],
+            'USER' => $user_string,
+            'USERNAME' => $user_name,
+            'USERID' => $line['user_id'],
+            'IP' => $line['IP'],
+            'IMAGE' => $image_string,
+            'IMAGENAME' => $image_title,
+            'IMAGEID' => $image_id,
+            'EDIT_IMAGE' => $image_edit_string,
+            'TYPE' => $line['image_type'],
+            'SECTION' => $line['section'],
+            'FULL_CATEGORY_PATH' => isset($full_cat_path[$line['category_id']]) ? strip_tags(
+                (string) $full_cat_path[$line['category_id']]
+            ) : l10n(
+                'Root'
+            ) . $line['category_id'],
+            'CATEGORY' => $name_of_category[$line['category_id']] ?? l10n(
+                'Root'
+            ) . $line['category_id'],
+            'TAGS' => explode(',', $tag_names),
+            'TAGIDS' => explode(',', (string) $tag_ids),
+        ];
     }
 
     $max_page = ceil(count($result) / 300);
@@ -962,7 +958,7 @@ SELECT
     $result = array_slice($result, $param['pageNumber'] * 300, 300);
 
     $summary['nb_guests'] = 0;
-    if (count(array_keys($summary['guests_IP'])) > 0) {
+    if (array_keys($summary['guests_IP']) !== []) {
         $summary['nb_guests'] = count(array_keys($summary['guests_IP']));
 
         // we delete the "guest" from the $username_of hash so that it is

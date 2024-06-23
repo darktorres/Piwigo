@@ -171,7 +171,7 @@ if (isset($_GET['hide_warnings'])) {
 if (! isset($_SESSION['upload_hide_warnings'])) {
     $setup_warnings = [];
 
-    if ($conf['use_exif'] and ! function_exists('exif_read_data')) {
+    if ($conf['use_exif'] && ! function_exists('exif_read_data')) {
         $setup_warnings[] = l10n('Exif extension not available, admin should disable exif use');
     }
 

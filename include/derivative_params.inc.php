@@ -390,11 +390,7 @@ final class DerivativeParams
     public function is_identity(
         $in_size
     ) {
-        if ($in_size[0] > $this->sizing->ideal_size[0] or
-            $in_size[1] > $this->sizing->ideal_size[1]) {
-            return false;
-        }
-        return true;
+        return $in_size[0] <= $this->sizing->ideal_size[0] && $in_size[1] <= $this->sizing->ideal_size[1];
     }
 
     /**

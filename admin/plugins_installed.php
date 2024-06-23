@@ -19,12 +19,7 @@ $template->set_filenames([
 
 // should we display details on plugins?
 if (isset($_GET['show_details'])) {
-    if ($_GET['show_details'] == 1) {
-        $show_details = true;
-    } else {
-        $show_details = false;
-    }
-
+    $show_details = $_GET['show_details'] == 1;
     pwg_set_session_var('plugins_show_details', $show_details);
 } elseif (pwg_get_session_var('plugins_show_details') != null) {
     $show_details = pwg_get_session_var('plugins_show_details');
@@ -84,8 +79,7 @@ $count_types_plugins = [
 ];
 
 foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
-    if (isset($_SESSION['incompatible_plugins'][$plugin_id])
-      and $fs_plugin['version'] != $_SESSION['incompatible_plugins'][$plugin_id]) {
+    if (isset($_SESSION['incompatible_plugins'][$plugin_id]) && $fs_plugin['version'] != $_SESSION['incompatible_plugins'][$plugin_id]) {
         // Incompatible plugins must be reinitilized
         unset($_SESSION['incompatible_plugins']);
     }
@@ -119,7 +113,7 @@ foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
         $tpl_plugin['STATE'] = 'inactive';
     }
 
-    if (isset($fs_plugin['extension']) and isset($merged_extensions[$fs_plugin['extension']])) {
+    if (isset($fs_plugin['extension']) && isset($merged_extensions[$fs_plugin['extension']])) {
         // Deactivate manually plugin from database
         $query = 'UPDATE ' . PLUGINS_TABLE . ' SET state=\'inactive\' WHERE id=\'' . $plugin_id . '\'';
         pwg_query($query);
@@ -146,7 +140,7 @@ $missing_plugin_ids = array_diff(
     array_keys($plugins->fs_plugins)
 );
 
-if (count($missing_plugin_ids) > 0) {
+if ($missing_plugin_ids !== []) {
     foreach ($missing_plugin_ids as $plugin_id) {
         $tpl_plugins[] = [
             'NAME' => $plugin_id,

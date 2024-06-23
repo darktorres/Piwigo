@@ -22,7 +22,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! isset($_GET['cat_id']) or ! is_numeric($_GET['cat_id'])) {
+if (! isset($_GET['cat_id']) || ! is_numeric($_GET['cat_id'])) {
     trigger_error('missing cat_id param', E_USER_ERROR);
 }
 
@@ -60,7 +60,7 @@ if (isset($_POST['submit'])) {
     if ($image_order_choice == 'user_define') {
         for ($i = 0; $i < 3; $i++) {
             if (! empty($_POST['image_order'][$i])) {
-                if (! empty($image_order)) {
+                if ($image_order !== null && $image_order !== '' && $image_order !== '0') {
                     $image_order .= ',';
                 }
                 $image_order .= $_POST['image_order'][$i];
@@ -106,7 +106,7 @@ SELECT *
 ;';
 $category = pwg_db_fetch_assoc(pwg_query($query));
 
-if ($category['image_order'] == 'rank ASC' or $category['image_order'] == '`rank` ASC') {
+if ($category['image_order'] == 'rank ASC' || $category['image_order'] == '`rank` ASC') {
     $image_order_choice = 'rank';
 } elseif ($category['image_order'] != '') {
     $image_order_choice = 'user_define';

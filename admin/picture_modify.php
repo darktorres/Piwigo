@@ -52,7 +52,7 @@ if (isset($_GET['delete'])) {
     // 2. else use the first reachable linked category
     // 3. redirect to gallery root
 
-    if (isset($_GET['cat_id']) and ! empty($_GET['cat_id'])) {
+    if (isset($_GET['cat_id']) && ! empty($_GET['cat_id'])) {
         redirect(
             make_index_url(
                 [
@@ -111,11 +111,7 @@ if (isset($_POST['submit'])) {
         $data['comment'] = strip_tags((string) @$_POST['description']);
     }
 
-    if (! empty($_POST['date_creation'])) {
-        $data['date_creation'] = $_POST['date_creation'];
-    } else {
-        $data['date_creation'] = null;
-    }
+    $data['date_creation'] = empty($_POST['date_creation']) ? null : $_POST['date_creation'];
 
     $data = trigger_change('picture_modify_before_update', $data);
 
@@ -150,12 +146,12 @@ if (isset($_POST['submit'])) {
     check_input_parameter('represent', $_POST, true, PATTERN_ID);
 
     $no_longer_thumbnail_for = array_diff($represented_albums, $_POST['represent']);
-    if (count($no_longer_thumbnail_for) > 0) {
+    if ($no_longer_thumbnail_for !== []) {
         set_random_representant($no_longer_thumbnail_for);
     }
 
     $new_thumbnail_for = array_diff($_POST['represent'], $represented_albums);
-    if (count($new_thumbnail_for) > 0) {
+    if ($new_thumbnail_for !== []) {
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = ' . $_GET['image_id'] . '
@@ -287,10 +283,10 @@ $intro_vars = [
     'stats' => l10n('Visited %d times', $row['hit']),
     'id' => l10n($row['id']),
     'ext' => l10n('%s file type', strtoupper(end($extTab))),
-    'is_svg' => (strtoupper(end($extTab)) == 'SVG'),
+    'is_svg' => (strtoupper(end($extTab)) === 'SVG'),
 ];
 
-if ($conf['rate'] and ! empty($row['rating_score'])) {
+if ($conf['rate'] && ! empty($row['rating_score'])) {
     $query = '
 SELECT
     COUNT(*)
@@ -395,8 +391,7 @@ $authorizeds = array_diff(
     )
 );
 
-if (isset($_GET['cat_id'])
-    and in_array($_GET['cat_id'], $authorizeds)) {
+if (isset($_GET['cat_id']) && in_array($_GET['cat_id'], $authorizeds)) {
     $url_img = make_picture_url(
         [
             'image_id' => $_GET['image_id'],
@@ -417,7 +412,7 @@ if (isset($_GET['cat_id'])
     }
 }
 
-if (isset($url_img) and $user['level'] >= $page['image']['level']) {
+if (isset($url_img) && $user['level'] >= $page['image']['level']) {
     $template->assign('U_JUMPTO', $url_img);
 }
 

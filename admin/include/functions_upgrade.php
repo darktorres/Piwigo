@@ -79,7 +79,7 @@ AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
         $plugins[] = $row['id'];
     }
 
-    if (! empty($plugins)) {
+    if ($plugins !== []) {
         $query = '
 UPDATE ' . PREFIX_TABLE . 'plugins
 SET state=\'inactive\'
@@ -120,7 +120,7 @@ SELECT
         $theme_names[] = $row['name'];
     }
 
-    if (! empty($theme_ids)) {
+    if ($theme_ids !== []) {
         $query = '
 DELETE
   FROM ' . PREFIX_TABLE . 'themes
@@ -183,7 +183,7 @@ function check_upgrade_access_rights()
 {
     global $conf, $page, $current_release;
 
-    if (version_compare($current_release, '2.0', '>=') and isset($_COOKIE[session_name()])) {
+    if (version_compare($current_release, '2.0', '>=') && isset($_COOKIE[session_name()])) {
         // Check if user is already connected as webmaster
         session_start();
         if (! empty($_SESSION['pwg_uid'])) {
@@ -195,14 +195,14 @@ SELECT status
             pwg_query($query);
 
             $row = pwg_db_fetch_assoc(pwg_query($query));
-            if (isset($row['status']) and $row['status'] == 'webmaster') {
+            if (isset($row['status']) && $row['status'] == 'webmaster') {
                 define('PHPWG_IN_UPGRADE', true);
                 return;
             }
         }
     }
 
-    if (! isset($_POST['username']) or ! isset($_POST['password'])) {
+    if (! isset($_POST['username']) || ! isset($_POST['password'])) {
         return;
     }
 
@@ -237,7 +237,7 @@ WHERE ' . $conf['user_fields']['username'] . '=\'' . $username . '\'
 
     if (! $conf['password_verify']($password, $row['password'])) {
         $page['errors'][] = l10n('Invalid password!');
-    } elseif ($row['status'] != 'admin' and $row['status'] != 'webmaster') {
+    } elseif ($row['status'] != 'admin' && $row['status'] != 'webmaster') {
         $page['errors'][] = l10n('You do not have access rights to run upgrade');
     } else {
         define('PHPWG_IN_UPGRADE', true);
@@ -257,8 +257,7 @@ function get_available_upgrade_ids()
 
     if ($contents = opendir($upgrades_path)) {
         while (($node = readdir($contents)) !== false) {
-            if (is_file($upgrades_path . '/' . $node)
-                and preg_match('/^(.*?)-database\.php$/', $node, $match)) {
+            if (is_file($upgrades_path . '/' . $node) && preg_match('/^(.*?)-database\.php$/', $node, $match)) {
                 $available_upgrade_ids[] = $match[1];
             }
         }
@@ -284,7 +283,7 @@ SELECT id
     $existing = get_available_upgrade_ids();
 
     // which upgrades need to be applied?
-    return count(array_diff($existing, $applied)) > 0;
+    return array_diff($existing, $applied) !== [];
 }
 
 function upgrade_db_connect()

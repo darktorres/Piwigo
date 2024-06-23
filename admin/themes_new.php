@@ -34,7 +34,7 @@ if (! is_writable($themes_dir)) {
 // |                       perform installation                            |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['revision']) and isset($_GET['extension'])) {
+if (isset($_GET['revision']) && isset($_GET['extension'])) {
     if (! is_webmaster()) {
         $page['errors'][] = l10n('Webmaster status is required.');
     } else {
@@ -113,8 +113,8 @@ if ($themes->get_server_themes(true)) { // only new themes
             'new_themes',
             [
                 'name' => $theme['extension_name'],
-                'thumbnail' => (key_exists('thumbnail_src', $theme)) ? $theme['thumbnail_src'] : '',
-                'screenshot' => (key_exists('screenshot_url', $theme)) ? $theme['screenshot_url'] : '',
+                'thumbnail' => (array_key_exists('thumbnail_src', $theme)) ? $theme['thumbnail_src'] : '',
+                'screenshot' => (array_key_exists('screenshot_url', $theme)) ? $theme['screenshot_url'] : '',
                 'install_url' => $url_auto_install,
             ]
         );

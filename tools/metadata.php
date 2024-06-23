@@ -19,7 +19,7 @@ echo 'Informations are read from ' . $filename . '<br><br><br>';
 function clean_iptc_value($value)
 {
     // strip leading zeros (weird Kodak Scanner software)
-    while (isset($value[0]) and $value[0] == chr(0)) {
+    while (isset($value[0]) && $value[0] === chr(0)) {
         $value = substr($value, 1);
     }
     // remove binary nulls

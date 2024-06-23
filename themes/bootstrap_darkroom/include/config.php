@@ -223,10 +223,10 @@ class Config
         if (array_key_exists($key, $this->defaults)) {
             switch ($this->types[$key]) {
                 case self::TYPE_STRING:
-                    $this->config[$key] = ! empty($value) ? $value : null;
+                    $this->config[$key] = empty($value) ? null : $value;
                     break;
                 case self::TYPE_BOOL:
-                    $this->config[$key] = $value ? true : false;
+                    $this->config[$key] = (bool) $value;
                     break;
                 case self::TYPE_NUM:
                     $this->config[$key] = is_numeric($value) ? $value : $this->defaults[$key];
@@ -252,6 +252,7 @@ class Config
         } else {
             return null;
         }
+        return null;
     }
 
     public function fromPost(array $post)

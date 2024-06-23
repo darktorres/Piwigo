@@ -26,7 +26,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
 }
 
@@ -100,7 +100,7 @@ DELETE
             }
         }
     } elseif ($action == 'del_tags') {
-        if (isset($_POST['del_tags']) and count($_POST['del_tags']) > 0) {
+        if (isset($_POST['del_tags']) && count($_POST['del_tags']) > 0) {
             $taglist_before = get_image_tag_ids($collection);
 
             $query = '
@@ -158,8 +158,7 @@ DELETE
             if (empty($category_info['dir'])) {
                 $redirect = true;
             }
-        } elseif (isset($_SESSION['bulk_manager_filter']['category'])
-            and $_POST['move'] != $_SESSION['bulk_manager_filter']['category']) {
+        } elseif (isset($_SESSION['bulk_manager_filter']['category']) && $_POST['move'] != $_SESSION['bulk_manager_filter']['category']) {
             $redirect = true;
         }
     } elseif ($action == 'dissociate') {
@@ -305,10 +304,8 @@ DELETE
             'action' => 'privacy_level',
         ]);
 
-        if (isset($_SESSION['bulk_manager_filter']['level'])) {
-            if ($_POST['level'] < $_SESSION['bulk_manager_filter']['level']) {
-                $redirect = true;
-            }
+        if (isset($_SESSION['bulk_manager_filter']['level']) && $_POST['level'] < $_SESSION['bulk_manager_filter']['level']) {
+            $redirect = true;
         }
     }
 
@@ -319,7 +316,7 @@ DELETE
 
     // delete
     elseif ($action == 'delete') {
-        if (isset($_POST['confirm_deletion']) and $_POST['confirm_deletion'] == 1) {
+        if (isset($_POST['confirm_deletion']) && $_POST['confirm_deletion'] == 1) {
             // now done with ajax calls, with blocks
             // $deleted_count = delete_elements($collection, true);
             if (count($collection) > 0) {
@@ -601,11 +598,7 @@ $template->assign(
 
 // how many items to display on this page
 if (! empty($_GET['display'])) {
-    if ($_GET['display'] == 'all') {
-        $page['nb_images'] = count($page['cat_elements_id']);
-    } else {
-        $page['nb_images'] = intval($_GET['display']);
-    }
+    $page['nb_images'] = $_GET['display'] == 'all' ? count($page['cat_elements_id']) : intval($_GET['display']);
 } elseif (in_array($conf['batch_manager_images_per_page_global'], [20, 50, 100])) {
     $page['nb_images'] = $conf['batch_manager_images_per_page_global'];
 } else {
@@ -624,22 +617,19 @@ if (count($page['cat_elements_id']) > 0) {
     $template->assign('navbar', $nav_bar);
 
     $is_category = false;
-    if (isset($_SESSION['bulk_manager_filter']['category'])
-        and ! isset($_SESSION['bulk_manager_filter']['category_recursive'])) {
+    if (isset($_SESSION['bulk_manager_filter']['category']) && ! isset($_SESSION['bulk_manager_filter']['category_recursive'])) {
         $is_category = true;
     }
 
     // If using the 'duplicates' filter,
     // order by the fields that are used to find duplicates.
-    if (isset($_SESSION['bulk_manager_filter']['prefilter'])
-        and $_SESSION['bulk_manager_filter']['prefilter'] === 'duplicates'
-        and isset($duplicates_on_fields)) {
+    if (isset($_SESSION['bulk_manager_filter']['prefilter']) && $_SESSION['bulk_manager_filter']['prefilter'] === 'duplicates' && isset($duplicates_on_fields)) {
         // The $duplicates_on_fields variable is defined in ./batch_manager.php
         $order_by_fields = array_merge(
             $duplicates_on_fields,
             ['id']
         );
-        $conf['order_by'] = ' ORDER BY ' . join(', ', $order_by_fields);
+        $conf['order_by'] = ' ORDER BY ' . implode(', ', $order_by_fields);
     }
 
     $query = '

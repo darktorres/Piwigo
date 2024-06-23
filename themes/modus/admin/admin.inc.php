@@ -30,7 +30,7 @@ if (isset($_POST[$text_values[0]])) {
         $my_conf[$k] = stripslashes((string) $_POST[$k]);
     }
     foreach ($bool_values as $k) {
-        $my_conf[$k] = isset($_POST[$k]) ? true : false;
+        $my_conf[$k] = isset($_POST[$k]);
     }
 
     if (! isset($_POST['use_album_square_thumbs'])) {
@@ -60,11 +60,7 @@ $tab_codes = array_map(
     $tabs
 );
 
-if (isset($_GET['tab']) and in_array($_GET['tab'], $tab_codes)) {
-    $page['tab'] = $_GET['tab'];
-} else {
-    $page['tab'] = $tabs[0]['code'];
-}
+$page['tab'] = isset($_GET['tab']) && in_array($_GET['tab'], $tab_codes) ? $_GET['tab'] : $tabs[0]['code'];
 
 $tabsheet = new tabsheet();
 foreach ($tabs as $tab) {

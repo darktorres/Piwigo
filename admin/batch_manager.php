@@ -49,7 +49,7 @@ DELETE FROM ' . CADDIE_TABLE . '
         redirect(get_root_url() . 'admin.php?page=' . $_GET['page']);
     }
 
-    if ($_GET['action'] == 'delete_orphans' and isset($_GET['nb_orphans_deleted'])) {
+    if ($_GET['action'] == 'delete_orphans' && isset($_GET['nb_orphans_deleted'])) {
         check_input_parameter('nb_orphans_deleted', $_GET, false, '/^\d+$/');
 
         if ($_GET['nb_orphans_deleted'] > 0) {
@@ -63,7 +63,7 @@ DELETE FROM ' . CADDIE_TABLE . '
         }
     }
 
-    if ($_GET['action'] == 'sync_md5sum' and isset($_GET['nb_md5sum_added'])) {
+    if ($_GET['action'] == 'sync_md5sum' && isset($_GET['nb_md5sum_added'])) {
         check_input_parameter('nb_md5sum_added', $_GET, false, '/^\d+$/');
         if ($_GET['nb_md5sum_added'] > 0) {
             $_SESSION['page_infos'][] = l10n_dec(
@@ -107,7 +107,7 @@ if (isset($_POST['submitFilter'])) {
                 $has_options = true;
             }
 
-            if (! $has_options or isset($_POST['filter_duplicates_filename'])) {
+            if (! $has_options || isset($_POST['filter_duplicates_filename'])) {
                 $_SESSION['bulk_manager_filter']['duplicates_filename'] = true;
             }
         }
@@ -126,7 +126,7 @@ if (isset($_POST['submitFilter'])) {
     if (isset($_POST['filter_tags_use'])) {
         $_SESSION['bulk_manager_filter']['tags'] = get_tag_ids($_POST['filter_tags'], false);
 
-        if (isset($_POST['tag_mode']) and in_array($_POST['tag_mode'], ['AND', 'OR'])) {
+        if (isset($_POST['tag_mode']) && in_array($_POST['tag_mode'], ['AND', 'OR'])) {
             $_SESSION['bulk_manager_filter']['tag_mode'] = $_POST['tag_mode'];
         }
     }
@@ -561,10 +561,9 @@ $page['cat_elements_id'] = empty($current_set) ? [] : $current_set;
 // category. For exampe, $page['start'] = 12 means we must show elements #12
 // and $page['nb_images'] next elements
 
-if (! isset($_REQUEST['start'])
-    or ! is_numeric($_REQUEST['start'])
-    or $_REQUEST['start'] < 0
-    or (isset($_REQUEST['display']) and $_REQUEST['display'] == 'all')) {
+if (! isset($_REQUEST['start']) || ! is_numeric(
+    $_REQUEST['start']
+) || $_REQUEST['start'] < 0 || isset($_REQUEST['display']) && $_REQUEST['display'] == 'all') {
     $page['start'] = 0;
 } else {
     $page['start'] = $_REQUEST['start'];
@@ -615,7 +614,7 @@ if (pwg_db_num_rows($result)) {
         }
     }
 }
-if (empty($widths)) { // arbitrary values, only used when no photos on the gallery
+if ($widths === []) { // arbitrary values, only used when no photos on the gallery
     $widths = [600, 1920, 3500];
     $heights = [480, 1080, 2300];
     $ratios = [1.25, 1.52, 1.78];
@@ -647,9 +646,9 @@ $ratio_categories = [
 foreach ($ratios as $ratio) {
     if ($ratio < 0.95) {
         $ratio_categories['portrait'][] = $ratio;
-    } elseif ($ratio >= 0.95 and $ratio <= 1.05) {
+    } elseif ($ratio >= 0.95 && $ratio <= 1.05) {
         $ratio_categories['square'][] = $ratio;
-    } elseif ($ratio > 1.05 and $ratio < 2) {
+    } elseif ($ratio > 1.05 && $ratio < 2) {
         $ratio_categories['landscape'][] = $ratio;
     } elseif ($ratio >= 2) {
         $ratio_categories['panorama'][] = $ratio;
@@ -657,7 +656,7 @@ foreach ($ratios as $ratio) {
 }
 
 foreach (array_keys($ratio_categories) as $type) {
-    if (count($ratio_categories[$type]) > 0) {
+    if ($ratio_categories[$type] !== []) {
         $dimensions['ratio_' . $type] = [
             'min' => $ratio_categories[$type][0],
             'max' => end($ratio_categories[$type]),
@@ -693,7 +692,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $filesizes[] = sprintf('%.1f', $row['filesize'] / 1024);
 }
 
-if (empty($filesizes)) { // arbitrary values, only used when no photos on the gallery
+if ($filesizes === []) { // arbitrary values, only used when no photos on the gallery
     $filesizes = [0, 1, 2, 5, 8, 15];
 }
 

@@ -32,7 +32,7 @@ $errors = [];
 $pwatermark = $_POST['w'];
 
 // step 0 - manage upload if any
-if (isset($_FILES['watermarkImage']) and ! empty($_FILES['watermarkImage']['tmp_name'])) {
+if (isset($_FILES['watermarkImage']) && ! empty($_FILES['watermarkImage']['tmp_name'])) {
     [$width, $height, $type] = getimagesize($_FILES['watermarkImage']['tmp_name']);
     if ($type != IMAGETYPE_PNG) {
         $errors['watermarkImage'] = sprintf(
@@ -108,17 +108,17 @@ switch ($pwatermark['position']) {
 
 // step 2 - check validity
 $v = intval($pwatermark['xpos']);
-if ($v < 0 or $v > 100) {
+if ($v < 0 || $v > 100) {
     $errors['watermark']['xpos'] = '[0..100]';
 }
 
 $v = intval($pwatermark['ypos']);
-if ($v < 0 or $v > 100) {
+if ($v < 0 || $v > 100) {
     $errors['watermark']['ypos'] = '[0..100]';
 }
 
 $v = intval($pwatermark['opacity']);
-if ($v <= 0 or $v > 100) {
+if ($v <= 0 || $v > 100) {
     $errors['watermark']['opacity'] = '(0..100]';
 }
 
@@ -153,13 +153,13 @@ if (count($errors) == 0) {
         ImageStdParams::apply_global($params);
 
         $changed = $params->use_watermark != $old_use_watermark;
-        if (! $changed and $params->use_watermark) {
+        if (! $changed && $params->use_watermark) {
             $changed = $watermark_changed;
         }
-        if (! $changed and $params->use_watermark) {
+        if (! $changed && $params->use_watermark) {
             // if thresholds change and before/after the threshold is lower than the corresponding derivative side -> some derivatives might switch the watermark
-            $changed |= $watermark->min_size[0] != $old_watermark->min_size[0] and ($watermark->min_size[0] < $params->max_width() or $old_watermark->min_size[0] < $params->max_width());
-            $changed |= $watermark->min_size[1] != $old_watermark->min_size[1] and ($watermark->min_size[1] < $params->max_height() or $old_watermark->min_size[1] < $params->max_height());
+            ($changed |= $watermark->min_size[0] != $old_watermark->min_size[0]) && ($watermark->min_size[0] < $params->max_width() || $old_watermark->min_size[0] < $params->max_width());
+            ($changed |= $watermark->min_size[1] != $old_watermark->min_size[1]) && ($watermark->min_size[1] < $params->max_height() || $old_watermark->min_size[1] < $params->max_height());
         }
 
         if ($changed) {
@@ -170,7 +170,7 @@ if (count($errors) == 0) {
 
     ImageStdParams::save();
 
-    if (count($changed_types)) {
+    if ($changed_types !== []) {
         clear_derivative_cache($changed_types);
     }
 

@@ -48,7 +48,7 @@ function ws_add_image_category_relations(
         }
         $rank_on_category[$cat_id] = $rank;
 
-        if ($rank == 'auto') {
+        if ($rank === 'auto') {
             $search_current_ranks = true;
         }
     }
@@ -92,7 +92,7 @@ SELECT category_id
 
     if ($replace_mode) {
         $to_remove_cat_ids = array_diff($existing_cat_ids, $cat_ids);
-        if (count($to_remove_cat_ids) > 0) {
+        if ($to_remove_cat_ids !== []) {
             $query = '
 DELETE
   FROM ' . IMAGE_CATEGORY_TABLE . '
@@ -310,7 +310,7 @@ SELECT DISTINCT image_id
         case 'moderate':
             $ret = [
                 'id' => $comm['id'],
-                'validation' => $comment_action == 'validate',
+                'validation' => $comment_action === 'validate',
             ];
             return [
                 'comment' => new PwgNamedStruct($ret),
@@ -398,7 +398,7 @@ SELECT id, name, permalink, uppercats, global_rank, commentable
     }
     usort($related_categories, 'global_rank_compare');
 
-    if (empty($related_categories) and ! is_admin()) {
+    if ($related_categories === [] && ! is_admin()) {
         // photo might be in the lounge? or simply orphan. A standard user should not get
         // info. An admin should still be able to get info.
         return new PwgError(401, 'Access denied');
@@ -464,7 +464,7 @@ SELECT COUNT(id) AS nb_comments
     [$nb_comments] = query2array($query, null, 'nb_comments');
     $nb_comments = (int) $nb_comments;
 
-    if ($nb_comments > 0 and $params['comments_per_page'] > 0) {
+    if ($nb_comments > 0 && $params['comments_per_page'] > 0) {
         $query = '
 SELECT id, date, author, content
   FROM ' . COMMENTS_TABLE . '
@@ -482,10 +482,7 @@ SELECT id, date, author, content
     }
 
     $comment_post_data = null;
-    if ($is_commentable and
-        (! is_a_guest()
-          or (is_a_guest() and $conf['comments_forall'])
-        )
+    if ($is_commentable && (! is_a_guest() || is_a_guest() && $conf['comments_forall'])
     ) {
         $comment_post_data['author'] = stripslashes((string) $user['username']);
         $comment_post_data['key'] = get_ephemeral_key(2, $params['image_id']);
@@ -621,7 +618,7 @@ function ws_images_search(
         $params['per_page']
     );
 
-    if (count($image_ids)) {
+    if ($image_ids !== []) {
         $query = '
 SELECT *
   FROM ' . IMAGES_TABLE . '
@@ -1054,7 +1051,7 @@ SELECT COUNT(*)
         }
     }
 
-    if (count(array_keys($update)) > 0) {
+    if (array_keys($update) !== []) {
         single_update(
             IMAGES_TABLE,
             $update,
@@ -1089,7 +1086,7 @@ SELECT id, name, permalink
     }
 
     // and now, let's create tag associations
-    if (isset($params['tag_ids']) and ! empty($params['tag_ids'])) {
+    if (isset($params['tag_ids']) && ! empty($params['tag_ids'])) {
         set_tags(
             explode(',', (string) $params['tag_ids']),
             $image_id
@@ -1189,7 +1186,7 @@ SELECT COUNT(*)
         ]
     );
 
-    if (isset($params['tags']) and ! empty($params['tags'])) {
+    if (isset($params['tags']) && ! empty($params['tags'])) {
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
         $tag_ids = [];
@@ -1309,7 +1306,7 @@ function ws_images_upload(
     // Get a file name
     if (isset($_REQUEST['name'])) {
         $fileName = $_REQUEST['name'];
-    } elseif (! empty($_FILES)) {
+    } elseif ($_FILES !== []) {
         $fileName = $_FILES['file']['name'];
     } else {
         $fileName = uniqid('file_');
@@ -1328,23 +1325,20 @@ function ws_images_upload(
     // file_put_contents('/tmp/plupload.log', "[".date('c')."] ".__FUNCTION__.', '.$fileName.' '.($chunk+1).'/'.$chunks."\n", FILE_APPEND);
 
     // Open temp file
-    if (! $out = @fopen("{$filePath}.part", $chunks ? 'ab' : 'wb')) {
+    if (! $out = @fopen("{$filePath}.part", $chunks !== 0 ? 'ab' : 'wb')) {
         die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
     }
 
-    if (! empty($_FILES)) {
+    if ($_FILES !== []) {
         if ($_FILES['file']['error'] || ! is_uploaded_file($_FILES['file']['tmp_name'])) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
         }
-
         // Read binary input stream and append it to temp file
         if (! $in = @fopen($_FILES['file']['tmp_name'], 'rb')) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
         }
-    } else {
-        if (! $in = @fopen('php://input', 'rb')) {
-            die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
-        }
+    } elseif (! $in = @fopen('php://input', 'rb')) {
+        die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
     }
 
     while ($buff = fread($in, 4096)) {
@@ -1637,7 +1631,7 @@ SELECT COUNT(*)
     $logger->debug(__FUNCTION__ . ' image_id after add_uploaded_file = ' . $image_id);
 
     // and now, let's create tag associations
-    if (isset($params['tag_ids']) and ! empty($params['tag_ids'])) {
+    if (isset($params['tag_ids']) && ! empty($params['tag_ids'])) {
         set_tags(
             explode(',', (string) $params['tag_ids']),
             $image_id
@@ -1659,7 +1653,7 @@ SELECT COUNT(*)
         }
     }
 
-    if (count(array_keys($update)) > 0) {
+    if (array_keys($update) !== []) {
         single_update(
             IMAGES_TABLE,
             $update,
@@ -1673,7 +1667,7 @@ SELECT COUNT(*)
     invalidate_user_cache();
 
     // trick to bypass get_sql_condition_FandF
-    if (! empty($params['level']) and $params['level'] > $user['level']) {
+    if (! empty($params['level']) && $params['level'] > $user['level']) {
         // this will not persist
         $user['level'] = $params['level'];
     }
@@ -1945,7 +1939,7 @@ SELECT
         }
 
         foreach ($files as $path) {
-            if (is_file($path) and ! unlink($path)) {
+            if (is_file($path) && ! unlink($path)) {
                 $ok = false;
                 trigger_error('"' . $path . '" cannot be removed', E_USER_WARNING);
                 break;
@@ -2011,11 +2005,7 @@ SELECT path
 
     if (isset($compare_type)) {
         $logger->debug(__FUNCTION__ . ', md5_file($path) = ' . md5_file($path));
-        if (md5_file($path) != $params[$compare_type . '_sum']) {
-            $ret[$compare_type] = 'differs';
-        } else {
-            $ret[$compare_type] = 'equals';
-        }
+        $ret[$compare_type] = md5_file($path) != $params[$compare_type . '_sum'] ? 'differs' : 'equals';
     }
 
     $logger->debug(__FUNCTION__, $ret);
@@ -2091,8 +2081,7 @@ SELECT *
             } else {
                 return new PwgError(
                     500,
-                    '[ws_images_setInfo]'
-                    . ' invalid parameter single_value_mode "' . $params['single_value_mode'] . '"'
+                    '[ws_images_setInfo] invalid parameter single_value_mode "' . $params['single_value_mode'] . '"'
                     . ', possible values are {fill_if_empty, replace}.'
                 );
             }
@@ -2114,7 +2103,7 @@ SELECT *
         }
     }
 
-    if (count(array_keys($update)) > 0) {
+    if (array_keys($update) !== []) {
         $update['id'] = $params['image_id'];
 
         single_update(
@@ -2132,7 +2121,7 @@ SELECT *
         ws_add_image_category_relations(
             $params['image_id'],
             $params['categories'],
-            ($params['multiple_value_mode'] == 'replace' ? true : false)
+            ($params['multiple_value_mode'] == 'replace')
         );
     }
 
@@ -2161,8 +2150,7 @@ SELECT *
         } else {
             return new PwgError(
                 500,
-                '[ws_images_setInfo]'
-                . ' invalid parameter multiple_value_mode "' . $params['multiple_value_mode'] . '"'
+                '[ws_images_setInfo] invalid parameter multiple_value_mode "' . $params['multiple_value_mode'] . '"'
                 . ', possible values are {replace, append}.'
             );
         }
@@ -2242,11 +2230,9 @@ function ws_images_emptyLounge(
 ) {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
-    $ret = [
+    return [
         'rows' => empty_lounge(),
     ];
-
-    return $ret;
 }
 
 /**

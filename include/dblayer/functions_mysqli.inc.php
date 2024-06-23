@@ -108,7 +108,7 @@ function pwg_query($query)
     global $mysqli, $conf, $page, $debug, $t2;
 
     $start = microtime(true);
-    ($result = $mysqli->query($query)) or my_error($query, $conf['die_on_sql_error']);
+    ($result = $mysqli->query($query)) || my_error($query, $conf['die_on_sql_error']);
 
     $time = microtime(true) - $start;
 
@@ -130,11 +130,10 @@ function pwg_query($query)
         $output .= number_format($page['queries_time'], 3, '.', ' ') . ' s)';
         $output .= "\n" . '(total time      : ';
         $output .= number_format(($time + $start - $t2), 3, '.', ' ') . ' s)';
-        if ($result != null and preg_match('/\s*SELECT\s+/i', $query)) {
+        if ($result != null && preg_match('/\s*SELECT\s+/i', $query)) {
             $output .= "\n" . '(num rows        : ';
             $output .= pwg_db_num_rows($result) . ' )';
-        } elseif ($result != null
-          and preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i', $query)) {
+        } elseif ($result != null && preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i', $query)) {
             $output .= "\n" . '(affected rows   : ';
             $output .= pwg_db_changes() . ' )';
         }
@@ -269,10 +268,10 @@ UPDATE ' . protect_column_name($tablename) . '
             foreach ($dbfields['update'] as $key) {
                 $separator = $is_first ? '' : ",\n    ";
 
-                if (isset($data[$key]) and $data[$key] != '') {
+                if (isset($data[$key]) && $data[$key] != '') {
                     $query .= $separator . protect_column_name($key) . ' = \'' . $data[$key] . '\'';
                 } else {
-                    if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+                    if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                         continue; // next field
                     }
                     $query .= $separator . protect_column_name($key) . ' = NULL';
@@ -315,7 +314,7 @@ UPDATE ' . protect_column_name($tablename) . '
                 $column .= ' ' . $row['Type'];
 
                 $nullable = true;
-                if (! isset($row['Null']) or $row['Null'] == '' or $row['Null'] == 'NO') {
+                if (! isset($row['Null']) || $row['Null'] == '' || $row['Null'] == 'NO') {
                     $column .= ' NOT NULL';
                     $nullable = false;
                 }
@@ -324,7 +323,7 @@ UPDATE ' . protect_column_name($tablename) . '
                 } elseif ($nullable) {
                     $column .= ' default NULL';
                 }
-                if (isset($row['Collation']) and $row['Collation'] != 'NULL') {
+                if (isset($row['Collation']) && $row['Collation'] != 'NULL') {
                     $column .= " collate '" . $row['Collation'] . "'";
                 }
                 $columns[] = $column;
@@ -343,7 +342,7 @@ CREATE TABLE ' . $temporary_tablename . '
         pwg_query($query);
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
-        if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+        if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
             $func_set = fn ($s) => "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})";
         } else {
             $func_set = fn ($s) => "t1.{$s} = t2.{$s}";
@@ -398,10 +397,10 @@ UPDATE ' . protect_column_name($tablename) . '
     foreach ($datas as $key => $value) {
         $separator = $is_first ? '' : ",\n    ";
 
-        if (isset($value) and $value !== '') {
+        if (isset($value) && $value !== '') {
             $query .= $separator . protect_column_name($key) . ' = \'' . $value . '\'';
         } else {
-            if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+            if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                 continue; // next field
             }
             $query .= $separator . protect_column_name($key) . ' = NULL';
@@ -448,7 +447,7 @@ function mass_inserts(
     ]
 ) {
     $ignore = '';
-    if (isset($options['ignore']) and $options['ignore']) {
+    if (isset($options['ignore']) && $options['ignore']) {
         $ignore = 'IGNORE';
     }
 
@@ -457,7 +456,7 @@ function mass_inserts(
 
         $query = 'SHOW VARIABLES LIKE \'max_allowed_packet\'';
         [, $packet_size] = pwg_db_fetch_row(pwg_query($query));
-        $packet_size = $packet_size - 2000; // The last list of values MUST not exceed 2000 character*/
+        $packet_size -= 2000; // The last list of values MUST not exceed 2000 character*/
         $query = '';
 
         foreach ($datas as $insert) {
@@ -483,7 +482,7 @@ INSERT ' . $ignore . ' INTO ' . protect_column_name($table_name) . '
                     $query .= ',';
                 }
 
-                if (! isset($insert[$dbfield]) or $insert[$dbfield] === '') {
+                if (! isset($insert[$dbfield]) || $insert[$dbfield] === '') {
                     $query .= 'NULL';
                 } else {
                     $query .= "'" . $insert[$dbfield] . "'";
@@ -511,7 +510,7 @@ function single_insert(
     ]
 ) {
     $ignore = '';
-    if (isset($options['ignore']) and $options['ignore']) {
+    if (isset($options['ignore']) && $options['ignore']) {
         $ignore = 'IGNORE';
     }
 
@@ -824,15 +823,13 @@ function query2array(
                 $data[$row[$key_name]] = $row;
             }
         }
+    } elseif (isset($value_name)) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row[$value_name];
+        }
     } else {
-        if (isset($value_name)) {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row[$value_name];
-            }
-        } else {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
-            }
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
         }
     }
 

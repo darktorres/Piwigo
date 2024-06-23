@@ -19,10 +19,10 @@ class RVTS
     {
         global $page;
         $page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
-        if (count($page['items']) < $page['nb_image_page'] + 3) {
-            if (! @$page['start'] || script_basename() == 'picture') {
-                $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
-            }
+        if (count(
+            $page['items']
+        ) < $page['nb_image_page'] + 3 && (! @$page['start'] || script_basename() == 'picture')) {
+            $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
         }
         add_event_handler('loc_begin_index', ['RVTS', 'on_index_begin'], EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
     }
@@ -44,7 +44,7 @@ class RVTS
             }
         } else {
             $adj = (int) @$_GET['adj'];
-            if ($adj) {
+            if ($adj !== 0) {
                 $mult = pwg_get_session_var('rvts_mult', 1);
                 if ($adj > 0 && $mult < 5) {
                     pwg_set_session_var('rvts_mult', ++$mult);

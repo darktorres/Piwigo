@@ -58,11 +58,7 @@ SELECT id, date_creation
             $data['comment'] = strip_tags((string) @$_POST['description-' . $row['id']]);
         }
 
-        if (! empty($_POST['date_creation-' . $row['id']])) {
-            $data['date_creation'] = $_POST['date_creation-' . $row['id']];
-        } else {
-            $data['date_creation'] = null;
-        }
+        $data['date_creation'] = empty($_POST['date_creation-' . $row['id']]) ? null : $_POST['date_creation-' . $row['id']];
 
         $datas[] = $data;
 
@@ -135,13 +131,11 @@ if (count($page['cat_elements_id']) > 0) {
     $element_ids = [];
 
     $is_category = false;
-    if (isset($_SESSION['bulk_manager_filter']['category'])
-        and ! isset($_SESSION['bulk_manager_filter']['category_recursive'])) {
+    if (isset($_SESSION['bulk_manager_filter']['category']) && ! isset($_SESSION['bulk_manager_filter']['category_recursive'])) {
         $is_category = true;
     }
 
-    if (isset($_SESSION['bulk_manager_filter']['prefilter'])
-        and $_SESSION['bulk_manager_filter']['prefilter'] == 'duplicates') {
+    if (isset($_SESSION['bulk_manager_filter']['prefilter']) && $_SESSION['bulk_manager_filter']['prefilter'] == 'duplicates') {
         $conf['order_by'] = ' ORDER BY file, id';
     }
 
@@ -208,11 +202,11 @@ SELECT
                     'U_EDIT' => get_root_url() . 'admin.php?page=photo-' . $row['id'],
                     'NAME' => htmlspecialchars($row['name'] ?? ''),
                     'AUTHOR' => htmlspecialchars($row['author'] ?? ''),
-                    'LEVEL' => ! empty($row['level']) ? $row['level'] : '0',
+                    'LEVEL' => empty($row['level']) ? '0' : $row['level'],
                     'DESCRIPTION' => htmlspecialchars($row['comment'] ?? ''),
                     'DATE_CREATION' => $row['date_creation'],
                     'TAGS' => $tag_selection,
-                    'is_svg' => (strtoupper(end($extTab)) == 'SVG'),
+                    'is_svg' => (strtoupper(end($extTab)) === 'SVG'),
                 ]
             )
         );

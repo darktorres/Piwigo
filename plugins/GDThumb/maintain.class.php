@@ -1,6 +1,6 @@
 <?php
 
-defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
+defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class GDThumb_maintain extends PluginMaintain
 {
@@ -52,7 +52,7 @@ class GDThumb_maintain extends PluginMaintain
         if (is_dir($path)):
             $fh = opendir($path);
             while ($file = readdir($fh)) {
-                if ($file != '.' and $file != '..'):
+                if ($file !== '.' && $file !== '..'):
                     $pathfile = $path . '/' . $file;
                     if (is_dir($pathfile)):
                         gtdeltree($pathfile);
@@ -64,5 +64,6 @@ class GDThumb_maintain extends PluginMaintain
         closedir($fh);
         return @rmdir($path);
         endif;
+        return null;
     }
 }

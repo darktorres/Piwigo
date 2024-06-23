@@ -183,8 +183,7 @@ function custom_notification_query(
                     break;
             }
             $query = 'SELECT DISTINCT ' . $field_id . ' ' . $query . ';';
-            $infos = query2array($query);
-            return $infos;
+            return query2array($query);
             break;
 
         default:
@@ -334,11 +333,16 @@ function news_exists(
     $start = null,
     $end = null
 ) {
-    return (nb_new_comments($start, $end) > 0) or
-        (nb_new_elements($start, $end) > 0) or
-        (nb_updated_categories($start, $end) > 0) or
-        ((is_admin()) and (nb_unvalidated_comments($start, $end) > 0)) or
-        ((is_admin()) and (nb_new_users($start, $end) > 0));
+    return nb_new_comments($start, $end) > 0 || nb_new_elements($start, $end) > 0 || nb_updated_categories(
+        $start,
+        $end
+    ) > 0 || is_admin() && nb_unvalidated_comments(
+        $start,
+        $end
+    ) > 0 || is_admin() && nb_new_users(
+        $start,
+        $end
+    ) > 0;
 }
 
 /**
@@ -361,7 +365,7 @@ function add_news_line(
 ) {
     if ($count > 0) {
         $line = l10n_dec($singular_key, $plural_key, $count);
-        if ($add_url and ! empty($url)) {
+        if ($add_url && ! empty($url)) {
             $line = '<a href="' . $url . '">' . $line . '</a>';
         }
         $news[] = $line;
@@ -487,8 +491,9 @@ SELECT
   LIMIT ' . $max_dates . '
 ;';
     $dates = query2array($query);
+    $counter = count($dates);
 
-    for ($i = 0; $i < count($dates); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         if ($max_elements > 0) { // get some thumbnails ...
             $query = '
 SELECT DISTINCT i.*
@@ -605,9 +610,7 @@ function get_html_description_recent_post_date(
     }
     $description .= '</ul>';
 
-    $description .= '</ul>';
-
-    return $description;
+    return $description . '</ul>';
 }
 
 /**
@@ -625,9 +628,8 @@ function get_title_recent_post_date(
     $exploded_date = strptime($date, '%Y-%m-%d %H:%M:%S');
 
     $title = l10n_dec('%d new photo', '%d new photos', $date_detail['nb_elements']);
-    $title .= ' (' . $lang['month'][1 + $exploded_date['tm_mon']] . ' ' . $exploded_date['tm_mday'] . ')';
 
-    return $title;
+    return $title . (' (' . $lang['month'][1 + $exploded_date['tm_mon']] . ' ' . $exploded_date['tm_mday'] . ')');
 }
 
 if (! function_exists('strptime')) {
@@ -637,7 +639,6 @@ if (! function_exists('strptime')) {
             die('Invalid strptime format ' . $fmt);
         }
         [$y, $m, $d, $H, $M, $S] = preg_split('/[-: ]/', (string) $date);
-        $res = localtime(mktime($H, $M, $S, $m, $d, $y), true);
-        return $res;
+        return localtime(mktime($H, $M, $S, $m, $d, $y), true);
     }
 }

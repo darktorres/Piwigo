@@ -76,19 +76,17 @@ function modus_smarty_prefilter($source)
         $source = substr_replace($source, $matches2[0][0], $matches[0][1] + strlen($matches[0][0]), 0);
     }
 
-    if (($pos = strpos($source, '<ul class="categoryActions">')) !== false || ($pos = strpos(
+    if ((($pos = strpos($source, '<ul class="categoryActions">')) !== false || ($pos = strpos(
         $source,
         '<ul class=categoryActions>'
-    )) !== false) {
-        if (($pos2 = strpos($source, '</ul>', $pos)) !== false
-            && (substr_count($source, '<li>', $pos, $pos2 - $pos) > 2)) {
-            $source = substr_replace(
-                $source,
-                '<a id=albumActionsSwitcher class=pwg-button><span class="pwg-icon pwg-icon-ellipsis"></span></a>{combine_script version=1 id=\'modus.async\' path="themes/`$themeconf.id`/js/modus.async.js" load=\'async\'}',
-                $pos,
-                0
-            );
-        }
+    )) !== false) && (($pos2 = strpos($source, '</ul>', $pos)) !== false
+        && (substr_count($source, '<li>', $pos, $pos2 - $pos) > 2))) {
+        $source = substr_replace(
+            $source,
+            '<a id=albumActionsSwitcher class=pwg-button><span class="pwg-icon pwg-icon-ellipsis"></span></a>{combine_script version=1 id=\'modus.async\' path="themes/`$themeconf.id`/js/modus.async.js" load=\'async\'}',
+            $pos,
+            0
+        );
     }
 
     $re = preg_quote('<img title="{$cat.icon_ts.TITLE}" src="', '/')
@@ -105,11 +103,10 @@ function modus_smarty_prefilter($source)
     $re = preg_quote('<img title="{$thumbnail.icon_ts.TITLE}" src="', '/')
         . '[^>]+'
         . preg_quote('/recent.png" alt="(!)">', '/');
-    $source = preg_replace(
+
+    return preg_replace(
         '/' . $re . '/',
         '<span class=albSymbol title="{$thumbnail.icon_ts.TITLE}">' . MODUS_STR_RECENT . '</span>',
         $source
     );
-
-    return $source;
 }

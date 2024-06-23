@@ -15,7 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('This page cannot be loaded directly, load upgrade.php');
 }
 
-if (! defined('PHPWG_IN_UPGRADE') or ! PHPWG_IN_UPGRADE) {
+if (! defined('PHPWG_IN_UPGRADE') || ! PHPWG_IN_UPGRADE) {
     die('Hacking attempt!');
 }
 
@@ -65,7 +65,7 @@ SELECT id, id_uppercat
 ;';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
-    if (! isset($row['id_uppercat']) or $row['id_uppercat'] == '') {
+    if (! isset($row['id_uppercat']) || $row['id_uppercat'] == '') {
         $row['id_uppercat'] = 'NULL';
     }
     $id_uppercats[$row['id']] = $row['id_uppercat'];
@@ -78,14 +78,14 @@ foreach (array_keys($id_uppercats) as $id) {
     $data['id'] = $id;
     $uppercats = [];
 
-    array_push($uppercats, $id);
-    while (isset($id_uppercats[$id]) and $id_uppercats[$id] != 'NULL') {
-        array_push($uppercats, $id_uppercats[$id]);
+    $uppercats[] = $id;
+    while (isset($id_uppercats[$id]) && $id_uppercats[$id] != 'NULL') {
+        $uppercats[] = $id_uppercats[$id];
         $id = $id_uppercats[$id];
     }
     $data['uppercats'] = implode(',', array_reverse($uppercats));
 
-    array_push($datas, $data);
+    $datas[] = $data;
 }
 
 mass_updates(

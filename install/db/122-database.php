@@ -34,19 +34,16 @@ while ($row = pwg_db_fetch_assoc($result)) {
         $high_path = dirname((string) $row['path']) . '/pwg_high/' . basename((string) $row['path']);
         rename($high_path, $row['path']);
 
-        array_push(
-            $updates,
-            [
-                'id' => $row['id'],
-                'width' => $row['high_width'],
-                'height' => $row['high_height'],
-                'filesize' => $row['high_filesize'],
-            ]
-        );
+        $updates[] = [
+            'id' => $row['id'],
+            'width' => $row['high_width'],
+            'height' => $row['high_height'],
+            'filesize' => $row['high_filesize'],
+        ];
     }
 }
 
-if (count($updates) > 0) {
+if ($updates !== []) {
     mass_updates(
         IMAGES_TABLE,
         [

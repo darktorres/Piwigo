@@ -70,11 +70,7 @@ final class SrcImage
             );
             $this->flags |= self::IS_MIMETYPE;
             if (($size = @getimagesize(PHPWG_ROOT_PATH . $this->rel_path)) === false) {
-                if ($ext == 'svg') {
-                    $this->rel_path = $infos['path'];
-                } else {
-                    $this->rel_path = 'themes/default/icon/mimetypes/unknown.png';
-                }
+                $this->rel_path = $ext === 'svg' ? $infos['path'] : 'themes/default/icon/mimetypes/unknown.png';
                 $size = getimagesize(PHPWG_ROOT_PATH . $this->rel_path);
             }
             $this->size = @[$size[0], $size[1]];
@@ -88,7 +84,7 @@ final class SrcImage
                 $this->rotation = intval($infos['rotation']) % 4;
                 // 1 or 5 =>  90 clockwise
                 // 3 or 7 => 270 clockwise
-                if ($this->rotation % 2) {
+                if ($this->rotation % 2 !== 0) {
                     $width = $infos['height'];
                     $height = $infos['width'];
                 }
@@ -130,7 +126,7 @@ final class SrcImage
     public function get_url()
     {
         $url = get_root_url() . $this->rel_path;
-        if (! ($this->flags & self::IS_MIMETYPE)) {
+        if (($this->flags & self::IS_MIMETYPE) === 0) {
             $url = trigger_change('get_src_image_url', $url, $this);
         }
         return embellish_url($url);
@@ -150,7 +146,7 @@ final class SrcImage
     public function get_size()
     {
         if ($this->size == null) {
-            if ($this->flags & self::DIM_NOT_GIVEN) {
+            if (($this->flags & self::DIM_NOT_GIVEN) !== 0) {
                 fatal_error('SrcImage dimensions required but not provided');
             }
             // probably not metadata synced
@@ -201,11 +197,7 @@ final class DerivativeImage
         $type,
         public SrcImage $src_image
     ) {
-        if (is_string($type)) {
-            $this->params = ImageStdParams::get_by_type($type);
-        } else {
-            $this->params = $type;
-        }
+        $this->params = is_string($type) ? ImageStdParams::get_by_type($type) : $type;
 
         self::build($this->src_image, $this->params, $this->rel_path, $this->rel_url, $this->is_cached);
     }
@@ -379,6 +371,7 @@ final class DerivativeImage
         if ($size) {
             return 'width:' . $size[0] . 'px; height:' . $size[1] . 'px';
         }
+        return null;
     }
 
     /**
@@ -392,6 +385,7 @@ final class DerivativeImage
         if ($size) {
             return 'width="' . $size[0] . '" height="' . $size[1] . '"';
         }
+        return null;
     }
 
     /**
@@ -405,6 +399,7 @@ final class DerivativeImage
         if ($size) {
             return $size[0] . ' x ' . $size[1];
         }
+        return null;
     }
 
     /**
@@ -444,6 +439,7 @@ final class DerivativeImage
         if ($size) {
             return 'width="' . $size[0] . '" height="' . $size[1] . '"';
         }
+        return null;
     }
 
     /**
@@ -475,7 +471,8 @@ final class DerivativeImage
                 return;
             }
             $defined_types = array_keys(ImageStdParams::get_defined_type_map());
-            for ($i = 0; $i < count($defined_types); $i++) {
+            $counter = count($defined_types);
+            for ($i = 0; $i < $counter; $i++) {
                 if ($defined_types[$i] == $params->type) {
                     for ($i--; $i >= 0; $i--) {
                         $smaller = ImageStdParams::get_by_type($defined_types[$i]);
@@ -513,7 +510,7 @@ final class DerivativeImage
         $url_style = $conf['derivative_url_style'];
         if (! $url_style) {
             $mtime = file_exists(PHPWG_ROOT_PATH . $rel_path) ? filemtime(PHPWG_ROOT_PATH . $rel_path) : false;
-            if ($mtime === false or $mtime < $params->last_mod_time) {
+            if ($mtime === false || $mtime < $params->last_mod_time) {
                 $is_cached = false;
                 $url_style = 2;
             } else {

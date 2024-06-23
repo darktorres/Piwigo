@@ -59,15 +59,11 @@ define(
     'piwigo_'
 );
 
-if (isset($_POST['install'])) {
-    $prefixeTable = $_POST['prefix'];
-} else {
-    $prefixeTable = DEFAULT_PREFIX_TABLE;
-}
+$prefixeTable = isset($_POST['install']) ? $_POST['prefix'] : DEFAULT_PREFIX_TABLE;
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
+defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 include(PHPWG_ROOT_PATH . 'include/template.class.php');
@@ -88,18 +84,18 @@ if (! empty($_GET['dl']) && file_exists(PHPWG_ROOT_PATH . $conf['data_location']
 }
 
 // Obtain various vars
-$dbhost = (! empty($_POST['dbhost'])) ? $_POST['dbhost'] : 'localhost';
-$dbuser = (! empty($_POST['dbuser'])) ? $_POST['dbuser'] : '';
-$dbpasswd = (! empty($_POST['dbpasswd'])) ? $_POST['dbpasswd'] : '';
-$dbname = (! empty($_POST['dbname'])) ? $_POST['dbname'] : '';
+$dbhost = (empty($_POST['dbhost'])) ? 'localhost' : $_POST['dbhost'];
+$dbuser = (empty($_POST['dbuser'])) ? '' : $_POST['dbuser'];
+$dbpasswd = (empty($_POST['dbpasswd'])) ? '' : $_POST['dbpasswd'];
+$dbname = (empty($_POST['dbname'])) ? '' : $_POST['dbname'];
 
 // dblayer
 $dblayer = 'mysqli';
 
-$admin_name = (! empty($_POST['admin_name'])) ? $_POST['admin_name'] : '';
-$admin_pass1 = (! empty($_POST['admin_pass1'])) ? $_POST['admin_pass1'] : '';
-$admin_pass2 = (! empty($_POST['admin_pass2'])) ? $_POST['admin_pass2'] : '';
-$admin_mail = (! empty($_POST['admin_mail'])) ? $_POST['admin_mail'] : '';
+$admin_name = (empty($_POST['admin_name'])) ? '' : $_POST['admin_name'];
+$admin_pass1 = (empty($_POST['admin_pass1'])) ? '' : $_POST['admin_pass1'];
+$admin_pass2 = (empty($_POST['admin_pass2'])) ? '' : $_POST['admin_pass2'];
+$admin_mail = (empty($_POST['admin_mail'])) ? '' : $_POST['admin_mail'];
 
 $is_newsletter_subscribe = true;
 if (isset($_POST['install'])) {
@@ -147,27 +143,27 @@ $language = 'en_UK';
 //   }
 // }
 
-if ($language == 'fr_FR') {
+if ($language === 'fr_FR') {
     define('PHPWG_DOMAIN', 'fr.piwigo.org');
-} elseif ($language == 'it_IT') {
+} elseif ($language === 'it_IT') {
     define('PHPWG_DOMAIN', 'it.piwigo.org');
-} elseif ($language == 'de_DE') {
+} elseif ($language === 'de_DE') {
     define('PHPWG_DOMAIN', 'de.piwigo.org');
-} elseif ($language == 'es_ES') {
+} elseif ($language === 'es_ES') {
     define('PHPWG_DOMAIN', 'es.piwigo.org');
-} elseif ($language == 'pl_PL') {
+} elseif ($language === 'pl_PL') {
     define('PHPWG_DOMAIN', 'pl.piwigo.org');
-} elseif ($language == 'zh_CN') {
+} elseif ($language === 'zh_CN') {
     define('PHPWG_DOMAIN', 'cn.piwigo.org');
-} elseif ($language == 'ru_RU') {
+} elseif ($language === 'ru_RU') {
     define('PHPWG_DOMAIN', 'ru.piwigo.org');
-} elseif ($language == 'nl_NL') {
+} elseif ($language === 'nl_NL') {
     define('PHPWG_DOMAIN', 'nl.piwigo.org');
-} elseif ($language == 'tr_TR') {
+} elseif ($language === 'tr_TR') {
     define('PHPWG_DOMAIN', 'tr.piwigo.org');
-} elseif ($language == 'da_DK') {
+} elseif ($language === 'da_DK') {
     define('PHPWG_DOMAIN', 'da.piwigo.org');
-} elseif ($language == 'pt_BR') {
+} elseif ($language === 'pt_BR') {
     define('PHPWG_DOMAIN', 'br.piwigo.org');
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
@@ -215,7 +211,7 @@ include(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
 
 if (isset($_POST['install'])) {
     $webmaster = trim(preg_replace('/\s{2,}/', ' ', $admin_name));
-    if (empty($webmaster)) {
+    if ($webmaster === '' || $webmaster === '0') {
         $errors[] = l10n('enter a login for webmaster');
     } elseif (preg_match('/[\'"]/', $webmaster)) {
         $errors[] = l10n('webmaster login can\'t contain characters \' or "');
@@ -272,7 +268,9 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
 
         conf_update_param(
             'page_banner',
-            '<h1>%gallery_title%</h1>' . "\n\n<p>" . pwg_db_real_escape_string(
+            '<h1>%gallery_title%</h1>
+
+<p>' . pwg_db_real_escape_string(
                 l10n('Welcome to my photo gallery')
             ) . '</p>'
         );
@@ -353,7 +351,7 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
             );
             $tmp_filename = md5(uniqid((string) time()));
             $fh = fopen(PHPWG_ROOT_PATH . $conf['data_location'] . 'pwg_' . $tmp_filename, 'w');
-            fputs($fh, $file_content, strlen($file_content));
+            fwrite($fh, $file_content, strlen($file_content));
             fclose($fh);
             $template->assign(
                 [
@@ -364,7 +362,7 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
             );
         }
 
-        fputs($fp, $file_content, strlen($file_content));
+        fwrite($fp, $file_content, strlen($file_content));
         fclose($fp);
     }
 }

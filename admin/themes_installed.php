@@ -29,11 +29,11 @@ $themes = new themes();
 // |                          perform actions                              |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['action']) and isset($_GET['theme'])) {
+if (isset($_GET['action']) && isset($_GET['theme'])) {
     $page['errors'] = $themes->perform_action($_GET['action'], $_GET['theme']);
 
     if (empty($page['errors'])) {
-        if ($_GET['action'] == 'activate' or $_GET['action'] == 'deactivate') {
+        if ($_GET['action'] == 'activate' || $_GET['action'] == 'deactivate') {
             $template->delete_compiled_templates();
         }
         redirect($base_url);
@@ -94,7 +94,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
         $tpl_theme['STATE'] = 'inactive';
 
         // is the theme "activable" ?
-        if (isset($fs_theme['activable']) and ! $fs_theme['activable']) {
+        if (isset($fs_theme['activable']) && ! $fs_theme['activable']) {
             $tpl_theme['ACTIVABLE'] = false;
             $tpl_theme['ACTIVABLE_TOOLTIP'] = l10n('This theme was not designed to be directly activated');
         } else {

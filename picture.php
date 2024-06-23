@@ -51,14 +51,16 @@ SELECT id, file, level
     $page['image_file'] = $row['file'];
     if (! isset($page['rank_of'][$page['image_id']])) {// the image can still be non accessible (filter/cat perm) and/or not in the set
         global $filter;
-        if (! empty($filter['visible_images']) and
-          ! in_array($page['image_id'], explode(',', (string) $filter['visible_images']))) {
+        if (! empty($filter['visible_images']) && ! in_array(
+            $page['image_id'],
+            explode(',', (string) $filter['visible_images'])
+        )) {
             page_not_found(
                 'The requested image is filtered',
                 duplicate_index_url()
             );
         }
-        if ($page['section'] == 'categories' and ! isset($page['category'])) {// flat view - all items
+        if ($page['section'] == 'categories' && ! isset($page['category'])) {// flat view - all items
             access_denied();
         } else {// try to see if we can access it differently
             $query = '
@@ -74,22 +76,20 @@ SELECT id
   LIMIT 1';
             if (pwg_db_num_rows(pwg_query($query)) == 0) {
                 access_denied();
+            } elseif ($page['section'] == 'best_rated') {
+                $page['rank_of'][$page['image_id']] = count($page['items']);
+                $page['items'][] = $page['image_id'];
             } else {
-                if ($page['section'] == 'best_rated') {
-                    $page['rank_of'][$page['image_id']] = count($page['items']);
-                    $page['items'][] = $page['image_id'];
-                } else {
-                    $url = make_picture_url(
-                        [
-                            'image_id' => $page['image_id'],
-                            'image_file' => $page['image_file'],
-                            'section' => 'categories',
-                            'flat' => true,
-                        ]
-                    );
-                    set_status_header($page['section'] == 'recent_pics' ? 301 : 302);
-                    redirect_http($url);
-                }
+                $url = make_picture_url(
+                    [
+                        'image_id' => $page['image_id'],
+                        'image_file' => $page['image_file'],
+                        'section' => 'categories',
+                        'flat' => true,
+                    ]
+                );
+                set_status_header($page['section'] == 'recent_pics' ? 301 : 302);
+                redirect_http($url);
             }
         }
     }
@@ -169,7 +169,7 @@ function default_picture_content(
         $show_original &= ! ($derivative->same_as_source());
 
         // in case we do not display the sizes icon, we only add the selected size to unique_derivatives
-        if ($conf['picture_sizes_icon'] or $type == $deriv_type) {
+        if ($conf['picture_sizes_icon'] || $type == $deriv_type) {
             $unique_derivatives[$type] = $derivative;
         }
     }
@@ -284,7 +284,7 @@ DELETE FROM ' . FAVORITES_TABLE . '
 
         case 'set_as_representative':
 
-            if (is_admin() and isset($page['category'])) {
+            if (is_admin() && isset($page['category'])) {
                 $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = ' . $page['image_id'] . '
@@ -404,7 +404,7 @@ UPDATE ' . CATEGORIES_TABLE . '
 //---------- incrementation of the number of hits
 $inc_hit_count = ! isset($_POST['content']);
 // don't increment counter if in the Mozilla Firefox prefetch
-if (isset($_SERVER['HTTP_X_MOZ']) and $_SERVER['HTTP_X_MOZ'] == 'prefetch') {
+if (isset($_SERVER['HTTP_X_MOZ']) && $_SERVER['HTTP_X_MOZ'] == 'prefetch') {
     $inc_hit_count = false;
 } else {
     // don't increment counter if comming from the same picture (actions)
@@ -471,13 +471,13 @@ SELECT *
 $result = pwg_query($query);
 
 while ($row = pwg_db_fetch_assoc($result)) {
-    if (isset($page['previous_item']) and $row['id'] == $page['previous_item']) {
+    if (isset($page['previous_item']) && $row['id'] == $page['previous_item']) {
         $i = 'previous';
-    } elseif (isset($page['next_item']) and $row['id'] == $page['next_item']) {
+    } elseif (isset($page['next_item']) && $row['id'] == $page['next_item']) {
         $i = 'next';
-    } elseif (isset($page['first_item']) and $row['id'] == $page['first_item']) {
+    } elseif (isset($page['first_item']) && $row['id'] == $page['first_item']) {
         $i = 'first';
-    } elseif (isset($page['last_item']) and $row['id'] == $page['last_item']) {
+    } elseif (isset($page['last_item']) && $row['id'] == $page['last_item']) {
         $i = 'last';
     } else {
         $i = 'current';
@@ -490,7 +490,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $row['path_ext'] = strtolower(get_extension($row['path']));
     $row['file_ext'] = strtolower(get_extension($row['file']));
 
-    if ($i == 'current') {
+    if ($i === 'current') {
         $row['element_path'] = get_element_path($row);
 
         if ($row['src_image']->is_original()) {// we have a photo
@@ -518,10 +518,10 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $picture[$i]['TITLE'] = render_element_name($row);
     $picture[$i]['TITLE_ESC'] = str_replace('"', '&quot;', $picture[$i]['TITLE']);
 
-    if ($i == 'previous' and $page['previous_item'] == $page['first_item']) {
+    if ($i === 'previous' && $page['previous_item'] == $page['first_item']) {
         $picture['first'] = $picture[$i];
     }
-    if ($i == 'next' and $page['next_item'] == $page['last_item']) {
+    if ($i === 'next' && $page['next_item'] == $page['last_item']) {
         $picture['last'] = $picture[$i];
     }
 }
@@ -543,13 +543,11 @@ if (isset($_GET['slideshow'])) {
         $id_pict_redirect = '';
         if (isset($page['next_item'])) {
             $id_pict_redirect = 'next';
-        } else {
-            if ($slideshow_params['repeat'] and isset($page['first_item'])) {
-                $id_pict_redirect = 'first';
-            }
+        } elseif ($slideshow_params['repeat'] && isset($page['first_item'])) {
+            $id_pict_redirect = 'first';
         }
 
-        if (! empty($id_pict_redirect)) {
+        if ($id_pict_redirect !== '' && $id_pict_redirect !== '0') {
             // $refresh, $url_link and $title are required for creating
             // an automated refresh page in header.tpl
             $refresh = $slideshow_params['period'];
@@ -562,7 +560,7 @@ if (isset($_GET['slideshow'])) {
 } else {
     $page['slideshow'] = false;
 }
-if ($page['slideshow'] and $conf['light_slideshow']) {
+if ($page['slideshow'] && $conf['light_slideshow']) {
     $template->set_filenames([
         'slideshow' => 'slideshow.tpl',
     ]);
@@ -585,13 +583,12 @@ $url_metadata = add_url_params($url_metadata, [
 $metadata_showable = trigger_change(
     'get_element_metadata_available',
     (
-        ($conf['show_exif'] or $conf['show_iptc'])
-        and ! $picture['current']['src_image']->is_mimetype()
+        ($conf['show_exif'] || $conf['show_iptc']) && ! $picture['current']['src_image']->is_mimetype()
     ),
     $picture['current']
 );
 
-if ($metadata_showable and pwg_get_session_var('show_metadata')) {
+if ($metadata_showable && pwg_get_session_var('show_metadata')) {
     $page['meta_robots'] = [
         'noindex' => 1,
         'nofollow' => 1,
@@ -631,7 +628,7 @@ foreach ([
         );
     }
 }
-if ($conf['picture_download_icon'] and ! empty($picture['current']['download_url'])) {
+if ($conf['picture_download_icon'] && ! empty($picture['current']['download_url'])) {
     $template->append('current', [
         'U_DOWNLOAD' => $picture['current']['download_url'],
     ], true);
@@ -709,7 +706,7 @@ if ($page['slideshow']) {
     }
 
     foreach (['dec', 'inc'] as $op) {
-        $new_period = $slideshow_params['period'] + ((($op == 'dec') ? -1 : 1) * $conf['slideshow_period_step']);
+        $new_period = $slideshow_params['period'] + ((($op === 'dec') ? -1 : 1) * $conf['slideshow_period_step']);
         $new_slideshow_params =
           correct_slideshow_params(
               array_merge(
@@ -750,7 +747,7 @@ $template->assign(
     [
         'SECTION_TITLE' => $page['section_title'],
         'PHOTO' => $title_nb,
-        'IS_HOME' => ($page['section'] == 'categories' and ! isset($page['category'])),
+        'IS_HOME' => ($page['section'] == 'categories' && ! isset($page['category'])),
 
         'LEVEL_SEPARATOR' => $conf['level_separator'],
 
@@ -768,7 +765,7 @@ if ($conf['picture_metadata_icon']) {
 
 // admin links
 if (is_admin()) {
-    if (isset($page['category']) and $conf['picture_representative_icon']) {
+    if (isset($page['category']) && $conf['picture_representative_icon']) {
         $template->assign(
             [
                 'U_SET_AS_REPRESENTATIVE' => add_url_params(
@@ -803,7 +800,7 @@ if (is_admin()) {
 }
 
 // favorite manipulation
-if (! is_a_guest() and $conf['picture_favorite_icon']) {
+if (! is_a_guest() && $conf['picture_favorite_icon']) {
     // verify if the picture is already in the favorite of the user
     $query = '
 SELECT COUNT(*) AS nb_fav
@@ -821,7 +818,7 @@ SELECT COUNT(*) AS nb_fav
             'U_FAVORITE' => add_url_params(
                 $url_self,
                 [
-                    'action' => ! $is_favorite ? 'add_to_favorites' : 'remove_from_favorites',
+                    'action' => $is_favorite ? 'remove_from_favorites' : 'add_to_favorites',
                 ]
             ),
         ]
@@ -830,8 +827,7 @@ SELECT COUNT(*) AS nb_fav
 
 //--------------------------------------------------------- picture information
 // legend
-if (isset($picture['current']['comment'])
-    and ! empty($picture['current']['comment'])) {
+if (isset($picture['current']['comment']) && ! empty($picture['current']['comment'])) {
     $template->assign(
         'COMMENT_IMG',
         trigger_change(
@@ -878,7 +874,7 @@ $url = make_index_url(
 $infos['INFO_POSTED_DATE'] = '<a href="' . $url . '" rel="nofollow">' . $val . '</a>';
 
 // size in pixels
-if ($picture['current']['src_image']->is_original() and isset($picture['current']['width'])) {
+if ($picture['current']['src_image']->is_original() && isset($picture['current']['width'])) {
     $infos['INFO_DIMENSIONS'] =
       $picture['current']['width'] . '*' . $picture['current']['height'];
 }
@@ -924,9 +920,9 @@ if (count($tags)) {
 }
 
 // related categories
-if (count($related_categories) == 1 and
-    isset($page['category']) and
-    $related_categories[0]['id'] == $page['category']['id']) { // no need to go to db, we have all the info
+if (count(
+    $related_categories
+) == 1 && isset($page['category']) && $related_categories[0]['id'] == $page['category']['id']) { // no need to go to db, we have all the info
     $template->append(
         'related_categories',
         get_cat_display_name($page['category']['upper_names'])
@@ -960,10 +956,12 @@ $element_content = trigger_change(
 );
 $template->assign('ELEMENT_CONTENT', $element_content);
 
-if (isset($picture['next'])
-    and $picture['next']['src_image']->is_original()
-    and $template->get_template_vars('U_PREFETCH') == null
-    and ! str_contains((string) @$_SERVER['HTTP_USER_AGENT'], 'Chrome/')) {
+if (isset($picture['next']) && $picture['next']['src_image']->is_original() && $template->get_template_vars(
+    'U_PREFETCH'
+) == null && ! str_contains(
+    (string) @$_SERVER['HTTP_USER_AGENT'],
+    'Chrome/'
+)) {
     $template->assign(
         'U_PREFETCH',
         $picture['next']['derivatives'][pwg_get_session_var(
@@ -991,13 +989,13 @@ include(PHPWG_ROOT_PATH . 'include/picture_rate.inc.php');
 if ($conf['activate_comments']) {
     include(PHPWG_ROOT_PATH . 'include/picture_comment.inc.php');
 }
-if ($metadata_showable and pwg_get_session_var('show_metadata') <> null) {
+if ($metadata_showable && pwg_get_session_var('show_metadata') != null) {
     include(PHPWG_ROOT_PATH . 'include/picture_metadata.inc.php');
 }
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if ($conf['picture_menu'] and (! isset($themeconf['hide_menu_on']) or ! in_array(
+if ($conf['picture_menu'] && (! isset($themeconf['hide_menu_on']) || ! in_array(
     'thePicturePage',
     $themeconf['hide_menu_on']
 ))) {
@@ -1010,7 +1008,7 @@ if ($conf['picture_menu'] and (! isset($themeconf['hide_menu_on']) or ! in_array
 include(PHPWG_ROOT_PATH . 'include/page_header.php');
 trigger_notify('loc_end_picture');
 flush_page_messages();
-if ($page['slideshow'] and $conf['light_slideshow']) {
+if ($page['slideshow'] && $conf['light_slideshow']) {
     $template->pparse('slideshow');
 } else {
     $template->parse_picture_buttons();

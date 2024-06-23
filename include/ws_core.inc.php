@@ -49,7 +49,7 @@ class PwgError
         $code,
         $codeText
     ) {
-        if ($code >= 400 and $code < 600) {
+        if ($code >= 400 && $code < 600) {
             set_status_header($code, $codeText);
         }
 
@@ -122,10 +122,11 @@ class PwgNamedStruct
         } else {
             $this->_xmlAttributes = [];
             foreach ($this->_content as $key => $value) {
-                if (! empty($key) and (is_scalar($value) or $value === null)) {
-                    if (empty($xmlElements) or ! in_array($key, $xmlElements)) {
-                        $this->_xmlAttributes[$key] = 1;
-                    }
+                if ((! empty($key) && (is_scalar($value) || $value === null)) && (empty($xmlElements) || ! in_array(
+                    $key,
+                    $xmlElements
+                ))) {
+                    $this->_xmlAttributes[$key] = 1;
                 }
             }
         }
@@ -167,14 +168,13 @@ abstract class PwgResponseEncoder
     public static function is_struct(
         &$data
     ) {
-        if (is_array($data)) {
-            if (range(0, count($data) - 1) !== array_keys(
-                $data
-            )) { # string keys, unordered, non-incremental keys, .. - whatever, make object
-                return true;
-            }
-        }
-        return false;
+        # string keys, unordered, non-incremental keys, .. - whatever, make object
+        return is_array($data) && range(
+            0,
+            count($data) - 1
+        ) !== array_keys(
+            $data
+        );
     }
 
     /**
@@ -191,10 +191,10 @@ abstract class PwgResponseEncoder
     {
         if (is_object($value)) {
             $class = strtolower(@$value::class);
-            if ($class == 'pwgnamedarray') {
+            if ($class === 'pwgnamedarray') {
                 $value = $value->_content;
             }
-            if ($class == 'pwgnamedstruct') {
+            if ($class === 'pwgnamedstruct') {
                 $value = $value->_content;
             }
         }
@@ -203,11 +203,9 @@ abstract class PwgResponseEncoder
             return;
         }
 
-        if (self::is_struct($value)) {
-            if (isset($value[WS_XML_ATTRIBUTES])) {
-                $value = array_merge($value, $value[WS_XML_ATTRIBUTES]);
-                unset($value[WS_XML_ATTRIBUTES]);
-            }
+        if (self::is_struct($value) && isset($value[WS_XML_ATTRIBUTES])) {
+            $value = array_merge($value, $value[WS_XML_ATTRIBUTES]);
+            unset($value[WS_XML_ATTRIBUTES]);
         }
 
         foreach ($value as $key => &$v) {
@@ -391,17 +389,15 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
 
     public static function isPost()
     {
-        return isset($HTTP_RAW_POST_DATA) or ! empty($_POST);
+        return isset($HTTP_RAW_POST_DATA) || $_POST !== [];
     }
 
     public static function makeArrayParam(&$param)
     {
         if ($param == null) {
             $param = [];
-        } else {
-            if (! is_array($param)) {
-                $param = [$param];
-            }
+        } elseif (! is_array($param)) {
+            $param = [$param];
         }
     }
 
@@ -435,8 +431,10 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             } elseif (self::hasFlag($type, WS_TYPE_FLOAT)) {
                 foreach ($param as &$value) {
                     if (
-                        ($value = filter_var($value, FILTER_VALIDATE_FLOAT)) === false
-                        or (isset($opts['options']['min_range']) and $value < $opts['options']['min_range'])
+                        ($value = filter_var(
+                            $value,
+                            FILTER_VALIDATE_FLOAT
+                        )) === false || isset($opts['options']['min_range']) && $value < $opts['options']['min_range']
                     ) {
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain' . $msg . ' floats');
                     }
@@ -454,8 +452,10 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                 }
             } elseif (self::hasFlag($type, WS_TYPE_FLOAT)) {
                 if (
-                    ($param = filter_var($param, FILTER_VALIDATE_FLOAT)) === false
-                    or (isset($opts['options']['min_range']) and $param < $opts['options']['min_range'])
+                    ($param = filter_var(
+                        $param,
+                        FILTER_VALIDATE_FLOAT
+                    )) === false || isset($opts['options']['min_range']) && $param < $opts['options']['min_range']
                 ) {
                     return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must be a' . $msg . ' float');
                 }
@@ -486,11 +486,11 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             return new PwgError(WS_ERR_INVALID_METHOD, 'Method name is not valid');
         }
 
-        if (isset($method['options']['post_only']) and $method['options']['post_only'] and ! self::isPost()) {
+        if (isset($method['options']['post_only']) && $method['options']['post_only'] && ! self::isPost()) {
             return new PwgError(405, 'This method requires HTTP POST');
         }
 
-        if (isset($method['options']['admin_only']) and $method['options']['admin_only'] and ! is_admin()) {
+        if (isset($method['options']['admin_only']) && $method['options']['admin_only'] && ! is_admin()) {
             return new PwgError(401, 'Access denied');
         }
 
@@ -513,7 +513,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                 }
             }
             // parameter provided but empty
-            elseif ($params[$name] === '' and ! self::hasFlag(
+            elseif ($params[$name] === '' && ! self::hasFlag(
                 $flags,
                 WS_PARAM_OPTIONAL
             )) {
@@ -523,7 +523,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             else {
                 $the_param = $params[$name];
 
-                if (is_array($the_param) and ! self::hasFlag($flags, WS_PARAM_ACCEPT_ARRAY)) {
+                if (is_array($the_param) && ! self::hasFlag($flags, WS_PARAM_ACCEPT_ARRAY)) {
                     return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must be scalar');
                 }
 
@@ -531,13 +531,11 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                     self::makeArrayParam($the_param);
                 }
 
-                if ($options['type'] > 0) {
-                    if (($ret = self::checkType($the_param, $options['type'], $name)) !== null) {
-                        return $ret;
-                    }
+                if ($options['type'] > 0 && ($ret = self::checkType($the_param, $options['type'], $name)) !== null) {
+                    return $ret;
                 }
 
-                if (isset($options['maxValue']) and $the_param > $options['maxValue']) {
+                if (isset($options['maxValue']) && $the_param > $options['maxValue']) {
                     $the_param = $options['maxValue'];
                 }
 
@@ -545,7 +543,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             }
         }
 
-        if (count($missing_params)) {
+        if ($missing_params !== []) {
             return new PwgError(WS_ERR_MISSING_PARAM, 'Missing parameters: ' . implode(',', $missing_params));
         }
 

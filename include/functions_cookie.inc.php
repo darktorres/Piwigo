@@ -17,16 +17,16 @@
  */
 function cookie_path()
 {
-    if (isset($_SERVER['REDIRECT_SCRIPT_NAME']) and
-         ! empty($_SERVER['REDIRECT_SCRIPT_NAME'])) {
+    if (isset($_SERVER['REDIRECT_SCRIPT_NAME']) && ! empty($_SERVER['REDIRECT_SCRIPT_NAME'])) {
         $scr = $_SERVER['REDIRECT_SCRIPT_NAME'];
     } elseif (isset($_SERVER['REDIRECT_URL'])) {
         // mod_rewrite is activated for upper level directories. we must set the
         // cookie to the path shown in the browser otherwise it will be discarded.
         if (
-            isset($_SERVER['PATH_INFO']) and ! empty($_SERVER['PATH_INFO']) and
-            ($_SERVER['REDIRECT_URL'] !== $_SERVER['PATH_INFO']) and
-            (str_ends_with((string) $_SERVER['REDIRECT_URL'], (string) $_SERVER['PATH_INFO']))
+            isset($_SERVER['PATH_INFO']) && ! empty($_SERVER['PATH_INFO']) && $_SERVER['REDIRECT_URL'] !== $_SERVER['PATH_INFO'] && str_ends_with(
+                (string) $_SERVER['REDIRECT_URL'],
+                (string) $_SERVER['PATH_INFO']
+            )
         ) {
             $scr = substr(
                 (string) $_SERVER['REDIRECT_URL'],
@@ -43,16 +43,16 @@ function cookie_path()
     $scr = substr((string) $scr, 0, strrpos((string) $scr, '/'));
 
     // add a trailing '/' if needed
-    if ((strlen($scr) == 0) or ($scr[strlen($scr) - 1] !== '/')) {
+    if (strlen($scr) == 0 || $scr[strlen($scr) - 1] !== '/') {
         $scr .= '/';
     }
 
     if (str_starts_with(PHPWG_ROOT_PATH, '../')) { // this is maybe a plugin inside pwg directory
         // TODO - what if it is an external script outside PWG ?
-        $scr = $scr . PHPWG_ROOT_PATH;
+        $scr .= PHPWG_ROOT_PATH;
         while (1) {
             $new = preg_replace('#[^/]+/\.\.(/|$)#', '', $scr);
-            if ($new == $scr) {
+            if ($new === $scr) {
                 break;
             }
             $scr = $new;
@@ -73,7 +73,7 @@ function pwg_set_cookie_var(
     mixed $value,
     $expire = null
 ) {
-    if ($value == null or $expire === 0) {
+    if ($value == null || $expire === 0) {
         unset($_COOKIE['pwg_' . $var]);
         return setcookie('pwg_' . $var, false, [
             'expires' => 0,

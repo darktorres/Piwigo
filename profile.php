@@ -23,7 +23,7 @@ if (! defined(
     // +-----------------------------------------------------------------------+
     check_status(ACCESS_CLASSIC);
 
-    if (! empty($_POST)) {
+    if ($_POST !== []) {
         check_pwg_token();
     }
 
@@ -65,7 +65,7 @@ SELECT ' . implode(',', $fields) . '
 
     // include menubar
     $themeconf = $template->get_template_vars('themeconf');
-    if (! isset($themeconf['hide_menu_on']) or ! in_array('theProfilePage', $themeconf['hide_menu_on'])) {
+    if (! isset($themeconf['hide_menu_on']) || ! in_array('theProfilePage', $themeconf['hide_menu_on'])) {
         include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
     }
 
@@ -107,10 +107,9 @@ function save_profile_from_post(
         unset($_POST['username']);
     }
 
-    if ($conf['allow_user_customization'] or defined('IN_ADMIN')) {
+    if ($conf['allow_user_customization'] || defined('IN_ADMIN')) {
         $int_pattern = '/^\d+$/';
-        if (empty($_POST['nb_image_page'])
-            or (! preg_match($int_pattern, (string) $_POST['nb_image_page']))) {
+        if (empty($_POST['nb_image_page']) || ! preg_match($int_pattern, (string) $_POST['nb_image_page'])) {
             $errors[] = l10n('The number of photos per page must be a not null scalar');
         }
 
@@ -118,8 +117,7 @@ function save_profile_from_post(
         if (! preg_match(
             $int_pattern,
             (string) $_POST['recent_period']
-        )
-            or $_POST['recent_period'] < 0) {
+        ) || $_POST['recent_period'] < 0) {
             $errors[] = l10n('Recent period must be a positive integer value');
         }
 
@@ -189,7 +187,7 @@ function save_profile_from_post(
 
             // username is updated only if allowed
             if (! empty($_POST['username'])) {
-                if ($_POST['username'] != $userdata['username'] and get_userid($_POST['username'])) {
+                if ($_POST['username'] != $userdata['username'] && get_userid($_POST['username'])) {
                     $page['errors'][] = l10n('this login is already used');
                     unset($_POST['redirect']);
                 } else {
@@ -236,7 +234,7 @@ function save_profile_from_post(
             $activity_details_tables[] = 'users';
         }
 
-        if ($conf['allow_user_customization'] or defined('IN_ADMIN')) {
+        if ($conf['allow_user_customization'] || defined('IN_ADMIN')) {
             // update user "additional" informations (specific to Piwigo)
             $fields = [
                 'nb_image_page', 'language',
@@ -323,7 +321,7 @@ function load_profile_in_template(
     $template->assign('template_options', get_pwg_themes());
 
     foreach (get_languages() as $language_code => $language_name) {
-        if (isset($_POST['submit']) or $userdata['language'] == $language_code) {
+        if (isset($_POST['submit']) || $userdata['language'] == $language_code) {
             $template->assign('language_selection', $language_code);
         }
         $language_options[$language_code] = $language_name;

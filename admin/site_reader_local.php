@@ -46,8 +46,7 @@ class LocalSiteReader
     // retrieve file system sub-directories fulldirs
     public function get_full_directories($basedir)
     {
-        $fs_fulldirs = get_fs_directories($basedir);
-        return $fs_fulldirs;
+        return get_fs_directories($basedir);
     }
 
     /**
@@ -65,7 +64,7 @@ class LocalSiteReader
         $fs = [];
         if (is_dir($path) && $contents = opendir($path)) {
             while (($node = readdir($contents)) !== false) {
-                if ($node == '.' or $node == '..') {
+                if ($node === '.' || $node === '..') {
                     continue;
                 }
 
@@ -87,11 +86,9 @@ class LocalSiteReader
                             $fs[$path . '/' . $node]['formats'] = $this->get_formats($path, $filename_wo_ext);
                         }
                     }
-                } elseif (is_dir($path . '/' . $node)
-                         and $node != 'pwg_high'
-                         and $node != 'pwg_representative'
-                         and $node != 'pwg_format'
-                         and $node != 'thumbnail') {
+                } elseif (is_dir(
+                    $path . '/' . $node
+                ) && $node !== 'pwg_high' && $node !== 'pwg_representative' && $node !== 'pwg_format' && $node !== 'thumbnail') {
                     $subdirs[] = $node;
                 }
             } //end while readdir

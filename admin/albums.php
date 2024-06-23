@@ -79,7 +79,7 @@ SELECT id
         $ref_dates = get_categories_ref_date(
             $category_ids,
             $order_by_field,
-            $order_by_asc == 'ASC' ? 'min' : 'max'
+            $order_by_asc === 'ASC' ? 'min' : 'max'
         );
     }
 
@@ -92,11 +92,7 @@ SELECT id, name, id_uppercat
     while ($row = pwg_db_fetch_assoc($result)) {
         $row['name'] = trigger_change('render_category_name', $row['name'], 'admin_cat_list');
 
-        if ($order_by_date) {
-            $sort[] = $ref_dates[$row['id']];
-        } else {
-            $sort[] = remove_accents($row['name']);
-        }
+        $sort[] = $order_by_date ? $ref_dates[$row['id']] : remove_accents($row['name']);
 
         $categories[] = [
             'id' => $row['id'],
@@ -107,7 +103,7 @@ SELECT id, name, id_uppercat
     array_multisort(
         $sort,
         $order_by_field === 'natural_order' ? SORT_NATURAL : SORT_REGULAR,
-        $order_by_asc == 'ASC' ? SORT_ASC : SORT_DESC,
+        $order_by_asc === 'ASC' ? SORT_ASC : SORT_DESC,
         $categories
     );
 
@@ -157,7 +153,8 @@ foreach ($allAlbum as $album) {
 
     $parents = explode(',', (string) $album['uppercats']);
     $the_place = &$associatedTree[strval($parents[0])];
-    for ($i = 1; $i < count($parents); $i++) {
+    $counter = count($parents);
+    for ($i = 1; $i < $counter; $i++) {
         $the_place = &$the_place['children'][strval($parents[$i])];
     }
     $the_place['cat'] = $album;
@@ -200,7 +197,7 @@ function assocToOrderedTree($assocT)
             $orderedCat['nb_subcats'] = count($cat['children']);
             $orderedCat['children'] = assocToOrderedTree($cat['children']);
         }
-        array_push($orderedTree, $orderedCat);
+        $orderedTree[] = $orderedCat;
     }
     usort($orderedTree, 'cmpCat');
     return $orderedTree;
@@ -315,7 +312,7 @@ SELECT
             }
         }
 
-        if (count($to_compare) > 0) {
+        if ($to_compare !== []) {
             $ref_dates[$cat_id] = $minmax == 'max' ? max($to_compare) : min($to_compare);
         } else {
             $ref_dates[$cat_id] = null;

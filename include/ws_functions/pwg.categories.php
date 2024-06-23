@@ -35,7 +35,7 @@ function ws_categories_getImages(
             $where_clauses[] = 'id=' . $cat_id;
         }
     }
-    if (! empty($where_clauses)) {
+    if ($where_clauses !== []) {
         $where_clauses = ['(' . implode("\n    OR ", $where_clauses) . ')'];
     }
     $where_clauses[] = get_sql_condition_FandF(
@@ -62,7 +62,7 @@ SELECT
     }
 
     //-------------------------------------------------------- get the images
-    if (! empty($cats)) {
+    if ($cats !== []) {
         $where_clauses = ws_std_image_sql_filter($params, 'i.');
         $where_clauses[] = 'category_id IN (' . implode(',', array_keys($cats)) . ')';
         $where_clauses[] = get_sql_condition_FandF(
@@ -74,9 +74,7 @@ SELECT
         );
 
         $order_by = ws_std_image_sql_order($params, 'i.');
-        if (empty($order_by)
-              and count($params['cat_id']) == 1
-              and isset($cats[$params['cat_id'][0]]['image_order'])
+        if (empty($order_by) && count($params['cat_id']) == 1 && isset($cats[$params['cat_id'][0]]['image_order'])
         ) {
             $order_by = $cats[$params['cat_id'][0]]['image_order'];
         }
@@ -116,7 +114,7 @@ SELECT SQL_CALC_FOUND_ROWS i.*
         [$total_images] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
 
         // let's take care of adding the related albums to each photo
-        if (count($image_ids) > 0) {
+        if ($image_ids !== []) {
             $category_ids = [];
 
             // find the complete list (given permissions) of albums linked to photos
@@ -136,7 +134,7 @@ SELECT
                 @$categories_of_image[$row['image_id']][] = $row['category_id'];
             }
 
-            if (count($category_ids) > 0) {
+            if ($category_ids !== []) {
                 // find details (for URL generation) about each album
                 $query = '
 SELECT
@@ -331,9 +329,9 @@ SELECT
             $image_id = get_random_image_in_category(
                 $row
             );
-        } else { // searching a random representant among representant of sub-categories
-            if ($row['count_categories'] > 0 and $row['count_images'] > 0) {
-                $query = '
+        } elseif ($row['count_categories'] > 0 && $row['count_images'] > 0) {
+            // searching a random representant among representant of sub-categories
+            $query = '
 SELECT representative_picture_id
   FROM ' . CATEGORIES_TABLE . '
     INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . '
@@ -341,24 +339,22 @@ SELECT representative_picture_id
   WHERE uppercats LIKE \'' . $row['uppercats'] . ',%\'
     AND representative_picture_id IS NOT NULL
         ' . get_sql_condition_FandF(
-                    [
-                        'visible_categories' => 'id',
-                    ],
-                    "\n  AND"
-                ) . '
+                [
+                    'visible_categories' => 'id',
+                ],
+                "\n  AND"
+            ) . '
   ORDER BY ' . DB_RANDOM_FUNCTION . '()
   LIMIT 1
 ;';
-                $subresult = pwg_query($query);
-
-                if (pwg_db_num_rows($subresult) > 0) {
-                    [$image_id] = pwg_db_fetch_row($subresult);
-                }
+            $subresult = pwg_query($query);
+            if (pwg_db_num_rows($subresult) > 0) {
+                [$image_id] = pwg_db_fetch_row($subresult);
             }
         }
 
         if (isset($image_id)) {
-            if ($conf['representative_cache_on_subcats'] and $row['user_representative_picture_id'] != $image_id) {
+            if ($conf['representative_cache_on_subcats'] && $row['user_representative_picture_id'] != $image_id) {
                 $user_representative_updates_for[$row['id']] = $image_id;
             }
 
@@ -374,7 +370,7 @@ SELECT representative_picture_id
     usort($cats, 'global_rank_compare');
 
     // management of the album thumbnail -- starts here
-    if (count($categories) > 0) {
+    if ($categories !== []) {
         $thumbnail_src_of = [];
         $new_image_ids = [];
 
@@ -403,7 +399,7 @@ SELECT id, path, representative_ext, level
                             $category
                         );
 
-                        if (isset($image_id) and ! in_array($image_id, $image_ids)) {
+                        if (isset($image_id) && ! in_array($image_id, $image_ids)) {
                             $new_image_ids[] = $image_id;
                         }
                         if ($conf['representative_cache_on_level']) {
@@ -417,7 +413,7 @@ SELECT id, path, representative_ext, level
             }
         }
 
-        if (count($new_image_ids) > 0) {
+        if ($new_image_ids !== []) {
             $query = '
 SELECT id, path, representative_ext
   FROM ' . IMAGES_TABLE . '
@@ -434,7 +430,7 @@ SELECT id, path, representative_ext
     // compared to code in include/category_cats, we only persist the new
     // user_representative if we have used $user['id'] and not the guest id,
     // or else the real guest may see thumbnail that he should not
-    if (! $params['public'] and count(
+    if (! $params['public'] && count(
         $user_representative_updates_for
     )) {
         $updates = [];
@@ -459,7 +455,7 @@ SELECT id, path, representative_ext
 
     foreach ($cats as &$cat) {
         foreach ($categories as $category) {
-            if ($category['id'] == $cat['id'] and isset($category['representative_picture_id'])) {
+            if ($category['id'] == $cat['id'] && isset($category['representative_picture_id'])) {
                 $cat['tn_url'] = $thumbnail_src_of[$category['representative_picture_id']];
             }
         }
@@ -514,7 +510,7 @@ SELECT category_id, COUNT(*) AS counter
 SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, status
   FROM ' . CATEGORIES_TABLE;
 
-    if (isset($params['search']) and $params['search'] != '') {
+    if (isset($params['search']) && $params['search'] != '') {
         $query .= '
   WHERE name LIKE \'%' . pwg_db_real_escape_string($params['search']) . '%\'
   LIMIT ' . $conf['linked_album_search_limit'];
@@ -596,13 +592,13 @@ function ws_categories_add(
 
     global $conf;
 
-    if (! empty($params['position']) and in_array($params['position'], ['first', 'last'])) {
+    if (! empty($params['position']) && in_array($params['position'], ['first', 'last'])) {
         //TODO make persistent with user prefs
         $conf['newcat_default_position'] = $params['position'];
     }
 
     $options = [];
-    if (! empty($params['status']) and in_array($params['status'], ['private', 'public'])) {
+    if (! empty($params['status']) && in_array($params['status'], ['private', 'public'])) {
         $options['status'] = $params['status'];
     }
 
@@ -752,12 +748,12 @@ SELECT *
     ];
 
     foreach (['visible', 'commentable'] as $param_name) {
-        if (isset($params[$param_name]) and ! preg_match('/^(true|false)$/i', (string) $params[$param_name])) {
+        if (isset($params[$param_name]) && ! preg_match('/^(true|false)$/i', (string) $params[$param_name])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid param ' . $param_name . ' : ' . $params[$param_name]);
         }
     }
 
-    if (! empty($params['visible']) and ($params['visible'] != $category['visible'])) {
+    if (! empty($params['visible']) && $params['visible'] != $category['visible']) {
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
         set_cat_visible([$params['category_id']], $params['visible']);
     }
@@ -888,7 +884,7 @@ SELECT COUNT(*)
 ;';
     [$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
-    if (! $conf['allow_random_representative'] and $nb_images != 0) {
+    if (! $conf['allow_random_representative'] && $nb_images != 0) {
         return new PwgError(401, 'not permitted');
     }
 
@@ -935,7 +931,7 @@ SELECT
   LIMIT 1
 ;';
     $result = pwg_query($query);
-    $has_images = pwg_db_num_rows($result) > 0 ? true : false;
+    $has_images = pwg_db_num_rows($result) > 0;
 
     if (! $has_images) {
         return new PwgError(401, 'not permitted');
@@ -978,8 +974,7 @@ function ws_categories_delete(
     if (! in_array($params['photo_deletion_mode'], $modes)) {
         return new PwgError(
             500,
-            '[ws_categories_delete]'
-            . ' invalid parameter photo_deletion_mode "' . $params['photo_deletion_mode'] . '"'
+            '[ws_categories_delete] invalid parameter photo_deletion_mode "' . $params['photo_deletion_mode'] . '"'
             . ', possible values are {' . implode(', ', $modes) . '}.'
         );
     }
@@ -1167,7 +1162,7 @@ SELECT DISTINCT
     category_id = ' . $category_id . '
   LIMIT 1';
     $result = pwg_query($query);
-    $category['has_images'] = pwg_db_num_rows($result) > 0 ? true : false;
+    $category['has_images'] = pwg_db_num_rows($result) > 0;
 
     // number of sub-categories
     $subcat_ids = get_subcat_ids([$category_id]);

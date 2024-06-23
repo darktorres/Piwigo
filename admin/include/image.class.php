@@ -110,7 +110,7 @@ class pwg_image
 
         // testing on height is useless in theory: if width is unchanged, there
         // should be no resize, because width/height ratio is not modified.
-        if ($resize_dimensions['width'] == $source_width and $resize_dimensions['height'] == $source_height) {
+        if ($resize_dimensions['width'] == $source_width && $resize_dimensions['height'] == $source_height) {
             // the image doesn't need any resize! We just copy it to the destination
             copy(
                 $this->source_filepath,
@@ -167,7 +167,7 @@ class pwg_image
         $follow_orientation = true
     ) {
         $rotate_for_dimensions = false;
-        if (isset($rotation) and in_array(abs($rotation), [90, 270])) {
+        if (isset($rotation) && in_array(abs($rotation), [90, 270])) {
             $rotate_for_dimensions = true;
         }
 
@@ -179,7 +179,7 @@ class pwg_image
             $x = 0;
             $y = 0;
 
-            if ($width < $height and $follow_orientation) {
+            if ($width < $height && $follow_orientation) {
                 [$max_width, $max_height] = [$max_height, $max_width];
             }
 
@@ -203,7 +203,7 @@ class pwg_image
         $destination_height = $height;
 
         // maximal size exceeded ?
-        if ($ratio_width > 1 or $ratio_height > 1) {
+        if ($ratio_width > 1 || $ratio_height > 1) {
             if ($ratio_width < $ratio_height) {
                 $destination_width = round($width / $ratio_height);
                 $destination_height = $max_height;
@@ -222,7 +222,7 @@ class pwg_image
             'height' => $destination_height,
         ];
 
-        if ($crop and ($x or $y)) {
+        if ($crop && ($x || $y)) {
             $result['crop'] = [
                 'width' => $width,
                 'height' => $height,
@@ -248,7 +248,7 @@ class pwg_image
 
         $exif = @exif_read_data($source_filepath);
 
-        if (isset($exif['Orientation']) and preg_match('/^\s*(\d)/', (string) $exif['Orientation'], $matches)) {
+        if (isset($exif['Orientation']) && preg_match('/^\s*(\d)/', (string) $exif['Orientation'], $matches)) {
             $orientation = $matches[1];
             if (in_array($orientation, [3, 4])) {
                 $rotation = 180;
@@ -264,22 +264,24 @@ class pwg_image
 
     public static function get_rotation_code_from_angle($rotation_angle)
     {
-        switch ($rotation_angle) {
-            case 0:   return 0;
-            case 90:  return 1;
-            case 180: return 2;
-            case 270: return 3;
-        }
+        return match ($rotation_angle) {
+            0 => 0,
+            90 => 1,
+            180 => 2,
+            270 => 3,
+            default => null,
+        };
     }
 
     public static function get_rotation_angle_from_code($rotation_code)
     {
-        switch ($rotation_code % 4) {
-            case 0: return 0;
-            case 1: return 90;
-            case 2: return 180;
-            case 3: return 270;
-        }
+        return match ($rotation_code % 4) {
+            0 => 0,
+            1 => 90,
+            2 => 180,
+            3 => 270,
+            default => null,
+        };
     }
 
     /**
@@ -310,7 +312,7 @@ class pwg_image
 
     public static function is_imagick()
     {
-        return extension_loaded('imagick') and class_exists('Imagick');
+        return extension_loaded('imagick') && class_exists('Imagick');
     }
 
     public static function is_ext_imagick()
@@ -324,7 +326,7 @@ class pwg_image
             return false;
         }
         @exec($conf['ext_imagick_dir'] . 'convert -version', $returnarray);
-        if (is_array($returnarray) and ! empty($returnarray[0]) and preg_match('/ImageMagick/i', $returnarray[0])) {
+        if (is_array($returnarray) && ! empty($returnarray[0]) && preg_match('/ImageMagick/i', $returnarray[0])) {
             if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match)) {
                 self::$ext_imagick_version = $match[1];
             }
@@ -360,12 +362,12 @@ class pwg_image
                 }
                 // no break
             case 'imagick':
-                if ($extension != 'gif' and self::is_imagick()) {
+                if ($extension != 'gif' && self::is_imagick()) {
                     return 'imagick';
                 }
                 // no break
             case 'ext_imagick':
-                if ($extension != 'gif' and self::is_ext_imagick()) {
+                if ($extension != 'gif' && self::is_ext_imagick()) {
                     return 'ext_imagick';
                 }
                 // no break
@@ -543,7 +545,7 @@ class image_ext_imagick implements imageInterface
 
         $command = $this->imagickdir . 'identify -format "%wx%h" "' . realpath($this->source_filepath) . '"';
         @exec($command, $returnarray);
-        if (! is_array($returnarray) or empty($returnarray[0]) or ! preg_match(
+        if (! is_array($returnarray) || empty($returnarray[0]) || ! preg_match(
             '/^(\d+)x(\d+)$/',
             $returnarray[0],
             $match
@@ -682,7 +684,7 @@ class image_ext_imagick implements imageInterface
         $logger->debug($exec);
         @exec($exec, $returnarray);
 
-        if (is_array($returnarray) && (count($returnarray) > 0)) {
+        if (is_array($returnarray) && ($returnarray !== [])) {
             $logger->error('', $returnarray);
             foreach ($returnarray as $line) {
                 trigger_error($line, E_USER_WARNING);
@@ -710,9 +712,9 @@ class image_gd implements imageInterface
 
         if (in_array($extension, ['jpg', 'jpeg'])) {
             $this->image = imagecreatefromjpeg($source_filepath);
-        } elseif ($extension == 'png') {
+        } elseif ($extension === 'png') {
             $this->image = imagecreatefrompng($source_filepath);
-        } elseif ($extension == 'gif' and $gd_info['GIF Read Support'] and $gd_info['GIF Create Support']) {
+        } elseif ($extension === 'gif' && $gd_info['GIF Read Support'] && $gd_info['GIF Create Support']) {
             $this->image = imagecreatefromgif($source_filepath);
         } else {
             die('[Image GD] unsupported file extension');
@@ -744,7 +746,7 @@ class image_gd implements imageInterface
 
         $result = imagecopymerge($dest, $this->image, 0, 0, $x, $y, $width, $height, 100);
 
-        if ($result !== false) {
+        if ($result) {
             imagedestroy($this->image);
             $this->image = $dest;
         } else {
@@ -799,7 +801,7 @@ class image_gd implements imageInterface
             $this->get_height()
         );
 
-        if ($result !== false) {
+        if ($result) {
             imagedestroy($this->image);
             $this->image = $dest;
         } else {
@@ -854,9 +856,9 @@ class image_gd implements imageInterface
     {
         $extension = strtolower(get_extension($destination_filepath));
 
-        if ($extension == 'png') {
+        if ($extension === 'png') {
             imagepng($this->image, $destination_filepath);
-        } elseif ($extension == 'gif') {
+        } elseif ($extension === 'gif') {
             imagegif($this->image, $destination_filepath);
         } else {
             imagejpeg($this->image, $destination_filepath, $this->quality);

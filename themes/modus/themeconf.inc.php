@@ -91,8 +91,7 @@ function rv_cdn_prefilter($source, &$smarty)
         'src="' . RVCDN_ROOT_URL . '{$themeconf.icon_dir}/',
         $source
     );
-    $source = str_replace('url({$' . 'ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
-    return $source;
+    return str_replace('url({$ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
 }
 function rv_cdn_combined_script($url, $script)
 {
@@ -161,9 +160,8 @@ function modus_css_resolution($params)
             $rules[] = '(' . $type . '-resolution:' . round(96 * ${$type}, 1) . 'dpi)';
         }
     }
-    $res .= ',' . implode(' and ', $rules);
 
-    return $res;
+    return $res . (',' . implode(' and ', $rules));
 }
 
 $this->smarty->registerPlugin('function', 'modus_thumbs', 'modus_thumbs');
@@ -202,7 +200,7 @@ function modus_thumbs($x, $smarty)
 
     foreach ($smarty->getTemplateVars('thumbnails') as $item) {
         $src_image = $item['src_image'];
-        $new = ! empty($item['icon_ts']) ? sprintf($new_icon, format_date($item['date_available'])) : '';
+        $new = empty($item['icon_ts']) ? '' : sprintf($new_icon, format_date($item['date_available']));
 
         $idx = 0;
         do {
@@ -270,12 +268,11 @@ function modus_get_index_photo_derivative_params($default)
     global $conf;
     if (isset($conf['modus_theme']) && pwg_get_session_var('index_deriv') === null) {
         $type = $conf['modus_theme']['index_photo_deriv'];
-        if ($caps = pwg_get_session_var('caps')) {
-            if (($caps[0] >= 2 && $caps[1] >= 768) /*Ipad3 always has clientWidth 768 independently of orientation*/
-                || $caps[0] >= 3
-            ) {
-                $type = $conf['modus_theme']['index_photo_deriv_hdpi'];
-            }
+        if (($caps = pwg_get_session_var(
+            'caps'
+        )) && (($caps[0] >= 2 && $caps[1] >= 768) /*Ipad3 always has clientWidth 768 independently of orientation*/
+            || $caps[0] >= 3)) {
+            $type = $conf['modus_theme']['index_photo_deriv_hdpi'];
         }
         $new = @ImageStdParams::get_by_type($type);
         if ($new) {
@@ -343,11 +340,7 @@ function modus_index_category_thumbnails($items)
         if ($t < -1 || $t > 1) {
             $styles[] = 'top:' . $t . 'px';
         }
-        if (count($styles)) {
-            $styles = ' style=' . implode(';', $styles);
-        } else {
-            $styles = '';
-        }
+        $styles = count($styles) ? ' style=' . implode(';', $styles) : '';
         $item['MODUS_STYLE'] = $styles;
     }
 
@@ -421,7 +414,7 @@ function modus_picture_content($content, $element_info)
                 break;
             }
 
-            if ($size[0] <= $available_size[0] and $size[1] <= $available_size[1]) {
+            if ($size[0] <= $available_size[0] && $size[1] <= $available_size[1]) {
                 $selected_derivative = $derivative;
             } else {
                 if ($available_size[2] > 1 || ! $selected_derivative) {
@@ -456,15 +449,14 @@ function modus_picture_content($content, $element_info)
             ]);
         }
 
-        if (isset($picture['next'])
-            and $picture['next']['src_image']->is_original()) {
+        if (isset($picture['next']) && $picture['next']['src_image']->is_original()) {
             $next_best = null;
             foreach ($picture['next']['derivatives'] as $derivative) {
                 $size = $derivative->get_size();
                 if (! $size) {
                     break;
                 }
-                if ($size[0] <= $available_size[0] and $size[1] <= $available_size[1]) {
+                if ($size[0] <= $available_size[0] && $size[1] <= $available_size[1]) {
                     $next_best = $derivative;
                 } else {
                     if ($available_size[2] > 1 || ! $next_best) {

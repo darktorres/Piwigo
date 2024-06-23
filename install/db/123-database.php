@@ -63,10 +63,8 @@ $thumb_height_min = 96; // the default value in Piwigo 2.3
 $thumb_height_max = 300; // slightly bigger than XXS default maxheight
 
 $thumb_is_square = false;
-if ($dbconf['upload_form_thumb_crop']) {
-    if ($dbconf['upload_form_thumb_maxwidth'] == $dbconf['upload_form_thumb_maxheight']) {
-        $thumb_is_square = true;
-    }
+if ($dbconf['upload_form_thumb_crop'] && $dbconf['upload_form_thumb_maxwidth'] == $dbconf['upload_form_thumb_maxheight']) {
+    $thumb_is_square = true;
 }
 
 if ($dbconf['upload_form_thumb_maxwidth'] < $thumb_width_min) {
@@ -102,8 +100,7 @@ $thumb = new DerivativeParams(
 $types[IMG_THUMB] = $thumb;
 
 // slightly enlarge XSS to be bigger than thumbnail size (but smaller than XS)
-if ($dbconf['upload_form_thumb_maxwidth'] >= $types[IMG_XXSMALL]->sizing->ideal_size[0]
-    or $dbconf['upload_form_thumb_maxheight'] >= $types[IMG_XXSMALL]->sizing->ideal_size[1]) {
+if ($dbconf['upload_form_thumb_maxwidth'] >= $types[IMG_XXSMALL]->sizing->ideal_size[0] || $dbconf['upload_form_thumb_maxheight'] >= $types[IMG_XXSMALL]->sizing->ideal_size[1]) {
     $xxs_maxwidth = $types[IMG_XXSMALL]->sizing->ideal_size[0];
     if ($dbconf['upload_form_thumb_maxwidth'] >= $xxs_maxwidth) {
         $xxs_maxwidth = 350;

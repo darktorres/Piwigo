@@ -273,8 +273,7 @@ final class ImageStdParams
         $params
     ) {
         $params->use_watermark = ! empty(self::$watermark->file) &&
-            (self::$watermark->min_size[0] <= $params->sizing->ideal_size[0]
-            or self::$watermark->min_size[1] <= $params->sizing->ideal_size[1]);
+            (self::$watermark->min_size[0] <= $params->sizing->ideal_size[0] || self::$watermark->min_size[1] <= $params->sizing->ideal_size[1]);
     }
 
     /**
@@ -287,8 +286,9 @@ final class ImageStdParams
             self::apply_global($params);
         }
         self::$all_type_map = self::$type_map;
+        $counter = count(self::$all_types);
 
-        for ($i = 0; $i < count(self::$all_types); $i++) {
+        for ($i = 0; $i < $counter; $i++) {
             $tocheck = self::$all_types[$i];
             if (! isset(self::$type_map[$tocheck])) {
                 for ($j = $i - 1; $j >= 0; $j--) {

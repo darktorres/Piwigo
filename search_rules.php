@@ -69,7 +69,7 @@ if (isset($search['fields']['allwords'])) {
         'search_words',
         l10n(
             'searched words : %s',
-            join(', ', $search['fields']['allwords']['words'])
+            implode(', ', $search['fields']['allwords']['words'])
         )
     );
 }
@@ -93,7 +93,7 @@ if (isset($search['fields']['author'])) {
         'search_words',
         l10n(
             'author(s) : %s',
-            join(', ', array_map('strip_tags', $search['fields']['author']['words']))
+            implode(', ', array_map('strip_tags', $search['fields']['author']['words']))
         )
     );
 }
@@ -137,14 +137,14 @@ SELECT id, uppercats, global_rank
 }
 
 foreach (['date_available', 'date_creation'] as $datefield) {
-    if ($datefield == 'date_available') {
+    if ($datefield === 'date_available') {
         $lang_items = [
             'date' => l10n('posted on %s'),
             'period' => l10n('posted between %s (%s) and %s (%s)'),
             'after' => l10n('posted after %s (%s)'),
             'before' => l10n('posted before %s (%s)'),
         ];
-    } elseif ($datefield == 'date_creation') {
+    } elseif ($datefield === 'date_creation') {
         $lang_items = [
             'date' => l10n('created on %s'),
             'period' => l10n('created between %s (%s) and %s (%s)'),
@@ -167,8 +167,7 @@ foreach (['date_available', 'date_creation'] as $datefield) {
                 format_date($search['fields'][$keys['date']])
             )
         );
-    } elseif (isset($search['fields'][$keys['before']])
-            and isset($search['fields'][$keys['after']])) {
+    } elseif (isset($search['fields'][$keys['before']]) && isset($search['fields'][$keys['after']])) {
         $template->assign(
             strtoupper($datefield),
             sprintf(

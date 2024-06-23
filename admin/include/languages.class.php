@@ -35,7 +35,7 @@ class languages
     ) {
         global $conf;
 
-        if (! $conf['enable_extensions_install'] and $action == 'delete') {
+        if (! $conf['enable_extensions_install'] && $action == 'delete') {
             die('Piwigo extensions install/update/delete system is disabled');
         }
 
@@ -127,11 +127,11 @@ UPDATE ' . USER_INFOS_TABLE . '
 
         $dir = opendir(PHPWG_ROOT_PATH . 'language');
         while ($file = readdir($dir)) {
-            if ($file != '.' and $file != '..') {
+            if ($file !== '.' && $file !== '..') {
                 $path = PHPWG_ROOT_PATH . 'language/' . $file;
-                if (is_dir($path) and ! is_link($path)
-                    and preg_match('/^[a-zA-Z0-9-_]+$/', $file)
-                    and file_exists($path . '/common.lang.php')
+                if (is_dir($path) && ! is_link($path) && preg_match('/^[a-zA-Z0-9-_]+$/', $file) && file_exists(
+                    $path . '/common.lang.php'
+                )
                 ) {
                     $language = [
                         'name' => $file,
@@ -158,7 +158,10 @@ UPDATE ' . USER_INFOS_TABLE . '
                     if (preg_match('|Author URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                         $language['author uri'] = trim($val[1]);
                     }
-                    if (! empty($language['uri']) and strpos($language['uri'], 'extension_view.php?eid=')) {
+                    if (isset($language['uri']) && ($language['uri'] !== '' && $language['uri'] !== '0') && strpos(
+                        $language['uri'],
+                        'extension_view.php?eid='
+                    )) {
                         [, $extension] = explode('extension_view.php?eid=', $language['uri']);
                         if (is_numeric($extension)) {
                             $language['extension'] = $extension;
@@ -205,7 +208,7 @@ UPDATE ' . USER_INFOS_TABLE . '
         $version = PHPWG_VERSION;
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result)) {
+        if (fetchRemote($url, $result, $get_data) && ($pem_versions = @unserialize($result))) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
@@ -216,7 +219,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 }
             }
         }
-        if (empty($versions_to_check)) {
+        if ($versions_to_check === []) {
             return false;
         }
 
@@ -239,7 +242,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 'get_nb_downloads' => 'true',
             ]
         );
-        if (! empty($languages_to_check)) {
+        if ($languages_to_check !== []) {
             if ($new) {
                 $get_data['extension_exclude'] = implode(',', $languages_to_check);
             } else {
@@ -284,7 +287,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data)) {
+            if (($handle = @fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 $zip = new PclZip($archive);
                 if ($list = $zip->listContent()) {
@@ -292,9 +295,11 @@ UPDATE ' . USER_INFOS_TABLE . '
                         // we search common.lang.php in archive
                         if (basename(
                             (string) $file['filename']
-                        ) == 'common.lang.php'
-                          and (! isset($main_filepath)
-                          or strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
+                        ) === 'common.lang.php' && (! isset($main_filepath) || strlen(
+                            (string) $file['filename']
+                        ) < strlen(
+                            (string) $main_filepath
+                        ))) {
                             $main_filepath = $file['filename'];
                         }
                     }
@@ -332,11 +337,14 @@ UPDATE ' . USER_INFOS_TABLE . '
                                         $this->perform_action('activate', $dest);
                                     }
                                 }
-                                if (file_exists($extract_path . '/obsolete.list')
-                                  and $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)
-                                  and ! empty($old_files)) {
+                                if (file_exists($extract_path . '/obsolete.list') && ($old_files = file(
+                                    $extract_path . '/obsolete.list',
+                                    FILE_IGNORE_NEW_LINES
+                                )) && $old_files !== []) {
                                     $old_files[] = 'obsolete.list';
-                                    $logger->debug(__FUNCTION__ . ', $old_files = {' . join('},{', $old_files) . '}');
+                                    $logger->debug(
+                                        __FUNCTION__ . ', $old_files = {' . implode('},{', $old_files) . '}'
+                                    );
 
                                     $extract_path_realpath = realpath($extract_path);
 
@@ -344,7 +352,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                                         $old_file = trim($old_file);
                                         $old_file = trim($old_file, '/'); // prevent path starting with a "/"
 
-                                        if (empty($old_file)) { // empty here means the extension itself
+                                        if ($old_file === '' || $old_file === '0') { // empty here means the extension itself
                                             continue;
                                         }
 
@@ -354,7 +362,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                                         $realpath = realpath(
                                             $path
                                         );
-                                        if ($realpath === false or ! str_starts_with(
+                                        if ($realpath === false || ! str_starts_with(
                                             $realpath,
                                             $extract_path_realpath
                                         )) {

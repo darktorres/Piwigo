@@ -23,8 +23,9 @@ function ws_tags_getList(
     } else {
         usort($tags, 'tag_alpha_compare');
     }
+    $counter = count($tags);
 
-    for ($i = 0; $i < count($tags); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         $tags[$i]['id'] = (int) $tags[$i]['id'];
         $tags[$i]['counter'] = (int) $tags[$i]['counter'];
         $tags[$i]['url'] = make_index_url(
@@ -116,7 +117,7 @@ function ws_tags_getImages(
 
     $image_tag_map = [];
     // build list of image ids with associated tags per image
-    if (! empty($image_ids) and ! $params['tag_mode_and']) {
+    if ($image_ids !== [] && ! $params['tag_mode_and']) {
         $query = '
 SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
   FROM ' . IMAGE_TAG_TABLE . '
@@ -133,7 +134,7 @@ SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
     }
 
     $images = [];
-    if (! empty($image_ids)) {
+    if ($image_ids !== []) {
         $rank_of = array_flip($image_ids);
         $favorite_ids = get_user_favorites();
 
@@ -396,7 +397,7 @@ SELECT image_id
         ]);
     }
 
-    if (count($inserts) > 0) {
+    if ($inserts !== []) {
         mass_inserts(
             IMAGE_TAG_TABLE,
             array_keys($inserts[0]),
@@ -419,7 +420,7 @@ function ws_tags_merge($params, &$service)
     }
 
     $all_tags = $params['merge_tag_id'];
-    array_push($all_tags, $params['destination_tag_id']);
+    $all_tags[] = $params['destination_tag_id'];
 
     $all_tags = array_unique($all_tags);
     $merge_tag = array_diff($params['merge_tag_id'], [$params['destination_tag_id']]);

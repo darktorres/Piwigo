@@ -59,7 +59,7 @@ function process_password_request()
 
     // password request is not possible for guest/generic users
     $status = $userdata['status'];
-    if (is_a_guest($status) or is_generic($status)) {
+    if (is_a_guest($status) || is_generic($status)) {
         $page['errors'][] = l10n('Password reset is not allowed for this user');
         return false;
     }
@@ -176,7 +176,7 @@ SELECT
                 return false;
             }
 
-            if (is_a_guest($row['status']) or is_generic($row['status'])) {
+            if (is_a_guest($row['status']) || is_generic($row['status'])) {
                 $page['errors'][] = l10n('Password reset is not allowed for this user');
                 return false;
             }
@@ -243,16 +243,12 @@ function reset_password()
 if (isset($_POST['submit'])) {
     check_pwg_token();
 
-    if ($_GET['action'] == 'lost') {
-        if (process_password_request()) {
-            $page['action'] = 'none';
-        }
+    if ($_GET['action'] == 'lost' && process_password_request()) {
+        $page['action'] = 'none';
     }
 
-    if ($_GET['action'] == 'reset') {
-        if (reset_password()) {
-            $page['action'] = 'none';
-        }
+    if ($_GET['action'] == 'reset' && reset_password()) {
+        $page['action'] = 'none';
     }
 }
 
@@ -261,11 +257,11 @@ if (isset($_POST['submit'])) {
 // +-----------------------------------------------------------------------+
 
 // a connected user can't reset the password from a mail
-if (isset($_GET['key']) and ! is_a_guest()) {
+if (isset($_GET['key']) && ! is_a_guest()) {
     unset($_GET['key']);
 }
 
-if (isset($_GET['key']) and ! isset($_POST['submit'])) {
+if (isset($_GET['key']) && ! isset($_POST['submit'])) {
     $user_id = check_password_reset_key($_GET['key']);
     if (is_numeric($user_id)) {
         $userdata = getuserdata($user_id, false);
@@ -288,11 +284,11 @@ if (! isset($page['action'])) {
     }
 }
 
-if ($page['action'] == 'reset' and ! isset($_GET['key']) and (is_a_guest() or is_generic())) {
+if ($page['action'] == 'reset' && ! isset($_GET['key']) && (is_a_guest() || is_generic())) {
     redirect(get_gallery_home_url());
 }
 
-if ($page['action'] == 'lost' and ! is_a_guest()) {
+if ($page['action'] == 'lost' && ! is_a_guest()) {
     redirect(get_gallery_home_url());
 }
 
@@ -326,7 +322,7 @@ $template->assign(
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('thePasswordPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('thePasswordPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 

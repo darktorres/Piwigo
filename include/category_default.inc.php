@@ -40,7 +40,7 @@ SELECT *
     unset($rank_of);
 }
 
-if (count($pictures) > 0) {
+if ($pictures !== []) {
     // define category slideshow url
     $row = reset($pictures);
     $page['cat_slideshow_url'] =
@@ -58,7 +58,7 @@ if (count($pictures) > 0) {
           ]
       );
 
-    if ($conf['activate_comments'] and $user['show_nb_comments']) {
+    if ($conf['activate_comments'] && $user['show_nb_comments']) {
         $query = '
 SELECT image_id, COUNT(*) AS nb_comments
   FROM ' . COMMENTS_TABLE . '

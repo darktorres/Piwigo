@@ -8,9 +8,7 @@ function int_delete_gdthumb_cache($pattern)
 {
     if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)):
         while (($node = readdir($contents)) !== false):
-            if ($node != '.'
-                and $node != '..'
-                and is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)):
+            if ($node !== '.' && $node !== '..' && is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)):
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
             endif;
         endwhile;
@@ -93,48 +91,36 @@ if (isset($_POST['cachedelete'])) {
 
 // Save configuration
 if (isset($_POST['submit'])) {
-    if (empty($_POST['method'])):
-        $method = 'resize';
-    else:
-        $method = $_POST['method'];
-    endif;
-    if (empty($_POST['normalize_title'])):
-        $normalize = 'off';
-    else:
-        $normalize = $_POST['normalize_title'];
-    endif;
-
+    $method = empty($_POST['method']) ? 'resize' : $_POST['method'];
+    $normalize = empty($_POST['normalize_title']) ? 'off' : $_POST['normalize_title'];
     $big_thumb = ! empty($_POST['big_thumb']);
     $big_thumb_noinpw = ! empty($_POST['big_thumb_noinpw']);
     $thumb_animate = ! empty($_POST['thumb_animate']);
     $thumb_mode_album = $_POST['thumb_mode_album'];
     $thumb_mode_photo = $_POST['thumb_mode_photo'];
-
     if ($method == 'slide'):
         if ($big_thumb):
             $big_thumb = false;
-            array_push($page['warnings'], l10n('Big thumb cannot be used in Slide mode. Disabled'));
+            $page['warnings'][] = l10n('Big thumb cannot be used in Slide mode. Disabled');
         endif;
         if ($thumb_animate):
             $thumb_animate = false;
-            array_push($page['warnings'], l10n('Thumb animation cannot be used in Slide mode. Disabled'));
+            $page['warnings'][] = l10n('Thumb animation cannot be used in Slide mode. Disabled');
         endif;
 
         if (($thumb_mode_album == 'overlay-ex') || ($thumb_mode_album == 'overlay') || ($thumb_mode_album == 'top') || ($thumb_mode_album == 'bottom')):
             $thumb_mode_album = 'bottom_static';
-            array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+            $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         endif;
 
         if (($thumb_mode_photo == 'overlay-ex') || ($thumb_mode_photo == 'overlay') || ($thumb_mode_photo == 'top') || ($thumb_mode_photo == 'bottom')):
             $thumb_mode_photo = 'bottom_static';
-            array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+            $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         endif;
     endif;
-
     if (($big_thumb_noinpw) && (! $big_thumb)):
         $big_thumb_noinpw = false;
     endif;
-
     $params = [
         'height' => $_POST['height'],
         'margin' => $_POST['margin'],
@@ -150,26 +136,23 @@ if (isset($_POST['submit'])) {
         'no_wordwrap' => ! empty($_POST['no_wordwrap']),
         'thumb_animate' => $thumb_animate,
     ];
-
     if (! is_numeric($params['height'])) {
-        array_push($page['errors'], l10n('Thumbnails max height must be an integer'));
+        $page['errors'][] = l10n('Thumbnails max height must be an integer');
     }
     if (! is_numeric($params['margin'])) {
-        array_push($page['errors'], l10n('Margin between thumbnails must be an integer'));
+        $page['errors'][] = l10n('Margin between thumbnails must be an integer');
     }
     if (! is_numeric($params['nb_image_page'])) {
-        array_push($page['errors'], l10n('Number of photos per page must be an integer'));
+        $page['errors'][] = l10n('Number of photos per page must be an integer');
     }
-
     if ($params['height'] != $conf['gdThumb']['height']) {
         delete_gdthumb_cache($conf['gdThumb']['height']);
     } elseif ($params['margin'] != $conf['gdThumb']['margin']) {
         delete_gdthumb_cache($conf['gdThumb']['height'] * 2 + $conf['gdThumb']['margin']);
     }
-
     if (empty($page['errors'])) {
         conf_update_param('gdThumb', $params);
-        array_push($page['infos'], l10n('Information data registered in database'));
+        $page['infos'][] = l10n('Information data registered in database');
     }
 }
 
@@ -179,11 +162,7 @@ $css_file = str_replace(
     '/',
     dirname(__FILE__, 3) . '/' . GDTHEME_PATH . 'admin/css/styles.css'
 );
-if (@file_exists($css_file)):
-    $custom_css = 'yes';
-else:
-    $custom_css = 'no';
-endif;
+$custom_css = @file_exists($css_file) ? 'yes' : 'no';
 
 if (! isset($params['normalize_title'])):
     $params['normalize_title'] = 'off';
