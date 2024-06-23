@@ -1246,7 +1246,7 @@ function is_autorize_status(
 /**
  * Abord script if user has no access to a particular ACCESS_*
  *
- * @return int one of ACCESS_* constants
+ * @param int $access_type one of ACCESS_* constants
  * @param string $user_status used if $user not initialized
  */
 function check_status(
