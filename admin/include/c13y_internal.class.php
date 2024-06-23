@@ -75,13 +75,13 @@ class c13y_internal
                 $c13y->add_anomaly(
                     sprintf(
                         l10n('%s value is not correct file because exif are not supported'),
-                        '$conf[\'' . $value . '\']'
+                        '$conf[\'' . $value . "']"
                     ),
                     null,
                     null,
                     sprintf(
                         l10n('%s must be to set to false in your local/config/config.inc.php file'),
-                        '$conf[\'' . $value . '\']'
+                        '$conf[\'' . $value . "']"
                     )
                     . '<br>' .
                     $c13y->get_htlm_links_more_info()
@@ -214,6 +214,7 @@ class c13y_internal
 
                         $result = true;
                     }
+
                     break;
                 case 'status':
                     if ($id == $conf['guest_id']) {
@@ -244,6 +245,7 @@ class c13y_internal
 
                         $result = true;
                     }
+
                     break;
             }
         }

@@ -66,14 +66,14 @@ function decode_slideshow_params(
         $matches = [];
         if (preg_match_all('/([a-z]+)-(\d+)/', (string) $encode_params, $matches)) {
             $matchcount = count($matches[1]);
-            for ($i = 0; $i < $matchcount; $i++) {
+            for ($i = 0; $i < $matchcount; ++$i) {
                 $result[$matches[1][$i]] = $matches[2][$i];
             }
         }
 
         if (preg_match_all('/([a-z]+)-(true|false)/', (string) $encode_params, $matches)) {
             $matchcount = count($matches[1]);
-            for ($i = 0; $i < $matchcount; $i++) {
+            for ($i = 0; $i < $matchcount; ++$i) {
                 $result[$matches[1][$i]] = get_boolean($matches[2][$i]);
             }
         }

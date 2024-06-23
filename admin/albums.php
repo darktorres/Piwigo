@@ -53,6 +53,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     if (! in_array($_POST['order'], $sort_orders)) {
         die('Invalid sort order');
     }
+
     check_input_parameter('id', $_POST, false, '/^-?\d+$/');
 
     $query = '
@@ -154,9 +155,10 @@ foreach ($allAlbum as $album) {
     $parents = explode(',', (string) $album['uppercats']);
     $the_place = &$associatedTree[strval($parents[0])];
     $counter = count($parents);
-    for ($i = 1; $i < $counter; $i++) {
+    for ($i = 1; $i < $counter; ++$i) {
         $the_place = &$the_place['children'][strval($parents[$i])];
     }
+
     $the_place['cat'] = $album;
 }
 
@@ -197,8 +199,10 @@ function assocToOrderedTree($assocT)
             $orderedCat['nb_subcats'] = count($cat['children']);
             $orderedCat['children'] = assocToOrderedTree($cat['children']);
         }
+
         $orderedTree[] = $orderedCat;
     }
+
     usort($orderedTree, 'cmpCat');
     return $orderedTree;
 }

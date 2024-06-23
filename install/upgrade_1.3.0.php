@@ -56,6 +56,7 @@ foreach ($queries as $query) {
     $query = str_replace('phpwebgallery_', PREFIX_TABLE, $query);
     pwg_query($query);
 }
+
 // filling the new column categories.uppercats
 $id_uppercats = [];
 
@@ -68,6 +69,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     if (! isset($row['id_uppercat']) || $row['id_uppercat'] == '') {
         $row['id_uppercat'] = 'NULL';
     }
+
     $id_uppercats[$row['id']] = $row['id_uppercat'];
 }
 
@@ -83,6 +85,7 @@ foreach (array_keys($id_uppercats) as $id) {
         $uppercats[] = $id_uppercats[$id];
         $id = $id_uppercats[$id];
     }
+
     $data['uppercats'] = implode(',', array_reverse($uppercats));
 
     $datas[] = $data;

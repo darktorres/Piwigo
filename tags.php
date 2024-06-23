@@ -75,7 +75,7 @@ if ($page['display_mode'] == 'letters') {
         if ($tag_letter !== $current_letter) {
             if ($current_column < $conf['tag_letters_column_number'] && $current_tag_idx > $current_column * $nb_tags / $conf['tag_letters_column_number']) {
                 $letter['CHANGE_COLUMN'] = true;
-                $current_column++;
+                ++$current_column;
             }
 
             $letter['TITLE'] = $current_letter;
@@ -100,7 +100,7 @@ if ($page['display_mode'] == 'letters') {
             ]
         );
 
-        $current_tag_idx++;
+        ++$current_tag_idx;
     }
 
     // flush last letter
@@ -145,6 +145,7 @@ if ($page['display_mode'] == 'letters') {
         );
     }
 }
+
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
 if (! isset($themeconf['hide_menu_on']) || ! in_array('theTagsPage', $themeconf['hide_menu_on'])) {

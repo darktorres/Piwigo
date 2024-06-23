@@ -19,6 +19,7 @@ check_status(ACCESS_GUEST);
 if (isset($page['category'])) {
     check_restrictions($page['category']['id']);
 }
+
 if ($page['start'] > 0 && $page['start'] >= count($page['items'])) {
     page_not_found('', duplicate_index_url([
         'start' => 0,
@@ -34,6 +35,7 @@ if (isset($_GET['image_order'])) {
     } else {
         pwg_unset_session_var('image_order');
     }
+
     redirect(
         duplicate_index_url(
             [],        // nothing to redefine
@@ -41,6 +43,7 @@ if (isset($_GET['image_order'])) {
         )
     );
 }
+
 if (isset($_GET['display'])) {
     $page['meta_robots']['noindex'] = 1;
     if (array_key_exists($_GET['display'], ImageStdParams::get_defined_type_map())) {
@@ -77,10 +80,12 @@ if (isset($page['is_homepage']) && $page['is_homepage']) {
     if ($start > 0 && $start >= count($page['items'])) {
         $start -= $page['nb_image_page'];
     }
+
     $canonical_url = duplicate_index_url([
         'start' => $start,
     ]);
 }
+
 $template->assign('U_CANONICAL', $canonical_url);
 
 //-------------------------------------------------------------- page title
@@ -130,6 +135,7 @@ if (empty($page['is_external'])) {
                 duplicate_index_url($chronology_params, ['start', 'flat'])
             );
         }
+
         if ($conf['index_posted_date_icon']) {
             $chronology_params['chronology_field'] = 'posted';
             $template->assign(
@@ -187,6 +193,7 @@ if (empty($page['is_external'])) {
             foreach ($cats as $cat) {
                 $hints[] = get_cat_display_name([$cat], '');
             }
+
             $template->assign('category_search_results', $hints);
         }
 
@@ -220,6 +227,7 @@ if (empty($page['is_external'])) {
         if (($pos = strpos($first_order, ',')) !== false) {
             $first_order = substr($first_order, 0, $pos);
         }
+
         $first_order = trim($first_order);
 
         $url = add_url_params(

@@ -71,6 +71,7 @@ SELECT user_id,
     if (empty($feed_row)) {
         page_not_found(l10n('Unknown feed identifier'));
     }
+
     if ($feed_row['user_id'] != $user['id']) { // new user
         $user = build_user($feed_row['user_id'], true);
     }
@@ -112,6 +113,7 @@ if (! $image_only) {
         foreach ($news as $line) {
             $item->description .= '<li>' . $line . '</li>';
         }
+
         $item->description .= '</ul>';
         $item->descriptionHtmlSyndicated = true;
 

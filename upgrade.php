@@ -19,6 +19,7 @@ $config_file_contents = @file_get_contents($config_file);
 if ($config_file_contents === false) {
     die('Cannot load ' . $config_file);
 }
+
 $php_end_tag = strrpos($config_file_contents, '?>');
 if ($php_end_tag === false) {
     die('Cannot find php end tag in ' . $config_file);
@@ -159,6 +160,7 @@ if ($language == 'fr_FR') {
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
 }
+
 define('PHPWG_URL', 'https://' . PHPWG_DOMAIN);
 
 load_language('common.lang', '', [
@@ -240,6 +242,7 @@ if ($has_remote_site) {
         foreach ($page['errors'] as $error) {
             echo '<li>' . $error . '</li>';
         }
+
         echo '</ul>';
     }
 
@@ -421,7 +424,7 @@ REPLACE INTO ' . PLUGINS_TABLE . '
                 $template->assign(
                     [
                         'button_label' => l10n(
-                            'Discover what\'s new in Piwigo %s',
+                            "Discover what's new in Piwigo %s",
                             get_branch_from_version(PHPWG_VERSION)
                         ),
                         'button_link' => 'admin.php?submited_tour_path=tours/' . $version_ . '&amp;pwg_token=' . get_pwg_token(),
@@ -451,8 +454,10 @@ else {
         if ($language == $language_code) {
             $template->assign('language_selection', $language_code);
         }
+
         $languages_options[$language_code] = $fs_language['name'];
     }
+
     $template->assign('language_options', $languages_options);
 
     $template->assign('introduction', [

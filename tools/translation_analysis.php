@@ -23,8 +23,10 @@ if (! isset($_GET['lang'])) {
         if ($page['ref_compare'] == $language) {
             continue;
         }
+
         echo '<li><a href="?lang=' . $language . '">' . $language . '</a></li>';
     }
+
     echo '</ul>';
     exit();
 } elseif (in_array($_GET['lang'], $languages)) {
@@ -43,6 +45,7 @@ foreach ($languages as $language) {
     if (in_array($language, [$page['ref_compare'], $page['ref_default_values']])) {
         continue;
     }
+
     echo '<h2>' . $language . '</h2>';
     $metalang[$language] = load_metalang($language, $file_list);
 
@@ -89,9 +92,11 @@ foreach ($languages as $language) {
                 if ($output_missing !== '') {
                     $output .= "// missing translations\n" . $output_missing;
                 }
+
                 if ($output_duplicated !== '') {
                     $output .= "\n// untranslated yet\n" . $output_duplicated;
                 }
+
                 echo '<textarea style="width:100%;height:250px;">' . $output . '</textarea>';
             }
 
@@ -119,6 +124,7 @@ function load_metalang($language, $file_list)
             $metalang[$file] = $lang;
         }
     }
+
     return $metalang;
 }
 

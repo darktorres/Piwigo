@@ -36,6 +36,7 @@ if ($_POST !== []) {
         if (isset($_POST['apply_on_sub'])) {
             $cat_ids = array_merge($cat_ids, get_subcat_ids([$page['cat']]));
         }
+
         set_cat_status($cat_ids, $_POST['status']);
         $category['status'] = $_POST['status'];
     }
@@ -232,6 +233,7 @@ SELECT user_id, group_id
         if (! isset($granted_groups[$row['group_id']])) {
             $granted_groups[$row['group_id']] = [];
         }
+
         $granted_groups[$row['group_id']][] = $row['user_id'];
     }
 

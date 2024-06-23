@@ -257,11 +257,12 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
         );
 
         $week = 0;
-        for ($i = 0; $i < $nb_weeks; $i++) {
+        for ($i = 0; $i < $nb_weeks; ++$i) {
             if ($week_number[$i] == $day_date->format('W')) {
                 $week = $i;
             }
         }
+
         $day_nb = $day_date->format('N');
 
         @$activity_last_weeks[$week][$day_nb]['details'][ucfirst((string) $action['object'])][ucfirst(
@@ -315,7 +316,7 @@ usort($temp_data, 'cmp_day');
 $diff_x = [];
 $counter = count($temp_data);
 
-for ($i = 1; $i < $counter; $i++) {
+for ($i = 1; $i < $counter; ++$i) {
     $diff_x[] = $temp_data[$i]['x'] / $temp_data[$i - 1]['x'] * 100;
 }
 
@@ -323,15 +324,15 @@ $split = 0;
 //Split (split represented by -1)
 if ($diff_x !== []) {
     while (max($diff_x) > 120) {
-        $diff_x[array_search(max($diff_x), $diff_x)] = -1;
-        $split++;
+        $diff_x[array_search(max($diff_x), $diff_x, true)] = -1;
+        ++$split;
     }
 }
 
 //Fill empty chart data for the template
 $chart_data = [];
-for ($i = 0; $i < $nb_weeks; $i++) {
-    for ($j = 1; $j <= 7; $j++) {
+for ($i = 0; $i < $nb_weeks; ++$i) {
+    for ($j = 1; $j <= 7; ++$j) {
         $chart_data[$i][$j] = 0;
     }
 }
@@ -341,14 +342,16 @@ $size = 1;
 if (isset($temp_data[0])) {
     $chart_data[$temp_data[0]['w']][$temp_data[0]['d']] = $size;
 }
+
 //Set sizes in chart data
 $counter = count($temp_data);
 
 //Set sizes in chart data
-for ($i = 1; $i < $counter; $i++) {
+for ($i = 1; $i < $counter; ++$i) {
     if ($diff_x[$i - 1] == -1) {
-        $size++;
+        ++$size;
     }
+
     $chart_data[$temp_data[$i]['w']][$temp_data[$i]['d']] = $size;
 }
 
@@ -359,10 +362,11 @@ $template->assign('ACTIVITY_CHART_DATA', $chart_data);
 $template->assign('ACTIVITY_CHART_NUMBER_SIZES', $size);
 
 $day_labels = [];
-for ($i = 0; $i <= 6; $i++) {
+for ($i = 0; $i <= 6; ++$i) {
     // first 3 letters of day name
     $day_labels[] = mb_substr((string) $lang['day'][($i + 1) % 7], 0, 3);
 }
+
 $template->assign('DAY_LABELS', $day_labels);
 
 // +-----------------------------------------------------------------------+
@@ -414,6 +418,7 @@ foreach ($file_extensions_of as $type => $extensions) {
     foreach ($extensions as $ext => $counter) {
         $details[] = $counter . 'x' . $ext;
     }
+
     $data_storage_details[$type] = implode(', ', $details);
 }
 

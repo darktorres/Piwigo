@@ -45,6 +45,7 @@ function modus_smarty_prefilter($source)
         if (! ($pos = strpos($source, '<div class="actionButtons">'))) {
             $pos = strpos($source, '<div class=actionButtons>');
         }
+
         if ($pos !== false) {
             $source = substr_replace(
                 $source,

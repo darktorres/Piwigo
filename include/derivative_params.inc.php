@@ -31,6 +31,7 @@ function size_to_url(
     if ($s[0] == $s[1]) {
         return $s[0];
     }
+
     return $s[0] . 'x' . $s[1];
 }
 
@@ -77,9 +78,9 @@ final class ImageRect
      * @var int
      * @var int
      */
-    public $l;
+    public $l = 0;
 
-    public $t;
+    public $t = 0;
 
     public $r;
 
@@ -91,7 +92,6 @@ final class ImageRect
     public function __construct(
         $l
     ) {
-        $this->l = $this->t = 0;
         $this->r = $l[0];
         $this->b = $l[1];
     }
@@ -125,6 +125,7 @@ final class ImageRect
         if ($this->width() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
         if (! empty($coi)) {
@@ -140,6 +141,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->l += $tlcrop;
         $this->r -= $pixels - $tlcrop;
     }
@@ -157,6 +159,7 @@ final class ImageRect
         if ($this->height() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
         if (! empty($coi)) {
@@ -172,6 +175,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->t += $tlcrop;
         $this->b -= $pixels - $tlcrop;
     }
@@ -403,6 +407,7 @@ final class DerivativeParams
             return $min_size[0] <= $out_size[0]
               || $min_size[1] <= $out_size[1];
         }
+
         return false;
     }
 }

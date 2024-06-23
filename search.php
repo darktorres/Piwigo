@@ -32,8 +32,8 @@ if (isset($_POST['submit'])) {
         check_input_parameter('fields', $_POST, true, '/^(name|comment|file)$/');
 
         $drop_char_match = [
-            '-', '^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_',
-            '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*'];
+            '-', '^', '$', ';', '#', '&', '(', ')', '<', '>', '`', "'", '"', '|', ',', '@', '_',
+            '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', "'", '!', '*'];
         $drop_char_replace = [
             ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', ' ', ' ', ' ', ' ', '', ' ',
             ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '', ' ', ' ', ' ', ' ', ' '];
@@ -139,6 +139,7 @@ INSERT INTO ' . SEARCH_TABLE . '
         $page['errors'][] = l10n('Empty query. No criteria has been entered.');
     }
 }
+
 //----------------------------------------------------------------- redirection
 if (isset($_POST['submit']) && count(
     $page['errors']
@@ -152,6 +153,7 @@ if (isset($_POST['submit']) && count(
         )
     );
 }
+
 //----------------------------------------------------- template initialization
 
 //
@@ -215,7 +217,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
         $author_counts[$row['author']] = 0;
     }
 
-    $author_counts[$row['author']]++;
+    ++$author_counts[$row['author']];
 }
 
 foreach ($author_counts as $author => $counter) {

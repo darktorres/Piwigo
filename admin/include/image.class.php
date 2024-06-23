@@ -98,6 +98,7 @@ class pwg_image
         if ($automatic_rotation) {
             $rotation = self::get_rotation_angle($this->source_filepath);
         }
+
         $resize_dimensions = self::get_resize_dimensions(
             $source_width,
             $source_height,
@@ -230,6 +231,7 @@ class pwg_image
                 'y' => $y,
             ];
         }
+
         return $result;
     }
 
@@ -301,8 +303,8 @@ class pwg_image
 
         $norm = array_sum(array_map('array_sum', $matrix));
 
-        for ($i = 0; $i < 3; $i++) {
-            for ($j = 0; $j < 3; $j++) {
+        for ($i = 0; $i < 3; ++$i) {
+            for ($j = 0; $j < 3; ++$j) {
                 $matrix[$i][$j] /= $norm;
             }
         }
@@ -322,16 +324,20 @@ class pwg_image
         if (! function_exists('exec')) {
             return false;
         }
+
         if (empty($conf['ext_imagick_dir'])) {
             return false;
         }
+
         @exec($conf['ext_imagick_dir'] . 'convert -version', $returnarray);
         if (is_array($returnarray) && ! empty($returnarray[0]) && preg_match('/ImageMagick/i', $returnarray[0])) {
             if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match)) {
                 self::$ext_imagick_version = $match[1];
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -385,6 +391,7 @@ class pwg_image
                     );
                 }
         }
+
         return false;
     }
 
@@ -393,6 +400,7 @@ class pwg_image
         if (method_exists($this->image, 'destroy')) {
             return $this->image->destroy();
         }
+
         return true;
     }
 
@@ -603,6 +611,7 @@ class image_ext_imagick implements imageInterface
             $this->width = $this->height;
             $this->height = $tmp;
         }
+
         $this->add_command('rotate', -$rotation);
         $this->add_command('orient', 'top-left');
         return true;
@@ -636,6 +645,7 @@ class image_ext_imagick implements imageInterface
             $param .= ' ';
             $param .= implode(',', $line);
         }
+
         $param .= '"';
         $this->add_command('morphology', $param);
         return true;
@@ -690,6 +700,7 @@ class image_ext_imagick implements imageInterface
                 trigger_error($line, E_USER_WARNING);
             }
         }
+
         return is_array($returnarray);
     }
 }
@@ -752,6 +763,7 @@ class image_gd implements imageInterface
         } else {
             imagedestroy($dest);
         }
+
         return $result;
     }
 
@@ -807,6 +819,7 @@ class image_gd implements imageInterface
         } else {
             imagedestroy($dest);
         }
+
         return $result;
     }
 

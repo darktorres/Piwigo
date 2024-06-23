@@ -81,6 +81,7 @@ class CalendarMonthly extends CalendarBase
                 )) {
                     $template->assign('chronology_calendar', $tpl_var);
                 }
+
                 $this->build_next_prev();
                 return true;
             }
@@ -90,9 +91,11 @@ class CalendarMonthly extends CalendarBase
             if (count($page['chronology_date']) == 0) {
                 $this->build_nav_bar(CYEAR); // years
             }
+
             if (count($page['chronology_date']) == 1) {
                 $this->build_nav_bar(CMONTH); // month
             }
+
             if (count($page['chronology_date']) == 2) {
                 $day_labels = range(1, $this->get_all_days_in_month(
                     $page['chronology_date'][CYEAR],
@@ -102,8 +105,10 @@ class CalendarMonthly extends CalendarBase
                 unset($day_labels[0]);
                 $this->build_nav_bar(CDAY, $day_labels); // days
             }
+
             $this->build_next_prev();
         }
+
         return false;
     }
 
@@ -123,6 +128,7 @@ class CalendarMonthly extends CalendarBase
         while (count($date) > $max_levels) {
             array_pop($date);
         }
+
         $res = '';
         if (isset($date[CYEAR]) && $date[CYEAR] !== 'any') {
             $b = $date[CYEAR] . '-';
@@ -143,20 +149,24 @@ class CalendarMonthly extends CalendarBase
                 if (isset($date[CMONTH]) && $date[CMONTH] !== 'any') {
                     $res .= ' AND ' . $this->calendar_levels[CMONTH]['sql'] . '=' . $date[CMONTH];
                 }
+
                 if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
                     $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
                 }
             }
-            $res = " AND {$this->date_field} BETWEEN '{$b}' AND '{$e} 23:59:59'" . $res;
+
+            $res = sprintf(" AND %s BETWEEN '%s' AND '%s 23:59:59'", $this->date_field, $b, $e) . $res;
         } else {
             $res = ' AND ' . $this->date_field . ' IS NOT NULL';
             if (isset($date[CMONTH]) && $date[CMONTH] !== 'any') {
                 $res .= ' AND ' . $this->calendar_levels[CMONTH]['sql'] . '=' . $date[CMONTH];
             }
+
             if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
                 $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
             }
         }
+
         return $res;
     }
 
@@ -189,13 +199,14 @@ class CalendarMonthly extends CalendarBase
         if (is_numeric($year) && $month == 2) {
             $nb_days = $md[2];
             if ($year % 4 == 0 && ($year % 100 != 0 || $year % 400 != 0)) {
-                $nb_days++;
+                ++$nb_days;
             }
         } elseif (is_numeric($month)) {
             $nb_days = $md[$month];
         } else {
             $nb_days = 31;
         }
+
         return $nb_days;
     }
 
@@ -231,9 +242,11 @@ class CalendarMonthly extends CalendarBase
                     'children' => [],
                 ];
             }
+
             $items[$y]['children'][$m] = $row['count'];
             $items[$y]['nb_images'] += $row['count'];
         }
+
         //echo ('<pre>'. var_export($items, true) . '</pre>');
         if (count(
             $items
@@ -301,14 +314,17 @@ class CalendarMonthly extends CalendarBase
                     'children' => [],
                 ];
             }
+
             $items[$m]['children'][$d] = $row['count'];
             $items[$m]['nb_images'] += $row['count'];
         }
+
         if (count($items) == 1) { // only one month exists so bail out to month view
             [$m] = array_keys($items);
             $page['chronology_date'][CMONTH] = $m;
             return false;
         }
+
         global $lang;
         foreach ($items as $month => $month_data) {
             $chronology_date = [$page['chronology_date'][CYEAR], $month];
@@ -389,6 +405,7 @@ class CalendarMonthly extends CalendarBase
             if ($first_day_dow < 0) {
                 $first_day_dow += 7;
             }
+
             //first_day_dow = week day corresponding to the first day of this month
             $wday_labels = $lang['day'];
 
@@ -408,7 +425,7 @@ class CalendarMonthly extends CalendarBase
             $tpl_crt_week = [];
 
             //fill the empty days in the week before first day of this month
-            for ($i = 0; $i < $first_day_dow; $i++) {
+            for ($i = 0; $i < $first_day_dow; ++$i) {
                 $tpl_crt_week[] = [];
             }
 
@@ -417,7 +434,7 @@ class CalendarMonthly extends CalendarBase
                     $page['chronology_date'][CYEAR],
                     $page['chronology_date'][CMONTH]
                 );
-                $day++) {
+                ++$day) {
                 $dow = ($first_day_dow + $day - 1) % 7;
                 if ($dow == 0 && $day != 1) {
                     $tpl_weeks[] = $tpl_crt_week; // add finished week to week list
@@ -452,11 +469,13 @@ class CalendarMonthly extends CalendarBase
                       ];
                 }
             }
+
             //fill the empty days in the week after the last day of this month
             while ($dow < 6) {
                 $tpl_crt_week[] = [];
-                $dow++;
+                ++$dow;
             }
+
             $tpl_weeks[] = $tpl_crt_week;
 
             $tpl_var['month_view'] =

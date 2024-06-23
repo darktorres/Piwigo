@@ -59,7 +59,7 @@ if ($inserts !== []) {
 ob_start();
 echo '<pre>';
 
-for ($upgrade_id = 149; $upgrade_id <= 152; $upgrade_id++) { // TODO change on each release
+for ($upgrade_id = 149; $upgrade_id <= 152; ++$upgrade_id) { // TODO change on each release
     if (! file_exists(UPGRADES_PATH . '/' . $upgrade_id . '-database.php')) {
         continue;
     }
@@ -86,7 +86,7 @@ for ($upgrade_id = 149; $upgrade_id <= 152; $upgrade_id++) { // TODO change on e
 INSERT INTO `' . PREFIX_TABLE . 'upgrade`
   (id, applied, description)
   VALUES
-  (\'' . $upgrade_id . '\', NOW(), \'[migration from 2.8.0 to ' . PHPWG_VERSION . ', ' . get_elapsed_time(
+  (\'' . $upgrade_id . "', NOW(), '[migration from 2.8.0 to " . PHPWG_VERSION . ', ' . get_elapsed_time(
         $up_start,
         get_moment()
     ) . '] ' . $upgrade_description . '\')

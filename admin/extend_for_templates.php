@@ -28,6 +28,7 @@
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
+
 include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 check_status(ACCESS_ADMINISTRATOR);
 
@@ -123,15 +124,19 @@ if (isset($_POST['submit'])) {
         if ($url_keyword == '----------') {
             $url_keyword = 'N/A';
         }
+
         $bound_tpl = $_POST['bound'][$i];
         if ($bound_tpl == '----------') {
             $bound_tpl = 'N/A';
         }
+
         if ($handle !== 'N/A') {
             $replacements[$newtpl] = [$handle, $url_keyword, $bound_tpl];
         }
-        $i++;
+
+        ++$i;
     }
+
     $conf['extents_for_templates'] = serialize($replacements);
     $tpl_extension = $replacements;
     /* ecrire la nouvelle conf */
@@ -156,6 +161,7 @@ foreach ($tpl_extension as $file => $conditions) {
         $new_extensions = array_diff($new_extensions, [$file]);
     }
 }
+
 foreach ($new_extensions as $file) {
     $tpl_extension[$file] = ['N/A', 'N/A', 'N/A'];
 }
@@ -191,6 +197,7 @@ foreach ($tpl_extension as $file => $conditions) {
         ]
     );
 }
+
 // +-----------------------------------------------------------------------+
 // |                           html code display                           |
 // +-----------------------------------------------------------------------+

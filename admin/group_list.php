@@ -84,6 +84,7 @@ SELECT u.' . $conf['user_fields']['username'] . ' AS username
     while ($us = pwg_db_fetch_assoc($res)) {
         $members[] = $us['username'];
     }
+
     $template->append(
         'groups',
         [
@@ -100,7 +101,7 @@ SELECT u.' . $conf['user_fields']['username'] . ' AS username
         ]
     );
 
-    $group_counter++;
+    ++$group_counter;
 }
 
 $template->assign('ADMIN_PAGE_TITLE', l10n('Groups') . ' <span class="badge-number">' . $group_counter . '</span>');

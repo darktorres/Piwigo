@@ -98,6 +98,7 @@ SELECT representative_picture_id
         $categories[] = $row;
         $category_ids[] = $row['id'];
     }
+
     unset($image_id);
 }
 
@@ -166,6 +167,7 @@ SELECT *
                     $category['representative_picture_id'] = $image_id;
                 }
             }
+
             unset($category);
         }
     }
@@ -185,6 +187,7 @@ SELECT *
     foreach ($infos_of_image as &$info) {
         $info['src_image'] = new SrcImage($info);
     }
+
     unset($info);
 }
 

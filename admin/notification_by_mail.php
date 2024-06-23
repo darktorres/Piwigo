@@ -96,7 +96,7 @@ update
 set
   ' . $conf['user_fields']['email'] . ' = null
 where
-  trim(' . $conf['user_fields']['email'] . ') = \'\';';
+  trim(' . $conf['user_fields']['email'] . ") = '';";
     pwg_query($query);
 
     // null mail_address are not selected in the list
@@ -226,6 +226,7 @@ function do_action_send_mail_notification(
                 if (! isset($customize_mail_content)) {
                     $customize_mail_content = $conf['nbm_complementary_mail_content'];
                 }
+
                 $customize_mail_content =
                   trigger_change('nbm_render_global_customize_mail_content', $customize_mail_content);
                 // Prepare message after change language
@@ -236,6 +237,7 @@ function do_action_send_mail_notification(
                         'Prepared time for list of users to send mail is limited. Others users are not listed.'
                     );
                 }
+
                 // Begin nbm users environment
                 begin_users_env_nbm($is_action_send);
                 foreach ($data_users as $nbm_user) {
@@ -244,6 +246,7 @@ function do_action_send_mail_notification(
                         $page['infos'][] = $msg_break_timeout;
                         break;
                     }
+
                     if ($is_action_send && check_sendmail_timeout()) {
                         // Stop fill list on 'send', if the quota is override
                         $page['errors'][] = $msg_break_timeout;
@@ -261,6 +264,7 @@ function do_action_send_mail_notification(
                             $auth = $auth_key['auth_key'];
                             $add_url_params['auth'] = $auth;
                         }
+
                         set_make_full_url();
                         // Fill return list of "treated" check_key for 'send'
                         $return_list[] = $nbm_user['check_key'];
@@ -270,6 +274,7 @@ function do_action_send_mail_notification(
                         } else {
                             $exist_data = news_exists($nbm_user['last_send'], $dbnow);
                         }
+
                         if ($exist_data) {
                             $subject = '[' . $conf['gallery_title'] . '] ' . l10n('New photos added');
 
@@ -369,6 +374,7 @@ function do_action_send_mail_notification(
                     // unset env nbm user
                     unset_user_on_env_nbm();
                 }
+
                 // Restore nbm environment
                 end_users_env_nbm();
                 if ($is_action_send) {
@@ -455,7 +461,7 @@ switch ($page['mode']) {
             while ($nbm_user = pwg_db_fetch_assoc($result)) {
                 if (isset($_POST[$nbm_user['param']])) {
                     conf_update_param($nbm_user['param'], $_POST[$nbm_user['param']], true);
-                    $updated_param_count++;
+                    ++$updated_param_count;
                 }
             }
 
@@ -476,6 +482,7 @@ switch ($page['mode']) {
             $check_key_treated = subscribe_notification_by_mail(true, $_POST['cat_false']);
             do_timeout_treatment('cat_false', $check_key_treated);
         }
+
         break;
 
     case 'send':
@@ -585,6 +592,7 @@ switch ($page['mode']) {
                 }
             }
         }
+
         $template->assign(
             [
                 'category_option_true' => $opt_true,
@@ -633,6 +641,7 @@ switch ($page['mode']) {
                 }
             }
         }
+
         $template->assign($page['mode'], $tpl_var);
 
         if ($conf['auth_key_duration'] > 0) {

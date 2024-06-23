@@ -232,6 +232,7 @@ SELECT DISTINCT id,name,uppercats,global_rank
         );
         break;
 }
+
 display_select_cat_wrapper($query_true, [], 'category_option_true');
 display_select_cat_wrapper($query_false, [], 'category_option_false');
 $template->assign('PWG_TOKEN', get_pwg_token());

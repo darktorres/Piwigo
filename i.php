@@ -32,6 +32,7 @@ function ierror($msg, $code)
         if (ob_get_length() !== false) {
             ob_clean();
         }
+
         // default url is on html format
         $url = html_entity_decode((string) $msg);
         $logger->debug($code . ' ' . $url, [
@@ -42,14 +43,16 @@ function ierror($msg, $code)
         header('Location: ' . $url);
         exit;
     }
+
     if ($code >= 400) {
         $protocol = $_SERVER['SERVER_PROTOCOL'];
         if (($protocol != 'HTTP/1.1') && ($protocol != 'HTTP/1.0')) {
             $protocol = 'HTTP/1.0';
         }
 
-        header("{$protocol} {$code} {$msg}", true, $code);
+        header(sprintf('%s %s %s', $protocol, $code, $msg), true, $code);
     }
+
     //todo improve
     echo $msg;
     $logger->error($code . ' ' . $msg, [
@@ -71,6 +74,7 @@ function url_to_size($s)
     if ($pos === false) {
         return [(int) $s, (int) $s];
     }
+
     return [(int) substr((string) $s, 0, $pos), (int) substr((string) $s, $pos + 1)];
 }
 
@@ -88,7 +92,8 @@ function parse_custom_params($tokens)
         $size = url_to_size(substr((string) $token, 1));
     } elseif ($token[0] == 'e') {
         $crop = 1;
-        $size = $min_size = url_to_size(substr((string) $token, 1));
+        $size = url_to_size(substr((string) $token, 1));
+        $min_size = $size;
     } else {
         $size = url_to_size($token);
         if (count($tokens) < 2) {
@@ -101,6 +106,7 @@ function parse_custom_params($tokens)
         $token = array_shift($tokens);
         $min_size = url_to_size($token);
     }
+
     return new DerivativeParams(new SizingParams($size, $crop, $min_size));
 }
 
@@ -118,6 +124,7 @@ function parse_request()
         if ($pos = strpos((string) $req, '&')) {
             $req = substr((string) $req, 0, $pos);
         }
+
         $req = rawurldecode((string) $req);
         /*foreach (array_keys($_GET) as $keynum => $key)
         {
@@ -139,6 +146,7 @@ function parse_request()
     if ($pos === false) {
         ierror('Missing .', 400);
     }
+
     $ext = substr($req, $pos);
     $page['derivative_ext'] = $ext;
     $req = substr($req, 0, $pos);
@@ -147,6 +155,7 @@ function parse_request()
     if ($pos === false) {
         ierror('Missing -', 400);
     }
+
     $deriv = substr($req, $pos + 1);
     $req = substr($req, 0, $pos);
 
@@ -166,6 +175,7 @@ function parse_request()
             ierror('Unknown parsing type', 400);
         }
     }
+
     array_shift($deriv);
 
     if ($page['derivative_type'] == IMG_CUSTOM) {
@@ -175,9 +185,11 @@ function parse_request()
         if ($params->sizing->ideal_size[0] < 20 || $params->sizing->ideal_size[1] < 20) {
             ierror('Invalid size', 400);
         }
+
         if ($params->sizing->max_crop < 0 || $params->sizing->max_crop > 1) {
             ierror('Invalid crop', 400);
         }
+
         $greatest = ImageStdParams::get_by_type(IMG_XXLARGE);
 
         $key = [];
@@ -212,6 +224,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
         $original_size[0] = $original_size[1];
         $original_size[1] = $tmp;
     }
+
     $dsize = $params->compute_final_size($original_size);
 
     $use_watermark = $params->use_watermark;
@@ -224,12 +237,15 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
         if ($candidate->type == $params->type) {
             continue;
         }
+
         if ($candidate->use_watermark != $use_watermark) {
             continue;
         }
+
         if ($candidate->max_width() < $params->max_width() || $candidate->max_height() < $params->max_height()) {
             continue;
         }
+
         $candidate_size = $candidate->compute_final_size($original_size);
         if ($dsize != $params->compute_final_size($candidate_size)) {
             continue;
@@ -242,14 +258,19 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
         } else {
             if ($use_watermark && $candidate->use_watermark) {
                 continue;
-            } //a square that requires watermark should not be generated from a larger derivative with watermark, because if the watermark is not centered on the large image, it will be cropped.
+            }
+
+            //a square that requires watermark should not be generated from a larger derivative with watermark, because if the watermark is not centered on the large image, it will be cropped.
             if ($candidate->sizing->max_crop != 0) {
                 continue;
-            } // this could be optimized
+            }
+
+            // this could be optimized
             if ($candidate_size[0] < $params->sizing->min_size[0] || $candidate_size[1] < $params->sizing->min_size[1]) {
                 continue;
             }
         }
+
         $candidates[] = $candidate;
     }
 
@@ -266,6 +287,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
           || $candidate_mtime < $candidate->last_mod_time) {
             continue;
         }
+
         $params->use_watermark = false;
         $params->sharpen = min(1, $params->sharpen);
         $page['src_path'] = $candidate_path;
@@ -273,6 +295,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
         $page['rotation_angle'] = 0;
         return true;
     }
+
     return false;
 }
 
@@ -289,6 +312,7 @@ function send_derivative($expires)
         ]);
         return;
     }
+
     $fp = fopen($page['derivative_path'], 'rb');
 
     $fstat = fstat($fp);
@@ -296,6 +320,7 @@ function send_derivative($expires)
     if ($expires !== false) {
         header('Expires: ' . gmdate('D, d M Y H:i:s', $expires) . ' GMT');
     }
+
     header('Connection: close');
 
     $ctype = 'application/octet-stream';
@@ -307,14 +332,16 @@ function send_derivative($expires)
         case '.gif': $ctype = 'image/gif';
             break;
     }
-    header("Content-Type: {$ctype}");
+
+    header('Content-Type: ' . $ctype);
 
     fpassthru($fp);
     fclose($fp);
 }
 
 $page = [];
-$begin = $step = microtime(true);
+$begin = microtime(true);
+$step = $begin;
 $timing = [];
 foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $k) {
     $timing[$k] = '';
@@ -331,12 +358,12 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $e) {
-    $logger->error($e->getMessage());
+} catch (Exception $exception) {
+    $logger->error($exception->getMessage());
 }
 
 [$conf['derivatives']] = pwg_db_fetch_row(
-    pwg_query('SELECT value FROM ' . $prefixeTable . 'config WHERE param=\'derivatives\'')
+    pwg_query('SELECT value FROM ' . $prefixeTable . "config WHERE param='derivatives'")
 );
 ImageStdParams::load_from_db();
 
@@ -380,6 +407,7 @@ if (! $need_generate) {
         header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 10 * 24 * 3600) . ' GMT', true, 304);
         exit;
     }
+
     send_derivative($expires);
     exit;
 }
@@ -400,6 +428,7 @@ SELECT *
             if (isset($row['width'])) {
                 $page['original_size'] = [$row['width'], $row['height']];
             }
+
             $page['coi'] = $row['coi'];
 
             if (! isset($row['rotation'])) {
@@ -418,6 +447,7 @@ SELECT *
                 $page['rotation_angle'] = pwg_image::get_rotation_angle_from_code($row['rotation']);
             }
         }
+
         if (! $row) {
             ierror('Db file path not found', 404);
         }
@@ -427,6 +457,7 @@ SELECT *
 } else {
     $page['rotation_angle'] = 0;
 }
+
 pwg_db_close();
 
 if (! try_switch_source($params, $src_mtime) && $params->type == IMG_CUSTOM) {
@@ -434,6 +465,7 @@ if (! try_switch_source($params, $src_mtime) && $params->type == IMG_CUSTOM) {
     foreach (ImageStdParams::get_defined_type_map() as $std_params) {
         $sharpen += $std_params->sharpen;
     }
+
     $params->sharpen = round($sharpen / count(ImageStdParams::get_defined_type_map()));
 }
 
@@ -452,21 +484,22 @@ $changes = 0;
 // rotate
 if ($page['rotation_angle'] != 0) {
     $image->rotate($page['rotation_angle']);
-    $changes++;
+    ++$changes;
     $timing['rotate'] = time_step($step);
 }
 
 // Crop & scale
-$o_size = $d_size = [$image->get_width(), $image->get_height()];
+$o_size = [$image->get_width(), $image->get_height()];
+$d_size = [$image->get_width(), $image->get_height()];
 $params->sizing->compute($o_size, $page['coi'], $crop_rect, $scaled_size);
 if ($crop_rect) {
-    $changes++;
+    ++$changes;
     $image->crop($crop_rect->width(), $crop_rect->height(), $crop_rect->l, $crop_rect->t);
     $timing['crop'] = time_step($step);
 }
 
 if ($scaled_size) {
-    $changes++;
+    ++$changes;
     $image->resize($scaled_size[0], $scaled_size[1]);
     $d_size = $scaled_size;
     $timing['scale'] = time_step($step);
@@ -487,19 +520,21 @@ if ($params->will_watermark($d_size)) {
         $wm_size = $wm_scaled_size;
         $wm_image->resize($wm_scaled_size[0], $wm_scaled_size[1]);
     }
+
     $x = round(($wm->xpos / 100) * ($d_size[0] - $wm_size[0]));
     $y = round(($wm->ypos / 100) * ($d_size[1] - $wm_size[1]));
     if ($image->compose($wm_image, $x, $y, $wm->opacity)) {
-        $changes++;
+        ++$changes;
         if ($wm->xrepeat || $wm->yrepeat) {
             $xpad = $wm_size[0] + max(30, round($wm_size[0] / 4));
             $ypad = $wm_size[1] + max(30, round($wm_size[1] / 4));
 
-            for ($i = -$wm->xrepeat; $i <= $wm->xrepeat; $i++) {
-                for ($j = -$wm->yrepeat; $j <= $wm->yrepeat; $j++) {
+            for ($i = -$wm->xrepeat; $i <= $wm->xrepeat; ++$i) {
+                for ($j = -$wm->yrepeat; $j <= $wm->yrepeat; ++$j) {
                     if (! $i && ! $j) {
                         continue;
                     }
+
                     $x2 = $x + $i * $xpad;
                     $y2 = $y + $j * $ypad;
                     if ($x2 >= 0 && $x2 + $wm_size[0] < $d_size[0] &&
@@ -515,6 +550,7 @@ if ($params->will_watermark($d_size)) {
             }
         }
     }
+
     $wm_image->destroy();
     $timing['watermark'] = time_step($step);
 }

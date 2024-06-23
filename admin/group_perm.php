@@ -148,6 +148,7 @@ if ($authorized_ids !== []) {
     $query_false .= '
     AND id NOT IN (' . implode(',', $authorized_ids) . ')';
 }
+
 $query_false .= '
 ;';
 display_select_cat_wrapper($query_false, [], 'category_option_false');

@@ -25,7 +25,7 @@ function ws_groups_getList(
     $where_clauses = ['1=1'];
 
     if (! empty($params['name'])) {
-        $where_clauses[] = 'LOWER(name) LIKE \'' . pwg_db_real_escape_string($params['name']) . '\'';
+        $where_clauses[] = "LOWER(name) LIKE '" . pwg_db_real_escape_string($params['name']) . "'";
     }
 
     if (! empty($params['group_id'])) {

@@ -29,6 +29,7 @@ if (isset($_POST[$text_values[0]])) {
     foreach ($text_values as $k) {
         $my_conf[$k] = stripslashes((string) $_POST[$k]);
     }
+
     foreach ($bool_values as $k) {
         $my_conf[$k] = isset($_POST[$k]);
     }
@@ -56,7 +57,7 @@ $tabs = [
 ];
 
 $tab_codes = array_map(
-    fn ($a) => $a['code'],
+    static fn ($a) => $a['code'],
     $tabs
 );
 
@@ -70,6 +71,7 @@ foreach ($tabs as $tab) {
         'admin.php?page=theme&amp;theme=modus'
     );
 }
+
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
@@ -78,6 +80,7 @@ $tabsheet->assign();
 foreach ($text_values as $k) {
     $template->assign(strtoupper($k), $my_conf[$k]);
 }
+
 foreach ($bool_values as $k) {
     $template->assign(strtoupper($k), $my_conf[$k]);
 }

@@ -77,7 +77,7 @@ abstract class CalendarBase
         $res = '';
         $counter = count($page['chronology_date']);
 
-        for ($i = 0; $i < $counter; $i++) {
+        for ($i = 0; $i < $counter; ++$i) {
             $res .= $conf['level_separator'];
             if (isset($page['chronology_date'][$i + 1])) {
                 $chronology_date = array_slice($page['chronology_date'], 0, $i + 1);
@@ -98,6 +98,7 @@ abstract class CalendarBase
                   . '</span>';
             }
         }
+
         return $res;
     }
 
@@ -116,6 +117,7 @@ abstract class CalendarBase
         } elseif ($date_component === 'any') {
             $label = l10n('All');
         }
+
         return $label;
     }
 
@@ -130,15 +132,17 @@ abstract class CalendarBase
     ) {
         $date_components = explode('-', $date);
         $res = '';
-        for ($i = count($date_components) - 1; $i >= 0; $i--) {
+        for ($i = count($date_components) - 1; $i >= 0; --$i) {
             if ($date_components[$i] !== 'any') {
                 $label = $this->get_date_component_label($i, $date_components[$i]);
                 if ($res !== '') {
                     $res .= ' ';
                 }
+
                 $res .= $label;
             }
         }
+
         return $res;
     }
 
@@ -169,6 +173,7 @@ abstract class CalendarBase
                     $items[$item] = -1;
                 }
             }
+
             ksort($items);
         }
 
@@ -177,6 +182,7 @@ abstract class CalendarBase
             if (isset($labels[$item])) {
                 $label = $labels[$item];
             }
+
             if ($nb_images == -1) {
                 $tmp_datas = [
                     'LABEL' => $label,
@@ -193,9 +199,11 @@ abstract class CalendarBase
                     'URL' => $url,
                 ];
             }
+
             if ($nb_images > 0) {
                 $tmp_datas['NB_IMAGES'] = $nb_images;
             }
+
             $nav_bar_datas[] = $tmp_datas;
         }
 
@@ -275,21 +283,22 @@ $this->get_date_where($level) . '
     protected function build_next_prev()
     {
         global $template, $page;
-
-        $prev = $next = null;
+        $prev = null;
+        $next = null;
         if (empty($page['chronology_date'])) {
             return;
         }
 
         $sub_queries = [];
         $nb_elements = count($page['chronology_date']);
-        for ($i = 0; $i < $nb_elements; $i++) {
+        for ($i = 0; $i < $nb_elements; ++$i) {
             if ($page['chronology_date'][$i] === 'any') {
-                $sub_queries[] = '\'any\'';
+                $sub_queries[] = "'any'";
             } else {
                 $sub_queries[] = pwg_db_cast_to_text($this->calendar_levels[$i]['sql']);
             }
         }
+
         $query = 'SELECT ' . pwg_db_concat_ws($sub_queries, '-') . ' AS period';
         $query .= $this->inner_sql . '
 AND ' . $this->date_field . ' IS NOT NULL
@@ -305,6 +314,7 @@ GROUP BY period';
             usort($upper_items, 'version_compare');
             $upper_items_rank = array_flip($upper_items);
         }
+
         $current_rank = $upper_items_rank[$current];
 
         $tpl_var = [];

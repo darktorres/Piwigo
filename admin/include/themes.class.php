@@ -19,6 +19,7 @@ class DummyTheme_maintain extends ThemeMaintain
         if (is_callable('theme_activate')) {
             return theme_activate($this->theme_id, $theme_version, $errors);
         }
+
         return null;
     }
 
@@ -28,6 +29,7 @@ class DummyTheme_maintain extends ThemeMaintain
         if (is_callable('theme_deactivate')) {
             return theme_deactivate($this->theme_id);
         }
+
         return null;
     }
 
@@ -37,6 +39,7 @@ class DummyTheme_maintain extends ThemeMaintain
         if (is_callable('theme_delete')) {
             return theme_delete();
         }
+
         return null;
     }
 }
@@ -133,6 +136,7 @@ INSERT INTO ' . THEMES_TABLE . '
                         conf_update_param('mobile_theme', $theme_id);
                     }
                 }
+
                 break;
 
             case 'deactivate':
@@ -178,6 +182,7 @@ DELETE
                 if ($this->fs_themes[$theme_id]['mobile']) {
                     conf_update_param('mobile_theme', '');
                 }
+
                 break;
 
             case 'delete':
@@ -185,6 +190,7 @@ DELETE
                     $errors[] = 'CANNOT DELETE - THEME IS INSTALLED';
                     break;
                 }
+
                 if (! isset($this->fs_themes[$theme_id])) {
                     // nothing to do here
                     break;
@@ -290,8 +296,9 @@ SELECT
 
         $clauses = [];
         if (! empty($id)) {
-            $clauses[] = 'id = \'' . $id . '\'';
+            $clauses[] = "id = '" . $id . "'";
         }
+
         if ($clauses !== []) {
             $query .= '
   WHERE ' . implode(' AND ', $clauses);
@@ -302,6 +309,7 @@ SELECT
         while ($row = pwg_db_fetch_assoc($result)) {
             $themes[] = $row;
         }
+
         return $themes;
     }
 
@@ -333,12 +341,15 @@ SELECT
                     if (preg_match('|Theme Name:\\s*(.+)|', $theme_data, $val)) {
                         $theme['name'] = trim($val[1]);
                     }
+
                     if (preg_match('|Version:\\s*([\\w.-]+)|', $theme_data, $val)) {
                         $theme['version'] = trim($val[1]);
                     }
+
                     if (preg_match('|Theme URI:\\s*(https?:\\/\\/.+)|', $theme_data, $val)) {
                         $theme['uri'] = trim($val[1]);
                     }
+
                     if ($desc = load_language('description.txt', $path . '/', [
                         'return' => true,
                     ])) {
@@ -346,12 +357,15 @@ SELECT
                     } elseif (preg_match('|Description:\\s*(.+)|', $theme_data, $val)) {
                         $theme['description'] = trim($val[1]);
                     }
+
                     if (preg_match('|Author:\\s*(.+)|', $theme_data, $val)) {
                         $theme['author'] = trim($val[1]);
                     }
+
                     if (preg_match('|Author URI:\\s*(https?:\\/\\/.+)|', $theme_data, $val)) {
                         $theme['author uri'] = trim($val[1]);
                     }
+
                     if (isset($theme['uri']) && ($theme['uri'] !== '' && $theme['uri'] !== '0') && strpos(
                         $theme['uri'],
                         'extension_view.php?eid='
@@ -361,12 +375,15 @@ SELECT
                             $theme['extension'] = $extension;
                         }
                     }
+
                     if (preg_match('/["\']parent["\'][^"\']+["\']([^"\']+)["\']/', $theme_data, $val)) {
                         $theme['parent'] = $val[1];
                     }
+
                     if (preg_match('/["\']activable["\'].*?(true|false)/i', $theme_data, $val)) {
                         $theme['activable'] = get_boolean($val[1]);
                     }
+
                     if (preg_match('/["\']mobile["\'].*?(true|false)/i', $theme_data, $val)) {
                         $theme['mobile'] = get_boolean($val[1]);
                     }
@@ -395,6 +412,7 @@ SELECT
                 }
             }
         }
+
         closedir($dir);
     }
 
@@ -439,6 +457,7 @@ SELECT
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
+
             $branch = get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
                 if (str_starts_with((string) $pem_version['name'], $branch)) {
@@ -446,6 +465,7 @@ SELECT
                 }
             }
         }
+
         if ($versions_to_check === []) {
             return false;
         }
@@ -477,16 +497,20 @@ SELECT
                 $get_data['extension_include'] = implode(',', $themes_to_check);
             }
         }
+
         if (fetchRemote($url, $result, $get_data)) {
             $pem_themes = @unserialize($result);
             if (! is_array($pem_themes)) {
                 return false;
             }
+
             foreach ($pem_themes as $theme) {
                 $this->server_themes[$theme['extension_id']] = $theme;
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -562,6 +586,7 @@ SELECT
                         } else {
                             $theme_id = ($root === '.' ? 'extension_' . $dest : basename($root));
                         }
+
                         $extract_path = PHPWG_THEMES_PATH . $theme_id;
                         $logger->debug(__FUNCTION__ . ', $extract_path = ' . $extract_path);
 
@@ -580,6 +605,7 @@ SELECT
                                     break;
                                 }
                             }
+
                             if (file_exists($extract_path . '/obsolete.list') && ($old_files = file(
                                 $extract_path . '/obsolete.list',
                                 FILE_IGNORE_NEW_LINES
@@ -645,6 +671,7 @@ SELECT
         if ($a['revision_date'] < $b['revision_date']) {
             return 1;
         }
+
         return -1;
     }
 
@@ -659,6 +686,7 @@ SELECT
         if ($r == 0) {
             return $this->extension_name_compare($a, $b);
         }
+
         return $r;
     }
 
@@ -668,6 +696,7 @@ SELECT
         if ($r == 0) {
             return name_compare($a, $b);
         }
+
         return $r;
     }
 
@@ -676,6 +705,7 @@ SELECT
         if ($a['extension_nb_downloads'] < $b['extension_nb_downloads']) {
             return 1;
         }
+
         return -1;
     }
 
@@ -695,6 +725,7 @@ SELECT
                 $not_installed[$theme_id] = $theme;
             }
         }
+
         $this->fs_themes = $active_themes + $inactive_themes + $not_installed;
     }
 

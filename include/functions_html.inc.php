@@ -64,6 +64,7 @@ function get_cat_display_name(
             $output .= $cat['name'] . '</a>';
         }
     }
+
     return $output;
 }
 
@@ -106,8 +107,10 @@ SELECT id, name, permalink
         if (isset($link_class)) {
             $output .= ' class="' . $link_class . '"';
         }
+
         $output .= '>';
     }
+
     $is_first = true;
     foreach (explode(',', $uppercats) as $category_id) {
         $cat = $cache['cat_names'][$category_id];
@@ -275,6 +278,7 @@ function page_forbidden(
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
     }
+
     redirect_html(
         $alternate_url,
         '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -299,6 +303,7 @@ function bad_request(
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
     }
+
     redirect_html(
         $alternate_url,
         '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -323,6 +328,7 @@ function page_not_found(
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
     }
+
     redirect_html(
         $alternate_url,
         '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -353,10 +359,14 @@ function fatal_error(
     if ($show_trace && function_exists('debug_backtrace')) {
         $bt = debug_backtrace();
         $counter = count($bt);
-        for ($i = 1; $i < $counter; $i++) {
+        for ($i = 1; $i < $counter; ++$i) {
             $class = isset($bt[$i]['class']) ? (@$bt[$i]['class'] . '::') : '';
-            $btrace_msg .= "#{$i}\t" . $class . @$bt[$i]['function'] . ' ' . @$bt[$i]['file'] . '(' . @$bt[$i]['line'] . ")\n";
+            $btrace_msg .= sprintf(
+                '#%d	',
+                $i
+            ) . $class . @$bt[$i]['function'] . ' ' . @$bt[$i]['file'] . '(' . @$bt[$i]['line'] . ")\n";
         }
+
         $btrace_msg = trim($btrace_msg);
         $msg .= "\n";
     }
@@ -376,6 +386,7 @@ function fatal_error(
     )) {// if possible turn off error display (we display it)
         ini_set('display_errors', false);
     }
+
     error_reporting(E_ALL);
     trigger_error(strip_tags($msg) . $btrace_msg, E_USER_ERROR);
     die(0); // just in case
@@ -394,7 +405,7 @@ function get_tags_content_title()
       . '</a> ';
     $counter = count($page['tags']);
 
-    for ($i = 0; $i < $counter; $i++) {
+    for ($i = 0; $i < $counter; ++$i) {
         $title .= $i > 0 ? ' + ' : '';
 
         $title .=
@@ -430,6 +441,7 @@ function get_tags_content_title()
               . '</a>';
         }
     }
+
     return $title;
 }
 
@@ -463,6 +475,7 @@ function get_combined_categories_content_title()
             if ($other_cats !== []) {
                 $params['combined_categories'] = $other_cats;
             }
+
             $remove_url = make_index_url($params);
 
             $title .=
@@ -514,12 +527,13 @@ function set_status_header(
                 break;
         }
     }
+
     $protocol = $_SERVER['SERVER_PROTOCOL'];
     if (($protocol != 'HTTP/1.1') && ($protocol != 'HTTP/1.0')) {
         $protocol = 'HTTP/1.0';
     }
 
-    header("{$protocol} {$code} {$text}", true, $code);
+    header(sprintf('%s %d %s', $protocol, $code, $text), true, $code);
     trigger_notify('set_status_header', $code, $text);
 }
 
@@ -536,6 +550,7 @@ function render_category_literal_description(
     if (! isset($desc)) {
         $desc = '';
     }
+
     return strip_tags($desc, '<span><p><a><br><b><i><small><big><strong><em>');
 }
 
@@ -552,6 +567,7 @@ function register_default_menubar_blocks(
     if ($menu->get_id() != 'menubar') {
         return;
     }
+
     $menu->register_block(new RegisteredBlock('mbLinks', 'Links', 'piwigo'));
     $menu->register_block(new RegisteredBlock('mbCategories', 'Albums', 'piwigo'));
     $menu->register_block(new RegisteredBlock('mbTags', 'Related tags', 'piwigo'));
@@ -579,6 +595,7 @@ function render_element_name(
     if (! empty($info['name'])) {
         return trigger_change('render_element_name', $info['name']);
     }
+
     return get_name_from_file($info['file']);
 }
 
@@ -596,6 +613,7 @@ function render_element_description(
     if (! empty($info['comment'])) {
         return trigger_change('render_element_description', $info['comment'], $param);
     }
+
     return '';
 }
 
@@ -676,6 +694,7 @@ function get_element_url_protection_handler(
             return $url;
         }
     }
+
     return get_action_url($infos['id'], 'e', false);
 }
 

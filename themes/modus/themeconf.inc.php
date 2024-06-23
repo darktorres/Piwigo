@@ -93,17 +93,20 @@ function rv_cdn_prefilter($source, &$smarty)
     );
     return str_replace('url({$ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
 }
+
 function rv_cdn_combined_script($url, $script)
 {
     if (! $script->is_remote()) {
         $url = RVCDN_ROOT_URL . $script->path;
     }
+
     return $url;
 }
 
 if (defined('RVPT_JQUERY_SRC')) {
     add_event_handler('loc_begin_page_header', 'modus_loc_begin_page_header');
 }
+
 function modus_loc_begin_page_header()
 {
     $all = $GLOBALS['template']->scriptLoader->get_all();
@@ -144,17 +147,20 @@ function modus_css_resolution($params)
     if (! empty($base)) {
         $rules[] = $base;
     }
+
     foreach (['min', 'max'] as $type) {
         if (! empty(${$type})) {
             $rules[] = '(-webkit-' . $type . '-device-pixel-ratio:' . ${$type} . ')';
         }
     }
+
     $res = implode(' and ', $rules);
 
     $rules = [];
     if (! empty($base)) {
         $rules[] = $base;
     }
+
     foreach (['min', 'max'] as $type) {
         if (! empty(${$type})) {
             $rules[] = '(' . $type . '-resolution:' . round(96 * ${$type}, 1) . 'dpi)';
@@ -182,6 +188,7 @@ function modus_thumbs($x, $smarty)
     } else {
         $horizontal_margin = floor(0.02 * $row_height);
     }
+
     $vertical_margin = $horizontal_margin + 1;
 
     $candidates = [$default_params];
@@ -207,7 +214,7 @@ function modus_thumbs($x, $smarty)
             $cparams = $candidates[$idx];
             $c = new DerivativeImage($cparams, $src_image);
             $csize = $c->get_size();
-            $idx++;
+            ++$idx;
         } while ($csize[1] < $row_height - 2 && $idx < count($candidates));
 
         $a_style = '';
@@ -216,6 +223,7 @@ function modus_thumbs($x, $smarty)
         } elseif ($csize[1] > $row_height) {
             $csize = $c->get_scaled_size(9999, $row_height);
         }
+
         if ($do_over) {?>
 <li class="path-ext-<?= $item['path_ext']?> file-ext-<?= $item['file_ext']?>" style=width:<?= $csize[0]?>px;height:<?= $row_height?>px><a href="<?= $item['URL']?>"<?= $a_style?>><img src="<?= $c->get_url()?>" width=<?= $csize[0]?> height=<?= $csize[1]?> alt="<?= $item['TN_ALT']?>"></a><div class=overDesc><?= $item['NAME']?><?= $new?></div></li>
 <?php
@@ -274,11 +282,13 @@ function modus_get_index_photo_derivative_params($default)
             || $caps[0] >= 3)) {
             $type = $conf['modus_theme']['index_photo_deriv_hdpi'];
         }
+
         $new = @ImageStdParams::get_by_type($type);
         if ($new) {
             return $new;
         }
     }
+
     return $default;
 }
 
@@ -326,6 +336,7 @@ function modus_index_category_thumbnails($items)
             $l = intval($wh - $dsize[0]) / 2;
             $t = intval($wh - $dsize[1]) / 2;
         }
+
         $item['modus_deriv'] = $deriv;
 
         if (! empty($item['icon_ts'])) {
@@ -340,6 +351,7 @@ function modus_index_category_thumbnails($items)
         if ($t < -1 || $t > 1) {
             $styles[] = 'top:' . $t . 'px';
         }
+
         $styles = count($styles) ? ' style=' . implode(';', $styles) : '';
         $item['MODUS_STYLE'] = $styles;
     }
@@ -359,9 +371,10 @@ function modus_loc_begin_picture()
     if (isset($_GET['map'])) {
         return;
     }
+
     $template->append(
         'head_elements',
-        '<script>if(document.documentElement.offsetWidth>1270)document.documentElement.className=\'wide\'</script>'
+        "<script>if(document.documentElement.offsetWidth>1270)document.documentElement.className='wide'</script>"
     );
 }
 
@@ -381,13 +394,16 @@ function modus_picture_content($content, $element_info)
         if ($type == IMG_SQUARE || $type == IMG_THUMB) {
             continue;
         }
+
         if (! array_key_exists($type, ImageStdParams::get_defined_type_map())) {
             continue;
         }
+
         $url = $derivative->get_url();
         if (isset($added[$url])) {
             continue;
         }
+
         $added[$url] = 1;
         $show_original &= ! ($derivative->same_as_source());
         $unique_derivatives[$type] = $derivative;
@@ -420,6 +436,7 @@ function modus_picture_content($content, $element_info)
                 if ($available_size[2] > 1 || ! $selected_derivative) {
                     $selected_derivative = $derivative;
                 }
+
                 break;
             }
         }
@@ -456,12 +473,14 @@ function modus_picture_content($content, $element_info)
                 if (! $size) {
                     break;
                 }
+
                 if ($size[0] <= $available_size[0] && $size[1] <= $available_size[1]) {
                     $next_best = $derivative;
                 } else {
                     if ($available_size[2] > 1 || ! $next_best) {
                         $next_best = $derivative;
                     }
+
                     break;
                 }
             }

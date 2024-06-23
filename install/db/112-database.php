@@ -24,12 +24,15 @@ if (is_dir($dir)) {
     foreach (glob($dir . '*.css') as $file) {
         @unlink($file);
     }
+
     foreach (glob($dir . '*.js') as $file) {
         @unlink($file);
     }
+
     @unlink($dir . 'index.htm');
     @rmdir($dir);
 }
+
 echo "\n"
 . $upgrade_description
 . "\n"

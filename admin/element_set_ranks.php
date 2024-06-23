@@ -58,20 +58,22 @@ if (isset($_POST['submit'])) {
 
     $image_order = null;
     if ($image_order_choice == 'user_define') {
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             if (! empty($_POST['image_order'][$i])) {
                 if ($image_order !== null && $image_order !== '' && $image_order !== '0') {
                     $image_order .= ',';
                 }
+
                 $image_order .= $_POST['image_order'][$i];
             }
         }
     } elseif ($image_order_choice == 'rank') {
         $image_order = '`rank` ASC';
     }
+
     $query = '
 UPDATE ' . CATEGORIES_TABLE . ' 
-  SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
+  SET image_order = ' . (isset($image_order) ? "'" . $image_order . "'" : 'NULL') . '
   WHERE id=' . $page['category_id'];
     pwg_query($query);
 
@@ -80,8 +82,8 @@ UPDATE ' . CATEGORIES_TABLE . '
 
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
-  SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
-  WHERE uppercats LIKE \'' . $cat_info['uppercats'] . ',%\'';
+  SET image_order = ' . (isset($image_order) ? "'" . $image_order . "'" : 'NULL') . '
+  WHERE uppercats LIKE \'' . $cat_info['uppercats'] . ",%'";
         pwg_query($query);
     }
 
@@ -157,7 +159,8 @@ if (pwg_db_num_rows($result) > 0) {
             $file_wo_ext = get_filename_wo_extension($row['file']);
             $thumbnail_name = str_replace('_', ' ', $file_wo_ext);
         }
-        $current_rank++;
+
+        ++$current_rank;
         $template->append(
             'thumbnails',
             [
@@ -170,6 +173,7 @@ if (pwg_db_num_rows($result) > 0) {
         );
     }
 }
+
 // image order management
 $sort_fields = [
     '' => '',
@@ -194,7 +198,7 @@ $template->assign('image_order_options', $sort_fields);
 
 $image_order = explode(',', $category['image_order'] ?? '');
 
-for ($i = 0; $i < 3; $i++) { // 3 fields
+for ($i = 0; $i < 3; ++$i) { // 3 fields
     if (isset($image_order[$i])) {
         $template->append('image_order', $image_order[$i]);
     } else {

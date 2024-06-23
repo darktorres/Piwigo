@@ -39,6 +39,7 @@ function get_sync_iptc_data(
                 $month = 1;
                 $day = 1;
             }
+
             $iptc[$pwg_key] = $year . '-' . $month . '-' . $day;
         }
     }
@@ -236,6 +237,7 @@ SELECT id, path, representative_ext
         if ($data === false) {
             continue;
         }
+
         // print_r($data);
         $id = $data['id'];
         foreach (['keywords', 'tags'] as $key) {
@@ -305,7 +307,7 @@ SELECT id
     if (is_numeric($category_id)) {
         if ($recursive) {
             $query .= '
-    AND uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $category_id . '(,|$)\'
+    AND uppercats ' . DB_REGEX_OPERATOR . " '(^|,)" . $category_id . '(,|$)\'
 ';
         } else {
             $query .= '
@@ -313,6 +315,7 @@ SELECT id
 ';
         }
     }
+
     $query .= '
 ;';
     $result = pwg_query($query);
@@ -333,6 +336,7 @@ SELECT id, path, representative_ext
     AND date_metadata_update IS NULL
 ';
     }
+
     $query .= '
 ;';
     return hash_from_query($query, 'id');

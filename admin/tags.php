@@ -102,6 +102,7 @@ if (isset($_SESSION['message_tags'])) {
     $message_tags = $_SESSION['message_tags'];
     unset($_SESSION['message_tags']);
 }
+
 $template->assign('message_tags', $message_tags);
 
 // +-----------------------------------------------------------------------+
@@ -136,8 +137,10 @@ while ($tag = pwg_db_fetch_assoc($result)) {
     if ($alt_names !== []) {
         $tag['alt_names'] = implode(', ', $alt_names);
     }
+
     $all_tags[] = $tag;
 }
+
 usort($all_tags, 'tag_alpha_compare');
 
 $template->assign(

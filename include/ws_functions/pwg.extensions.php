@@ -20,6 +20,7 @@ function ws_plugins_getList(
 
     $plugins = new plugins();
     $plugins->sort_fs_plugins('name');
+
     $plugin_list = [];
 
     foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
@@ -76,6 +77,7 @@ function ws_plugins_performAction(
     if (in_array($params['action'], ['activate', 'deactivate'])) {
         $template->delete_compiled_templates();
     }
+
     return true;
 }
 
@@ -114,6 +116,7 @@ function ws_themes_performAction(
     if (in_array($params['action'], ['activate', 'deactivate'])) {
         $template->delete_compiled_templates();
     }
+
     return true;
 }
 
@@ -212,9 +215,9 @@ function ws_extensions_update(
 
     return match ($upgrade_status) {
         'ok' => l10n('%s has been successfully updated.', $extension_name),
-        'temp_path_error' => new PwgError(null, l10n('Can\'t create temporary file.')),
-        'dl_archive_error' => new PwgError(null, l10n('Can\'t download archive.')),
-        'archive_error' => new PwgError(null, l10n('Can\'t read or extract archive.')),
+        'temp_path_error' => new PwgError(null, l10n("Can't create temporary file.")),
+        'dl_archive_error' => new PwgError(null, l10n("Can't download archive.")),
+        'archive_error' => new PwgError(null, l10n("Can't read or extract archive.")),
         default => new PwgError(null, l10n('An error occured during extraction (%s).', $upgrade_status)),
     };
 }

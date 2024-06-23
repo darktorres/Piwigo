@@ -18,13 +18,16 @@ class PwgRestRequestHandler extends PwgRequestHandler
         foreach ($param_array as $name => $value) {
             if ($name == 'format') {
                 continue;
-            } // ignore - special keys
+            }
+
+            // ignore - special keys
             if ($name == 'method') {
                 $method = $value;
             } else {
                 $params[$name] = $value;
             }
         }
+
         if (empty($method) && isset($_GET['method'])) {
             $method = $_GET['method'];
         }
@@ -35,6 +38,7 @@ class PwgRestRequestHandler extends PwgRequestHandler
             );
             return;
         }
+
         $resp = $service->invoke($method, $params);
         $service->sendResponse($resp);
     }

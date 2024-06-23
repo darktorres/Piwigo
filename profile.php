@@ -152,7 +152,7 @@ function save_profile_from_post(
             $query = '
   SELECT ' . $conf['user_fields']['password'] . ' AS password
     FROM ' . USERS_TABLE . '
-    WHERE ' . $conf['user_fields']['id'] . ' = \'' . $userdata['id'] . '\'
+    WHERE ' . $conf['user_fields']['id'] . " = '" . $userdata['id'] . '\'
   ;';
             [$current_password] = pwg_db_fetch_row(pwg_query($query));
 
@@ -253,6 +253,7 @@ function save_profile_from_post(
                     $data[$field] = $_POST[$field];
                 }
             }
+
             mass_updates(
                 USER_INFOS_TABLE,
                 [
@@ -264,6 +265,7 @@ function save_profile_from_post(
 
             $activity_details_tables[] = 'user_infos';
         }
+
         trigger_notify('save_profile_from_post', $userdata['id']);
         pwg_activity('user', $userdata['id'], 'edit', [
             'function' => __FUNCTION__,
@@ -274,6 +276,7 @@ function save_profile_from_post(
             redirect($_POST['redirect']);
         }
     }
+
     return true;
 }
 
@@ -324,6 +327,7 @@ function load_profile_in_template(
         if (isset($_POST['submit']) || $userdata['language'] == $language_code) {
             $template->assign('language_selection', $language_code);
         }
+
         $language_options[$language_code] = $language_name;
     }
 

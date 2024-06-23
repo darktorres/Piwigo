@@ -12,6 +12,7 @@ function int_delete_gdthumb_cache($pattern)
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
             endif;
         endwhile;
+
         closedir($contents);
     endif;
 }
@@ -55,18 +56,22 @@ if (isset($_GET['getMissingDerivative'])) {
             if ($src_image->is_mimetype()) {
                 continue;
             }
+
             if (($params['method'] == 'slide') || ($params['method'] == 'square')):
                 $derivative = new DerivativeImage(ImageStdParams::get_custom($params['height'], 9999), $src_image);
             else:
                 $derivative = new DerivativeImage(ImageStdParams::get_custom(9999, $params['height']), $src_image);
             endif;
+
             if (@filemtime($derivative->get_path()) === false) {
                 $urls[] = $derivative->get_url() . $uid;
             }
+
             if (count($urls) >= $max_urls && ! $is_last) {
                 break;
             }
         }
+
         if ($is_last) {
             $start_id = 0;
         }
@@ -76,6 +81,7 @@ if (isset($_GET['getMissingDerivative'])) {
     if ($start_id) {
         $ret['next_page'] = $start_id;
     }
+
     $ret['urls'] = $urls;
     echo json_encode($ret);
     exit();
@@ -103,6 +109,7 @@ if (isset($_POST['submit'])) {
             $big_thumb = false;
             $page['warnings'][] = l10n('Big thumb cannot be used in Slide mode. Disabled');
         endif;
+
         if ($thumb_animate):
             $thumb_animate = false;
             $page['warnings'][] = l10n('Thumb animation cannot be used in Slide mode. Disabled');
@@ -118,9 +125,11 @@ if (isset($_POST['submit'])) {
             $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         endif;
     endif;
+
     if (($big_thumb_noinpw) && (! $big_thumb)):
         $big_thumb_noinpw = false;
     endif;
+
     $params = [
         'height' => $_POST['height'],
         'margin' => $_POST['margin'],
@@ -139,17 +148,21 @@ if (isset($_POST['submit'])) {
     if (! is_numeric($params['height'])) {
         $page['errors'][] = l10n('Thumbnails max height must be an integer');
     }
+
     if (! is_numeric($params['margin'])) {
         $page['errors'][] = l10n('Margin between thumbnails must be an integer');
     }
+
     if (! is_numeric($params['nb_image_page'])) {
         $page['errors'][] = l10n('Number of photos per page must be an integer');
     }
+
     if ($params['height'] != $conf['gdThumb']['height']) {
         delete_gdthumb_cache($conf['gdThumb']['height']);
     } elseif ($params['margin'] != $conf['gdThumb']['margin']) {
         delete_gdthumb_cache($conf['gdThumb']['height'] * 2 + $conf['gdThumb']['margin']);
     }
+
     if (empty($page['errors'])) {
         conf_update_param('gdThumb', $params);
         $page['infos'][] = l10n('Information data registered in database');

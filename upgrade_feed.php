@@ -48,8 +48,8 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $e) {
-    my_error(l10n($e->getMessage(), true));
+} catch (Exception $exception) {
+    my_error(l10n($exception->getMessage(), true));
 }
 
 // +-----------------------------------------------------------------------+
@@ -88,7 +88,7 @@ foreach ($to_apply as $upgrade_id) {
 INSERT INTO ' . PREFIX_TABLE . 'upgrade
   (id, applied, description)
   VALUES
-  (\'' . $upgrade_id . '\', NOW(), \'' . $upgrade_description . '\')
+  (\'' . $upgrade_id . "', NOW(), '" . $upgrade_description . '\')
 ;';
     pwg_query($query);
 }

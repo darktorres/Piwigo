@@ -76,6 +76,7 @@ DELETE FROM ' . CADDIE_TABLE . '
         }
     }
 }
+
 // +-----------------------------------------------------------------------+
 // |                      initialize current set                           |
 // +-----------------------------------------------------------------------+
@@ -149,6 +150,7 @@ if (isset($_POST['submitFilter'])) {
                 $_SESSION['bulk_manager_filter']['dimension'][$type] = $_POST['filter_dimension_' . $type];
             }
         }
+
         foreach (['min_ratio', 'max_ratio'] as $type) {
             if (filter_var($_POST['filter_dimension_' . $type], FILTER_VALIDATE_FLOAT) !== false) {
                 $_SESSION['bulk_manager_filter']['dimension'][$type] = $_POST['filter_dimension_' . $type];
@@ -196,12 +198,14 @@ elseif (isset($_GET['filter'])) {
                 } else {
                     $_SESSION['bulk_manager_filter']['prefilter'] = $value;
                 }
+
                 break;
 
             case 'album': case 'category': case 'cat':
                 if (is_numeric($value)) {
                     $_SESSION['bulk_manager_filter']['category'] = $value;
                 }
+
                 break;
 
             case 'tag':
@@ -209,12 +213,14 @@ elseif (isset($_GET['filter'])) {
                     $_SESSION['bulk_manager_filter']['tags'] = [$value];
                     $_SESSION['bulk_manager_filter']['tag_mode'] = 'AND';
                 }
+
                 break;
 
             case 'level':
                 if (is_numeric($value) && in_array($value, $conf['available_permission_levels'])) {
                     $_SESSION['bulk_manager_filter']['level'] = $value;
                 }
+
                 break;
 
             case 'search':
@@ -234,6 +240,7 @@ elseif (isset($_GET['filter'])) {
                         [$_SESSION['bulk_manager_filter']['dimension']['min_' . $type], $_SESSION['bulk_manager_filter']['dimension']['max_' . $type]] = $values;
                     }
                 }
+
                 break;
 
             case 'filesize':
@@ -299,7 +306,7 @@ SELECT id
   WHERE date_available BETWEEN ' . pwg_db_get_recent_period_expression(
                     1,
                     $row['date']
-                ) . ' AND \'' . $row['date'] . '\'
+                ) . " AND '" . $row['date'] . '\'
 ;';
                 $filter_sets[] = query2array($query, null, 'id');
             }
@@ -416,6 +423,7 @@ SELECT id
 
                 $filter_sets[] = query2array($query, null, 'id');
             }
+
             break;
 
         default:
@@ -487,18 +495,23 @@ if (isset($_SESSION['bulk_manager_filter']['dimension'])) {
     if (isset($_SESSION['bulk_manager_filter']['dimension']['min_width'])) {
         $where_clause[] = 'width >= ' . $_SESSION['bulk_manager_filter']['dimension']['min_width'];
     }
+
     if (isset($_SESSION['bulk_manager_filter']['dimension']['max_width'])) {
         $where_clause[] = 'width <= ' . $_SESSION['bulk_manager_filter']['dimension']['max_width'];
     }
+
     if (isset($_SESSION['bulk_manager_filter']['dimension']['min_height'])) {
         $where_clause[] = 'height >= ' . $_SESSION['bulk_manager_filter']['dimension']['min_height'];
     }
+
     if (isset($_SESSION['bulk_manager_filter']['dimension']['max_height'])) {
         $where_clause[] = 'height <= ' . $_SESSION['bulk_manager_filter']['dimension']['max_height'];
     }
+
     if (isset($_SESSION['bulk_manager_filter']['dimension']['min_ratio'])) {
         $where_clause[] = 'width/height >= ' . $_SESSION['bulk_manager_filter']['dimension']['min_ratio'];
     }
+
     if (isset($_SESSION['bulk_manager_filter']['dimension']['max_ratio'])) {
         // max_ratio is a floor value, so must be a bit increased
         $where_clause[] = 'width/height < ' . ($_SESSION['bulk_manager_filter']['dimension']['max_ratio'] + 0.01);
@@ -542,6 +555,7 @@ if (isset($_SESSION['bulk_manager_filter']['search']) &&
     if (! empty($res['items']) && ! empty($res['qs']['unmatched_terms'])) {
         $template->assign('no_search_results', array_map('htmlspecialchars', $res['qs']['unmatched_terms']));
     }
+
     $filter_sets[] = $res['items'];
 }
 
@@ -551,6 +565,7 @@ $current_set = array_shift($filter_sets);
 foreach ($filter_sets as $set) {
     $current_set = array_intersect($current_set, $set);
 }
+
 $page['cat_elements_id'] = empty($current_set) ? [] : $current_set;
 
 // +-----------------------------------------------------------------------+
@@ -614,6 +629,7 @@ if (pwg_db_num_rows($result)) {
         }
     }
 }
+
 if ($widths === []) { // arbitrary values, only used when no photos on the gallery
     $widths = [600, 1920, 3500];
     $heights = [480, 1080, 2300];

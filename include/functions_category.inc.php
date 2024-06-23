@@ -74,6 +74,7 @@ FROM ' . CATEGORIES_TABLE . ' INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . '
         if (isset($page['category'])) {
             $where .= ' OR id_uppercat IN (' . $page['category']['uppercats'] . ')';
         }
+
         $where .= ')';
     } else {
         $where = '
@@ -128,11 +129,13 @@ WHERE ' . $where . '
         if ($conf['index_new_icon']) {
             $row['icon_ts'] = get_icon($row['max_date_last'], $child_date_last);
         }
+
         $cats[] = $row;
         if ($row['id'] === ($page['category']['id'] ?? null)) { //save the number of subcats for later optim
             $page['category']['count_categories'] = $row['count_categories'];
         }
     }
+
     usort($cats, 'global_rank_compare');
 
     // Update filtered data
@@ -192,6 +195,7 @@ SELECT *
             $cat['upper_names'][] = $names[$cat_id];
         }
     }
+
     return $cat;
 }
 
@@ -262,6 +266,7 @@ function display_select_categories(
                 )
             );
         }
+
         $tpl_cats[$category['id']] = $option;
     }
 
@@ -304,12 +309,15 @@ SELECT DISTINCT(id)
                 E_USER_WARNING
             );
         }
+
         if ($num > 0) {
             $query .= '
     OR ';
         }
-        $query .= 'uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $category_id . '(,|$)\'';
+
+        $query .= 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,)" . $category_id . '(,|$)\'';
     }
+
     $query .= '
 ;';
     return query2array($query, null, 'id');
@@ -331,8 +339,10 @@ function get_cat_id_from_permalinks(
         if ($in !== '' && $in !== '0') {
             $in .= ', ';
         }
-        $in .= '\'' . $permalink . '\'';
+
+        $in .= "'" . $permalink . "'";
     }
+
     $query = '
 SELECT cat_id AS id, permalink, 1 AS is_old
   FROM ' . OLD_PERMALINKS_TABLE . '
@@ -347,20 +357,23 @@ SELECT id, permalink, 0 AS is_old
     if (empty($perma_hash)) {
         return null;
     }
-    for ($i = count($permalinks) - 1; $i >= 0; $i--) {
+
+    for ($i = count($permalinks) - 1; $i >= 0; --$i) {
         if (isset($perma_hash[$permalinks[$i]])) {
             $idx = $i;
             $cat_id = $perma_hash[$permalinks[$i]]['id'];
             if ($perma_hash[$permalinks[$i]]['is_old']) {
                 $query = '
 UPDATE ' . OLD_PERMALINKS_TABLE . ' SET last_hit=NOW(), hit=hit+1
-  WHERE permalink=\'' . $permalinks[$i] . '\' AND cat_id=' . $cat_id . '
+  WHERE permalink=\'' . $permalinks[$i] . "' AND cat_id=" . $cat_id . '
   LIMIT 1';
                 pwg_query($query);
             }
+
             return $cat_id;
         }
     }
+
     return null;
 }
 
@@ -432,11 +445,12 @@ SELECT image_id
   WHERE ';
         if ($recursive) {
             $query .= '
-    (c.id=' . $category['id'] . ' OR uppercats LIKE \'' . $category['uppercats'] . ',%\')';
+    (c.id=' . $category['id'] . " OR uppercats LIKE '" . $category['uppercats'] . ",%')";
         } else {
             $query .= '
     c.id=' . $category['id'];
         }
+
         $query .= '
     ' . get_sql_condition_FandF(
             [
@@ -531,11 +545,11 @@ FROM ' . CATEGORIES_TABLE . ' as c
         }
 
         $parent = &$cats[$cat['id_uppercat']];
-        $parent['nb_categories']++;
+        ++$parent['nb_categories'];
 
         do {
             $parent['count_images'] += $cat['nb_images'];
-            $parent['count_categories']++;
+            ++$parent['count_categories'];
 
             if (empty($parent['max_date_last']) || $parent['max_date_last'] < $cat['date_last']) {
                 $parent['max_date_last'] = $cat['date_last'];
@@ -544,8 +558,10 @@ FROM ' . CATEGORIES_TABLE . ' as c
             if (! isset($parent['id_uppercat'])) {
                 break;
             }
+
             $parent = &$cats[$parent['id_uppercat']];
         } while (true);
+
         unset($parent);
     }
 
@@ -572,7 +588,7 @@ function remove_computed_category(
 ) {
     if (isset($cats[$cat['id_uppercat']])) {
         $parent = &$cats[$cat['id_uppercat']];
-        $parent['nb_categories']--;
+        --$parent['nb_categories'];
 
         do {
             $parent['count_images'] -= $cat['nb_images'];
@@ -581,6 +597,7 @@ function remove_computed_category(
             if (! isset($cats[$parent['id_uppercat']])) {
                 break;
             }
+
             $parent = &$cats[$parent['id_uppercat']];
         } while (true);
     }
@@ -635,6 +652,7 @@ SELECT id
         $query .= '
   HAVING COUNT(DISTINCT category_id)=' . count($cat_ids);
     }
+
     $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
 
     return query2array($query, null, 'id');

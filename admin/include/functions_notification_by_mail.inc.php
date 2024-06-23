@@ -42,7 +42,7 @@ select
 from
   ' . USER_MAIL_NOTIFICATION_TABLE . '
 where
-  check_key = \'' . $key . '\';';
+  check_key = \'' . $key . "';";
 
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
@@ -73,7 +73,7 @@ function check_sendmail_timeout()
 function quote_check_key_list(
     $check_key_list = []
 ) {
-    return array_map(fn ($s) => '\'' . $s . '\'', $check_key_list);
+    return array_map(static fn ($s) => "'" . $s . "'", $check_key_list);
 }
 
 /*
@@ -126,7 +126,7 @@ where 1=1';
 
         if (isset($enabled_filter_value) && $enabled_filter_value != '') {
             $query .= ' and
-        N.enabled = \'' . boolean_to_string($enabled_filter_value) . '\'';
+        N.enabled = \'' . boolean_to_string($enabled_filter_value) . "'";
         }
 
         $query .= '
@@ -149,6 +149,7 @@ order by';
             }
         }
     }
+
     return $data_users;
 }
 

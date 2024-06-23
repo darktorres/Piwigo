@@ -67,18 +67,19 @@ if (isset($_GET['installstatus'])) {
                     ]
                 );
             }
+
             break;
 
         case 'temp_path_error':
-            $page['errors'][] = l10n('Can\'t create temporary file.');
+            $page['errors'][] = l10n("Can't create temporary file.");
             break;
 
         case 'dl_archive_error':
-            $page['errors'][] = l10n('Can\'t download archive.');
+            $page['errors'][] = l10n("Can't download archive.");
             break;
 
         case 'archive_error':
-            $page['errors'][] = l10n('Can\'t read or extract archive.');
+            $page['errors'][] = l10n("Can't read or extract archive.");
             break;
 
         default:
@@ -164,6 +165,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
         } elseif ($last_revision_diff->y > 3) { // 3 years or less
             $certification = 0;
         }
+
         // Between 6 month and 3 years : certification = 1
 
         $template->append('plugins', [
@@ -192,12 +194,13 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
         ]);
     }
 } else {
-    $page['errors'][] = l10n('Can\'t connect to server.');
+    $page['errors'][] = l10n("Can't connect to server.");
 }
 
 if (! $beta_test && preg_match('/(beta|RC)/', PHPWG_VERSION)) {
     $template->assign('BETA_URL', $base_url . '&amp;beta-test=true');
 }
+
 $template->assign('ADMIN_PAGE_TITLE', l10n('Plugins'));
 $template->assign('BETA_TEST', $beta_test);
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugins');

@@ -27,6 +27,7 @@ function get_nb_available_tags()
             ]
         );
     }
+
     return $user['nb_available_tags'];
 }
 
@@ -75,6 +76,7 @@ SELECT *
             $tags[] = $row;
         }
     }
+
     return $tags;
 }
 
@@ -134,7 +136,7 @@ function add_level_to_tags(
 
     // tag levels threshold calculation: a tag with an average rate must have
     // the middle level.
-    for ($i = 1; $i < $conf['tags_levels']; $i++) {
+    for ($i = 1; $i < $conf['tags_levels']; ++$i) {
         $threshold_of_level[$i] =
           2 * $i * $tag_average_count / $conf['tags_levels'];
     }
@@ -144,13 +146,14 @@ function add_level_to_tags(
         $tag['level'] = 1;
 
         // based on threshold, determine current tag level
-        for ($i = $conf['tags_levels'] - 1; $i >= 1; $i--) {
+        for ($i = $conf['tags_levels'] - 1; $i >= 1; --$i) {
             if ($tag['counter'] > $threshold_of_level[$i]) {
                 $tag['level'] = $i + 1;
                 break;
             }
         }
     }
+
     unset($tag);
 
     return $tags;
@@ -209,6 +212,7 @@ SELECT id
         $query .= '
   HAVING COUNT(DISTINCT tag_id)=' . count($tag_ids);
     }
+
     $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
 
     return query2array($query, null, 'id');
@@ -231,6 +235,7 @@ function get_common_tags(
     if (empty($items)) {
         return [];
     }
+
     $query = '
 SELECT t.*, count(*) AS counter
   FROM ' . IMAGE_TAG_TABLE . '
@@ -240,6 +245,7 @@ SELECT t.*, count(*) AS counter
         $query .= '
     AND tag_id NOT IN (' . implode(',', $excluded_tag_ids) . ')';
     }
+
     $query .= '
   GROUP BY t.id
   ORDER BY ';
@@ -256,6 +262,7 @@ SELECT t.*, count(*) AS counter
         $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
         $tags[] = $row;
     }
+
     usort($tags, 'tag_alpha_compare');
     return $tags;
 }
@@ -278,14 +285,17 @@ function find_tags(
     if (! empty($ids)) {
         $where_clauses[] = 'id IN (' . implode(',', $ids) . ')';
     }
+
     if (! empty($url_names)) {
         $where_clauses[] =
-          'url_name IN (\'' . implode('\', \'', $url_names) . '\')';
+          "url_name IN ('" . implode("', '", $url_names) . "')";
     }
+
     if (! empty($names)) {
         $where_clauses[] =
-          'name IN (\'' . implode('\', \'', $names) . '\')';
+          "name IN ('" . implode("', '", $names) . "')";
     }
+
     if ($where_clauses === []) {
         return [];
     }

@@ -26,16 +26,19 @@ function xmlrpc_encode($data)
                 foreach ($data as $item) {
                     $return .= '  <value>' . xmlrpc_encode($item) . "</value>\n";
                 }
+
                 $return .= '</data></array>';
             } else {
                 $return = '<struct>' . "\n";
                 foreach ($data as $name => $value) {
                     $name = htmlspecialchars($name);
-                    $return .= "  <member><name>{$name}</name><value>";
+                    $return .= sprintf('  <member><name>%s</name><value>', $name);
                     $return .= xmlrpc_encode($value) . "</value></member>\n";
                 }
+
                 $return .= '</struct>';
             }
+
             return $return;
     }
 }

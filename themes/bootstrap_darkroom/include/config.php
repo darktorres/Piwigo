@@ -215,6 +215,7 @@ class Config
         if (is_array($loaded)) {
             $this->populateConfig($loaded);
         }
+
         $this->save();
     }
 
@@ -252,6 +253,7 @@ class Config
         } else {
             return null;
         }
+
         return null;
     }
 
@@ -294,6 +296,7 @@ class Config
         if (! file_exists($dir)) {
             mkdir($dir, 0755, true);
         }
+
         if (empty($content) && file_exists($file)) {
             unlink($file);
         } else {
@@ -307,6 +310,7 @@ class Config
         if (file_exists($file)) {
             return file_get_contents($file);
         }
+
         return null;
     }
 }

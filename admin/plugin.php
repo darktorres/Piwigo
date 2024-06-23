@@ -16,10 +16,10 @@ check_status(ACCESS_ADMINISTRATOR);
 
 $sections = explode('/', (string) $_GET['section']);
 $counter = count($sections);
-for ($i = 0; $i < $counter; $i++) {
+for ($i = 0; $i < $counter; ++$i) {
     if (empty($sections[$i])) {
         unset($sections[$i]);
-        $i--;
+        --$i;
         continue;
     }
 

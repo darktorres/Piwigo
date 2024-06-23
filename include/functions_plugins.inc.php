@@ -164,8 +164,9 @@ function remove_event_handler(
     if (! isset($pwg_event_handlers[$event][$priority])) {
         return false;
     }
+
     $counter = count($pwg_event_handlers[$event][$priority]);
-    for ($i = 0; $i < $counter; $i++) {
+    for ($i = 0; $i < $counter; ++$i) {
         if ($pwg_event_handlers[$event][$priority][$i]['function'] == $func) {
             unset($pwg_event_handlers[$event][$priority][$i]);
             $pwg_event_handlers[$event][$priority] =
@@ -177,9 +178,11 @@ function remove_event_handler(
                     unset($pwg_event_handlers[$event]);
                 }
             }
+
             return true;
         }
     }
+
     return false;
 }
 
@@ -214,6 +217,7 @@ function trigger_change(
     if (! isset($pwg_event_handlers[$event])) {
         return $data;
     }
+
     $args = func_get_args();
     array_shift($args);
 
@@ -270,6 +274,7 @@ function trigger_notify(
     if (! isset($pwg_event_handlers[$event])) {
         return;
     }
+
     $args = func_get_args();
     array_shift($args);
 
@@ -301,6 +306,7 @@ function set_plugin_data(
         $pwg_loaded_plugins[$plugin_id]['plugin_data'] = &$data;
         return true;
     }
+
     return false;
 }
 
@@ -334,11 +340,13 @@ function get_db_plugins(
 SELECT * FROM ' . PLUGINS_TABLE;
     $clauses = [];
     if (! empty($state)) {
-        $clauses[] = 'state=\'' . $state . '\'';
+        $clauses[] = "state='" . $state . "'";
     }
+
     if (! empty($id)) {
         $clauses[] = 'id="' . $id . '"';
     }
+
     if ($clauses !== []) {
         $query .= '
   WHERE ' . implode(' AND ', $clauses);
@@ -385,7 +393,7 @@ function autoupdate_plugin(
     $i = -1;
 
     while (($line = fgets($fh)) !== false && $fs_version == null && $i < 10) {
-        $i++;
+        ++$i;
         if ($i < 2) {
             continue;
         } // first lines are typically "<?php" and "/*"
@@ -462,6 +470,7 @@ function load_plugins()
         foreach ($plugins as $plugin) {// include main from a function to avoid using same function context
             load_plugin($plugin);
         }
+
         trigger_notify('plugins_loaded');
     }
 }

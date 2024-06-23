@@ -130,12 +130,13 @@ $available_order_by = [
 ];
 $counter = count($available_order_by);
 
-for ($i = 0; $i < $counter; $i++) {
+for ($i = 0; $i < $counter; ++$i) {
     $template->append(
         'order_by_options',
         $available_order_by[$i][0]
     );
 }
+
 $template->assign('order_by_options_selected', [$order_by_index]);
 
 $user_options = [
@@ -220,6 +221,7 @@ ORDER BY date DESC;';
         $row['USER'] = $user_rate;
         $tpl_image['rates'][] = $row;
     }
+
     $template->append('images', $tpl_image);
 }
 

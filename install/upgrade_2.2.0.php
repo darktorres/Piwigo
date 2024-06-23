@@ -59,7 +59,7 @@ if ($inserts !== []) {
 ob_start();
 echo '<pre>';
 
-for ($upgrade_id = 98; $upgrade_id <= 111; $upgrade_id++) {
+for ($upgrade_id = 98; $upgrade_id <= 111; ++$upgrade_id) {
     if (! file_exists(UPGRADES_PATH . '/' . $upgrade_id . '-database.php')) {
         break;
     }
@@ -79,7 +79,7 @@ for ($upgrade_id = 98; $upgrade_id <= 111; $upgrade_id++) {
 INSERT INTO `' . PREFIX_TABLE . 'upgrade`
   (id, applied, description)
   VALUES
-  (\'' . $upgrade_id . '\', NOW(), \'[migration from 2.2.0 to ' . PHPWG_VERSION . '] ' . $upgrade_description . '\')
+  (\'' . $upgrade_id . "', NOW(), '[migration from 2.2.0 to " . PHPWG_VERSION . '] ' . $upgrade_description . '\')
 ;';
     pwg_query($query);
 }

@@ -38,7 +38,7 @@ if (! empty($gallery_url)) {
         $local_conf = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php';
     }
 
-    $conf_line = '$conf[\'gallery_url\'] = \'' . $gallery_url . '\';';
+    $conf_line = '$conf[\'gallery_url\'] = \'' . $gallery_url . "';";
 
     if (! is_file($local_conf)) {
         $config_file_contents_new = "<?php\n" . $conf_line . "\n?>";

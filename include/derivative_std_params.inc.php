@@ -167,6 +167,7 @@ final class ImageStdParams
             self::$custom[$key] = time();
             self::save();
         }
+
         return $params;
     }
 
@@ -191,10 +192,12 @@ final class ImageStdParams
             if (! self::$watermark) {
                 self::$watermark = new WatermarkParams();
             }
+
             self::$custom = @$arr['c'];
             if (! self::$custom) {
                 self::$custom = [];
             }
+
             if (isset($arr['q'])) {
                 self::$quality = $arr['q'];
             }
@@ -203,6 +206,7 @@ final class ImageStdParams
             self::$type_map = self::get_default_sizes();
             self::save();
         }
+
         self::build_maps();
     }
 
@@ -261,6 +265,7 @@ final class ImageStdParams
         foreach ($arr as $params) {
             $params->last_mod_time = $now;
         }
+
         return $arr;
     }
 
@@ -285,13 +290,14 @@ final class ImageStdParams
             $params->type = $type;
             self::apply_global($params);
         }
+
         self::$all_type_map = self::$type_map;
         $counter = count(self::$all_types);
 
-        for ($i = 0; $i < $counter; $i++) {
+        for ($i = 0; $i < $counter; ++$i) {
             $tocheck = self::$all_types[$i];
             if (! isset(self::$type_map[$tocheck])) {
-                for ($j = $i - 1; $j >= 0; $j--) {
+                for ($j = $i - 1; $j >= 0; --$j) {
                     $target = self::$all_types[$j];
                     if (isset(self::$type_map[$target])) {
                         self::$all_type_map[$tocheck] = self::$type_map[$target];
