@@ -16,7 +16,7 @@ function ws_plugins_getList(
     $params,
     $service
 ) {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/plugins.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
 
     $plugins = new plugins();
     $plugins->sort_fs_plugins('name');
@@ -65,7 +65,7 @@ function ws_plugins_performAction(
     }
 
     define('IN_ADMIN', true);
-    include_once(PHPWG_ROOT_PATH . 'admin/include/plugins.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
 
     $plugins = new plugins();
     $errors = $plugins->perform_action($params['action'], $params['plugin']);
@@ -104,7 +104,7 @@ function ws_themes_performAction(
     }
 
     define('IN_ADMIN', true);
-    include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
 
     $themes = new themes();
     $errors = $themes->perform_action($params['action'], $params['theme']);
@@ -152,8 +152,8 @@ function ws_extensions_update(
         return new PwgError(403, 'invalid extension type');
     }
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-    include_once(PHPWG_ROOT_PATH . 'admin/include/' . $params['type'] . '.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/' . $params['type'] . '.class.php');
 
     $type = $params['type'];
     $extension_id = $params['id'];
@@ -238,7 +238,7 @@ function ws_extensions_ignoreupdate(
     global $conf;
 
     define('IN_ADMIN', true);
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (! is_webmaster()) {
         return new PwgError(401, 'Access denied');
@@ -298,8 +298,8 @@ function ws_extensions_checkupdates(
 ) {
     global $conf;
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-    include_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/updates.class.php');
 
     $update = new updates();
     $result = [];

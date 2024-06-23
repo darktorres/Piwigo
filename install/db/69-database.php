@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Move #categories.date_last and nb_images to #user_cache_categories';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 // +-----------------------------------------------------------------------+
 // |                            Upgrade content                            |

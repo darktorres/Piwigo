@@ -11,7 +11,7 @@
  * This file is included by the picture page to manage picture metadata
  */
 
-include_once(PHPWG_ROOT_PATH . '/include/functions_metadata.inc.php');
+include_once(PHPWG_ROOT_PATH . '/inc/functions_metadata.inc.php');
 if ($conf['show_exif'] && function_exists('exif_read_data')) {
     $exif_mapping = [];
     foreach ($conf['show_exif_fields'] as $field) {

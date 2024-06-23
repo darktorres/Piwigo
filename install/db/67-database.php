@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Uninstall dew plugin';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 // +-----------------------------------------------------------------------+
 // |                            Upgrade content                            |

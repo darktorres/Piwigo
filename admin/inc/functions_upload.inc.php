@@ -7,8 +7,8 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/image.class.php');
 
 // add default event handler for image and thumbnail resize
 add_event_handler(
@@ -369,7 +369,7 @@ SELECT
     set_make_full_url();
     // in case we are on uploadify.php, we have to replace the false path
     $derivative_url = preg_replace(
-        '#admin/include/i#',
+        '#admin/inc/i#',
         'i',
         DerivativeImage::url(IMG_MEDIUM, $src_image)
     );

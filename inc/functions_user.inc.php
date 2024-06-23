@@ -215,7 +215,7 @@ SELECT id
         create_user_infos($user_id, $override);
 
         if ($notify_admin && $conf['email_admin_on_new_user'] != 'none') {
-            include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+            include_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
             $admin_url = get_absolute_root_url() . 'admin.php?page=user_list&username=' . $login;
 
             $keyargs_content = [
@@ -239,7 +239,7 @@ SELECT id
         }
 
         if ($notify_user && email_check_format($mail_address)) {
-            include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+            include_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
 
             $keyargs_content = [
                 get_l10n_args('Hello %s,', stripslashes($login)),

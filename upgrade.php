@@ -10,7 +10,7 @@
 define('PHPWG_ROOT_PATH', './');
 
 // load config file
-include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
+include(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
 @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
@@ -29,13 +29,13 @@ include($config_file);
 
 // $conf is not used for users tables - define cannot be re-defined
 define('USERS_TABLE', $prefixeTable . 'users');
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 define('PREFIX_TABLE', $prefixeTable);
 define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 
-include_once(PHPWG_ROOT_PATH . 'include/functions.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'include/template.class.php');
+include_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH . 'inc/template.class.php');
 
 // +-----------------------------------------------------------------------+
 // |                              functions                                |
@@ -116,7 +116,7 @@ function print_time($message)
 // +-----------------------------------------------------------------------+
 // |                             language                                  |
 // +-----------------------------------------------------------------------+
-include(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+include(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
 $languages = new languages('utf-8');
 if (isset($_GET['language'])) {
     $language = strip_tags((string) $_GET['language']);
@@ -187,8 +187,8 @@ load_language('upgrade.lang', '', [
 // +-----------------------------------------------------------------------+
 // |                          database connection                          |
 // +-----------------------------------------------------------------------+
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
-include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upgrade.php');
+include(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 upgrade_db_connect();
 
@@ -231,7 +231,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 if ($has_remote_site) {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/updates.class.php');
 
     $page['errors'] = [];
     $step = 3;
@@ -447,7 +447,7 @@ REPLACE INTO ' . PLUGINS_TABLE . '
 // |                          start template output                        |
 // +-----------------------------------------------------------------------+
 else {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
     $languages = new languages();
 
     foreach ($languages->fs_languages as $language_code => $fs_language) {

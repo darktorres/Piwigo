@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'derivatives: remove useless configuration settings and columns';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 //
 // Clean useless configuration settings

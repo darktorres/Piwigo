@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'add "email" field in comments table';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 $query = 'ALTER TABLE `' . COMMENTS_TABLE . '` ADD `email` varchar(255) default NULL;';
 pwg_query($query);

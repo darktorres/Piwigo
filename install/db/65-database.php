@@ -117,7 +117,7 @@ SELECT language, COUNT(user_id) AS count FROM ' . USER_INFOS_TABLE . '
 
     // +-----------------------------------------------------------------------+
     // get admin charset
-    include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
+    include(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
     @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
     $admin_charset = 'iso-8859-1';
     $query = '

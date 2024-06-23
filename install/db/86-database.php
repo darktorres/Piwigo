@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Automatically activate core themes.';
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_install.inc.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_install.inc.php');
 activate_core_themes();
 
 echo "\n"

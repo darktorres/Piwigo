@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'add anonymous_id in comments table';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 $query = 'ALTER TABLE `' . COMMENTS_TABLE . '` ADD `anonymous_id` VARCHAR( 45 ) DEFAULT NULL;';
 pwg_query($query);

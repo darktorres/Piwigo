@@ -325,4 +325,4 @@ if ($categories !== []) {
     $template->assign('cats_navbar', $page['cats_navigation_bar']);
 }
 
-pwg_debug('end include/category_cats.inc.php');
+pwg_debug('end inc/category_cats.inc.php');

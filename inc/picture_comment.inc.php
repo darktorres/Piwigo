@@ -34,7 +34,7 @@ if ($page['show_comments'] && isset($_POST['content'])) {
         'image_id' => $page['image_id'],
     ];
 
-    include_once(PHPWG_ROOT_PATH . 'include/functions_comment.inc.php');
+    include_once(PHPWG_ROOT_PATH . 'inc/functions_comment.inc.php');
 
     $comment_action = insert_user_comment($comm, @$_POST['key'], $page['errors']);
 

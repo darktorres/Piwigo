@@ -52,7 +52,7 @@ function execute_sqlfile(
  */
 function activate_core_themes()
 {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
     $themes = new themes();
     foreach ($themes->fs_themes as $theme_id => $fs_theme) {
         if (in_array($theme_id, ['modus', 'smartpocket'])) {
@@ -66,7 +66,7 @@ function activate_core_themes()
  */
 function activate_core_plugins()
 {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/plugins.class.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
 
     $plugins = new plugins();
 

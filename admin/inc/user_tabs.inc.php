@@ -7,7 +7,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 $my_base_url = get_root_url() . 'admin.php?page=';
 

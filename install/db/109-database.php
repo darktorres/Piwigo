@@ -12,7 +12,7 @@ defined(
 ) || die('Hacking attempt!');
 
 $upgrade_description = 'Rename #images.average_rate to ratingscore.';
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 if ($conf['dblayer'] == 'mysql') {
     $q = 'ALTER TABLE ' . IMAGES_TABLE . ' CHANGE average_rate rating_score float(5,2) unsigned default NULL';

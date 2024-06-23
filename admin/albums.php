@@ -11,7 +11,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
 $query = '
 SELECT
@@ -30,7 +30,7 @@ check_status(ACCESS_ADMINISTRATOR);
 // +-----------------------------------------------------------------------+
 
 $page['tab'] = 'list';
-include(PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php');
+include(PHPWG_ROOT_PATH . 'admin/inc/albums_tab.inc.php');
 
 // +-----------------------------------------------------------------------+
 // |                         categories auto order                         |

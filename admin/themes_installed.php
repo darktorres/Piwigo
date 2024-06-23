@@ -19,7 +19,7 @@ if (! is_webmaster()) {
     );
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
 
 $base_url = get_root_url() . 'admin.php?page=' . $page['page'];
 

@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Delete unnecessary #history_summary.id, #history.year, #history.month, #history.day and #history.hour';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 // +-----------------------------------------------------------------------+
 // |                            Upgrade content                            |

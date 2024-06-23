@@ -28,8 +28,8 @@ if (DB_CHARSET == 'utf8') {
 pwg_query($query);
 
 // Fill table
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
 
 $languages = new languages(PWG_CHARSET);
 

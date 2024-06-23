@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Change type from text to mediumtext for #sessions.data #user_cache.forbidden_categories and #user_cache.image_access_list';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 // +-----------------------------------------------------------------------+
 // |                            Upgrade content                            |

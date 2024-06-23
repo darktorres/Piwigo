@@ -51,7 +51,7 @@ if ((defined(
     $_POST['password'],
     false
 )) {
-    include_once(PHPWG_ROOT_PATH . 'include/ws_init.inc.php');
+    include_once(PHPWG_ROOT_PATH . 'inc/ws_init.inc.php');
     $service->sendResponse(new PwgError(999, 'Invalid username/password'));
     exit();
 }

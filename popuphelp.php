@@ -13,7 +13,7 @@
 
 define('PHPWG_ROOT_PATH', './');
 define('PWG_HELP', true);
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -27,7 +27,7 @@ $page['meta_robots'] = [
     'noindex' => 1,
     'nofollow' => 1,
 ];
-include(PHPWG_ROOT_PATH . 'include/page_header.php');
+include(PHPWG_ROOT_PATH . 'inc/page_header.php');
 
 if (
     isset($_GET['page']) && preg_match('/^[a-z_]*$/', (string) $_GET['page'])
@@ -64,4 +64,4 @@ $template->assign(
 
 $template->pparse('popuphelp');
 
-include(PHPWG_ROOT_PATH . 'include/page_tail.php');
+include(PHPWG_ROOT_PATH . 'inc/page_tail.php');

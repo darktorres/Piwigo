@@ -11,10 +11,10 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/image.class.php');
 
 define(
     'PHOTOS_ADD_BASE_URL',

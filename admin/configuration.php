@@ -19,9 +19,9 @@ if (! is_webmaster()) {
     );
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -218,12 +218,12 @@ if (isset($_POST['submit'])) {
 
         case 'watermark':
 
-            include(PHPWG_ROOT_PATH . 'admin/include/configuration_watermark_process.inc.php');
+            include(PHPWG_ROOT_PATH . 'admin/inc/configuration_watermark_process.inc.php');
             break;
 
         case 'sizes':
 
-            include(PHPWG_ROOT_PATH . 'admin/include/configuration_sizes_process.inc.php');
+            include(PHPWG_ROOT_PATH . 'admin/inc/configuration_sizes_process.inc.php');
             break;
 
         case 'comments':
@@ -345,7 +345,7 @@ switch ($page['section']) {
         function order_by_is_local()
         {
             $conf = [];
-            include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
+            include(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
             if (file_exists(
                 PHPWG_ROOT_PATH . 'local/config/config.inc.php'
             )) {
