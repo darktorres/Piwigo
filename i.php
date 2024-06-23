@@ -11,6 +11,7 @@ const PHPWG_ROOT_PATH = './';
 // fast bootstrap - no db connection
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'].'i/');
@@ -18,60 +19,6 @@ defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_locati
 file_exists(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php') && include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], array('filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt'));
-
-
-/**
- * @return void
- */
-function trigger_notify() {}
-
-/**
- * @param $filename
- * @return string
- */
-function get_extension($filename ): string
-{
-  $ext = strrchr($filename, '.');
-  if (!$ext) { 
-    return ''; 
-  }
-  return substr(strrchr($ext, '.'), 1, strlen($filename));
-}
-
-/**
- * @param string $dir
- * @return bool
- */
-function mkgetdir(string $dir): bool
-{
-  if ($dir == null)
-  {
-    return false;
-  }
-  if ( !is_dir($dir) )
-  {
-    global $conf;
-    if (str_starts_with(PHP_OS, 'WIN'))
-    {
-      $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
-    }
-    $umask = umask(0);
-    $mkd = mkdir($dir, $conf['chmod_value'], true);
-    umask($umask);
-    if (!$mkd && !is_dir($dir) /* retest existence because of potential concurrent i.php with slow file systems*/)
-    {
-      return false;
-    }
-
-    $file = $dir.'/index.htm';
-    file_exists($file) || file_put_contents( $file, 'Not allowed!' );
-  }
-  if ( !is_writable($dir) )
-  {
-    return false;
-  }
-  return true;
-}
 
 // end fast bootstrap
 
