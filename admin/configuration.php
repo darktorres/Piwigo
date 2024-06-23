@@ -1,5 +1,28 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Image;
+use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\admin\inc\clear_derivative_cache;
+use function Piwigo\inc\build_user;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_conf_from_db;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\time_since;
+use function Piwigo\load_profile_in_template;
+use function Piwigo\save_profile_from_post;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -21,7 +44,6 @@ if (! is_webmaster()) {
 
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -323,7 +345,7 @@ $template->set_filename(
 );
 
 // TabSheet
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('configuration');
 $tabsheet->select($page['section']);
 $tabsheet->assign();
@@ -503,7 +525,7 @@ switch ($page['section']) {
         // we only load the derivatives if it was not already loaded: it occurs
         // when submitting the form and an error remains
         if (! isset($page['sizes_loaded_in_tpl'])) {
-            $is_gd = pwg_image::get_library() == 'gd';
+            $is_gd = Image::get_library() == 'gd';
             $template->assign('is_gd', $is_gd);
             $template->assign(
                 'sizes',

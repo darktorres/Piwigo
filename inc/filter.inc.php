@@ -1,5 +1,9 @@
 <?php
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -1,5 +1,16 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\WatermarkParams;
+use function Piwigo\inc\get_filename_wo_extension;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\mkgetdir;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\str2url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

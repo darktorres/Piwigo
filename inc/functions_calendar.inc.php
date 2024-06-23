@@ -1,5 +1,7 @@
 <?php
 
+namespace Piwigo\inc;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -87,13 +89,13 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     $styles = [
         // Monthly style
         'monthly' => [
-            'include' => 'calendar_monthly.class.php',
+            'include' => 'CalendarMonthly.php',
             'view_calendar' => true,
             'classname' => 'CalendarMonthly',
         ],
         // Weekly style
         'weekly' => [
-            'include' => 'calendar_weekly.class.php',
+            'include' => 'CalendarWeekly.php',
             'view_calendar' => false,
             'classname' => 'CalendarWeekly',
         ],
@@ -115,7 +117,8 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     $classname = $styles[$cal_style]['classname'];
 
     include(PHPWG_ROOT_PATH . 'inc/' . $styles[$cal_style]['include']);
-    $calendar = new $classname();
+    $tmp = '\\Piwigo\\inc\\' . $classname;
+    $calendar = new $tmp();
 
     // Retrieve view
 

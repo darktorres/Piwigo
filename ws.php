@@ -1,5 +1,12 @@
 <?php
 
+namespace Piwigo;
+
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\page_forbidden;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -849,7 +856,7 @@ function ws_addDefaultMethods($arr)
 
     $service->addMethod(
         'pwg.categories.getAdminList',
-        'ws_categories_getAdminList',
+        '\Piwigo\inc\ws_functions\ws_categories_getAdminList',
         [
             'search' => [
                 'default' => null,
@@ -1000,7 +1007,7 @@ function ws_addDefaultMethods($arr)
 
     $service->addMethod(
         'pwg.tags.getAdminList',
-        'ws_tags_getAdminList',
+        '\Piwigo\inc\ws_functions\ws_tags_getAdminList',
         null,
         '<b>Admin only.</b>',
         $ws_functions_root . 'pwg.tags.php',
@@ -1395,7 +1402,7 @@ function ws_addDefaultMethods($arr)
 
     $service->addMethod(
         'pwg.extensions.checkUpdates',
-        'ws_extensions_checkupdates',
+        '\Piwigo\inc\ws_functions\ws_extensions_checkupdates',
         null,
         'Checks if piwigo or extensions are up to date.',
         $ws_functions_root . 'pwg.extensions.php',

@@ -18,7 +18,8 @@
     "config": {
         "allow-plugins": {
             "cweagans/composer-patches": true
-        }
+        },
+        "optimize-autoloader": true
     },
     "extra": {
         "patches": {
@@ -31,5 +32,10 @@
         "symplify/easy-coding-standard": "^12.2",
         "rector/rector": "^1.1",
         "vimeo/psalm": "^5.24"
+    },
+    "autoload": {
+        "psr-4": {
+            "Piwigo\\": ""
+        }
     }
 }

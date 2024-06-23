@@ -1,5 +1,24 @@
 <?php
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\add_permission_on_category;
+use function Piwigo\admin\inc\get_admin_client_cache_keys;
+use function Piwigo\admin\inc\get_uppercat_ids;
+use function Piwigo\admin\inc\set_cat_status;
+use function Piwigo\inc\array_from_query;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_cat_display_name_from_id;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\simple_hash_from_query;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

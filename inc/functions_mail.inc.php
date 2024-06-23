@@ -1,5 +1,7 @@
 <?php
 
+namespace Piwigo\inc;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -897,7 +899,7 @@ function pwg_send_mail($result, $to, $subject, $content, $headers)
 function move_css_to_body(
     $content
 ) {
-    return Pelago\Emogrifier\CssInliner::fromHtml($content)->inlineCss()->render();
+    return \Pelago\Emogrifier\CssInliner::fromHtml($content)->inlineCss()->render();
 }
 
 /**

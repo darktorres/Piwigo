@@ -1,4 +1,13 @@
 <?php
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\load_conf_from_db;
+use function Piwigo\inc\mobile_theme;
+
 /*
 Plugin Name: gdThumb
 Version: 1.0.26

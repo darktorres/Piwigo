@@ -1,5 +1,66 @@
 <?php
 
+namespace Piwigo;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\inc\access_denied;
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\array_from_query;
+use function Piwigo\inc\can_manage_comment;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_restrictions;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\cookie_path;
+use function Piwigo\inc\correct_slideshow_params;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\decode_slideshow_params;
+use function Piwigo\inc\delete_user_comment;
+use function Piwigo\inc\duplicate_index_url;
+use function Piwigo\inc\duplicate_picture_url;
+use function Piwigo\inc\encode_slideshow_params;
+use function Piwigo\inc\fill_caddie;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_action_url;
+use function Piwigo\inc\get_cat_display_name;
+use function Piwigo\inc\get_comment_author_id;
+use function Piwigo\inc\get_common_tags;
+use function Piwigo\inc\get_element_path;
+use function Piwigo\inc\get_element_url;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\get_privacy_level_options;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\hash_from_query;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\make_picture_url;
+use function Piwigo\inc\page_not_found;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_log;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\pwg_unset_session_var;
+use function Piwigo\inc\rate_picture;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\redirect_http;
+use function Piwigo\inc\render_element_name;
+use function Piwigo\inc\set_status_header;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\update_user_comment;
+use function Piwigo\inc\validate_user_comment;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -110,7 +171,7 @@ if (isset($_GET['metadata'])) {
 // add default event handler for rendering element content
 add_event_handler(
     'render_element_content',
-    'default_picture_content'
+    '\Piwigo\default_picture_content'
 );
 // add default event handler for rendering element description
 add_event_handler(
@@ -459,7 +520,7 @@ SELECT id,uppercats,commentable,visible,status,global_rank
 ) . '
 ;';
 $related_categories = array_from_query($query);
-usort($related_categories, 'global_rank_compare');
+usort($related_categories, '\Piwigo\inc\global_rank_compare');
 //-------------------------first, prev, current, next & last picture management
 $picture = [];
 

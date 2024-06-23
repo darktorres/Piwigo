@@ -1,5 +1,22 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\DerivativeImage;
+use function Piwigo\admin\inc\get_admin_client_cache_keys;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\create_navigation_bar;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -20,8 +37,7 @@ check_status(ACCESS_ADMINISTRATOR);
 
 check_input_parameter('display', $_GET, false, PATTERN_ID);
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('rating');
 $tabsheet->select('rating');
 $tabsheet->assign();

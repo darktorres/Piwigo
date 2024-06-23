@@ -1,5 +1,12 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\admin\inc\get_upload_form_config;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\get_root_url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,9 +19,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/image.class.php');
 
 define(
     'PHOTOS_ADD_BASE_URL',
@@ -47,7 +52,7 @@ if (isset($_GET['section'])) {
     $page['tab'] = 'direct';
 }
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('photos_add');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();

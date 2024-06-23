@@ -1,5 +1,30 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\CheckIntegrity;
+use Piwigo\admin\inc\CompatibilityInternal;
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\admin\inc\fs_quick_check;
+use function Piwigo\admin\inc\get_newsletter_subscribe_base_url;
+use function Piwigo\admin\inc\get_orphans;
+use function Piwigo\admin\inc\get_piwigo_news;
+use function Piwigo\admin\inc\number_format_human_readable;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_elapsed_time;
+use function Piwigo\inc\get_moment;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\time_since;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\userprefs_get_param;
+use function Piwigo\inc\userprefs_update_param;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,8 +37,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/check_integrity.class.php');
-include_once(PHPWG_ROOT_PATH . 'admin/inc/c13y_internal.class.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -30,11 +53,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'hide_newsletter_subscription')
     exit();
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-
 $my_base_url = get_root_url() . 'admin.php?page=';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('admin_home');
 $tabsheet->select('');
 $tabsheet->assign();
@@ -218,7 +239,7 @@ $week_number = [];
 $temp_data = [];
 
 $activity_last_weeks = [];
-$date = new DateTime();
+$date = new \DateTime();
 
 //Get data from $nb_weeks last weeks
 while ($mondays < $nb_weeks) {
@@ -227,7 +248,7 @@ while ($mondays < $nb_weeks) {
         ++$mondays;
     }
 
-    $date->sub(new DateInterval('P1D'));
+    $date->sub(new \DateInterval('P1D'));
 }
 
 $week_number = array_reverse($week_number);
@@ -252,7 +273,7 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
 
     foreach ($activity_actions as $action) {
         // set the time to 12:00 (midday) so that it doesn't goes to previous/next day due to timezone offset
-        $day_date = new DateTime(
+        $day_date = new \DateTime(
             $action['activity_day'] . ' 12:00:00'
         );
 
@@ -310,7 +331,7 @@ function cmp_day($a, $b)
     return $a['x'] <=> $b['x'];
 }
 
-usort($temp_data, 'cmp_day');
+usort($temp_data, '\Piwigo\admin\cmp_day');
 
 //Get the percent difference
 $diff_x = [];
@@ -462,9 +483,9 @@ $template->assign_var_from_handle(
 );
 
 // Check integrity
-$c13y = new check_integrity();
+$c13y = new CheckIntegrity();
 // add internal checks
-new c13y_internal();
+new CompatibilityInternal();
 // check and display
 $c13y->check();
 $c13y->display();

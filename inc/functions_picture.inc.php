@@ -1,5 +1,10 @@
 <?php
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\get_boolean;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -1,5 +1,26 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\inc\build_user;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_gallery_home_url;
+use function Piwigo\inc\get_html_description_recent_post_date;
+use function Piwigo\inc\get_recent_post_dates_array;
+use function Piwigo\inc\get_title_recent_post_date;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\news;
+use function Piwigo\inc\page_not_found;
+use function Piwigo\inc\set_make_full_url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -89,7 +110,7 @@ check_status(ACCESS_GUEST);
 
 set_make_full_url();
 
-$rss = new UniversalFeedCreator();
+$rss = new \UniversalFeedCreator();
 $rss->title = $conf['gallery_title'];
 $rss->title .= ' (as ' . stripslashes((string) $user['username']) . ')';
 
@@ -104,7 +125,7 @@ if (! $image_only) {
     $news = news($feed_row['last_check'], $dbnow, true, true);
 
     if (count($news) > 0) {
-        $item = new FeedItem();
+        $item = new \FeedItem();
         $item->title = l10n('New on %s', format_date($dbnow));
         $item->link = get_gallery_home_url();
 
@@ -147,7 +168,7 @@ UPDATE ' . USER_FEED_TABLE . '
 $dates = get_recent_post_dates_array($conf['recent_post_dates']['RSS']);
 
 foreach ($dates as $date_detail) { // for each recent post date we create a feed item
-    $item = new FeedItem();
+    $item = new \FeedItem();
     $date = $date_detail['date_available'];
     $item->title = get_title_recent_post_date($date_detail);
     $item->link = make_index_url(

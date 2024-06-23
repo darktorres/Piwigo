@@ -1,5 +1,15 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\admin\inc\get_available_upgrade_ids;
+use function Piwigo\admin\inc\prepare_conf_upgrade;
+use function Piwigo\inc\array_from_query;
+use function Piwigo\inc\dbLayer\my_error;
+use function Piwigo\inc\dbLayer\pwg_db_connect;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -48,7 +58,7 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $exception) {
+} catch (\Exception $exception) {
     my_error(l10n($exception->getMessage(), true));
 }
 

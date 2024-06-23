@@ -1,5 +1,30 @@
 <?php
 
+namespace Piwigo;
+
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\check_restrictions;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\create_navigation_bar;
+use function Piwigo\inc\duplicate_index_url;
+use function Piwigo\inc\fill_caddie;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\get_cat_display_name;
+use function Piwigo\inc\get_category_preferred_image_orders;
+use function Piwigo\inc\get_gallery_home_url;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\page_not_found;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_log;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\pwg_unset_session_var;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_notify;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -188,7 +213,7 @@ if (empty($page['is_external'])) {
             (array) @$page['qsearch_details']['matching_cats']
         );
         if ($cats !== []) {
-            usort($cats, 'name_compare');
+            usort($cats, '\Piwigo\inc\name_compare');
             $hints = [];
             foreach ($cats as $cat) {
                 $hints[] = get_cat_display_name([$cat], '');

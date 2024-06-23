@@ -1,13 +1,13 @@
 <?php
 
+namespace Piwigo\inc;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
 // | For copyright and license information, please view the COPYING.txt    |
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
-
-include_once(PHPWG_ROOT_PATH . 'inc/block.class.php');
 
 initialize_menu();
 
@@ -170,7 +170,7 @@ function initialize_menu()
         //displays all tags available for the current user
         elseif ($conf['menubar_tag_cloud_content'] == 'always_all' || $conf['menubar_tag_cloud_content'] == 'all_or_current' && empty($page['items'])) {
             $tags = get_available_tags();
-            usort($tags, 'tags_counter_compare');
+            usort($tags, 'Piwigo\inc\tags_counter_compare');
             $tags = array_slice($tags, 0, $conf['menubar_tag_cloud_items_number']);
             foreach ($tags as $tag) {
                 $block->data[] = array_merge(

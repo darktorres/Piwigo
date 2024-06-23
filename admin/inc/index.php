@@ -1,5 +1,7 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -1,5 +1,42 @@
 <?php
 
+namespace Piwigo;
+
+use Piwigo\admin\inc\Languages;
+use Piwigo\inc\Template;
+use function Piwigo\admin\inc\activate_core_plugins;
+use function Piwigo\admin\inc\activate_core_themes;
+use function Piwigo\admin\inc\execute_sqlfile;
+use function Piwigo\admin\inc\fetchRemote;
+use function Piwigo\admin\inc\get_available_upgrade_ids;
+use function Piwigo\admin\inc\get_newsletter_subscribe_base_url;
+use function Piwigo\inc\build_user;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\cookie_path;
+use function Piwigo\inc\create_user_infos;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\my_error;
+use function Piwigo\inc\dbLayer\pwg_db_cast_to_text;
+use function Piwigo\inc\dbLayer\pwg_db_connect;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\get_branch_from_version;
+use function Piwigo\inc\get_l10n_args;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_args;
+use function Piwigo\inc\load_conf_from_db;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\log_user;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\pwg_mail;
+use function Piwigo\inc\pwg_password_hash;
+use function Piwigo\inc\secure_directory;
+use function Piwigo\inc\userprefs_update_param;
+use function Piwigo\inc\validate_mail_address;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -71,8 +108,7 @@ include(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
 @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
-include(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
-include(PHPWG_ROOT_PATH . 'inc/template.class.php');
+include(PHPWG_ROOT_PATH . '/inc/functions.inc.php');
 
 // download database config file if exists
 check_input_parameter('dl', $_GET, false, '/^[a-f0-9]{32}$/');
@@ -123,8 +159,7 @@ if (@file_exists($config_file)) {
 include(PHPWG_ROOT_PATH . 'inc/constants.php');
 include(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
-include(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
-$languages = new languages('utf-8');
+$languages = new Languages('utf-8');
 
 // if (isset($_GET['language']))
 // {
@@ -422,12 +457,12 @@ if ($step == 1) {
         $errors[] = $error_copy;
     } else {
         session_set_save_handler(
-            'pwg_session_open',
-            'pwg_session_close',
-            'pwg_session_read',
-            'pwg_session_write',
-            'pwg_session_destroy',
-            'pwg_session_gc'
+            '\Piwigo\inc\pwg_session_open',
+            '\Piwigo\inc\pwg_session_close',
+            '\Piwigo\inc\pwg_session_read',
+            '\Piwigo\inc\pwg_session_write',
+            '\Piwigo\inc\pwg_session_destroy',
+            '\Piwigo\inc\pwg_session_gc'
         );
         if (function_exists('ini_set')) {
             ini_set('session.use_cookies', $conf['session_use_cookies']);

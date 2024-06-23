@@ -1,5 +1,16 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\generate_key;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\trigger_notify;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

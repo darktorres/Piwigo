@@ -1,5 +1,39 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\CheckIntegrity;
+use Piwigo\admin\inc\Image;
+use Piwigo\inc\FileCombiner;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\admin\inc\categories_integrity;
+use function Piwigo\admin\inc\clear_derivative_cache;
+use function Piwigo\admin\inc\delete_orphan_tags;
+use function Piwigo\admin\inc\fetchRemote;
+use function Piwigo\admin\inc\fs_quick_check;
+use function Piwigo\admin\inc\images_integrity;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\update_category;
+use function Piwigo\admin\inc\update_global_rank;
+use function Piwigo\admin\inc\update_path;
+use function Piwigo\admin\inc\update_uppercats;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\do_maintenance_all_tables;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_get_db_version;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\pwg_session_gc;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\time_since;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\update_rating_score;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -168,8 +202,7 @@ DELETE
 
     case 'c13y':
 
-        include_once(PHPWG_ROOT_PATH . 'admin/inc/check_integrity.class.php');
-        $c13y = new check_integrity();
+        $c13y = new CheckIntegrity();
         $c13y->maintenance();
         $page['infos'][] = sprintf(
             '%s : %s',
@@ -339,28 +372,7 @@ $template->assign(
 );
 
 // graphics library
-switch (pwg_image::get_library()) {
-    case 'imagick':
-        $library = 'ImageMagick';
-        $img = new Imagick();
-        $version = $img->getVersion();
-        if (preg_match('/ImageMagick \d+\.\d+\.\d+-?\d*/', $version['versionString'], $match)) {
-            $library = $match[0];
-        }
-
-        $template->assign('GRAPHICS_LIBRARY', $library);
-        break;
-
-    case 'ext_imagick':
-        $library = 'External ImageMagick';
-        exec($conf['ext_imagick_dir'] . 'convert -version', $returnarray);
-        if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match)) {
-            $library .= ' ' . $match[1];
-        }
-
-        $template->assign('GRAPHICS_LIBRARY', $library);
-        break;
-
+switch (Image::get_library()) {
     case 'gd':
         $gd_info = gd_info();
         $template->assign('GRAPHICS_LIBRARY', 'GD ' . @$gd_info['GD Version']);

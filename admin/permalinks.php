@@ -1,5 +1,23 @@
 <?php
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\delete_cat_permalink;
+use function Piwigo\admin\inc\set_cat_permalink;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\dbLayer\pwg_db_changes;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\display_select_cat_wrapper;
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -143,7 +161,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 if ($sort_by[0] == 'name') {
-    usort($categories, 'global_rank_compare');
+    usort($categories, '\Piwigo\inc\global_rank_compare');
 }
 
 $template->assign('permalinks', $categories);

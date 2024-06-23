@@ -1,5 +1,50 @@
 <?php
 
+namespace Piwigo\inc\ws_functions;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\Error;
+use Piwigo\inc\NamedArray;
+use Piwigo\inc\NamedStruct;
+use function Piwigo\admin\inc\create_virtual_category;
+use function Piwigo\admin\inc\delete_categories;
+use function Piwigo\admin\inc\get_category_representant_properties;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\move_categories;
+use function Piwigo\admin\inc\save_categories_order;
+use function Piwigo\admin\inc\set_cat_status;
+use function Piwigo\admin\inc\set_cat_visible;
+use function Piwigo\admin\inc\set_random_representant;
+use function Piwigo\admin\inc\update_global_rank;
+use function Piwigo\inc\array_from_query;
+use function Piwigo\inc\calculate_permissions;
+use function Piwigo\inc\categories_flatlist_to_tree;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_random_image_in_category;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\get_user_favorites;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\make_picture_url;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\ws_std_get_category_xml_attributes;
+use function Piwigo\inc\ws_std_get_image_xml_attributes;
+use function Piwigo\inc\ws_std_get_urls;
+use function Piwigo\inc\ws_std_image_sql_filter;
+use function Piwigo\inc\ws_std_image_sql_order;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -180,7 +225,7 @@ SELECT
                     ];
                 }
 
-                $images[$idx]['categories'] = new PwgNamedArray(
+                $images[$idx]['categories'] = new NamedArray(
                     $image_cats,
                     'category',
                     ['id', 'url', 'page_url']
@@ -190,7 +235,7 @@ SELECT
     }
 
     return [
-        'paging' => new PwgNamedStruct(
+        'paging' => new NamedStruct(
             [
                 'page' => $params['page'],
                 'per_page' => $params['per_page'],
@@ -198,7 +243,7 @@ SELECT
                 'total_count' => $total_images,
             ]
         ),
-        'images' => new PwgNamedArray(
+        'images' => new NamedArray(
             $images,
             'image',
             ws_std_get_image_xml_attributes()
@@ -223,7 +268,7 @@ function ws_categories_getList(
     global $user, $conf;
 
     if (! in_array($params['thumbnail_size'], array_keys(ImageStdParams::get_defined_type_map()))) {
-        return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid thumbnail_size');
+        return new Error(WS_ERR_INVALID_PARAM, 'Invalid thumbnail_size');
     }
 
     $where = ['1=1'];
@@ -374,7 +419,7 @@ SELECT representative_picture_id
         $cats[] = $row;
     }
 
-    usort($cats, 'global_rank_compare');
+    usort($cats, '\Piwigo\inc\global_rank_compare');
 
     // management of the album thumbnail -- starts here
     if ($categories !== []) {
@@ -481,7 +526,7 @@ SELECT id, path, representative_ext
     }
 
     return [
-        'categories' => new PwgNamedArray(
+        'categories' => new NamedArray(
             $cats,
             'category',
             ws_std_get_category_xml_attributes()
@@ -573,9 +618,9 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
         $limit_reached = true;
     }
 
-    usort($cats, 'global_rank_compare');
+    usort($cats, '\Piwigo\inc\global_rank_compare');
     return [
-        'categories' => new PwgNamedArray(
+        'categories' => new NamedArray(
             $cats,
             'category',
             ['id', 'nb_images', 'name', 'uppercats', 'global_rank', 'status', 'test']
@@ -628,7 +673,7 @@ function ws_categories_add(
     );
 
     if (isset($creation_output['error'])) {
-        return new PwgError(500, $creation_output['error']);
+        return new Error(500, $creation_output['error']);
     }
 
     invalidate_user_cache();
@@ -656,7 +701,7 @@ SELECT id, id_uppercat, `rank`
     $categories = query2array($query);
 
     if (count($categories) == 0) {
-        return new PwgError(404, 'category_id not found');
+        return new Error(404, 'category_id not found');
     }
 
     $category = $categories[0];
@@ -677,7 +722,7 @@ SELECT id
         $cat_asc = query2array($query, null, 'id');
 
         if (strcmp(implode(',', $cat_asc), implode(',', $order_new_by_id)) !== 0) {
-            return new PwgError(
+            return new Error(
                 WS_ERR_INVALID_PARAM,
                 'you need to provide all sub-category ids for a given category'
             );
@@ -741,14 +786,14 @@ SELECT *
 ;';
     $categories = query2array($query);
     if (count($categories) == 0) {
-        return new PwgError(404, 'category_id not found');
+        return new Error(404, 'category_id not found');
     }
 
     $category = $categories[0];
 
     if (! empty($params['status'])) {
         if (! in_array($params['status'], ['private', 'public'])) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid status, only public/private');
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid status, only public/private');
         }
 
         if ($params['status'] != $category['status']) {
@@ -763,7 +808,7 @@ SELECT *
 
     foreach (['visible', 'commentable'] as $param_name) {
         if (isset($params[$param_name]) && ! preg_match('/^(true|false)$/i', (string) $params[$param_name])) {
-            return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid param ' . $param_name . ' : ' . $params[$param_name]);
+            return new Error(WS_ERR_INVALID_PARAM, 'Invalid param ' . $param_name . ' : ' . $params[$param_name]);
         }
     }
 
@@ -831,7 +876,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(404, 'category_id not found');
+        return new Error(404, 'category_id not found');
     }
 
     // does the image really exist?
@@ -842,7 +887,7 @@ SELECT COUNT(*)
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
-        return new PwgError(404, 'image_id not found');
+        return new Error(404, 'image_id not found');
     }
 
     // apply change
@@ -888,7 +933,7 @@ SELECT id
 ;';
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) == 0) {
-        return new PwgError(404, 'category_id not found');
+        return new Error(404, 'category_id not found');
     }
 
     $query = '
@@ -899,7 +944,7 @@ SELECT COUNT(*)
     [$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
     if (! $conf['allow_random_representative'] && $nb_images != 0) {
-        return new PwgError(401, 'not permitted');
+        return new Error(401, 'not permitted');
     }
 
     $query = '
@@ -934,7 +979,7 @@ SELECT id
 ;';
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) == 0) {
-        return new PwgError(404, 'category_id not found');
+        return new Error(404, 'category_id not found');
     }
 
     $query = '
@@ -948,7 +993,7 @@ SELECT
     $has_images = pwg_db_num_rows($result) > 0;
 
     if (! $has_images) {
-        return new PwgError(401, 'not permitted');
+        return new Error(401, 'not permitted');
     }
 
     include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
@@ -981,12 +1026,12 @@ function ws_categories_delete(
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     $modes = ['no_delete', 'delete_orphans', 'force_delete'];
     if (! in_array($params['photo_deletion_mode'], $modes)) {
-        return new PwgError(
+        return new Error(
             500,
             '[ws_categories_delete] invalid parameter photo_deletion_mode "' . $params['photo_deletion_mode'] . '"'
             . ', possible values are {' . implode(', ', $modes) . '}.'
@@ -1047,7 +1092,7 @@ function ws_categories_move(
     global $page;
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     if (! is_array($params['category_id'])) {
@@ -1069,7 +1114,7 @@ function ws_categories_move(
     }
 
     if (count($category_ids) == 0) {
-        return new PwgError(403, 'Invalid category_id input parameter, no category to move');
+        return new Error(403, 'Invalid category_id input parameter, no category to move');
     }
 
     // we can't move physical categories
@@ -1094,7 +1139,7 @@ SELECT id, name, dir
                 )
             );
 
-            return new PwgError(
+            return new Error(
                 403,
                 sprintf(
                     'Category %s (%u) is not a virtual category, you cannot move it',
@@ -1108,7 +1153,7 @@ SELECT id, name, dir
     if (count($categories_in_db) != count($category_ids)) {
         $unknown_category_ids = array_diff($category_ids, array_keys($categories_in_db));
 
-        return new PwgError(
+        return new Error(
             403,
             sprintf(
                 'Category %u does not exist',
@@ -1123,7 +1168,7 @@ SELECT id, name, dir
     if ($params['parent'] != 0) {
         $subcat_ids = get_subcat_ids([$params['parent']]);
         if (count($subcat_ids) == 0) {
-            return new PwgError(403, 'Unknown parent category id');
+            return new Error(403, 'Unknown parent category id');
         }
     }
 
@@ -1135,7 +1180,7 @@ SELECT id, name, dir
     invalidate_user_cache();
 
     if (count($page['errors']) != 0) {
-        return new PwgError(403, implode('; ', $page['errors']));
+        return new Error(403, implode('; ', $page['errors']));
     }
 
     $query = '

@@ -1,5 +1,14 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\inc\array_from_query;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\redirect;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

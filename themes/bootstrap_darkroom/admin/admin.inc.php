@@ -1,12 +1,16 @@
 <?php
 
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+
 // Check whether we are indeed included by Piwigo.
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
 // Includes
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 require_once(PHPWG_THEMES_PATH . 'bootstrap_darkroom/inc/config.php');
 
 load_language('theme.lang', PHPWG_THEMES_PATH . 'bootstrap_darkroom/');
@@ -32,7 +36,7 @@ if ($page['tab'] == TAB_SETTINGS && isset($_POST['boostrap_darkroom_settings']))
 }
 
 // TabSheet
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('bsdark');
 $tabsheet->add(TAB_SETTINGS, l10n('Settings'), ADMIN_PATH . '&tab=' . TAB_SETTINGS);
 $tabsheet->add(TAB_ABOUT, l10n('About'), ADMIN_PATH . '&tab=' . TAB_ABOUT);

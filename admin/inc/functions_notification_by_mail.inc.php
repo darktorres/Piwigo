@@ -1,5 +1,30 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\build_user;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\format_email;
+use function Piwigo\inc\generate_key;
+use function Piwigo\inc\get_gallery_home_url;
+use function Piwigo\inc\get_mail_sender_name;
+use function Piwigo\inc\get_mail_template;
+use function Piwigo\inc\get_moment;
+use function Piwigo\inc\get_str_email_format;
+use function Piwigo\inc\get_webmaster_mail_address;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\pwg_mail;
+use function Piwigo\inc\set_make_full_url;
+use function Piwigo\inc\switch_lang_back;
+use function Piwigo\inc\switch_lang_to;
+use function Piwigo\inc\unset_make_full_url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

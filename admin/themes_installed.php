@@ -1,5 +1,15 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Themes;
+use function Piwigo\inc\get_default_theme;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_notify;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -19,11 +29,9 @@ if (! is_webmaster()) {
     );
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
-
 $base_url = get_root_url() . 'admin.php?page=' . $page['page'];
 
-$themes = new themes();
+$themes = new Themes();
 
 // +-----------------------------------------------------------------------+
 // |                          perform actions                              |
@@ -154,7 +162,7 @@ function cmp($a, $b)
     return $s[$a['STATE']] >= $s[$b['STATE']] ? 1 : -1;
 }
 
-usort($tpl_themes, 'cmp');
+usort($tpl_themes, '\Piwigo\admin\cmp');
 
 $template->assign(
     [

@@ -1,5 +1,7 @@
 <?php
 
+namespace Piwigo\inc;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,7 +10,7 @@
 // +-----------------------------------------------------------------------+
 
 /**
- * Event handler for method invocation security check. Should return a PwgError
+ * Event handler for method invocation security check. Should return a Error
  * if the preconditions are not satifsied for method invocation.
  */
 function ws_isInvokeAllowed(
@@ -23,7 +25,7 @@ function ws_isInvokeAllowed(
     }
 
     if (! is_autorize_status(ACCESS_GUEST) && ! str_starts_with((string) $methodName, 'pwg.session.')) {
-        return new PwgError(401, 'Access denied');
+        return new Error(401, 'Access denied');
     }
 
     return $res;
@@ -224,7 +226,7 @@ function categories_flatlist_to_tree(
         } else {
             if (! isset($categories[$key_of_cat[$node['id_uppercat']]]['sub_categories'])) {
                 $categories[$key_of_cat[$node['id_uppercat']]]['sub_categories'] =
-                  new PwgNamedArray([], 'category', ws_std_get_category_xml_attributes());
+                  new NamedArray([], 'category', ws_std_get_category_xml_attributes());
             }
 
             $categories[$key_of_cat[$node['id_uppercat']]]['sub_categories']->_content[] = &$node;

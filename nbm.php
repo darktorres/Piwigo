@@ -1,5 +1,15 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\admin\inc\subscribe_notification_by_mail;
+use function Piwigo\admin\inc\unsubscribe_notification_by_mail;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\trigger_notify;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

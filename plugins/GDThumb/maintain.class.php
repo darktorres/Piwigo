@@ -1,5 +1,9 @@
 <?php
 
+use Piwigo\inc\PluginMaintain;
+use function Piwigo\inc\conf_delete_param;
+use function Piwigo\inc\conf_update_param;
+
 defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class GDThumb_maintain extends PluginMaintain
@@ -55,7 +59,7 @@ class GDThumb_maintain extends PluginMaintain
                 if ($file !== '.' && $file !== '..'):
                     $pathfile = $path . '/' . $file;
                     if (is_dir($pathfile)):
-                        gtdeltree($pathfile);
+                        self::gtdeltree($pathfile);
                     else:
                         @unlink($pathfile);
                     endif;

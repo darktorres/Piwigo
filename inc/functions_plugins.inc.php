@@ -1,5 +1,10 @@
 <?php
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -11,106 +16,6 @@
 define('PHPWG_PLUGINS_PATH', PHPWG_ROOT_PATH . 'plugins/');
 /** default priority for plugins handlers */
 define('EVENT_HANDLER_PRIORITY_NEUTRAL', 50);
-
-/**
- * Used to declare maintenance methods of a plugin.
- */
-class PluginMaintain
-{
-    /**
-     * @param string $plugin_id
-     */
-    public function __construct(
-        protected $plugin_id
-    ) {
-    }
-
-    /**
-     * @param string $plugin_version
-     * @param array $errors - used to return error messages
-     */
-    public function install(
-        $plugin_version,
-        &$errors = [
-        ]
-    ) {
-    }
-
-    /**
-     * @param string $plugin_version
-     * @param array $errors - used to return error messages
-     */
-    public function activate(
-        $plugin_version,
-        &$errors = [
-        ]
-    ) {
-    }
-
-    public function deactivate()
-    {
-    }
-
-    public function uninstall()
-    {
-    }
-
-    /**
-     * @param string $old_version
-     * @param string $new_version
-     * @param array $errors - used to return error messages
-     */
-    public function update(
-        $old_version,
-        $new_version,
-        &$errors = [
-        ]
-    ) {
-    }
-
-    /**
-     * @removed 2.7
-     */
-    public function autoUpdate()
-    {
-        if (is_admin() && ! defined('IN_WS')) {
-            trigger_error('Function PluginMaintain::autoUpdate deprecated', E_USER_WARNING);
-        }
-    }
-}
-
-/**
- * Used to declare maintenance methods of a theme.
- */
-class ThemeMaintain
-{
-    /**
-     * @param string $theme_id
-     */
-    public function __construct(
-        protected $theme_id
-    ) {
-    }
-
-    /**
-     * @param string $theme_version
-     * @param array $errors - used to return error messages
-     */
-    public function activate(
-        $theme_version,
-        &$errors = [
-        ]
-    ) {
-    }
-
-    public function deactivate()
-    {
-    }
-
-    public function delete()
-    {
-    }
-}
 
 /**
  * Register an event handler.

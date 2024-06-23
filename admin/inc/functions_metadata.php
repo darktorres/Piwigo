@@ -1,5 +1,15 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_exif_data;
+use function Piwigo\inc\get_iptc_data;
+use function Piwigo\inc\hash_from_query;
+use function Piwigo\inc\original_to_representative;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

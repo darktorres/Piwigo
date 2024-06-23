@@ -1,5 +1,17 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\inc\array_from_query;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_search_array;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -124,7 +136,7 @@ SELECT id, uppercats, global_rank
         }
     }
 
-    usort($categories, 'global_rank_compare');
+    usort($categories, '\Piwigo\inc\global_rank_compare');
 
     foreach ($categories as $category) {
         $template->append(

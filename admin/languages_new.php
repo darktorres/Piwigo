@@ -1,5 +1,15 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Languages;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\redirect;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -15,15 +25,13 @@ if (! $conf['enable_extensions_install']) {
     die('Piwigo extensions install/update system is disabled');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
-
 $template->set_filenames([
     'languages' => 'languages_new.tpl',
 ]);
 
 $base_url = get_root_url() . 'admin.php?page=' . $page['page'] . '&tab=' . $page['tab'];
 
-$languages = new languages();
+$languages = new Languages();
 $languages->get_db_languages();
 
 // +-----------------------------------------------------------------------+

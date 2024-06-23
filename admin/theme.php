@@ -1,5 +1,10 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Themes;
+use function Piwigo\inc\check_status;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -18,8 +23,7 @@ if (empty($_GET['theme'])) {
     die('Invalid theme URL');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
-$themes = new themes();
+$themes = new Themes();
 if (! in_array($_GET['theme'], array_keys($themes->fs_themes))) {
     die('Invalid theme');
 }

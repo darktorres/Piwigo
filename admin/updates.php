@@ -1,5 +1,10 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\inc\get_root_url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -15,13 +20,11 @@ if (! $conf['enable_extensions_install'] && ! $conf['enable_core_update']) {
     die('update system is disabled');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-
 $my_base_url = get_root_url() . 'admin.php?page=updates';
 
 $page['tab'] = $_GET['tab'] ?? 'pwg';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('updates');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();

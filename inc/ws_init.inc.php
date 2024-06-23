@@ -1,5 +1,13 @@
 <?php
 
+namespace Piwigo\inc;
+
+use Piwigo\inc\ws_protocols\JsonEncoder;
+use Piwigo\inc\ws_protocols\RestEncoder;
+use Piwigo\inc\ws_protocols\RestRequestHandler;
+use Piwigo\inc\ws_protocols\SerialPhpEncoder;
+use Piwigo\inc\ws_protocols\XmlRpcEncoder;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,8 +24,8 @@ defined(
 
 include_once(PHPWG_ROOT_PATH . 'inc/ws_core.inc.php');
 
-add_event_handler('ws_add_methods', 'ws_addDefaultMethods');
-add_event_handler('ws_invoke_allowed', 'ws_isInvokeAllowed', EVENT_HANDLER_PRIORITY_NEUTRAL, 3);
+add_event_handler('ws_add_methods', '\Piwigo\ws_addDefaultMethods');
+add_event_handler('ws_invoke_allowed', '\Piwigo\inc\ws_isInvokeAllowed', EVENT_HANDLER_PRIORITY_NEUTRAL, 3);
 
 $requestFormat = 'rest';
 $responseFormat = null;
@@ -30,13 +38,12 @@ if (! isset($responseFormat) && isset($requestFormat)) {
     $responseFormat = $requestFormat;
 }
 
-$service = new PwgServer();
+$service = new Server();
 
 if ($requestFormat !== null) {
     $handler = null;
     if ($requestFormat === 'rest') {
-        include_once(PHPWG_ROOT_PATH . 'inc/ws_protocols/rest_handler.php');
-        $handler = new PwgRestRequestHandler();
+        $handler = new RestRequestHandler();
     }
 
     $service->setHandler($requestFormat, $handler);
@@ -46,20 +53,16 @@ if ($responseFormat !== null) {
     $encoder = null;
     switch ($responseFormat) {
         case 'rest':
-            include_once(PHPWG_ROOT_PATH . 'inc/ws_protocols/rest_encoder.php');
-            $encoder = new PwgRestEncoder();
+            $encoder = new RestEncoder();
             break;
         case 'php':
-            include_once(PHPWG_ROOT_PATH . 'inc/ws_protocols/php_encoder.php');
-            $encoder = new PwgSerialPhpEncoder();
+            $encoder = new SerialPhpEncoder();
             break;
         case 'json':
-            include_once(PHPWG_ROOT_PATH . 'inc/ws_protocols/json_encoder.php');
-            $encoder = new PwgJsonEncoder();
+            $encoder = new JsonEncoder();
             break;
         case 'xmlrpc':
-            include_once(PHPWG_ROOT_PATH . 'inc/ws_protocols/xmlrpc_encoder.php');
-            $encoder = new PwgXmlRpcEncoder();
+            $encoder = new XmlRpcEncoder();
             break;
     }
 

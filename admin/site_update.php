@@ -1,5 +1,44 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\admin\inc\add_permission_on_category;
+use function Piwigo\admin\inc\clear_derivative_cache_rec;
+use function Piwigo\admin\inc\delete_categories;
+use function Piwigo\admin\inc\delete_elements;
+use function Piwigo\admin\inc\get_admins;
+use function Piwigo\admin\inc\get_filelist;
+use function Piwigo\admin\inc\get_fulldirs;
+use function Piwigo\admin\inc\set_tags_of;
+use function Piwigo\admin\inc\tag_id_from_tag_name;
+use function Piwigo\admin\inc\update_category;
+use function Piwigo\admin\inc\update_global_rank;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_nextval;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\display_select_cat_wrapper;
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\fill_caddie;
+use function Piwigo\inc\get_elapsed_time;
+use function Piwigo\inc\get_moment;
+use function Piwigo\inc\get_name_from_file;
+use function Piwigo\inc\get_privacy_level_options;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\hash_from_query;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\simple_hash_from_query;
+use function Piwigo\inc\url_is_remote;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -59,7 +98,6 @@ $infos = [];
 if ($site_is_remote) {
     fatal_error('remote sites not supported');
 } else {
-    include_once(PHPWG_ROOT_PATH . 'admin/site_reader_local.php');
     $site_reader = new LocalSiteReader($site_url);
 }
 
@@ -73,10 +111,9 @@ if (isset($page['no_md5sum_number'])) {
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 $my_base_url = get_root_url() . 'admin.php?page=';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('site_update');
 $tabsheet->select('synchronization');
 $tabsheet->assign();

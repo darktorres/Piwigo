@@ -1,5 +1,21 @@
 <?php
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\add_permission_on_category;
+use function Piwigo\admin\inc\get_username;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\display_select_cat_wrapper;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -105,7 +121,7 @@ if (pwg_db_num_rows($result) > 0) {
         $group_authorized[] = $row['cat_id'];
     }
 
-    usort($cats, 'global_rank_compare');
+    usort($cats, '\Piwigo\inc\global_rank_compare');
 
     foreach ($cats as $category) {
         $template->append(
