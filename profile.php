@@ -1,5 +1,35 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\deactivate_password_reset_key;
+use function Piwigo\inc\deactivate_user_auth_keys;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\get_default_language;
+use function Piwigo\inc\get_default_theme;
+use function Piwigo\inc\get_l10n_args;
+use function Piwigo\inc\get_languages;
+use function Piwigo\inc\get_pwg_themes;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_userid;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_args;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\pwg_mail;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\switch_lang_back;
+use function Piwigo\inc\switch_lang_to;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\validate_mail_address;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

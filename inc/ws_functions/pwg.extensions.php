@@ -1,5 +1,19 @@
 <?php
 
+namespace Piwigo\inc\ws_functions;
+
+use Piwigo\admin\inc\Plugins;
+use Piwigo\admin\inc\Themes;
+use Piwigo\admin\inc\Updates;
+use Piwigo\inc\Error;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\redirect;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -16,9 +30,7 @@ function ws_plugins_getList(
     $params,
     $service
 ) {
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
-
-    $plugins = new plugins();
+    $plugins = new Plugins();
     $plugins->sort_fs_plugins('name');
 
     $plugin_list = [];
@@ -53,25 +65,24 @@ function ws_plugins_performAction(
     global $template, $conf;
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     if (! is_webmaster()) {
-        return new PwgError(403, l10n('Webmaster status is required.'));
+        return new Error(403, l10n('Webmaster status is required.'));
     }
 
     if (! $conf['enable_extensions_install'] && $params['action'] == 'delete') {
-        return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
+        return new Error(401, 'Piwigo extensions install/update/delete system is disabled');
     }
 
     define('IN_ADMIN', true);
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php');
 
-    $plugins = new plugins();
+    $plugins = new Plugins();
     $errors = $plugins->perform_action($params['action'], $params['plugin']);
 
     if (! empty($errors)) {
-        return new PwgError(500, $errors);
+        return new Error(500, $errors);
     }
 
     if (in_array($params['action'], ['activate', 'deactivate'])) {
@@ -97,21 +108,20 @@ function ws_themes_performAction(
     global $template, $conf;
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     if (! $conf['enable_extensions_install'] && $params['action'] == 'delete') {
-        return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
+        return new Error(401, 'Piwigo extensions install/update/delete system is disabled');
     }
 
     define('IN_ADMIN', true);
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
 
-    $themes = new themes();
+    $themes = new Themes();
     $errors = $themes->perform_action($params['action'], $params['theme']);
 
     if (! empty($errors)) {
-        return new PwgError(500, $errors);
+        return new Error(500, $errors);
     }
 
     if (in_array($params['action'], ['activate', 'deactivate'])) {
@@ -139,19 +149,19 @@ function ws_extensions_update(
     global $conf;
 
     if (! $conf['enable_extensions_install']) {
-        return new PwgError(401, 'Piwigo extensions install/update system is disabled');
+        return new Error(401, 'Piwigo extensions install/update system is disabled');
     }
 
     if (! is_webmaster()) {
-        return new PwgError(401, l10n('Webmaster status is required.'));
+        return new Error(401, l10n('Webmaster status is required.'));
     }
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     if (! in_array($params['type'], ['plugins', 'themes', 'languages'])) {
-        return new PwgError(403, 'invalid extension type');
+        return new Error(403, 'invalid extension type');
     }
 
     require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
@@ -217,10 +227,10 @@ function ws_extensions_update(
 
     return match ($upgrade_status) {
         'ok' => l10n('%s has been successfully updated.', $extension_name),
-        'temp_path_error' => new PwgError(null, l10n("Can't create temporary file.")),
-        'dl_archive_error' => new PwgError(null, l10n("Can't download archive.")),
-        'archive_error' => new PwgError(null, l10n("Can't read or extract archive.")),
-        default => new PwgError(null, l10n('An error occured during extraction (%s).', $upgrade_status)),
+        'temp_path_error' => new Error(null, l10n("Can't create temporary file.")),
+        'dl_archive_error' => new Error(null, l10n("Can't download archive.")),
+        'archive_error' => new Error(null, l10n("Can't read or extract archive.")),
+        default => new Error(null, l10n('An error occured during extraction (%s).', $upgrade_status)),
     };
 }
 
@@ -243,11 +253,11 @@ function ws_extensions_ignoreupdate(
     require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (! is_webmaster()) {
-        return new PwgError(401, 'Access denied');
+        return new Error(401, 'Access denied');
     }
 
     if (get_pwg_token() != $params['pwg_token']) {
-        return new PwgError(403, 'Invalid security token');
+        return new Error(403, 'Invalid security token');
     }
 
     // Reset ignored extension
@@ -271,7 +281,7 @@ function ws_extensions_ignoreupdate(
         $params['type'],
         ['plugins', 'themes', 'languages']
     )) {
-        return new PwgError(403, 'Invalid parameters');
+        return new Error(403, 'Invalid parameters');
     }
 
     // Add or remove extension from ignore list
@@ -299,9 +309,8 @@ function ws_extensions_checkupdates(
     global $conf;
 
     require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/updates.class.php');
 
-    $update = new updates();
+    $update = new Updates();
     $result = [];
 
     if (! isset($_SESSION['need_update' . PHPWG_VERSION])) {

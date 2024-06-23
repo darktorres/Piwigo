@@ -1,5 +1,11 @@
 <?php
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

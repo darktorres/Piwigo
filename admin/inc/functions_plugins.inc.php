@@ -1,5 +1,9 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\get_root_url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

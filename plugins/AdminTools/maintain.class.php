@@ -1,5 +1,9 @@
 <?php
 
+use Piwigo\inc\PluginMaintain;
+use function Piwigo\inc\conf_delete_param;
+use function Piwigo\inc\conf_update_param;
+
 defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class AdminTools_maintain extends PluginMaintain

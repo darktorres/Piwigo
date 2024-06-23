@@ -1,5 +1,11 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,7 +15,7 @@
 
 add_event_handler(
     'tabsheet_before_select',
-    'add_core_tabs',
+    '\Piwigo\admin\inc\add_core_tabs',
     0
 );
 

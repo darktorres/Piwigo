@@ -1,5 +1,7 @@
 <?php
 
+use function Piwigo\inc\conf_update_param;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }

@@ -1,5 +1,9 @@
 <?php
 
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+
 // Need upgrade?
 global $conf;
 require(PHPWG_THEMES_PATH . 'smartpocket/admin/upgrade.inc.php');

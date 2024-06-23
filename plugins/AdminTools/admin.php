@@ -1,5 +1,8 @@
 <?php
 
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\l10n;
+
 defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 if (isset($_POST['save_config'])) {

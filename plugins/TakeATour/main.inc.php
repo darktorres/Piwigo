@@ -1,4 +1,17 @@
 <?php
+
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\pwg_unset_session_var;
+use function Piwigo\inc\trigger_notify;
+
 /*
 Plugin Name: Take A Tour of Your Piwigo
 Version: 14.4.0

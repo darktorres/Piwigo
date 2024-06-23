@@ -1,5 +1,7 @@
 <?php
 
+use function Piwigo\inc\load_language;
+
 function modus_css_gradient($gradient)
 {
     if (! empty($gradient)) {

@@ -1,5 +1,12 @@
 <?php
 
+namespace Piwigo;
+
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\page_forbidden;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -77,7 +84,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.getVersion',
-        'ws_getVersion',
+        '\Piwigo\inc\ws_functions\ws_getVersion',
         null,
         'Returns the Piwigo version.',
         $ws_functions_root . 'pwg.php'
@@ -85,7 +92,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.getInfos',
-        'ws_getInfos',
+        '\Piwigo\inc\ws_functions\ws_getInfos',
         null,
         'Returns general informations.',
         $ws_functions_root . 'pwg.php',
@@ -96,7 +103,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.getCacheSize',
-        'ws_getCacheSize',
+        '\Piwigo\inc\ws_functions\ws_getCacheSize',
         null,
         'Returns general informations.',
         $ws_functions_root . 'pwg.php',
@@ -107,7 +114,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.activity.getList',
-        'ws_getActivityList',
+        '\Piwigo\inc\ws_functions\ws_getActivityList',
         [
             'page' => [
                 'default' => null,
@@ -127,7 +134,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.activity.downloadLog',
-        'ws_activity_downloadLog',
+        '\Piwigo\inc\ws_functions\ws_activity_downloadLog',
         null,
         'Returns general informations.',
         $ws_functions_root . 'pwg.php',
@@ -138,7 +145,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.caddie.add',
-        'ws_caddie_add',
+        '\Piwigo\inc\ws_functions\ws_caddie_add',
         [
             'image_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY,
@@ -154,7 +161,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.getImages',
-        'ws_categories_getImages',
+        '\Piwigo\inc\ws_functions\ws_categories_getImages',
         array_merge([
             'cat_id' => [
                 'default' => null,
@@ -167,7 +174,7 @@ function ws_addDefaultMethods($arr): void
             ],
             'per_page' => [
                 'default' => 100,
-                'maxValue' => $conf['ws_max_images_per_page'],
+                'maxValue' => $conf['\Piwigo\inc\ws_functions\ws_max_images_per_page'],
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
             'page' => [
@@ -187,7 +194,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.getList',
-        'ws_categories_getList',
+        '\Piwigo\inc\ws_functions\ws_categories_getList',
         [
             'cat_id' => [
                 'default' => null,
@@ -221,7 +228,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.getMissingDerivatives',
-        'ws_getMissingDerivatives',
+        '\Piwigo\inc\ws_functions\ws_getMissingDerivatives',
         array_merge([
             'types' => [
                 'default' => null,
@@ -251,7 +258,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.addComment',
-        'ws_images_addComment',
+        '\Piwigo\inc\ws_functions\ws_images_addComment',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -271,7 +278,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.getInfo',
-        'ws_images_getInfo',
+        '\Piwigo\inc\ws_functions\ws_images_getInfo',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -292,7 +299,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.rate',
-        'ws_images_rate',
+        '\Piwigo\inc\ws_functions\ws_images_rate',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -307,12 +314,12 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.search',
-        'ws_images_search',
+        '\Piwigo\inc\ws_functions\ws_images_search',
         array_merge([
             'query' => [],
             'per_page' => [
                 'default' => 100,
-                'maxValue' => $conf['ws_max_images_per_page'],
+                'maxValue' => $conf['\Piwigo\inc\ws_functions\ws_max_images_per_page'],
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
             'page' => [
@@ -330,7 +337,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.setPrivacyLevel',
-        'ws_images_setPrivacyLevel',
+        '\Piwigo\inc\ws_functions\ws_images_setPrivacyLevel',
         [
             'image_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY,
@@ -351,7 +358,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.formats.searchImage',
-        'ws_images_formats_searchImage',
+        '\Piwigo\inc\ws_functions\ws_images_formats_searchImage',
         [
             'category_id' => [
                 'type' => WS_TYPE_ID,
@@ -369,7 +376,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.formats.delete',
-        'ws_images_formats_delete',
+        '\Piwigo\inc\ws_functions\ws_images_formats_delete',
         [
             'format_id' => [
                 'type' => WS_TYPE_ID,
@@ -388,7 +395,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.setRank',
-        'ws_images_setRank',
+        '\Piwigo\inc\ws_functions\ws_images_setRank',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -417,7 +424,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.rates.delete',
-        'ws_rates_delete',
+        '\Piwigo\inc\ws_functions\ws_rates_delete',
         [
             'user_id' => [
                 'type' => WS_TYPE_ID,
@@ -440,7 +447,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.session.getStatus',
-        'ws_session_getStatus',
+        '\Piwigo\inc\ws_functions\ws_session_getStatus',
         null,
         'Gets information about the current session. Also provides a token useable with admin methods.',
         $ws_functions_root . 'pwg.php'
@@ -448,7 +455,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.session.login',
-        'ws_session_login',
+        '\Piwigo\inc\ws_functions\ws_session_login',
         [
             'username' => [],
             'password' => [
@@ -464,7 +471,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.session.logout',
-        'ws_session_logout',
+        '\Piwigo\inc\ws_functions\ws_session_logout',
         null,
         'Ends the current session.',
         $ws_functions_root . 'pwg.php'
@@ -472,7 +479,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.getList',
-        'ws_tags_getList',
+        '\Piwigo\inc\ws_functions\ws_tags_getList',
         [
             'sort_by_counter' => [
                 'default' => false,
@@ -485,7 +492,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.getImages',
-        'ws_tags_getImages',
+        '\Piwigo\inc\ws_functions\ws_tags_getImages',
         array_merge([
             'tag_id' => [
                 'default' => null,
@@ -506,7 +513,7 @@ function ws_addDefaultMethods($arr): void
             ],
             'per_page' => [
                 'default' => 100,
-                'maxValue' => $conf['ws_max_images_per_page'],
+                'maxValue' => $conf['\Piwigo\inc\ws_functions\ws_max_images_per_page'],
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
             'page' => [
@@ -524,7 +531,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.addChunk',
-        'ws_images_add_chunk',
+        '\Piwigo\inc\ws_functions\ws_images_add_chunk',
         [
             'data' => [],
             'original_sum' => [],
@@ -544,7 +551,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.addFile',
-        'ws_images_addFile',
+        '\Piwigo\inc\ws_functions\ws_images_addFile',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -565,7 +572,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.add',
-        'ws_images_add',
+        '\Piwigo\inc\ws_functions\ws_images_add',
         [
             'thumbnail_sum' => [
                 'default' => null,
@@ -623,7 +630,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.addSimple',
-        'ws_images_addSimple',
+        '\Piwigo\inc\ws_functions\ws_images_addSimple',
         [
             'category' => [
                 'default' => null,
@@ -666,7 +673,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.upload',
-        'ws_images_upload',
+        '\Piwigo\inc\ws_functions\ws_images_upload',
         [
             'name' => [
                 'default' => null,
@@ -700,7 +707,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.uploadAsync',
-        'ws_images_uploadAsync',
+        '\Piwigo\inc\ws_functions\ws_images_uploadAsync',
         [
             'username' => [],
             'password' => [
@@ -761,7 +768,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.delete',
-        'ws_images_delete',
+        '\Piwigo\inc\ws_functions\ws_images_delete',
         [
             'image_id' => [
                 'flags' => WS_PARAM_ACCEPT_ARRAY,
@@ -778,7 +785,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.setMd5sum',
-        'ws_images_setMd5sum',
+        '\Piwigo\inc\ws_functions\ws_images_setMd5sum',
         [
             'block_size' => [
                 'default' => $conf['checksum_compute_blocksize'],
@@ -796,7 +803,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.syncMetadata',
-        'ws_images_syncMetadata',
+        '\Piwigo\inc\ws_functions\ws_images_syncMetadata',
         [
             'image_id' => [
                 'default' => null,
@@ -815,7 +822,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.deleteOrphans',
-        'ws_images_deleteOrphans',
+        '\Piwigo\inc\ws_functions\ws_images_deleteOrphans',
         [
             'block_size' => [
                 'default' => 1000,
@@ -833,7 +840,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.calculateOrphans',
-        'ws_categories_calculateOrphans',
+        '\Piwigo\inc\ws_functions\ws_categories_calculateOrphans',
         [
             'category_id' => [
                 'type' => WS_TYPE_ID,
@@ -849,7 +856,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.getAdminList',
-        'ws_categories_getAdminList',
+        '\Piwigo\inc\ws_functions\ws_categories_getAdminList',
         [
             'search' => [
                 'default' => null,
@@ -870,7 +877,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.add',
-        'ws_categories_add',
+        '\Piwigo\inc\ws_functions\ws_categories_add',
         [
             'name' => [],
             'parent' => [
@@ -906,7 +913,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.delete',
-        'ws_categories_delete',
+        '\Piwigo\inc\ws_functions\ws_categories_delete',
         [
             'category_id' => [
                 'flags' => WS_PARAM_ACCEPT_ARRAY,
@@ -928,7 +935,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.move',
-        'ws_categories_move',
+        '\Piwigo\inc\ws_functions\ws_categories_move',
         [
             'category_id' => [
                 'flags' => WS_PARAM_ACCEPT_ARRAY,
@@ -949,7 +956,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.setRepresentative',
-        'ws_categories_setRepresentative',
+        '\Piwigo\inc\ws_functions\ws_categories_setRepresentative',
         [
             'category_id' => [
                 'type' => WS_TYPE_ID,
@@ -968,7 +975,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.deleteRepresentative',
-        'ws_categories_deleteRepresentative',
+        '\Piwigo\inc\ws_functions\ws_categories_deleteRepresentative',
         [
             'category_id' => [
                 'type' => WS_TYPE_ID,
@@ -984,7 +991,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.refreshRepresentative',
-        'ws_categories_refreshRepresentative',
+        '\Piwigo\inc\ws_functions\ws_categories_refreshRepresentative',
         [
             'category_id' => [
                 'type' => WS_TYPE_ID,
@@ -1000,7 +1007,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.getAdminList',
-        'ws_tags_getAdminList',
+        '\Piwigo\inc\ws_functions\ws_tags_getAdminList',
         null,
         '<b>Admin only.</b>',
         $ws_functions_root . 'pwg.tags.php',
@@ -1011,7 +1018,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod( // TODO: create multiple tags
         'pwg.tags.add',
-        'ws_tags_add',
+        '\Piwigo\inc\ws_functions\ws_tags_add',
         [
             'name' => [],
         ],
@@ -1024,7 +1031,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.delete',
-        'ws_tags_delete',
+        '\Piwigo\inc\ws_functions\ws_tags_delete',
         [
             'tag_id' => [
                 'type' => WS_TYPE_ID,
@@ -1041,7 +1048,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.rename',
-        'ws_tags_rename',
+        '\Piwigo\inc\ws_functions\ws_tags_rename',
         [
             'tag_id' => [
                 'type' => WS_TYPE_ID,
@@ -1058,7 +1065,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.duplicate',
-        'ws_tags_duplicate',
+        '\Piwigo\inc\ws_functions\ws_tags_duplicate',
         [
             'tag_id' => [
                 'type' => WS_TYPE_ID,
@@ -1076,7 +1083,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.tags.merge',
-        'ws_tags_merge',
+        '\Piwigo\inc\ws_functions\ws_tags_merge',
         [
             'destination_tag_id' => [
                 'type' => WS_TYPE_ID,
@@ -1098,7 +1105,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.exist',
-        'ws_images_exist',
+        '\Piwigo\inc\ws_functions\ws_images_exist',
         [
             'md5sum_list' => [
                 'default' => null,
@@ -1117,7 +1124,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.checkFiles',
-        'ws_images_checkFiles',
+        '\Piwigo\inc\ws_functions\ws_images_checkFiles',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -1142,7 +1149,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.checkUpload',
-        'ws_images_checkUpload',
+        '\Piwigo\inc\ws_functions\ws_images_checkUpload',
         null,
         'Checks if Piwigo is ready for upload.',
         $ws_functions_root . 'pwg.images.php',
@@ -1153,7 +1160,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.emptyLounge',
-        'ws_images_emptyLounge',
+        '\Piwigo\inc\ws_functions\ws_images_emptyLounge',
         null,
         'Empty lounge, where images may be waiting before taking off.',
         $ws_functions_root . 'pwg.images.php',
@@ -1164,7 +1171,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.uploadCompleted',
-        'ws_images_uploadCompleted',
+        '\Piwigo\inc\ws_functions\ws_images_uploadCompleted',
         [
             'image_id' => [
                 'default' => null,
@@ -1185,7 +1192,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.images.setInfo',
-        'ws_images_setInfo',
+        '\Piwigo\inc\ws_functions\ws_images_setInfo',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -1238,7 +1245,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.setInfo',
-        'ws_categories_setInfo',
+        '\Piwigo\inc\ws_functions\ws_categories_setInfo',
         [
             'category_id' => [
                 'type' => WS_TYPE_ID,
@@ -1281,7 +1288,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.categories.setRank',
-        'ws_categories_setRank',
+        '\Piwigo\inc\ws_functions\ws_categories_setRank',
         [
             'category_id' => [
                 'type' => WS_TYPE_ID,
@@ -1307,7 +1314,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.plugins.getList',
-        'ws_plugins_getList',
+        '\Piwigo\inc\ws_functions\ws_plugins_getList',
         null,
         'Gets the list of plugins with id, name, version, state and description.',
         $ws_functions_root . 'pwg.extensions.php',
@@ -1318,7 +1325,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.plugins.performAction',
-        'ws_plugins_performAction',
+        '\Piwigo\inc\ws_functions\ws_plugins_performAction',
         [
             'action' => [
                 'info' => 'install, activate, deactivate, uninstall, delete',
@@ -1335,7 +1342,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.themes.performAction',
-        'ws_themes_performAction',
+        '\Piwigo\inc\ws_functions\ws_themes_performAction',
         [
             'action' => [
                 'info' => 'activate, deactivate, delete, set_default',
@@ -1352,7 +1359,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.extensions.update',
-        'ws_extensions_update',
+        '\Piwigo\inc\ws_functions\ws_extensions_update',
         [
             'type' => [
                 'info' => 'plugins, languages, themes',
@@ -1370,7 +1377,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.extensions.ignoreUpdate',
-        'ws_extensions_ignoreupdate',
+        '\Piwigo\inc\ws_functions\ws_extensions_ignoreupdate',
         [
             'type' => [
                 'default' => null,
@@ -1395,7 +1402,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.extensions.checkUpdates',
-        'ws_extensions_checkupdates',
+        '\Piwigo\inc\ws_functions\ws_extensions_checkupdates',
         null,
         'Checks if piwigo or extensions are up to date.',
         $ws_functions_root . 'pwg.extensions.php',
@@ -1406,7 +1413,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.getList',
-        'ws_groups_getList',
+        '\Piwigo\inc\ws_functions\ws_groups_getList',
         [
             'group_id' => [
                 'flags' => WS_PARAM_OPTIONAL | WS_PARAM_FORCE_ARRAY,
@@ -1418,7 +1425,7 @@ function ws_addDefaultMethods($arr): void
             ],
             'per_page' => [
                 'default' => 100,
-                'maxValue' => $conf['ws_max_users_per_page'],
+                'maxValue' => $conf['\Piwigo\inc\ws_functions\ws_max_users_per_page'],
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
             'page' => [
@@ -1439,7 +1446,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.add',
-        'ws_groups_add',
+        '\Piwigo\inc\ws_functions\ws_groups_add',
         [
             'name' => [],
             'is_default' => [
@@ -1457,7 +1464,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.delete',
-        'ws_groups_delete',
+        '\Piwigo\inc\ws_functions\ws_groups_delete',
         [
             'group_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY,
@@ -1475,7 +1482,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.setInfo',
-        'ws_groups_setInfo',
+        '\Piwigo\inc\ws_functions\ws_groups_setInfo',
         [
             'group_id' => [
                 'type' => WS_TYPE_ID,
@@ -1499,7 +1506,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.addUser',
-        'ws_groups_addUser',
+        '\Piwigo\inc\ws_functions\ws_groups_addUser',
         [
             'group_id' => [
                 'type' => WS_TYPE_ID,
@@ -1520,7 +1527,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.deleteUser',
-        'ws_groups_deleteUser',
+        '\Piwigo\inc\ws_functions\ws_groups_deleteUser',
         [
             'group_id' => [
                 'type' => WS_TYPE_ID,
@@ -1541,7 +1548,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.merge',
-        'ws_groups_merge',
+        '\Piwigo\inc\ws_functions\ws_groups_merge',
         [
             'destination_group_id' => [
                 'type' => WS_TYPE_ID,
@@ -1563,7 +1570,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.groups.duplicate',
-        'ws_groups_duplicate',
+        '\Piwigo\inc\ws_functions\ws_groups_duplicate',
         [
             'group_id' => [
                 'type' => WS_TYPE_ID,
@@ -1581,7 +1588,7 @@ function ws_addDefaultMethods($arr): void
 
     $service->addMethod(
         'pwg.users.getList',
-        'ws_users_getList',
+        '\Piwigo\inc\ws_functions\ws_users_getList',
         [
             'user_id' => [
                 'flags' => WS_PARAM_OPTIONAL | WS_PARAM_FORCE_ARRAY,
@@ -1606,7 +1613,7 @@ function ws_addDefaultMethods($arr): void
             ],
             'per_page' => [
                 'default' => 100,
-                'maxValue' => $conf['ws_max_users_per_page'],
+                'maxValue' => $conf['\Piwigo\inc\ws_functions\ws_max_users_per_page'],
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
             'page' => [
@@ -1642,7 +1649,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.add',
-        'ws_users_add',
+        '\Piwigo\inc\ws_functions\ws_users_add',
         [
             'username' => [],
             'password' => [
@@ -1670,7 +1677,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.delete',
-        'ws_users_delete',
+        '\Piwigo\inc\ws_functions\ws_users_delete',
         [
             'user_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY,
@@ -1688,7 +1695,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.getAuthKey',
-        'ws_users_getAuthKey',
+        '\Piwigo\inc\ws_functions\ws_users_getAuthKey',
         [
             'user_id' => [
                 'type' => WS_TYPE_ID,
@@ -1705,7 +1712,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.setInfo',
-        'ws_users_setInfo',
+        '\Piwigo\inc\ws_functions\ws_users_setInfo',
         [
             'user_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY,
@@ -1778,7 +1785,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.permissions.getList',
-        'ws_permissions_getList',
+        '\Piwigo\inc\ws_functions\ws_permissions_getList',
         [
             'cat_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY | WS_PARAM_OPTIONAL,
@@ -1803,7 +1810,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.permissions.add',
-        'ws_permissions_add',
+        '\Piwigo\inc\ws_functions\ws_permissions_add',
         [
             'cat_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY,
@@ -1833,7 +1840,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.permissions.remove',
-        'ws_permissions_remove',
+        '\Piwigo\inc\ws_functions\ws_permissions_remove',
         [
             'cat_id' => [
                 'flags' => WS_PARAM_FORCE_ARRAY,
@@ -1859,7 +1866,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.preferences.set',
-        'ws_users_preferences_set',
+        '\Piwigo\inc\ws_functions\ws_users_preferences_set',
         [
             'param' => [],
             'value' => [
@@ -1876,7 +1883,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.favorites.add',
-        'ws_users_favorites_add',
+        '\Piwigo\inc\ws_functions\ws_users_favorites_add',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -1888,7 +1895,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.favorites.remove',
-        'ws_users_favorites_remove',
+        '\Piwigo\inc\ws_functions\ws_users_favorites_remove',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -1900,11 +1907,11 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.users.favorites.getList',
-        'ws_users_favorites_getList',
+        '\Piwigo\inc\ws_functions\ws_users_favorites_getList',
         [
             'per_page' => [
                 'default' => 100,
-                'maxValue' => $conf['ws_max_images_per_page'],
+                'maxValue' => $conf['\Piwigo\inc\ws_functions\ws_max_images_per_page'],
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
             'page' => [
@@ -1922,7 +1929,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.history.log',
-        'ws_history_log',
+        '\Piwigo\inc\ws_functions\ws_history_log',
         [
             'image_id' => [
                 'type' => WS_TYPE_ID,
@@ -1944,7 +1951,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
 
     $service->addMethod(
         'pwg.history.search',
-        'ws_history_search',
+        '\Piwigo\inc\ws_functions\ws_history_search',
         [
             'start' => [
                 'default' => null,

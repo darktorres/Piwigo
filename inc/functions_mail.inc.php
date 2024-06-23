@@ -1,13 +1,16 @@
 <?php
 
+namespace Piwigo\inc;
+
+use PHPMailer\PHPMailer\PHPMailer;
+use function Piwigo\inc\dbLayer\query2array;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
 // | For copyright and license information, please view the COPYING.txt    |
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
-
-use PHPMailer\PHPMailer\PHPMailer;
 
 /**
  * Returns the name of the mail sender
@@ -896,7 +899,7 @@ function pwg_send_mail($result, $to, $subject, $content, $headers)
 function move_css_to_body(
     $content
 ) {
-    return Pelago\Emogrifier\CssInliner::fromHtml($content)->inlineCss()->render();
+    return \Pelago\Emogrifier\CssInliner::fromHtml($content)->inlineCss()->render();
 }
 
 /**

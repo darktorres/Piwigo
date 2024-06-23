@@ -1,5 +1,13 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Updates;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\safe_version_compare;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -23,8 +31,7 @@ if (! is_webmaster()) {
     );
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/updates.class.php');
-$autoupdate = new updates($page['page']);
+$autoupdate = new Updates($page['page']);
 
 $show_reset = false;
 if (! $autoupdate->get_server_extensions()) {

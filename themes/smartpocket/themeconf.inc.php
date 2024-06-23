@@ -1,4 +1,13 @@
 <?php
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\get_device;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\mobile_theme;
+
 /*
 Theme Name: Smart Pocket
 Version: 14.4.0.2

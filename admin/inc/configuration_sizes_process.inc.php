@@ -1,5 +1,17 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use Piwigo\inc\DerivativeParams;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SizingParams;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\size_equals;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -1,5 +1,7 @@
 <?php
 
+namespace Piwigo\inc\ws_protocols;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

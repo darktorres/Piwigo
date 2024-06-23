@@ -1,5 +1,29 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\SrcImage;
+use function Piwigo\admin\inc\get_admin_client_cache_keys;
+use function Piwigo\admin\inc\get_tag_ids;
+use function Piwigo\admin\inc\get_taglist;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\set_tags;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\create_navigation_bar;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\get_cat_info;
+use function Piwigo\inc\get_name_from_file;
+use function Piwigo\inc\get_privacy_level_options;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\render_element_name;
+use function Piwigo\inc\trigger_notify;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -1,5 +1,15 @@
 <?php
 
+namespace Piwigo\admin;
+
+use function Piwigo\admin\inc\get_dirs;
+use function Piwigo\admin\inc\get_extents;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

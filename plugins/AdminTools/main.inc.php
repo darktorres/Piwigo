@@ -1,4 +1,9 @@
 <?php
+
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\load_language;
+
 /*
 Plugin Name: Admin Tools
 Version: 14.4.0

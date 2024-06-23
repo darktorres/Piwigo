@@ -1,5 +1,10 @@
 <?php
 
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\load_language;
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+

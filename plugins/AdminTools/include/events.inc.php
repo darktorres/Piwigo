@@ -1,5 +1,31 @@
 <?php
 
+use Piwigo\inc\DerivativeImage;
+use function Piwigo\admin\inc\delete_elements;
+use function Piwigo\admin\inc\get_tag_ids;
+use function Piwigo\admin\inc\get_taglist;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\set_tags;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\dblayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dblayer\pwg_db_fetch_row;
+use function Piwigo\inc\dblayer\pwg_db_num_rows;
+use function Piwigo\inc\dblayer\pwg_query;
+use function Piwigo\inc\dblayer\single_update;
+use function Piwigo\inc\duplicate_index_url;
+use function Piwigo\inc\duplicate_picture_url;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\script_basename;
+use function Piwigo\inc\switch_lang_back;
+use function Piwigo\inc\switch_lang_to;
+
 defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 /**

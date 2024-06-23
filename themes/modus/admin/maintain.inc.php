@@ -1,5 +1,8 @@
 <?php
 
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\pwg_query;
+
 function theme_activate($id, $version, &$errors)
 {
     global $conf;

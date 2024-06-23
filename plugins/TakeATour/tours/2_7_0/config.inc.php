@@ -1,4 +1,13 @@
 <?php
+
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\dblayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dblayer\pwg_query;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_set_session_var;
+
 /**********************************
  * REQUIRED PATH TO THE TPL FILE */
 

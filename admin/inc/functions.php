@@ -1,5 +1,45 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\conf_delete_param;
+use function Piwigo\inc\conf_get_param;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\create_user_infos;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\mass_updates;
+use function Piwigo\inc\dbLayer\pwg_db_concat;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_insert;
+use function Piwigo\inc\dbLayer\single_update;
+use function Piwigo\inc\delete_user_sessions;
+use function Piwigo\inc\derivative_to_url;
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\generate_key;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\get_element_path;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\l10n_dec;
+use function Piwigo\inc\mkgetdir;
+use function Piwigo\inc\original_to_format;
+use function Piwigo\inc\original_to_representative;
+use function Piwigo\inc\pwg_activity;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\url_is_remote;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -827,7 +867,7 @@ SELECT
   WHERE id IN (' . implode(',', $categories) . ')
 ;';
         $all_categories = query2array($query);
-        usort($all_categories, global_rank_compare(...));
+        usort($all_categories, \Piwigo\inc\global_rank_compare(...));
 
         foreach ($all_categories as $cat) {
             $is_top = true;
@@ -2562,56 +2602,14 @@ function get_active_menu(
     $menu_page
 ) {
     global $page;
-
-    if (isset($page['active_menu'])) {
-        return $page['active_menu'];
-    }
-
-    switch ($menu_page) {
-        case 'photo':
-        case 'photos_add':
-        case 'rating':
-        case 'tags':
-        case 'batch_manager':
-            return 0;
-
-        case 'album':
-        case 'cat_list':
-        case 'albums':
-        case 'cat_options':
-        case 'cat_search':
-        case 'permalinks':
-            return 1;
-
-        case 'user_list':
-        case 'user_perm':
-        case 'group_list':
-        case 'group_perm':
-        case 'notification_by_mail':
-        case 'user_activity':
-            return 2;
-
-        case 'site_manager':
-        case 'site_update':
-        case 'stats':
-        case 'history':
-        case 'maintenance':
-        case 'comments':
-        case 'updates':
-            return 3;
-
-        case 'configuration':
-        case 'derivatives':
-        case 'extend_for_templates':
-        case 'menubar':
-        case 'themes':
-        case 'theme':
-        case 'languages':
-            return 4;
-
-        default:
-            return -1;
-    }
+    return $page['active_menu'] ?? match ($menu_page) {
+        'photo', 'photos_add', 'rating', 'tags', 'batch_manager' => 0,
+        'album', 'cat_list', 'albums', 'cat_options', 'cat_search', 'permalinks' => 1,
+        'user_list', 'user_perm', 'group_list', 'group_perm', 'notification_by_mail', 'user_activity' => 2,
+        'site_manager', 'site_update', 'stats', 'history', 'maintenance', 'comments', 'updates' => 3,
+        'configuration', 'derivatives', 'extend_for_templates', 'menubar', 'themes', 'theme', 'languages' => 4,
+        default => -1,
+    };
 }
 
 /**
@@ -2651,9 +2649,9 @@ function get_taglist(
         }
     }
 
-    usort($taglist, tag_alpha_compare(...));
+    usort($taglist, \Piwigo\inc\tag_alpha_compare(...));
     if ($altlist !== []) {
-        usort($altlist, tag_alpha_compare(...));
+        usort($altlist, \Piwigo\inc\tag_alpha_compare(...));
         $taglist = array_merge($taglist, $altlist);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+use function Piwigo\inc\l10n;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }

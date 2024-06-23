@@ -1,4 +1,9 @@
 <?php
+
+use function Piwigo\admin\inc\get_orphans;
+use function Piwigo\inc\dblayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dblayer\pwg_query;
+
 /**********************************
  * REQUIRED PATH TO THE TPL FILE */
 

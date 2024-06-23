@@ -1,5 +1,9 @@
 <?php
 
+namespace Piwigo\admin;
+
+use function Piwigo\inc\check_status;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -1,5 +1,9 @@
 <?php
 
+namespace Piwigo\admin;
+
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

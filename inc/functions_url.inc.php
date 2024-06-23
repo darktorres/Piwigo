@@ -1,5 +1,9 @@
 <?php
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\query2array;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

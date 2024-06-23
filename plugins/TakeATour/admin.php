@@ -1,5 +1,12 @@
 <?php
 
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\inc\get_branch_from_version;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
@@ -13,7 +20,7 @@ load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/', [
 require_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 $page['tab'] = 'list';
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->add(
     'list',
     '<span class="icon-menu"></span>Take a Tour',

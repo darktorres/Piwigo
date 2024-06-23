@@ -1,5 +1,42 @@
 <?php
 
+namespace Piwigo;
+
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\can_manage_comment;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\create_navigation_bar;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\delete_user_comment;
+use function Piwigo\inc\display_select_cat_wrapper;
+use function Piwigo\inc\flush_page_messages;
+use function Piwigo\inc\format_date;
+use function Piwigo\inc\get_comment_author_id;
+use function Piwigo\inc\get_ephemeral_key;
+use function Piwigo\inc\get_name_from_file;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\get_subcat_ids;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_picture_url;
+use function Piwigo\inc\page_not_found;
+use function Piwigo\inc\redirect;
+use function Piwigo\inc\trigger_change;
+use function Piwigo\inc\trigger_notify;
+use function Piwigo\inc\update_user_comment;
+use function Piwigo\inc\validate_user_comment;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

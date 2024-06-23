@@ -1,5 +1,31 @@
 <?php
 
+namespace Piwigo;
+
+use Piwigo\admin\inc\Languages;
+use Piwigo\admin\inc\Updates;
+use Piwigo\inc\Template;
+use function Piwigo\admin\inc\check_upgrade;
+use function Piwigo\admin\inc\check_upgrade_access_rights;
+use function Piwigo\admin\inc\deactivate_non_standard_plugins;
+use function Piwigo\admin\inc\deactivate_non_standard_themes;
+use function Piwigo\admin\inc\deactivate_templates;
+use function Piwigo\admin\inc\invalidate_user_cache;
+use function Piwigo\admin\inc\upgrade_db_connect;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_branch_from_version;
+use function Piwigo\inc\get_elapsed_time;
+use function Piwigo\inc\get_moment;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_conf_from_db;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\url_is_remote;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -38,7 +64,6 @@ define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 
 require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
 require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-require_once(PHPWG_ROOT_PATH . 'inc/template.class.php');
 
 // +-----------------------------------------------------------------------+
 // |                              functions                                |
@@ -117,8 +142,7 @@ function print_time(string $message): void
 // +-----------------------------------------------------------------------+
 // |                             language                                  |
 // +-----------------------------------------------------------------------+
-require(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
-$languages = new languages('utf-8');
+$languages = new Languages('utf-8');
 if (isset($_GET['language'])) {
     $language = strip_tags((string) $_GET['language']);
 
@@ -232,11 +256,9 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 if ($has_remote_site) {
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/updates.class.php');
-
     $page['errors'] = [];
     $step = 3;
-    updates::upgrade_to('2.3.4', $step, false);
+    Updates::upgrade_to('2.3.4', $step, false);
 
     if (isset($page['errors']) && $page['errors'] !== []) {
         echo '<ul>';
@@ -449,8 +471,7 @@ REPLACE INTO ' . PLUGINS_TABLE . '
 // |                          start template output                        |
 // +-----------------------------------------------------------------------+
 else {
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
-    $languages = new languages();
+    $languages = new Languages();
 
     foreach ($languages->fs_languages as $language_code => $fs_language) {
         if ($language == $language_code) {

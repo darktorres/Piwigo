@@ -827,7 +827,7 @@ $core = [
         'name' => 'sendResponse',
         'type' => 'trigger_notify',
         'vars' => ['string', 'encodedResponse'],
-        'files' => ['inc\ws_core.inc.php (PwgServer::sendResponse)'],
+        'files' => ['inc\ws_core.inc.php (Server::sendResponse)'],
     ],
     [
         'name' => 'set_status_header',
@@ -885,13 +885,13 @@ $core = [
         'name' => 'ws_add_methods',
         'type' => 'trigger_notify',
         'vars' => ['object', 'this'],
-        'files' => ['inc\ws_core.inc.php (PwgServer::run)'],
+        'files' => ['inc\ws_core.inc.php (Server::run)'],
     ],
     [
         'name' => 'ws_invoke_allowed',
         'type' => 'trigger_change',
         'vars' => ['bool', null, 'string', 'methodName', 'array', 'params'],
-        'files' => ['inc\ws_core.inc.php (PwgServer::invoke)'],
+        'files' => ['inc\ws_core.inc.php (Server::invoke)'],
     ],
     [
         'name' => 'user_logout',

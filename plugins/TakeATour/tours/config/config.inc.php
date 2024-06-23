@@ -1,4 +1,7 @@
 <?php
+
+use function Piwigo\inc\add_event_handler;
+
 /**********************************
  * REQUIRED PATH TO THE TPL FILE */
 

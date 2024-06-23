@@ -1,5 +1,19 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_autorize_status;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\make_picture_url;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -11,8 +25,7 @@ defined(
     'PHPWG_ROOT_PATH'
 ) || die('Hacking attempt!');
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 $tabsheet->set_id('rating');
 $tabsheet->select('rating_user');
 $tabsheet->assign();
@@ -208,11 +221,11 @@ if (isset($_GET['order_by']) && is_numeric($_GET['order_by'])) {
 }
 
 $available_order_by = [
-    [l10n('Average rate'), 'avg_compare'],
-    [l10n('Number of rates'), 'count_compare'],
-    [l10n('Variation'), 'cv_compare'],
-    [l10n('Consensus deviation'), 'consensus_dev_compare'],
-    [l10n('Last'), 'last_rate_compare'],
+    [l10n('Average rate'), '\Piwigo\admin\avg_compare'],
+    [l10n('Number of rates'), '\Piwigo\admin\count_compare'],
+    [l10n('Variation'), '\Piwigo\admin\cv_compare'],
+    [l10n('Consensus deviation'), '\Piwigo\admin\consensus_dev_compare'],
+    [l10n('Last'), '\Piwigo\admin\last_rate_compare'],
 ];
 $counter = count($available_order_by);
 

@@ -1,5 +1,15 @@
 <?php
 
+use Piwigo\admin\inc\Tabsheet;
+use function Piwigo\inc\check_pwg_token;
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\get_root_url;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\load_language;
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+
@@ -49,7 +59,7 @@ if (! in_array($page['tab'], $conf['LocalFilesEditor_tabs'])) {
     die('Hacking attempt!');
 }
 
-$tabsheet = new tabsheet();
+$tabsheet = new Tabsheet();
 foreach ($conf['LocalFilesEditor_tabs'] as $tab) {
     $tabsheet->add($tab, l10n('locfiledit_onglet_' . $tab), $my_base_url . '-' . $tab);
 }

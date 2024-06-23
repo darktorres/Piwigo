@@ -1,5 +1,18 @@
 <?php
 
+namespace Piwigo\admin\inc;
+
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\get_cat_display_name_cache;
+use function Piwigo\inc\get_privacy_level_options;
+use function Piwigo\inc\get_pwg_token;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -21,7 +34,7 @@ $template->assign(
 );
 
 // what is the maximum number of pixels permitted by the memory_limit?
-if (pwg_image::get_library() == 'gd') {
+if (Image::get_library() == 'gd') {
     $fudge_factor = 1.7;
     $available_memory = get_ini_size('memory_limit') - memory_get_usage();
     $max_upload_width = round(sqrt($available_memory / (2 * $fudge_factor)));

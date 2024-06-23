@@ -1,5 +1,9 @@
 <?php
 
+use function Piwigo\inc\get_default_language;
+use function Piwigo\inc\get_languages;
+use function Piwigo\inc\l10n;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }

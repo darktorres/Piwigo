@@ -1,4 +1,7 @@
 <?php
+
+use function Piwigo\inc\add_event_handler;
+
 /*
 Theme Name: elegant
 Version: 14.4.0

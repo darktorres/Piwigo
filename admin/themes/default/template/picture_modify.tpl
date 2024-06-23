@@ -109,7 +109,7 @@ $('#action-delete-picture').on('click', function() {
       {/if}
       <a class="icon-download" href="{$U_DOWNLOAD}" title="{'Download'|translate}"></a>
       <a class="icon-signal" href="{$U_HISTORY}" title="{'Visit history'|translate}"></a>
-      {if !url_is_remote($PATH)}
+      {if !\Piwigo\inc\url_is_remote($PATH)}
       <a class="icon-arrows-cw" href="{$U_SYNC}" title="{'Synchronize metadata'|@translate}"></a>
       <a class="icon-trash" title="{'delete photo'|@translate}" id='action-delete-picture'></a>
       {/if}

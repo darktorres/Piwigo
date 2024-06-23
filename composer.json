@@ -32,5 +32,10 @@
                 "Patch strftime": "patches/strftime.patch"
             }
         }
+    },
+    "autoload": {
+        "psr-4": {
+            "Piwigo\\": ""
+        }
     }
 }

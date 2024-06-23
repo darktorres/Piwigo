@@ -1,5 +1,22 @@
 <?php
 
+use Piwigo\admin\inc\Themes;
+use Piwigo\inc\FileCombiner;
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\build_user;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\conf_delete_param;
+use function Piwigo\inc\conf_update_param;
+use function Piwigo\inc\dblayer\query2array;
+use function Piwigo\inc\duplicate_index_url;
+use function Piwigo\inc\duplicate_picture_url;
+use function Piwigo\inc\get_languages;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\is_admin;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\script_basename;
+
 defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 /**
@@ -304,7 +321,7 @@ FROM ' . USERS_TABLE . ' AS u
 
         // get themes
         require_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
-        $themes = new themes();
+        $themes = new Themes();
         foreach (array_keys($themes->db_themes_by_id) as $theme) {
             if (! empty($theme)) {
                 $out['themes'][] = $theme;

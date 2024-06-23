@@ -1,11 +1,15 @@
 <?php
 
+use Piwigo\admin\inc\Themes;
+use function Piwigo\inc\get_default_theme;
+use function Piwigo\inc\l10n;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
 require_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
-$themes = new themes();
+$themes = new Themes();
 
 if (isset($_POST['edit'])) {
     $_POST['theme'] = $_POST['theme_select'];

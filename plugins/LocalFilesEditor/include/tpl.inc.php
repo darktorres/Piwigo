@@ -1,5 +1,10 @@
 <?php
 
+use function Piwigo\admin\inc\get_dirs;
+use function Piwigo\admin\inc\get_extents;
+use function Piwigo\inc\get_extension;
+use function Piwigo\inc\l10n;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }

@@ -1,5 +1,13 @@
 <?php
 
+namespace Piwigo;
+
+use function Piwigo\inc\check_status;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\get_sql_condition_FandF;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\redirect;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

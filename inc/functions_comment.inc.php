@@ -1,5 +1,15 @@
 <?php
 
+namespace Piwigo\inc;
+
+use function Piwigo\inc\dbLayer\pwg_db_changes;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_get_flood_period_expression;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_query;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -9,7 +19,7 @@
 
 add_event_handler(
     'user_comment_check',
-    'user_comment_check'
+    '\Piwigo\inc\user_comment_check'
 );
 
 /**

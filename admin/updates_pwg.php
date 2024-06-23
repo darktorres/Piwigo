@@ -1,5 +1,12 @@
 <?php
 
+namespace Piwigo\admin;
+
+use Piwigo\admin\inc\Updates;
+use function Piwigo\inc\check_input_parameter;
+use function Piwigo\inc\is_webmaster;
+use function Piwigo\inc\l10n;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -15,8 +22,6 @@ if (! $conf['enable_core_update']) {
     die('Piwigo core update system is disabled');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/updates.class.php');
-
 /*
 STEP:
 0 = check is needed. If version is latest or check fail, we stay on step 0
@@ -29,7 +34,7 @@ $step = $_GET['step'] ?? 0;
 check_input_parameter('to', $_GET, false, '/^\d+\.\d+\.\d+$/');
 $upgrade_to = $_GET['to'] ?? '';
 
-$updates = new updates();
+$updates = new Updates();
 $new_versions = $updates->get_piwigo_new_versions();
 
 // +-----------------------------------------------------------------------+
@@ -62,7 +67,7 @@ if ($step == 1) {
 // |                                Step 2                                 |
 // +-----------------------------------------------------------------------+
 if (($step == 2 && is_webmaster()) && (isset($_POST['submit']) && isset($_POST['upgrade_to']))) {
-    updates::upgrade_to($_POST['upgrade_to'], $step);
+    Updates::upgrade_to($_POST['upgrade_to'], $step);
 }
 
 // +-----------------------------------------------------------------------+
@@ -70,7 +75,7 @@ if (($step == 2 && is_webmaster()) && (isset($_POST['submit']) && isset($_POST['
 // +-----------------------------------------------------------------------+
 if ($step == 3 && is_webmaster()) {
     if (isset($_POST['submit']) && isset($_POST['upgrade_to'])) {
-        updates::upgrade_to($_POST['upgrade_to'], $step);
+        Updates::upgrade_to($_POST['upgrade_to'], $step);
     }
 
     $updates->get_merged_extensions($upgrade_to);

@@ -1,5 +1,9 @@
 <?php
 
+namespace Piwigo\inc;
+
+use Piwigo\admin\inc\Updates;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -43,8 +47,7 @@ if (! is_a_guest()) {
 
 //     if ($check_for_updates) {
 //         require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-//         require_once(PHPWG_ROOT_PATH . 'admin/inc/updates.class.php');
-//         $updates = new updates();
+//         $updates = new Updates();
 //         $updates->notify_piwigo_new_versions();
 //     }
 // }

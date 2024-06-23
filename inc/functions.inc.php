@@ -1,5 +1,24 @@
 <?php
 
+namespace Piwigo\inc;
+
+use function Piwigo\admin\inc\empty_lounge;
+use function Piwigo\admin\inc\history_autopurge;
+use function Piwigo\admin\inc\history_summarize;
+use function Piwigo\inc\dbLayer\boolean_to_string;
+use function Piwigo\inc\dbLayer\get_boolean;
+use function Piwigo\inc\dbLayer\get_enums;
+use function Piwigo\inc\dbLayer\mass_inserts;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
+use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
+use function Piwigo\inc\dbLayer\pwg_db_get_recent_period;
+use function Piwigo\inc\dbLayer\pwg_db_insert_id;
+use function Piwigo\inc\dbLayer\pwg_db_num_rows;
+use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
+use function Piwigo\inc\dbLayer\pwg_query;
+use function Piwigo\inc\dbLayer\query2array;
+use function Piwigo\inc\dbLayer\single_update;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,7 +26,6 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions_plugins.inc.php');
 require_once(PHPWG_ROOT_PATH . 'inc/functions_user.inc.php');
 require_once(PHPWG_ROOT_PATH . 'inc/functions_cookie.inc.php');
 require_once(PHPWG_ROOT_PATH . 'inc/functions_session.inc.php');
@@ -15,9 +33,6 @@ require_once(PHPWG_ROOT_PATH . 'inc/functions_category.inc.php');
 require_once(PHPWG_ROOT_PATH . 'inc/functions_html.inc.php');
 require_once(PHPWG_ROOT_PATH . 'inc/functions_tag.inc.php');
 require_once(PHPWG_ROOT_PATH . 'inc/functions_url.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/derivative_params.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/derivative_std_params.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/derivative.inc.php');
 
 /**
  * returns the current microsecond since Unix epoch
@@ -743,9 +758,9 @@ function pwg_activity($object, $object_id, $action, array $details = []): void
  * returns a DateInterval object or a stdClass with the same attributes
  * http://stephenharris.info/date-intervals-in-php-5-2
  *
- * @param DateTime $date1
- * @param DateTime $date2
- * @return DateInterval|stdClass
+ * @param \DateTime $date1
+ * @param \DateTime $date2
+ * @return \DateInterval|\stdClass
  */
 function dateDiff(
     $date1,
@@ -755,7 +770,7 @@ function dateDiff(
         return $date1->diff($date2);
     }
 
-    $diff = new stdClass();
+    $diff = new \stdClass();
 
     //Make sure $date1 is ealier
     $diff->invert = $date2 < $date1;
@@ -813,7 +828,7 @@ function dateDiff(
  *
  * @param int|string $original timestamp or datetime string
  * @param string $format input format respecting date() syntax
- * @return DateTime|false
+ * @return \DateTime|false
  */
 function str2DateTime(
     $original,
@@ -823,12 +838,12 @@ function str2DateTime(
         return false;
     }
 
-    if ($original instanceof DateTime) {
+    if ($original instanceof \DateTime) {
         return $original;
     }
 
     if (! empty($format) && version_compare(PHP_VERSION, '5.3.0') >= 0) {// from known date format
-        return DateTime::createFromFormat(
+        return \DateTime::createFromFormat(
             '!' . $format,
             $original
         ); // ! char to reset fields to UNIX epoch
@@ -836,7 +851,7 @@ function str2DateTime(
 
     $t = trim($original, '0123456789');
     if ($t === '' || $t === '0') { // from timestamp
-        return new DateTime('@' . $original);
+        return new \DateTime('@' . $original);
     }
 
     // from unknown date format (assuming something like Y-m-d H:i:s)
@@ -864,11 +879,10 @@ function str2DateTime(
         $ymdhms[5] = 0;
     }
 
-    $date = new DateTime();
+    $date = new \DateTime();
     $date->setDate($ymdhms[0], $ymdhms[1], $ymdhms[2]);
     $date->setTime($ymdhms[3], $ymdhms[4], $ymdhms[5]);
     return $date;
-
 }
 
 /**
@@ -982,7 +996,7 @@ function time_since(
         return l10n('N/A');
     }
 
-    $now = new DateTime();
+    $now = new \DateTime();
     $diff = dateDiff($now, $date);
 
     $chunks = [
@@ -2252,7 +2266,7 @@ function get_device()
     $device = pwg_get_session_var('device');
 
     if ($device === null) {
-        $uagent_obj = new uagent_info();
+        $uagent_obj = new \uagent_info();
         if ($uagent_obj->DetectSmartphone()) {
             $device = 'mobile';
         } elseif ($uagent_obj->DetectTierTablet()) {

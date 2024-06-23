@@ -1,5 +1,8 @@
 <?php
 
+use function Piwigo\inc\add_event_handler;
+use function Piwigo\inc\load_language;
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+

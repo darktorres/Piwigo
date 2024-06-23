@@ -1,5 +1,20 @@
 <?php
 
+use Piwigo\admin\inc\Languages;
+use function Piwigo\inc\add_url_params;
+use function Piwigo\inc\dblayer\pwg_query;
+use function Piwigo\inc\duplicate_index_url;
+use function Piwigo\inc\get_absolute_root_url;
+use function Piwigo\inc\get_languages;
+use function Piwigo\inc\get_query_string_diff;
+use function Piwigo\inc\is_a_guest;
+use function Piwigo\inc\is_generic;
+use function Piwigo\inc\load_language;
+use function Piwigo\inc\make_index_url;
+use function Piwigo\inc\pwg_get_session_var;
+use function Piwigo\inc\pwg_set_session_var;
+use function Piwigo\inc\redirect;
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+
@@ -36,7 +51,7 @@ function language_controler_switch()
 
     if (isset($_GET['lang'])) {
         require_once(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
-        $languages = new languages();
+        $languages = new Languages();
         if (! in_array($_GET['lang'], array_keys($languages->fs_languages))) {
             $_GET['lang'] = PHPWG_DEFAULT_LANGUAGE;
         }

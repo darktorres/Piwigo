@@ -1,5 +1,9 @@
 <?php
 
+use Piwigo\inc\ThemeMaintain;
+use function Piwigo\inc\conf_delete_param;
+use function Piwigo\inc\conf_update_param;
+
 class smartpocket_maintain extends ThemeMaintain
 {
     private $installed = false;
