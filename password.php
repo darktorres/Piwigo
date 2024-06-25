@@ -246,16 +246,12 @@ function reset_password(): bool
 if (isset($_POST['submit'])) {
     check_pwg_token();
 
-    if ($_GET['action'] == 'lost') {
-        if (process_password_request()) {
-            $page['action'] = 'none';
-        }
+    if ($_GET['action'] == 'lost' && process_password_request()) {
+        $page['action'] = 'none';
     }
 
-    if ($_GET['action'] == 'reset') {
-        if (reset_password()) {
-            $page['action'] = 'none';
-        }
+    if ($_GET['action'] == 'reset' && reset_password()) {
+        $page['action'] = 'none';
     }
 }
 
@@ -329,7 +325,7 @@ $template->assign(
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('thePasswordPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('thePasswordPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 

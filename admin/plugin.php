@@ -17,14 +17,15 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 check_status(ACCESS_ADMINISTRATOR);
 
 $sections = explode('/', (string) $_GET['section']);
-for ($i = 0; $i < count($sections); $i++) {
+$counter = count($sections);
+for ($i = 0; $i < $counter; $i++) {
     if (empty($sections[$i])) {
         unset($sections[$i]);
         $i--;
         continue;
     }
 
-    if ($sections[$i] == '..' || ! preg_match('/^[a-zA-Z0-9_\.-]+$/', $sections[$i])) {
+    if ($sections[$i] === '..' || ! preg_match('/^[a-zA-Z0-9_\.-]+$/', $sections[$i])) {
         die('invalid section token [' . htmlentities($sections[$i]) . ']');
     }
 }

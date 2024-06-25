@@ -70,7 +70,7 @@ if (isset($_POST['login'])) {
             $root_url = get_absolute_root_url();
 
             redirect(
-                empty($redirect_to)
+                $redirect_to === '' || $redirect_to === '0'
                 ? get_gallery_home_url()
                 : substr($root_url, 0, strlen($root_url) - strlen(cookie_path())) . $redirect_to
             );
@@ -110,7 +110,7 @@ if (! $conf['gallery_locked']) {
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) or ! in_array(
+if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) || ! in_array(
     'theIdentificationPage',
     $themeconf['hide_menu_on']
 ))) {

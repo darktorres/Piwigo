@@ -315,14 +315,15 @@ usort($temp_data, 'cmp_day');
 
 //Get the percent difference
 $diff_x = [];
+$counter = count($temp_data);
 
-for ($i = 1; $i < count($temp_data); $i++) {
+for ($i = 1; $i < $counter; $i++) {
     $diff_x[] = $temp_data[$i]['x'] / $temp_data[$i - 1]['x'] * 100;
 }
 
 $split = 0;
 //Split (split represented by -1)
-if (count($diff_x) > 0) {
+if ($diff_x !== []) {
     while (max($diff_x) > 120) {
         $diff_x[array_search(max($diff_x), $diff_x)] = -1;
         $split++;
@@ -342,9 +343,11 @@ $size = 1;
 if (isset($temp_data[0])) {
     $chart_data[$temp_data[0]['w']][$temp_data[0]['d']] = $size;
 }
+//Set sizes in chart data
+$counter = count($temp_data);
 
 //Set sizes in chart data
-for ($i = 1; $i < count($temp_data); $i++) {
+for ($i = 1; $i < $counter; $i++) {
     if ($diff_x[$i - 1] == -1) {
         $size++;
     }
@@ -431,10 +434,8 @@ if (isset($result[0]['SUM(filesize)'])) {
 // Add cache size if requested and known.
 if ($conf['add_cache_to_storage_chart'] && isset($conf['cache_sizes'])) {
     $cache_sizes = $conf['cache_sizes'];
-    if (isset($cache_sizes)) {
-        if (isset($cache_sizes[0]['value'])) {
-            $data_storage['Cache'] = $cache_sizes[0]['value'] / 1024;
-        }
+    if (isset($cache_sizes) && isset($cache_sizes[0]['value'])) {
+        $data_storage['Cache'] = $cache_sizes[0]['value'] / 1024;
     }
 }
 

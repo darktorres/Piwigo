@@ -150,7 +150,7 @@ class pwg_image
 
         $this->image->resize($resize_dimensions['width'], $resize_dimensions['height']);
 
-        if (! empty($rotation)) {
+        if ($rotation !== null && $rotation !== 0) {
             $this->image->rotate($rotation);
         }
 
@@ -692,7 +692,7 @@ class image_ext_imagick implements imageInterface
         $logger->debug($exec);
         exec($exec, $returnarray);
 
-        if (is_array($returnarray) && (count($returnarray) > 0)) {
+        if (is_array($returnarray) && ($returnarray !== [])) {
             $logger->error('', $returnarray);
             foreach ($returnarray as $line) {
                 trigger_error($line, E_USER_WARNING);
@@ -720,9 +720,9 @@ class image_gd implements imageInterface
 
         if (in_array($extension, ['jpg', 'jpeg'])) {
             $this->image = imagecreatefromjpeg($source_filepath);
-        } elseif ($extension == 'png') {
+        } elseif ($extension === 'png') {
             $this->image = imagecreatefrompng($source_filepath);
-        } elseif ($extension == 'gif' && $gd_info['GIF Read Support'] && $gd_info['GIF Create Support']) {
+        } elseif ($extension === 'gif' && $gd_info['GIF Read Support'] && $gd_info['GIF Create Support']) {
             $this->image = imagecreatefromgif($source_filepath);
         } else {
             die('[Image GD] unsupported file extension');
@@ -754,7 +754,7 @@ class image_gd implements imageInterface
 
         $result = imagecopymerge($dest, $this->image, 0, 0, $x, $y, $width, $height, 100);
 
-        if ($result !== false) {
+        if ($result) {
             imagedestroy($this->image);
             $this->image = $dest;
         } else {
@@ -809,7 +809,7 @@ class image_gd implements imageInterface
             $this->get_height()
         );
 
-        if ($result !== false) {
+        if ($result) {
             imagedestroy($this->image);
             $this->image = $dest;
         } else {
@@ -864,9 +864,9 @@ class image_gd implements imageInterface
     {
         $extension = strtolower(get_extension($destination_filepath));
 
-        if ($extension == 'png') {
+        if ($extension === 'png') {
             imagepng($this->image, $destination_filepath);
-        } elseif ($extension == 'gif') {
+        } elseif ($extension === 'gif') {
             imagegif($this->image, $destination_filepath);
         } else {
             imagejpeg($this->image, $destination_filepath, $this->quality);

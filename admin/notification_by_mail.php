@@ -54,24 +54,19 @@ function do_timeout_treatment(
 ): void {
     global $env_nbm, $base_url, $page, $must_repost;
 
-    if ($env_nbm['is_sendmail_timeout']) {
-        if (isset($_POST[$post_keyname])) {
-            $post_count = count($_POST[$post_keyname]);
-            $treated_count = count($check_key_treated);
-            if ($treated_count != 0) {
-                $time_refresh = ceil((get_moment() - $env_nbm['start_time']) * $post_count / $treated_count);
-            } else {
-                $time_refresh = 0;
-            }
-            $_POST[$post_keyname] = array_diff($_POST[$post_keyname], $check_key_treated);
-
-            $must_repost = true;
-            $page['errors'][] = l10n_dec(
-                'Execution time is out, treatment must be continue [Estimated time: %d second].',
-                'Execution time is out, treatment must be continue [Estimated time: %d seconds].',
-                $time_refresh
-            );
-        }
+    if ($env_nbm['is_sendmail_timeout'] && isset($_POST[$post_keyname])) {
+        $post_count = count($_POST[$post_keyname]);
+        $treated_count = count($check_key_treated);
+        $time_refresh = $treated_count != 0 ? ceil(
+            (get_moment() - $env_nbm['start_time']) * $post_count / $treated_count
+        ) : 0;
+        $_POST[$post_keyname] = array_diff($_POST[$post_keyname], $check_key_treated);
+        $must_repost = true;
+        $page['errors'][] = l10n_dec(
+            'Execution time is out, treatment must be continue [Estimated time: %d second].',
+            'Execution time is out, treatment must be continue [Estimated time: %d seconds].',
+            $time_refresh
+        );
     }
 
 }
@@ -217,7 +212,7 @@ function do_action_send_mail_notification(
     if (in_array($action, ['list_to_send', 'send'])) {
         [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
-        $is_action_send = ($action == 'send');
+        $is_action_send = ($action === 'send');
 
         // disabled and null mail_address are not selected in the list
         $data_users = get_user_notifications(
@@ -230,16 +225,13 @@ function do_action_send_mail_notification(
 
         // Check if exist news to list user or send mails
         if ((! $is_list_all_without_test) || ($is_action_send)) {
-            if (count($data_users) > 0) {
+            if ($data_users !== []) {
                 $datas = [];
-
                 if (! isset($customize_mail_content)) {
                     $customize_mail_content = $conf['nbm_complementary_mail_content'];
                 }
-
                 $customize_mail_content =
                   trigger_change('nbm_render_global_customize_mail_content', $customize_mail_content);
-
                 // Prepare message after change language
                 if ($is_action_send) {
                     $msg_break_timeout = l10n('Time to send mail is limited. Others mails are skipped.');
@@ -248,10 +240,8 @@ function do_action_send_mail_notification(
                         'Prepared time for list of users to send mail is limited. Others users are not listed.'
                     );
                 }
-
                 // Begin nbm users environment
                 begin_users_env_nbm($is_action_send);
-
                 foreach ($data_users as $nbm_user) {
                     if ((! $is_action_send) && check_sendmail_timeout()) {
                         // Stop fill list on 'list_to_send', if the quota is override
@@ -270,25 +260,20 @@ function do_action_send_mail_notification(
                     if ($is_action_send) {
                         $auth = null;
                         $add_url_params = [];
-
                         $auth_key = create_user_auth_key($nbm_user['user_id'], $nbm_user['status']);
-
                         if ($auth_key !== false) {
                             $auth = $auth_key['auth_key'];
                             $add_url_params['auth'] = $auth;
                         }
-
                         set_make_full_url();
                         // Fill return list of "treated" check_key for 'send'
                         $return_list[] = $nbm_user['check_key'];
-
                         if ($conf['nbm_send_detailed_content']) {
                             $news = news($nbm_user['last_send'], $dbnow, false, $conf['nbm_send_html_mail'], $auth);
-                            $exist_data = count($news) > 0;
+                            $exist_data = $news !== [];
                         } else {
                             $exist_data = news_exists($nbm_user['last_send'], $dbnow);
                         }
-
                         if ($exist_data) {
                             $subject = '[' . $conf['gallery_title'] . '] ' . l10n('New photos added');
 
@@ -380,20 +365,16 @@ function do_action_send_mail_notification(
 
                             unset_make_full_url();
                         }
-                    } else {
-                        if (news_exists($nbm_user['last_send'], $dbnow)) {
-                            // Fill return list of "selected" users for 'list_to_send'
-                            $return_list[] = $nbm_user;
-                        }
+                    } elseif (news_exists($nbm_user['last_send'], $dbnow)) {
+                        // Fill return list of "selected" users for 'list_to_send'
+                        $return_list[] = $nbm_user;
                     }
 
                     // unset env nbm user
                     unset_user_on_env_nbm();
                 }
-
                 // Restore nbm environment
                 end_users_env_nbm();
-
                 if ($is_action_send) {
                     mass_updates(
                         USER_MAIL_NOTIFICATION_TABLE,
@@ -406,10 +387,8 @@ function do_action_send_mail_notification(
 
                     display_counter_info();
                 }
-            } else {
-                if ($is_action_send) {
-                    $page['errors'][] = l10n('No user to send notifications by mail.');
-                }
+            } elseif ($is_action_send) {
+                $page['errors'][] = l10n('No user to send notifications by mail.');
             }
         } else {
             // Quick List, don't check news
@@ -426,11 +405,7 @@ function do_action_send_mail_notification(
 // +-----------------------------------------------------------------------+
 // | Main                                                                  |
 // +-----------------------------------------------------------------------+
-if (! isset($_GET['mode'])) {
-    $page['mode'] = 'send';
-} else {
-    $page['mode'] = $_GET['mode'];
-}
+$page['mode'] = $_GET['mode'] ?? 'send';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -462,7 +437,7 @@ if (! isset($_POST) || (count(
 // | Treatment of tab post                                                 |
 // +-----------------------------------------------------------------------+
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
 }
 
@@ -639,7 +614,7 @@ switch ($page['mode']) {
             ? stripslashes((string) $_POST['send_customize_mail_content'])
             : $conf['nbm_complementary_mail_content'];
 
-        if (count($data_users)) {
+        if ($data_users !== []) {
             foreach ($data_users as $nbm_user) {
                 if (
                     (! $must_repost) || // Not timeout, normal treatment

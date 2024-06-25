@@ -25,7 +25,7 @@ if (! defined(
     // +-----------------------------------------------------------------------+
     check_status(ACCESS_CLASSIC);
 
-    if (! empty($_POST)) {
+    if ($_POST !== []) {
         check_pwg_token();
     }
 
@@ -67,7 +67,7 @@ SELECT ' . implode(',', $fields) . '
 
     // include menubar
     $themeconf = $template->get_template_vars('themeconf');
-    if (! isset($themeconf['hide_menu_on']) or ! in_array('theProfilePage', $themeconf['hide_menu_on'])) {
+    if (! isset($themeconf['hide_menu_on']) || ! in_array('theProfilePage', $themeconf['hide_menu_on'])) {
         include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
     }
 

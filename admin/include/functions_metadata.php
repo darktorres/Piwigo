@@ -25,20 +25,20 @@ function get_sync_iptc_data(
     $iptc = get_iptc_data($file, $map);
 
     foreach ($iptc as $pwg_key => $value) {
-        if (in_array($pwg_key, ['date_creation', 'date_available'])) {
-            if (preg_match('/(\d{4})(\d{2})(\d{2})/', (string) $value, $matches)) {
-                $year = $matches[1];
-                $month = $matches[2];
-                $day = $matches[3];
-
-                if (! checkdate($month, $day, $year)) {
-                    // we suppose the year is correct
-                    $month = 1;
-                    $day = 1;
-                }
-
-                $iptc[$pwg_key] = $year . '-' . $month . '-' . $day;
+        if (in_array($pwg_key, ['date_creation', 'date_available']) && preg_match(
+            '/(\d{4})(\d{2})(\d{2})/',
+            (string) $value,
+            $matches
+        )) {
+            $year = $matches[1];
+            $month = $matches[2];
+            $day = $matches[3];
+            if (! checkdate($month, $day, $year)) {
+                // we suppose the year is correct
+                $month = 1;
+                $day = 1;
             }
+            $iptc[$pwg_key] = $year . '-' . $month . '-' . $day;
         }
     }
 
@@ -272,7 +272,7 @@ SELECT id, path, representative_ext
         $datas[] = $data;
     }
 
-    if (count($datas) > 0) {
+    if ($datas !== []) {
         $update_fields = get_sync_metadata_attributes();
         $update_fields[] = 'date_metadata_update';
 

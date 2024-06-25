@@ -53,7 +53,7 @@ if (! empty($gallery_url)) {
             $page['errors'][] = $error;
             echo $error;
         } else {
-            $php_end_tag = strrpos($config_file_contents, '?' . '>');
+            $php_end_tag = strrpos($config_file_contents, '?>');
             if ($php_end_tag === false) {
                 // the file is empty
                 $config_file_contents_new = "<?php\n" . $conf_line . "\n?>";
@@ -67,13 +67,10 @@ if (! empty($gallery_url)) {
         }
     }
 
-    if (isset($config_file_contents_new)) {
-        if (! file_put_contents($local_conf, $config_file_contents_new)) {
-            $error = 'Cannot write into local configuration file ' . $local_conf . ', add by hand: ' . $conf_line;
-
-            $page['errors'][] = $error;
-            echo $error;
-        }
+    if (isset($config_file_contents_new) && ! file_put_contents($local_conf, $config_file_contents_new)) {
+        $error = 'Cannot write into local configuration file ' . $local_conf . ', add by hand: ' . $conf_line;
+        $page['errors'][] = $error;
+        echo $error;
     }
 }
 

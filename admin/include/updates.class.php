@@ -17,7 +17,7 @@ if (! defined(
 
 class updates
 {
-    public array $types = [];
+    public array $types = ['plugins', 'themes', 'languages'];
 
     public $plugins;
 
@@ -39,8 +39,6 @@ class updates
 
     public function __construct(string $page = 'updates')
     {
-        $this->types = ['plugins', 'themes', 'languages'];
-
         if (in_array($page, $this->types)) {
             $this->types = [$page];
         }
@@ -104,7 +102,7 @@ class updates
                 if (version_compare(PHPWG_VERSION, $last_version_number, '<')) {
                     $last_branch = get_branch_from_version($last_version_number);
 
-                    if ($last_branch == $actual_branch) {
+                    if ($last_branch === $actual_branch) {
                         $new_versions['minor'] = $last_version_number;
                         $new_versions['minor_php'] = $last_version_php;
                     } else {
@@ -116,7 +114,7 @@ class updates
                             [$version_number, $version_php] = explode('/', trim($version));
                             $branch = get_branch_from_version($version_number);
 
-                            if ($branch == $actual_branch) {
+                            if ($branch === $actual_branch) {
                                 if (version_compare(PHPWG_VERSION, $version_number, '<')) {
                                     $new_versions['minor'] = $version_number;
                                     $new_versions['minor_php'] = $version_php;
@@ -148,7 +146,7 @@ class updates
             return;
         }
 
-        $new_versions_string = join(
+        $new_versions_string = implode(
             ' & ',
             array_intersect_key(
                 $new_versions,
@@ -156,7 +154,7 @@ class updates
             )
         );
 
-        if (empty($new_versions_string)) {
+        if ($new_versions_string === '' || $new_versions_string === '0') {
             return;
         }
 
@@ -246,7 +244,7 @@ class updates
                 }
             }
         }
-        if (empty($versions_to_check)) {
+        if ($versions_to_check === []) {
             return false;
         }
 
@@ -274,7 +272,7 @@ class updates
         );
 
         $post_data = [];
-        if (! empty($ext_to_check)) {
+        if ($ext_to_check !== []) {
             $post_data['extension_include'] = implode(',', array_keys($ext_to_check));
         }
 
@@ -313,9 +311,8 @@ class updates
     }
 
     // Check all extensions upgrades
-
     /**
-     * @return false|void
+     * @return false|null
      */
     public function check_extensions()
     {
@@ -352,6 +349,7 @@ class updates
             $conf['updates_ignored'][$type] = $ignore_list;
         }
         conf_update_param('updates_ignored', pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
+        return null;
     }
 
     // Check if extension have been upgraded since last check
@@ -398,11 +396,9 @@ class updates
         if (fetchRemote($this->merged_extension_url, $result)) {
             $rows = explode("\n", (string) $result);
             foreach ($rows as $row) {
-                if (preg_match('/^(\d+\.\d+): *(.*)$/', $row, $match)) {
-                    if (version_compare($version, $match[1], '>=')) {
-                        $extensions = explode(',', trim($match[2]));
-                        $this->merged_extensions = array_merge($this->merged_extensions, $extensions);
-                    }
+                if (preg_match('/^(\d+\.\d+): *(.*)$/', $row, $match) && version_compare($version, $match[1], '>=')) {
+                    $extensions = explode(',', trim($match[2]));
+                    $this->merged_extensions = array_merge($this->merged_extensions, $extensions);
                 }
             }
         }
@@ -516,8 +512,8 @@ class updates
                         }
                     }
 
-                    if (empty($error)) {
-                        if (! empty($obsolete_list)) {
+                    if ($error === '' || $error === '0') {
+                        if ($obsolete_list !== null && $obsolete_list !== '' && $obsolete_list !== '0') {
                             self::process_obsolete_list($obsolete_list);
                         }
 

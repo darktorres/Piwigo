@@ -70,7 +70,7 @@ foreach ($orphan_tags as $tag) {
     $orphan_tag_names[] = trigger_change('render_tag_name', $tag['name'], $tag);
 }
 
-if (count($orphan_tag_names) > 0) {
+if ($orphan_tag_names !== []) {
     $warning_tags = sprintf(
         l10n('You have %d orphan tags %s'),
         count($orphan_tag_names),
@@ -135,7 +135,7 @@ while ($tag = pwg_db_fetch_assoc($result)) {
 
     $alt_names = trigger_change('get_tag_alt_names', [], $raw_name);
     $alt_names = array_diff(array_unique($alt_names), [$tag['name']]);
-    if (count($alt_names)) {
+    if ($alt_names !== []) {
         $tag['alt_names'] = implode(', ', $alt_names);
     }
     $all_tags[] = $tag;

@@ -237,7 +237,7 @@ SELECT
         $group_ids = $all_group_ids;
     }
 
-    if (count($group_ids) > 0) {
+    if ($group_ids !== []) {
         $query = '
 SELECT
     id,
@@ -292,7 +292,7 @@ SELECT
     $user_ids = $all_user_ids;
 }
 
-if (count($user_ids) > 0) {
+if ($user_ids !== []) {
     $query = '
 SELECT
     ' . $conf['user_fields']['id'] . ' AS id,

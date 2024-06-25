@@ -10,8 +10,8 @@ function int_delete_gdthumb_cache($pattern): void
 {
     if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)):
         while (($node = readdir($contents)) !== false):
-            if ($node != '.'
-                && $node != '..'
+            if ($node !== '.'
+                && $node !== '..'
                 && is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)):
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
             endif;
@@ -58,7 +58,7 @@ if (isset($_GET['getMissingDerivative'])) {
         while ($row = pwg_db_fetch_assoc($result)) {
             $start_id = $row['id'];
             $src_image = new SrcImage($row);
-            if ($src_image->is_mimetype()) {
+            if ($src_image->is_mimetype() !== 0) {
                 continue;
             }
             if (($params['method'] == 'slide') || ($params['method'] == 'square')):
@@ -97,24 +97,13 @@ if (isset($_POST['cachedelete'])) {
 
 // Save configuration
 if (isset($_POST['submit'])) {
-
-    if (empty($_POST['method'])):
-        $method = 'resize';
-    else:
-        $method = $_POST['method'];
-    endif;
-    if (empty($_POST['normalize_title'])):
-        $normalize = 'off';
-    else:
-        $normalize = $_POST['normalize_title'];
-    endif;
-
+    $method = empty($_POST['method']) ? 'resize' : $_POST['method'];
+    $normalize = empty($_POST['normalize_title']) ? 'off' : $_POST['normalize_title'];
     $big_thumb = ! empty($_POST['big_thumb']);
     $big_thumb_noinpw = ! empty($_POST['big_thumb_noinpw']);
     $thumb_animate = ! empty($_POST['thumb_animate']);
     $thumb_mode_album = $_POST['thumb_mode_album'];
     $thumb_mode_photo = $_POST['thumb_mode_photo'];
-
     if ($method == 'slide'):
         if ($big_thumb):
             $big_thumb = false;
@@ -135,11 +124,9 @@ if (isset($_POST['submit'])) {
             $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         endif;
     endif;
-
     if (($big_thumb_noinpw) && (! $big_thumb)):
         $big_thumb_noinpw = false;
     endif;
-
     $params = [
         'height' => $_POST['height'],
         'margin' => $_POST['margin'],
@@ -155,7 +142,6 @@ if (isset($_POST['submit'])) {
         'no_wordwrap' => ! empty($_POST['no_wordwrap']),
         'thumb_animate' => $thumb_animate,
     ];
-
     if (! is_numeric($params['height'])) {
         $page['errors'][] = l10n('Thumbnails max height must be an integer');
     }
@@ -165,13 +151,11 @@ if (isset($_POST['submit'])) {
     if (! is_numeric($params['nb_image_page'])) {
         $page['errors'][] = l10n('Number of photos per page must be an integer');
     }
-
     if ($params['height'] != $conf['gdThumb']['height']) {
         delete_gdthumb_cache($conf['gdThumb']['height']);
     } elseif ($params['margin'] != $conf['gdThumb']['margin']) {
         delete_gdthumb_cache($conf['gdThumb']['height'] * 2 + $conf['gdThumb']['margin']);
     }
-
     if (empty($page['errors'])) {
         conf_update_param('gdThumb', $params);
         $page['infos'][] = l10n('Information data registered in database');
@@ -184,11 +168,7 @@ $css_file = str_replace(
     '/',
     dirname(__FILE__, 3) . '/' . GDTHEME_PATH . 'admin/css/styles.css'
 );
-if (file_exists($css_file)):
-    $custom_css = 'yes';
-else:
-    $custom_css = 'no';
-endif;
+$custom_css = file_exists($css_file) ? 'yes' : 'no';
 
 if (! isset($params['normalize_title'])):
     $params['normalize_title'] = 'off';

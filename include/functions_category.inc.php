@@ -292,11 +292,9 @@ SELECT DISTINCT(id)
   FROM ' . CATEGORIES_TABLE . '
   WHERE ';
     foreach ($ids as $num => $category_id) {
-        is_numeric($category_id)
-          || trigger_error(
-              'get_subcat_ids expecting numeric, not ' . gettype($category_id),
-              E_USER_WARNING
-          );
+        if (! is_numeric($category_id)) {
+            trigger_error('get_subcat_ids expecting numeric, not ' . gettype($category_id), E_USER_WARNING);
+        }
         if ($num > 0) {
             $query .= '
     OR ';
@@ -320,7 +318,7 @@ function get_cat_id_from_permalinks(
 ): ?int {
     $in = '';
     foreach ($permalinks as $permalink) {
-        if (! empty($in)) {
+        if ($in !== '' && $in !== '0') {
             $in .= ', ';
         }
         $in .= '\'' . $permalink . '\'';
@@ -336,7 +334,7 @@ SELECT id, permalink, 0 AS is_old
 ;';
     $perma_hash = query2array($query, 'permalink');
 
-    if (empty($perma_hash)) {
+    if ($perma_hash === []) {
         return null;
     }
     for ($i = count($permalinks) - 1; $i >= 0; $i--) {
@@ -389,7 +387,7 @@ function get_display_images_count(
         //at least one image direct or indirect
         $display_text .= l10n_dec('%d photo', '%d photos', $cat_count_images);
 
-        if ($cat_count_categories == 0 || $cat_nb_images == $cat_count_images) {
+        if ($cat_count_categories == 0 || $cat_nb_images === $cat_count_images) {
             //no descendant categories or descendants do not contain images
             if (! $short_message) {
                 $display_text .= ' ' . l10n('in this album');
@@ -590,7 +588,7 @@ function get_image_ids_for_categories(
 ): array {
     global $conf;
 
-    if (empty($cat_ids)) {
+    if ($cat_ids === []) {
         return [];
     }
 
@@ -611,14 +609,14 @@ SELECT id
         );
     }
 
-    $query .= (empty($extra_images_where_sql) ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
+    $query .= ($extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
   GROUP BY id';
 
-    if ($mode == 'AND' && count($cat_ids) > 1) {
+    if ($mode === 'AND' && count($cat_ids) > 1) {
         $query .= '
   HAVING COUNT(DISTINCT category_id)=' . count($cat_ids);
     }
-    $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
+    $query .= "\n" . ($order_by === '' || $order_by === '0' ? $conf['order_by'] : $order_by);
 
     return query2array($query, null, 'id');
 }
@@ -636,7 +634,7 @@ function get_common_categories(
     array $excluded_cat_ids = [],
     $use_permissions = true
 ): array {
-    if (empty($items)) {
+    if ($items === []) {
         return [];
     }
 
@@ -659,7 +657,7 @@ SELECT
         );
     }
 
-    if (! empty($excluded_cat_ids)) {
+    if ($excluded_cat_ids !== []) {
         $query .= '
     AND category_id NOT IN (' . implode(',', $excluded_cat_ids) . ')';
     }

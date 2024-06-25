@@ -20,9 +20,9 @@ $env_nbm =
         ];
 
 if (
-    (! isset($env_nbm['sendmail_timeout'])) or
-    (! is_numeric($env_nbm['sendmail_timeout'])) or
-    ($env_nbm['sendmail_timeout'] <= 0)
+    ! isset($env_nbm['sendmail_timeout']) || ! is_numeric(
+        $env_nbm['sendmail_timeout']
+    ) || $env_nbm['sendmail_timeout'] <= 0
 ) {
     $env_nbm['sendmail_timeout'] = $conf['nbm_treatment_timeout_default'];
 }
@@ -126,7 +126,7 @@ where 1=1';
 
         $query .= $query_and_check_key;
 
-        if (isset($enabled_filter_value) && ($enabled_filter_value != '')) {
+        if (isset($enabled_filter_value) && ($enabled_filter_value !== '')) {
             $query .= ' and
         N.enabled = \'' . boolean_to_string($enabled_filter_value) . '\'';
         }
@@ -301,7 +301,6 @@ function display_counter_info(): void
             '%d mails were not sent.',
             $env_nbm['error_on_mail_count']
         );
-
         if ($env_nbm['sent_mail_count'] != 0) {
             $page['infos'][] = l10n_dec(
                 '%d mail was sent.',
@@ -309,16 +308,14 @@ function display_counter_info(): void
                 $env_nbm['sent_mail_count']
             );
         }
+    } elseif ($env_nbm['sent_mail_count'] == 0) {
+        $page['infos'][] = l10n('No mail to send.');
     } else {
-        if ($env_nbm['sent_mail_count'] == 0) {
-            $page['infos'][] = l10n('No mail to send.');
-        } else {
-            $page['infos'][] = l10n_dec(
-                '%d mail was sent.',
-                '%d mails were sent.',
-                $env_nbm['sent_mail_count']
-            );
-        }
+        $page['infos'][] = l10n_dec(
+            '%d mail was sent.',
+            '%d mails were sent.',
+            $env_nbm['sent_mail_count']
+        );
     }
 }
 

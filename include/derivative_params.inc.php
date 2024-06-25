@@ -114,7 +114,7 @@ final class ImageRect
         }
         $tlcrop = floor($pixels / 2);
 
-        if (! empty($coi)) {
+        if ($coi !== null && $coi !== '' && $coi !== '0') {
             $coil = floor($this->r * char_to_fraction($coi[0]));
             $coir = ceil($this->r * char_to_fraction($coi[2]));
             $availableL = $coil > $this->l ? $coil - $this->l : 0;
@@ -146,7 +146,7 @@ final class ImageRect
         }
         $tlcrop = floor($pixels / 2);
 
-        if (! empty($coi)) {
+        if ($coi !== null && $coi !== '' && $coi !== '0') {
             $coit = floor($this->b * char_to_fraction($coi[1]));
             $coib = ceil($this->b * char_to_fraction($coi[3]));
             $availableT = $coit > $this->t ? $coit - $this->t : 0;
@@ -275,7 +275,7 @@ final class SizingParams
         }
 
         $crop_rect = null;
-        if ($destCrop->width() != $in_size[0] || $destCrop->height() != $in_size[1]) {
+        if ($destCrop->width() !== $in_size[0] || $destCrop->height() !== $in_size[1]) {
             $crop_rect = $destCrop;
         }
     }
@@ -340,11 +340,7 @@ final class DerivativeParams
      */
     public function is_identity($in_size): bool
     {
-        if ($in_size[0] > $this->sizing->ideal_size[0] or
-            $in_size[1] > $this->sizing->ideal_size[1]) {
-            return false;
-        }
-        return true;
+        return $in_size[0] <= $this->sizing->ideal_size[0] && $in_size[1] <= $this->sizing->ideal_size[1];
     }
 
     public function will_watermark($out_size): bool

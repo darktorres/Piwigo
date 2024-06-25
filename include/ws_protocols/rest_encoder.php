@@ -11,27 +11,20 @@ declare(strict_types=1);
 
 class PwgXmlWriter
 {
-    public bool $_indent;
+    public bool $_indent = true;
 
-    public string $_indentStr;
+    public string $_indentStr = "\t";
 
-    public array $_elementStack;
+    public array $_elementStack = [];
 
-    public bool $_lastTagOpen;
+    public bool $_lastTagOpen = false;
 
-    public int $_indentLevel;
+    public int $_indentLevel = 0;
 
-    public string $_encodedXml;
+    public string $_encodedXml = '';
 
     public function __construct()
     {
-        $this->_elementStack = [];
-        $this->_lastTagOpen = false;
-        $this->_indentLevel = 0;
-
-        $this->_encodedXml = '';
-        $this->_indent = true;
-        $this->_indentStr = "\t";
     }
 
     public function &getOutput(): string
@@ -42,7 +35,7 @@ class PwgXmlWriter
     public function start_element($name): void
     {
         $this->_end_prev(false);
-        if (! empty($this->_elementStack)) {
+        if ($this->_elementStack !== []) {
             $this->_eol_indent();
         }
         $this->_indentLevel++;
@@ -111,8 +104,7 @@ class PwgXmlWriter
 
     public function _indent(): void
     {
-        if ($this->_indent and
-            $this->_indentLevel > count($this->_elementStack)) {
+        if ($this->_indent && $this->_indentLevel > count($this->_elementStack)) {
             $this->_output(
                 str_repeat($this->_indentStr, count($this->_elementStack))
             );

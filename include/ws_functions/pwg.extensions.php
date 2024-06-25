@@ -22,11 +22,7 @@ function ws_plugins_getList(array $params, $service): array
     $plugin_list = [];
 
     foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
-        if (isset($plugins->db_plugins_by_id[$plugin_id])) {
-            $state = $plugins->db_plugins_by_id[$plugin_id]['state'];
-        } else {
-            $state = 'uninstalled';
-        }
+        $state = isset($plugins->db_plugins_by_id[$plugin_id]) ? $plugins->db_plugins_by_id[$plugin_id]['state'] : 'uninstalled';
 
         $plugin_list[] = [
             'id' => $plugin_id,
@@ -71,7 +67,7 @@ function ws_plugins_performAction(
     $plugins = new plugins();
     $errors = $plugins->perform_action($params['action'], $params['plugin']);
 
-    if (! empty($errors)) {
+    if ($errors !== []) {
         return new PwgError(500, $errors);
     }
 
@@ -315,7 +311,7 @@ function ws_extensions_checkupdates(
     if (! is_array($_SESSION['extensions_need_update'])) {
         $result['ext_need_update'] = null;
     } else {
-        $result['ext_need_update'] = ! empty($_SESSION['extensions_need_update']);
+        $result['ext_need_update'] = isset($_SESSION['extensions_need_update']) && $_SESSION['extensions_need_update'] !== [];
     }
 
     return $result;

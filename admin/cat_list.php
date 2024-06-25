@@ -22,7 +22,7 @@ check_status(ACCESS_ADMINISTRATOR);
 
 trigger_notify('loc_begin_cat_list');
 
-if (! empty($_POST) || isset($_GET['delete'])) {
+if ($_POST !== [] || isset($_GET['delete'])) {
     check_pwg_token();
 }
 
@@ -88,8 +88,8 @@ SELECT
             }
         }
 
-        if (count($to_compare) > 0) {
-            $ref_dates[$cat_id] = $minmax == 'max' ? max($to_compare) : min($to_compare);
+        if ($to_compare !== []) {
+            $ref_dates[$cat_id] = $minmax === 'max' ? max($to_compare) : min($to_compare);
         } else {
             $ref_dates[$cat_id] = null;
         }
@@ -225,7 +225,7 @@ $categories = query2array($query, 'id');
 
 // get the categories containing images directly
 $categories_with_images = [];
-if (count($categories)) {
+if ($categories !== []) {
     $query = '
 SELECT
     category_id,
@@ -318,10 +318,8 @@ foreach ($categories as $category) {
     if (empty($category['dir'])) {
         $tpl_cat['U_DELETE'] = $self_url . '&amp;delete=' . $category['id'];
         $tpl_cat['U_DELETE'] .= '&amp;pwg_token=' . get_pwg_token();
-    } else {
-        if ($conf['enable_synchronization']) {
-            $tpl_cat['U_SYNC'] = $base_url . 'site_update&amp;site=1&amp;cat_id=' . $category['id'];
-        }
+    } elseif ($conf['enable_synchronization']) {
+        $tpl_cat['U_SYNC'] = $base_url . 'site_update&amp;site=1&amp;cat_id=' . $category['id'];
     }
 
     $template->append('categories', $tpl_cat);

@@ -102,7 +102,7 @@ class CalendarWeekly extends CalendarBase
         if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
             $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
         }
-        if (empty($res)) {
+        if ($res === '' || $res === '0') {
             $res = ' AND ' . $this->date_field . ' IS NOT NULL';
         }
         return $res;

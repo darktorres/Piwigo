@@ -35,7 +35,7 @@ class languages
     ): array {
         global $conf;
 
-        if (! $conf['enable_extensions_install'] && $action == 'delete') {
+        if (! $conf['enable_extensions_install'] && $action === 'delete') {
             die('Piwigo extensions install/update/delete system is disabled');
         }
 
@@ -68,7 +68,7 @@ INSERT INTO ' . LANGUAGES_TABLE . '
                     break;
                 }
 
-                if ($language_id == get_default_language()) {
+                if ($language_id === get_default_language()) {
                     $errors[] = 'CANNOT DEACTIVATE - LANGUAGE IS DEFAULT LANGUAGE';
                     break;
                 }
@@ -127,7 +127,7 @@ UPDATE ' . USER_INFOS_TABLE . '
 
         $dir = opendir(PHPWG_ROOT_PATH . 'language');
         while ($file = readdir($dir)) {
-            if ($file != '.' && $file != '..') {
+            if ($file !== '.' && $file !== '..') {
                 $path = PHPWG_ROOT_PATH . 'language/' . $file;
                 if (is_dir($path) && ! is_link($path)
                     && preg_match('/^[a-zA-Z0-9-_]+$/', $file)
@@ -158,7 +158,10 @@ UPDATE ' . USER_INFOS_TABLE . '
                     if (preg_match('|Author URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                         $language['author uri'] = trim($val[1]);
                     }
-                    if (! empty($language['uri']) && strpos($language['uri'], 'extension_view.php?eid=')) {
+                    if (isset($language['uri']) && ($language['uri'] !== '' && $language['uri'] !== '0') && strpos(
+                        $language['uri'],
+                        'extension_view.php?eid='
+                    )) {
                         [, $extension] = explode('extension_view.php?eid=', $language['uri']);
                         if (is_numeric($extension)) {
                             $language['extension'] = $extension;
@@ -217,7 +220,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 }
             }
         }
-        if (empty($versions_to_check)) {
+        if ($versions_to_check === []) {
             return false;
         }
 
@@ -240,7 +243,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 'get_nb_downloads' => 'true',
             ]
         );
-        if (! empty($languages_to_check)) {
+        if ($languages_to_check !== []) {
             if ($new) {
                 $get_data['extension_exclude'] = implode(',', $languages_to_check);
             } else {
@@ -293,7 +296,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                         // we search common.lang.php in archive
                         if (basename(
                             (string) $file['filename']
-                        ) == 'common.lang.php'
+                        ) === 'common.lang.php'
                           && (! isset($main_filepath)
                           || strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
                             $main_filepath = $file['filename'];
@@ -305,7 +308,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                     if (isset($main_filepath)) {
                         $root = basename(dirname((string) $main_filepath)); // common.lang.php path in archive
                         if (preg_match('/^[a-z]{2}_[A-Z]{2}$/', $root)) {
-                            if ($action == 'install') {
+                            if ($action === 'install') {
                                 $dest = $root;
                             }
                             $extract_path = PHPWG_ROOT_PATH . 'language/' . $dest;
@@ -329,7 +332,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                                 }
                                 if ($status == 'ok') {
                                     $this->get_fs_languages();
-                                    if ($action == 'install') {
+                                    if ($action === 'install') {
                                         $this->perform_action('activate', $dest);
                                     }
                                 }
@@ -337,7 +340,9 @@ UPDATE ' . USER_INFOS_TABLE . '
                                   && $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)
                                   && ! empty($old_files)) {
                                     $old_files[] = 'obsolete.list';
-                                    $logger->debug(__FUNCTION__ . ', $old_files = {' . join('},{', $old_files) . '}');
+                                    $logger->debug(
+                                        __FUNCTION__ . ', $old_files = {' . implode('},{', $old_files) . '}'
+                                    );
 
                                     $extract_path_realpath = realpath($extract_path);
 
@@ -345,7 +350,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                                         $old_file = trim($old_file);
                                         $old_file = trim($old_file, '/'); // prevent path starting with a "/"
 
-                                        if (empty($old_file)) { // empty here means the extension itself
+                                        if ($old_file === '' || $old_file === '0') { // empty here means the extension itself
                                             continue;
                                         }
 

@@ -86,18 +86,18 @@ foreach ($languages as $language) {
 
             echo '<h3>' . $file . '.lang.php</h3>';
 
-            if ($output_missing != '' || $output_duplicated != '') {
+            if ($output_missing !== '' || $output_duplicated !== '') {
                 $output = '';
-                if ($output_missing != '') {
+                if ($output_missing !== '') {
                     $output .= "// missing translations\n" . $output_missing;
                 }
-                if ($output_duplicated != '') {
+                if ($output_duplicated !== '') {
                     $output .= "\n// untranslated yet\n" . $output_duplicated;
                 }
                 echo '<textarea style="width:100%;height:250px;">' . $output . '</textarea>';
             }
 
-            if ($output_lost != '') {
+            if ($output_lost !== '') {
                 echo '<pre>' . $output_lost . '</pre>';
             }
         } else {
@@ -130,5 +130,5 @@ function get_line_to_translate($file, $key): string
 
     $print_key = str_replace("'", '\\\'', $key);
     $print_value = str_replace("'", '\\\'', $metalang[$page['ref_default_values']][$file][$key]);
-    return '$' . "lang['" . $print_key . "'] = '" . $print_value . "';\n";
+    return '$lang[\'' . $print_key . "'] = '" . $print_value . "';\n";
 }

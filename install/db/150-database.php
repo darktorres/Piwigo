@@ -34,7 +34,7 @@ SELECT
 $history_lines = query2array(
     $query
 );
-if (count($history_lines) > 0) {
+if ($history_lines !== []) {
     $last_summarized = $history_lines[0];
 
     [$year, $month, $day] = explode('-', (string) $last_summarized['date']);

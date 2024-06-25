@@ -42,7 +42,7 @@ SELECT *
     unset($rank_of);
 }
 
-if (count($pictures) > 0) {
+if ($pictures !== []) {
     // define category slideshow url
     $row = reset($pictures);
     $page['cat_slideshow_url'] =

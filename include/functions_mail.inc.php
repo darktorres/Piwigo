@@ -74,7 +74,7 @@ function format_email(
     $cvt_email = trim((string) preg_replace('#[\n\r]+#', '', $email));
     $cvt_name = trim((string) preg_replace('#[\n\r]+#', '', $name));
 
-    if ($cvt_name != '') {
+    if ($cvt_name !== '') {
         $cvt_name = '"' . addcslashes($cvt_name, '"') . '"' . ' ';
     }
 
@@ -291,7 +291,7 @@ function pwg_mail_notification_admins(
     bool $send_technical_details = true,
     $group_id = null
 ): bool {
-    if (empty($subject) || empty($content)) {
+    if ($subject === '' || $subject === '0' || $subject === [] || ($content === '' || $content === '0' || $content === [])) {
         return false;
     }
 
@@ -353,7 +353,7 @@ function pwg_mail_admins(
     bool $only_webmasters = false,
     $group_id = null
 ): bool {
-    if (empty($args['content']) && empty($tpl)) {
+    if (empty($args['content']) && $tpl === []) {
         return false;
     }
 
@@ -400,7 +400,7 @@ SELECT
 ;';
     $admins = query2array($query);
 
-    if (empty($admins)) {
+    if ($admins === []) {
         return $return;
     }
 
@@ -426,7 +426,7 @@ function pwg_mail_group(
     array $tpl = [
     ]
 ): bool|int {
-    if (empty($group_id) || (empty($args['content']) && empty($tpl))) {
+    if ($group_id === 0 || (empty($args['content']) && $tpl === [])) {
         return false;
     }
 
@@ -452,7 +452,7 @@ SELECT DISTINCT language
 ;';
     $languages = query2array($query, null, 'language');
 
-    if (empty($languages)) {
+    if ($languages === []) {
         return $return;
     }
 
@@ -475,7 +475,7 @@ SELECT
 ;';
         $users = query2array($query);
 
-        if (empty($users)) {
+        if ($users === []) {
             continue;
         }
 
@@ -543,7 +543,7 @@ function pwg_mail(
 ): bool {
     global $conf, $conf_mail, $lang_info, $page;
 
-    if (empty($to) && empty($args['Cc']) && empty($args['Bcc'])) {
+    if (($to === '' || $to === '0' || $to === []) && empty($args['Cc']) && empty($args['Bcc'])) {
         return true;
     }
 
@@ -596,7 +596,7 @@ function pwg_mail(
             'name' => '',
         ];
     }
-    if (! empty($Bcc)) {
+    if ($Bcc !== []) {
         foreach ($Bcc as $recipient) {
             $mail->addBCC($recipient['email'], $recipient['name']);
         }
@@ -613,11 +613,13 @@ function pwg_mail(
     }
 
     // try to decompose subject like "[....] ...."
-    if (! isset($args['mail_title']) && ! isset($args['mail_subtitle'])) {
-        if (preg_match('#^\[(.*)\](.*)$#', $args['subject'], $matches)) {
-            $args['mail_title'] = $matches[1];
-            $args['mail_subtitle'] = $matches[2];
-        }
+    if (! isset($args['mail_title']) && ! isset($args['mail_subtitle']) && preg_match(
+        '#^\[(.*)\](.*)$#',
+        $args['subject'],
+        $matches
+    )) {
+        $args['mail_title'] = $matches[1];
+        $args['mail_subtitle'] = $matches[2];
     }
     if (! isset($args['mail_title'])) {
         $args['mail_title'] = $conf['gallery_title'];
@@ -672,7 +674,7 @@ function pwg_mail(
                 ]
             );
 
-            if ($content_type == 'text/html') {
+            if ($content_type === 'text/html') {
                 if ($template->smarty->templateExists('global-mail-css.tpl')) {
                     $template->set_filename('global-css', 'global-mail-css.tpl');
                     $template->assign_var_from_handle('GLOBAL_MAIL_CSS', 'global-css');
@@ -699,7 +701,7 @@ function pwg_mail(
         // Content
         // Stored in a temp variable, if a content template is used it will be assigned
         // to the $CONTENT template variable, otherwise it will be appened to the mail
-        if ($args['content_format'] == 'text/plain' && $content_type == 'text/html') {
+        if ($args['content_format'] == 'text/plain' && $content_type === 'text/html') {
             // convert plain text to html
             $mail_content =
               '<p>' .
@@ -711,7 +713,7 @@ function pwg_mail(
                   )
               ) .
               '</p>';
-        } elseif ($args['content_format'] == 'text/html' && $content_type == 'text/plain') {
+        } elseif ($args['content_format'] == 'text/html' && $content_type === 'text/plain') {
             // convert html text to plain text
             $mail_content = strip_tags((string) $args['content']);
         } else {

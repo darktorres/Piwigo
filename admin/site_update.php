@@ -102,11 +102,7 @@ if (isset($_POST['submit'])) {
     }
 
     // shall we simulate only
-    if (isset($_POST['simulate']) && $_POST['simulate'] == 1) {
-        $simulate = true;
-    } else {
-        $simulate = false;
-    }
+    $simulate = isset($_POST['simulate']) && $_POST['simulate'] == 1;
 }
 
 // +-----------------------------------------------------------------------+
@@ -262,7 +258,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
         $next_rank[$insert['id']] = 1;
     }
 
-    if (count($inserts) > 0) {
+    if ($inserts !== []) {
         if (! $simulate) {
             $dbfields = [
                 'id', 'dir', 'name', 'site_id', 'id_uppercat', 'uppercats', 'commentable',
@@ -285,7 +281,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
             ]);
 
             $category_up = implode(',', array_unique($category_up));
-            if ($conf['inheritance_by_default'] && ! empty($category_up)) {
+            if ($conf['inheritance_by_default'] && ($category_up !== '' && $category_up !== '0')) {
                 $query = '
           SELECT *
           FROM ' . GROUP_ACCESS_TABLE . '
@@ -378,7 +374,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
         $to_delete_derivative_dirs[] = PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $fulldir;
     }
 
-    if (count($to_delete) > 0) {
+    if ($to_delete !== []) {
         if (! $simulate) {
             delete_categories($to_delete);
             foreach ($to_delete_derivative_dirs as $to_delete_dir) {
@@ -412,7 +408,7 @@ if (isset($_POST['submit']) && $_POST['sync'] == 'files'
 
     $db_elements = [];
 
-    if (count($cat_ids) > 0) {
+    if ($cat_ids !== []) {
         $query = '
 SELECT id, path
   FROM ' . IMAGES_TABLE . '
@@ -494,13 +490,13 @@ SELECT id, path
 
         $existing_ids = [];
 
-        foreach (array_intersect_key($fs, $db_elements_flip) as $path => $existing) {
+        foreach (array_keys(array_intersect_key($fs, $db_elements_flip)) as $path) {
             $existing_ids[] = $db_elements_flip[$path];
         }
 
         $logger->debug('existing_ids', $existing_ids);
 
-        if (count($existing_ids) > 0) {
+        if ($existing_ids !== []) {
             $db_formats = [];
 
             // find formats for existing photos (already in database)
@@ -561,7 +557,7 @@ SELECT *
 
     if (! $simulate) {
         // inserts all new elements
-        if (count($inserts) > 0) {
+        if ($inserts !== []) {
             mass_inserts(
                 IMAGES_TABLE,
                 array_keys($inserts[0]),
@@ -586,7 +582,7 @@ SELECT *
         }
 
         // inserts all formats
-        if (count($insert_formats) > 0) {
+        if ($insert_formats !== []) {
             mass_inserts(
                 IMAGE_FORMAT_TABLE,
                 array_keys($insert_formats[0]),
@@ -594,7 +590,7 @@ SELECT *
             );
         }
 
-        if (count($formats_to_delete) > 0) {
+        if ($formats_to_delete !== []) {
             $query = '
 DELETE
   FROM ' . IMAGE_FORMAT_TABLE . '
@@ -615,7 +611,7 @@ DELETE
             'info' => l10n('deleted'),
         ];
     }
-    if (count($to_delete_elements) > 0) {
+    if ($to_delete_elements !== []) {
         if (! $simulate) {
             delete_elements($to_delete_elements);
         }
@@ -679,7 +675,7 @@ if (isset($_POST['submit'])
         } // end foreach file
 
         $counts['upd_elements'] = count($datas);
-        if (! $simulate && count($datas) > 0) {
+        if (! $simulate && $datas !== []) {
             mass_updates(
                 IMAGES_TABLE,
                 // fields
@@ -775,7 +771,7 @@ if (isset($_POST['submit']) && isset($_POST['sync_meta'])
     }
 
     if (! $simulate) {
-        if (count($datas) > 0) {
+        if ($datas !== []) {
             mass_updates(
                 IMAGES_TABLE,
                 // fields
@@ -858,11 +854,7 @@ if (isset($_POST['submit'])) {
         'meta_empty_overrides' => isset($_POST['meta_empty_overrides']),
     ];
 
-    if (isset($_POST['cat']) && is_numeric($_POST['cat'])) {
-        $cat_selected = [$_POST['cat']];
-    } else {
-        $cat_selected = [];
-    }
+    $cat_selected = isset($_POST['cat']) && is_numeric($_POST['cat']) ? [$_POST['cat']] : [];
 } else {
     $tpl_introduction = [
         'sync' => 'dirs',
@@ -900,7 +892,7 @@ display_select_cat_wrapper(
     false
 );
 
-if (count($errors) > 0) {
+if ($errors !== []) {
     foreach ($errors as $error) {
         $template->append(
             'sync_errors',
@@ -922,7 +914,7 @@ if (count($errors) > 0) {
     }
 }
 
-if (count($infos) > 0
+if ($infos !== []
     && isset($_POST['display_info'])
     && $_POST['display_info'] == 1) {
     foreach ($infos as $info) {

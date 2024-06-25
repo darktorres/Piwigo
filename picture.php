@@ -53,8 +53,10 @@ SELECT id, file, level
     $page['image_file'] = $row['file'];
     if (! isset($page['rank_of'][$page['image_id']])) {// the image can still be non accessible (filter/cat perm) and/or not in the set
         global $filter;
-        if (! empty($filter['visible_images']) and
-          ! in_array($page['image_id'], explode(',', (string) $filter['visible_images']))) {
+        if (! empty($filter['visible_images']) && ! in_array(
+            $page['image_id'],
+            explode(',', (string) $filter['visible_images'])
+        )) {
             page_not_found(
                 'The requested image is filtered',
                 duplicate_index_url()
@@ -76,22 +78,20 @@ SELECT id
   LIMIT 1';
             if (pwg_db_num_rows(pwg_query($query)) == 0) {
                 access_denied();
+            } elseif ($page['section'] == 'best_rated') {
+                $page['rank_of'][$page['image_id']] = count($page['items']);
+                $page['items'][] = $page['image_id'];
             } else {
-                if ($page['section'] == 'best_rated') {
-                    $page['rank_of'][$page['image_id']] = count($page['items']);
-                    $page['items'][] = $page['image_id'];
-                } else {
-                    $url = make_picture_url(
-                        [
-                            'image_id' => $page['image_id'],
-                            'image_file' => $page['image_file'],
-                            'section' => 'categories',
-                            'flat' => true,
-                        ]
-                    );
-                    set_status_header($page['section'] == 'recent_pics' ? 301 : 302);
-                    redirect_http($url);
-                }
+                $url = make_picture_url(
+                    [
+                        'image_id' => $page['image_id'],
+                        'image_file' => $page['image_file'],
+                        'section' => 'categories',
+                        'flat' => true,
+                    ]
+                );
+                set_status_header($page['section'] == 'recent_pics' ? 301 : 302);
+                redirect_http($url);
             }
         }
     }
@@ -494,7 +494,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $row['path_ext'] = strtolower(get_extension($row['path']));
     $row['file_ext'] = strtolower(get_extension($row['file']));
 
-    if ($i == 'current') {
+    if ($i === 'current') {
         $row['element_path'] = get_element_path($row);
 
         if ($row['src_image']->is_original()) {// we have a photo
@@ -522,10 +522,10 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $picture[$i]['TITLE'] = render_element_name($row);
     $picture[$i]['TITLE_ESC'] = str_replace('"', '&quot;', $picture[$i]['TITLE']);
 
-    if ($i == 'previous' && $page['previous_item'] == $page['first_item']) {
+    if ($i === 'previous' && $page['previous_item'] == $page['first_item']) {
         $picture['first'] = $picture[$i];
     }
-    if ($i == 'next' && $page['next_item'] == $page['last_item']) {
+    if ($i === 'next' && $page['next_item'] == $page['last_item']) {
         $picture['last'] = $picture[$i];
     }
 }
@@ -547,13 +547,11 @@ if (isset($_GET['slideshow'])) {
         $id_pict_redirect = '';
         if (isset($page['next_item'])) {
             $id_pict_redirect = 'next';
-        } else {
-            if ($slideshow_params['repeat'] && isset($page['first_item'])) {
-                $id_pict_redirect = 'first';
-            }
+        } elseif ($slideshow_params['repeat'] && isset($page['first_item'])) {
+            $id_pict_redirect = 'first';
         }
 
-        if (! empty($id_pict_redirect)) {
+        if ($id_pict_redirect !== '' && $id_pict_redirect !== '0') {
             // $refresh, $url_link and $title are required for creating
             // an automated refresh page in header.tpl
             $refresh = $slideshow_params['period'];
@@ -713,7 +711,7 @@ if ($page['slideshow']) {
     }
 
     foreach (['dec', 'inc'] as $op) {
-        $new_period = $slideshow_params['period'] + ((($op == 'dec') ? -1 : 1) * $conf['slideshow_period_step']);
+        $new_period = $slideshow_params['period'] + ((($op === 'dec') ? -1 : 1) * $conf['slideshow_period_step']);
         $new_slideshow_params =
           correct_slideshow_params(
               array_merge(
@@ -825,7 +823,7 @@ SELECT COUNT(*) AS nb_fav
             'U_FAVORITE' => add_url_params(
                 $url_self,
                 [
-                    'action' => ! $is_favorite ? 'add_to_favorites' : 'remove_from_favorites',
+                    'action' => $is_favorite ? 'remove_from_favorites' : 'add_to_favorites',
                 ]
             ),
         ]
@@ -903,7 +901,7 @@ $template->assign('display_info', $conf['picture_informations']);
 
 // related tags
 $tags = get_common_tags([$page['image_id']], -1);
-if (count($tags)) {
+if ($tags !== []) {
     foreach ($tags as $tag) {
         $template->append(
             'related_tags',
@@ -928,9 +926,9 @@ if (count($tags)) {
 }
 
 // related categories
-if (count($related_categories) == 1 and
-    isset($page['category']) and
-    $related_categories[0]['id'] == $page['category']['id']) { // no need to go to db, we have all the info
+if (count(
+    $related_categories
+) == 1 && isset($page['category']) && $related_categories[0]['id'] == $page['category']['id']) { // no need to go to db, we have all the info
     $template->append(
         'related_categories',
         get_cat_display_name($page['category']['upper_names'])
@@ -995,13 +993,13 @@ include(PHPWG_ROOT_PATH . 'include/picture_rate.inc.php');
 if ($conf['activate_comments']) {
     include(PHPWG_ROOT_PATH . 'include/picture_comment.inc.php');
 }
-if ($metadata_showable && pwg_get_session_var('show_metadata') <> null) {
+if ($metadata_showable && pwg_get_session_var('show_metadata') != null) {
     include(PHPWG_ROOT_PATH . 'include/picture_metadata.inc.php');
 }
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if ($conf['picture_menu'] and (! isset($themeconf['hide_menu_on']) or ! in_array(
+if ($conf['picture_menu'] && (! isset($themeconf['hide_menu_on']) || ! in_array(
     'thePicturePage',
     $themeconf['hide_menu_on']
 ))) {

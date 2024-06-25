@@ -105,7 +105,7 @@ SELECT *
 ;';
         $formats = query2array($query);
 
-        if (! empty($formats)) {
+        if ($formats !== []) {
             $format_strings = [];
 
             foreach ($formats as $format) {

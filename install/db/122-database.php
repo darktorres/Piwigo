@@ -45,7 +45,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     }
 }
 
-if (count($updates) > 0) {
+if ($updates !== []) {
     mass_updates(
         IMAGES_TABLE,
         [

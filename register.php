@@ -69,8 +69,8 @@ if (isset($_POST['submit'])) {
     $registration_post_key = get_ephemeral_key(6);
 }
 
-$login = ! empty($_POST['login']) ? htmlspecialchars(stripslashes((string) $_POST['login'])) : '';
-$email = ! empty($_POST['mail_address']) ? htmlspecialchars(stripslashes((string) $_POST['mail_address'])) : '';
+$login = empty($_POST['login']) ? '' : htmlspecialchars(stripslashes((string) $_POST['login']));
+$email = empty($_POST['mail_address']) ? '' : htmlspecialchars(stripslashes((string) $_POST['mail_address']));
 
 //----------------------------------------------------- template initialization
 //
@@ -93,7 +93,7 @@ $template->assign([
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theRegisterPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theRegisterPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 

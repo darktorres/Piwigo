@@ -253,16 +253,8 @@ function set_missing_values(
     $limit = count($data);
     $result = [];
 
-    if ($firstDate == null) {
-        $date = get_date_object($data[count($data) - 1]);
-    } else {
-        $date = $firstDate;
-    }
-    if ($lastDate == null) {
-        $date_end = get_date_object($data[0]);
-    } else {
-        $date_end = $lastDate;
-    }
+    $date = $firstDate == null ? get_date_object($data[count($data) - 1]) : $firstDate;
+    $date_end = $lastDate == null ? get_date_object($data[0]) : $lastDate;
 
     //Declare variable according the unit
     if ($unit == 'year') {
@@ -372,7 +364,7 @@ $template->assign([
     'lastMonths' => $last_months,
     'lastYears' => $last_years,
     'langCode' => strval($user['language']),
-    'month_labels' => join('~', $lang['month']),
+    'month_labels' => implode('~', $lang['month']),
     'ADMIN_PAGE_TITLE' => l10n('History'),
 ]);
 

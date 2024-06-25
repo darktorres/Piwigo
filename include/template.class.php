@@ -173,7 +173,7 @@ class Template
         }
 
         $this->smarty->setTemplateDir([]);
-        if (! empty($theme)) {
+        if ($theme !== '' && $theme !== '0') {
             $this->set_theme($root, $theme, $path);
             if (! defined('IN_ADMIN')) {
                 $this->set_prefilter('header', ['Template', 'prefilter_local_css']);
@@ -249,7 +249,7 @@ class Template
     ): void {
         $this->smarty->addTemplateDir($dir);
 
-        if (! isset($this->smarty->compile_id)) {
+        if ($this->smarty->compile_id === null) {
             $compile_id = '1';
             $compile_id .= ($real_dir = realpath($dir)) === false ? $dir : $real_dir;
             $this->smarty->compile_id = base_convert(hash('crc32b', $compile_id), 16, 36);
@@ -361,8 +361,8 @@ class Template
                 return false;
             }
 
-            if ((stripos(implode('', array_keys($_GET)), '/' . $param) !== false || $param == 'N/A')
-              && ($thm == $theme || $thm == 'N/A')
+            if ((stripos(implode('', array_keys($_GET)), '/' . $param) !== false || $param === 'N/A')
+              && ($thm === $theme || $thm === 'N/A')
               && (! isset($this->extents[$handle]) || $overwrite)
               && file_exists($dir . $filename)) {
                 $this->extents[$handle] = realpath($dir . $filename);
@@ -514,7 +514,7 @@ class Template
                 foreach ($scripts as $script) {
                     $content[] =
                         '<script src="'
-                        . self::make_script_src($script)
+                        . $this->make_script_src($script)
                         . '"></script>';
                 }
 
@@ -551,7 +551,7 @@ class Template
             $pos = strpos($this->output, $search);
             if ($pos !== false) {
                 $rep = "\n" . implode("\n", $this->html_head_elements);
-                if (strlen($this->html_style)) {
+                if (strlen($this->html_style) !== 0) {
                     $rep .= '<style type="text/css">' . $this->html_style . '</style>';
                 }
                 $this->output = substr_replace($this->output, $rep, $pos, 0);
@@ -595,12 +595,10 @@ class Template
     public static function get_php_str_val(
         string $str
     ): mixed {
-        if (is_string($str) && strlen($str) > 1) {
-            if (($str[0] == '\'' && $str[strlen($str) - 1] == '\'')
-              || ($str[0] == '"' && $str[strlen($str) - 1] == '"')) {
-                eval('$tmp=' . $str . ';');
-                return $tmp;
-            }
+        if (is_string($str) && strlen($str) > 1 && (($str[0] === '\'' && $str[strlen($str) - 1] === '\'')
+          || ($str[0] === '"' && $str[strlen($str) - 1] === '"'))) {
+            eval('$tmp=' . $str . ';');
+            return $tmp;
         }
         return null;
     }
@@ -632,8 +630,7 @@ class Template
                     $ret = 'sprintf(';
                     $ret .= self::modcompiler_translate([$params[0]]);
                     $ret .= ',' . implode(',', array_slice($params, 1));
-                    $ret .= ')';
-                    return $ret;
+                    return $ret . ')';
                 }
                 return 'l10n(' . $params[0] . ',' . implode(',', array_slice($params, 1)) . ')';
         }
@@ -661,8 +658,7 @@ class Template
             $ret .= ':';
             $ret .= self::modcompiler_translate([$params[1]]);
             $ret .= ',$tmp';
-            $ret .= ')';
-            return $ret;
+            return $ret . ')';
         }
         return 'l10n_dec(' . $params[1] . ',' . $params[2] . ',' . $params[0] . ')';
     }
@@ -703,7 +699,7 @@ class Template
         string|null $content
     ): void {
         $content = isset($content) ? trim($content) : '';
-        if (! empty($content)) { // second call
+        if ($content !== '' && $content !== '0') { // second call
             $this->html_head_elements[] = $content;
         }
     }
@@ -719,7 +715,7 @@ class Template
         string|null $content
     ): void {
         $content = isset($content) ? trim($content) : '';
-        if (! empty($content)) { // second call
+        if ($content !== '' && $content !== '0') { // second call
             $this->html_style .= "\n" . $content;
         }
     }
@@ -741,14 +737,20 @@ class Template
         array $params,
         Smarty\Template $smarty
     ): void {
-        ! empty($params['name']) || fatal_error('define_derivative missing name');
+        if (empty($params['name'])) {
+            fatal_error('define_derivative missing name');
+        }
         if (isset($params['type'])) {
             $derivative = ImageStdParams::get_by_type($params['type']);
             $smarty->assign($params['name'], $derivative);
             return;
         }
-        ! empty($params['width']) || fatal_error('define_derivative missing width');
-        ! empty($params['height']) || fatal_error('define_derivative missing height');
+        if (empty($params['width'])) {
+            fatal_error('define_derivative missing width');
+        }
+        if (empty($params['height'])) {
+            fatal_error('define_derivative missing height');
+        }
 
         $w = intval($params['width']);
         $h = intval($params['height']);
@@ -765,9 +767,13 @@ class Template
 
             if ($crop) {
                 $minw = empty($params['min_width']) ? $w : intval($params['min_width']);
-                $minw <= $w || fatal_error('define_derivative invalid min_width');
+                if ($minw > $w) {
+                    fatal_error('define_derivative invalid min_width');
+                }
                 $minh = empty($params['min_height']) ? $h : intval($params['min_height']);
-                $minh <= $h || fatal_error('define_derivative invalid min_height');
+                if ($minh > $h) {
+                    fatal_error('define_derivative invalid min_height');
+                }
             }
         }
 
@@ -838,23 +844,23 @@ class Template
         foreach ($scripts[0] as $script) {
             $content[] =
               '<script src="'
-              . self::make_script_src($script)
+              . $this->make_script_src($script)
               . '"></script>';
         }
-        if (count($this->scriptLoader->inline_scripts)) {
+        if ($this->scriptLoader->inline_scripts !== []) {
             // $content[]= '<script>';
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
             // $content[]= '</script>';
         }
 
-        if (count($scripts[1])) {
+        if (count($scripts[1]) > 0) {
             $content[] = '<script>';
             $content[] = '(function() {
 var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTagName(\'script\').length-1];';
             foreach ($scripts[1] as $id => $script) {
                 $content[] =
                   's=document.createElement(\'script\'); s.type=\'text/javascript\'; s.async=true; s.src=\''
-                  . self::make_script_src(
+                  . $this->make_script_src(
                       $script
                   )
                   . '\';';
@@ -878,7 +884,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         string|null $content
     ): void {
         $content = isset($content) ? trim($content) : '';
-        if (! empty($content)) { // second call
+        if ($content !== '' && $content !== '0') { // second call
 
             $this->scriptLoader->add_inline(
                 $content,
@@ -1070,7 +1076,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             $css[] = "{combine_css path='{$f}' order=10}";
         }
 
-        if (! empty($css)) {
+        if ($css !== []) {
             $source = str_replace('{get_combined_css}', implode("\n", $css) . "\n{get_combined_css}", $source);
         }
 
@@ -1120,7 +1126,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public function parse_picture_buttons(): void
     {
-        if (! empty($this->picture_buttons)) {
+        if ($this->picture_buttons !== []) {
             ksort($this->picture_buttons);
             $buttons = [];
             foreach ($this->picture_buttons as $k => $row) {
@@ -1143,7 +1149,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public function parse_index_buttons(): void
     {
-        if (! empty($this->index_buttons)) {
+        if ($this->index_buttons !== []) {
             ksort($this->index_buttons);
             $buttons = [];
             foreach ($this->index_buttons as $k => $row) {
@@ -1164,7 +1170,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
     /**
      * Returns clean relative URL to script file.
      */
-    private static function make_script_src(
+    private function make_script_src(
         Combinable $script
     ): string {
         $ret = '';
@@ -1206,7 +1212,7 @@ class Combinable
 {
     public string $path;
 
-    public bool $is_template;
+    public bool $is_template = false;
 
     public function __construct(
         public string $id,
@@ -1214,12 +1220,11 @@ class Combinable
         public string|int $version = 0
     ) {
         $this->set_path($path);
-        $this->is_template = false;
     }
 
     public function set_path(string|null $path): void
     {
-        if (! empty($path)) {
+        if ($path !== null && $path !== '' && $path !== '0') {
             $this->path = $path;
         }
     }
@@ -1235,7 +1240,7 @@ class Combinable
  */
 final class Script extends Combinable
 {
-    public array $extra;
+    public array $extra = [];
 
     /**
      * @param int $load_mode 0,1,2
@@ -1248,7 +1253,6 @@ final class Script extends Combinable
         public array $precedents = []
     ) {
         parent::__construct($id, $path, $version);
-        $this->extra = [];
     }
 }
 
@@ -1334,7 +1338,7 @@ class CssLoader
     /**
      * Callback for CSS files sorting.
      */
-    private static function cmp_by_order($a, $b)
+    private function cmp_by_order($a, $b)
     {
         return $a->order - $b->order;
     }
@@ -1394,14 +1398,13 @@ class ScriptLoader
      */
     public function add_inline(string $code, array $require): void
     {
-        ! $this->did_footer || trigger_error(
-            'Attempt to add inline script but the footer has been written',
-            E_USER_WARNING
-        );
-        if (! empty($require)) {
+        if ($this->did_footer) {
+            trigger_error('Attempt to add inline script but the footer has been written', E_USER_WARNING);
+        }
+        if ($require !== []) {
             foreach ($require as $id) {
-                if (! isset($this->registered_scripts[$id])) {
-                    $this->load_known_required_script($id, 1) || fatal_error("inline script not found require {$id}");
+                if (! isset($this->registered_scripts[$id]) && ! $this->load_known_required_script($id, 1)) {
+                    fatal_error("inline script not found require {$id}");
                 }
                 $s = $this->registered_scripts[$id];
                 if ($s->load_mode == 2) {
@@ -1431,7 +1434,7 @@ class ScriptLoader
         if (! isset($this->registered_scripts[$id])) {
             $script = new Script($load_mode, $id, $path, $version, $require);
             $script->is_template = $is_template;
-            self::fill_well_known($id, $script);
+            $this->fill_well_known($id, $script);
             $this->registered_scripts[$id] = $script;
 
             // Try to load undefined required script
@@ -1442,7 +1445,7 @@ class ScriptLoader
             }
         } else {
             $script = $this->registered_scripts[$id];
-            if (count($require)) {
+            if ($require !== []) {
                 $script->precedents = array_unique(array_merge($script->precedents, $require));
             }
             $script->set_path($path);
@@ -1462,7 +1465,7 @@ class ScriptLoader
      */
     public function get_head_scripts(): array
     {
-        self::check_load_dep($this->registered_scripts);
+        $this->check_load_dep($this->registered_scripts);
         foreach (array_keys($this->registered_scripts) as $id) {
             $this->compute_script_topological_order($id);
         }
@@ -1480,7 +1483,7 @@ class ScriptLoader
             }
         }
         $this->did_head = true;
-        return self::do_combine($this->head_done_scripts, 0);
+        return $this->do_combine($this->head_done_scripts, 0);
     }
 
     /**
@@ -1489,7 +1492,7 @@ class ScriptLoader
     public function get_footer_scripts(): array
     {
         if (! $this->did_head) {
-            self::check_load_dep($this->registered_scripts);
+            $this->check_load_dep($this->registered_scripts);
         }
         $this->did_footer = true;
         $todo = [];
@@ -1511,14 +1514,14 @@ class ScriptLoader
                 $result[$script->load_mode - 1][$id] = $script;
             }
         }
-        return [self::do_combine($result[0], 1), self::do_combine($result[1], 2)];
+        return [$this->do_combine($result[0], 1), $this->do_combine($result[1], 2)];
     }
 
     /**
      * @param Script[] $scripts
      * @return Combinable[]
      */
-    private static function do_combine(
+    private function do_combine(
         array $scripts,
         int $load_mode
     ): array {
@@ -1532,7 +1535,7 @@ class ScriptLoader
      *
      * @param Script[] $scripts
      */
-    private static function check_load_dep(
+    private function check_load_dep(
         array $scripts
     ): void {
         global $conf;
@@ -1562,20 +1565,18 @@ class ScriptLoader
      *
      * @param string $id in FileCombiner::$known_paths
      */
-    private static function fill_well_known(
+    private function fill_well_known(
         string $id,
         Script $script
     ): void {
-        if (empty($script->path) && isset(self::$known_paths[$id])) {
+        if (($script->path === '' || $script->path === '0') && isset(self::$known_paths[$id])) {
             $script->path = self::$known_paths[$id];
         }
         if (str_starts_with($id, 'jquery.')) {
             $required_ids = ['jquery'];
 
-            if (str_starts_with($id, 'jquery.ui.')) {
-                if (empty($script->path)) {
-                    $script->path = dirname((string) self::$known_paths['jquery.ui']) . "/{$id}.js";
-                }
+            if (str_starts_with($id, 'jquery.ui.') && ($script->path === '' || $script->path === '0')) {
+                $script->path = dirname((string) self::$known_paths['jquery.ui']) . "/{$id}.js";
             }
 
             foreach ($required_ids as $required_id) {
@@ -1598,7 +1599,7 @@ class ScriptLoader
         if (isset(self::$known_paths[$id]) || str_starts_with($id, 'jquery.ui.')) {
             $this->add($id, $load_mode, [], null);
 
-            if ($id == 'jquery') {
+            if ($id === 'jquery') {
                 $this->add('jquery-migrate', $load_mode, [], null);
             }
 
@@ -1619,7 +1620,9 @@ class ScriptLoader
             trigger_error("Undefined script {$script_id} is required by someone", E_USER_WARNING);
             return 0;
         }
-        $recursion_limiter < 5 || fatal_error('combined script circular dependency');
+        if ($recursion_limiter >= 5) {
+            fatal_error('combined script circular dependency');
+        }
         $script = $this->registered_scripts[$script_id];
         if (isset($script->extra['order'])) {
             return $script->extra['order'];
@@ -1638,10 +1641,10 @@ class ScriptLoader
     /**
      * Callback for scripts sorter.
      */
-    private static function cmp_by_mode_and_order($s1, $s2)
+    private function cmp_by_mode_and_order($s1, $s2)
     {
         $ret = intval($s1->load_mode) - intval($s2->load_mode);
-        if ($ret) {
+        if ($ret !== 0) {
             return $ret;
         }
 
@@ -1674,7 +1677,7 @@ final class FileCombiner
         private readonly string $type,
         private array $combinables = []
     ) {
-        $this->is_css = $this->type == 'css';
+        $this->is_css = $this->type === 'css';
     }
 
     /**
@@ -1695,7 +1698,7 @@ final class FileCombiner
         }
 
         while ($file = readdir($dir)) {
-            if (get_extension($file) == 'js' || get_extension($file) == 'css') {
+            if (get_extension($file) === 'js' || get_extension($file) === 'css') {
                 unlink($combinedDir . $file);
             }
         }
@@ -1770,7 +1773,7 @@ final class FileCombiner
         bool $force
     ): void {
         if (count($pending) > 1) {
-            $key = join('>', $key);
+            $key = implode('>', $key);
             $file = PWG_COMBINED_DIR . base_convert(hash('crc32b', $key), 16, 36) . '.' . $this->type;
             if ($force || ! file_exists(PHPWG_ROOT_PATH . $file)) {
                 $output = '';
@@ -1839,9 +1842,9 @@ final class FileCombiner
             $content = $template->parse($handle, true);
 
             if ($this->is_css) {
-                $content = self::process_css($content, $combinable->path, $header);
+                $content = $this->process_css($content, $combinable->path, $header);
             } else {
-                $content = self::process_js($content, $combinable->path);
+                $content = $this->process_js($content, $combinable->path);
             }
 
             if ($return_content) {
@@ -1856,9 +1859,9 @@ final class FileCombiner
         } elseif ($return_content) {
             $content = file_get_contents(PHPWG_ROOT_PATH . $combinable->path);
             if ($this->is_css) {
-                $content = self::process_css($content, $combinable->path, $header);
+                $content = $this->process_css($content, $combinable->path, $header);
             } else {
-                $content = self::process_js($content, $combinable->path);
+                $content = $this->process_js($content, $combinable->path);
             }
             return $content;
         }
@@ -1870,7 +1873,7 @@ final class FileCombiner
      *
      * @param string $js file content
      */
-    private static function process_js(
+    private function process_js(
         string $js,
         string $file
     ): string {
@@ -1890,7 +1893,7 @@ final class FileCombiner
      * @param string $header CSS directives that must appear first in
      *                       the minified file.
      */
-    private static function process_css(
+    private function process_css(
         string $css,
         string $file,
         string &$header

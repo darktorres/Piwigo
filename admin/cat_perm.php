@@ -30,7 +30,7 @@ $page['cat'] = $category['id'];
 // |                           form submission                             |
 // +-----------------------------------------------------------------------+
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
 
     if ($category['status'] != $_POST['status'] || ($category['status'] != 'public' && isset($_POST['apply_on_sub']))) {
@@ -61,7 +61,7 @@ SELECT group_id
         // remove permissions to groups
         //
         $deny_groups = array_diff($groups_granted, $_POST['groups']);
-        if (count($deny_groups) > 0) {
+        if ($deny_groups !== []) {
             // if you forbid access to an album, all sub-albums become
             // automatically forbidden
             $query = '
@@ -129,7 +129,7 @@ SELECT user_id
         // remove permissions to users
         //
         $deny_users = array_diff($users_granted, $_POST['users']);
-        if (count($deny_users) > 0) {
+        if ($deny_users !== []) {
             // if you forbid access to an album, all sub-album become automatically
             // forbidden
             $query = '
@@ -221,7 +221,7 @@ $user_granted_direct_ids = query2array($query, null, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 $user_granted_indirect_ids = [];
-if (count($group_granted_ids) > 0) {
+if ($group_granted_ids !== []) {
     $granted_groups = [];
 
     $query = '

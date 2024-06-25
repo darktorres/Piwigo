@@ -31,13 +31,9 @@ $tabsheet->assign();
 // +-----------------------------------------------------------------------+
 // |                            initialization                             |
 // +-----------------------------------------------------------------------+
-if (isset($_GET['start']) && is_numeric(
+$start = isset($_GET['start']) && is_numeric(
     $_GET['start']
-)) {
-    $start = $_GET['start'];
-} else {
-    $start = 0;
-}
+) ? $_GET['start'] : 0;
 
 $elements_per_page = 10;
 if (isset($_GET['display']) && is_numeric($_GET['display'])) {
@@ -62,7 +58,7 @@ $page['cat_filter'] = '';
 if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
     $cat_ids = get_subcat_ids([$_GET['cat']]);
 
-    if (count($cat_ids) > 0) {
+    if ($cat_ids !== []) {
         $page['cat_filter'] = ' AND ic.category_id IN (' . implode(',', $cat_ids) . ')';
     }
 }
@@ -82,7 +78,7 @@ SELECT
     COUNT(DISTINCT(r.element_id))
   FROM ' . RATE_TABLE . ' AS r';
 
-if (! empty($page['cat_filter'])) {
+if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= '
     JOIN ' . IMAGES_TABLE . ' AS i ON r.element_id = i.id
     JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON ic.image_id = i.id';
@@ -134,8 +130,9 @@ $available_order_by = [
     [l10n('Creation date'), 'date_creation DESC'],
     [l10n('Post date'), 'date_available DESC'],
 ];
+$counter = count($available_order_by);
 
-for ($i = 0; $i < count($available_order_by); $i++) {
+for ($i = 0; $i < $counter; $i++) {
     $template->append(
         'order_by_options',
         $available_order_by[$i][0]
@@ -166,7 +163,7 @@ SELECT i.id,
   FROM ' . RATE_TABLE . ' AS r
     LEFT JOIN ' . IMAGES_TABLE . ' AS i ON r.element_id = i.id';
 
-if (! empty($page['cat_filter'])) {
+if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= '
     JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON ic.image_id = i.id';
 }

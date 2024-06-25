@@ -86,11 +86,7 @@ $since_options = [
 
 trigger_notify('loc_begin_comments');
 
-if (! empty($_GET['since'])) {
-    $page['since'] = intval($_GET['since']);
-} else {
-    $page['since'] = 4;
-}
+$page['since'] = empty($_GET['since']) ? 4 : intval($_GET['since']);
 
 // on which field sorting
 //
@@ -125,7 +121,7 @@ if (isset($_GET['cat']) && $_GET['cat'] != 0) {
     check_input_parameter('cat', $_GET, false, PATTERN_ID);
 
     $category_ids = get_subcat_ids([$_GET['cat']]);
-    if (empty($category_ids)) {
+    if ($category_ids === []) {
         $category_ids = [-1];
     }
 
@@ -211,19 +207,19 @@ if (isset($action)) {
     if (can_manage_comment($action, $comment_author_id)) {
         $perform_redirect = false;
 
-        if ($action == 'delete') {
+        if ($action === 'delete') {
             check_pwg_token();
             delete_user_comment($comment_id);
             $perform_redirect = true;
         }
 
-        if ($action == 'validate') {
+        if ($action === 'validate') {
             check_pwg_token();
             validate_user_comment($comment_id);
             $perform_redirect = true;
         }
 
-        if ($action == 'edit') {
+        if ($action === 'edit') {
             if (! empty($_POST['content'])) {
                 check_pwg_token();
                 $comment_action = update_user_comment(
@@ -333,11 +329,9 @@ $template->assign('item_number_options_selected', $page['items_number']);
 // |                            navigation bar                             |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['start'])) {
-    $start = intval($_GET['start']);
-} else {
-    $start = 0;
-}
+$start = isset($_GET['start']) ? intval(
+    $_GET['start']
+) : 0;
 
 // +-----------------------------------------------------------------------+
 // |                        last comments display                          |
@@ -394,7 +388,7 @@ $navbar = create_navigation_bar(
 
 $template->assign('navbar', $navbar);
 
-if (count($comments) > 0) {
+if ($comments !== []) {
     // retrieving element informations
     $query = '
 SELECT *
@@ -479,16 +473,14 @@ SELECT *
             }
         }
 
-        if (can_manage_comment('validate', $comment['author_id'])) {
-            if ($comment['validated'] != 'true') {
-                $tpl_comment['U_VALIDATE'] = add_url_params(
-                    $url_self,
-                    [
-                        'validate' => $comment['comment_id'],
-                        'pwg_token' => get_pwg_token(),
-                    ]
-                );
-            }
+        if (can_manage_comment('validate', $comment['author_id']) && $comment['validated'] != 'true') {
+            $tpl_comment['U_VALIDATE'] = add_url_params(
+                $url_self,
+                [
+                    'validate' => $comment['comment_id'],
+                    'pwg_token' => get_pwg_token(),
+                ]
+            );
         }
         $template->append('comments', $tpl_comment);
     }
@@ -499,7 +491,7 @@ $template->assign('comment_derivative_params', $derivative_params);
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theCommentsPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theCommentsPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 
@@ -509,7 +501,7 @@ if (! isset($themeconf['hide_menu_on']) or ! in_array('theCommentsPage', $themec
 include(PHPWG_ROOT_PATH . 'include/page_header.php');
 trigger_notify('loc_end_comments');
 flush_page_messages();
-if (count($comments) > 0) {
+if ($comments !== []) {
     $template->assign_var_from_handle('COMMENT_LIST', 'comment_list');
 }
 $template->pparse('comments');

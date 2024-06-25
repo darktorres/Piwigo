@@ -45,7 +45,7 @@ function pwg_db_connect(
     if (mysqli_connect_error()) {
         throw new Exception("Can't connect to server");
     }
-    if (! empty($database) && ! $mysqli->select_db($database)) {
+    if ($database !== '' && $database !== '0' && ! $mysqli->select_db($database)) {
         throw new Exception('Connection to server succeed, but it was impossible to connect to database');
     }
 
@@ -265,7 +265,7 @@ UPDATE ' . protect_column_name($tablename) . '
                 if (isset($data[$key]) && $data[$key] != '') {
                     $query .= $separator . protect_column_name($key) . ' = \'' . $data[$key] . '\'';
                 } else {
-                    if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+                    if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                         continue; // next field
                     }
                     $query .= $separator . protect_column_name($key) . ' = NULL';
@@ -336,7 +336,7 @@ CREATE TABLE ' . protect_column_name($temporary_tablename) . '
         pwg_query($query);
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
-        if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+        if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
             $func_set = fn ($s) => "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})";
         } else {
             $func_set = fn ($s) => "t1.{$s} = t2.{$s}";
@@ -391,7 +391,7 @@ UPDATE ' . protect_column_name($tablename) . '
         if (isset($value) && $value !== '') {
             $query .= $separator . protect_column_name($key) . ' = \'' . $value . '\'';
         } else {
-            if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+            if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                 continue; // next field
             }
             $query .= $separator . protect_column_name($key) . ' = NULL';
@@ -471,7 +471,7 @@ function mass_inserts(
                 pwg_query($queryBase . $query);
                 $query = $queryTemp;
             } else {
-                if (! empty($query)) {
+                if ($query !== '' && $query !== '0') {
                     $query .= ', ';
                 }
                 $query .= $queryTemp;
@@ -656,7 +656,7 @@ function boolean_to_string(
 
 function pwg_db_get_recent_period_expression($period, string $date = 'CURRENT_DATE'): string
 {
-    if ($date != 'CURRENT_DATE') {
+    if ($date !== 'CURRENT_DATE') {
         $date = '\'' . $date . '\'';
     }
 
@@ -799,15 +799,13 @@ function query2array(
                 $data[$row[$key_name]] = $row;
             }
         }
+    } elseif (isset($value_name)) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row[$value_name];
+        }
     } else {
-        if (isset($value_name)) {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row[$value_name];
-            }
-        } else {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
-            }
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
         }
     }
 

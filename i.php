@@ -13,17 +13,21 @@ const PHPWG_ROOT_PATH = './';
 
 // fast bootstrap - no db connection
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-file_exists(
+if (file_exists(
     PHPWG_ROOT_PATH . 'local/config/config.inc.php'
-) && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+)) {
+    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+}
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
-file_exists(
+if (file_exists(
     PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php'
-) && include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+)) {
+    include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+}
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
@@ -117,8 +121,7 @@ function parse_request(): void
 {
     global $conf, $page;
 
-    if (! $conf['question_mark_in_urls'] and
-         isset($_SERVER['PATH_INFO']) && ! empty($_SERVER['PATH_INFO'])) {
+    if (! $conf['question_mark_in_urls'] && (isset($_SERVER['PATH_INFO']) && ! empty($_SERVER['PATH_INFO']))) {
         $req = $_SERVER['PATH_INFO'];
         $req = str_replace('//', '/', $req);
         $path_count = count(explode('/', $req));
@@ -142,19 +145,23 @@ function parse_request(): void
     $page['derivative_path'] = PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $req;
 
     $pos = strrpos($req, '.');
-    $pos !== false || ierror('Missing .', 400);
+    if ($pos === false) {
+        ierror('Missing .', 400);
+    }
     $ext = substr($req, $pos);
     $page['derivative_ext'] = $ext;
     $req = substr($req, 0, $pos);
 
     $pos = strrpos($req, '-');
-    $pos !== false || ierror('Missing -', 400);
+    if ($pos === false) {
+        ierror('Missing -', 400);
+    }
     $deriv = substr($req, $pos + 1);
     $req = substr($req, 0, $pos);
 
     $deriv = explode('_', $deriv);
     foreach (ImageStdParams::get_defined_type_map() as $type => $params) {
-        if (derivative_to_url($type) == $deriv[0]) {
+        if (derivative_to_url($type) === $deriv[0]) {
             $page['derivative_type'] = $type;
             $page['derivative_params'] = $params;
             break;
@@ -162,7 +169,7 @@ function parse_request(): void
     }
 
     if (! isset($page['derivative_type'])) {
-        if (derivative_to_url(IMG_CUSTOM) == $deriv[0]) {
+        if (derivative_to_url(IMG_CUSTOM) === $deriv[0]) {
             $page['derivative_type'] = IMG_CUSTOM;
         } else {
             ierror('Unknown parsing type', 400);
@@ -233,7 +240,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime): bool
             continue;
         }
         $candidate_size = $candidate->compute_final_size($original_size);
-        if ($dsize != $params->compute_final_size($candidate_size)) {
+        if ($dsize !== $params->compute_final_size($candidate_size)) {
             continue;
         }
 
@@ -355,9 +362,7 @@ if ($src_mtime === false) {
 
 $need_generate = false;
 $derivative_mtime = file_exists($page['derivative_path']) ? filemtime($page['derivative_path']) : false;
-if ($derivative_mtime === false or
-    $derivative_mtime < $src_mtime or
-    $derivative_mtime < $params->last_mod_time) {
+if ($derivative_mtime === false || $derivative_mtime < $src_mtime || $derivative_mtime < $params->last_mod_time) {
     $need_generate = true;
 }
 
@@ -377,7 +382,7 @@ if (! $need_generate) {
     if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
       && strtotime(
           (string) $_SERVER['HTTP_IF_MODIFIED_SINCE']
-      ) == $derivative_mtime) {// send the last mod time of the file back
+      ) === $derivative_mtime) {// send the last mod time of the file back
         header(
             'Last-Modified: ' . gmdate('D, d M Y H:i:s', $derivative_mtime) . ' GMT',
             true,
@@ -509,10 +514,13 @@ if ($params->will_watermark($d_size)) {
                     $x2 = $x + $i * $xpad;
                     $y2 = $y + $j * $ypad;
                     if ($x2 >= 0 && $x2 + $wm_size[0] < $d_size[0] &&
-                        $y2 >= 0 && $y2 + $wm_size[1] < $d_size[1]) {
-                        if (! $image->compose($wm_image, $x2, $y2, $wm->opacity)) {
-                            break;
-                        }
+                        $y2 >= 0 && $y2 + $wm_size[1] < $d_size[1] && ! $image->compose(
+                            $wm_image,
+                            $x2,
+                            $y2,
+                            $wm->opacity
+                        )) {
+                        break;
                     }
                 }
             }

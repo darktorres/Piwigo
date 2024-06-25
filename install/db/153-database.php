@@ -21,7 +21,7 @@ function value_display_fromto(): string
     if (file_exists($file)) {
         $conf = [];
         include($file);
-        if (isset($conf['display_fromto']) and $conf['display_fromto']) {
+        if (isset($conf['display_fromto']) && $conf['display_fromto']) {
             return 'true';
         }
     }

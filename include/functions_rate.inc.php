@@ -22,7 +22,7 @@ function rate_picture(
 
     if (! isset($rate)
         || ! $conf['rate']
-        || ! preg_match('/^[0-9]+$/', (string) $rate)
+        || ! preg_match('/^\d+$/', (string) $rate)
         || ! in_array($rate, $conf['rate_items'])) {
         return false;
     }
@@ -51,7 +51,7 @@ SELECT element_id
 ;';
             $already_there = query2array($query, null, 'element_id');
 
-            if (count($already_there) > 0) {
+            if ($already_there !== []) {
                 $query = '
 DELETE
   FROM ' . RATE_TABLE . '
@@ -175,7 +175,7 @@ SELECT id FROM ' . IMAGES_TABLE . '
 
         $to_update = query2array($query, null, 'id');
 
-        if (! empty($to_update)) {
+        if ($to_update !== []) {
             $query = '
 UPDATE ' . IMAGES_TABLE . '
   SET rating_score=NULL

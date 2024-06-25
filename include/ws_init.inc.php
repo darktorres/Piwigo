@@ -37,7 +37,7 @@ $service = new PwgServer();
 
 if ($requestFormat !== null) {
     $handler = null;
-    if ($requestFormat == 'rest') {
+    if ($requestFormat === 'rest') {
         include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php');
         $handler = new PwgRestRequestHandler();
     }

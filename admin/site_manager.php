@@ -25,7 +25,7 @@ if (! $conf['enable_synchronization']) {
 
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST) || isset($_GET['action'])) {
+if ($_POST !== [] || isset($_GET['action'])) {
     check_pwg_token();
 }
 
@@ -72,10 +72,8 @@ SELECT COUNT(id) AS count
     if ($row['count'] > 0) {
         $page['errors'][] = l10n('This site already exists') . ' [' . $url . ']';
     }
-    if (count($page['errors']) == 0) {
-        if (! file_exists($url)) {
-            $page['errors'][] = l10n('Directory does not exist') . ' [' . $url . ']';
-        }
+    if (count($page['errors']) == 0 && ! file_exists($url)) {
+        $page['errors'][] = l10n('Directory does not exist') . ' [' . $url . ']';
     }
 
     if (count($page['errors']) == 0) {
@@ -105,13 +103,9 @@ SELECT galleries_url
   WHERE id = ' . $page['site'] . '
 ;';
     [$galleries_url] = pwg_db_fetch_row(pwg_query($query));
-    switch ($_GET['action']) {
-        case 'delete':
-
-            delete_site($page['site']);
-            $page['infos'][] = $galleries_url . ' ' . l10n('deleted');
-            break;
-
+    if ($_GET['action'] === 'delete') {
+        delete_site($page['site']);
+        $page['infos'][] = $galleries_url . ' ' . l10n('deleted');
     }
 }
 

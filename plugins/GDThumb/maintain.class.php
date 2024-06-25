@@ -54,7 +54,7 @@ class GDThumb_maintain extends PluginMaintain
         if (is_dir($path)):
             $fh = opendir($path);
             while ($file = readdir($fh)) {
-                if ($file != '.' && $file != '..'):
+                if ($file !== '.' && $file !== '..'):
                     $pathfile = $path . '/' . $file;
                     if (is_dir($pathfile)):
                         $this->gtdeltree($pathfile);

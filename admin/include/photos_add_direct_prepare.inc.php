@@ -152,7 +152,7 @@ $template->assign(
 $setup_errors = [];
 
 $error_message = ready_for_upload_message();
-if (! empty($error_message)) {
+if ($error_message !== null && $error_message !== '' && $error_message !== '0') {
     $setup_errors[] = $error_message;
 }
 

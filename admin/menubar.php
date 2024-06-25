@@ -63,14 +63,14 @@ if (! is_array($mb_conf)) {
     $mb_conf = [];
 }
 
-foreach ($mb_conf as $id => $pos) {
+foreach (array_keys($mb_conf) as $id) {
     if (! isset($reg_blocks[$id])) {
         unset($mb_conf[$id]);
     }
 }
 
 $idx = 1;
-foreach ($reg_blocks as $id => $block) {
+foreach (array_keys($reg_blocks) as $id) {
     if (! isset($mb_conf[$id])) {
         $mb_conf[$id] = $idx * 50;
     }

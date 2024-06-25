@@ -128,7 +128,7 @@ switch ($_GET['part']) {
         break;
 }
 
-if (empty($file)) {
+if ($file === '' || $file === '0') {
     do_error(404, 'Requested file not found');
 }
 

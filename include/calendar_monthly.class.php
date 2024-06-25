@@ -54,19 +54,26 @@ class CalendarMonthly extends CalendarBase
         if ($view_type == CAL_VIEW_CALENDAR) {
             global $template;
             $tpl_var = [];
-            if (count($page['chronology_date']) == 0) {//case A: no year given - display all years+months
-                if ($this->build_global_calendar($tpl_var)) {
-                    $template->assign('chronology_calendar', $tpl_var);
-                    return true;
-                }
+            //case A: no year given - display all years+months
+            if (count(
+                $page['chronology_date']
+            ) == 0 && $this->build_global_calendar(
+                $tpl_var
+            )) {
+                $template->assign('chronology_calendar', $tpl_var);
+                return true;
             }
 
-            if (count($page['chronology_date']) == 1) {//case B: year given - display all days in given year
-                if ($this->build_year_calendar($tpl_var)) {
-                    $template->assign('chronology_calendar', $tpl_var);
-                    $this->build_nav_bar(CYEAR); // years
-                    return true;
-                }
+            //case B: year given - display all days in given year
+            if (count(
+                $page['chronology_date']
+            ) == 1 && $this->build_year_calendar(
+                $tpl_var
+            )) {
+                $template->assign('chronology_calendar', $tpl_var);
+                $this->build_nav_bar(CYEAR);
+                // years
+                return true;
             }
 
             if (count($page['chronology_date']) == 2) {//case C: year+month given - display a nice month calendar
@@ -342,7 +349,7 @@ class CalendarMonthly extends CalendarBase
             ];
         }
 
-        foreach ($items as $day => $data) {
+        foreach (array_keys($items) as $day) {
             $page['chronology_date'][CDAY] = $day;
             $query = '
   SELECT id, file,representative_ext,path,width,height,rotation, ' . pwg_db_get_dayofweek(
@@ -362,7 +369,7 @@ class CalendarMonthly extends CalendarBase
             $items[$day]['dow'] = $row['dow'];
         }
 
-        if (! empty($items)) {
+        if ($items !== []) {
             [$known_day] = array_keys($items);
             $known_dow = $items[$known_day]['dow'];
             $first_day_dow = ($known_dow - ($known_day - 1)) % 7;

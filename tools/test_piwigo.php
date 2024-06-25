@@ -136,7 +136,7 @@ function install_piwigo($option): void
 
     require_once(PHPWG_ROOT_PATH . '/local/config/database.inc.php');
 
-    if (PHPWG_INSTALLED === true) {
+    if (PHPWG_INSTALLED) {
         echo "Installation OK!\n";
     } else {
         echo "Installation KO!\n";

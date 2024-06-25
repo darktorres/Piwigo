@@ -139,11 +139,7 @@ if (empty($page['is_external'])) {
             );
         }
     } else {
-        if ($page['chronology_field'] == 'created') {
-            $chronology_field = 'posted';
-        } else {
-            $chronology_field = 'created';
-        }
+        $chronology_field = $page['chronology_field'] == 'created' ? 'posted' : 'created';
         if ($conf['index_' . $chronology_field . '_date_icon']) {
             $url = duplicate_index_url(
                 [
@@ -181,13 +177,12 @@ if (empty($page['is_external'])) {
         );
     }
 
-    if ($page['section'] == 'search' && $page['start'] == 0 and
-        ! isset($page['chronology_field']) && isset($page['qsearch_details'])) {
+    if ($page['section'] == 'search' && $page['start'] == 0 && (! isset($page['chronology_field']) && isset($page['qsearch_details']))) {
         $cats = array_merge(
             ($page['qsearch_details']['matching_cats_no_images']) ?? [],
             $page['qsearch_details']['matching_cats']
         );
-        if (count($cats)) {
+        if ($cats !== []) {
             usort($cats, 'name_compare');
             $hints = [];
             foreach ($cats as $cat) {

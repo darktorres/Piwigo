@@ -33,7 +33,7 @@ $tabsheet->assign();
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST) || isset($_GET['delete']) || isset($_GET['toggle_is_default'])) {
+if ($_POST !== [] || isset($_GET['delete']) || isset($_GET['toggle_is_default'])) {
     check_pwg_token();
 }
 

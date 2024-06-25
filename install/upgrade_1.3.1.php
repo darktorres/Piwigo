@@ -538,7 +538,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $cat_ids[] = $row['id'];
 }
 
-if (count($cat_ids) > 0) {
+if ($cat_ids !== []) {
     $privates = get_subcat_ids($cat_ids);
 
     $query = '
@@ -555,7 +555,7 @@ $config_file_contents = file_get_contents($config_file);
 if ($config_file_contents === false) {
     die('CANNOT LOAD ' . $config_file);
 }
-$php_end_tag = strrpos($config_file_contents, '?' . '>');
+$php_end_tag = strrpos($config_file_contents, '?>');
 if ($php_end_tag === false) {
     die('CANNOT FIND PHP END TAG IN ' . $config_file);
 }

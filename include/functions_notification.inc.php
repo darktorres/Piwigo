@@ -53,11 +53,11 @@ function custom_notification_query(
   FROM ' . COMMENTS_TABLE . ' AS c
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON c.image_id = ic.image_id
   WHERE 1=1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
     AND c.validation_date > \'' . $start . '\'';
             }
-            if (! empty($end)) {
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
     AND c.validation_date <= \'' . $end . '\'';
             }
@@ -69,11 +69,11 @@ function custom_notification_query(
             $query = '
   FROM ' . COMMENTS_TABLE . '
   WHERE 1=1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
     AND date > \'' . $start . '\'';
             }
-            if (! empty($end)) {
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
     AND date <= \'' . $end . '\'';
             }
@@ -88,11 +88,11 @@ function custom_notification_query(
   FROM ' . IMAGES_TABLE . '
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON image_id = id
   WHERE 1=1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
     AND date_available > \'' . $start . '\'';
             }
-            if (! empty($end)) {
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
     AND date_available <= \'' . $end . '\'';
             }
@@ -104,11 +104,11 @@ function custom_notification_query(
             $query = '
   FROM ' . USER_INFOS_TABLE . '
   WHERE 1=1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
     AND registration_date > \'' . $start . '\'';
             }
-            if (! empty($end)) {
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
     AND registration_date <= \'' . $end . '\'';
             }
@@ -304,11 +304,16 @@ function news_exists(
     string $start = null,
     string $end = null
 ): bool {
-    return (nb_new_comments($start, $end) > 0) or
-            (nb_new_elements($start, $end) > 0) or
-            (nb_updated_categories($start, $end) > 0) or
-            ((is_admin()) && (nb_unvalidated_comments($start, $end) > 0)) or
-            ((is_admin()) && (nb_new_users($start, $end) > 0));
+    return nb_new_comments($start, $end) > 0 || nb_new_elements($start, $end) > 0 || nb_updated_categories(
+        $start,
+        $end
+    ) > 0 || (is_admin()) && (nb_unvalidated_comments(
+        $start,
+        $end
+    ) > 0) || (is_admin()) && (nb_new_users(
+        $start,
+        $end
+    ) > 0);
 }
 
 /**
@@ -324,7 +329,7 @@ function add_news_line(
 ): void {
     if ($count > 0) {
         $line = l10n_dec($singular_key, $plural_key, $count);
-        if ($add_url && ! empty($url)) {
+        if ($add_url && ($url !== '' && $url !== '0')) {
             $line = '<a href="' . $url . '">' . $line . '</a>';
         }
         $news[] = $line;
@@ -448,8 +453,9 @@ SELECT
   LIMIT ' . $max_dates . '
 ;';
     $dates = query2array($query);
+    $counter = count($dates);
 
-    for ($i = 0; $i < count($dates); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         if ($max_elements > 0) { // get some thumbnails ...
             $query = '
 SELECT DISTINCT i.*
@@ -562,9 +568,7 @@ function get_html_description_recent_post_date(
     }
     $description .= '</ul>';
 
-    $description .= '</ul>';
-
-    return $description;
+    return $description . '</ul>';
 }
 
 /**
@@ -581,9 +585,8 @@ function get_title_recent_post_date(
     $exploded_date = strptime($date, '%Y-%m-%d %H:%M:%S');
 
     $title = l10n_dec('%d new photo', '%d new photos', $date_detail['nb_elements']);
-    $title .= ' (' . $lang['month'][1 + $exploded_date['tm_mon']] . ' ' . $exploded_date['tm_mday'] . ')';
 
-    return $title;
+    return $title . (' (' . $lang['month'][1 + $exploded_date['tm_mon']] . ' ' . $exploded_date['tm_mday'] . ')');
 }
 
 if (! function_exists('strptime')) {

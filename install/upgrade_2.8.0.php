@@ -46,7 +46,7 @@ foreach ($to_apply as $upgrade_id) {
     ];
 }
 
-if (! empty($inserts)) {
+if ($inserts !== []) {
     mass_inserts(
         '`' . UPGRADE_TABLE . '`',
         array_keys($inserts[0]),

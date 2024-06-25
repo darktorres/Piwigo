@@ -74,7 +74,7 @@ SELECT id, path, representative_ext, width, height, rotation
         while ($row = pwg_db_fetch_assoc($result)) {
             $start_id = $row['id'];
             $src_image = new SrcImage($row);
-            if ($src_image->is_mimetype()) {
+            if ($src_image->is_mimetype() !== 0) {
                 continue;
             }
 
@@ -286,7 +286,7 @@ SELECT id
             'user_id' => $user['id'],
         ];
     }
-    if (count($datas)) {
+    if ($datas !== []) {
         mass_inserts(
             CADDIE_TABLE,
             ['element_id', 'user_id'],
@@ -504,7 +504,7 @@ SELECT
 
     $username_of = [];
     $user_id_list = [];
-    if (count($user_ids) > 0) {
+    if ($user_ids !== []) {
         $query = '
 SELECT
     `' . $conf['user_fields']['id'] . '` AS user_id,
@@ -596,11 +596,7 @@ function ws_history_search($param, &$service): array
 
     global $conf;
 
-    if (isset($_GET['start']) && is_numeric($_GET['start'])) {
-        $page['start'] = $_GET['start'];
-    } else {
-        $page['start'] = 0;
-    }
+    $page['start'] = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['start'] : 0;
 
     $types = array_merge(['none'], get_enums(HISTORY_TABLE, 'image_type'));
 
@@ -756,7 +752,7 @@ SELECT rules
     }
 
     // prepare reference data (users, tags, categories...)
-    if (count($user_ids) > 0) {
+    if ($user_ids !== []) {
         $query = '
 SELECT ' . $conf['user_fields']['id'] . ' AS id
      , ' . $conf['user_fields']['username'] . ' AS username
@@ -771,7 +767,7 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id
         }
     }
 
-    if (count($category_ids) > 0) {
+    if ($category_ids !== []) {
         $query = '
 SELECT id, uppercats
   FROM ' . CATEGORIES_TABLE . '
@@ -796,7 +792,7 @@ SELECT id, uppercats
         }
     }
 
-    if (count($image_ids) > 0) {
+    if ($image_ids !== []) {
         $query = '
 SELECT
     id,
@@ -956,7 +952,7 @@ SELECT
     $result = array_slice($result, $param['pageNumber'] * 300, 300);
 
     $summary['nb_guests'] = 0;
-    if (count(array_keys($summary['guests_IP'])) > 0) {
+    if (array_keys($summary['guests_IP']) !== []) {
         $summary['nb_guests'] = count(array_keys($summary['guests_IP']));
 
         // we delete the "guest" from the $username_of hash so that it is

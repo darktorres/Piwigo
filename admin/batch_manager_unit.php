@@ -60,11 +60,7 @@ SELECT id, date_creation
             $data['comment'] = strip_tags((string) $_POST['description-' . $row['id']]);
         }
 
-        if (! empty($_POST['date_creation-' . $row['id']])) {
-            $data['date_creation'] = $_POST['date_creation-' . $row['id']];
-        } else {
-            $data['date_creation'] = null;
-        }
+        $data['date_creation'] = empty($_POST['date_creation-' . $row['id']]) ? null : $_POST['date_creation-' . $row['id']];
 
         $datas[] = $data;
 
@@ -193,7 +189,7 @@ SELECT
         $tag_selection = get_taglist($query);
 
         $legend = render_element_name($row);
-        if ($legend != get_name_from_file($row['file'])) {
+        if ($legend !== get_name_from_file($row['file'])) {
             $legend .= ' (' . $row['file'] . ')';
         }
         $extTab = explode('.', (string) $row['path']);
@@ -210,11 +206,11 @@ SELECT
                     'U_EDIT' => get_root_url() . 'admin.php?page=photo-' . $row['id'],
                     'NAME' => htmlspecialchars($row['name'] ?? ''),
                     'AUTHOR' => htmlspecialchars($row['author'] ?? ''),
-                    'LEVEL' => ! empty($row['level']) ? $row['level'] : '0',
+                    'LEVEL' => empty($row['level']) ? '0' : $row['level'],
                     'DESCRIPTION' => htmlspecialchars($row['comment'] ?? ''),
                     'DATE_CREATION' => $row['date_creation'],
                     'TAGS' => $tag_selection,
-                    'is_svg' => (strtoupper(end($extTab)) == 'SVG'),
+                    'is_svg' => (strtoupper(end($extTab)) === 'SVG'),
                 ]
             )
         );

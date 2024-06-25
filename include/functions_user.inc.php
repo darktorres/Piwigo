@@ -20,9 +20,10 @@ function validate_mail_address(
 ) {
     global $conf;
 
-    if (empty($mail_address) and
-        ! ($conf['obligatory_user_mail_address'] and
-        in_array(script_basename(), ['register', 'profile']))) {
+    if (($mail_address === '' || $mail_address === '0') && ! ($conf['obligatory_user_mail_address'] && in_array(
+        script_basename(),
+        ['register', 'profile']
+    ))) {
         return '';
     }
 
@@ -30,7 +31,7 @@ function validate_mail_address(
         return l10n('mail address must be like xxx@yyy.eee (example : jack@altern.org)');
     }
 
-    if (defined('PHPWG_INSTALLED') && ! empty($mail_address)) {
+    if (defined('PHPWG_INSTALLED') && ($mail_address !== '' && $mail_address !== '0')) {
         $query = '
 SELECT count(*)
 FROM ' . USERS_TABLE . '
@@ -125,7 +126,7 @@ function register_user(
 ): false|int {
     global $conf;
 
-    if ($login == '') {
+    if ($login === '') {
         $errors[] = l10n('Please, enter a login');
     }
     if (preg_match('/^.* $/', $login)) {
@@ -137,7 +138,7 @@ function register_user(
     if (get_userid($login)) {
         $errors[] = l10n('this login is already used');
     }
-    if ($login != strip_tags($login)) {
+    if ($login !== strip_tags($login)) {
         $errors[] = l10n('html tags are not allowed in login');
     }
     $mail_error = validate_mail_address(null, $mail_address);
@@ -286,7 +287,7 @@ function build_user(
     $user['id'] = $user_id;
     $user = array_merge($user, getuserdata($user_id, $use_cache));
 
-    if ($user['id'] == $conf['guest_id'] && $user['status'] <> 'guest') {
+    if ($user['id'] == $conf['guest_id'] && $user['status'] != 'guest') {
         $user['status'] = 'guest';
         $user['internal_status']['guest_must_be_guest'] = true;
     }
@@ -379,89 +380,79 @@ SELECT
 
     $userdata['preferences'] = empty($userdata['preferences']) ? [] : unserialize($userdata['preferences']);
 
-    if ($use_cache) {
-        if (! isset($userdata['need_update'])
-            || ! is_bool($userdata['need_update'])
-            || $userdata['need_update']) {
-            $userdata['cache_update_time'] = time();
-
-            // Set need update are done
-            $userdata['need_update'] = false;
-
-            $userdata['forbidden_categories'] =
-              calculate_permissions((int) $userdata['id'], $userdata['status']);
-
-            /* now we build the list of forbidden images (this list does not contain
-            images that are not in at least an authorized category)*/
-            $query = '
+    if ($use_cache && (! isset($userdata['need_update'])
+        || ! is_bool($userdata['need_update'])
+        || $userdata['need_update'])) {
+        $userdata['cache_update_time'] = time();
+        // Set need update are done
+        $userdata['need_update'] = false;
+        $userdata['forbidden_categories'] =
+          calculate_permissions((int) $userdata['id'], $userdata['status']);
+        /* now we build the list of forbidden images (this list does not contain
+           images that are not in at least an authorized category)*/
+        $query = '
 SELECT DISTINCT(id)
   FROM ' . IMAGES_TABLE . ' INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id=image_id
   WHERE category_id NOT IN (' . $userdata['forbidden_categories'] . ')
     AND level>' . $userdata['level'];
-            $forbidden_ids = query2array($query, null, 'id');
-
-            if (empty($forbidden_ids)) {
-                $forbidden_ids[] = 0;
-            }
-            $userdata['image_access_type'] = 'NOT IN'; //TODO maybe later
-            $userdata['image_access_list'] = implode(',', $forbidden_ids);
-
-            $query = '
+        $forbidden_ids = query2array($query, null, 'id');
+        if ($forbidden_ids === []) {
+            $forbidden_ids[] = 0;
+        }
+        $userdata['image_access_type'] = 'NOT IN';
+        //TODO maybe later
+        $userdata['image_access_list'] = implode(',', $forbidden_ids);
+        $query = '
 SELECT COUNT(DISTINCT(image_id)) as total
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id NOT IN (' . $userdata['forbidden_categories'] . ')
     AND image_id ' . $userdata['image_access_type'] . ' (' . $userdata['image_access_list'] . ')';
-            [$userdata['nb_total_images']] = pwg_db_fetch_row(pwg_query($query));
-
-            // now we update user cache categories
-            $user_cache_cats = get_computed_categories($userdata);
-            if (! is_admin($userdata['status'])) { // for non admins we forbid categories with no image (feature 1053)
-                $forbidden_ids = [];
-                foreach ($user_cache_cats as $cat) {
-                    if ($cat['count_images'] == 0) {
-                        $forbidden_ids[] = $cat['cat_id'];
-                        remove_computed_category($user_cache_cats, $cat);
-                    }
-                }
-                if (! empty($forbidden_ids)) {
-                    if (empty($userdata['forbidden_categories'])) {
-                        $userdata['forbidden_categories'] = implode(',', $forbidden_ids);
-                    } else {
-                        $userdata['forbidden_categories'] .= ',' . implode(',', $forbidden_ids);
-                    }
+        [$userdata['nb_total_images']] = pwg_db_fetch_row(pwg_query($query));
+        // now we update user cache categories
+        $user_cache_cats = get_computed_categories($userdata);
+        if (! is_admin($userdata['status'])) { // for non admins we forbid categories with no image (feature 1053)
+            $forbidden_ids = [];
+            foreach ($user_cache_cats as $cat) {
+                if ($cat['count_images'] == 0) {
+                    $forbidden_ids[] = $cat['cat_id'];
+                    remove_computed_category($user_cache_cats, $cat);
                 }
             }
-
-            // delete user cache
-            $query = '
+            if ($forbidden_ids !== []) {
+                if (empty($userdata['forbidden_categories'])) {
+                    $userdata['forbidden_categories'] = implode(',', $forbidden_ids);
+                } else {
+                    $userdata['forbidden_categories'] .= ',' . implode(',', $forbidden_ids);
+                }
+            }
+        }
+        // delete user cache
+        $query = '
 DELETE FROM ' . USER_CACHE_CATEGORIES_TABLE . '
   WHERE user_id = ' . $userdata['id'];
-            pwg_query($query);
-
-            // Due to concurrency issues, we ask MySQL to ignore errors on
-            // insert. This may happen when cache needs refresh and that Piwigo is
-            // called "very simultaneously".
-            mass_inserts(
-                USER_CACHE_CATEGORIES_TABLE,
-                [
-                    'user_id', 'cat_id',
-                    'date_last', 'max_date_last', 'nb_images', 'count_images', 'nb_categories', 'count_categories',
-                ],
-                $user_cache_cats,
-                [
-                    'ignore' => true,
-                ]
-            );
-
-            // update user cache
-            $query = '
+        pwg_query($query);
+        // Due to concurrency issues, we ask MySQL to ignore errors on
+        // insert. This may happen when cache needs refresh and that Piwigo is
+        // called "very simultaneously".
+        mass_inserts(
+            USER_CACHE_CATEGORIES_TABLE,
+            [
+                'user_id', 'cat_id',
+                'date_last', 'max_date_last', 'nb_images', 'count_images', 'nb_categories', 'count_categories',
+            ],
+            $user_cache_cats,
+            [
+                'ignore' => true,
+            ]
+        );
+        // update user cache
+        $query = '
 DELETE FROM ' . USER_CACHE_TABLE . '
   WHERE user_id = ' . $userdata['id'];
-            pwg_query($query);
-
-            // for the same reason as user_cache_categories, we ignore error on
-            // this insert
-            $query = '
+        pwg_query($query);
+        // for the same reason as user_cache_categories, we ignore error on
+        // this insert
+        $query = '
 INSERT IGNORE INTO ' . USER_CACHE_TABLE . '
   (user_id, need_update, cache_update_time, forbidden_categories, nb_total_images,
     last_photo_date,
@@ -472,8 +463,7 @@ INSERT IGNORE INTO ' . USER_CACHE_TABLE . '
   . $userdata['forbidden_categories'] . '\',' . $userdata['nb_total_images'] . ',' .
   (empty($userdata['last_photo_date']) ? 'NULL' : '\'' . $userdata['last_photo_date'] . '\'') .
   ',\'' . $userdata['image_access_type'] . '\',\'' . $userdata['image_access_list'] . '\')';
-            pwg_query($query);
-        }
+        pwg_query($query);
     }
 
     return $userdata;
@@ -516,7 +506,7 @@ SELECT image_id
     $favorites = query2array($query, null, 'image_id');
 
     $to_deletes = array_diff($favorites, $authorizeds);
-    if (count($to_deletes) > 0) {
+    if ($to_deletes !== []) {
         $query = '
 DELETE FROM ' . FAVORITES_TABLE . '
   WHERE image_id IN (' . implode(',', $to_deletes) . ')
@@ -589,7 +579,7 @@ SELECT id
         $forbidden_array = array_unique($forbidden_array);
     }
 
-    if (empty($forbidden_array)) {// at least, the list contains 0 value. This category does not exists so
+    if ($forbidden_array === []) {// at least, the list contains 0 value. This category does not exists so
         // where clauses such as "WHERE category_id NOT IN(0)" will always be
         // true.
         $forbidden_array[] = 0;
@@ -749,7 +739,7 @@ function get_browser_language(): false|string
     $language_header = strtolower(
         str_replace('-', '_', $language_header)
     );
-    $match_pattern = '/(([a-z]{1,8})(?:_[a-z0-9]{1,8})*)\s*(?:;\s*q\s*=\s*([01](?:\.[0-9]{0,3})?))?/';
+    $match_pattern = '/(([a-z]{1,8})(?:_[a-z0-9]{1,8})*)\s*(?:;\s*q\s*=\s*([01](?:\.\d{0,3})?))?/';
     $matches = null;
     preg_match_all($match_pattern, $language_header, $matches);
     $accept_languages_full = $matches[1];  // ['en-us', 'fr-ch', 'kok-in']
@@ -781,7 +771,7 @@ function get_browser_language(): false|string
     // list all enabled language codes in the Piwigo installation
     // in both full and short forms, and case insensitive
     $languages_available = [];
-    foreach (get_languages() as $language_code => $language_name) {
+    foreach (array_keys(get_languages()) as $language_code) {
         $lowercase_full = strtolower($language_code);
         $lowercase_parts = explode('_', $lowercase_full, 2);
         $lowercase_prefix = $lowercase_parts[0];
@@ -789,7 +779,7 @@ function get_browser_language(): false|string
         $languages_available[$lowercase_prefix] = $language_code;
     }
 
-    foreach ($q_values as $i => $q_value) {
+    foreach (array_keys($q_values) as $i) {
         // if the exact language variant is present, make sure it's chosen
         // en-US;q=0.9 => en_us => en_US
         if (array_key_exists($accept_languages_full[$i], $languages_available)) {
@@ -822,7 +812,7 @@ function create_user_infos(
         $user_ids = [$user_ids];
     }
 
-    if (! empty($user_ids)) {
+    if ($user_ids !== []) {
         $inserts = [];
         [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
@@ -841,8 +831,7 @@ function create_user_infos(
             if ($user_id == $conf['webmaster_id']) {
                 $status = 'webmaster';
                 $level = max($conf['available_permission_levels']);
-            } elseif (($user_id == $conf['guest_id']) or
-                     ($user_id == $conf['default_user_id'])) {
+            } elseif ($user_id == $conf['guest_id'] || $user_id == $conf['default_user_id']) {
                 $status = 'guest';
             } else {
                 $status = 'normal';
@@ -1123,7 +1112,7 @@ function get_user_status(
 ): string {
     global $user;
 
-    if (empty($user_status)) {
+    if ($user_status === '' || $user_status === '0') {
         $user_status = $user['status'] ?? '';
     }
     return $user_status;
@@ -1140,7 +1129,7 @@ function get_access_type_status(
 ): int {
     global $conf;
 
-    $access_type_status = match (get_user_status($user_status)) {
+    return match (get_user_status($user_status)) {
         'guest' => $conf['guest_access'] ? ACCESS_GUEST : ACCESS_FREE,
         'generic' => ACCESS_GUEST,
         'normal' => ACCESS_CLASSIC,
@@ -1148,8 +1137,6 @@ function get_access_type_status(
         'webmaster' => ACCESS_WEBMASTER,
         default => ACCESS_FREE,
     };
-
-    return $access_type_status;
 }
 
 /**
@@ -1188,7 +1175,7 @@ function check_status(
 function is_generic(
     string $user_status = ''
 ): bool {
-    return get_user_status($user_status) == 'generic';
+    return get_user_status($user_status) === 'generic';
 }
 
 /**
@@ -1199,7 +1186,7 @@ function is_generic(
 function is_a_guest(
     string $user_status = ''
 ): bool {
-    return get_user_status($user_status) == 'guest';
+    return get_user_status($user_status) === 'guest';
 }
 
 /**
@@ -1258,19 +1245,10 @@ function can_manage_comment(
         return true;
     }
 
-    if ($action == 'edit' && $conf['user_can_edit_comment']) {
-        if ($comment_author_id == $user['id']) {
-            return true;
-        }
+    if ($action === 'edit' && $conf['user_can_edit_comment'] && $comment_author_id == $user['id']) {
+        return true;
     }
-
-    if ($action == 'delete' && $conf['user_can_delete_comment']) {
-        if ($comment_author_id == $user['id']) {
-            return true;
-        }
-    }
-
-    return false;
+    return $action === 'delete' && $conf['user_can_delete_comment'] && $comment_author_id == $user['id'];
 }
 
 /**
@@ -1345,13 +1323,13 @@ function get_sql_condition_FandF(
         }
     }
 
-    if (count($sql_list) > 0) {
+    if ($sql_list !== []) {
         $sql = '(' . implode(' AND ', $sql_list) . ')';
     } else {
         $sql = $force_one_condition ? '1 = 1' : '';
     }
 
-    if (isset($prefix_condition) && ! empty($sql)) {
+    if (isset($prefix_condition) && ($sql !== '' && $sql !== '0')) {
         $sql = $prefix_condition . ' ' . $sql;
     }
 
@@ -1591,9 +1569,9 @@ function userprefs_update_param(
     global $user;
 
     // If the field is true or false, the variable is transformed into a boolean value.
-    if ($value == 'true') {
+    if ($value === 'true') {
         $value = true;
-    } elseif ($value == 'false') {
+    } elseif ($value === 'false') {
         $value = false;
     }
 
@@ -1614,7 +1592,7 @@ function userprefs_delete_param(
     if (! is_array($params)) {
         $params = [$params];
     }
-    if (empty($params)) {
+    if ($params === []) {
         return;
     }
 

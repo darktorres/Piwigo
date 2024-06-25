@@ -57,7 +57,7 @@ SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter
 ;';
     $tag_counters = query2array($query, 'tag_id', 'counter');
 
-    if (empty($tag_counters)) {
+    if ($tag_counters === []) {
         return [];
     }
 
@@ -69,7 +69,7 @@ SELECT *
     $tags = [];
     while ($row = pwg_db_fetch_assoc($result)) {
         $counter = intval($tag_counters[$row['id']]);
-        if ($counter) {
+        if ($counter !== 0) {
             $row['counter'] = $counter;
             $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
             $tags[] = $row;
@@ -172,7 +172,7 @@ function get_image_ids_for_tags(
     bool $use_permissions = true
 ): array {
     global $conf;
-    if (empty($tag_ids)) {
+    if ($tag_ids === []) {
         return [];
     }
 
@@ -200,14 +200,14 @@ SELECT id
         );
     }
 
-    $query .= (empty($extra_images_where_sql) ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
+    $query .= ($extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
   GROUP BY id';
 
-    if ($mode == 'AND' && count($tag_ids) > 1) {
+    if ($mode === 'AND' && count($tag_ids) > 1) {
         $query .= '
   HAVING COUNT(DISTINCT tag_id)=' . count($tag_ids);
     }
-    $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
+    $query .= "\n" . ($order_by === '' || $order_by === '0' ? $conf['order_by'] : $order_by);
 
     return query2array($query, null, 'id');
 }
@@ -225,7 +225,7 @@ function get_common_tags(
     array $excluded_tag_ids = [
     ]
 ): array {
-    if (empty($items)) {
+    if ($items === []) {
         return [];
     }
     $query = '
@@ -233,7 +233,7 @@ SELECT t.*, count(*) AS counter
   FROM ' . IMAGE_TAG_TABLE . '
     INNER JOIN ' . TAGS_TABLE . ' t ON tag_id = id
   WHERE image_id IN (' . implode(',', $items) . ')';
-    if (! empty($excluded_tag_ids)) {
+    if ($excluded_tag_ids !== []) {
         $query .= '
     AND tag_id NOT IN (' . implode(',', $excluded_tag_ids) . ')';
     }
@@ -272,18 +272,18 @@ function find_tags(
     ]
 ): array {
     $where_clauses = [];
-    if (! empty($ids)) {
+    if ($ids !== []) {
         $where_clauses[] = 'id IN (' . implode(',', $ids) . ')';
     }
-    if (! empty($url_names)) {
+    if ($url_names !== []) {
         $where_clauses[] =
           'url_name IN (\'' . implode('\', \'', $url_names) . '\')';
     }
-    if (! empty($names)) {
+    if ($names !== []) {
         $where_clauses[] =
           'name IN (\'' . implode('\', \'', $names) . '\')';
     }
-    if (empty($where_clauses)) {
+    if ($where_clauses === []) {
         return [];
     }
 

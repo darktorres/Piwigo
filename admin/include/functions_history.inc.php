@@ -83,7 +83,7 @@ SELECT
             }
         }
 
-        if (count($local_clauses) > 0) {
+        if ($local_clauses !== []) {
             $clauses[] = implode(' OR ', $local_clauses);
         }
     }
@@ -98,12 +98,10 @@ SELECT
     }
 
     if (isset($search['fields']['filename'])) {
-        if (count($search['image_ids']) == 0) {
-            // a clause that is always false
-            $clauses[] = '1 = 2 ';
-        } else {
-            $clauses[] = 'image_id IN (' . implode(', ', $search['image_ids']) . ')';
-        }
+        $clauses[] = count($search['image_ids']) == 0 ? '1 = 2 ' : 'image_id IN (' . implode(
+            ', ',
+            $search['image_ids']
+        ) . ')';
     }
 
     if (isset($search['fields']['ip'])) {
@@ -164,7 +162,7 @@ SELECT
     $summary_lines = query2array($query);
 
     $history_min_id = 0;
-    if (count($summary_lines) > 0) {
+    if ($summary_lines !== []) {
         $last_summary = $summary_lines[0];
         $history_min_id = $last_summary['history_id_to'];
     } else {
@@ -177,7 +175,7 @@ SELECT
   FROM ' . HISTORY_TABLE . '
 ;';
         $history_lines = query2array($query);
-        if (count($history_lines) > 0) {
+        if ($history_lines !== []) {
             $history_min_id = $history_lines[0]['min_id'] - 1;
         }
     }
@@ -320,7 +318,7 @@ SELECT *
         ];
     }
 
-    if (count($updates) > 0) {
+    if ($updates !== []) {
         mass_updates(
             HISTORY_SUMMARY_TABLE,
             [
@@ -331,7 +329,7 @@ SELECT *
         );
     }
 
-    if (count($inserts) > 0) {
+    if ($inserts !== []) {
         mass_inserts(
             HISTORY_SUMMARY_TABLE,
             array_keys($inserts[0]),
@@ -415,7 +413,7 @@ SELECT
 
     $history_id_delete_before = min($search_min);
 
-    $logger->debug(__FUNCTION__ . ', ' . join('/', $search_min));
+    $logger->debug(__FUNCTION__ . ', ' . implode('/', $search_min));
 
     $query = '
 DELETE

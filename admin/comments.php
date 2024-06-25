@@ -15,11 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
-if (isset($_GET['start']) && is_numeric($_GET['start'])) {
-    $page['start'] = $_GET['start'];
-} else {
-    $page['start'] = 0;
-}
+$page['start'] = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['start'] : 0;
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -31,7 +27,7 @@ check_status(ACCESS_ADMINISTRATOR);
 // |                                actions                                |
 // +-----------------------------------------------------------------------+
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     if (empty($_POST['comments'])) {
         $page['errors'][] = l10n('Select at least one comment');
     } else {
@@ -110,11 +106,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     }
 }
 
-if (! isset($_GET['filter']) && $nb_pending > 0) {
-    $page['filter'] = 'pending';
-} else {
-    $page['filter'] = 'all';
-}
+$page['filter'] = ! isset($_GET['filter']) && $nb_pending > 0 ? 'pending' : 'all';
 
 if (isset($_GET['filter']) && $_GET['filter'] == 'pending') {
     $page['filter'] = $_GET['filter'];
@@ -164,11 +156,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
             'representative_ext' => $row['representative_ext'],
         ]
     );
-    if (empty($row['author_id'])) {
-        $author_name = $row['author'];
-    } else {
-        $author_name = stripslashes((string) $row['username']);
-    }
+    $author_name = empty($row['author_id']) ? $row['author'] : stripslashes((string) $row['username']);
     $template->append(
         'comments',
         [

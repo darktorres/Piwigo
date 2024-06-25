@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 class tabsheet
 {
-    public array $sheets;
+    public array $sheets = [];
 
-    public $uniqid;
+    public $uniqid = null;
 
-    public string $selected;
+    public string $selected = '';
 
     /*
       $name is the tabsheet's name inside the template .tpl file
@@ -25,9 +25,6 @@ class tabsheet
         public mixed $name = 'TABSHEET',
         public mixed $titlename = 'TABSHEET_TITLE'
     ) {
-        $this->sheets = [];
-        $this->uniqid = null;
-        $this->selected = '';
     }
 
     public function set_id($id): void
@@ -113,7 +110,7 @@ class tabsheet
      */
     public function get_selected(): mixed
     {
-        if (! empty($this->selected)) {
+        if ($this->selected !== '' && $this->selected !== '0') {
             return $this->sheets[$this->selected];
         }
 

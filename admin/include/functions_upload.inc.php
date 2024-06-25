@@ -56,7 +56,7 @@ function get_upload_form_config(): array
 
 function save_upload_form_config($data, array &$errors = [], array &$form_errors = []): bool
 {
-    if (! is_array($data) || empty($data)) {
+    if (! is_array($data) || $data === []) {
         return false;
     }
 
@@ -68,12 +68,7 @@ function save_upload_form_config($data, array &$errors = [], array &$form_errors
             continue;
         }
         if (is_bool($upload_form_config[$field]['default'])) {
-            if (isset($value)) {
-                $value = true;
-            } else {
-                $value = false;
-            }
-
+            $value = isset($value);
             $updates[] = [
                 'param' => $field,
                 'value' => boolean_to_string($value),
@@ -237,27 +232,24 @@ SELECT
         $representative_ext = null;
     }
 
-    if (pwg_image::get_library() != 'gd') {
-        if ($conf['original_resize']) {
-            $need_resize = need_resize(
+    if (pwg_image::get_library() != 'gd' && $conf['original_resize']) {
+        $need_resize = need_resize(
+            $file_path,
+            $conf['original_resize_maxwidth'],
+            $conf['original_resize_maxheight']
+        );
+        if ($need_resize) {
+            $img = new pwg_image($file_path);
+
+            $img->pwg_resize(
                 $file_path,
                 $conf['original_resize_maxwidth'],
-                $conf['original_resize_maxheight']
+                $conf['original_resize_maxheight'],
+                $conf['original_resize_quality'],
+                $conf['upload_form_automatic_rotation']
             );
 
-            if ($need_resize) {
-                $img = new pwg_image($file_path);
-
-                $img->pwg_resize(
-                    $file_path,
-                    $conf['original_resize_maxwidth'],
-                    $conf['original_resize_maxheight'],
-                    $conf['original_resize_quality'],
-                    $conf['upload_form_automatic_rotation']
-                );
-
-                $img->destroy();
-            }
+            $img->destroy();
         }
     }
 
@@ -471,7 +463,7 @@ function upload_file_pdf($representative_ext, $file_path): mixed
         return $representative_ext;
     }
 
-    if (strtolower(get_extension($file_path)) != 'pdf') {
+    if (strtolower(get_extension($file_path)) !== 'pdf') {
         return $representative_ext;
     }
 
@@ -667,12 +659,7 @@ function need_resize($image_filepath, $max_width, $max_height): bool
     // rotation must be applied to the resized photo, then we should test
     // invert width and height.
     [$width, $height] = getimagesize($image_filepath);
-
-    if ($width > $max_width || $height > $max_height) {
-        return true;
-    }
-
-    return false;
+    return $width > $max_width || $height > $max_height;
 }
 
 function pwg_image_infos($path): array
@@ -735,11 +722,11 @@ function convert_shorthand_notation_to_bytes($value): mixed
     $suffix = substr((string) $value, -1);
     $multiply_by = null;
 
-    if ($suffix == 'K') {
+    if ($suffix === 'K') {
         $multiply_by = 1024;
-    } elseif ($suffix == 'M') {
+    } elseif ($suffix === 'M') {
         $multiply_by = 1024 * 1024;
-    } elseif ($suffix == 'G') {
+    } elseif ($suffix === 'G') {
         $multiply_by = 1024 * 1024 * 1024;
     }
 
@@ -769,16 +756,13 @@ function ready_for_upload_message(): ?string
                 $relative_dir
             );
         }
-    } else {
+    } elseif (! is_writable($conf['upload_dir'])) {
+        chmod($conf['upload_dir'], 0777);
         if (! is_writable($conf['upload_dir'])) {
-            chmod($conf['upload_dir'], 0777);
-
-            if (! is_writable($conf['upload_dir'])) {
-                return sprintf(
-                    l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
-                    $relative_dir
-                );
-            }
+            return sprintf(
+                l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
+                $relative_dir
+            );
         }
     }
 

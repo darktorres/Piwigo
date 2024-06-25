@@ -119,10 +119,13 @@ class PwgNamedStruct
         } else {
             $this->_xmlAttributes = [];
             foreach ($this->_content as $key => $value) {
-                if (! empty($key) && (is_scalar($value) || $value === null)) {
-                    if (empty($xmlElements) || ! in_array($key, $xmlElements)) {
-                        $this->_xmlAttributes[$key] = 1;
-                    }
+                if ($key !== 0 && ($key !== '' && $key !== '0') && (is_scalar(
+                    $value
+                ) || $value === null) && (empty($xmlElements) || ! in_array(
+                    $key,
+                    $xmlElements
+                ))) {
+                    $this->_xmlAttributes[$key] = 1;
                 }
             }
         }
@@ -165,14 +168,13 @@ abstract class PwgResponseEncoder
     public static function is_struct(
         $data
     ): bool {
-        if (is_array($data)) {
-            if (range(0, count($data) - 1) !== array_keys(
-                $data
-            )) { # string keys, unordered, non-incremental keys, .. - whatever, make object
-                return true;
-            }
-        }
-        return false;
+        # string keys, unordered, non-incremental keys, .. - whatever, make object
+        return is_array($data) && range(
+            0,
+            count($data) - 1
+        ) !== array_keys(
+            $data
+        );
     }
 
     /**
@@ -189,10 +191,10 @@ abstract class PwgResponseEncoder
     {
         if (is_object($value)) {
             $class = strtolower($value::class);
-            if ($class == 'pwgnamedarray') {
+            if ($class === 'pwgnamedarray') {
                 $value = $value->_content;
             }
-            if ($class == 'pwgnamedstruct') {
+            if ($class === 'pwgnamedstruct') {
                 $value = $value->_content;
             }
         }
@@ -201,11 +203,9 @@ abstract class PwgResponseEncoder
             return;
         }
 
-        if (self::is_struct($value)) {
-            if (isset($value[WS_XML_ATTRIBUTES])) {
-                $value = array_merge($value, $value[WS_XML_ATTRIBUTES]);
-                unset($value[WS_XML_ATTRIBUTES]);
-            }
+        if (self::is_struct($value) && isset($value[WS_XML_ATTRIBUTES])) {
+            $value = array_merge($value, $value[WS_XML_ATTRIBUTES]);
+            unset($value[WS_XML_ATTRIBUTES]);
         }
 
         foreach ($value as $key => &$v) {
@@ -398,17 +398,15 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
 
     public static function isPost(): bool
     {
-        return isset($HTTP_RAW_POST_DATA) || ! empty($_POST);
+        return isset($HTTP_RAW_POST_DATA) || $_POST !== [];
     }
 
     public static function makeArrayParam(&$param): void
     {
         if ($param == null) {
             $param = [];
-        } else {
-            if (! is_array($param)) {
-                $param = [$param];
-            }
+        } elseif (! is_array($param)) {
+            $param = [$param];
         }
     }
 
@@ -538,10 +536,12 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                     self::makeArrayParam($the_param);
                 }
 
-                if ($options['type'] > 0) {
-                    if (($ret = self::checkType($the_param, $options['type'], $name)) !== null) {
-                        return $ret;
-                    }
+                if ($options['type'] > 0 && ($ret = self::checkType(
+                    $the_param,
+                    $options['type'],
+                    $name
+                )) instanceof \PwgError) {
+                    return $ret;
                 }
 
                 if (isset($options['maxValue']) && $the_param > $options['maxValue']) {
@@ -552,7 +552,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
             }
         }
 
-        if (count($missing_params)) {
+        if ($missing_params !== []) {
             return new PwgError(WS_ERR_MISSING_PARAM, 'Missing parameters: ' . implode(',', $missing_params));
         }
 

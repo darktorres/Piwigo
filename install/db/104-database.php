@@ -51,7 +51,7 @@ foreach ($upload_form_config as $param_shortname => $param) {
     }
 }
 
-if (count($inserts) > 0) {
+if ($inserts !== []) {
     mass_inserts(
         CONFIG_TABLE,
         array_keys($inserts[0]),

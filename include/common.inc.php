@@ -70,15 +70,19 @@ $header_notes = [];
 $filter = [];
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-file_exists(
+if (file_exists(
     PHPWG_ROOT_PATH . 'local/config/config.inc.php'
-) && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+)) {
+    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+}
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
-file_exists(
+if (file_exists(
     PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php'
-) && include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+)) {
+    include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+}
 if (! defined('PHPWG_INSTALLED')) {
     header('Location: install.php');
     exit;
@@ -122,10 +126,10 @@ $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] .
     'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
 ]);
 
-if (! $conf['check_upgrade_feed']) {
-    if (! isset($conf['piwigo_db_version']) || $conf['piwigo_db_version'] != get_branch_from_version(PHPWG_VERSION)) {
-        redirect(get_root_url() . 'upgrade.php');
-    }
+if (! $conf['check_upgrade_feed'] && (! isset($conf['piwigo_db_version']) || $conf['piwigo_db_version'] != get_branch_from_version(
+    PHPWG_VERSION
+))) {
+    redirect(get_root_url() . 'upgrade.php');
 }
 
 ImageStdParams::load_from_db();
@@ -207,7 +211,7 @@ if (defined('IN_ADMIN') && IN_ADMIN) {// Admin template
     ));
 } else { // Classic template
     $theme = $user['theme'];
-    if (script_basename() != 'ws' && mobile_theme()) {
+    if (script_basename() !== 'ws' && mobile_theme()) {
         $theme = $conf['mobile_theme'];
     }
     $template = new Template(PHPWG_ROOT_PATH . 'themes', $theme);
@@ -217,16 +221,14 @@ if (! isset($conf['no_photo_yet'])) {
     include(PHPWG_ROOT_PATH . 'include/no_photo_yet.inc.php');
 }
 
-if (isset($user['internal_status']['guest_must_be_guest'])
-    and
-    $user['internal_status']['guest_must_be_guest'] === true) {
+if (isset($user['internal_status']['guest_must_be_guest']) && $user['internal_status']['guest_must_be_guest'] === true) {
     $header_msgs[] = l10n('Bad status for user "guest", using default status. Please notify the webmaster.');
 }
 
 if ($conf['gallery_locked']) {
     $header_msgs[] = l10n('The gallery is locked for maintenance. Please, come back later.');
 
-    if (script_basename() != 'identification' && ! is_admin()) {
+    if (script_basename() !== 'identification' && ! is_admin()) {
         set_status_header(503, 'Service Unavailable');
         header('Retry-After: 900');
         header('Content-Type: text/html; charset=utf-8');
@@ -241,14 +243,13 @@ if ($conf['gallery_locked']) {
 if ($conf['check_upgrade_feed']) {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
     if (check_upgrade_feed()) {
-        $header_msgs[] = 'Some database upgrades are missing, '
-          . '<a href="' . get_absolute_root_url(
-              false
-          ) . 'upgrade_feed.php">upgrade now</a>';
+        $header_msgs[] = 'Some database upgrades are missing, <a href="' . get_absolute_root_url(
+            false
+        ) . 'upgrade_feed.php">upgrade now</a>';
     }
 }
 
-if (count($header_msgs) > 0) {
+if ($header_msgs !== []) {
     $template->assign('header_msgs', $header_msgs);
     $header_msgs = [];
 }

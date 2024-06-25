@@ -62,7 +62,7 @@ if (isset($_POST['submit'])) {
     if ($image_order_choice == 'user_define') {
         for ($i = 0; $i < 3; $i++) {
             if (! empty($_POST['image_order'][$i])) {
-                if (! empty($image_order)) {
+                if ($image_order !== null && $image_order !== '' && $image_order !== '0') {
                     $image_order .= ',';
                 }
                 $image_order .= $_POST['image_order'][$i];

@@ -56,12 +56,12 @@ function ws_users_getList(
         while ($row = pwg_db_fetch_assoc($filtered_groups_res)) {
             $filtered_groups[] = $row['id'];
         }
-        $filter_where_clause = '(' . 'u.' . $conf['user_fields']['username'] . ' LIKE \'%' .
+        $filter_where_clause = '(u.' . $conf['user_fields']['username'] . ' LIKE \'%' .
         pwg_db_real_escape_string($params['filter']) . '%\' OR '
         . 'u.' . $conf['user_fields']['email'] . ' LIKE \'%' .
         pwg_db_real_escape_string($params['filter']) . '%\'';
 
-        if (! empty($filtered_groups)) {
+        if ($filtered_groups !== []) {
             $filter_where_clause .= 'OR ug.group_id IN (' . implode(',', $filtered_groups) . ')';
         }
         $where_clauses[] = $filter_where_clause . ')';
@@ -85,7 +85,7 @@ function ws_users_getList(
 
     if (! empty($params['status'])) {
         $params['status'] = array_intersect($params['status'], get_enums(USER_INFOS_TABLE, 'status'));
-        if (count($params['status']) > 0) {
+        if ($params['status'] !== []) {
             $where_clauses[] = 'ui.status IN("' . implode('","', $params['status']) . '")';
         }
     }
@@ -201,7 +201,7 @@ SELECT DISTINCT ';
   WHERE
     ' . implode(' AND ', $where_clauses) . '
   ORDER BY ' . $params['order'];
-    if ($params['per_page'] != 0 || ! empty($params['display'])) {
+    if ($params['per_page'] != 0 || isset($params['display']) && $params['display'] !== []) {
         $query .= '
     LIMIT ' . $params['per_page'] . '
     OFFSET ' . ($params['per_page'] * $params['page']) . ';
@@ -224,7 +224,7 @@ SELECT DISTINCT ';
     }
 
     $users_id_arr = [];
-    if (count($users) > 0) {
+    if ($users !== []) {
         if (isset($params['display']['groups'])) {
             $query = '
   SELECT user_id, group_id
@@ -352,10 +352,8 @@ function ws_users_add(
 
     global $conf;
 
-    if ($conf['double_password_type_in_admin']) {
-        if ($params['password'] != $params['password_confirm']) {
-            return new PwgError(WS_ERR_INVALID_PARAM, l10n('The passwords do not match'));
-        }
+    if ($conf['double_password_type_in_admin'] && $params['password'] != $params['password_confirm']) {
+        return new PwgError(WS_ERR_INVALID_PARAM, l10n('The passwords do not match'));
     }
 
     $user_id = register_user(
@@ -654,7 +652,7 @@ UPDATE ' . USER_INFOS_TABLE . ' SET
         }
     }
 
-    if (count($updates_infos) > 0) {
+    if ($updates_infos !== []) {
         $query = '
 UPDATE ' . USER_INFOS_TABLE . ' SET ';
 
@@ -695,7 +693,7 @@ SELECT
         // if only -1 (a group id that can't exist) is in the list, then no
         // group is associated
 
-        if (count($group_ids) > 0) {
+        if ($group_ids !== []) {
             $inserts = [];
 
             foreach ($group_ids as $group_id) {
@@ -845,7 +843,7 @@ function ws_users_favorites_getList(
     check_user_favorites();
 
     $order_by = ws_std_image_sql_order($params, 'i.');
-    $order_by = empty($order_by) ? $conf['order_by'] : 'ORDER BY ' . $order_by;
+    $order_by = $order_by === '' || $order_by === '0' ? $conf['order_by'] : 'ORDER BY ' . $order_by;
 
     $query = '
 SELECT

@@ -121,14 +121,16 @@ SELECT
         $sessions_to_delete = [];
 
         foreach ($sessions as $session) {
-            if (preg_match('/pwg_uid\|i:(\d+);/', (string) $session['data'], $matches)) {
-                if (! isset($all_user_ids[$matches[1]])) {
-                    $sessions_to_delete[] = $session['id'];
-                }
+            if (preg_match(
+                '/pwg_uid\|i:(\d+);/',
+                (string) $session['data'],
+                $matches
+            ) && ! isset($all_user_ids[$matches[1]])) {
+                $sessions_to_delete[] = $session['id'];
             }
         }
 
-        if (count($sessions_to_delete) > 0) {
+        if ($sessions_to_delete !== []) {
             $query = '
 DELETE
   FROM ' . SESSIONS_TABLE . '
@@ -215,7 +217,7 @@ DELETE
             }
             // concatenation needed to avoid automatic transformation by release
             // script generator
-            elseif ('%' . 'PWGVERSION' . '%' == $versions['current']) {
+            elseif ($versions['current'] == '%PWGVERSION%') {
                 $page['infos'][] = l10n('You are running on development sources, no check possible.');
             } elseif (version_compare($versions['current'], $versions['latest']) < 0) {
                 $page['infos'][] = l10n('A new version of Piwigo is available.');
@@ -346,7 +348,7 @@ SELECT
   WHERE user_id = 2
 ;';
 $users = query2array($query);
-if (count($users) > 0) {
+if ($users !== []) {
     $installed_on = $users[0]['registration_date'];
 
     if (! empty($installed_on)) {

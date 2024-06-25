@@ -18,7 +18,7 @@ function get_cat_id_from_permalink(
 SELECT id FROM ' . CATEGORIES_TABLE . '
   WHERE permalink=\'' . $permalink . '\'';
     $ids = query2array($query, null, 'id');
-    if (! empty($ids)) {
+    if ($ids !== []) {
         return $ids[0];
     }
     return null;

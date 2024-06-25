@@ -34,7 +34,7 @@ function upgrade65_change_table_to_blob($table, $field_definitions): void
         $binaryType = preg_replace('/' . $type . '/i', $types[$type], $row['Type']);
         $changes[] = 'MODIFY COLUMN ' . $row['Field'] . ' ' . $binaryType;
     }
-    if (count($changes)) {
+    if ($changes !== []) {
         $query = 'ALTER TABLE ' . $table . ' ' . implode(', ', $changes);
         pwg_query($query);
     }
@@ -57,12 +57,10 @@ function upgrade65_change_table_to_charset($table, $field_definitions, $db_chars
             if (isset($row['Default'])) {
                 $query .= ' DEFAULT "' . addslashes((string) $row['Default']) . '"';
             }
+        } elseif (! isset($row['Default'])) {
+            $query .= ' DEFAULT NULL';
         } else {
-            if (! isset($row['Default'])) {
-                $query .= ' DEFAULT NULL';
-            } else {
-                $query .= ' DEFAULT "' . addslashes((string) $row['Default']) . '"';
-            }
+            $query .= ' DEFAULT "' . addslashes((string) $row['Default']) . '"';
         }
 
         if ($row['Extra'] == 'auto_increment') {
@@ -71,7 +69,7 @@ function upgrade65_change_table_to_charset($table, $field_definitions, $db_chars
         $changes[] = 'MODIFY COLUMN ' . $query;
     }
 
-    if (count($changes)) {
+    if ($changes !== []) {
         $query = 'ALTER TABLE `' . $table . '` ' . implode(', ', $changes);
         pwg_query($query);
     }
@@ -185,7 +183,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
     $db_collate = '';
     if (version_compare($mysql_version, '4.1', '<')) { // below 4.1 no charset support
         $upgrade_log .= "< conversion\tnothing\n";
-    } elseif ($admin_charset == 'iso-8859-1') {
+    } elseif ($admin_charset === 'iso-8859-1') {
         $pwg_charset = 'utf-8';
         $db_charset = 'utf8';
         foreach ($all_tables as $table) {
@@ -202,7 +200,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
     ALTER TABLE t1 CHANGE c1 c1 BLOB;
     ALTER TABLE t1 CHANGE c1 c1 TEXT CHARACTER SET utf8;
     */
-    elseif ($admin_charset == 'utf-8') {
+    elseif ($admin_charset === 'utf-8') {
         $pwg_charset = 'utf-8';
         $db_charset = 'utf8';
         foreach ($all_tables as $table) {
@@ -215,7 +213,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
         }
         $upgrade_log .= "< conversion\tchange binary\n";
         $upgrade_log .= "< conversion\tchange utf8\n";
-    } elseif ($admin_charset == 'iso-8859-2'/*Central European*/) {
+    } elseif ($admin_charset === 'iso-8859-2'/*Central European*/) {
         $pwg_charset = 'utf-8';
         $db_charset = 'utf8';
         foreach ($all_tables as $table) {
@@ -250,14 +248,14 @@ define(\'DB_COLLATE\',  \'\');';
     define('DB_CHARSET', $db_charset);
     define('DB_COLLATE', '');
 
-    if (version_compare(mysql_get_server_info(), '4.1.0', '>=') && DB_CHARSET != '') {
+    if (version_compare(mysql_get_server_info(), '4.1.0', '>=') && DB_CHARSET !== '') {
         pwg_query('SET NAMES "' . DB_CHARSET . '"');
     }
 
     echo $upgrade_log;
     $fp = fopen(PHPWG_ROOT_PATH . 'upgrade65.log', 'w');
     if ($fp) {
-        fputs($fp, $upgrade_log, strlen($upgrade_log));
+        fwrite($fp, $upgrade_log, strlen($upgrade_log));
         fclose($fp);
     }
 

@@ -24,8 +24,9 @@ function ws_tags_getList(
     } else {
         usort($tags, 'tag_alpha_compare');
     }
+    $counter = count($tags);
 
-    for ($i = 0; $i < count($tags); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         $tags[$i]['id'] = (int) $tags[$i]['id'];
         $tags[$i]['counter'] = (int) $tags[$i]['counter'];
         $tags[$i]['url'] = make_index_url(
@@ -96,12 +97,12 @@ function ws_tags_getImages(
     $tag_ids = array_keys($tags_by_id);
 
     $where_clauses = ws_std_image_sql_filter($params);
-    if (! empty($where_clauses)) {
+    if ($where_clauses !== []) {
         $where_clauses = implode(' AND ', $where_clauses);
     }
 
     $order_by = ws_std_image_sql_order($params, 'i.');
-    if (! empty($order_by)) {
+    if ($order_by !== '' && $order_by !== '0') {
         $order_by = 'ORDER BY ' . $order_by;
     }
     $image_ids = get_image_ids_for_tags(
@@ -116,7 +117,7 @@ function ws_tags_getImages(
 
     $image_tag_map = [];
     // build list of image ids with associated tags per image
-    if (! empty($image_ids) && ! $params['tag_mode_and']) {
+    if ($image_ids !== [] && ! $params['tag_mode_and']) {
         $query = '
 SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
   FROM ' . IMAGE_TAG_TABLE . '
@@ -133,7 +134,7 @@ SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
     }
 
     $images = [];
-    if (! empty($image_ids)) {
+    if ($image_ids !== []) {
         $rank_of = array_flip($image_ids);
         $favorite_ids = get_user_favorites();
 
@@ -398,7 +399,7 @@ SELECT image_id
         ]);
     }
 
-    if (count($inserts) > 0) {
+    if ($inserts !== []) {
         mass_inserts(
             IMAGE_TAG_TABLE,
             array_keys($inserts[0]),

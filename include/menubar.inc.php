@@ -28,7 +28,7 @@ function initialize_menu(): void
     }
     $menu->prepare_display();
 
-    if (($page['section'] ?? null) === 'search' and isset($page['qsearch_details'])) {
+    if (($page['section'] ?? null) === 'search' && isset($page['qsearch_details'])) {
         $template->assign('QUERY_SEARCH', htmlspecialchars((string) $page['qsearch_details']['q']));
     }
 
@@ -45,9 +45,7 @@ function initialize_menu(): void
             }
 
             if (
-                (! isset($url_data['eval_visible']))
-                or
-                (eval($url_data['eval_visible']))
+                ! isset($url_data['eval_visible']) || eval($url_data['eval_visible'])
             ) {
                 $tpl_var = [
                     'URL' => $url,
@@ -64,7 +62,7 @@ function initialize_menu(): void
                 $block->data[] = $tpl_var;
             }
         }
-        if (! empty($block->data)) {
+        if ($block->data !== null && $block->data !== []) {
             $block->template = 'menubar_links.tpl';
         }
     }
@@ -130,14 +128,14 @@ function initialize_menu(): void
             'MENU_CATEGORIES' => get_related_categories_menu($page['items'], $exclude_cat_ids),
         ];
 
-        if (! empty($block->data['MENU_CATEGORIES'])) {
+        if (isset($block->data['MENU_CATEGORIES']) && $block->data['MENU_CATEGORIES'] !== []) {
             $block->template = 'menubar_related_categories.tpl';
         }
     }
 
     //------------------------------------------------------------------------ tags
     $block = $menu->get_block('mbTags');
-    if ($block != null && script_basename() != 'picture') {
+    if ($block != null && script_basename() !== 'picture') {
         if ('tags' === ($page['section'] ?? null)) {
             $tags = get_common_tags(
                 $page['items'],

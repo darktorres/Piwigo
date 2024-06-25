@@ -39,11 +39,7 @@ check_input_parameter(
     '/^[a-z]+$/i'
 );
 
-if (! isset($_GET['section'])) {
-    $page['section'] = 'main';
-} else {
-    $page['section'] = $_GET['section'];
-}
+$page['section'] = $_GET['section'] ?? 'main';
 
 $main_checkboxes = [
     'allow_user_registration',
@@ -171,7 +167,7 @@ if (isset($_POST['submit'])) {
                             $used[$val] = true;
                         }
                     }
-                    if (! count($_POST['order_by'])) {
+                    if (count($_POST['order_by']) === 0) {
                         $page['errors'][] = l10n('No order field selected');
                     } else {
                         // limit to the number of available parameters
@@ -208,12 +204,10 @@ if (isset($_POST['submit'])) {
                 $_POST['email_admin_on_new_user'] = 'none';
             } elseif ($_POST['email_admin_on_new_user_filter'] == 'all') {
                 $_POST['email_admin_on_new_user'] = 'all';
+            } elseif (empty($_POST['email_admin_on_new_user_filter_group'])) {
+                $_POST['email_admin_on_new_user'] = 'all';
             } else {
-                if (empty($_POST['email_admin_on_new_user_filter_group'])) {
-                    $_POST['email_admin_on_new_user'] = 'all';
-                } else {
-                    $_POST['email_admin_on_new_user'] = 'group:' . $_POST['email_admin_on_new_user_filter_group'];
-                }
+                $_POST['email_admin_on_new_user'] = 'group:' . $_POST['email_admin_on_new_user_filter_group'];
             }
 
             foreach ($main_checkboxes as $checkbox) {
@@ -278,10 +272,8 @@ if (isset($_POST['submit'])) {
             if (isset($_POST[$row['param']])) {
                 $value = $_POST[$row['param']];
 
-                if ($row['param'] == 'gallery_title') {
-                    if (! $conf['allow_html_descriptions']) {
-                        $value = strip_tags((string) $value);
-                    }
+                if ($row['param'] == 'gallery_title' && ! $conf['allow_html_descriptions']) {
+                    $value = strip_tags((string) $value);
                 }
 
                 $query = '
@@ -345,9 +337,11 @@ switch ($page['section']) {
         {
             $conf = [];
             include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-            file_exists(
+            if (file_exists(
                 PHPWG_ROOT_PATH . 'local/config/config.inc.php'
-            ) && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+            )) {
+                include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+            }
             if (isset($conf['local_dir_site'])) {
                 include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
             }

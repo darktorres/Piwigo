@@ -72,7 +72,7 @@ if (isset($_POST['submit'])) {
         ];
     }
 
-    if (isset($_POST['authors']) && is_array($_POST['authors']) && count($_POST['authors']) > 0) {
+    if (isset($_POST['authors']) && is_array($_POST['authors']) && $_POST['authors'] !== []) {
         $authors = [];
 
         foreach ($_POST['authors'] as $author) {
@@ -184,7 +184,7 @@ $template->assign(
 
 $available_tags = get_available_tags();
 
-if (count($available_tags) > 0) {
+if ($available_tags !== []) {
     usort($available_tags, 'tag_alpha_compare');
 
     $template->assign('TAGS', $available_tags);
@@ -246,7 +246,7 @@ display_select_cat_wrapper($query, [], 'category_options');
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theSearchPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theSearchPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 

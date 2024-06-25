@@ -113,11 +113,7 @@ if (isset($_POST['submit'])) {
         $data['comment'] = strip_tags((string) $_POST['description']);
     }
 
-    if (! empty($_POST['date_creation'])) {
-        $data['date_creation'] = $_POST['date_creation'];
-    } else {
-        $data['date_creation'] = null;
-    }
+    $data['date_creation'] = empty($_POST['date_creation']) ? null : $_POST['date_creation'];
 
     $data = trigger_change('picture_modify_before_update', $data);
 
@@ -152,12 +148,12 @@ if (isset($_POST['submit'])) {
     check_input_parameter('represent', $_POST, true, PATTERN_ID);
 
     $no_longer_thumbnail_for = array_diff($represented_albums, $_POST['represent']);
-    if (count($no_longer_thumbnail_for) > 0) {
+    if ($no_longer_thumbnail_for !== []) {
         set_random_representant($no_longer_thumbnail_for);
     }
 
     $new_thumbnail_for = array_diff($_POST['represent'], $represented_albums);
-    if (count($new_thumbnail_for) > 0) {
+    if ($new_thumbnail_for !== []) {
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = ' . $_GET['image_id'] . '
@@ -289,7 +285,7 @@ $intro_vars = [
     'stats' => l10n('Visited %d times', $row['hit']),
     'id' => l10n((string) $row['id']),
     'ext' => l10n('%s file type', strtoupper(end($extTab))),
-    'is_svg' => (strtoupper(end($extTab)) == 'SVG'),
+    'is_svg' => (strtoupper(end($extTab)) === 'SVG'),
 ];
 
 if ($conf['rate'] && ! empty($row['rating_score'])) {
@@ -315,7 +311,7 @@ SELECT *
 ;';
 $formats = query2array($query);
 
-if (! empty($formats)) {
+if ($formats !== []) {
     $format_strings = [];
 
     foreach ($formats as $format) {

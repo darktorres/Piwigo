@@ -70,7 +70,7 @@ SELECT id
     delete_elements($element_ids);
 
     // now, should we delete photos that are virtually linked to the category?
-    if ($photo_deletion_mode == 'delete_orphans' || $photo_deletion_mode == 'force_delete') {
+    if ($photo_deletion_mode === 'delete_orphans' || $photo_deletion_mode === 'force_delete') {
         $query = '
 SELECT
     DISTINCT(image_id)
@@ -79,8 +79,8 @@ SELECT
 ;';
         $image_ids_linked = query2array($query, null, 'image_id');
 
-        if (count($image_ids_linked) > 0) {
-            if ($photo_deletion_mode == 'delete_orphans') {
+        if ($image_ids_linked !== []) {
+            if ($photo_deletion_mode === 'delete_orphans') {
                 $query = '
 SELECT
     DISTINCT(image_id)
@@ -92,7 +92,7 @@ SELECT
                 $image_ids_to_delete = array_diff($image_ids_linked, $image_ids_not_orphans);
             }
 
-            if ($photo_deletion_mode == 'force_delete') {
+            if ($photo_deletion_mode === 'force_delete') {
                 $image_ids_to_delete = $image_ids_linked;
             }
 
@@ -321,7 +321,7 @@ SELECT
   WHERE representative_picture_id IN (' . $ids_str . ')
 ;';
     $category_ids = query2array($query, null, 'id');
-    if (count($category_ids) > 0) {
+    if ($category_ids !== []) {
         update_category($category_ids);
     }
 
@@ -390,7 +390,7 @@ function delete_orphan_tags(): void
 {
     $orphan_tags = get_orphan_tags();
 
-    if (count($orphan_tags) > 0) {
+    if ($orphan_tags !== []) {
         $orphan_tag_ids = [];
         foreach ($orphan_tags as $tag) {
             $orphan_tag_ids[] = $tag['id'];
@@ -451,7 +451,7 @@ SELECT DISTINCT c.id
 ;';
     $wrong_representant = query2array($query, null, 'id');
 
-    if (count($wrong_representant) > 0) {
+    if ($wrong_representant !== []) {
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = NULL
@@ -473,7 +473,7 @@ SELECT DISTINCT id
     AND ' . sprintf($where_cats, 'category_id') . '
 ;';
         $to_rand = query2array($query, null, 'id');
-        if (count($to_rand) > 0) {
+        if ($to_rand !== []) {
             set_random_representant($to_rand);
         }
     }
@@ -494,7 +494,7 @@ SELECT
 ;';
     $orphan_image_ids = query2array($query, null, 'image_id');
 
-    if (count($orphan_image_ids) > 0) {
+    if ($orphan_image_ids !== []) {
         $query = '
 DELETE
   FROM ' . IMAGE_CATEGORY_TABLE . '
@@ -530,7 +530,7 @@ SELECT
 ;';
         $orphans = array_unique(query2array($query, null, $column));
 
-        if (count($orphans) > 0) {
+        if ($orphans !== []) {
             $query = '
 DELETE
   FROM ' . $table . '
@@ -569,18 +569,16 @@ function get_fs_directories(
     );
     $exclude_folders = array_flip($exclude_folders);
 
-    if (is_dir($path)) {
-        if ($contents = opendir($path)) {
-            while (($node = readdir($contents)) !== false) {
-                if (is_dir($path . '/' . $node) && ! isset($exclude_folders[$node])) {
-                    $dirs[] = $path . '/' . $node;
-                    if ($recursive) {
-                        $dirs = array_merge($dirs, get_fs_directories($path . '/' . $node));
-                    }
+    if (is_dir($path) && ($contents = opendir($path))) {
+        while (($node = readdir($contents)) !== false) {
+            if (is_dir($path . '/' . $node) && ! isset($exclude_folders[$node])) {
+                $dirs[] = $path . '/' . $node;
+                if ($recursive) {
+                    $dirs = array_merge($dirs, get_fs_directories($path . '/' . $node));
                 }
             }
-            closedir($contents);
         }
+        closedir($contents);
     }
 
     return $dirs;
@@ -749,7 +747,7 @@ function set_cat_status(
     }
 
     // make public a category => all its parent categories become public
-    if ($value == 'public') {
+    if ($value === 'public') {
         $uppercats = get_uppercat_ids($categories);
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
@@ -760,7 +758,7 @@ UPDATE ' . CATEGORIES_TABLE . '
     }
 
     // make a category private => all its child categories become private
-    if ($value == 'private') {
+    if ($value === 'private') {
         $subcats = get_subcat_ids($categories);
 
         $query = '
@@ -844,7 +842,7 @@ SELECT
         // to find the reference of each top album, we will need the parent albums
         $parent_cats = [];
 
-        if (count($parent_ids) > 0) {
+        if ($parent_ids !== []) {
             $query = '
 SELECT
     id,
@@ -938,11 +936,7 @@ SELECT id,representative_ext,path
 ;';
 
     $row = pwg_db_fetch_assoc(pwg_query($query));
-    if ($size == null) {
-        $src = DerivativeImage::thumb_url($row);
-    } else {
-        $src = DerivativeImage::url($size, $row);
-    }
+    $src = $size == null ? DerivativeImage::thumb_url($row) : DerivativeImage::url($size, $row);
     $url = get_root_url() . 'admin.php?page=photo-' . $image_id;
 
     return [
@@ -1071,7 +1065,7 @@ function get_fs(
     if (is_dir($path)) {
         if ($contents = opendir($path)) {
             while (($node = readdir($contents)) !== false) {
-                if ($node == '.' || $node == '..') {
+                if ($node === '.' || $node === '..') {
                     continue;
                 }
 
@@ -1079,9 +1073,9 @@ function get_fs(
                     $extension = get_extension($node);
 
                     if (isset($conf['flip_picture_ext'][$extension])) {
-                        if (basename($path) == 'thumbnail') {
+                        if (basename($path) === 'thumbnail') {
                             $fs['thumbnails'][] = $path . '/' . $node;
-                        } elseif (basename($path) == 'pwg_representative') {
+                        } elseif (basename($path) === 'pwg_representative') {
                             $fs['representatives'][] = $path . '/' . $node;
                         } else {
                             $fs['elements'][] = $path . '/' . $node;
@@ -1089,7 +1083,7 @@ function get_fs(
                     } elseif (isset($conf['flip_file_ext'][$extension])) {
                         $fs['elements'][] = $path . '/' . $node;
                     }
-                } elseif (is_dir($path . '/' . $node) && $node != 'pwg_high' && $recursive) {
+                } elseif (is_dir($path . '/' . $node) && $node !== 'pwg_high' && $recursive) {
                     $subdirs[] = $node;
                 }
             }
@@ -1148,7 +1142,7 @@ SELECT user_id
         $infos_users
     );
 
-    if (count($to_create) > 0) {
+    if ($to_create !== []) {
         create_user_infos($to_create);
     }
 
@@ -1174,7 +1168,7 @@ SELECT DISTINCT user_id
             $base_users
         );
 
-        if (count($to_delete) > 0) {
+        if ($to_delete !== []) {
             $query = '
 DELETE
   FROM ' . $table . '
@@ -1372,7 +1366,7 @@ function create_virtual_category(
         $query = '
 SELECT MAX(`rank`) AS max_rank
   FROM ' . CATEGORIES_TABLE . '
-  WHERE id_uppercat ' . (empty($parent_id) ? 'IS NULL' : '= ' . $parent_id) . ' 
+  WHERE id_uppercat ' . ($parent_id === null || $parent_id === 0 ? 'IS NULL' : '= ' . $parent_id) . ' 
 ;';
         $row = pwg_db_fetch_assoc(pwg_query($query));
 
@@ -1419,7 +1413,7 @@ SELECT MAX(`rank`) AS max_rank
         );
     }
 
-    if (! empty($parent_id) && is_numeric($parent_id)) {
+    if ($parent_id !== null && $parent_id !== 0 && is_numeric($parent_id)) {
         $query = '
 SELECT id, uppercats, global_rank, visible, status
   FROM ' . CATEGORIES_TABLE . '
@@ -1645,7 +1639,7 @@ SELECT id
                 [],
                 $tag_name
             );
-            if (count($sub_name_where)) {
+            if (count($sub_name_where) > 0) {
                 $query = '
 SELECT id
   FROM ' . TAGS_TABLE . '
@@ -1687,7 +1681,7 @@ SELECT id
 function set_tags_of(
     array $tags_of
 ): void {
-    if (count($tags_of) > 0) {
+    if ($tags_of !== []) {
         $taglist_before = get_image_tag_ids(array_keys($tags_of));
         global $logger;
         $logger->debug('taglist_before', $taglist_before);
@@ -1710,7 +1704,7 @@ DELETE
             }
         }
 
-        if (count($inserts)) {
+        if ($inserts !== []) {
             mass_inserts(
                 IMAGE_TAG_TABLE,
                 array_keys($inserts[0]),
@@ -1811,7 +1805,7 @@ function fill_lounge(
         }
     }
 
-    if (count($inserts)) {
+    if ($inserts !== []) {
         mass_inserts(
             LOUNGE_TABLE,
             array_keys($inserts[0]),
@@ -1857,7 +1851,7 @@ INSERT IGNORE
     );
     [$running_exec_id] = explode('-', (string) $empty_lounge_running);
 
-    if ($running_exec_id != $exec_id) {
+    if ($running_exec_id !== $exec_id) {
         $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ', skip');
         return null;
     }
@@ -1986,7 +1980,7 @@ SELECT
         }
     }
 
-    if (count($inserts)) {
+    if ($inserts !== []) {
         mass_inserts(
             IMAGE_CATEGORY_TABLE,
             array_keys($inserts[0]),
@@ -2021,7 +2015,7 @@ DELETE ' . IMAGE_CATEGORY_TABLE . '.*
   WHERE id IN (' . implode(',', $images) . ')
 ';
 
-    if (is_array($categories) && count($categories) > 0) {
+    if (is_array($categories) && $categories !== []) {
         $query .= '
     AND category_id NOT IN (' . implode(',', $categories) . ')
 ';
@@ -2032,7 +2026,7 @@ DELETE ' . IMAGE_CATEGORY_TABLE . '.*
 ;';
     pwg_query($query);
 
-    if (is_array($categories) && count($categories) > 0) {
+    if (is_array($categories) && $categories !== []) {
         associate_images_to_categories($images, $categories);
     }
 }
@@ -2138,21 +2132,21 @@ function get_user_access_level_html_options(
 function get_extents(
     string $start = ''
 ): array {
-    if ($start == '') {
+    if ($start === '') {
         $start = './template-extension';
     }
     $dir = opendir($start);
     $extents = [];
 
     while (($file = readdir($dir)) !== false) {
-        if ($file == '.' || $file == '..' || $file == '.svn') {
+        if ($file === '.' || $file === '..' || $file === '.svn') {
             continue;
         }
         $path = $start . '/' . $file;
         if (is_dir($path)) {
             $extents = array_merge($extents, get_extents($path));
         } elseif (! is_link($path) && file_exists($path)
-                && get_extension($path) == 'tpl') {
+                && get_extension($path) === 'tpl') {
             $extents[] = substr($path, 21);
         }
     }
@@ -2206,16 +2200,12 @@ function cat_admin_access(
     int $category_id
 ): bool {
     global $user;
-
     // $filter['visible_categories'] and $filter['visible_images']
     // are not used because it's not necessary (filter <> restriction)
-    if (in_array(
+    return ! in_array(
         $category_id,
         explode(',', $user['forbidden_categories'] ?? '')
-    )) {
-        return false;
-    }
-    return true;
+    );
 }
 
 /**
@@ -2254,15 +2244,17 @@ function fetchRemote(
     }
 
     // Initialization
-    $method = empty($post_data) ? 'GET' : 'POST';
-    $request = empty($post_data) ? '' : http_build_query($post_data, '', '&');
-    if (! empty($get_data)) {
-        $src .= ! str_contains($src, '?') ? '?' : '&';
+    $method = $post_data === [] ? 'GET' : 'POST';
+    $request = $post_data === [] ? '' : http_build_query($post_data, '', '&');
+    if ($get_data !== []) {
+        $src .= str_contains($src, '?') ? '&' : '?';
         $src .= http_build_query($get_data, '', '&');
     }
 
     // Initialize $dest
-    is_resource($dest) || $dest = '';
+    if (! is_resource($dest)) {
+        $dest = '';
+    }
 
     // Try curl to read remote file
     if (function_exists('curl_init') && function_exists('curl_exec')) {
@@ -2280,7 +2272,7 @@ function fetchRemote(
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        if ($method == 'POST') {
+        if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         }
@@ -2300,12 +2292,7 @@ function fetchRemote(
 
     // Try file_get_contents to read remote file
     if (ini_get('allow_url_fopen')) {
-        if (str_contains($src, 'format=php')) {
-            $headers = "Content-type: application/x-www-form-urlencoded\r\n";
-        } else {
-            $headers = '';
-        }
-
+        $headers = str_contains($src, 'format=php') ? "Content-type: application/x-www-form-urlencoded\r\n" : '';
         $opts = [
             'http' => [
                 'method' => $method,
@@ -2313,7 +2300,7 @@ function fetchRemote(
                 'header' => $headers,
             ],
         ];
-        if ($method == 'POST') {
+        if ($method === 'POST') {
             $opts['http']['content'] = $request;
         }
         $context = stream_context_create($opts);
@@ -2336,7 +2323,7 @@ function fetchRemote(
 
     $http_request = $method . ' ' . $path . " HTTP/1.0\r\n";
     $http_request .= 'Host: ' . $host . "\r\n";
-    if ($method == 'POST') {
+    if ($method === 'POST') {
         $http_request .= "Content-Type: application/x-www-form-urlencoded;\r\n";
         $http_request .= 'Content-Length: ' . strlen($request) . "\r\n";
     }
@@ -2352,7 +2339,7 @@ function fetchRemote(
     while (! feof($s)) {
         $line = fgets($s);
 
-        if (rtrim($line, "\r\n") == '' && ! $in_content) {
+        if (rtrim($line, "\r\n") === '' && ! $in_content) {
             $in_content = true;
             $i++;
             continue;
@@ -2549,7 +2536,7 @@ function get_taglist(
     }
 
     usort($taglist, 'tag_alpha_compare');
-    if (count($altlist)) {
+    if ($altlist !== []) {
         usort($altlist, 'tag_alpha_compare');
         $taglist = array_merge($taglist, $altlist);
     }
@@ -2708,8 +2695,9 @@ function clear_derivative_cache(
     } elseif (! is_array($types)) {
         $types = [$types];
     }
+    $counter = count($types);
 
-    for ($i = 0; $i < count($types); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         $type = $types[$i];
         if ($type == IMG_CUSTOM) {
             $type = derivative_to_url($type) . '_[a-zA-Z0-9]+';
@@ -2731,8 +2719,8 @@ function clear_derivative_cache(
 
     if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
         while (($node = readdir($contents)) !== false) {
-            if ($node != '.'
-                && $node != '..'
+            if ($node !== '.'
+                && $node !== '..'
                 && is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)) {
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
             }
@@ -2752,19 +2740,17 @@ function clear_derivative_cache_rec($path, $pattern)
 
     if ($contents = opendir($path)) {
         while (($node = readdir($contents)) !== false) {
-            if ($node == '.' || $node == '..') {
+            if ($node === '.' || $node === '..') {
                 continue;
             }
             if (is_dir($path . '/' . $node)) {
                 $rmdir &= clear_derivative_cache_rec($path . '/' . $node, $pattern);
+            } elseif (preg_match($pattern, $node)) {
+                unlink($path . '/' . $node);
+            } elseif ($node === 'index.htm') {
+                $rm_index = true;
             } else {
-                if (preg_match($pattern, $node)) {
-                    unlink($path . '/' . $node);
-                } elseif ($node == 'index.htm') {
-                    $rm_index = true;
-                } else {
-                    $rmdir = false;
-                }
+                $rmdir = false;
             }
         }
         closedir($contents);
@@ -2798,11 +2784,7 @@ function delete_element_derivatives(
         $path = substr((string) $path, 3);
     }
     $dot = strrpos((string) $path, '.');
-    if ($type == 'all') {
-        $pattern = '-*';
-    } else {
-        $pattern = '-' . derivative_to_url($type) . '*';
-    }
+    $pattern = $type == 'all' ? '-*' : '-' . derivative_to_url($type) . '*';
     $path = substr_replace($path, $pattern, $dot, 0);
     if (($glob = glob(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $path)) !== false) {
         foreach ($glob as $file) {
@@ -2822,10 +2804,10 @@ function get_dirs(
     $sub_dirs = [];
     if ($opendir = opendir($directory)) {
         while ($file = readdir($opendir)) {
-            if ($file != '.'
-                && $file != '..'
+            if ($file !== '.'
+                && $file !== '..'
                 && is_dir($directory . '/' . $file)
-                && $file != '.svn') {
+                && $file !== '.svn') {
                 $sub_dirs[] = $file;
             }
         }
@@ -2847,7 +2829,7 @@ function deltree(
     if (is_dir($path)) {
         $fh = opendir($path);
         while ($file = readdir($fh)) {
-            if ($file != '.' && $file != '..') {
+            if ($file !== '.' && $file !== '..') {
                 $pathfile = $path . '/' . $file;
                 if (is_dir($pathfile)) {
                     deltree($pathfile, $trash_path);
@@ -2860,7 +2842,7 @@ function deltree(
 
         if (rmdir($path)) {
             return true;
-        } elseif (! empty($trash_path)) {
+        } elseif ($trash_path !== null && $trash_path !== '' && $trash_path !== '0') {
             if (! is_dir($trash_path)) {
                 mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
             }
@@ -2900,11 +2882,7 @@ function get_admin_client_cache_keys(
     if (! is_array($requested)) {
         $requested = [$requested];
     }
-    if (empty($requested)) {
-        $requested = array_keys($tables);
-    } else {
-        $requested = array_intersect($requested, array_keys($tables));
-    }
+    $requested = $requested === [] ? array_keys($tables) : array_intersect($requested, array_keys($tables));
 
     $keys = [
         '_hash' => md5(get_absolute_root_url()),
@@ -2997,7 +2975,7 @@ SELECT
     LEFT JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id
   WHERE category_id is null';
 
-    if (count($lounged_ids) > 0) {
+    if ($lounged_ids !== []) {
         $query .= '
     AND id NOT IN (' . implode(',', $lounged_ids) . ')';
     }
@@ -3081,7 +3059,7 @@ function number_format_human_readable(
     }
 
     $decimals = 1;
-    if ($readable[$index] == '') {
+    if ($readable[$index] === '') {
         $decimals = 0;
     }
 
@@ -3125,7 +3103,7 @@ function get_cache_size_derivatives($path): array
     if (is_dir($path)) {
         if ($contents = opendir($path)) {
             while (($node = readdir($contents)) !== false) {
-                if ($node == '.' || $node == '..') {
+                if ($node === '.' || $node === '..') {
                     continue;
                 }
 

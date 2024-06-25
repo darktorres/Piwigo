@@ -20,7 +20,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
     check_input_parameter('cat_true', $_POST, true, PATTERN_ID);
     check_input_parameter('cat_false', $_POST, true, PATTERN_ID);
@@ -148,7 +148,7 @@ $query_false = '
 SELECT id,name,uppercats,global_rank
   FROM ' . CATEGORIES_TABLE . '
   WHERE status = \'private\'';
-if (count($authorized_ids) > 0) {
+if ($authorized_ids !== []) {
     $query_false .= '
     AND id NOT IN (' . implode(',', $authorized_ids) . ')';
 }

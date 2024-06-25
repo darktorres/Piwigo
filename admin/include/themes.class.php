@@ -76,7 +76,7 @@ class themes
     ) {
         global $conf;
 
-        if (! $conf['enable_extensions_install'] && $action == 'delete') {
+        if (! $conf['enable_extensions_install'] && $action === 'delete') {
             die('Piwigo extensions install/update/delete system is disabled');
         }
 
@@ -84,7 +84,7 @@ class themes
             $crt_db_theme = $this->db_themes_by_id[$theme_id];
         }
 
-        $theme_maintain = self::build_maintain_class($theme_id);
+        $theme_maintain = $this->build_maintain_class($theme_id);
 
         $errors = [];
         $activity_details = [
@@ -98,7 +98,7 @@ class themes
                     break;
                 }
 
-                if ($theme_id == 'default') {
+                if ($theme_id === 'default') {
                     // you can't activate the "default" theme
                     break;
                 }
@@ -122,7 +122,7 @@ class themes
 
                 $theme_maintain->activate($this->fs_themes[$theme_id]['version'], $errors);
 
-                if (empty($errors)) {
+                if ($errors === []) {
                     $query = '
 INSERT INTO ' . THEMES_TABLE . '
   (id, version, name)
@@ -152,7 +152,7 @@ INSERT INTO ' . THEMES_TABLE . '
                     break;
                 }
 
-                if ($theme_id == get_default_theme()) {
+                if ($theme_id === get_default_theme()) {
                     // find a random theme to replace
                     $new_theme = null;
 
@@ -196,7 +196,7 @@ DELETE
                 }
 
                 $children = $this->get_children_themes($theme_id);
-                if (count($children) > 0) {
+                if ($children !== []) {
                     $errors[] = l10n(
                         'Impossible to delete this theme. Other themes depends on it: %s',
                         implode(', ', $children)
@@ -297,10 +297,10 @@ SELECT
   FROM ' . THEMES_TABLE;
 
         $clauses = [];
-        if (! empty($id)) {
+        if ($id !== '' && $id !== '0') {
             $clauses[] = 'id = \'' . $id . '\'';
         }
-        if (count($clauses) > 0) {
+        if ($clauses !== []) {
             $query .= '
   WHERE ' . implode(' AND ', $clauses);
         }
@@ -321,7 +321,7 @@ SELECT
         $dir = opendir(PHPWG_THEMES_PATH);
 
         while ($file = readdir($dir)) {
-            if ($file != '.' && $file != '..') {
+            if ($file !== '.' && $file !== '..') {
                 $path = PHPWG_THEMES_PATH . $file;
                 if (is_dir($path)
                     && preg_match('/^[a-zA-Z0-9-_]+$/', $file)
@@ -360,7 +360,10 @@ SELECT
                     if (preg_match('|Author URI:\\s*(https?:\\/\\/.+)|', $theme_data, $val)) {
                         $theme['author uri'] = trim($val[1]);
                     }
-                    if (! empty($theme['uri']) && strpos($theme['uri'], 'extension_view.php?eid=')) {
+                    if (isset($theme['uri']) && ($theme['uri'] !== '' && $theme['uri'] !== '0') && strpos(
+                        $theme['uri'],
+                        'extension_view.php?eid='
+                    )) {
                         [, $extension] = explode('extension_view.php?eid=', $theme['uri']);
                         if (is_numeric($extension)) {
                             $theme['extension'] = $extension;
@@ -451,7 +454,7 @@ SELECT
                 }
             }
         }
-        if (empty($versions_to_check)) {
+        if ($versions_to_check === []) {
             return false;
         }
 
@@ -475,7 +478,7 @@ SELECT
             ]
         );
 
-        if (! empty($themes_to_check)) {
+        if ($themes_to_check !== []) {
             if ($new) {
                 $get_data['extension_exclude'] = implode(',', $themes_to_check);
             } else {
@@ -549,7 +552,7 @@ SELECT
                         // we search main.inc.php in archive
                         if (basename(
                             (string) $file['filename']
-                        ) == 'themeconf.inc.php'
+                        ) === 'themeconf.inc.php'
                           && (! isset($main_filepath)
                           || strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
                             $main_filepath = $file['filename'];
@@ -560,10 +563,10 @@ SELECT
 
                     if (isset($main_filepath)) {
                         $root = dirname((string) $main_filepath); // main.inc.php path in archive
-                        if ($action == 'upgrade') {
+                        if ($action === 'upgrade') {
                             $theme_id = $dest;
                         } else {
-                            $theme_id = ($root == '.' ? 'extension_' . $dest : basename($root));
+                            $theme_id = ($root === '.' ? 'extension_' . $dest : basename($root));
                         }
                         $extract_path = PHPWG_THEMES_PATH . $theme_id;
                         $logger->debug(__FUNCTION__ . ', $extract_path = ' . $extract_path);
@@ -588,7 +591,7 @@ SELECT
                               && ! empty($old_files)) {
                                 $old_files[] = 'obsolete.list';
 
-                                $logger->debug(__FUNCTION__ . ', $old_files = {' . join('},{', $old_files) . '}');
+                                $logger->debug(__FUNCTION__ . ', $old_files = {' . implode('},{', $old_files) . '}');
 
                                 $extract_path_realpath = realpath($extract_path);
 
@@ -596,7 +599,7 @@ SELECT
                                     $old_file = trim($old_file);
                                     $old_file = trim($old_file, '/'); // prevent path starting with a "/"
 
-                                    if (empty($old_file)) { // empty here means the extension itself
+                                    if ($old_file === '' || $old_file === '0') { // empty here means the extension itself
                                         continue;
                                     }
 
@@ -704,7 +707,7 @@ SELECT
      * Returns the maintain class of a theme
      * or build a new class with the procedural methods
      */
-    private static function build_maintain_class(
+    private function build_maintain_class(
         string $theme_id
     ): mixed {
         $file_to_include = PHPWG_THEMES_PATH . '/' . $theme_id . '/admin/maintain.inc.php';

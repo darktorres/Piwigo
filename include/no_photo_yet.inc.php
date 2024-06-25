@@ -14,10 +14,10 @@ declare(strict_types=1);
 // photos
 if (
     ! (defined('IN_ADMIN') && IN_ADMIN)   // no message inside administration
-    && script_basename() != 'identification' // keep the ability to login
-    && script_basename() != 'password'       // keep the ability to reset password
-    && script_basename() != 'ws'             // keep the ability to discuss with web API
-    && script_basename() != 'popuphelp'      // keep the ability to display help popups
+    && script_basename() !== 'identification' // keep the ability to login
+    && script_basename() !== 'password'       // keep the ability to reset password
+    && script_basename() !== 'ws'             // keep the ability to discuss with web API
+    && script_basename() !== 'popuphelp'      // keep the ability to display help popups
     && (is_a_guest() || is_admin())          // normal users are not concerned by no_photo_yet
     && ! isset($_SESSION['no_photo_yet'])     // temporary hide
 ) {

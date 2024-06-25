@@ -27,10 +27,9 @@ function get_cat_display_name(
     $is_first = true;
 
     foreach ($cat_informations as $cat) {
-        is_array($cat) || trigger_error(
-            'get_cat_display_name wrong type for category ',
-            E_USER_WARNING
-        );
+        if (! is_array($cat)) {
+            trigger_error('get_cat_display_name wrong type for category ', E_USER_WARNING);
+        }
 
         $cat['name'] = trigger_change(
             'render_category_name',
@@ -46,7 +45,7 @@ function get_cat_display_name(
 
         if (! isset($url)) {
             $output .= $cat['name'];
-        } elseif ($url == '') {
+        } elseif ($url === '') {
             $output .= '<a href="'
                   . make_index_url(
                       [
@@ -117,7 +116,7 @@ SELECT id, name, permalink
 
         if (! isset($url) || $single_link) {
             $output .= $cat['name'];
-        } elseif ($url == '') {
+        } elseif ($url === '') {
             $output .= '
 <a href="'
             . add_url_params(
@@ -319,14 +318,15 @@ function fatal_error(
     string $title = null,
     bool $show_trace = true
 ): void {
-    if (empty($title)) {
+    if ($title === null || $title === '' || $title === '0') {
         $title = l10n('Piwigo encountered a non recoverable error');
     }
 
     $btrace_msg = '';
     if ($show_trace && function_exists('debug_backtrace')) {
         $bt = debug_backtrace();
-        for ($i = 1; $i < count($bt); $i++) {
+        $counter = count($bt);
+        for ($i = 1; $i < $counter; $i++) {
             $class = isset($bt[$i]['class']) ? ($bt[$i]['class'] . '::') : '';
             $btrace_msg .= "#{$i}\t" . $class . $bt[$i]['function'] . ' ' . $bt[$i]['file'] . '(' . $bt[$i]['line'] . ")\n";
         }
@@ -362,8 +362,9 @@ function get_tags_content_title(): string
     $title = '<a href="' . get_root_url() . 'tags.php" title="' . l10n('display available tags') . '">'
       . l10n(count($page['tags']) > 1 ? 'Tags' : 'Tag')
       . '</a> ';
+    $counter = count($page['tags']);
 
-    for ($i = 0; $i < count($page['tags']); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         $title .= $i > 0 ? ' + ' : '';
 
         $title .=
@@ -427,7 +428,7 @@ function get_combined_categories_content_title(): string
                 'category' => array_shift($other_cats),
             ];
 
-            if (count($other_cats) > 0) {
+            if ($other_cats !== []) {
                 $params['combined_categories'] = $other_cats;
             }
             $remove_url = make_index_url($params);
@@ -454,7 +455,7 @@ function set_status_header(
     int $code,
     string $text = ''
 ): void {
-    if (empty($text)) {
+    if ($text === '' || $text === '0') {
         switch ($code) {
             case 200: $text = 'OK';
                 break;
@@ -496,7 +497,9 @@ function set_status_header(
 function render_category_literal_description(
     string|null $desc
 ): string {
-    ! isset($desc) ? $desc = '' : false;
+    if (! isset($desc)) {
+        $desc = '';
+    }
     return strip_tags($desc, '<span><p><a><br><b><i><small><big><strong><em>');
 }
 
@@ -522,7 +525,7 @@ function register_default_menubar_blocks(
 
     // We hide the quick identification menu on the identification page. It
     // would be confusing.
-    if (script_basename() != 'identification') {
+    if (script_basename() !== 'identification') {
         $menu->register_block(new RegisteredBlock('mbIdentification', 'Identification', 'piwigo'));
     }
 }
@@ -584,11 +587,11 @@ function get_thumbnail_title(
         $details[] = l10n_dec('%d comment', '%d comments', $info['nb_comments']);
     }
 
-    if (count($details) > 0) {
+    if ($details !== []) {
         $title .= ' (' . implode(', ', $details) . ')';
     }
 
-    if (! empty($comment)) {
+    if ($comment !== '' && $comment !== '0') {
         $comment = strip_tags($comment);
         $title .= ' ' . substr($comment, 0, 100) . (strlen($comment) > 100 ? '...' : '');
     }
@@ -604,7 +607,7 @@ function get_src_image_url_protection_handler(
     string $url,
     SrcImage $src_image
 ): string {
-    return get_action_url($src_image->id, $src_image->is_original() ? 'e' : 'r', false);
+    return get_action_url($src_image->id, $src_image->is_original() !== 0 ? 'e' : 'r', false);
 }
 
 /**

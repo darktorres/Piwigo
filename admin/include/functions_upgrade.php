@@ -81,7 +81,7 @@ AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
         $plugins[] = $row['id'];
     }
 
-    if (! empty($plugins)) {
+    if ($plugins !== []) {
         $query = '
 UPDATE ' . PREFIX_TABLE . 'plugins
 SET state=\'inactive\'
@@ -122,7 +122,7 @@ SELECT
         $theme_names[] = $row['name'];
     }
 
-    if (! empty($theme_ids)) {
+    if ($theme_ids !== []) {
         $query = '
 DELETE
   FROM ' . PREFIX_TABLE . 'themes
@@ -284,7 +284,7 @@ SELECT id
     $existing = get_available_upgrade_ids();
 
     // which upgrades need to be applied?
-    return count(array_diff($existing, $applied)) > 0;
+    return array_diff($existing, $applied) !== [];
 }
 
 function upgrade_db_connect(): void

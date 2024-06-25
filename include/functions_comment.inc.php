@@ -27,13 +27,13 @@ function user_comment_check(
 ): string {
     global $conf,$user;
 
-    if ($action == 'reject') {
+    if ($action === 'reject') {
         return $action;
     }
 
     $my_action = $conf['comment_spam_reject'] ? 'reject' : 'moderate';
 
-    if ($action == $my_action) {
+    if ($action === $my_action) {
         return $action;
     }
 
@@ -162,7 +162,7 @@ SELECT COUNT(*) AS user_exists
     }
     $anonymous_id = implode('.', $ip_components);
 
-    if ($comment_action != 'reject' && $conf['anti-flood_time'] > 0 && ! is_admin()) { // anti-flood system
+    if ($comment_action !== 'reject' && $conf['anti-flood_time'] > 0 && ! is_admin()) { // anti-flood system
         $reference_date = pwg_db_get_flood_period_expression($conf['anti-flood_time']);
 
         $query = '
@@ -204,8 +204,8 @@ INSERT INTO ' . COMMENTS_TABLE . '
     \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
     ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . ',
     ' . $comm['image_id'] . ',
-    ' . (! empty($comm['website_url']) ? '\'' . $comm['website_url'] . '\'' : 'NULL') . ',
-    ' . (! empty($comm['email']) ? '\'' . $comm['email'] . '\'' : 'NULL') . '
+    ' . (empty($comm['website_url']) ? 'NULL' : '\'' . $comm['website_url'] . '\'') . ',
+    ' . (empty($comm['email']) ? 'NULL' : '\'' . $comm['email'] . '\'') . '
   )
 ';
         pwg_query($query);
@@ -257,11 +257,7 @@ function delete_user_comment(
         $user_where_clause = '   AND author_id = \'' . $GLOBALS['user']['id'] . '\'';
     }
 
-    if (is_array($comment_id)) {
-        $where_clause = 'id IN(' . implode(',', $comment_id) . ')';
-    } else {
-        $where_clause = 'id = ' . $comment_id;
-    }
+    $where_clause = is_array($comment_id) ? 'id IN(' . implode(',', $comment_id) . ')' : 'id = ' . $comment_id;
 
     $query = '
 DELETE FROM ' . COMMENTS_TABLE . '
@@ -349,7 +345,7 @@ function update_user_comment(
         $query = '
 UPDATE ' . COMMENTS_TABLE . '
   SET content = \'' . $comment['content'] . '\',
-      website_url = ' . (! empty($comment['website_url']) ? '\'' . $comment['website_url'] . '\'' : 'NULL') . ',
+      website_url = ' . (empty($comment['website_url']) ? 'NULL' : '\'' . $comment['website_url'] . '\'') . ',
       validated = \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
       validation_date = ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . '
   WHERE id = ' . $comment['comment_id'] .
@@ -401,8 +397,8 @@ function email_admin(
     global $conf;
 
     if (! in_array($action, ['edit', 'delete'])
-        || (($action == 'edit') && ! $conf['email_admin_on_comment_edition'])
-        || (($action == 'delete') && ! $conf['email_admin_on_comment_deletion'])) {
+        || (($action === 'edit') && ! $conf['email_admin_on_comment_edition'])
+        || (($action === 'delete') && ! $conf['email_admin_on_comment_deletion'])) {
         return;
     }
 
@@ -412,7 +408,7 @@ function email_admin(
         get_l10n_args('Author: %s', $comment['author']),
     ];
 
-    if ($action == 'delete') {
+    if ($action === 'delete') {
         $keyargs_content[] = get_l10n_args('This author removed the comment with id %d', $comment['comment_id']);
     } else {
         $keyargs_content[] = get_l10n_args('This author modified following comment:');
@@ -460,11 +456,7 @@ SELECT
 function validate_user_comment(
     array|int $comment_id
 ): void {
-    if (is_array($comment_id)) {
-        $where_clause = 'id IN(' . implode(',', $comment_id) . ')';
-    } else {
-        $where_clause = 'id = ' . $comment_id;
-    }
+    $where_clause = is_array($comment_id) ? 'id IN(' . implode(',', $comment_id) . ')' : 'id = ' . $comment_id;
 
     $query = '
 UPDATE ' . COMMENTS_TABLE . '

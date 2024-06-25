@@ -84,7 +84,7 @@ if ($conf['show_gt']) {
 $template->assign('debug', $debug_vars);
 
 //------------------------------------------------------------- mobile version
-if (! empty($conf['mobile_theme']) && (get_device() != 'desktop' || mobile_theme())) {
+if (! empty($conf['mobile_theme']) && (get_device() !== 'desktop' || mobile_theme())) {
     $template->assign(
         'TOGGLE_MOBILE_THEME_URL',
         add_url_params(

@@ -68,11 +68,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
         ];
     }
     $usr = $users_by_id[$row['user_id']];
-    if ($usr['anon']) {
-        $user_key = $usr['name'] . '(' . $row['anonymous_id'] . ')';
-    } else {
-        $user_key = $usr['name'];
-    }
+    $user_key = $usr['anon'] ? $usr['name'] . '(' . $row['anonymous_id'] . ')' : $usr['name'];
     $rating = &$by_user_ratings[$user_key];
     if ($rating === null) {
         $rating = $by_user_rating_model;
@@ -93,7 +89,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 
 // get image tn urls
 $image_urls = [];
-if (count($image_ids) > 0) {
+if ($image_ids !== []) {
     $query = 'SELECT id, name, file, path, representative_ext, level
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', array_keys($image_ids)) . ')';
@@ -153,7 +149,7 @@ foreach ($by_user_ratings as $id => &$rating) {
     }
 
     $consensus_dev /= $c;
-    if ($consensus_dev_top_count) {
+    if ($consensus_dev_top_count !== 0) {
         $consensus_dev_top /= $consensus_dev_top_count;
     }
 
@@ -164,7 +160,7 @@ foreach ($by_user_ratings as $id => &$rating) {
         'avg' => $s / $c,
         'cv' => $s == 0 ? -1 : sqrt($var) / ($s / $c), // http://en.wikipedia.org/wiki/Coefficient_of_variation
         'cd' => $consensus_dev,
-        'cdtop' => $consensus_dev_top_count ? $consensus_dev_top : '',
+        'cdtop' => $consensus_dev_top_count !== 0 ? $consensus_dev_top : '',
     ];
 }
 unset($rating);
@@ -217,8 +213,9 @@ $available_order_by = [
     [l10n('Consensus deviation'), 'consensus_dev_compare'],
     [l10n('Last'), 'last_rate_compare'],
 ];
+$counter = count($available_order_by);
 
-for ($i = 0; $i < count($available_order_by); $i++) {
+for ($i = 0; $i < $counter; $i++) {
     $template->append(
         'order_by_options',
         $available_order_by[$i][0]

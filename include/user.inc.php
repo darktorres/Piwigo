@@ -36,10 +36,8 @@ if ($conf['apache_authentication']) {
         }
     }
 
-    if (isset($remote_user)) {
-        if (! ($user['id'] = get_userid($remote_user))) {
-            $user['id'] = register_user($remote_user, '', '', false);
-        }
+    if (isset($remote_user) && ! ($user['id'] = get_userid($remote_user))) {
+        $user['id'] = register_user($remote_user, '', '', false);
     }
 }
 
@@ -48,18 +46,17 @@ if (isset($_GET['auth'])) {
     auth_key_login($_GET['auth']);
 }
 
-if (
-    defined('IN_WS')
-    && isset($_REQUEST['method'])
-    && $_REQUEST['method'] == 'pwg.images.uploadAsync'
-    && isset($_POST['username'])
-    && isset($_POST['password'])
-) {
-    if (! try_log_user($_POST['username'], $_POST['password'], false)) {
-        include_once(PHPWG_ROOT_PATH . 'include/ws_init.inc.php');
-        $service->sendResponse(new PwgError(999, 'Invalid username/password'));
-        exit();
-    }
+if (defined('IN_WS')
+&& isset($_REQUEST['method'])
+&& $_REQUEST['method'] == 'pwg.images.uploadAsync'
+&& isset($_POST['username']) && isset($_POST['password']) && ! try_log_user(
+    $_POST['username'],
+    $_POST['password'],
+    false
+)) {
+    include_once(PHPWG_ROOT_PATH . 'include/ws_init.inc.php');
+    $service->sendResponse(new PwgError(999, 'Invalid username/password'));
+    exit();
 }
 
 $user = build_user(

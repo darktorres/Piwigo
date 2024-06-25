@@ -118,21 +118,21 @@ class Inflector_en
             return $res;
         }
 
-        self::run($this->pluralizers, $word, $res);
-        self::run($this->singularizers, $word, $res);
+        $this->run($this->pluralizers, $word, $res);
+        $this->run($this->singularizers, $word, $res);
         if (strlen((string) $word) > 4) {
-            self::run($this->er2ing, $word, $res);
+            $this->run($this->er2ing, $word, $res);
         }
         if (strlen((string) $word) > 5) {
-            $rc = self::run($this->ing2er, $word, $res);
+            $rc = $this->run($this->ing2er, $word, $res);
             if ($rc !== false) {
-                self::run($this->pluralizers, $rc, $res);
+                $this->run($this->pluralizers, $rc, $res);
             }
         }
         return $res;
     }
 
-    private static function run($rules, $word, &$res)
+    private function run($rules, $word, &$res)
     {
         foreach ($rules as $rule => $replacement) {
             $rc = preg_replace($rule . 'i', $replacement, $word, -1, $count);

@@ -109,7 +109,7 @@ SELECT
 
 $nb_lines_for_user = query2array($query, 'performed_by', 'counter');
 
-if (count($nb_lines_for_user) > 0) {
+if ($nb_lines_for_user !== []) {
     $query = '
   SELECT 
       ' . $conf['user_fields']['id'] . ' AS id, 

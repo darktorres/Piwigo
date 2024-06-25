@@ -44,7 +44,7 @@ function get_absolute_root_url(
     if ($with_scheme) {
         $is_https = false;
         if (isset($_SERVER['HTTPS']) &&
-          ((strtolower((string) $_SERVER['HTTPS']) == 'on') || ($_SERVER['HTTPS'] == 1))) {
+          ((strtolower((string) $_SERVER['HTTPS']) === 'on') || ($_SERVER['HTTPS'] == 1))) {
             $is_https = true;
             $url .= 'https://';
         } else {
@@ -68,13 +68,12 @@ function get_absolute_root_url(
                 $url_port = ':' . $conf['url_port'];
             }
 
-            if (! empty($url_port) && strrchr($url, ':') != $url_port) {
+            if ($url_port !== null && $url_port !== '' && $url_port !== '0' && strrchr($url, ':') != $url_port) {
                 $url .= $url_port;
             }
         }
     }
-    $url .= cookie_path();
-    return $url;
+    return $url . cookie_path();
 }
 
 /**
@@ -87,13 +86,13 @@ function add_url_params(
     array $params,
     string $arg_separator = '&amp;'
 ): string {
-    if (! empty($params)) {
+    if ($params !== []) {
         assert(is_array($params));
         $is_first = true;
         foreach ($params as $param => $val) {
             if ($is_first) {
                 $is_first = false;
-                $url .= (! str_contains($url, '?')) ? '?' : $arg_separator;
+                $url .= (str_contains($url, '?')) ? $arg_separator : '?';
             } else {
                 $url .= $arg_separator;
             }
@@ -300,16 +299,12 @@ function make_section_in_url(
             if (! isset($params['category'])) {
                 $section_string .= '/categories';
             } else {
-                isset($params['category']['name']) || trigger_error(
-                    'make_section_in_url category name not set',
-                    E_USER_WARNING
-                );
-
-                array_key_exists('permalink', $params['category']) || trigger_error(
-                    'make_section_in_url category permalink not set',
-                    E_USER_WARNING
-                );
-
+                if (! isset($params['category']['name'])) {
+                    trigger_error('make_section_in_url category name not set', E_USER_WARNING);
+                }
+                if (! array_key_exists('permalink', $params['category'])) {
+                    trigger_error('make_section_in_url category permalink not set', E_USER_WARNING);
+                }
                 $section_string .= '/category/';
                 if (empty($params['category']['permalink'])) {
                     $section_string .= $params['category']['id'];
@@ -319,7 +314,6 @@ function make_section_in_url(
                 } else {
                     $section_string .= $params['category']['permalink'];
                 }
-
                 if (isset($params['combined_categories'])) {
                     foreach ($params['combined_categories'] as $category) {
                         $section_string .= '/';
@@ -442,7 +436,7 @@ function parse_section_url(
                     && ! str_starts_with((string) $tokens[$next_token], 'start-')
                     && ! str_starts_with((string) $tokens[$next_token], 'startcat-')
                     && $tokens[$current_token] != 'flat') {
-                    if (empty($maybe_permalinks)) {
+                    if ($maybe_permalinks === []) {
                         $maybe_permalinks[] = $tokens[$current_token];
                     } else {
                         $maybe_permalinks[] =
@@ -452,7 +446,7 @@ function parse_section_url(
                     $current_token++;
                 }
 
-                if (count($maybe_permalinks)) {
+                if ($maybe_permalinks !== []) {
                     $cat_id = get_cat_id_from_permalinks($maybe_permalinks, $perma_index);
                     if (isset($cat_id)) {
                         $next_token += $perma_index + 1;
@@ -472,7 +466,7 @@ function parse_section_url(
 
         if (isset($page['category'])) {
             $result = get_cat_info($page['category']);
-            if (empty($result)) {
+            if ($result === null || $result === []) {
                 page_not_found(l10n('Requested album does not exist'));
             }
             $page['category'] = $result;
@@ -483,7 +477,7 @@ function parse_section_url(
 
             foreach ($page['combined_categories'] as $cat_id) {
                 $result = get_cat_info($cat_id);
-                if (empty($result)) {
+                if ($result === null || $result === []) {
                     page_not_found(l10n('Requested album does not exist'));
                 }
 
@@ -524,7 +518,7 @@ function parse_section_url(
         }
         $next_token = $i;
 
-        if (empty($requested_tag_ids) && empty($requested_tag_url_names)) {
+        if ($requested_tag_ids === [] && $requested_tag_url_names === []) {
             bad_request('at least one tag required');
         }
 
@@ -611,9 +605,8 @@ function parse_well_known_params_url(
             }
 
             array_shift($chronology_tokens);
-            if (count($chronology_tokens) > 0) {
-                if ($chronology_tokens[0] == 'list' or
-                    $chronology_tokens[0] == 'calendar') {
+            if ($chronology_tokens !== []) {
+                if ($chronology_tokens[0] === 'list' || $chronology_tokens[0] === 'calendar') {
                     $page['chronology_view'] = $chronology_tokens[0];
                     array_shift($chronology_tokens);
                 }
@@ -776,11 +769,8 @@ function get_query_string_diff(
  */
 function url_is_remote(string $url): bool
 {
-    if (str_starts_with($url, 'http://')
-      || str_starts_with($url, 'https://')) {
-        return true;
-    }
-    return false;
+    return str_starts_with($url, 'http://')
+      || str_starts_with($url, 'https://');
 }
 
 /**

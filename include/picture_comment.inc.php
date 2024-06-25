@@ -70,12 +70,7 @@ if ($page['show_comments'] && isset($_POST['content'])) {
 }
 
 if ($page['show_comments']) {
-    if (! is_admin()) {
-        $validated_clause = '  AND validated = \'true\'';
-    } else {
-        $validated_clause = '';
-    }
-
+    $validated_clause = is_admin() ? '' : '  AND validated = \'true\'';
     // number of comments for this picture
     $query = '
 SELECT
@@ -85,12 +80,10 @@ SELECT
     . $validated_clause . '
 ;';
     $row = pwg_db_fetch_assoc(pwg_query($query));
-
     // navigation bar creation
     if (! isset($page['start'])) {
         $page['start'] = 0;
     }
-
     $navigation_bar = create_navigation_bar(
         duplicate_picture_url([], ['start']),
         $row['nb_comments'],
@@ -98,14 +91,10 @@ SELECT
         $conf['nb_comment_page'],
         true // We want a clean URL
     );
-
-    $template->assign(
-        [
-            'COMMENT_COUNT' => $row['nb_comments'],
-            'navbar' => $navigation_bar,
-        ]
-    );
-
+    $template->assign([
+        'COMMENT_COUNT' => $row['nb_comments'],
+        'navbar' => $navigation_bar,
+    ]);
     if ($row['nb_comments'] > 0) {
         // comments order (get, session, conf)
         if (! empty($_GET['comments_order']) && in_array(
@@ -212,7 +201,6 @@ SELECT
             $template->append('comments', $tpl_comment);
         }
     }
-
     $show_add_comment_form = true;
     if (isset($edit_comment)) {
         $show_add_comment_form = false;
@@ -220,7 +208,6 @@ SELECT
     if (is_a_guest() && ! $conf['comments_forall']) {
         $show_add_comment_form = false;
     }
-
     if ($show_add_comment_form) {
         $key = get_ephemeral_key(3, $page['image_id']);
 

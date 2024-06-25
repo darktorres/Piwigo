@@ -21,7 +21,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
     check_input_parameter('cat_true', $_POST, true, PATTERN_ID);
     check_input_parameter('cat_false', $_POST, true, PATTERN_ID);

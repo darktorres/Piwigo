@@ -169,7 +169,7 @@ $template->assign(
             ' ',
             preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $parent_navigation)
         ),
-        'PARENT_CAT_ID' => ! empty($category['id_uppercat']) ? $category['id_uppercat'] : 0,
+        'PARENT_CAT_ID' => empty($category['id_uppercat']) ? 0 : $category['id_uppercat'],
         'CAT_ID' => $category['id'],
         'CAT_NAME' => htmlspecialchars((string) $category['name']),
         'CAT_COMMENT' => htmlspecialchars((string) $category['comment']),
@@ -261,7 +261,7 @@ SELECT occured_on
 ';
 $result = query2array($query);
 
-if (count($result) > 0) {
+if ($result !== []) {
     $template->assign(
         [
             'INFO_CREATION_SINCE' => time_since(
@@ -359,11 +359,9 @@ if ($category['has_images'] || ! empty($category['representative_picture_id'])) 
 
     // can the admin delete the current representant ?
     if (
-        ($category['has_images']
-         && $conf['allow_random_representative'])
-        or
-        (! $category['has_images']
-         && ! empty($category['representative_picture_id']))) {
+        $category['has_images']
+         && $conf['allow_random_representative'] || ! $category['has_images']
+         && ! empty($category['representative_picture_id'])) {
         $tpl_representant['ALLOW_DELETE'] = true;
     }
     $template->assign('representant', $tpl_representant);

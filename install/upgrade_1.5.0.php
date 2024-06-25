@@ -84,7 +84,7 @@ SELECT id, keywords
         ];
     }
 
-    if (! empty($datas)) {
+    if ($datas !== []) {
         mass_inserts(
             PREFIX_TABLE . 'tags',
             array_keys($datas[0]),
@@ -102,7 +102,7 @@ SELECT id, keywords
         }
     }
 
-    if (! empty($datas)) {
+    if ($datas !== []) {
         mass_inserts(
             PREFIX_TABLE . 'image_tag',
             array_keys($datas[0]),
@@ -295,9 +295,11 @@ $params = [
 // Get real values from config file
 $conf_save = $conf;
 unset($conf);
-file_exists(
+if (file_exists(
     PHPWG_ROOT_PATH . 'local/config/config.inc.php'
-) && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+)) {
+    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+}
 if (isset($conf['gallery_url'])) {
     $params['gallery_url'][0] = $conf['gallery_url'];
 }
