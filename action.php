@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,231 +11,194 @@
 
 const PHPWG_ROOT_PATH = './';
 session_cache_limiter('public');
-include_once(PHPWG_ROOT_PATH.'include/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
 
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
 
-/**
- * @param $ext
- * @return string
- */
 function guess_mime_type($ext): string
 {
-  return match (strtolower($ext)) 
-  {
-    "jpe", "jpeg", "jpg" => "image/jpeg",
-    "png" => "image/png",
-    "gif" => "image/gif",
-    "tiff", "tif" => "image/tiff",
-    "txt" => "text/plain",
-    "html", "htm" => "text/html",
-    "xml" => "text/xml",
-    "pdf" => "application/pdf",
-    "zip" => "application/zip",
-    "ogg" => "application/ogg",
-    default => "application/octet-stream",
-  };
+    return match (strtolower($ext)) {
+        'jpe', 'jpeg', 'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'tiff', 'tif' => 'image/tiff',
+        'txt' => 'text/plain',
+        'html', 'htm' => 'text/html',
+        'xml' => 'text/xml',
+        'pdf' => 'application/pdf',
+        'zip' => 'application/zip',
+        'ogg' => 'application/ogg',
+        default => 'application/octet-stream',
+    };
 }
 
-/**
- * @param $code
- * @param $str
- * @return void
- */
-function do_error($code, $str ): void
+function do_error($code, $str): void
 {
-  set_status_header( $code );
-  echo $str ;
-  exit();
+    set_status_header($code);
+    echo $str;
+    exit();
 }
 
-if ($conf['enable_formats'] && isset($_GET['format']))
-{
-  check_input_parameter('format', $_GET, false, PATTERN_ID);
+if ($conf['enable_formats'] && isset($_GET['format'])) {
+    check_input_parameter('format', $_GET, false, PATTERN_ID);
 
-  $query = '
+    $query = '
 SELECT
     *
-  FROM '.IMAGE_FORMAT_TABLE.'
-  WHERE format_id = '.$_GET['format'].'
+  FROM ' . IMAGE_FORMAT_TABLE . '
+  WHERE format_id = ' . $_GET['format'] . '
 ;';
-  $formats = query2array($query);
+    $formats = query2array($query);
 
-  if (count($formats) == 0)
-  {
-    do_error(400, 'Invalid request - format');
-  }
+    if (count($formats) == 0) {
+        do_error(400, 'Invalid request - format');
+    }
 
-  $format = $formats[0];
+    $format = $formats[0];
 
-  $_GET['id'] = $format['image_id'];
-  $_GET['part'] = 'f'; // "f" for "format"
+    $_GET['id'] = $format['image_id'];
+    $_GET['part'] = 'f'; // "f" for "format"
 }
 
-
-if (!isset($_GET['id'])
-    || !is_numeric($_GET['id'])
-    || !isset($_GET['part'])
-    || !in_array($_GET['part'], array('e','r','f') ) )
-{
-  do_error(400, 'Invalid request - id/part');
+if (! isset($_GET['id'])
+    || ! is_numeric($_GET['id'])
+    || ! isset($_GET['part'])
+    || ! in_array($_GET['part'], ['e', 'r', 'f'])) {
+    do_error(400, 'Invalid request - id/part');
 }
 
 $query = '
-SELECT * FROM '. IMAGES_TABLE.'
-  WHERE id='.$_GET['id'].'
+SELECT * FROM ' . IMAGES_TABLE . '
+  WHERE id=' . $_GET['id'] . '
 ;';
 
 $element_info = pwg_db_fetch_assoc(pwg_query($query));
-if ( empty($element_info) )
-{
-  do_error(404, 'Requested id not found');
+if (empty($element_info)) {
+    do_error(404, 'Requested id not found');
 }
 
 // special download action for admins
 $is_admin_download = false;
-if (is_admin() && isset($_GET['pwg_token']) && get_pwg_token() == $_GET['pwg_token'])
-{
-  $is_admin_download = true;
-  $user['enabled_high'] = true;
+if (is_admin() && isset($_GET['pwg_token']) && get_pwg_token() == $_GET['pwg_token']) {
+    $is_admin_download = true;
+    $user['enabled_high'] = true;
 }
 
 $src_image = new SrcImage($element_info);
 
 // $filter['visible_categories'] and $filter['visible_images']
 // are not used because it's not necessary (filter <> restriction)
-$query='
+$query = '
 SELECT id
-  FROM '.CATEGORIES_TABLE.'
-    INNER JOIN '.IMAGE_CATEGORY_TABLE.' ON category_id = id
-  WHERE image_id = '.$_GET['id'].'
-'.get_sql_condition_FandF(
-  array(
-      'forbidden_categories' => 'category_id',
-      'forbidden_images' => 'image_id',
-    ),
-  '    AND'
-  ).'
+  FROM ' . CATEGORIES_TABLE . '
+    INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON category_id = id
+  WHERE image_id = ' . $_GET['id'] . '
+' . get_sql_condition_FandF(
+    [
+        'forbidden_categories' => 'category_id',
+        'forbidden_images' => 'image_id',
+    ],
+    '    AND'
+) . '
   LIMIT 1
 ;';
-if (!$is_admin_download && pwg_db_num_rows(pwg_query($query))<1 )
-{
-  do_error(401, 'Access denied');
+if (! $is_admin_download && pwg_db_num_rows(pwg_query($query)) < 1) {
+    do_error(401, 'Access denied');
 }
 
-include_once(PHPWG_ROOT_PATH.'include/functions_picture.inc.php');
-$file='';
-switch ($_GET['part'])
-{
-  case 'e':
-    if ( $src_image->is_original() && !$user['enabled_high'] )
-    {// we have a photo and the user has no access to HD
-      $deriv = new DerivativeImage(IMG_XXLARGE, $src_image);
-      if ( !$deriv->same_as_source() )
-      {
-        do_error(401, 'Access denied e');
-      }
-    }
-    $file = get_element_path($element_info);
-    break;
-  case 'r':
-    $file = original_to_representative( get_element_path($element_info), $element_info['representative_ext'] );
-    break;
-  case 'f' :
-    $file = original_to_format(get_element_path($element_info), $format['ext']);
-    $element_info['file'] = get_filename_wo_extension($element_info['file']).'.'.$format['ext'];
-    break;
+include_once(PHPWG_ROOT_PATH . 'include/functions_picture.inc.php');
+$file = '';
+switch ($_GET['part']) {
+    case 'e':
+        if ($src_image->is_original() && ! $user['enabled_high']) {// we have a photo and the user has no access to HD
+            $deriv = new DerivativeImage(IMG_XXLARGE, $src_image);
+            if (! $deriv->same_as_source()) {
+                do_error(401, 'Access denied e');
+            }
+        }
+        $file = get_element_path($element_info);
+        break;
+    case 'r':
+        $file = original_to_representative(get_element_path($element_info), $element_info['representative_ext']);
+        break;
+    case 'f':
+        $file = original_to_format(get_element_path($element_info), $format['ext']);
+        $element_info['file'] = get_filename_wo_extension($element_info['file']) . '.' . $format['ext'];
+        break;
 }
 
-if ( empty($file) )
-{
-  do_error(404, 'Requested file not found');
+if (empty($file)) {
+    do_error(404, 'Requested file not found');
 }
 
 if ($_GET['part'] == 'e') {
-  pwg_log($_GET['id'], 'high');
-}
-elseif ($_GET['part'] == 'r')
-{
-  pwg_log($_GET['id'], 'other');
-}
-elseif ($_GET['part'] == 'f')
-{
-  pwg_log($_GET['id'], 'high', $format['format_id']);
+    pwg_log($_GET['id'], 'high');
+} elseif ($_GET['part'] == 'r') {
+    pwg_log($_GET['id'], 'other');
+} elseif ($_GET['part'] == 'f') {
+    pwg_log($_GET['id'], 'high', $format['format_id']);
 }
 
-$http_headers = array();
+$http_headers = [];
 
 $ctype = null;
-if (!url_is_remote($file))
-{
-  if ( !is_readable($file) )
-  {
-    do_error(404, "Requested file not found - $file");
-  }
-  $http_headers[] = 'Content-Length: '.filesize($file);
-  if ( function_exists('mime_content_type') )
-  {
-    $ctype = mime_content_type($file);
-  }
-
-  $gmt_mtime = gmdate('D, d M Y H:i:s', filemtime($file)).' GMT';
-  $http_headers[] = 'Last-Modified: '.$gmt_mtime;
-
-  // following lines would indicate how the client should handle the cache
-  /* $max_age=300;
-  $http_headers[] = 'Expires: '.gmdate('D, d M Y H:i:s', time()+$max_age).' GMT';
-  // HTTP/1.1 only
-  $http_headers[] = 'Cache-Control: private, must-revalidate, max-age='.$max_age;*/
-
-  if ('f' != $_GET['part'] && isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) )
-  {
-    set_status_header(304);
-    foreach ($http_headers as $header)
-    {
-      header( $header );
+if (! url_is_remote($file)) {
+    if (! is_readable($file)) {
+        do_error(404, "Requested file not found - {$file}");
     }
-    exit();
-  }
+    $http_headers[] = 'Content-Length: ' . filesize($file);
+    if (function_exists('mime_content_type')) {
+        $ctype = mime_content_type($file);
+    }
+
+    $gmt_mtime = gmdate('D, d M Y H:i:s', filemtime($file)) . ' GMT';
+    $http_headers[] = 'Last-Modified: ' . $gmt_mtime;
+
+    // following lines would indicate how the client should handle the cache
+    /* $max_age=300;
+    $http_headers[] = 'Expires: '.gmdate('D, d M Y H:i:s', time()+$max_age).' GMT';
+    // HTTP/1.1 only
+    $http_headers[] = 'Cache-Control: private, must-revalidate, max-age='.$max_age;*/
+
+    if ($_GET['part'] != 'f' && isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+        set_status_header(304);
+        foreach ($http_headers as $header) {
+            header($header);
+        }
+        exit();
+    }
 }
 
-if (!isset($ctype))
-{ // give it a guess
-  $ctype = guess_mime_type( get_extension($file) );
+if (! isset($ctype)) { // give it a guess
+    $ctype = guess_mime_type(get_extension($file));
 }
 
-$http_headers[] = 'Content-Type: '.$ctype;
+$http_headers[] = 'Content-Type: ' . $ctype;
 
-if (isset($_GET['download']))
-{
-  $http_headers[] = 'Content-Disposition: attachment; filename="'.htmlspecialchars_decode($element_info['file']).'";';
-  $http_headers[] = 'Content-Transfer-Encoding: binary';
-}
-else
-{
-  $http_headers[] = 'Content-Disposition: inline; filename="'
-            .basename($file).'";';
+if (isset($_GET['download'])) {
+    $http_headers[] = 'Content-Disposition: attachment; filename="' . htmlspecialchars_decode(
+        $element_info['file']
+    ) . '";';
+    $http_headers[] = 'Content-Transfer-Encoding: binary';
+} else {
+    $http_headers[] = 'Content-Disposition: inline; filename="'
+              . basename($file) . '";';
 }
 
-foreach ($http_headers as $header)
-{
-  header( $header );
+foreach ($http_headers as $header) {
+    header($header);
 }
 
 // Looking at the safe_mode configuration for execution time
-if (ini_get('safe_mode') == 0)
-{
-  set_time_limit(0);
+if (ini_get('safe_mode') == 0) {
+    set_time_limit(0);
 }
 
 // Without clean and flush there may be some image download problems, or image can be corrupted after download
-if (ob_get_length() !== FALSE)
-{
-  ob_flush();
+if (ob_get_length() !== false) {
+    ob_flush();
 }
 flush();
 
 readfile($file);
-
-

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,18 +9,16 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-if (!defined('PHPWG_ROOT_PATH'))
-{
-  die('Hacking attempt!');
+if (! defined('PHPWG_ROOT_PATH')) {
+    die('Hacking attempt!');
 }
 
 $upgrade_description = 'rotation mode (code, not angle) is stored in the database';
 
-$query = 'ALTER TABLE '.IMAGES_TABLE.' ADD COLUMN rotation tinyint unsigned DEFAULT NULL';
+$query = 'ALTER TABLE ' . IMAGES_TABLE . ' ADD COLUMN rotation tinyint unsigned DEFAULT NULL';
 pwg_query($query);
 
-echo
-"\n"
+echo "\n"
 . $upgrade_description
-."\n"
+. "\n"
 ;

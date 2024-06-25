@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,9 +9,8 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-if (!defined('PHPWG_ROOT_PATH'))
-{
-  die('Hacking attempt!');
+if (! defined('PHPWG_ROOT_PATH')) {
+    die('Hacking attempt!');
 }
 
 $upgrade_description = 'Update default template';
@@ -19,14 +21,12 @@ $upgrade_description = 'Update default template';
 
 // set yoga/Sylvia as default value for user_infos.template column
 $query = '
-ALTER TABLE '.PREFIX_TABLE.'user_infos
+ALTER TABLE ' . PREFIX_TABLE . 'user_infos
   CHANGE COLUMN template template varchar(255) NOT NULL default \'yoga/Sylvia\'
 ;';
 pwg_query($query);
 
-echo
-"\n"
-.'Default template modified to yoga/Sylvia'
-."\n"
+echo "\n"
+. 'Default template modified to yoga/Sylvia'
+. "\n"
 ;
-

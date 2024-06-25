@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,16 +9,17 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
+defined(
+    'PHPWG_ROOT_PATH'
+) || die('Hacking attempt!');
 
 $upgrade_description = 'add nb direct child categories';
 
 $query = '
-ALTER TABLE '.USER_CACHE_CATEGORIES_TABLE.'
+ALTER TABLE ' . USER_CACHE_CATEGORIES_TABLE . '
   ADD COLUMN nb_categories mediumint(8) unsigned NOT NULL default 0 AFTER count_images';
 pwg_query($query);
 
 invalidate_user_cache();
 
-
-echo "\n".$upgrade_description."\n";
+echo "\n" . $upgrade_description . "\n";

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,28 +9,24 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-if (!defined('PHPWG_ROOT_PATH'))
-{
-  die('Hacking attempt!');
+if (! defined('PHPWG_ROOT_PATH')) {
+    die('Hacking attempt!');
 }
 
 $upgrade_description = 'Add c13y_ignore config';
 
-include_once(PHPWG_ROOT_PATH.'include/constants.php');
+include_once(PHPWG_ROOT_PATH . 'include/constants.php');
 
 // +-----------------------------------------------------------------------+
 // |                            Upgrade content                            |
 // +-----------------------------------------------------------------------+
 
-$query = "
-INSERT INTO ".CONFIG_TABLE." (param,value,comment) VALUES ('c13y_ignore',null,'List of ignored anomalies');
+$query = '
+INSERT INTO ' . CONFIG_TABLE . " (param,value,comment) VALUES ('c13y_ignore',null,'List of ignored anomalies');
 ";
 pwg_query($query);
 
-echo
-"\n"
-.'"'.$upgrade_description.'"'.' ended'
-."\n"
+echo "\n"
+. '"' . $upgrade_description . '"' . ' ended'
+. "\n"
 ;
-
-

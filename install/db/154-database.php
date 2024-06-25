@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,15 +9,14 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-if (!defined('PHPWG_ROOT_PATH'))
-{
-  die('Hacking attempt!');
+if (! defined('PHPWG_ROOT_PATH')) {
+    die('Hacking attempt!');
 }
 
 $upgrade_description = 'add activity table';
 
 pwg_query('
-CREATE TABLE `'.PREFIX_TABLE.'activity` (
+CREATE TABLE `' . PREFIX_TABLE . 'activity` (
   `activity_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `object` varchar(255) NOT NULL,
   `object_id` int(11) unsigned NOT NULL,
@@ -26,6 +28,4 @@ CREATE TABLE `'.PREFIX_TABLE.'activity` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8
 ;');
 
-echo "\n".$upgrade_description."\n";
-
-
+echo "\n" . $upgrade_description . "\n";

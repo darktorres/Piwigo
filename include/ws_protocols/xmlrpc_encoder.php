@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,63 +10,49 @@
 // +-----------------------------------------------------------------------+
 
 /**
- * @param $data
  * @return string|void
  */
 function xmlrpc_encode($data)
 {
-  switch (gettype($data))
-  {
-    case 'boolean':
-      return '<boolean>'.($data ? '1' : '0').'</boolean>';
-    case 'integer':
-      return '<int>'.$data.'</int>';
-    case 'double':
-      return '<double>'.$data.'</double>';
-    case 'string':
-      return '<string>'.htmlspecialchars($data).'</string>';
-    case 'object':
-    case 'array':
-      $is_array = range(0, count($data) - 1) === array_keys($data);
-      if ($is_array)
-      {
-        $return = '<array><data>'."\n";
-        foreach ($data as $item)
-        {
-          $return .= '  <value>'.xmlrpc_encode($item)."</value>\n";
-        }
-        $return .= '</data></array>';
-      }
-      else
-      {
-        $return = '<struct>'."\n";
-        foreach ($data as $name => $value)
-        {
-					$name = htmlspecialchars($name);
-          $return .= "  <member><name>$name</name><value>";
-          $return .= xmlrpc_encode($value)."</value></member>\n";
-        }
-        $return .= '</struct>';
-      }
-      return $return;
-  }
+    switch (gettype($data)) {
+        case 'boolean':
+            return '<boolean>' . ($data ? '1' : '0') . '</boolean>';
+        case 'integer':
+            return '<int>' . $data . '</int>';
+        case 'double':
+            return '<double>' . $data . '</double>';
+        case 'string':
+            return '<string>' . htmlspecialchars($data) . '</string>';
+        case 'object':
+        case 'array':
+            $is_array = range(0, count($data) - 1) === array_keys($data);
+            if ($is_array) {
+                $return = '<array><data>' . "\n";
+                foreach ($data as $item) {
+                    $return .= '  <value>' . xmlrpc_encode($item) . "</value>\n";
+                }
+                $return .= '</data></array>';
+            } else {
+                $return = '<struct>' . "\n";
+                foreach ($data as $name => $value) {
+                    $name = htmlspecialchars($name);
+                    $return .= "  <member><name>{$name}</name><value>";
+                    $return .= xmlrpc_encode($value) . "</value></member>\n";
+                }
+                $return .= '</struct>';
+            }
+            return $return;
+    }
 }
 
-/**
- *
- */
 class PwgXmlRpcEncoder extends PwgResponseEncoder
 {
-  /**
-   * @param mixed $response
-   * @return string
-   */
-  public function encodeResponse(mixed $response): string
-  {
-    if ($response instanceof PwgError) {
-      $code = $response->code();
-      $msg = htmlspecialchars($response->message());
-      return <<<EOD
+    public function encodeResponse(mixed $response): string
+    {
+        if ($response instanceof PwgError) {
+            $code = $response->code();
+            $msg = htmlspecialchars($response->message());
+            return <<<EOD
 <methodResponse>
   <fault>
     <value>
@@ -81,30 +70,25 @@ class PwgXmlRpcEncoder extends PwgResponseEncoder
   </fault>
 </methodResponse>
 EOD;
-    }
+        }
 
-    parent::flattenResponse($response);
-    $ret = xmlrpc_encode($response);
-    return <<<EOD
+        parent::flattenResponse($response);
+        $ret = xmlrpc_encode($response);
+        return <<<EOD
 <methodResponse>
   <params>
     <param>
       <value>
-        $ret
+        {$ret}
       </value>
     </param>
   </params>
 </methodResponse>
 EOD;
-  }
+    }
 
-  /**
-   * @return string
-   */
-  public function getContentType(): string
-  {
-    return 'text/xml';
-  }
+    public function getContentType(): string
+    {
+        return 'text/xml';
+    }
 }
-
-

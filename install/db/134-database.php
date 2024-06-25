@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,22 +9,24 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
+defined(
+    'PHPWG_ROOT_PATH'
+) || die('Hacking attempt!');
 
 $upgrade_description = 'replace dblayer to "mysqli" if available.';
 
 global $conf;
 
-$config_file = PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php';
+$config_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
 
-if ( extension_loaded('mysqli') && $conf['dblayer']=='mysql' && is_writable($config_file) )
-{
-  $file_content = file_get_contents($config_file);
-  $file_content = preg_replace(
-                            '#\$conf\[\'dblayer\'\]( *)=( *)\'mysql\';#', 
-                            '$conf[\'dblayer\']$1=$2\'mysqli\';', 
-                            $file_content);
-  file_put_contents($config_file, $file_content);
+if (extension_loaded('mysqli') && $conf['dblayer'] == 'mysql' && is_writable($config_file)) {
+    $file_content = file_get_contents($config_file);
+    $file_content = preg_replace(
+        '#\$conf\[\'dblayer\'\]( *)=( *)\'mysql\';#',
+        '$conf[\'dblayer\']$1=$2\'mysqli\';',
+        $file_content
+    );
+    file_put_contents($config_file, $file_content);
 }
 
-echo "\n".$upgrade_description."\n";
+echo "\n" . $upgrade_description . "\n";

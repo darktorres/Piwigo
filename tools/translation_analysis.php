@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -7,157 +10,125 @@
 // +-----------------------------------------------------------------------+
 
 const PHPWG_ROOT_PATH = '../';
-include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
-include_once( PHPWG_ROOT_PATH.'tools/language/translation_validated.inc.php' );
+include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+include_once(PHPWG_ROOT_PATH . 'tools/language/translation_validated.inc.php');
 $languages = array_keys(get_languages());
 sort($languages);
 
 $page['ref_compare'] = 'en_UK';
 $page['ref_default_values'] = 'en_UK';
 
-if (!isset($_GET['lang']))
-{
-  echo '<a href="?lang=all">All languages</a><br><br>';
-  echo '<ul>';
-  foreach ($languages as $language)
-  {
-    if ($page['ref_compare'] == $language)
-    {
-      continue;
+if (! isset($_GET['lang'])) {
+    echo '<a href="?lang=all">All languages</a><br><br>';
+    echo '<ul>';
+    foreach ($languages as $language) {
+        if ($page['ref_compare'] == $language) {
+            continue;
+        }
+        echo '<li><a href="?lang=' . $language . '">' . $language . '</a></li>';
     }
-    echo '<li><a href="?lang='.$language.'">'.$language.'</a></li>';
-  }
-  echo '</ul>';
-  exit();
-}
-elseif (in_array($_GET['lang'], $languages))
-{
-  $languages = array($_GET['lang']);
+    echo '</ul>';
+    exit();
+} elseif (in_array($_GET['lang'], $languages)) {
+    $languages = [$_GET['lang']];
 }
 
-$file_list = array('common', 'admin', 'install', 'upgrade');
+$file_list = ['common', 'admin', 'install', 'upgrade'];
 
-$metalang = array();
+$metalang = [];
 
 // preload reference languages
-$metalang[ $page['ref_compare'] ] = load_metalang($page['ref_compare'], $file_list);
-$metalang[ $page['ref_default_values'] ] = load_metalang($page['ref_default_values'], $file_list);
+$metalang[$page['ref_compare']] = load_metalang($page['ref_compare'], $file_list);
+$metalang[$page['ref_default_values']] = load_metalang($page['ref_default_values'], $file_list);
 
-foreach ($languages as $language)
-{
-  if (in_array($language, array($page['ref_compare'], $page['ref_default_values'])))
-  {
-    continue;
-  }
-  echo '<h2>'.$language.'</h2>';
-  $metalang[$language] = load_metalang($language, $file_list);
-
-  foreach ($file_list as $file)
-  {
-    if (isset($metalang[ $language ][$file]))
-    {
-      $missing_keys = array_diff(
-        array_keys($metalang[ $page['ref_compare'] ][$file]),
-        array_keys($metalang[ $language ][$file])
-        );
-
-      $output_missing = '';
-      foreach ($missing_keys as $key)
-      {
-        $output_missing.= get_line_to_translate($file, $key);
-      }
-
-      // strings not "really" translated?
-      $output_duplicated = '';
-      $output_lost = '';
-      foreach (array_keys($metalang[$language][$file]) as $key)
-      {
-        $exceptions = array('Level 0');
-        if (in_array($key, $exceptions))
-        {
-          continue;
-        }
-
-        if (isset($validated_keys[$language]) && in_array($key, $validated_keys[$language]))
-        {
-          continue;
-        }
-        
-        $local_value = $metalang[$language][$file][$key];
-        if (!isset($metalang[ $page['ref_default_values'] ][$file][$key]))
-        {
-          $output_lost.= '#'.$key.'# does not exist in the reference language'."\n";
-        }
-        else
-        {
-          $ref_value = $metalang[ $page['ref_default_values'] ][$file][$key];
-          if ($local_value == $ref_value)
-          {
-            $output_duplicated.= get_line_to_translate($file, $key);
-          }
-        }
-      }
-
-      echo '<h3>'.$file.'.lang.php</h3>';
-      
-      if ('' != $output_missing || '' != $output_duplicated)
-      {
-        $output = '';
-        if ('' != $output_missing)
-        {
-          $output.= "// missing translations\n".$output_missing;
-        }
-        if ('' != $output_duplicated)
-        {
-          $output.= "\n// untranslated yet\n".$output_duplicated;
-        }
-        echo '<textarea style="width:100%;height:250px;">'.$output.'</textarea>';
-      }
-
-      if ('' != $output_lost)
-      {
-        echo '<pre>'.$output_lost.'</pre>';
-      }
+foreach ($languages as $language) {
+    if (in_array($language, [$page['ref_compare'], $page['ref_default_values']])) {
+        continue;
     }
-    else
-    {
-      echo '<h3>'.$file.'.lang.php is missing</h3>';
+    echo '<h2>' . $language . '</h2>';
+    $metalang[$language] = load_metalang($language, $file_list);
+
+    foreach ($file_list as $file) {
+        if (isset($metalang[$language][$file])) {
+            $missing_keys = array_diff(
+                array_keys($metalang[$page['ref_compare']][$file]),
+                array_keys($metalang[$language][$file])
+            );
+
+            $output_missing = '';
+            foreach ($missing_keys as $key) {
+                $output_missing .= get_line_to_translate($file, $key);
+            }
+
+            // strings not "really" translated?
+            $output_duplicated = '';
+            $output_lost = '';
+            foreach (array_keys($metalang[$language][$file]) as $key) {
+                $exceptions = ['Level 0'];
+                if (in_array($key, $exceptions)) {
+                    continue;
+                }
+
+                if (isset($validated_keys[$language]) && in_array($key, $validated_keys[$language])) {
+                    continue;
+                }
+
+                $local_value = $metalang[$language][$file][$key];
+                if (! isset($metalang[$page['ref_default_values']][$file][$key])) {
+                    $output_lost .= '#' . $key . '# does not exist in the reference language' . "\n";
+                } else {
+                    $ref_value = $metalang[$page['ref_default_values']][$file][$key];
+                    if ($local_value == $ref_value) {
+                        $output_duplicated .= get_line_to_translate($file, $key);
+                    }
+                }
+            }
+
+            echo '<h3>' . $file . '.lang.php</h3>';
+
+            if ($output_missing != '' || $output_duplicated != '') {
+                $output = '';
+                if ($output_missing != '') {
+                    $output .= "// missing translations\n" . $output_missing;
+                }
+                if ($output_duplicated != '') {
+                    $output .= "\n// untranslated yet\n" . $output_duplicated;
+                }
+                echo '<textarea style="width:100%;height:250px;">' . $output . '</textarea>';
+            }
+
+            if ($output_lost != '') {
+                echo '<pre>' . $output_lost . '</pre>';
+            }
+        } else {
+            echo '<h3>' . $file . '.lang.php is missing</h3>';
+        }
     }
-  }
 }
 
-/**
- * @param $language
- * @param $file_list
- * @return array
- */
 function load_metalang($language, $file_list): array
 {
-  global $lang, $user;
-  
-  $metalang = array();
-  foreach ($file_list as $file)
-  {
-    $lang = array();
-    $user['language'] = $language;
-    if (load_language($file.'.lang', '', array('language'=>$language, 'no_fallback'=>true)))
-    {
-      $metalang[$file] = $lang;
+    global $lang, $user;
+
+    $metalang = [];
+    foreach ($file_list as $file) {
+        $lang = [];
+        $user['language'] = $language;
+        if (load_language($file . '.lang', '', [
+            'language' => $language,
+            'no_fallback' => true,
+        ])) {
+            $metalang[$file] = $lang;
+        }
     }
-  }
-  return $metalang;
+    return $metalang;
 }
 
-/**
- * @param $file
- * @param $key
- * @return string
- */
 function get_line_to_translate($file, $key): string
 {
-  global $metalang, $page;
-  
-  $print_key = str_replace("'", '\\\'', $key);
-  $print_value = str_replace("'", '\\\'', $metalang[ $page['ref_default_values'] ][$file][$key]);
-  return '$'."lang['".$print_key."'] = '".$print_value."';\n";
+    global $metalang, $page;
+
+    $print_key = str_replace("'", '\\\'', $key);
+    $print_value = str_replace("'", '\\\'', $metalang[$page['ref_default_values']][$file][$key]);
+    return '$' . "lang['" . $print_key . "'] = '" . $print_value . "';\n";
 }
