@@ -34,7 +34,7 @@ function ws_getMissingDerivatives(
 
     $max_urls = $params['max_urls'];
     $query = 'SELECT MAX(id)+1, COUNT(*) FROM ' . IMAGES_TABLE . ';';
-    list($max_id, $image_count) = pwg_db_fetch_row(pwg_query($query));
+    [$max_id, $image_count] = pwg_db_fetch_row(pwg_query($query));
 
     if ($image_count == 0) {
         return [];
@@ -125,45 +125,45 @@ function ws_getInfos(
     $infos['version'] = PHPWG_VERSION;
 
     $query = 'SELECT COUNT(*) FROM ' . IMAGES_TABLE . ';';
-    list($infos['nb_elements']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_elements']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ';';
-    list($infos['nb_categories']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_categories']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ' WHERE dir IS NULL;';
-    list($infos['nb_virtual']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_virtual']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ' WHERE dir IS NOT NULL;';
-    list($infos['nb_physical']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_physical']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . IMAGE_CATEGORY_TABLE . ';';
-    list($infos['nb_image_category']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_image_category']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . TAGS_TABLE . ';';
-    list($infos['nb_tags']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_tags']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . IMAGE_TAG_TABLE . ';';
-    list($infos['nb_image_tag']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_image_tag']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . USERS_TABLE . ';';
-    list($infos['nb_users']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_users']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . GROUPS_TABLE . ';';
-    list($infos['nb_groups']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_groups']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . ';';
-    list($infos['nb_comments']) = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_comments']] = pwg_db_fetch_row(pwg_query($query));
 
     // first element
     if ($infos['nb_elements'] > 0) {
         $query = 'SELECT MIN(date_available) FROM ' . IMAGES_TABLE . ';';
-        list($infos['first_date']) = pwg_db_fetch_row(pwg_query($query));
+        [$infos['first_date']] = pwg_db_fetch_row(pwg_query($query));
     }
 
     // unvalidated comments
     if ($infos['nb_comments'] > 0) {
         $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . ' WHERE validated=\'false\';';
-        list($infos['nb_unvalidated_comments']) = pwg_db_fetch_row(pwg_query($query));
+        [$infos['nb_unvalidated_comments']] = pwg_db_fetch_row(pwg_query($query));
     }
 
     // Cache size
@@ -364,21 +364,21 @@ function ws_session_getStatus(
 ): array {
     global $user, $conf;
 
-    $res['username'] = is_a_guest() ? 'guest' : stripslashes($user['username']);
+    $res['username'] = is_a_guest() ? 'guest' : stripslashes((string) $user['username']);
     foreach (['status', 'theme', 'language'] as $k) {
         $res[$k] = $user[$k];
     }
     $res['pwg_token'] = get_pwg_token();
     $res['charset'] = 'utf-8';
 
-    list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+    [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
     $res['current_datetime'] = $dbnow;
     $res['version'] = PHPWG_VERSION;
 
     // Piwigo Remote Sync does not support receiving the available sizes
     $piwigo_remote_sync_agent = 'Apache-HttpClient/';
     if (! isset($_SERVER['HTTP_USER_AGENT']) || ! str_starts_with(
-        $_SERVER['HTTP_USER_AGENT'],
+        (string) $_SERVER['HTTP_USER_AGENT'],
         $piwigo_remote_sync_agent
     )) {
         $res['available_sizes'] = array_keys(ImageStdParams::get_defined_type_map());
@@ -476,7 +476,7 @@ SELECT
             $output_lines[count($output_lines) - 1]['counter']++;
             $output_lines[count($output_lines) - 1]['object_id'][] = $row['object_id'];
         } else {
-            list($date, $hour) = explode(' ', $row['occured_on']);
+            [$date, $hour] = explode(' ', (string) $row['occured_on']);
             // New line
             $output_lines[] = [
                 'id' => $line_id,
@@ -577,8 +577,8 @@ function ws_history_log($params, &$service): void
         ];
     }
 
-    if (! empty($params['tags_string']) && preg_match('/^\d+(,\d+)*$/', $params['tags_string'])) {
-        $page['tag_ids'] = explode(',', $params['tags_string']);
+    if (! empty($params['tags_string']) && preg_match('/^\d+(,\d+)*$/', (string) $params['tags_string'])) {
+        $page['tag_ids'] = explode(',', (string) $params['tags_string']);
     }
 
     pwg_log($params['image_id'], 'picture');
@@ -714,7 +714,7 @@ SELECT rules
   FROM ' . SEARCH_TABLE . '
   WHERE id = ' . $search_id . '
 ;';
-    list($serialized_rules) = pwg_db_fetch_row(pwg_query($query));
+    [$serialized_rules] = pwg_db_fetch_row(pwg_query($query));
 
     $page['search'] = unserialize($serialized_rules);
 
@@ -767,7 +767,7 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id
 
         $username_of = [];
         while ($row = pwg_db_fetch_assoc($result)) {
-            $username_of[$row['id']] = stripslashes($row['username']);
+            $username_of[$row['id']] = stripslashes((string) $row['username']);
         }
     }
 
@@ -788,7 +788,7 @@ SELECT id, uppercats
                 'admin.php?page=album-'
             );
 
-            $uppercats = explode(',', $uppercats);
+            $uppercats = explode(',', (string) $uppercats);
             $name_of_category[$category_id] = get_cat_display_name_cache(
                 end($uppercats),
                 'admin.php?page=album-'
@@ -873,7 +873,7 @@ SELECT
         if (isset($line['tag_ids'])) {
             $tag_names = preg_replace_callback(
                 '/(\d+)/',
-                function ($m) use ($name_of_tag) { return $name_of_tag[$m[1]] ?? $m[1]; },
+                fn ($m) => $name_of_tag[$m[1]] ?? $m[1],
                 $line['tag_ids']
             );
             $tag_ids = $line['tag_ids'];
@@ -941,13 +941,13 @@ SELECT
               'TYPE' => $line['image_type'],
               'SECTION' => $line['section'],
               'FULL_CATEGORY_PATH' => isset($full_cat_path[$line['category_id']]) ? strip_tags(
-                  $full_cat_path[$line['category_id']]
+                  (string) $full_cat_path[$line['category_id']]
               ) : l10n(
                   'Root'
               ) . $line['category_id'],
               'CATEGORY' => $name_of_category[$line['category_id']] ?? l10n('Root') . $line['category_id'],
               'TAGS' => explode(',', $tag_names),
-              'TAGIDS' => explode(',', $tag_ids),
+              'TAGIDS' => explode(',', (string) $tag_ids),
           ];
     }
 

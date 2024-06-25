@@ -37,7 +37,7 @@ function ws_add_image_category_relations(
 
     $tokens = explode(';', $categories_string);
     foreach ($tokens as $token) {
-        list($cat_id, $rank) = explode(',', $token);
+        [$cat_id, $rank] = explode(',', $token);
 
         if (! preg_match('/^\d+$/', $cat_id)) {
             continue;
@@ -290,8 +290,8 @@ SELECT DISTINCT image_id
     }
 
     $comm = [
-        'author' => trim($params['author']),
-        'content' => trim($params['content']),
+        'author' => trim((string) $params['author']),
+        'content' => trim((string) $params['content']),
         'image_id' => $params['image_id'],
     ];
 
@@ -459,7 +459,7 @@ SELECT COUNT(id) AS nb_comments
   FROM ' . COMMENTS_TABLE . '
   WHERE ' . $where_comments . '
 ;';
-    list($nb_comments) = query2array($query, null, 'nb_comments');
+    [$nb_comments] = query2array($query, null, 'nb_comments');
     $nb_comments = (int) $nb_comments;
 
     if ($nb_comments > 0 && $params['comments_per_page'] > 0) {
@@ -485,7 +485,7 @@ SELECT id, date, author, content
           || (is_a_guest() && $conf['comments_forall'])
         )
     ) {
-        $comment_post_data['author'] = stripslashes($user['username']);
+        $comment_post_data['author'] = stripslashes((string) $user['username']);
         $comment_post_data['key'] = get_ephemeral_key(2, $params['image_id']);
     }
 
@@ -745,7 +745,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
@@ -757,7 +757,7 @@ SELECT COUNT(*)
   WHERE image_id = ' . $params['image_id'] . '
     AND category_id = ' . $params['category_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'This image is not associated to this category');
     }
@@ -828,7 +828,7 @@ function ws_images_add_chunk(
         $logger->debug(sprintf(
             '[ws_images_add_chunk] input param "%s" : "%s"',
             $param_key,
-            $param_value === null ? 'NULL' : $param_value
+            $param_value ?? 'NULL'
         ));
     }
 
@@ -849,11 +849,11 @@ function ws_images_add_chunk(
         $params['position']
     );
 
-    $logger->debug('[ws_images_add_chunk] data length : ' . strlen($params['data']));
+    $logger->debug('[ws_images_add_chunk] data length : ' . strlen((string) $params['data']));
 
     $bytes_written = file_put_contents(
         $upload_dir . '/' . $filename,
-        base64_decode($params['data'])
+        base64_decode((string) $params['data'])
     );
 
     if ($bytes_written === false) {
@@ -969,7 +969,7 @@ function ws_images_add(
         $logger->debug(sprintf(
             '[pwg.images.add] input param "%s" : "%s"',
             $param_key,
-            $param_value === null ? 'NULL' : $param_value
+            $param_value ?? 'NULL'
         ));
     }
 
@@ -979,7 +979,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return new PwgError(404, 'image_id not found');
         }
@@ -999,7 +999,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE ' . $where_clause . '
 ;';
-        list($counter) = pwg_db_fetch_row(pwg_query($query));
+        [$counter] = pwg_db_fetch_row(pwg_query($query));
         if ($counter != 0) {
             return new PwgError(500, 'file already exists');
         }
@@ -1066,7 +1066,7 @@ SELECT COUNT(*)
     if (isset($params['categories'])) {
         ws_add_image_category_relations($image_id, $params['categories']);
 
-        if (preg_match('/^\d+/', $params['categories'], $matches)) {
+        if (preg_match('/^\d+/', (string) $params['categories'], $matches)) {
             $category_id = $matches[0];
 
             $query = '
@@ -1085,7 +1085,7 @@ SELECT id, name, permalink
     // and now, let's create tag associations
     if (isset($params['tag_ids']) && ! empty($params['tag_ids'])) {
         set_tags(
-            explode(',', $params['tag_ids']),
+            explode(',', (string) $params['tag_ids']),
             $image_id
         );
     }
@@ -1143,7 +1143,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return new PwgError(404, 'image_id not found');
         }
@@ -1191,7 +1191,7 @@ SELECT COUNT(*)
                 $tag_ids[] = tag_id_from_tag_name($tag_name);
             }
         } else {
-            $tag_names = preg_split('~(?<!\\\),~', $params['tags']);
+            $tag_names = preg_split('~(?<!\\\),~', (string) $params['tags']);
             foreach ($tag_names as $tag_name) {
                 $tag_ids[] = tag_id_from_tag_name(preg_replace('#\\\\*,#', ',', $tag_name));
             }
@@ -1261,7 +1261,7 @@ function ws_images_upload(
         // We must check if the extension is in the authorized list.
         if (preg_match(
             '/\.(' . implode('|', $conf['format_ext']) . ')$/',
-            $params['name'],
+            (string) $params['name'],
             $matches
         )) {
             $format_ext = $matches[1];
@@ -1310,7 +1310,7 @@ function ws_images_upload(
 
     // change the name of the file in the buffer to avoid any unexpected
     // extension. Function add_uploaded_file will eventually clean the mess.
-    $fileName = md5($fileName);
+    $fileName = md5((string) $fileName);
 
     $filePath = $upload_dir . DIRECTORY_SEPARATOR . $fileName;
 
@@ -1379,7 +1379,7 @@ SELECT *
 
         $image_id = add_uploaded_file(
             $filePath,
-            stripslashes($params['name']), // function add_uploaded_file will secure before insert
+            stripslashes((string) $params['name']), // function add_uploaded_file will secure before insert
             $params['category'],
             $params['level'] // image_id = not provided, this is a new photo
         );
@@ -1409,7 +1409,7 @@ SELECT
   FROM ' . LOUNGE_TABLE . '
   WHERE category_id = ' . $params['category'][0] . '
 ;';
-        list($nb_photos_lounge) = pwg_db_fetch_row(pwg_query($query));
+        [$nb_photos_lounge] = pwg_db_fetch_row(pwg_query($query));
 
         $category_name = get_cat_display_name_from_id($params['category'][0], null);
 
@@ -1456,7 +1456,7 @@ function ws_images_uploadAsync(
     // to authenticate the request (a much better time/place than here)
 
     // additional check for some parameters
-    if (! preg_match('/^[a-fA-F0-9]{32}$/', $params['original_sum'])) {
+    if (! preg_match('/^[a-fA-F0-9]{32}$/', (string) $params['original_sum'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid original_sum');
     }
 
@@ -1466,7 +1466,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return new PwgError(404, __FUNCTION__ . ' : image_id not found');
         }
@@ -1629,7 +1629,7 @@ SELECT COUNT(*)
     // and now, let's create tag associations
     if (isset($params['tag_ids']) && ! empty($params['tag_ids'])) {
         set_tags(
-            explode(',', $params['tag_ids']),
+            explode(',', (string) $params['tag_ids']),
             $image_id
         );
     }
@@ -1742,7 +1742,7 @@ SELECT id, md5sum
         // filename list
         $filenames = preg_split(
             $split_pattern,
-            $params['filename_list'],
+            (string) $params['filename_list'],
             -1,
             PREG_SPLIT_NO_EMPTY
         );
@@ -1780,7 +1780,7 @@ function ws_images_formats_searchImage(
 
     $logger->debug(__FUNCTION__, $params);
 
-    $candidates = json_decode(stripslashes($params['filename_list']), true);
+    $candidates = json_decode(stripslashes((string) $params['filename_list']), true);
 
     $unique_filenames_db = [];
 
@@ -1799,9 +1799,7 @@ SELECT
     // we want "long" format extensions first to match "cmyk.jpg" before "jpg" for example
     usort(
         $conf['format_ext'],
-        function ($a, $b) {
-            return strlen($b) - strlen($a);
-        }
+        fn ($a, $b) => strlen((string) $b) - strlen((string) $a)
     );
 
     $result = [];
@@ -1809,7 +1807,11 @@ SELECT
     foreach ($candidates as $format_external_id => $format_filename) {
         $candidate_filename_wo_ext = null;
 
-        if (preg_match('/^(.*?)\.(' . implode('|', $conf['format_ext']) . ')$/', $format_filename, $matches)) {
+        if (preg_match(
+            '/^(.*?)\.(' . implode('|', $conf['format_ext']) . ')$/',
+            (string) $format_filename,
+            $matches
+        )) {
             $candidate_filename_wo_ext = $matches[1];
         }
 
@@ -1861,7 +1863,7 @@ function ws_images_formats_delete(
     if (! is_array($params['format_id'])) {
         $params['format_id'] = preg_split(
             '/[\s,;\|]/',
-            $params['format_id'],
+            (string) $params['format_id'],
             -1,
             PREG_SPLIT_NO_EMPTY
         );
@@ -1974,7 +1976,7 @@ SELECT path
         return new PwgError(404, 'image_id not found');
     }
 
-    list($path) = pwg_db_fetch_row($result);
+    [$path] = pwg_db_fetch_row($result);
 
     $ret = [];
 
@@ -2057,11 +2059,13 @@ SELECT *
     foreach ($info_columns as $key) {
         if (isset($params[$key])) {
             if (! $conf['allow_html_descriptions']) {
-                $params[$key] = strip_tags($params[$key], '<b><strong><em><i>');
+                $params[$key] = strip_tags((string) $params[$key], '<b><strong><em><i>');
             }
 
             // TODO do not strip tags if pwg_token is provided (and valid)
-            $params[$key] = strip_tags($params[$key]);
+            $params[$key] = strip_tags(
+                (string) $params[$key]
+            );
 
             if ($params['single_value_mode'] == 'fill_if_empty') {
                 if (empty($image_row[$key])) {
@@ -2089,7 +2093,7 @@ SELECT *
         }
 
         // prevent XSS, remove HTML tags
-        $update['file'] = strip_tags($params['file']);
+        $update['file'] = strip_tags((string) $params['file']);
         if (empty($update['file'])) {
             unset($update['file']);
         }
@@ -2121,7 +2125,7 @@ SELECT *
     if (isset($params['tag_ids'])) {
         $tag_ids = [];
 
-        foreach (explode(',', $params['tag_ids']) as $candidate) {
+        foreach (explode(',', (string) $params['tag_ids']) as $candidate) {
             $candidate = trim($candidate);
 
             if (preg_match(PATTERN_ID, $candidate)) {
@@ -2169,7 +2173,7 @@ function ws_images_delete(
     if (! is_array($params['image_id'])) {
         $params['image_id'] = preg_split(
             '/[\s,;\|]/',
-            $params['image_id'],
+            (string) $params['image_id'],
             -1,
             PREG_SPLIT_NO_EMPTY
         );
@@ -2241,7 +2245,7 @@ function ws_images_uploadCompleted(
     if (! is_array($params['image_id'])) {
         $params['image_id'] = preg_split(
             '/[\s,;\|]/',
-            $params['image_id'],
+            (string) $params['image_id'],
             -1,
             PREG_SPLIT_NO_EMPTY
         );

@@ -22,7 +22,7 @@ if (is_writable($local_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php')) 
     $order_by = str_ireplace(
         ['order by ', 'asc', 'desc'],
         [null, 'ASC', 'DESC'],
-        trim($conf['order_by_inside_category'])
+        trim((string) $conf['order_by_inside_category'])
     );
 
     // for a simple patern

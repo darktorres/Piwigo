@@ -129,12 +129,13 @@ class PwgRestEncoder extends PwgResponseEncoder
 {
     private PwgXmlWriter $_writer;
 
+    #[\Override]
     public function encodeResponse(mixed $response): string
     {
         if ($response instanceof PwgError) {
             return '<?xml version="1.0"?>
 <rsp stat="fail">
-	<err code="' . $response->code() . '" msg="' . htmlspecialchars($response->message()) . '" />
+	<err code="' . $response->code() . '" msg="' . htmlspecialchars((string) $response->message()) . '" />
 </rsp>';
         }
 
@@ -147,6 +148,7 @@ class PwgRestEncoder extends PwgResponseEncoder
 </rsp>';
     }
 
+    #[\Override]
     public function getContentType(): string
     {
         return 'text/xml';
@@ -223,20 +225,14 @@ class PwgRestEncoder extends PwgResponseEncoder
                 }
                 break;
             case 'object':
-                switch (strtolower(get_class($data))) {
-                    case 'pwgnamedarray':
-                        $this->encode_array($data->_content, $data->_itemName, $data->_xmlAttributes);
-                        break;
-                    case 'pwgnamedstruct':
-                        $this->encode_struct($data->_content, false, $data->_xmlAttributes);
-                        break;
-                    default:
-                        $this->encode_struct(get_object_vars($data), true);
-                        break;
-                }
+                match (strtolower($data::class)) {
+                    'pwgnamedarray' => $this->encode_array($data->_content, $data->_itemName, $data->_xmlAttributes),
+                    'pwgnamedstruct' => $this->encode_struct($data->_content, false, $data->_xmlAttributes),
+                    default => $this->encode_struct(get_object_vars($data), true),
+                };
                 break;
             default:
-                trigger_error('Invalid type ' . gettype($data) . ' ' . get_class($data), E_USER_WARNING);
+                trigger_error('Invalid type ' . gettype($data) . ' ' . $data::class, E_USER_WARNING);
         }
     }
 }

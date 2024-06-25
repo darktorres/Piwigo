@@ -29,11 +29,11 @@ function delete_gdthumb_cache($height): void
 global $template, $conf, $page;
 
 load_language('plugin.lang', GDTHUMB_PATH);
-include(dirname(__FILE__) . '/config_default.inc.php');
+include(__DIR__ . '/config_default.inc.php');
 $params = $conf['gdThumb'];
 
 if (isset($_GET['getMissingDerivative'])) {
-    list($max_id, $image_count) = pwg_db_fetch_row(
+    [$max_id, $image_count] = pwg_db_fetch_row(
         pwg_query('SELECT COALESCE(MAX(id)+1, 0), COUNT(*) FROM ' . IMAGES_TABLE)
     );
     $start_id = intval($_POST['prev_page']);
@@ -224,6 +224,6 @@ $template->assign(
 );
 
 $template->set_filenames([
-    'plugin_admin_content' => dirname(__FILE__) . '/template/admin.tpl',
+    'plugin_admin_content' => __DIR__ . '/template/admin.tpl',
 ]);
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugin_admin_content');

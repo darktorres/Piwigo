@@ -35,7 +35,7 @@ trigger_notify('loc_begin_element_set_unit');
 
 if (isset($_POST['submit'])) {
     check_input_parameter('element_ids', $_POST, false, '/^\d+(,\d+)*$/');
-    $collection = explode(',', $_POST['element_ids']);
+    $collection = explode(',', (string) $_POST['element_ids']);
 
     $datas = [];
 
@@ -57,7 +57,7 @@ SELECT id, date_creation
         if ($conf['allow_html_descriptions']) {
             $data['comment'] = $_POST['description-' . $row['id']];
         } else {
-            $data['comment'] = strip_tags($_POST['description-' . $row['id']]);
+            $data['comment'] = strip_tags((string) $_POST['description-' . $row['id']]);
         }
 
         if (! empty($_POST['date_creation-' . $row['id']])) {
@@ -196,7 +196,7 @@ SELECT
         if ($legend != get_name_from_file($row['file'])) {
             $legend .= ' (' . $row['file'] . ')';
         }
-        $extTab = explode('.', $row['path']);
+        $extTab = explode('.', (string) $row['path']);
 
         $template->append(
             'elements',

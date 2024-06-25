@@ -18,6 +18,7 @@ class DummyTheme_maintain extends ThemeMaintain
     /**
      * @return void|null
      */
+    #[\Override]
     public function activate($theme_version, &$errors = [])
     {
         if (is_callable('theme_activate')) {
@@ -25,6 +26,7 @@ class DummyTheme_maintain extends ThemeMaintain
         }
     }
 
+    #[\Override]
     public function deactivate(): void
     {
         if (is_callable('theme_deactivate')) {
@@ -35,6 +37,7 @@ class DummyTheme_maintain extends ThemeMaintain
     /**
      * @return void|null
      */
+    #[\Override]
     public function delete()
     {
         if (is_callable('theme_delete')) {
@@ -162,7 +165,7 @@ SELECT id
                     if (pwg_db_num_rows($result) == 0) {
                         $new_theme = 'default';
                     } else {
-                        list($new_theme) = pwg_db_fetch_row($result);
+                        [$new_theme] = pwg_db_fetch_row($result);
                     }
 
                     $this->set_default_theme($new_theme);
@@ -358,7 +361,7 @@ SELECT
                         $theme['author uri'] = trim($val[1]);
                     }
                     if (! empty($theme['uri']) && strpos($theme['uri'], 'extension_view.php?eid=')) {
-                        list(, $extension) = explode('extension_view.php?eid=', $theme['uri']);
+                        [, $extension] = explode('extension_view.php?eid=', $theme['uri']);
                         if (is_numeric($extension)) {
                             $theme['extension'] = $extension;
                         }
@@ -413,7 +416,7 @@ SELECT
                 $this->sort_themes_by_state();
                 break;
             case 'author':
-                uasort($this->fs_themes, [$this, 'theme_author_compare']);
+                uasort($this->fs_themes, $this->theme_author_compare(...));
                 break;
             case 'id':
                 uksort($this->fs_themes, 'strcasecmp');
@@ -443,7 +446,7 @@ SELECT
             }
             $branch = get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
-                if (str_starts_with($pem_version['name'], $branch)) {
+                if (str_starts_with((string) $pem_version['name'], $branch)) {
                     $versions_to_check[] = $pem_version['id'];
                 }
             }
@@ -467,7 +470,7 @@ SELECT
             [
                 'last_revision_only' => 'true',
                 'version' => implode(',', $versions_to_check),
-                'lang' => substr($user['language'], 0, 2),
+                'lang' => substr((string) $user['language'], 0, 2),
                 'get_nb_downloads' => 'true',
             ]
         );
@@ -502,16 +505,16 @@ SELECT
                 krsort($this->server_themes);
                 break;
             case 'revision':
-                usort($this->server_themes, [$this, 'extension_revision_compare']);
+                usort($this->server_themes, $this->extension_revision_compare(...));
                 break;
             case 'name':
-                uasort($this->server_themes, [$this, 'extension_name_compare']);
+                uasort($this->server_themes, $this->extension_name_compare(...));
                 break;
             case 'author':
-                uasort($this->server_themes, [$this, 'extension_author_compare']);
+                uasort($this->server_themes, $this->extension_author_compare(...));
                 break;
             case 'downloads':
-                usort($this->server_themes, [$this, 'extension_downloads_compare']);
+                usort($this->server_themes, $this->extension_downloads_compare(...));
                 break;
         }
     }
@@ -544,9 +547,11 @@ SELECT
                 if ($list = $zip->listContent()) {
                     foreach ($list as $file) {
                         // we search main.inc.php in archive
-                        if (basename($file['filename']) == 'themeconf.inc.php'
+                        if (basename(
+                            (string) $file['filename']
+                        ) == 'themeconf.inc.php'
                           && (! isset($main_filepath)
-                          || strlen($file['filename']) < strlen($main_filepath))) {
+                          || strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
                             $main_filepath = $file['filename'];
                         }
                     }
@@ -554,7 +559,7 @@ SELECT
                     $logger->debug(__FUNCTION__ . ', $main_filepath = ' . $main_filepath);
 
                     if (isset($main_filepath)) {
-                        $root = dirname($main_filepath); // main.inc.php path in archive
+                        $root = dirname((string) $main_filepath); // main.inc.php path in archive
                         if ($action == 'upgrade') {
                             $theme_id = $dest;
                         } else {
@@ -647,12 +652,12 @@ SELECT
 
     public function extension_name_compare($a, $b): int
     {
-        return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
+        return strcmp(strtolower((string) $a['extension_name']), strtolower((string) $b['extension_name']));
     }
 
     public function extension_author_compare($a, $b): int
     {
-        $r = strcasecmp($a['author_name'], $b['author_name']);
+        $r = strcasecmp((string) $a['author_name'], (string) $b['author_name']);
         if ($r == 0) {
             return $this->extension_name_compare($a, $b);
         }
@@ -661,7 +666,7 @@ SELECT
 
     public function theme_author_compare($a, $b): int
     {
-        $r = strcasecmp($a['author'], $b['author']);
+        $r = strcasecmp((string) $a['author'], (string) $b['author']);
         if ($r == 0) {
             return name_compare($a, $b);
         }

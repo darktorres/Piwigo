@@ -204,7 +204,7 @@ class Config
         }
 
         // Load and JSON decode the config
-        $loaded = json_decode($conf[self::CONF_PARAM], true);
+        $loaded = json_decode((string) $conf[self::CONF_PARAM], true);
 
         // Check for current version
         if (isset($loaded[self::KEY_VERSION]) && $loaded[self::KEY_VERSION] == self::CONF_VERSION) {
@@ -262,7 +262,7 @@ class Config
     public function fromPost(array $post): void
     {
         foreach (array_keys($this->defaults) as $key) {
-            $this->__set($key, isset($post[$key]) ? stripslashes($post[$key]) : null);
+            $this->__set($key, isset($post[$key]) ? stripslashes((string) $post[$key]) : null);
         }
     }
 
@@ -294,7 +294,7 @@ class Config
     private function saveFile($key, $content): void
     {
         $file = $this->files[$key];
-        $dir = dirname($file);
+        $dir = dirname((string) $file);
         if (! file_exists($dir)) {
             mkdir($dir, 0755, true);
         }

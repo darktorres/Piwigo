@@ -30,10 +30,10 @@ load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
 // | Main                                                                  |
 // +-----------------------------------------------------------------------+
 if (isset($_GET['subscribe'])
-    && preg_match('/^[A-Za-z0-9]{16}$/', $_GET['subscribe'])) {
+    && preg_match('/^[A-Za-z0-9]{16}$/', (string) $_GET['subscribe'])) {
     subscribe_notification_by_mail(false, [$_GET['subscribe']]);
 } elseif (isset($_GET['unsubscribe'])
-    && preg_match('/^[A-Za-z0-9]{16}$/', $_GET['unsubscribe'])) {
+    && preg_match('/^[A-Za-z0-9]{16}$/', (string) $_GET['unsubscribe'])) {
     unsubscribe_notification_by_mail(false, [$_GET['unsubscribe']]);
 } else {
     $page['errors'][] = l10n('Unknown identifier');

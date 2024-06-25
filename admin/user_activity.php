@@ -52,7 +52,7 @@ SELECT
         $row['details'] = str_replace('`groups`', 'groups', $row['details']);
         $row['details'] = str_replace('`rank`', 'rank', $row['details']);
 
-        list($date, $hour) = explode(' ', $row['occured_on']);
+        [$date, $hour] = explode(' ', (string) $row['occured_on']);
 
         $output_lines[] = [
             'username' => $row['username'],
@@ -136,7 +136,7 @@ SELECT COUNT(*)
   FROM ' . USERS_TABLE . '
 ;';
 
-list($nb_users) = pwg_db_fetch_row(pwg_query($query));
+[$nb_users] = pwg_db_fetch_row(pwg_query($query));
 $template->assign('nb_users', $nb_users);
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'user_activity');

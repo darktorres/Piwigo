@@ -127,7 +127,7 @@ SELECT
         $sessions_to_delete = [];
 
         foreach ($sessions as $session) {
-            if (preg_match('/pwg_uid\|i:(\d+);/', $session['data'], $matches)) {
+            if (preg_match('/pwg_uid\|i:(\d+);/', (string) $session['data'], $matches)) {
                 if (! isset($all_user_ids[$matches[1]])) {
                     $sessions_to_delete[] = $session['id'];
                 }
@@ -205,7 +205,7 @@ DELETE
         if ($types_str == 'all') {
             clear_derivative_cache($_GET['type']);
         } else {
-            $types = explode('_', $types_str);
+            $types = explode('_', (string) $types_str);
             foreach ($types as $type_to_clear) {
                 clear_derivative_cache($type_to_clear);
             }
@@ -221,7 +221,7 @@ DELETE
             $versions = [
                 'current' => PHPWG_VERSION,
             ];
-            $lines = explode("\r\n", $result);
+            $lines = explode("\r\n", (string) $result);
 
             // if the current version is a BSF (development branch) build, we check
             // the first line, for stable versions, we check the second line
@@ -296,7 +296,7 @@ $purge_urls[l10n(IMG_CUSTOM)] = IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
 $db_version = pwg_get_db_version();
-list($db_current_date) = pwg_db_fetch_row(pwg_query('SELECT now();'));
+[$db_current_date] = pwg_db_fetch_row(pwg_query('SELECT now();'));
 
 $template->assign(
     [
@@ -327,7 +327,7 @@ $template->assign(
         'PHP_DATATIME' => $php_current_timestamp,
         'DB_DATATIME' => $db_current_date,
         'pwg_token' => $pwg_token,
-        'cache_sizes' => (isset($conf['cache_sizes'])) ? $conf['cache_sizes'] : null,
+        'cache_sizes' => $conf['cache_sizes'] ?? null,
         'time_elapsed_since_last_calc' => (isset($conf['cache_sizes'])) ? time_since(
             $conf['cache_sizes'][3]['value'],
             'year'

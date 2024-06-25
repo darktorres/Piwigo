@@ -46,7 +46,7 @@ function get_local_dir($category_id): string
         $uppercats = $row['uppercats'];
     }
 
-    $upper_array = explode(',', $uppercats);
+    $upper_array = explode(',', (string) $uppercats);
 
     $database_dirs = [];
     $query = 'SELECT id,dir';
@@ -127,7 +127,7 @@ $navigation = get_cat_display_name_cache(
 );
 
 // Parent navigation path
-$uppercats_array = explode(',', $category['uppercats']);
+$uppercats_array = explode(',', (string) $category['uppercats']);
 if (count($uppercats_array) > 1) {
     array_pop($uppercats_array);
     $parent_navigation = get_cat_display_name_cache(
@@ -171,8 +171,8 @@ $template->assign(
         ),
         'PARENT_CAT_ID' => ! empty($category['id_uppercat']) ? $category['id_uppercat'] : 0,
         'CAT_ID' => $category['id'],
-        'CAT_NAME' => htmlspecialchars($category['name']),
-        'CAT_COMMENT' => htmlspecialchars($category['comment']),
+        'CAT_NAME' => htmlspecialchars((string) $category['name']),
+        'CAT_COMMENT' => htmlspecialchars((string) $category['comment']),
         'IS_VISIBLE' => boolean_to_string($category['visible']),
 
         'U_DELETE' => $base_url . 'albums',
@@ -211,7 +211,7 @@ SELECT
     JOIN ' . IMAGE_CATEGORY_TABLE . ' ON image_id = id
   WHERE category_id = ' . $category['id'] . '
 ;';
-    list($image_count, $min_date, $max_date) = pwg_db_fetch_row(pwg_query($query));
+    [$image_count, $min_date, $max_date] = pwg_db_fetch_row(pwg_query($query));
 
     if ($min_date == $max_date) {
         $info_title = l10n(

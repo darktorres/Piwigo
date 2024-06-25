@@ -422,7 +422,7 @@ if (function_exists('mb_strtolower')) {
      */
     function pwg_transliterate($term): string
     {
-        return remove_accents(strtolower($term));
+        return remove_accents(strtolower((string) $term));
     }
 }
 
@@ -433,7 +433,7 @@ function str2url(string $str): string
 {
     $str = $safe = pwg_transliterate($str);
     $str = preg_replace('/[^\x80-\xffa-z0-9_\s\'\:\/\[\],-]/', '', $str);
-    $str = preg_replace('/[\s\'\:\/\[\],-]+/', ' ', trim($str));
+    $str = preg_replace('/[\s\'\:\/\[\],-]+/', ' ', trim((string) $str));
     $res = str_replace(' ', '_', $str);
 
     if (empty($res)) {
@@ -478,7 +478,7 @@ function pwg_log(
     global $conf, $user, $page;
 
     $update_last_visit = false;
-    if (empty($user['last_visit']) || strtotime($user['last_visit']) < time() - $conf['session_length']) {
+    if (empty($user['last_visit']) || strtotime((string) $user['last_visit']) < time() - $conf['session_length']) {
         $update_last_visit = true;
     }
     $update_last_visit = trigger_change('pwg_log_update_last_visit', $update_last_visit);
@@ -518,8 +518,10 @@ UPDATE ' . USER_INFOS_TABLE . '
     // It would be "cleaner" to increase length of history.IP to 50 chars, but
     // the alter table is very long on such a big table. We should plan this
     // for a future version, once history table is kept "smaller".
-    if (str_contains($ip, ':') && strlen($ip) > 15) {
-        $ip = substr($ip, 0, 15);
+    if (str_contains((string) $ip, ':') && strlen(
+        (string) $ip
+    ) > 15) {
+        $ip = substr((string) $ip, 0, 15);
     }
 
     // If plugin developers add their own sections, Piwigo will automatically add it in the history.section enum column
@@ -531,7 +533,7 @@ UPDATE ' . USER_INFOS_TABLE . '
 
         if (in_array($page['section'], $conf['history_sections_cache'])) {
             $section = $page['section'];
-        } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', $page['section'])) {
+        } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', (string) $page['section'])) {
             $history_sections = get_enums(HISTORY_TABLE, 'section');
             $history_sections[] = $page['section'];
 
@@ -634,12 +636,12 @@ function pwg_activity($object, $object_id, $action, array $details = []): void
 
     $user_agent = null;
     if ($object == 'user' && $action == 'login' && isset($_SERVER['HTTP_USER_AGENT'])) {
-        $user_agent = strip_tags($_SERVER['HTTP_USER_AGENT']);
+        $user_agent = strip_tags((string) $_SERVER['HTTP_USER_AGENT']);
     }
 
     if ($object == 'photo' && $action == 'add' && ! isset($details['sync'])) {
         $details['added_with'] = 'app';
-        if (isset($_SERVER['HTTP_REFERER']) && str_contains($_SERVER['HTTP_REFERER'], 'page=photos_add')) {
+        if (isset($_SERVER['HTTP_REFERER']) && str_contains((string) $_SERVER['HTTP_REFERER'], 'page=photos_add')) {
             $details['added_with'] = 'browser';
         }
     }
@@ -701,7 +703,7 @@ function dateDiff(
     //Make sure $date1 is ealier
     $diff->invert = $date2 < $date1;
     if ($diff->invert) {
-        list($date1, $date2) = [$date2, $date1];
+        [$date1, $date2] = [$date2, $date1];
     }
 
     //Calculate R values
@@ -739,7 +741,7 @@ function dateDiff(
         $date1->modify('-1 ' . $period);
     }
 
-    list($diff->y, $diff->m, $diff->d, $diff->h) = array_values($periods);
+    [$diff->y, $diff->m, $diff->d, $diff->h] = array_values($periods);
 
     //Minutes, seconds
     $diff->s = round(abs($date1->format('U') - $date2->format('U')));
@@ -1356,7 +1358,7 @@ SELECT ' . $conf['user_fields']['email'] . '
   FROM ' . USERS_TABLE . '
   WHERE ' . $conf['user_fields']['id'] . ' = ' . $conf['webmaster_id'] . '
 ;';
-    list($email) = pwg_db_fetch_row(pwg_query($query));
+    [$email] = pwg_db_fetch_row(pwg_query($query));
 
     return trigger_change('get_webmaster_mail_address', $email);
 }
@@ -1554,11 +1556,7 @@ function conf_get_param(
     mixed $default_value = null
 ): mixed {
     global $conf;
-
-    if (isset($conf[$param])) {
-        return $conf[$param];
-    }
-    return $default_value;
+    return $conf[$param] ?? $default_value;
 }
 
 /**
@@ -1597,7 +1595,7 @@ function script_basename(): string
 
     foreach (['SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF'] as $value) {
         if (! empty($_SERVER[$value])) {
-            $filename = strtolower($_SERVER[$value]);
+            $filename = strtolower((string) $_SERVER[$value]);
             if ($conf['php_extension_in_urls'] && get_extension($filename) !== 'php') {
                 continue;
             }
@@ -1831,8 +1829,8 @@ function get_ephemeral_key(
     return $time . ':' . $valid_after_seconds . ':'
         . hash_hmac(
             'md5',
-            $time . substr($_SERVER['REMOTE_ADDR'], 0, 5) . $valid_after_seconds . $aditionnal_data_to_hash,
-            $conf['secret_key']
+            $time . substr((string) $_SERVER['REMOTE_ADDR'], 0, 5) . $valid_after_seconds . $aditionnal_data_to_hash,
+            (string) $conf['secret_key']
         );
 }
 
@@ -1851,8 +1849,8 @@ function verify_ephemeral_key(
         or $key[0] < $time - 3600 // 60 minutes expiration
         or hash_hmac(
             'md5',
-            $key[0] . substr($_SERVER['REMOTE_ADDR'], 0, 5) . $key[1] . $aditionnal_data_to_hash,
-            $conf['secret_key']
+            $key[0] . substr((string) $_SERVER['REMOTE_ADDR'], 0, 5) . $key[1] . $aditionnal_data_to_hash,
+            (string) $conf['secret_key']
         ) != $key[2]
     ) {
         return false;
@@ -1989,7 +1987,7 @@ function get_pwg_token(): string
 {
     global $conf;
 
-    return hash_hmac('md5', session_id(), $conf['secret_key']);
+    return hash_hmac('md5', session_id(), (string) $conf['secret_key']);
 }
 
 /*
@@ -2031,12 +2029,12 @@ function check_input_parameter(
         }
 
         foreach ($param_value as $key => $item_to_check) {
-            if (! preg_match(PATTERN_ID, (string) $key) || ! preg_match($pattern, $item_to_check)) {
+            if (! preg_match(PATTERN_ID, (string) $key) || ! preg_match($pattern, (string) $item_to_check)) {
                 fatal_error('[Hacking attempt] an item is not valid in input parameter "' . $param_name . '"');
             }
         }
     } else {
-        if (! preg_match($pattern, $param_value)) {
+        if (! preg_match($pattern, (string) $param_value)) {
             fatal_error('[Hacking attempt] the input parameter "' . $param_name . '" is not valid');
         }
     }
@@ -2136,7 +2134,7 @@ function url_check_format(string $url): bool
         return false;
     }
 
-    if (strncmp($url, 'http://', 7) !== 0 && strncmp($url, 'https://', 8) !== 0) {
+    if (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://')) {
         return false;
     }
 
@@ -2178,7 +2176,7 @@ SELECT COUNT(DISTINCT(com.id))
     ON ic.image_id = com.image_id
   WHERE ' . implode('
     AND ', $where);
-        list($user['nb_available_comments']) = pwg_db_fetch_row(pwg_query($query));
+        [$user['nb_available_comments']] = pwg_db_fetch_row(pwg_query($query));
 
         single_update(
             USER_CACHE_TABLE,
@@ -2203,7 +2201,7 @@ function safe_version_compare(
     string $b,
     string $op = null
 ): bool|int {
-    $replace_chars = function ($m) { return ord(strtolower($m[1])); };
+    $replace_chars = fn ($m) => ord(strtolower((string) $m[1]));
 
     // add dot before groups of letters (version_compare does the same thing)
     $a = preg_replace(
@@ -2257,7 +2255,7 @@ SELECT
     $voyagers = query2array($query);
     if (count($voyagers)) {
         $voyager = $voyagers[0];
-        $age = strtotime($voyager['dbnow']) - strtotime($voyager['date_available']);
+        $age = strtotime((string) $voyager['dbnow']) - strtotime((string) $voyager['date_available']);
 
         if ($age > $conf['lounge_max_duration']) {
             include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');

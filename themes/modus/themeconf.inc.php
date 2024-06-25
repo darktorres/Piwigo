@@ -17,17 +17,15 @@ $themeconf = [
 const MODUS_STR_RECENT = "\xe2\x9c\xbd"; //HEAVY TEARDROP-SPOKED ASTERISK
 const MODUS_STR_RECENT_CHILD = "\xe2\x9c\xbb"; //TEARDROP-SPOKED ASTERISK
 
-if (! empty($_GET['skin']) && ! preg_match('/[^a-zA-Z0-9_-]/', $_GET['skin'])) {
+if (! empty($_GET['skin']) && ! preg_match('/[^a-zA-Z0-9_-]/', (string) $_GET['skin'])) {
     $conf['modus_theme']['skin'] = $_GET['skin'];
 } else {
-    include_once(dirname(__FILE__) . '/functions.inc.php');
+    include_once(__DIR__ . '/functions.inc.php');
     $conf['modus_theme'] = modus_get_default_config();
 }
 
 // we're mainly interested in an override of the colorscheme
-include(dirname(
-    __FILE__
-) . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
+include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
 
 $this->assign(
     [
@@ -42,12 +40,12 @@ $this->assign(
     ]
 );
 
-if (file_exists(dirname(__FILE__) . '/skins/' . $conf['modus_theme']['skin'] . '.css')) {
+if (file_exists(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.css')) {
     $this->assign('MODUS_CSS_SKIN', $conf['modus_theme']['skin']);
 }
 
 if (! $conf['compiled_template_cache_language']) {
-    load_language('theme.lang', dirname(__FILE__) . '/');
+    load_language('theme.lang', __DIR__ . '/');
     load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
         'no_fallback' => true,
         'local' => true,
@@ -56,7 +54,7 @@ if (! $conf['compiled_template_cache_language']) {
 
 if (isset($_COOKIE['caps'])) {
     // setcookie('caps','',0,cookie_path());
-    pwg_set_session_var('caps', explode('x', $_COOKIE['caps']));
+    pwg_set_session_var('caps', explode('x', (string) $_COOKIE['caps']));
     /*file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'tmp/modus.log', implode("\t", array(
         date("Y-m-d H:i:s"), $_COOKIE['caps'], $_SERVER['HTTP_USER_AGENT']
         ))."\n", FILE_APPEND);*/
@@ -71,7 +69,7 @@ if (get_device() == 'mobile') {
 $this->smarty->registerFilter('pre', 'modus_smarty_prefilter_wrap');
 function modus_smarty_prefilter_wrap($source): array|string|null
 {
-    include_once(dirname(__FILE__) . '/functions.inc.php');
+    include_once(__DIR__ . '/functions.inc.php');
     return modus_smarty_prefilter($source);
 }
 
@@ -116,13 +114,13 @@ add_event_handler('combinable_preparse', 'modus_combinable_preparse');
 function modus_combinable_preparse($template): void
 {
     global $conf, $template;
-    include_once(dirname(__FILE__) . '/functions.inc.php');
+    include_once(__DIR__ . '/functions.inc.php');
 
     if (! isset($template->smarty->registered_plugins['modifier']['cssGradient'])) {
         $template->smarty->registerPlugin('modifier', 'cssGradient', 'modus_css_gradient');
     }
 
-    include(dirname(__FILE__) . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
+    include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
 
     $template->assign([
         'conf' => $conf,
@@ -236,7 +234,7 @@ function modus_thumbs($x, $smarty): void
         'rvgtProcessor=new RVGThumbs({hMargin:' . $horizontal_margin . ',rowHeight:' . $row_height . '});'
     );
 
-    $my_base_name = basename(dirname(__FILE__));
+    $my_base_name = basename(__DIR__);
     // not async to avoid visible flickering reflow
     $template->scriptLoader->add(
         'modus.arange',
@@ -406,12 +404,15 @@ function modus_picture_content($content, $element_info): mixed
     }
 
     if (isset($_COOKIE['picture_deriv'])) { // ignore persistence
-        setcookie('picture_deriv', '', 0, cookie_path());
+        setcookie('picture_deriv', '', [
+            'expires' => 0,
+            'path' => cookie_path(),
+        ]);
     }
 
     $selected_derivative = null;
     if (isset($_COOKIE['phavsz'])) {
-        $available_size = explode('x', $_COOKIE['phavsz']);
+        $available_size = explode('x', (string) $_COOKIE['phavsz']);
     } elseif (($caps = pwg_get_session_var('caps')) && $caps[0] > 1) {
         $available_size = [$caps[0] * $caps[1], $caps[0] * ($caps[2] - 100), $caps[0]];
     }

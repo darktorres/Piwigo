@@ -19,7 +19,7 @@ function ws_groups_getList(
     array $params,
     &$service
 ): PwgError|array {
-    if (! preg_match(PATTERN_ORDER, $params['order'])) {
+    if (! preg_match(PATTERN_ORDER, (string) $params['order'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
     }
 
@@ -68,7 +68,7 @@ function ws_groups_add(
     array $params,
     $service
 ): mixed {
-    $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes($params['name'])));
+    $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes((string) $params['name'])));
 
     // is the name not already used ?
     $query = '
@@ -76,7 +76,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE name = \'' . $params['name'] . '\'
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
     }
@@ -151,13 +151,13 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
     if (! empty($params['name'])) {
-        $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes($params['name'])));
+        $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes((string) $params['name'])));
 
         // is the name not already used ?
         $query = '
@@ -166,7 +166,7 @@ SELECT COUNT(*)
   WHERE name = \'' . $params['name'] . '\'
   AND id != ' . $params['group_id'] . '
 ;';
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count != 0) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
         }
@@ -213,7 +213,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
@@ -272,7 +272,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id in (' . implode(',', $all_groups) . ')
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($all_groups)) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'All groups does not exist.');
     }
@@ -358,7 +358,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE name = \'' . pwg_db_real_escape_string($params['copy_name']) . '\'
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
     }
@@ -368,7 +368,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
@@ -379,7 +379,7 @@ SELECT is_default
   WHERE id = ' . $params['group_id'] . '
 ;';
 
-    list($is_default) = pwg_db_fetch_row(pwg_query($query));
+    [$is_default] = pwg_db_fetch_row(pwg_query($query));
 
     // creating the group
     single_insert(
@@ -452,7 +452,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }

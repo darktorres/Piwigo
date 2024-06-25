@@ -180,7 +180,7 @@ function ws_extensions_update(
             );
         }
 
-        list($upgrade_status) = $extension->perform_action('update', $extension_id, [
+        [$upgrade_status] = $extension->perform_action('update', $extension_id, [
             'revision' => $revision,
         ]);
         $extension_name = $extension->fs_plugins[$extension_id]['name'];

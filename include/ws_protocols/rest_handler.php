@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 class PwgRestRequestHandler extends PwgRequestHandler
 {
+    #[\Override]
     public function handleRequest($service): void
     {
         $params = [];

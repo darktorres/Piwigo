@@ -42,7 +42,7 @@ $template->assign(
           $page['body_id'] ?? '',
 
         'CONTENT_ENCODING' => 'utf-8',
-        'PAGE_TITLE' => strip_tags($title),
+        'PAGE_TITLE' => strip_tags((string) $title),
 
         'U_HOME' => get_gallery_home_url(),
 

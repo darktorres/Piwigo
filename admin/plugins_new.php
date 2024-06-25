@@ -86,7 +86,7 @@ if (isset($_GET['installstatus'])) {
         default:
             $page['errors'][] = l10n(
                 'An error occured during extraction (%s).',
-                htmlspecialchars($_GET['installstatus'])
+                htmlspecialchars((string) $_GET['installstatus'])
             );
             $page['errors'][] = l10n('Please check "plugins" folder and sub-folders permissions (CHMOD).');
     }
@@ -128,8 +128,8 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
     }
 
     foreach ($plugins->server_plugins as $plugin) {
-        $ext_desc = trim($plugin['extension_description'], " \n\r");
-        list($small_desc) = explode("\n", wordwrap($ext_desc, 200));
+        $ext_desc = trim((string) $plugin['extension_description'], " \n\r");
+        [$small_desc] = explode("\n", wordwrap($ext_desc, 200));
 
         $url_auto_install = htmlentities($base_url)
           . '&amp;revision=' . $plugin['revision_id']
@@ -175,7 +175,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
             'SMALL_DESC' => trim($small_desc, " \r\n"),
             'BIG_DESC' => $ext_desc,
             'VERSION' => $plugin['revision_name'],
-            'REVISION_DATE' => preg_replace('/[^0-9]/', '', (string) strtotime($plugin['revision_date'])),
+            'REVISION_DATE' => preg_replace('/[^0-9]/', '', (string) strtotime((string) $plugin['revision_date'])),
             'REVISION_FORMATED_DATE' => format_date(
                 $plugin['revision_date'],
                 ['day', 'month', 'year']

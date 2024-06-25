@@ -15,9 +15,9 @@ class Inflector_en
 
     private $singularizers;
 
-    private array $er2ing;
+    private readonly array $er2ing;
 
-    private array $ing2er;
+    private readonly array $ing2er;
 
     public function __construct()
     {
@@ -108,7 +108,7 @@ class Inflector_en
     {
         $res = [];
 
-        $lword = strtolower($word);
+        $lword = strtolower((string) $word);
 
         $rc = ($this->exceptions[$lword]) ?? null;
         if (isset($rc)) {
@@ -120,10 +120,10 @@ class Inflector_en
 
         self::run($this->pluralizers, $word, $res);
         self::run($this->singularizers, $word, $res);
-        if (strlen($word) > 4) {
+        if (strlen((string) $word) > 4) {
             self::run($this->er2ing, $word, $res);
         }
-        if (strlen($word) > 5) {
+        if (strlen((string) $word) > 5) {
             $rc = self::run($this->ing2er, $word, $res);
             if ($rc !== false) {
                 self::run($this->pluralizers, $rc, $res);

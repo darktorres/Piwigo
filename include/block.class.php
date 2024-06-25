@@ -14,15 +14,13 @@ declare(strict_types=1);
  */
 class BlockManager
 {
-    protected string $id;
-
     protected array $registered_blocks = [];
 
     protected array $display_blocks = [];
 
-    public function __construct(string $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        protected string $id
+    ) {
     }
 
     /**
@@ -108,10 +106,7 @@ class BlockManager
      */
     public function get_block(string $block_id): ?DisplayBlock
     {
-        if (isset($this->display_blocks[$block_id])) {
-            return $this->display_blocks[$block_id];
-        }
-        return null;
+        return $this->display_blocks[$block_id] ?? null;
     }
 
     /**
@@ -170,17 +165,11 @@ class BlockManager
  */
 class RegisteredBlock
 {
-    protected string $id;
-
-    protected string $name;
-
-    protected string $owner;
-
-    public function __construct(string $id, string $name, string $owner)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->owner = $owner;
+    public function __construct(
+        protected string $id,
+        protected string $name,
+        protected string $owner
+    ) {
     }
 
     public function get_id(): string
@@ -210,15 +199,13 @@ class DisplayBlock
 
     public string $raw_content;
 
-    protected RegisteredBlock $_registeredBlock;
-
     protected int $_position;
 
     protected string $_title;
 
-    public function __construct(RegisteredBlock $block)
-    {
-        $this->_registeredBlock = $block;
+    public function __construct(
+        protected RegisteredBlock $_registeredBlock
+    ) {
     }
 
     public function get_block(): RegisteredBlock

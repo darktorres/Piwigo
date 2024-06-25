@@ -29,7 +29,7 @@ if (($conf['show_exif']) && (function_exists('exif_read_data'))) {
         ];
 
         foreach ($conf['show_exif_fields'] as $field) {
-            if (! str_contains($field, ';')) {
+            if (! str_contains((string) $field, ';')) {
                 if (isset($exif[$field])) {
                     $key = $field;
                     if (isset($lang['exif_field_' . $field])) {
@@ -38,7 +38,7 @@ if (($conf['show_exif']) && (function_exists('exif_read_data'))) {
                     $tpl_meta['lines'][$key] = $exif[$field];
                 }
             } else {
-                $tokens = explode(';', $field);
+                $tokens = explode(';', (string) $field);
                 if (isset($exif[$field])) {
                     $key = $tokens[1];
                     if (isset($lang['exif_field_' . $key])) {

@@ -26,7 +26,7 @@ SELECT COUNT(rate) AS count
   FROM ' . RATE_TABLE . '
   WHERE element_id = ' . $picture['current']['id'] . '
 ;';
-        list($rate_summary['count'], $rate_summary['average']) = pwg_db_fetch_row(pwg_query($query));
+        [$rate_summary['count'], $rate_summary['average']] = pwg_db_fetch_row(pwg_query($query));
     }
     $template->assign('rate_summary', $rate_summary);
 
@@ -39,7 +39,7 @@ SELECT COUNT(rate) AS count
       AND user_id = ' . $user['id'];
 
             if (! is_autorize_status(ACCESS_CLASSIC)) {
-                $ip_components = explode('.', $_SERVER['REMOTE_ADDR']);
+                $ip_components = explode('.', (string) $_SERVER['REMOTE_ADDR']);
                 if (count($ip_components) > 3) {
                     array_pop($ip_components);
                 }

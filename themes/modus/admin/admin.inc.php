@@ -13,7 +13,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 
 $default_conf = modus_get_default_config();
 
-load_language('theme.lang', dirname(__FILE__) . '/../');
+load_language('theme.lang', __DIR__ . '/../');
 
 $my_conf = $conf['modus_theme'];
 if (! isset($my_conf)) {
@@ -29,7 +29,7 @@ $bool_values = ['display_page_banner'];
 // *************** POST management ********************
 if (isset($_POST[$text_values[0]])) {
     foreach ($text_values as $k) {
-        $my_conf[$k] = stripslashes($_POST[$k]);
+        $my_conf[$k] = stripslashes((string) $_POST[$k]);
     }
     foreach ($bool_values as $k) {
         $my_conf[$k] = isset($_POST[$k]);
@@ -58,7 +58,7 @@ $tabs = [
 ];
 
 $tab_codes = array_map(
-    function ($a) { return $a['code']; },
+    fn ($a) => $a['code'],
     $tabs
 );
 
@@ -116,5 +116,5 @@ $template->assign([
     'available_skins' => $available_skins,
 ]);
 
-$template->set_filename('modus_content', dirname(__FILE__) . '/modus_admin.tpl');
+$template->set_filename('modus_content', __DIR__ . '/modus_admin.tpl');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'modus_content');

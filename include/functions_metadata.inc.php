@@ -129,12 +129,12 @@ function get_exif_data(
 
         // configured fields
         foreach ($map as $key => $field) {
-            if (! str_contains($field, ';')) {
+            if (! str_contains((string) $field, ';')) {
                 if (isset($exif[$field])) {
                     $result[$key] = $exif[$field];
                 }
             } else {
-                $tokens = explode(';', $field);
+                $tokens = explode(';', (string) $field);
                 if (isset($exif[$tokens[0]][$tokens[1]])) {
                     $result[$key] = $exif[$tokens[0]][$tokens[1]];
                 }
@@ -161,7 +161,7 @@ function get_exif_data(
         foreach ($result as $key => $value) {
             // in case the origin of the photo is unsecure (user upload), we remove
             // HTML tags to avoid XSS (malicious execution of javascript)
-            $result[$key] = strip_tags($value);
+            $result[$key] = strip_tags((string) $value);
         }
     }
 

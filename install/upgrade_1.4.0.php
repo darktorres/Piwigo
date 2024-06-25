@@ -26,7 +26,7 @@ SELECT value
   FROM ' . CONFIG_TABLE . '
   WHERE param = \'prefix_thumbnail\'
 ;';
-list($prefix_thumbnail) = pwg_db_fetch_row(pwg_query($query));
+[$prefix_thumbnail] = pwg_db_fetch_row(pwg_query($query));
 
 // delete obsolete configuration
 $query = '
@@ -174,7 +174,7 @@ SELECT *
 ;';
 
 $datas = [];
-list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {

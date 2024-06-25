@@ -64,9 +64,9 @@ $plugin_menu_links_deprec = trigger_change(
 $settings_url_for_plugin_deprec = [];
 
 foreach ($plugin_menu_links_deprec as $value) {
-    if (preg_match('/^admin\.php\?page=plugin-(.*)$/', $value['URL'], $matches)) {
+    if (preg_match('/^admin\.php\?page=plugin-(.*)$/', (string) $value['URL'], $matches)) {
         $settings_url_for_plugin_deprec[$matches[1]] = $value['URL'];
-    } elseif (preg_match('/^.*section=(.*?)[\/&%].*$/', $value['URL'], $matches)) {
+    } elseif (preg_match('/^.*section=(.*?)[\/&%].*$/', (string) $value['URL'], $matches)) {
         $settings_url_for_plugin_deprec[$matches[1]] = $value['URL'];
     }
 }
@@ -175,7 +175,7 @@ function cmp($a, $b): bool|int
     ];
 
     if ($a['STATE'] == $b['STATE']) {
-        return strcasecmp($a['NAME'], $b['NAME']);
+        return strcasecmp((string) $a['NAME'], (string) $b['NAME']);
     }
 
     return $s[$a['STATE']] >= $s[$b['STATE']];

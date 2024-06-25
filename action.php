@@ -18,7 +18,7 @@ check_status(ACCESS_GUEST);
 
 function guess_mime_type($ext): string
 {
-    return match (strtolower($ext)) {
+    return match (strtolower((string) $ext)) {
         'jpe', 'jpeg', 'jpg' => 'image/jpeg',
         'png' => 'image/png',
         'gif' => 'image/gif',
@@ -178,7 +178,7 @@ $http_headers[] = 'Content-Type: ' . $ctype;
 
 if (isset($_GET['download'])) {
     $http_headers[] = 'Content-Disposition: attachment; filename="' . htmlspecialchars_decode(
-        $element_info['file']
+        (string) $element_info['file']
     ) . '";';
     $http_headers[] = 'Content-Transfer-Encoding: binary';
 } else {

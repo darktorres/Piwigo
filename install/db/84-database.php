@@ -31,7 +31,7 @@ $result = pwg_query($query);
 
 $users = [];
 while ($row = pwg_db_fetch_assoc($result)) {
-    list($user_template, $user_theme) = explode('/', $row['theme']);
+    [$user_template, $user_theme] = explode('/', (string) $row['theme']);
 
     switch ($user_template) {
         case 'yoga':

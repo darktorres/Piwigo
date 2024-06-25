@@ -20,7 +20,7 @@ SELECT
     COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-list($albums_counter) = pwg_db_fetch_row(pwg_query($query));
+[$albums_counter] = pwg_db_fetch_row(pwg_query($query));
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -73,7 +73,7 @@ SELECT id
     $categories = [];
     $sort = [];
 
-    list($order_by_field, $order_by_asc) = explode(' ', $_POST['order']);
+    [$order_by_field, $order_by_asc] = explode(' ', (string) $_POST['order']);
 
     $order_by_date = false;
     if (str_starts_with($order_by_field, 'date_')) {
@@ -158,7 +158,7 @@ foreach ($allAlbum as $album) {
     $album['name'] = trigger_change('render_category_name', $album['name'], 'admin_cat_list');
     $album['lastmodified'] = time_since($album['lastmodified'], 'year');
 
-    $parents = explode(',', $album['uppercats']);
+    $parents = explode(',', (string) $album['uppercats']);
     $the_place = &$associatedTree[$parents[0]];
     for ($i = 1; $i < count($parents); $i++) {
         $the_place = &$the_place['children'][$parents[$i]];
@@ -179,10 +179,7 @@ $is_forbidden = array_fill_keys(
 //Make an ordered tree
 function cmpCat($a, $b): int
 {
-    if ($a['rank'] == $b['rank']) {
-        return 0;
-    }
-    return ($a['rank'] < $b['rank']) ? -1 : 1;
+    return $a['rank'] <=> $b['rank'];
 }
 
 function assocToOrderedTree($assocT): array
@@ -233,7 +230,7 @@ $all_categories = query2array($query, 'id', 'uppercats');
 $subcats_of = [];
 
 foreach ($all_categories as $id => $uppercats) {
-    foreach (array_slice(explode(',', $uppercats), 0, -1) as $uppercat_id) {
+    foreach (array_slice(explode(',', (string) $uppercats), 0, -1) as $uppercat_id) {
         $subcats_of[$uppercat_id][] = $id;
     }
 }
@@ -309,7 +306,7 @@ SELECT
         $subcat_ids = [];
 
         foreach ($uppercats_of as $id => $uppercats) {
-            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', $uppercats)) {
+            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', (string) $uppercats)) {
                 $subcat_ids[] = $id;
             }
         }

@@ -88,7 +88,7 @@ function save_upload_form_config($data, array &$errors = [], array &$form_errors
             $max = $upload_form_config[$field]['max'];
             $pattern = $upload_form_config[$field]['pattern'];
 
-            if (preg_match($pattern, $value) && $value >= $min && $value <= $max) {
+            if (preg_match($pattern, (string) $value) && $value >= $min && $value <= $max) {
                 $updates[] = [
                     'param' => $field,
                     'value' => $value,
@@ -143,7 +143,7 @@ function add_uploaded_file(
     global $conf, $user;
 
     if ($original_filename !== null) {
-        $original_filename = htmlspecialchars($original_filename);
+        $original_filename = htmlspecialchars((string) $original_filename);
     }
 
     $md5sum = $original_md5sum ?? md5_file($source_filepath);
@@ -173,8 +173,8 @@ SELECT
         // this photo is new
 
         // current date
-        list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
-        list($year, $month, $day) = preg_split('/[^\d]/', $dbnow, 4);
+        [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        [$year, $month, $day] = preg_split('/[^\d]/', (string) $dbnow, 4);
 
         // upload directory hierarchy
         $upload_dir = sprintf(
@@ -186,11 +186,11 @@ SELECT
 
         // compute file path
         $date_string = preg_replace('/[^\d]/', '', $dbnow);
-        $random_string = substr($md5sum, 0, 8);
+        $random_string = substr((string) $md5sum, 0, 8);
         $filename_wo_ext = $date_string . '-' . $random_string;
         $file_path = $upload_dir . '/' . $filename_wo_ext . '.';
 
-        list($width, $height, $type) = getimagesize($source_filepath);
+        [$width, $height, $type] = getimagesize($source_filepath);
 
         if ($type == IMAGETYPE_PNG) {
             $file_path .= 'png';
@@ -270,7 +270,7 @@ SELECT
 
     if (isset($image_id)) {
         $update = [
-            'file' => pwg_db_real_escape_string($original_filename ?? basename($file_path)),
+            'file' => pwg_db_real_escape_string($original_filename ?? basename((string) $file_path)),
             'filesize' => $file_infos['filesize'],
             'width' => $file_infos['width'],
             'height' => $file_infos['height'],
@@ -292,7 +292,7 @@ SELECT
         );
     } else {
         // database registration
-        $file = pwg_db_real_escape_string($original_filename ?? basename($file_path));
+        $file = pwg_db_real_escape_string($original_filename ?? basename((string) $file_path));
         $insert = [
             'file' => $file,
             'name' => get_name_from_file($file),
@@ -326,7 +326,7 @@ SELECT
 
     if (! $conf['lounge_active']) {
         // check if we need to use the lounge from now
-        list($nb_photos) = pwg_db_fetch_row(
+        [$nb_photos] = pwg_db_fetch_row(
             pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE . ';')
         );
         if ($nb_photos >= $conf['lounge_activate_threshold']) {
@@ -418,8 +418,8 @@ SELECT
         die('[' . __FUNCTION__ . '] this photo does not exist in the database');
     }
 
-    $format_path = dirname($images[0]['path']) . '/pwg_format/';
-    $format_path .= get_filename_wo_extension(basename($images[0]['path']));
+    $format_path = dirname((string) $images[0]['path']) . '/pwg_format/';
+    $format_path .= get_filename_wo_extension(basename((string) $images[0]['path']));
     $format_path .= '.' . $format_ext;
 
     prepare_directory(dirname($format_path));
@@ -526,9 +526,9 @@ function upload_file_tiff($representative_ext, $file_path): mixed
 
     // move the uploaded file to pwg_representative sub-directory
     $representative_file_path = dirname(
-        $file_path
+        (string) $file_path
     ) . '/pwg_representative/';
-    $representative_file_path .= get_filename_wo_extension(basename($file_path)) . '.';
+    $representative_file_path .= get_filename_wo_extension(basename((string) $file_path)) . '.';
 
     $representative_ext = $conf['tiff_representative_ext'];
     $representative_file_path .= $representative_ext;
@@ -592,8 +592,8 @@ function upload_file_video($representative_ext, $file_path): mixed
         return $representative_ext;
     }
 
-    $representative_file_path = dirname($file_path) . '/pwg_representative/';
-    $representative_file_path .= get_filename_wo_extension(basename($file_path)) . '.';
+    $representative_file_path = dirname((string) $file_path) . '/pwg_representative/';
+    $representative_file_path .= get_filename_wo_extension(basename((string) $file_path)) . '.';
 
     $representative_ext = 'jpg';
     $representative_file_path .= $representative_ext;
@@ -666,7 +666,7 @@ function need_resize($image_filepath, $max_width, $max_height): bool
     // TODO : the resize check should take the orientation into account. If a
     // rotation must be applied to the resized photo, then we should test
     // invert width and height.
-    list($width, $height) = getimagesize($image_filepath);
+    [$width, $height] = getimagesize($image_filepath);
 
     if ($width > $max_width || $height > $max_height) {
         return true;
@@ -677,7 +677,7 @@ function need_resize($image_filepath, $max_width, $max_height): bool
 
 function pwg_image_infos($path): array
 {
-    list($width, $height) = getimagesize($path);
+    [$width, $height] = getimagesize($path);
     $filesize = floor(filesize($path) / 1024);
 
     return [
@@ -732,7 +732,7 @@ function get_ini_size($ini_key, bool $in_bytes = true): mixed
 
 function convert_shorthand_notation_to_bytes($value): mixed
 {
-    $suffix = substr($value, -1);
+    $suffix = substr((string) $value, -1);
     $multiply_by = null;
 
     if ($suffix == 'K') {
@@ -744,7 +744,7 @@ function convert_shorthand_notation_to_bytes($value): mixed
     }
 
     if (isset($multiply_by)) {
-        $value = substr($value, 0, -1);
+        $value = substr((string) $value, 0, -1);
         $value *= $multiply_by;
     }
 
@@ -763,7 +763,7 @@ function ready_for_upload_message(): ?string
     $relative_dir = preg_replace('#^' . PHPWG_ROOT_PATH . '#', '', $conf['upload_dir']);
 
     if (! is_dir($conf['upload_dir'])) {
-        if (! is_writable(dirname($conf['upload_dir']))) {
+        if (! is_writable(dirname((string) $conf['upload_dir']))) {
             return sprintf(
                 l10n('Create the "%s" directory at the root of your Piwigo installation'),
                 $relative_dir

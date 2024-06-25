@@ -235,7 +235,7 @@ if (isset($_POST['submit'])) {
 
             // the number of comments per page must be an integer between 5 and 50
             // included
-            if (! preg_match($int_pattern, $_POST['nb_comment_page'])
+            if (! preg_match($int_pattern, (string) $_POST['nb_comment_page'])
                  || $_POST['nb_comment_page'] < 5
                  || $_POST['nb_comment_page'] > 50) {
                 $page['errors'][] = l10n('The number of comments a page must be between 5 and 50 included.');
@@ -252,7 +252,7 @@ if (isset($_POST['submit'])) {
 
         case 'display':
 
-            if (! preg_match($int_pattern, $_POST['nb_categories_page'])
+            if (! preg_match($int_pattern, (string) $_POST['nb_categories_page'])
                   || $_POST['nb_categories_page'] < 4) {
                 $page['errors'][] = l10n('The number of albums a page must be above 4.');
             }
@@ -280,7 +280,7 @@ if (isset($_POST['submit'])) {
 
                 if ($row['param'] == 'gallery_title') {
                     if (! $conf['allow_html_descriptions']) {
-                        $value = strip_tags($value);
+                        $value = strip_tags((string) $value);
                     }
                 }
 
@@ -366,7 +366,7 @@ switch ($page['section']) {
             $template->assign('ORDER_BY_IS_CUSTOM', true);
         } else {
             $out = [];
-            $order_by = trim($conf['order_by_inside_category']);
+            $order_by = trim((string) $conf['order_by_inside_category']);
             $order_by = str_replace('ORDER BY ', '', $order_by);
             $order_by = explode(', ', $order_by);
         }
@@ -374,8 +374,8 @@ switch ($page['section']) {
         $template->assign(
             'main',
             [
-                'CONF_GALLERY_TITLE' => htmlspecialchars($conf['gallery_title']),
-                'CONF_PAGE_BANNER' => htmlspecialchars($conf['page_banner']),
+                'CONF_GALLERY_TITLE' => htmlspecialchars((string) $conf['gallery_title']),
+                'CONF_PAGE_BANNER' => htmlspecialchars((string) $conf['page_banner']),
                 'week_starts_on_options' => [
                     'sunday' => $lang['day'][0],
                     'monday' => $lang['day'][1],
@@ -392,7 +392,7 @@ switch ($page['section']) {
                 ) ? 'all' : 'group',
                 'email_admin_on_new_user_filter_group' => preg_match(
                     '/^group:(\d+)$/',
-                    $conf['email_admin_on_new_user'],
+                    (string) $conf['email_admin_on_new_user'],
                     $matches
                 ) ? $matches[1] : -1,
             ]
@@ -535,9 +535,9 @@ switch ($page['section']) {
                 }
 
                 if ($params) {
-                    list($tpl_var['w'], $tpl_var['h']) = $params->sizing->ideal_size;
+                    [$tpl_var['w'], $tpl_var['h']] = $params->sizing->ideal_size;
                     if (($tpl_var['crop'] = round(100 * $params->sizing->max_crop)) > 0) {
-                        list($tpl_var['minw'], $tpl_var['minh']) = $params->sizing->min_size;
+                        [$tpl_var['minw'], $tpl_var['minh']] = $params->sizing->min_size;
                     } else {
                         $tpl_var['minw'] = $tpl_var['minh'] = '';
                     }

@@ -33,7 +33,7 @@ $page['meta_robots'] = [
 
 if (
     isset($_GET['page'])
-    && preg_match('/^[a-z_]*$/', $_GET['page'])
+    && preg_match('/^[a-z_]*$/', (string) $_GET['page'])
 ) {
     $help_content = load_language(
         'help/' . $_GET['page'] . '.html',

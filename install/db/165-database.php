@@ -15,7 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Add more options to email_admin_on_new_user';
 
-list($old_value) = pwg_db_fetch_row(
+[$old_value] = pwg_db_fetch_row(
     pwg_query('SELECT value FROM ' . PREFIX_TABLE . 'config WHERE param = "email_admin_on_new_user"')
 );
 

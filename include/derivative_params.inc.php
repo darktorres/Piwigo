@@ -75,8 +75,9 @@ final class ImageRect
     /**
      * @param int[] $l width and height
      */
-    public function __construct(array $l)
-    {
+    public function __construct(
+        array $l
+    ) {
         $this->l = $this->t = 0;
         $this->r = (int) $l[0];
         $this->b = (int) $l[1];
@@ -169,23 +170,17 @@ final class ImageRect
  */
 final class SizingParams
 {
-    public array $ideal_size;
-
-    public int|float $max_crop;
-
-    public ?array $min_size;
-
     /**
      * @param int[] $ideal_size - two element array of maximum output dimensions (width, height)
      * @param float|int $max_crop - from 0=no cropping to 1= max cropping (100% of width/height);
      *    expressed as a factor of the input width/height
      * @param int[]|null $min_size - (used only if _$max_crop_ !=0) two element array of output dimensions (width, height)
      */
-    public function __construct(array $ideal_size, float|int $max_crop = 0, array $min_size = null)
-    {
-        $this->ideal_size = $ideal_size;
-        $this->max_crop = $max_crop;
-        $this->min_size = $min_size;
+    public function __construct(
+        public array $ideal_size,
+        public int|float $max_crop = 0,
+        public ?array $min_size = null
+    ) {
     }
 
     /**
@@ -291,8 +286,6 @@ final class SizingParams
  */
 final class DerivativeParams
 {
-    public SizingParams $sizing;
-
     public string $type = IMG_CUSTOM;
 
     public int $last_mod_time = 0; // used for non-custom images to regenerate the cached files
@@ -301,9 +294,9 @@ final class DerivativeParams
 
     public int|float $sharpen = 0; // from 0=no sharpening to 1=max sharpening
 
-    public function __construct(SizingParams $sizing)
-    {
-        $this->sizing = $sizing;
+    public function __construct(
+        public SizingParams $sizing
+    ) {
     }
 
     /**

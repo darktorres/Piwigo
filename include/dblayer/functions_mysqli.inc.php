@@ -38,7 +38,7 @@ function pwg_db_connect(
         $socket = $host;
         $host = null;
     } elseif (str_contains($host, ':')) {
-        list($host, $port) = explode(':', $host);
+        [$host, $port] = explode(':', $host);
     }
 
     $mysqli = new mysqli($host, $user, $password, '', $port, $socket);
@@ -52,14 +52,14 @@ function pwg_db_connect(
     // MySQL 5.7 default settings forbid to select a colum that is not in the
     // group by. We've used that in Piwigo, for years. As an immediate solution
     // we can remove this constraint in the current MySQL session.
-    list($sql_mode_current) = pwg_db_fetch_row(
+    [$sql_mode_current] = pwg_db_fetch_row(
         pwg_query('SELECT @@SESSION.sql_mode')
     );
 
     // remove ONLY_FULL_GROUP_BY from the list
     $sql_mode_altered = implode(
         ',',
-        array_diff(explode(',', $sql_mode_current), ['ONLY_FULL_GROUP_BY'])
+        array_diff(explode(',', (string) $sql_mode_current), ['ONLY_FULL_GROUP_BY'])
     );
 
     if ($sql_mode_altered != $sql_mode_current) {
@@ -154,7 +154,7 @@ function pwg_db_nextval(
     $query = '
 SELECT IF(MAX(' . $column . ')+1 IS NULL, 1, MAX(' . $column . ')+1)
   FROM ' . $table;
-    list($next) = pwg_db_fetch_row(pwg_query($query));
+    [$next] = pwg_db_fetch_row(pwg_query($query));
 
     return $next;
 }
@@ -337,9 +337,9 @@ CREATE TABLE ' . protect_column_name($temporary_tablename) . '
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
         if ($flags & MASS_UPDATES_SKIP_EMPTY) {
-            $func_set = function ($s) { return "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})"; };
+            $func_set = fn ($s) => "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})";
         } else {
-            $func_set = function ($s) { return "t1.{$s} = t2.{$s}"; };
+            $func_set = fn ($s) => "t1.{$s} = t2.{$s}";
         }
 
         // update of table by joining with temporary table
@@ -354,7 +354,7 @@ UPDATE ' . protect_column_name($tablename) . ' AS t1, ' . $temporary_tablename .
           implode(
               "\n    AND ",
               array_map(
-                  function ($s) { return "t1.{$s} = t2.{$s}"; },
+                  fn ($s) => "t1.{$s} = t2.{$s}",
                   $dbfields['primary']
               )
           );
@@ -441,7 +441,7 @@ function mass_inserts(
     }
 
     if (count($datas) != 0) {
-        list(, $packet_size) = pwg_db_fetch_row(pwg_query("SHOW VARIABLES LIKE 'max_allowed_packet'"));
+        [, $packet_size] = pwg_db_fetch_row(pwg_query("SHOW VARIABLES LIKE 'max_allowed_packet'"));
         $queryBase = 'INSERT ' . $ignore . ' INTO ' . protect_column_name($table_name) . ' (' . implode(
             ',',
             array_map('protect_column_name', $dbfields)
@@ -616,7 +616,7 @@ function get_enums(
     while ($row = pwg_db_fetch_assoc($result)) {
         if ($row['Field'] == $field) {
             // parse enum('blue','green','black')
-            $options = explode(',', substr($row['Type'], 5, -1));
+            $options = explode(',', substr((string) $row['Type'], 5, -1));
             foreach ($options as $i => $option) {
                 $options[$i] = str_replace("'", '', $option);
             }
@@ -632,7 +632,7 @@ function get_enums(
  */
 function get_boolean(mixed $input): bool
 {
-    if (strtolower($input) === 'false') {
+    if (strtolower((string) $input) === 'false') {
         return false;
     }
 
@@ -667,7 +667,7 @@ function pwg_db_get_recent_period($period, string $date = 'CURRENT_DATE'): mixed
 {
     $query = '
 SELECT ' . pwg_db_get_recent_period_expression($period);
-    list($d) = pwg_db_fetch_row(pwg_query($query));
+    [$d] = pwg_db_fetch_row(pwg_query($query));
 
     return $d;
 }

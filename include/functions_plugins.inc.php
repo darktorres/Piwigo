@@ -19,11 +19,9 @@ const EVENT_HANDLER_PRIORITY_NEUTRAL = 50;
  */
 class PluginMaintain
 {
-    protected string $plugin_id;
-
-    public function __construct(string $id)
-    {
-        $this->plugin_id = $id;
+    public function __construct(
+        protected string $plugin_id
+    ) {
     }
 
     /**
@@ -81,11 +79,9 @@ class PluginMaintain
  */
 class ThemeMaintain
 {
-    protected string $theme_id;
-
-    public function __construct(string $id)
-    {
-        $this->theme_id = $id;
+    public function __construct(
+        protected string $theme_id
+    ) {
     }
 
     /**
@@ -293,10 +289,7 @@ function &get_plugin_data(
     string $plugin_id
 ): mixed {
     global $pwg_loaded_plugins;
-    if (isset($pwg_loaded_plugins[$plugin_id]['plugin_data'])) {
-        return $pwg_loaded_plugins[$plugin_id]['plugin_data'];
-    }
-    return null;
+    return $pwg_loaded_plugins[$plugin_id]['plugin_data'] ?? null;
 }
 
 /**

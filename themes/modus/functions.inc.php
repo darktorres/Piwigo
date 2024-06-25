@@ -9,8 +9,8 @@ function modus_css_gradient($gradient)
 {
     if (! empty($gradient)) {
         $std = implode(',', $gradient);
-        $gs = trim($gradient[0], '#');
-        $ge = trim($gradient[1], '#');
+        $gs = trim((string) $gradient[0], '#');
+        $ge = trim((string) $gradient[1], '#');
         return "filter: progid:DXImageTransform.Microsoft.gradient(startColorStr=#FF{$gs},endColorStr=#FF{$ge}); /* IE to 9*/
 	background-image: -moz-linear-gradient(top,{$std}); /* FF 3.16 to 15 */
 	background-image: -webkit-linear-gradient(top,{$std}); /* Chrome, Safari */
@@ -39,7 +39,7 @@ function modus_smarty_prefilter($source): array|string|null
     $source = str_replace('<div id=imageHeaderBar>', '<div class=titrePage id=imageHeaderBar>', $source);
 
     if (! isset($lang['modus_theme'])) {
-        load_language('theme.lang', dirname(__FILE__) . '/');
+        load_language('theme.lang', __DIR__ . '/');
     }
 
     // picture page actionButtons wrap for mobile

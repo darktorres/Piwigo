@@ -65,7 +65,7 @@ abstract class PersistentCache
  */
 class PersistentFileCache extends PersistentCache
 {
-    private string $dir;
+    private readonly string $dir;
 
     public function __construct()
     {
@@ -73,6 +73,7 @@ class PersistentFileCache extends PersistentCache
         $this->dir = PHPWG_ROOT_PATH . $conf['data_location'] . 'cache/';
     }
 
+    #[\Override]
     public function get(string $key, mixed &$value): bool
     {
         $loaded = file_exists($this->dir . $key . '.cache') ? file_get_contents($this->dir . $key . '.cache') : false;
@@ -85,13 +86,14 @@ class PersistentFileCache extends PersistentCache
         return false;
     }
 
+    #[\Override]
     public function set(string $key, mixed $value, int $lifetime = null): bool
     {
         if ($lifetime === null) {
             $lifetime = $this->default_lifetime;
         }
 
-        if (rand() % 97 == 0) {
+        if (random_int(0, mt_getrandmax()) % 97 == 0) {
             $this->purge(false);
         }
 
@@ -110,6 +112,7 @@ class PersistentFileCache extends PersistentCache
         return true;
     }
 
+    #[\Override]
     public function purge(bool $all): void
     {
         $files = glob($this->dir . '*.cache');

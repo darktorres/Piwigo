@@ -82,10 +82,10 @@ function get_remote_addr_session_hash(): string
         return '';
     }
 
-    if (! str_contains($_SERVER['REMOTE_ADDR'], ':')) {//ipv4
+    if (! str_contains((string) $_SERVER['REMOTE_ADDR'], ':')) {//ipv4
         return vsprintf(
             '%02X%02X',
-            explode('.', $_SERVER['REMOTE_ADDR'])
+            explode('.', (string) $_SERVER['REMOTE_ADDR'])
         );
     }
     return ''; //ipv6 not yet
@@ -178,10 +178,7 @@ function pwg_get_session_var(
     string $var,
     mixed $default = null
 ): mixed {
-    if (isset($_SESSION['pwg_' . $var])) {
-        return $_SESSION['pwg_' . $var];
-    }
-    return $default;
+    return $_SESSION['pwg_' . $var] ?? $default;
 }
 
 /**

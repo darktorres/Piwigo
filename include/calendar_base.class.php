@@ -232,7 +232,7 @@ $this->get_date_where($level) . '
         if (count($level_items) == 1 and
              count($page['chronology_date']) < count($this->calendar_levels) - 1) {
             if (! isset($page['chronology_date'][$level])) {
-                list($key) = array_keys($level_items);
+                [$key] = array_keys($level_items);
                 $page['chronology_date'][$level] = (int) $key;
 
                 if ($level < count($page['chronology_date']) and
@@ -306,7 +306,7 @@ GROUP BY period';
 
         if ($current_rank > 0) { // has previous
             $prev = $upper_items[$current_rank - 1];
-            $chronology_date = explode('-', $prev);
+            $chronology_date = explode('-', (string) $prev);
             $tpl_var['previous'] =
               [
                   'LABEL' => $this->get_date_nice_name($prev),
@@ -321,7 +321,7 @@ GROUP BY period';
 
         if ($current_rank < count($upper_items) - 1) { // has next
             $next = $upper_items[$current_rank + 1];
-            $chronology_date = explode('-', $next);
+            $chronology_date = explode('-', (string) $next);
             $tpl_var['next'] =
               [
                   'LABEL' => $this->get_date_nice_name($next),

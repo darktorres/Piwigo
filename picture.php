@@ -54,7 +54,7 @@ SELECT id, file, level
     if (! isset($page['rank_of'][$page['image_id']])) {// the image can still be non accessible (filter/cat perm) and/or not in the set
         global $filter;
         if (! empty($filter['visible_images']) and
-          ! in_array($page['image_id'], explode(',', $filter['visible_images']))) {
+          ! in_array($page['image_id'], explode(',', (string) $filter['visible_images']))) {
             page_not_found(
                 'The requested image is filtered',
                 duplicate_index_url()
@@ -125,7 +125,7 @@ add_event_handler(
 function pwg_nl2br(
     $string
 ): string {
-    return nl2br($string);
+    return nl2br((string) $string);
 }
 
 trigger_notify('loc_begin_picture');
@@ -146,7 +146,10 @@ function default_picture_content($content, $element_info): mixed
         if (array_key_exists($_COOKIE['picture_deriv'], ImageStdParams::get_defined_type_map())) {
             pwg_set_session_var('picture_deriv', $_COOKIE['picture_deriv']);
         }
-        setcookie('picture_deriv', '', 0, cookie_path());
+        setcookie('picture_deriv', '', [
+            'expires' => 0,
+            'path' => cookie_path(),
+        ]);
     }
     $deriv_type = pwg_get_session_var('picture_deriv', $conf['derivative_default_size']);
     $selected_derivative = $element_info['derivatives'][$deriv_type];
@@ -487,7 +490,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $row['src_image'] = new SrcImage($row);
     $row['derivatives'] = DerivativeImage::get_all($row['src_image']);
 
-    $extTab = explode('.', $row['path']);
+    $extTab = explode('.', (string) $row['path']);
     $row['path_ext'] = strtolower(get_extension($row['path']));
     $row['file_ext'] = strtolower(get_extension($row['file']));
 
@@ -661,8 +664,8 @@ SELECT *
                 $format['download_url'] = 'action.php?format=' . $format['format_id'] . '&amp;download';
             }
 
-            $format['label'] = strtoupper($format['ext']);
-            $lang_key = 'format ' . strtoupper($format['ext']);
+            $format['label'] = strtoupper((string) $format['ext']);
+            $lang_key = 'format ' . strtoupper((string) $format['ext']);
             if (isset($lang[$lang_key])) {
                 $format['label'] = $lang[$lang_key];
             }
@@ -856,7 +859,7 @@ if (! empty($picture['current']['date_creation'])) {
             'chronology_field' => 'created',
             'chronology_style' => 'monthly',
             'chronology_view' => 'list',
-            'chronology_date' => explode('-', substr($picture['current']['date_creation'], 0, 10)),
+            'chronology_date' => explode('-', substr((string) $picture['current']['date_creation'], 0, 10)),
         ]
     );
     $infos['INFO_CREATION_DATE'] =
@@ -872,7 +875,7 @@ $url = make_index_url(
         'chronology_view' => 'list',
         'chronology_date' => explode(
             '-',
-            substr($picture['current']['date_available'], 0, 10)
+            substr((string) $picture['current']['date_available'], 0, 10)
         ),
     ]
 );
@@ -935,7 +938,7 @@ if (count($related_categories) == 1 and
 } else { // use only 1 sql query to get names for all related categories
     $ids = [];
     foreach ($related_categories as $category) {// add all uppercats to $ids
-        $ids = array_merge($ids, explode(',', $category['uppercats']));
+        $ids = array_merge($ids, explode(',', (string) $category['uppercats']));
     }
     $ids = array_unique($ids);
     $query = '
@@ -945,7 +948,7 @@ SELECT id, name, permalink
     $cat_map = query2array($query, 'id');
     foreach ($related_categories as $category) {
         $cats = [];
-        foreach (explode(',', $category['uppercats']) as $id) {
+        foreach (explode(',', (string) $category['uppercats']) as $id) {
             $cats[] = $cat_map[$id];
         }
         $template->append('related_categories', get_cat_display_name($cats));
@@ -964,7 +967,7 @@ $template->assign('ELEMENT_CONTENT', $element_content);
 if (isset($picture['next'])
     && $picture['next']['src_image']->is_original()
     && $template->get_template_vars('U_PREFETCH') == null
-    && ! str_contains($_SERVER['HTTP_USER_AGENT'], 'Chrome/')) {
+    && ! str_contains((string) $_SERVER['HTTP_USER_AGENT'], 'Chrome/')) {
     $template->assign(
         'U_PREFETCH',
         $picture['next']['derivatives'][pwg_get_session_var(

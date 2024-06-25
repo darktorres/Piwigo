@@ -44,8 +44,10 @@ class PwgError
 
     private $_codeText;
 
-    public function __construct($code, $codeText)
-    {
+    public function __construct(
+        $code,
+        $codeText
+    ) {
         if ($code >= 400 && $code < 600) {
             set_status_header($code, $codeText);
         }
@@ -72,23 +74,20 @@ class PwgError
  */
 class PwgNamedArray
 {
-    public array $_content;
-
-    public string $_itemName;
-
     public array $_xmlAttributes;
 
     /**
      * Constructs a named array
-     * @param array $arr (keys must be consecutive integers starting at 0)
-     * @param string $itemName xml element name for values of arr (e.g. image)
+     * @param array $_content (keys must be consecutive integers starting at 0)
+     * @param string $_itemName xml element name for values of arr (e.g. image)
      * @param array $xmlAttributes of sub-item attributes that will be encoded as
      *      xml attributes instead of xml child elements
      */
-    public function __construct(array $arr, string $itemName, array $xmlAttributes = [])
-    {
-        $this->_content = $arr;
-        $this->_itemName = $itemName;
+    public function __construct(
+        public array $_content,
+        public string $_itemName,
+        array $xmlAttributes = []
+    ) {
         $this->_xmlAttributes = array_flip($xmlAttributes);
     }
 }
@@ -99,22 +98,22 @@ class PwgNamedArray
  */
 class PwgNamedStruct
 {
-    public array $_content;
-
     public array $_xmlAttributes;
 
     /**
      * Constructs a named struct (usually returned by web service function
      * implementation)
-     * @param array $content the actual content (php array)
+     * @param array $_content the actual content (php array)
      * @param array|null $xmlAttributes name of the keys in $content that will be
      *    encoded as xml attributes (if null - automatically prefer xml attributes
      *    whenever possible)
      * @param null $xmlElements
      */
-    public function __construct(array $content, array $xmlAttributes = null, $xmlElements = null)
-    {
-        $this->_content = $content;
+    public function __construct(
+        public array $_content,
+        array $xmlAttributes = null,
+        $xmlElements = null
+    ) {
         if (isset($xmlAttributes)) {
             $this->_xmlAttributes = array_flip($xmlAttributes);
         } else {
@@ -189,7 +188,7 @@ abstract class PwgResponseEncoder
     private static function flatten(&$value): void
     {
         if (is_object($value)) {
-            $class = strtolower(get_class($value));
+            $class = strtolower($value::class);
             if ($class == 'pwgnamedarray') {
                 $value = $value->_content;
             }
@@ -583,7 +582,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
     ): array {
         $methods = array_filter(
             $service->_methods,
-            function ($m) { return empty($m['options']['hidden']) || ! $m['options']['hidden']; }
+            fn ($m) => empty($m['options']['hidden']) || ! $m['options']['hidden']
         );
         return [
             'methods' => new PwgNamedArray(array_keys($methods), 'method'),

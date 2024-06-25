@@ -79,7 +79,7 @@ class RVTS
         $url_model = str_replace('&amp;', '&', $url_model);
         $ajax_url_model = str_replace('&amp;', '&', $ajax_url_model);
 
-        $my_base_name = basename(dirname(__FILE__));
+        $my_base_name = basename(__DIR__);
         $ajax_loader_image = get_root_url() . "plugins/{$my_base_name}/ajax-loader.gif";
         $template->func_combine_script([
             'id' => 'jquery',
@@ -97,7 +97,7 @@ class RVTS
         $per_page = $page['nb_image_page'];
         $moreMsg = 'See the remaining %d photos';
         if ($GLOBALS['lang_info']['code'] != 'en') {
-            load_language('lang', dirname(__FILE__) . '/');
+            load_language('lang', __DIR__ . '/');
             $moreMsg = l10n($moreMsg);
         }
 
@@ -139,7 +139,7 @@ jQuery('.navigationBar').hide();"
             }
         }
         if ($req != null) {
-            $my_base_name = basename(dirname(__FILE__));
+            $my_base_name = basename(__DIR__);
             $template->func_combine_script([
                 'id' => $my_base_name,
                 'load' => 'async',

@@ -8,9 +8,10 @@ class GDThumb_maintain extends PluginMaintain
 {
     private bool $installed = false;
 
+    #[\Override]
     public function install($plugin_version, &$errors = []): void
     {
-        include(dirname(__FILE__) . '/config_default.inc.php');
+        include(__DIR__ . '/config_default.inc.php');
         global $conf;
         if (empty($conf['gdThumb'])):
             conf_update_param('gdThumb', $config_default, true);
@@ -19,11 +20,13 @@ class GDThumb_maintain extends PluginMaintain
         $this->installed = true;
     }
 
+    #[\Override]
     public function update($old_version, $new_version, &$errors = []): void
     {
         $this->install($new_version, $errors);
     }
 
+    #[\Override]
     public function activate($plugin_version, &$errors = []): void
     {
         if (! $this->installed):
@@ -32,6 +35,7 @@ class GDThumb_maintain extends PluginMaintain
         endif;
     }
 
+    #[\Override]
     public function uninstall(): void
     {
         $this->cleanUp();

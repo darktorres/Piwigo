@@ -48,21 +48,19 @@ class pwg_image
 
     public string|false $library = '';
 
-    public string $source_filepath = '';
-
     public static string $ext_imagick_version = '';
 
-    public function __construct($source_filepath, $library = null)
-    {
-        $this->source_filepath = $source_filepath;
-
+    public function __construct(
+        public string $source_filepath,
+        $library = null
+    ) {
         trigger_notify('load_image_library', [&$this]);
 
         // if (is_object($this->image)) {
         //   return; // A plugin may have load its own library
         // }
 
-        $extension = strtolower(get_extension($source_filepath));
+        $extension = strtolower(get_extension($this->source_filepath));
 
         if (! in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
             die('[Image] unsupported file extension');
@@ -73,7 +71,7 @@ class pwg_image
         }
 
         $class = 'image_' . $this->library;
-        $this->image = new $class($source_filepath);
+        $this->image = new $class($this->source_filepath);
     }
 
     // Unknow methods will be redirected to image object
@@ -182,7 +180,7 @@ class pwg_image
         }
 
         if ($rotate_for_dimensions) {
-            list($width, $height) = [$height, $width];
+            [$width, $height] = [$height, $width];
         }
 
         if ($crop) {
@@ -190,7 +188,7 @@ class pwg_image
             $y = 0;
 
             if ($width < $height && $follow_orientation) {
-                list($max_width, $max_height) = [$max_height, $max_width];
+                [$max_width, $max_height] = [$max_height, $max_width];
             }
 
             $img_ratio = $width / $height;
@@ -224,7 +222,7 @@ class pwg_image
         }
 
         if ($rotate_for_dimensions) {
-            list($destination_width, $destination_height) = [$destination_height, $destination_width];
+            [$destination_width, $destination_height] = [$destination_height, $destination_width];
         }
 
         $result = [
@@ -245,7 +243,7 @@ class pwg_image
 
     public static function get_rotation_angle($source_filepath): ?int
     {
-        list($width, $height, $type) = getimagesize($source_filepath);
+        [$width, $height, $type] = getimagesize($source_filepath);
         if ($type != IMAGETYPE_JPEG) {
             return null;
         }
@@ -364,7 +362,7 @@ class pwg_image
         }
 
         // Choose image library
-        switch (strtolower($library)) {
+        switch (strtolower((string) $library)) {
             case 'auto':
             case 'vips':
                 if (self::is_vips()) {
@@ -428,37 +426,44 @@ class image_imagick implements imageInterface
 {
     public Imagick $image;
 
-    public function __construct($source_filepath)
-    {
+    public function __construct(
+        $source_filepath
+    ) {
         // A bug cause that Imagick class can not be extended
         $this->image = new Imagick($source_filepath);
     }
 
+    #[\Override]
     public function get_width(): int
     {
         return $this->image->getImageWidth();
     }
 
+    #[\Override]
     public function get_height(): int
     {
         return $this->image->getImageHeight();
     }
 
+    #[\Override]
     public function set_compression_quality(int $quality): bool
     {
         return $this->image->setImageCompressionQuality($quality);
     }
 
+    #[\Override]
     public function crop($width, $height, $x, $y): bool
     {
         return $this->image->cropImage($width, $height, $x, $y);
     }
 
+    #[\Override]
     public function strip(): bool
     {
         return $this->image->stripImage();
     }
 
+    #[\Override]
     public function rotate($rotation): true
     {
         $this->image->rotateImage(new ImagickPixel(), -$rotation);
@@ -466,6 +471,7 @@ class image_imagick implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function resize(int $width, int $height): bool
     {
         $this->image->setInterlaceScheme(Imagick::INTERLACE_LINE);
@@ -480,12 +486,14 @@ class image_imagick implements imageInterface
         return $this->image->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 0.9);
     }
 
+    #[\Override]
     public function sharpen($amount): bool
     {
         $m = pwg_image::get_sharpen_matrix($amount);
         return $this->image->convolveImage($m);
     }
 
+    #[\Override]
     public function compose($overlay, $x, $y, $opacity): bool
     {
         $ioverlay = $overlay->image->image;
@@ -508,6 +516,7 @@ class image_imagick implements imageInterface
         return $this->image->compositeImage($ioverlay, Imagick::COMPOSITE_DISSOLVE, $x, $y);
     }
 
+    #[\Override]
     public function write($destination_filepath): bool
     {
         // use 4:2:2 chroma subsampling (reduce file size by 20-30% with "almost" no human perception)
@@ -526,25 +535,23 @@ class image_ext_imagick implements imageInterface
 {
     public mixed $imagickdir = '';
 
-    public string $source_filepath = '';
-
     public int $width;
 
     public int $height;
 
     public array $commands = [];
 
-    public function __construct($source_filepath)
-    {
+    public function __construct(
+        public string $source_filepath
+    ) {
         global $conf;
-        $this->source_filepath = $source_filepath;
         $this->imagickdir = $conf['ext_imagick_dir'];
 
-        if (str_starts_with($_SERVER['SCRIPT_FILENAME'], '/kunden/')) {  // 1and1
+        if (str_starts_with((string) $_SERVER['SCRIPT_FILENAME'], '/kunden/')) {  // 1and1
             putenv('MAGICK_THREAD_LIMIT=1');
         }
 
-        $command = $this->imagickdir . 'identify -quiet -format "%wx%h" "' . realpath($source_filepath) . '"';
+        $command = $this->imagickdir . 'identify -quiet -format "%wx%h" "' . realpath($this->source_filepath) . '"';
         exec($command, $returnarray);
         if (! is_array($returnarray) || empty($returnarray[0]) || ! preg_match(
             '/^(\d+)x(\d+)$/',
@@ -563,16 +570,19 @@ class image_ext_imagick implements imageInterface
         $this->commands[$command] = $params;
     }
 
+    #[\Override]
     public function get_width(): string
     {
         return $this->width;
     }
 
+    #[\Override]
     public function get_height(): string
     {
         return $this->height;
     }
 
+    #[\Override]
     public function crop($width, $height, $x, $y): true
     {
         $this->width = $width;
@@ -582,12 +592,14 @@ class image_ext_imagick implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function strip(): true
     {
         $this->add_command('strip');
         return true;
     }
 
+    #[\Override]
     public function rotate($rotation): true
     {
         if (empty($rotation)) {
@@ -604,12 +616,14 @@ class image_ext_imagick implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function set_compression_quality(int $quality): true
     {
         $this->add_command('quality', $quality);
         return true;
     }
 
+    #[\Override]
     public function resize(int $width, int $height): true
     {
         $this->width = $width;
@@ -620,6 +634,7 @@ class image_ext_imagick implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function sharpen($amount): true
     {
         $m = pwg_image::get_sharpen_matrix($amount);
@@ -634,6 +649,7 @@ class image_ext_imagick implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function compose($overlay, $x, $y, $opacity): true
     {
         $param = 'compose dissolve -define compose:args=' . $opacity;
@@ -644,6 +660,7 @@ class image_ext_imagick implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function write($destination_filepath): bool
     {
         global $logger;
@@ -670,7 +687,7 @@ class image_ext_imagick implements imageInterface
             }
         }
 
-        $dest = pathinfo($destination_filepath);
+        $dest = pathinfo((string) $destination_filepath);
         $exec .= ' "' . realpath($dest['dirname']) . '/' . $dest['basename'] . '" 2>&1';
         $logger->debug($exec);
         exec($exec, $returnarray);
@@ -695,8 +712,9 @@ class image_gd implements imageInterface
 
     public int $quality = 95;
 
-    public function __construct($source_filepath)
-    {
+    public function __construct(
+        $source_filepath
+    ) {
         $gd_info = gd_info();
         $extension = strtolower(get_extension($source_filepath));
 
@@ -711,16 +729,19 @@ class image_gd implements imageInterface
         }
     }
 
+    #[\Override]
     public function get_width(): false|int
     {
         return imagesx($this->image);
     }
 
+    #[\Override]
     public function get_height(): false|int
     {
         return imagesy($this->image);
     }
 
+    #[\Override]
     public function crop($width, $height, $x, $y): bool
     {
         $dest = imagecreatetruecolor($width, $height);
@@ -742,11 +763,13 @@ class image_gd implements imageInterface
         return $result;
     }
 
+    #[\Override]
     public function strip(): true
     {
         return true;
     }
 
+    #[\Override]
     public function rotate($rotation): true
     {
         $dest = imagerotate($this->image, $rotation, 0);
@@ -755,12 +778,14 @@ class image_gd implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function set_compression_quality(int $quality): true
     {
         $this->quality = $quality;
         return true;
     }
 
+    #[\Override]
     public function resize(int $width, int $height): bool
     {
         $dest = imagecreatetruecolor($width, $height);
@@ -793,12 +818,14 @@ class image_gd implements imageInterface
         return $result;
     }
 
+    #[\Override]
     public function sharpen($amount): bool
     {
         $m = pwg_image::get_sharpen_matrix($amount);
         return imageconvolution($this->image, $m, 1, 0);
     }
 
+    #[\Override]
     public function compose($overlay, $x, $y, $opacity): true
     {
         $ioverlay = $overlay->image->image;
@@ -832,6 +859,7 @@ class image_gd implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function write($destination_filepath): bool
     {
         $extension = strtolower(get_extension($destination_filepath));
@@ -865,8 +893,9 @@ class image_vips implements imageInterface
 
     public string $source_filepath;
 
-    public function __construct(string $source_filepath)
-    {
+    public function __construct(
+        string $source_filepath
+    ) {
         // putenv('VIPS_WARNING=0');
 
         try {
@@ -885,39 +914,46 @@ class image_vips implements imageInterface
 
     }
 
+    #[\Override]
     public function get_width(): int
     {
         return $this->image->width;
     }
 
+    #[\Override]
     public function get_height(): int
     {
         return $this->image->height;
     }
 
+    #[\Override]
     public function crop($width, $height, $x, $y): true
     {
         $this->image = $this->image->crop($x, $y, $width, $height);
         return true;
     }
 
+    #[\Override]
     public function strip(): true
     {
         return true;
     }
 
+    #[\Override]
     public function rotate($rotation): true
     {
         $this->image = $this->image->rotate($rotation);
         return true;
     }
 
+    #[\Override]
     public function set_compression_quality(int $quality): true
     {
         $this->quality = $quality;
         return true;
     }
 
+    #[\Override]
     public function resize(int $width, int $height): true
     {
         $this->image = Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, [
@@ -926,19 +962,22 @@ class image_vips implements imageInterface
         return true;
     }
 
+    #[\Override]
     public function sharpen($amount): true
     {
         return true;
     }
 
+    #[\Override]
     public function compose($overlay, $x, $y, $opacity): true
     {
         return true;
     }
 
+    #[\Override]
     public function write($destination_filepath): true
     {
-        $dest = pathinfo($destination_filepath);
+        $dest = pathinfo((string) $destination_filepath);
 
         try {
             $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);

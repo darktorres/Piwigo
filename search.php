@@ -30,7 +30,7 @@ if (isset($_POST['submit'])) {
     }
 
     if (isset($_POST['search_allwords'])
-        && ! preg_match('/^\s*$/', $_POST['search_allwords'])) {
+        && ! preg_match('/^\s*$/', (string) $_POST['search_allwords'])) {
         check_input_parameter('mode', $_POST, false, '/^(OR|AND)$/');
         check_input_parameter('fields', $_POST, true, '/^(name|comment|file)$/');
 
@@ -76,7 +76,7 @@ if (isset($_POST['submit'])) {
         $authors = [];
 
         foreach ($_POST['authors'] as $author) {
-            $authors[] = strip_tags($author);
+            $authors[] = strip_tags((string) $author);
         }
 
         $search['fields']['author'] = [

@@ -16,11 +16,11 @@ declare(strict_types=1);
  */
 final class SrcImage
 {
-    public const IS_ORIGINAL = 0x01;
+    public const int IS_ORIGINAL = 0x01;
 
-    public const IS_MIMETYPE = 0x02;
+    public const int IS_MIMETYPE = 0x02;
 
-    public const DIM_NOT_GIVEN = 0x04;
+    public const int DIM_NOT_GIVEN = 0x04;
 
     public mixed $id;
 
@@ -35,8 +35,9 @@ final class SrcImage
     /**
      * @param array $infos assoc array of data from images table
      */
-    public function __construct(array $infos)
-    {
+    public function __construct(
+        array $infos
+    ) {
         global $conf;
 
         $this->id = $infos['id'];
@@ -65,7 +66,7 @@ final class SrcImage
             $this->size = [$size[0], $size[1]];
         }
 
-        $segments = explode('/', $this->rel_path); // Split the string by "/"
+        $segments = explode('/', (string) $this->rel_path); // Split the string by "/"
         $encodedSegments = array_map(
             'rawurlencode',
             $segments
@@ -154,8 +155,6 @@ final class SrcImage
  */
 final class DerivativeImage
 {
-    public SrcImage $src_image;
-
     private array|DerivativeParams|null $params = null;
 
     private string $rel_path = '';
@@ -167,16 +166,17 @@ final class DerivativeImage
      *    or a DerivativeParams object
      * @param SrcImage $src_image the source image of this derivative
      */
-    public function __construct(DerivativeParams|string $type, SrcImage $src_image)
-    {
-        $this->src_image = $src_image;
+    public function __construct(
+        DerivativeParams|string $type,
+        public SrcImage $src_image
+    ) {
         if (is_string($type)) {
             $this->params = ImageStdParams::get_by_type($type);
         } else {
             $this->params = $type;
         }
 
-        self::build($src_image, $this->params, $this->rel_path, $this->rel_url);
+        self::build($this->src_image, $this->params, $this->rel_path, $this->rel_url);
     }
 
     /**

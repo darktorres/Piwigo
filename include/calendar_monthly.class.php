@@ -19,6 +19,7 @@ class CalendarMonthly extends CalendarBase
     /**
      * Initialize the calendar.
      */
+    #[\Override]
     public function initialize(string $inner_sql): void
     {
         parent::initialize($inner_sql);
@@ -44,6 +45,7 @@ class CalendarMonthly extends CalendarBase
      *
      * @return bool false indicates that thumbnails where not included
      */
+    #[\Override]
     public function generate_category_content(): bool
     {
         global $conf, $page;
@@ -102,6 +104,7 @@ class CalendarMonthly extends CalendarBase
      *
      * @param int $max_levels (e.g. 2=only year and month)
      */
+    #[\Override]
     public function get_date_where(
         int $max_levels = 3
     ): string {
@@ -206,8 +209,8 @@ class CalendarMonthly extends CalendarBase
         $result = pwg_query($query);
         $items = [];
         while ($row = pwg_db_fetch_assoc($result)) {
-            $y = substr($row['period'], 0, 4);
-            $m = (int) substr($row['period'], 4, 2);
+            $y = substr((string) $row['period'], 0, 4);
+            $m = (int) substr((string) $row['period'], 4, 2);
             if (! isset($items[$y])) {
                 $items[$y] = [
                     'nb_images' => 0,
@@ -221,7 +224,7 @@ class CalendarMonthly extends CalendarBase
         if (count(
             $items
         ) == 1) {// only one year exists so bail out to year view
-            list($y) = array_keys($items);
+            [$y] = array_keys($items);
             $page['chronology_date'][CYEAR] = $y;
             return false;
         }
@@ -273,8 +276,8 @@ class CalendarMonthly extends CalendarBase
         $result = pwg_query($query);
         $items = [];
         while ($row = pwg_db_fetch_assoc($result)) {
-            $m = (int) substr($row['period'], 0, 2);
-            $d = substr($row['period'], 2, 2);
+            $m = (int) substr((string) $row['period'], 0, 2);
+            $d = substr((string) $row['period'], 2, 2);
             if (! isset($items[$m])) {
                 $items[$m] = [
                     'nb_images' => 0,
@@ -285,7 +288,7 @@ class CalendarMonthly extends CalendarBase
             $items[$m]['nb_images'] += $row['count'];
         }
         if (count($items) == 1) { // only one month exists so bail out to month view
-            list($m) = array_keys($items);
+            [$m] = array_keys($items);
             $page['chronology_date'][CMONTH] = $m;
             return false;
         }
@@ -360,7 +363,7 @@ class CalendarMonthly extends CalendarBase
         }
 
         if (! empty($items)) {
-            list($known_day) = array_keys($items);
+            [$known_day] = array_keys($items);
             $known_dow = $items[$known_day]['dow'];
             $first_day_dow = ($known_dow - ($known_day - 1)) % 7;
             if ($first_day_dow < 0) {
@@ -379,7 +382,7 @@ class CalendarMonthly extends CalendarBase
                 $wday_labels[] = array_shift($wday_labels);
             }
 
-            list($cell_width, $cell_height) = ImageStdParams::get_by_type(IMG_SQUARE)->sizing->ideal_size;
+            [$cell_width, $cell_height] = ImageStdParams::get_by_type(IMG_SQUARE)->sizing->ideal_size;
 
             $tpl_weeks = [];
             $tpl_crt_week = [];

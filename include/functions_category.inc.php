@@ -14,7 +14,7 @@ declare(strict_types=1);
  */
 function global_rank_compare($a, $b): int
 {
-    return strnatcasecmp($a['global_rank'], $b['global_rank']);
+    return strnatcasecmp((string) $a['global_rank'], (string) $b['global_rank']);
 }
 
 /**
@@ -38,7 +38,7 @@ function check_restrictions(
     // are not used because it's not necessary (filter <> restriction)
     if (in_array(
         $category_id,
-        explode(',', $user['forbidden_categories'])
+        explode(',', (string) $user['forbidden_categories'])
     )) {
         access_denied();
     }
@@ -118,7 +118,7 @@ WHERE ' . $where . '
                 'URL' => make_index_url([
                     'category' => $row,
                 ]),
-                'LEVEL' => substr_count($row['global_rank'], '.') + 1,
+                'LEVEL' => substr_count((string) $row['global_rank'], '.') + 1,
                 'SELECTED' => $selected_category !== null && $selected_category['id'] == $row['id'],
                 'IS_UPPERCAT' => $selected_category !== null && $selected_category['id_uppercat'] == $row['id'],
             ]
@@ -164,7 +164,7 @@ SELECT *
         }
     }
 
-    $upper_ids = explode(',', $cat['uppercats']);
+    $upper_ids = explode(',', (string) $cat['uppercats']);
     if (count($upper_ids) == 1) {// no need to make a query for level 1
         $cat['upper_names'] = [
             [
@@ -245,11 +245,11 @@ function display_select_categories(
         } else {
             $option = str_repeat(
                 '&nbsp;',
-                (3 * substr_count($category['global_rank'], '.'))
+                (3 * substr_count((string) $category['global_rank'], '.'))
             );
             $option .= '- ';
             $option .= strip_tags(
-                trigger_change(
+                (string) trigger_change(
                     'render_category_name',
                     $category['name'],
                     'display_select_categories'
@@ -439,7 +439,7 @@ SELECT image_id
 ;';
         $result = pwg_query($query);
         if (pwg_db_num_rows($result) > 0) {
-            list($image_id) = pwg_db_fetch_row($result);
+            [$image_id] = pwg_db_fetch_row($result);
         }
     }
 
@@ -697,7 +697,7 @@ function get_related_categories_menu($items, array $excluded_cat_ids = []): arra
     $cat_ids = [];
     // now we add the upper categories and useful values such as depth level and url
     foreach ($common_cats as $cat) {
-        foreach (explode(',', $cat['uppercats']) as $uppercat) {
+        foreach (explode(',', (string) $cat['uppercats']) as $uppercat) {
             $cat_ids[$uppercat] = ($cat_ids[$uppercat] ?? 0) + 1;
         }
     }
@@ -720,7 +720,7 @@ SELECT
 
     foreach ($cats as $idx => $cat) {
         $index_of_cat[$cat['id']] = $idx;
-        $cats[$idx]['LEVEL'] = substr_count($cat['global_rank'], '.') + 1;
+        $cats[$idx]['LEVEL'] = substr_count((string) $cat['global_rank'], '.') + 1;
         $cats[$idx]['name'] = trigger_change('render_category_name', $cat['name'], $cat);
 
         // if the category is directly linked to the items, we add an URL + counter
@@ -749,7 +749,7 @@ SELECT
         //
         // Option 3 seems more appropriate here.
         if (! empty($cat['id_uppercat']) && ($cats[$idx]['count_images'] ?? 0) > 0) {
-            foreach (array_slice(explode(',', $cat['uppercats']), 0, -1) as $uppercat_id) {
+            foreach (array_slice(explode(',', (string) $cat['uppercats']), 0, -1) as $uppercat_id) {
                 $cats[$index_of_cat[$uppercat_id]]['count_categories'] = ($cats[$index_of_cat[$uppercat_id]]['count_categories'] ?? 0) + 1;
             }
         }

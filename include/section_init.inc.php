@@ -53,7 +53,7 @@ if (! $conf['question_mark_in_urls'] and
     $page['root_path'] = PHPWG_ROOT_PATH;
 }
 
-if (strncmp($page['root_path'], './', 2) == 0) {
+if (str_starts_with($page['root_path'], './')) {
     $page['root_path'] = substr($page['root_path'], 2);
 }
 

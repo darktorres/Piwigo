@@ -170,7 +170,7 @@ function render_comment_content(
     $replacement = '<a href="$1" rel="nofollow">$1</a>';
     $content = preg_replace($pattern, $replacement, $content);
 
-    $content = nl2br($content);
+    $content = nl2br((string) $content);
 
     // replace _word_ by an underlined word
     $pattern = '/\b_(\S*)_\b/';
@@ -196,7 +196,7 @@ function render_comment_content(
  */
 function name_compare($a, $b): int
 {
-    return strcmp(strtolower($a['name']), strtolower($b['name']));
+    return strcmp(strtolower((string) $a['name']), strtolower((string) $b['name']));
 }
 
 /**
@@ -212,7 +212,7 @@ function tag_alpha_compare($a, $b): int
         }
     }
 
-    return strcmp($cache[__FUNCTION__][$a['name']], $cache[__FUNCTION__][$b['name']]);
+    return strcmp((string) $cache[__FUNCTION__][$a['name']], (string) $cache[__FUNCTION__][$b['name']]);
 }
 
 /**
@@ -224,7 +224,7 @@ function access_denied(): void
 
     $login_url =
         get_root_url() . 'identification.php?redirect='
-        . urlencode(urlencode($_SERVER['REQUEST_URI']));
+        . urlencode(urlencode((string) $_SERVER['REQUEST_URI']));
 
     if (isset($user) && ! is_a_guest()) {
         set_status_header(401);

@@ -94,43 +94,43 @@ $query = '
 SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
 ;';
-list($nb_photos) = pwg_db_fetch_row(pwg_query($query));
+[$nb_photos] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-list($nb_categories) = pwg_db_fetch_row(pwg_query($query));
+[$nb_categories] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . TAGS_TABLE . '
 ;';
-list($nb_tags) = pwg_db_fetch_row(pwg_query($query));
+[$nb_tags] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . IMAGE_TAG_TABLE . '
 ;';
-list($nb_image_tag) = pwg_db_fetch_row(pwg_query($query));
+[$nb_image_tag] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . USERS_TABLE . '
 ;';
-list($nb_users) = pwg_db_fetch_row(pwg_query($query));
+[$nb_users] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
 ;';
-list($nb_groups) = pwg_db_fetch_row(pwg_query($query));
+[$nb_groups] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . RATE_TABLE . '
 ;';
-list($nb_rates) = pwg_db_fetch_row(pwg_query($query));
+[$nb_rates] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT
@@ -138,21 +138,21 @@ SELECT
   FROM ' . HISTORY_SUMMARY_TABLE . '
   WHERE month IS NULL
 ;';
-list($nb_views) = pwg_db_fetch_row(pwg_query($query));
+[$nb_views] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT
     SUM(filesize)
   FROM ' . IMAGES_TABLE . '
 ;';
-list($disk_usage) = pwg_db_fetch_row(pwg_query($query));
+[$disk_usage] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT
     SUM(filesize)
   FROM ' . IMAGE_FORMAT_TABLE . '
 ;';
-list($formats_disk_usage) = pwg_db_fetch_row(pwg_query($query));
+[$formats_disk_usage] = pwg_db_fetch_row(pwg_query($query));
 
 $disk_usage += $formats_disk_usage;
 
@@ -184,7 +184,7 @@ if ($conf['activate_comments']) {
 SELECT COUNT(*)
   FROM ' . COMMENTS_TABLE . '
 ;';
-    list($nb_comments) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_comments] = pwg_db_fetch_row(pwg_query($query));
     $template->assign('NB_COMMENTS', $nb_comments);
 } else {
     $template->assign('NB_COMMENTS', 0);
@@ -266,8 +266,8 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
         }
         $day_nb = $day_date->format('N');
 
-        $activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst(
-            $action['action']
+        $activity_last_weeks[$week][$day_nb]['details'][ucfirst((string) $action['object'])][ucfirst(
+            (string) $action['action']
         )] = $action['activity_counter'];
         $activity_last_weeks[$week][$day_nb]['number'] = ($activity_last_weeks[$week][$day_nb]['number'] ?? 0) + $action['activity_counter'];
         $activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
@@ -308,10 +308,7 @@ foreach ($activity_last_weeks as $week => $i) {
 //Function to sort days by number of activity
 function cmp_day($a, $b): int
 {
-    if ($a['x'] == $b['x']) {
-        return 0;
-    }
-    return ($a['x'] < $b['x']) ? -1 : 1;
+    return $a['x'] <=> $b['x'];
 }
 
 usort($temp_data, 'cmp_day');
@@ -363,7 +360,7 @@ $template->assign('ACTIVITY_CHART_NUMBER_SIZES', $size);
 $day_labels = [];
 for ($i = 0; $i <= 6; $i++) {
     // first 3 letters of day name
-    $day_labels[] = mb_substr($lang['day'][($i + 1) % 7], 0, 3);
+    $day_labels[] = mb_substr((string) $lang['day'][($i + 1) % 7], 0, 3);
 }
 $template->assign('DAY_LABELS', $day_labels);
 

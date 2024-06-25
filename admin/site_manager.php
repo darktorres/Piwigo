@@ -104,7 +104,7 @@ SELECT galleries_url
   FROM ' . SITES_TABLE . '
   WHERE id = ' . $page['site'] . '
 ;';
-    list($galleries_url) = pwg_db_fetch_row(pwg_query($query));
+    [$galleries_url] = pwg_db_fetch_row(pwg_query($query));
     switch ($_GET['action']) {
         case 'delete':
 

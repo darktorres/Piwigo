@@ -86,13 +86,13 @@ SELECT user_id,
 // Check the status now after the user has been loaded
 check_status(ACCESS_GUEST);
 
-list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 set_make_full_url();
 
 $rss = new UniversalFeedCreator();
 $rss->title = $conf['gallery_title'];
-$rss->title .= ' (as ' . stripslashes($user['username']) . ')';
+$rss->title .= ' (as ' . stripslashes((string) $user['username']) . ')';
 
 $rss->link = get_gallery_home_url();
 
@@ -155,7 +155,7 @@ foreach ($dates as $date_detail) { // for each recent post date we create a feed
             'chronology_field' => 'posted',
             'chronology_style' => 'monthly',
             'chronology_view' => 'calendar',
-            'chronology_date' => explode('-', substr($date, 0, 10)),
+            'chronology_date' => explode('-', substr((string) $date, 0, 10)),
         ]
     );
 

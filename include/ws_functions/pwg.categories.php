@@ -114,7 +114,7 @@ SELECT SQL_CALC_FOUND_ROWS i.*
             $images[] = $image;
         }
 
-        list($total_images) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+        [$total_images] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
 
         // let's take care of adding the related albums to each photo
         if (count($image_ids) > 0) {
@@ -295,7 +295,7 @@ SELECT
             $row['name'] = strip_tags(get_cat_display_name_cache($row['uppercats'], null));
         } else {
             $row['name'] = strip_tags(
-                trigger_change(
+                (string) trigger_change(
                     'render_category_name',
                     $row['name'],
                     'ws_categories_getList'
@@ -352,7 +352,7 @@ SELECT representative_picture_id
                 $subresult = pwg_query($query);
 
                 if (pwg_db_num_rows($subresult) > 0) {
-                    list($image_id) = pwg_db_fetch_row($subresult);
+                    [$image_id] = pwg_db_fetch_row($subresult);
                 }
             }
         }
@@ -500,7 +500,7 @@ function ws_categories_getAdminList(
     if (! isset($params['additional_output'])) {
         $params['additional_output'] = '';
     }
-    $params['additional_output'] = array_map('trim', explode(',', $params['additional_output']));
+    $params['additional_output'] = array_map('trim', explode(',', (string) $params['additional_output']));
 
     $query = '
 SELECT category_id, COUNT(*) AS counter
@@ -525,7 +525,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
 ;';
     $result = pwg_query($query);
 
-    list($counter) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+    [$counter] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
 
     $cats = [];
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -538,7 +538,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
         );
 
         $row['name'] = strip_tags(
-            trigger_change(
+            (string) trigger_change(
                 'render_category_name',
                 $row['name'],
                 'ws_categories_getAdminList'
@@ -547,7 +547,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
         $row['fullname'] = strip_tags($cat_display_name);
         isset($row['comment']) ? false : $row['comment'] = '';
         $row['comment'] = strip_tags(
-            trigger_change(
+            (string) trigger_change(
                 'render_category_description',
                 $row['comment'],
                 'ws_categories_getAdminList'
@@ -609,12 +609,12 @@ function ws_categories_add(
     if (! empty($params['comment'])) {
         // TODO do not strip tags if pwg_token is provided (and valid)
         $options['comment'] = strip_tags(
-            $params['comment']
+            (string) $params['comment']
         );
     }
 
     $creation_output = create_virtual_category(
-        strip_tags($params['name']), // TODO do not strip tags if pwg_token is provided (and valid)
+        strip_tags((string) $params['name']), // TODO do not strip tags if pwg_token is provided (and valid)
         $params['parent'],
         $options
     );
@@ -675,7 +675,7 @@ SELECT id
             );
         }
     } else {
-        $params['category_id'] = implode($params['category_id']);
+        $params['category_id'] = implode('', $params['category_id']);
 
         $query = '
 SELECT id
@@ -752,7 +752,7 @@ SELECT *
     ];
 
     foreach (['visible', 'commentable'] as $param_name) {
-        if (isset($params[$param_name]) && ! preg_match('/^(true|false)$/i', $params[$param_name])) {
+        if (isset($params[$param_name]) && ! preg_match('/^(true|false)$/i', (string) $params[$param_name])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid param ' . $param_name . ' : ' . $params[$param_name]);
         }
     }
@@ -769,7 +769,9 @@ SELECT *
         if (isset($params[$key])) {
             $perform_update = true;
             // TODO do not strip tags if pwg_token is provided (and valid)
-            $update[$key] = strip_tags($params[$key]);
+            $update[$key] = strip_tags(
+                (string) $params[$key]
+            );
         }
     }
 
@@ -817,7 +819,7 @@ SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $params['category_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'category_id not found');
     }
@@ -828,7 +830,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
@@ -884,7 +886,7 @@ SELECT COUNT(*)
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id = ' . $params['category_id'] . '
 ;';
-    list($nb_images) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
     if (! $conf['allow_random_representative'] && $nb_images != 0) {
         return new PwgError(401, 'not permitted');
@@ -984,7 +986,7 @@ function ws_categories_delete(
     if (! is_array($params['category_id'])) {
         $params['category_id'] = preg_split(
             '/[\s,;\|]/',
-            $params['category_id'],
+            (string) $params['category_id'],
             -1,
             PREG_SPLIT_NO_EMPTY
         );
@@ -1039,7 +1041,7 @@ function ws_categories_move(
     if (! is_array($params['category_id'])) {
         $params['category_id'] = preg_split(
             '/[\s,;\|]/',
-            $params['category_id'],
+            (string) $params['category_id'],
             -1,
             PREG_SPLIT_NO_EMPTY
         );
@@ -1072,7 +1074,7 @@ SELECT id, name, dir
         // we break on error at first physical category detected
         if (! empty($row['dir'])) {
             $row['name'] = strip_tags(
-                trigger_change(
+                (string) trigger_change(
                     'render_category_name',
                     $row['name'],
                     'ws_categories_move'

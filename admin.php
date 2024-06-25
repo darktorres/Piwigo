@@ -39,7 +39,7 @@ check_input_parameter('section', $_GET, false, '/^[a-z]+[a-z_\/-]*(\.php)?$/i');
 if ($conf['fs_quick_check_period'] > 0) {
     $perform_fsqc = false;
     if (isset($conf['fs_quick_check_last_check'])) {
-        if (strtotime($conf['fs_quick_check_last_check']) < strtotime(
+        if (strtotime((string) $conf['fs_quick_check_last_check']) < strtotime(
             $conf['fs_quick_check_period'] . ' seconds ago'
         )) {
             $perform_fsqc = true;
@@ -120,7 +120,7 @@ $change_theme_url .= 'change_theme=1';
 // ?page=plugin&section=community/admin.php&tab=pendings
 if (isset($_GET['page']) && preg_match(
     '/^plugin-([^-]*)(?:-(.*))?$/',
-    $_GET['page'],
+    (string) $_GET['page'],
     $matches
 )) {
     $_GET['page'] = 'plugin';
@@ -139,7 +139,7 @@ if (isset($_GET['page']) && preg_match(
 // ?page=album&cat_id=134&tab=properties
 if (isset($_GET['page']) && preg_match(
     '/^album-(\d+)(?:-(.*))?$/',
-    $_GET['page'],
+    (string) $_GET['page'],
     $matches
 )) {
     $_GET['page'] = 'album';
@@ -153,7 +153,7 @@ if (isset($_GET['page']) && preg_match(
 // ?page=photo&image_id=1234&tab=properties
 if (isset($_GET['page']) && preg_match(
     '/^photo-(\d+)(?:-(.*))?$/',
-    $_GET['page'],
+    (string) $_GET['page'],
     $matches
 )) {
     $_GET['page'] = 'photo';
@@ -164,7 +164,7 @@ if (isset($_GET['page']) && preg_match(
 }
 
 if (isset($_GET['page'])
-    && preg_match('/^[a-z_]*$/', $_GET['page'])
+    && preg_match('/^[a-z_]*$/', (string) $_GET['page'])
     && is_file(PHPWG_ROOT_PATH . 'admin/' . $_GET['page'] . '.php')) {
     $page['page'] = $_GET['page'];
 } else {
@@ -246,7 +246,7 @@ SELECT COUNT(*)
   FROM ' . COMMENTS_TABLE . '
   WHERE validated=\'false\'
 ;';
-    list($nb_comments) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_comments] = pwg_db_fetch_row(pwg_query($query));
 
     if ($nb_comments > 0) {
         $template->assign('NB_PENDING_COMMENTS', $nb_comments);
@@ -260,7 +260,7 @@ SELECT COUNT(*)
   FROM ' . CADDIE_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-list($nb_photos_in_caddie) = pwg_db_fetch_row(pwg_query($query));
+[$nb_photos_in_caddie] = pwg_db_fetch_row(pwg_query($query));
 
 if ($nb_photos_in_caddie > 0) {
     $template->assign(
@@ -290,7 +290,7 @@ if (in_array($page['page'], ['site_update', 'batch_manager'])) {
 // only calculate number of orphans on all pages if the number of images is "not huge"
 $page['nb_orphans'] = 0;
 
-list($page['nb_photos_total']) = pwg_db_fetch_row(pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE));
+[$page['nb_photos_total']] = pwg_db_fetch_row(pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE));
 if ($page['nb_photos_total'] < 100000) { // 100k is already a big gallery
     $page['nb_orphans'] = count(get_orphans());
 }

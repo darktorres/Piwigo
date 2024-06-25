@@ -47,11 +47,12 @@ function xmlrpc_encode($data)
 
 class PwgXmlRpcEncoder extends PwgResponseEncoder
 {
+    #[\Override]
     public function encodeResponse(mixed $response): string
     {
         if ($response instanceof PwgError) {
             $code = $response->code();
-            $msg = htmlspecialchars($response->message());
+            $msg = htmlspecialchars((string) $response->message());
             return <<<EOD
 <methodResponse>
   <fault>
@@ -87,6 +88,7 @@ EOD;
 EOD;
     }
 
+    #[\Override]
     public function getContentType(): string
     {
         return 'text/xml';

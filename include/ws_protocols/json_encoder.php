@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 class PwgJsonEncoder extends PwgResponseEncoder
 {
+    #[\Override]
     public function encodeResponse(mixed $response): false|string
     {
         if ($response instanceof PwgError) {
@@ -31,6 +32,7 @@ class PwgJsonEncoder extends PwgResponseEncoder
         );
     }
 
+    #[\Override]
     public function getContentType(): string
     {
         return 'text/plain';

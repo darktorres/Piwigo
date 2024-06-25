@@ -48,7 +48,7 @@ global $template;
 // Add our template to the global template
 $template->set_filenames(
     [
-        'theme_admin_content' => dirname(__FILE__) . '/template/' . $page['tab'] . '.tpl',
+        'theme_admin_content' => __DIR__ . '/template/' . $page['tab'] . '.tpl',
     ]
 );
 

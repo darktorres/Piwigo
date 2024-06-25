@@ -26,12 +26,12 @@ function cookie_path(): string
         if (
             isset($_SERVER['PATH_INFO']) && ! empty($_SERVER['PATH_INFO']) and
             ($_SERVER['REDIRECT_URL'] !== $_SERVER['PATH_INFO']) and
-            (str_ends_with($_SERVER['REDIRECT_URL'], $_SERVER['PATH_INFO']))
+            (str_ends_with((string) $_SERVER['REDIRECT_URL'], (string) $_SERVER['PATH_INFO']))
         ) {
             $scr = substr(
-                $_SERVER['REDIRECT_URL'],
+                (string) $_SERVER['REDIRECT_URL'],
                 0,
-                strlen($_SERVER['REDIRECT_URL']) - strlen($_SERVER['PATH_INFO'])
+                strlen((string) $_SERVER['REDIRECT_URL']) - strlen((string) $_SERVER['PATH_INFO'])
             );
         } else {
             $scr = $_SERVER['REDIRECT_URL'];
@@ -40,7 +40,7 @@ function cookie_path(): string
         $scr = $_SERVER['SCRIPT_NAME'];
     }
 
-    $scr = substr($scr, 0, strrpos($scr, '/'));
+    $scr = substr((string) $scr, 0, strrpos((string) $scr, '/'));
 
     // add a trailing '/' if needed
     if ((strlen($scr) == 0) || ($scr[strlen($scr) - 1] !== '/')) {
@@ -72,13 +72,19 @@ function pwg_set_cookie_var(
 ): bool {
     if ($value == null || $expire === 0) {
         unset($_COOKIE['pwg_' . $var]);
-        return setcookie('pwg_' . $var, '', 0, cookie_path());
+        return setcookie('pwg_' . $var, '', [
+            'expires' => 0,
+            'path' => cookie_path(),
+        ]);
 
     }
 
     $_COOKIE['pwg_' . $var] = $value;
     $expire = is_numeric($expire) ? $expire : strtotime('+10 years');
-    return setcookie('pwg_' . $var, $value, $expire, cookie_path());
+    return setcookie('pwg_' . $var, (string) $value, [
+        'expires' => $expire,
+        'path' => cookie_path(),
+    ]);
 
 }
 

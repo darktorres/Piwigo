@@ -31,7 +31,7 @@ SELECT
   FROM ' . CONFIG_TABLE . '
   WHERE param =\'gallery_url\'
 ;';
-list($gallery_url) = pwg_db_fetch_row(pwg_query($query));
+[$gallery_url] = pwg_db_fetch_row(pwg_query($query));
 
 if (! empty($gallery_url)) {
     // let's try to write it in the local configuration file

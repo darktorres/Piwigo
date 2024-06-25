@@ -27,14 +27,14 @@ if (mobile_theme()) {
 // | Plugin constants                                               |
 // +-----------------------------------------------------------------------+
 const GDTHUMB_VERSION = '1.0.26';
-define('GDTHUMB_ID', basename(dirname(__FILE__)));
+define('GDTHUMB_ID', basename(__DIR__));
 const GDTHUMB_PATH = PHPWG_PLUGINS_PATH . GDTHUMB_ID . '/';
 if (! defined('GDTHEME_PATH')):
     define('GDTHEME_PATH', PHPWG_THEMES_PATH . 'greydragon/');
 endif;
 
 if (! isset($conf['gdThumb'])):
-    include(dirname(__FILE__) . '/config_default.inc.php');
+    include(__DIR__ . '/config_default.inc.php');
     conf_update_param('gdThumb', $config_default);
     load_conf_from_db();
 endif;
@@ -77,7 +77,7 @@ function GDThumb_index(): void
 function GDThumb_endsWith($needles, $haystack): bool
 {
     if(! empty($needles) && ! empty($haystack)):
-        $arr_needles = explode(',', $needles);
+        $arr_needles = explode(',', (string) $needles);
     endif;
     return false;
 }
@@ -121,7 +121,7 @@ function GDThumb_process_thumb($tpl_vars, $pictures): mixed
         $confTemp['normalize_title'] = 'on';
     endif;
 
-    $template->set_filename('index_thumbnails', dirname(__FILE__) . '/template/gdthumb_thumb.tpl');
+    $template->set_filename('index_thumbnails', __DIR__ . '/template/gdthumb_thumb.tpl');
     $template->assign('GDThumb', $confTemp);
     if (($confTemp['method'] == 'slide') || ($confTemp['method'] == 'square')):
         $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom($confTemp['height'], 9999));
@@ -149,7 +149,7 @@ function GDThumb_process_category($tpl_vars): mixed
     $confTemp['GDTHUMB_ROOT'] = 'plugins/' . GDTHUMB_ID;
     $confTemp['big_thumb_noinpw'] = isset($confTemp['big_thumb_noinpw']) ? 1 : 0;
 
-    $template->set_filename('index_category_thumbnails', dirname(__FILE__) . '/template/gdthumb_cat.tpl');
+    $template->set_filename('index_category_thumbnails', __DIR__ . '/template/gdthumb_cat.tpl');
     $template->assign('GDThumb', $confTemp);
     if (($confTemp['method'] == 'slide') || ($confTemp['method'] == 'square')):
         $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom($confTemp['height'], 9999));
@@ -184,7 +184,7 @@ function GDThumb_admin_menu($menu): mixed
 {
     $menu[] = [
         'NAME' => 'gdThumb',
-        'URL' => get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__)),
+        'URL' => get_root_url() . 'admin.php?page=plugin-' . basename(__DIR__),
     ];
     return $menu;
 }

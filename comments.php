@@ -149,7 +149,7 @@ if (! empty($_GET['comment_id'])) {
     if (! is_admin()) {
         $login_url =
           get_root_url() . 'identification.php?redirect='
-          . urlencode(urlencode($_SERVER['REQUEST_URI']))
+          . urlencode(urlencode((string) $_SERVER['REQUEST_URI']))
         ;
         redirect($login_url);
     }
@@ -164,8 +164,8 @@ if (! empty($_GET['keyword'])) {
       implode(
           ' AND ',
           array_map(
-              function ($s) {return "content LIKE '%{$s}%'"; },
-              preg_split('/[\s,;]+/', $_GET['keyword'])
+              fn ($s) => "content LIKE '%{$s}%'",
+              preg_split('/[\s,;]+/', (string) $_GET['keyword'])
           )
       ) .
       ')';
@@ -279,8 +279,8 @@ $template->set_filenames([
 $template->assign(
     [
         'F_ACTION' => PHPWG_ROOT_PATH . 'comments.php',
-        'F_KEYWORD' => isset($_GET['keyword']) ? htmlspecialchars(stripslashes($_GET['keyword'])) : '',
-        'F_AUTHOR' => isset($_GET['author']) ? htmlspecialchars(stripslashes($_GET['author'])) : '',
+        'F_KEYWORD' => isset($_GET['keyword']) ? htmlspecialchars(stripslashes((string) $_GET['keyword'])) : '',
+        'F_AUTHOR' => isset($_GET['author']) ? htmlspecialchars(stripslashes((string) $_GET['author'])) : '',
     ]
 );
 
@@ -380,7 +380,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $element_ids[] = $row['image_id'];
     $category_ids[] = $row['category_id'];
 }
-list($counter) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+[$counter] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
 
 $url = PHPWG_ROOT_PATH . 'comments.php'
   . get_query_string_diff(['start', 'edit', 'delete', 'validate', 'pwg_token']);

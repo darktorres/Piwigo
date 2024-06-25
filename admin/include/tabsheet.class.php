@@ -15,22 +15,18 @@ class tabsheet
 
     public $uniqid;
 
-    public mixed $name;
-
-    public mixed $titlename;
-
     public string $selected;
 
     /*
       $name is the tabsheet's name inside the template .tpl file
       $titlename in the template is affected by $titlename value
     */
-    public function __construct(string $name = 'TABSHEET', string $titlename = 'TABSHEET_TITLE')
-    {
+    public function __construct(
+        public mixed $name = 'TABSHEET',
+        public mixed $titlename = 'TABSHEET_TITLE'
+    ) {
         $this->sheets = [];
         $this->uniqid = null;
-        $this->name = $name;
-        $this->titlename = $titlename;
         $this->selected = '';
     }
 

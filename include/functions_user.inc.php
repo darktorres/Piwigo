@@ -37,7 +37,7 @@ FROM ' . USERS_TABLE . '
 WHERE upper(' . $conf['user_fields']['email'] . ') = upper(\'' . $mail_address . '\')
 ' . (is_numeric($user_id) ? 'AND ' . $conf['user_fields']['id'] . ' != \'' . $user_id . '\'' : '') . '
 ;';
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count != 0) {
             return l10n('this email address is already in use');
         }
@@ -59,7 +59,7 @@ function validate_login_case(
         $query = '
 SELECT ' . $conf['user_fields']['username'] . '
 FROM ' . USERS_TABLE . '
-WHERE LOWER(' . stripslashes($conf['user_fields']['username']) . ") = '" . strtolower($login) . "'
+WHERE LOWER(' . stripslashes((string) $conf['user_fields']['username']) . ") = '" . strtolower($login) . "'
 ;";
 
         $count = pwg_db_num_rows(pwg_query($query));
@@ -89,7 +89,7 @@ function search_case_username(
     FROM `' . USERS_TABLE . '`;
   ');
     while ($r = pwg_db_fetch_assoc($q)) {
-        $SCU_users[$r['username']] = strtolower($r['username']);
+        $SCU_users[$r['username']] = strtolower((string) $r['username']);
     }
     // $SCU_users is now an associative table where the key is the account as
     // registered in the DB, and the value is this same account, in lower case
@@ -213,7 +213,7 @@ SELECT id
             ];
 
             $group_id = null;
-            if (preg_match('/^group:(\d+)$/', $conf['email_admin_on_new_user'], $matches)) {
+            if (preg_match('/^group:(\d+)$/', (string) $conf['email_admin_on_new_user'], $matches)) {
                 $group_id = $matches[1];
             }
 
@@ -343,7 +343,7 @@ SELECT
   WHERE ui.user_id = ' . $user_id . '
   GROUP BY ui.user_id
 ;';
-        list($counter) = pwg_db_fetch_row(pwg_query($query));
+        [$counter] = pwg_db_fetch_row(pwg_query($query));
         if ($counter != 1) {
             create_user_infos($user_id);
         }
@@ -411,7 +411,7 @@ SELECT COUNT(DISTINCT(image_id)) as total
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id NOT IN (' . $userdata['forbidden_categories'] . ')
     AND image_id ' . $userdata['image_access_type'] . ' (' . $userdata['image_access_list'] . ')';
-            list($userdata['nb_total_images']) = pwg_db_fetch_row(pwg_query($query));
+            [$userdata['nb_total_images']] = pwg_db_fetch_row(pwg_query($query));
 
             // now we update user cache categories
             $user_cache_cats = get_computed_categories($userdata);
@@ -618,7 +618,7 @@ SELECT ' . $conf['user_fields']['id'] . '
         return false;
     }
 
-    list($user_id) = pwg_db_fetch_row($result);
+    [$user_id] = pwg_db_fetch_row($result);
     return $user_id;
 
 }
@@ -644,7 +644,7 @@ SELECT
         return false;
     }
 
-    list($user_id) = pwg_db_fetch_row($result);
+    [$user_id] = pwg_db_fetch_row($result);
     return $user_id;
 
 }
@@ -824,7 +824,7 @@ function create_user_infos(
 
     if (! empty($user_ids)) {
         $inserts = [];
-        list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
         $default_user = get_default_user_info(false);
         if ($default_user === false) {
@@ -884,7 +884,7 @@ WHERE ' . $conf['user_fields']['id'] . ' = ' . $user_id;
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) > 0) {
         $row = pwg_db_fetch_assoc($result);
-        $username = stripslashes($row['username']);
+        $username = stripslashes((string) $row['username']);
         $data = $time . $user_id . $username;
         return base64_encode(hash_hmac('sha1', $data, $conf['secret_key'] . $row['password'], true));
     }
@@ -906,20 +906,24 @@ function log_user(int $user_id, bool $remember_me): void
             setcookie(
                 $conf['remember_me_name'],
                 $cookie,
-                time() + $conf['remember_me_length'],
-                cookie_path(),
-                ini_get('session.cookie_domain'),
-                (bool) ini_get('session.cookie_secure'),
-                (bool) ini_get('session.cookie_httponly')
+                [
+                    'expires' => time() + $conf['remember_me_length'],
+                    'path' => cookie_path(),
+                    'domain' => ini_get('session.cookie_domain'),
+                    'secure' => (bool) ini_get('session.cookie_secure'),
+                    'httponly' => (bool) ini_get('session.cookie_httponly'),
+                ]
             );
         }
     } else { // make sure we clean any remember me ...
         setcookie(
             $conf['remember_me_name'],
             '',
-            0,
-            cookie_path(),
-            ini_get('session.cookie_domain')
+            [
+                'expires' => 0,
+                'path' => cookie_path(),
+                'domain' => ini_get('session.cookie_domain'),
+            ]
         );
     }
     if (session_id() != '') { // we regenerate the session for security reasons
@@ -943,7 +947,7 @@ function auto_login(): bool
     global $conf;
 
     if (isset($_COOKIE[$conf['remember_me_name']])) {
-        $cookie = explode('-', stripslashes($_COOKIE[$conf['remember_me_name']]));
+        $cookie = explode('-', stripslashes((string) $_COOKIE[$conf['remember_me_name']]));
         if (count($cookie) === 3
             && is_numeric($cookie[0]) /*user id*/
             && is_numeric($cookie[1]) /*time*/
@@ -952,11 +956,15 @@ function auto_login(): bool
             $key = calculate_auto_login_key((int) $cookie[0], (int) $cookie[1], $username);
             if ($key !== false && $key === $cookie[2]) {
                 log_user((int) $cookie[0], true);
-                trigger_notify('login_success', stripslashes($username));
+                trigger_notify('login_success', stripslashes((string) $username));
                 return true;
             }
         }
-        setcookie($conf['remember_me_name'], '', 0, cookie_path(), ini_get('session.cookie_domain'));
+        setcookie($conf['remember_me_name'], '', [
+            'expires' => 0,
+            'path' => cookie_path(),
+            'domain' => ini_get('session.cookie_domain'),
+        ]);
     }
     return false;
 }
@@ -1092,11 +1100,17 @@ function logout_user(): void
     setcookie(
         session_name(),
         '',
-        0,
-        ini_get('session.cookie_path'),
-        ini_get('session.cookie_domain')
+        [
+            'expires' => 0,
+            'path' => ini_get('session.cookie_path'),
+            'domain' => ini_get('session.cookie_domain'),
+        ]
     );
-    setcookie($conf['remember_me_name'], '', 0, cookie_path(), ini_get('session.cookie_domain'));
+    setcookie($conf['remember_me_name'], '', [
+        'expires' => 0,
+        'path' => cookie_path(),
+        'domain' => ini_get('session.cookie_domain'),
+    ]);
 }
 
 /**
@@ -1126,39 +1140,14 @@ function get_access_type_status(
 ): int {
     global $conf;
 
-    switch (get_user_status($user_status)) {
-        case 'guest':
-
-            $access_type_status =
-              ($conf['guest_access'] ? ACCESS_GUEST : ACCESS_FREE);
-            break;
-
-        case 'generic':
-
-            $access_type_status = ACCESS_GUEST;
-            break;
-
-        case 'normal':
-
-            $access_type_status = ACCESS_CLASSIC;
-            break;
-
-        case 'admin':
-
-            $access_type_status = ACCESS_ADMINISTRATOR;
-            break;
-
-        case 'webmaster':
-
-            $access_type_status = ACCESS_WEBMASTER;
-            break;
-
-        default:
-
-            $access_type_status = ACCESS_FREE;
-            break;
-
-    }
+    $access_type_status = match (get_user_status($user_status)) {
+        'guest' => $conf['guest_access'] ? ACCESS_GUEST : ACCESS_FREE,
+        'generic' => ACCESS_GUEST,
+        'normal' => ACCESS_CLASSIC,
+        'admin' => ACCESS_ADMINISTRATOR,
+        'webmaster' => ACCESS_WEBMASTER,
+        default => ACCESS_FREE,
+    };
 
     return $access_type_status;
 }
@@ -1391,7 +1380,7 @@ function auth_key_login($auth_key): bool
 {
     global $conf, $user, $page;
 
-    if (! preg_match('/^[a-z0-9]{30}$/i', $auth_key)) {
+    if (! preg_match('/^[a-z0-9]{30}$/i', (string) $auth_key)) {
         return false;
     }
 
@@ -1414,7 +1403,7 @@ SELECT
     $key = $keys[0];
 
     // is the key still valid?
-    if (strtotime($key['expired_on']) < strtotime($key['dbnow'])) {
+    if (strtotime((string) $key['expired_on']) < strtotime((string) $key['dbnow'])) {
         $page['auth_key_invalid'] = true;
         return false;
     }
@@ -1483,7 +1472,7 @@ SELECT
   FROM ' . USER_AUTH_KEYS_TABLE . '
   WHERE auth_key = \'' . $candidate . '\'
 ;';
-    list($counter, $now, $expiration) = pwg_db_fetch_row(pwg_query($query));
+    [$counter, $now, $expiration] = pwg_db_fetch_row(pwg_query($query));
     if ($counter == 0) {
         $key = [
             'auth_key' => $candidate,
@@ -1651,9 +1640,5 @@ function userprefs_get_param(
 ): mixed {
     global $user;
 
-    if (isset($user['preferences'][$param])) {
-        return $user['preferences'][$param];
-    }
-
-    return $default_value;
+    return $user['preferences'][$param] ?? $default_value;
 }

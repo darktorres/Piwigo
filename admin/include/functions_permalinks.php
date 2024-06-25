@@ -38,7 +38,7 @@ SELECT c.id
     $result = pwg_query($query);
     $cat_id = null;
     if (pwg_db_num_rows($result)) {
-        list($cat_id) = pwg_db_fetch_row($result);
+        [$cat_id] = pwg_db_fetch_row($result);
     }
     return $cat_id;
 }
@@ -61,7 +61,7 @@ SELECT permalink
 ;';
     $result = pwg_query($query);
     if (pwg_db_num_rows($result)) {
-        list($permalink) = pwg_db_fetch_row($result);
+        [$permalink] = pwg_db_fetch_row($result);
     }
     if (! isset($permalink)) {// no permalink; nothing to do
         return true;
@@ -119,7 +119,7 @@ function set_cat_permalink(
     global $page, $cache;
 
     $sanitized_permalink = preg_replace('#[^a-zA-Z0-9_/-]#', '', $permalink);
-    $sanitized_permalink = trim($sanitized_permalink, '/');
+    $sanitized_permalink = trim((string) $sanitized_permalink, '/');
     $sanitized_permalink = str_replace('//', '/', $sanitized_permalink);
     if ($sanitized_permalink != $permalink
         || preg_match('#^(\d)+(-.*)?$#', $permalink)) {
