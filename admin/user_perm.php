@@ -108,6 +108,7 @@ if (pwg_db_num_rows($result) > 0) {
         $cats[] = $row;
         $group_authorized[] = $row['cat_id'];
     }
+
     usort($cats, 'global_rank_compare');
 
     foreach ($cats as $category) {
@@ -128,6 +129,7 @@ if ($group_authorized !== []) {
     $query_true .= '
     AND cat_id NOT IN (' . implode(',', $group_authorized) . ')';
 }
+
 $query_true .= '
 ;';
 display_select_cat_wrapper($query_true, [], 'category_option_true');
@@ -146,10 +148,12 @@ if ($authorized_ids !== []) {
     $query_false .= '
     AND id NOT IN (' . implode(',', $authorized_ids) . ')';
 }
+
 if ($group_authorized !== []) {
     $query_false .= '
     AND id NOT IN (' . implode(',', $group_authorized) . ')';
 }
+
 $query_false .= '
 ;';
 display_select_cat_wrapper($query_false, [], 'category_option_false');

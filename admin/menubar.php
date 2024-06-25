@@ -59,6 +59,7 @@ $mb_conf = $conf['blk_' . $menu->get_id()];
 if (is_string($mb_conf)) {
     $mb_conf = unserialize($mb_conf);
 }
+
 if (! is_array($mb_conf)) {
     $mb_conf = [];
 }
@@ -74,6 +75,7 @@ foreach (array_keys($reg_blocks) as $id) {
     if (! isset($mb_conf[$id])) {
         $mb_conf[$id] = $idx * 50;
     }
+
     $idx++;
 }
 
@@ -87,6 +89,7 @@ if (isset($_POST['submit']) && is_webmaster()) {
             $mb_conf[$id] = $mb_conf[$id] > 0 ? $pos : -$pos;
         }
     }
+
     make_consecutive($mb_conf);
 
     // BEGIN OPTIM - DONT ASK ABOUT THIS ALGO - but optimizes the size of the array we save in DB

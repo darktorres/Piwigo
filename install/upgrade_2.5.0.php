@@ -87,7 +87,7 @@ for ($upgrade_id = 135; $upgrade_id <= 139; $upgrade_id++) { // TODO change on e
 INSERT INTO `' . PREFIX_TABLE . 'upgrade`
   (id, applied, description)
   VALUES
-  (\'' . $upgrade_id . '\', NOW(), \'[migration from 2.5.0 to ' . PHPWG_VERSION . '] ' . $upgrade_description . '\')
+  (\'' . $upgrade_id . "', NOW(), '[migration from 2.5.0 to " . PHPWG_VERSION . '] ' . $upgrade_description . '\')
 ;';
     pwg_query($query);
 }

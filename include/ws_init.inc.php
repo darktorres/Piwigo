@@ -41,6 +41,7 @@ if ($requestFormat !== null) {
         include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php');
         $handler = new PwgRestRequestHandler();
     }
+
     $service->setHandler($requestFormat, $handler);
 }
 
@@ -64,6 +65,7 @@ if ($responseFormat !== null) {
             $encoder = new PwgXmlRpcEncoder();
             break;
     }
+
     $service->setEncoder($responseFormat, $encoder);
 }
 

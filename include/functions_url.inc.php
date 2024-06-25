@@ -22,6 +22,7 @@ function get_root_url(): string
             return substr($root_url, 2);
         }
     }
+
     return $root_url;
 }
 
@@ -50,6 +51,7 @@ function get_absolute_root_url(
         } else {
             $url .= 'http://';
         }
+
         if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
             $url .= $_SERVER['HTTP_X_FORWARDED_HOST'];
         } else {
@@ -73,6 +75,7 @@ function get_absolute_root_url(
             }
         }
     }
+
     return $url . cookie_path();
 }
 
@@ -96,12 +99,14 @@ function add_url_params(
             } else {
                 $url .= $arg_separator;
             }
+
             $url .= $param;
             if (isset($val)) {
                 $url .= '=' . $val;
             }
         }
     }
+
     return $url;
 }
 
@@ -115,6 +120,7 @@ function make_index_url(array $params = []): string
     if ($conf['php_extension_in_urls']) {
         $url .= '.php';
     }
+
     if ($conf['question_mark_in_urls']) {
         $url .= '?';
     }
@@ -206,9 +212,11 @@ function make_picture_url(
     if ($conf['php_extension_in_urls']) {
         $url .= '.php';
     }
+
     if ($conf['question_mark_in_urls']) {
         $url .= '?';
     }
+
     $url .= '/';
     switch ($conf['picture_url_style']) {
         case 'id-file':
@@ -216,6 +224,7 @@ function make_picture_url(
             if (isset($params['image_file'])) {
                 $url .= '-' . str2url(get_filename_wo_extension($params['image_file']));
             }
+
             break;
         case 'file':
             if (isset($params['image_file'])) {
@@ -229,9 +238,11 @@ function make_picture_url(
         default:
             $url .= $params['image_id'];
     }
+
     if (! isset($params['category'])) {// make urls shorter ...
         unset($params['flat']);
     }
+
     $url .= make_section_in_url($params);
     return add_well_known_params_in_url($url, $params);
 }
@@ -247,6 +258,7 @@ function add_well_known_params_in_url($url, $params)
         if (isset($params['chronology_view'])) {
             $url .= '-' . $params['chronology_view'];
         }
+
         if (! empty($params['chronology_date'])) {
             $url .= '-' . implode('-', $params['chronology_date']);
         }
@@ -259,6 +271,7 @@ function add_well_known_params_in_url($url, $params)
     if (isset($params['start']) && $params['start'] > 0) {
         $url .= '/start-' . $params['start'];
     }
+
     return $url;
 }
 
@@ -302,9 +315,11 @@ function make_section_in_url(
                 if (! isset($params['category']['name'])) {
                     trigger_error('make_section_in_url category name not set', E_USER_WARNING);
                 }
+
                 if (! array_key_exists('permalink', $params['category'])) {
                     trigger_error('make_section_in_url category permalink not set', E_USER_WARNING);
                 }
+
                 $section_string .= '/category/';
                 if (empty($params['category']['permalink'])) {
                     $section_string .= $params['category']['id'];
@@ -314,6 +329,7 @@ function make_section_in_url(
                 } else {
                     $section_string .= $params['category']['permalink'];
                 }
+
                 if (isset($params['combined_categories'])) {
                     foreach ($params['combined_categories'] as $category) {
                         $section_string .= '/';
@@ -426,6 +442,7 @@ function parse_section_url(
                 } else {
                     $page['combined_categories'][] = $matches[1];
                 }
+
                 $next_token++;
             } else {// try a permalink
                 $maybe_permalinks = [];
@@ -443,6 +460,7 @@ function parse_section_url(
                             $maybe_permalinks[count($maybe_permalinks) - 1]
                             . '/' . $tokens[$current_token];
                     }
+
                     $current_token++;
                 }
 
@@ -469,6 +487,7 @@ function parse_section_url(
             if ($result === null || $result === []) {
                 page_not_found(l10n('Requested album does not exist'));
             }
+
             $page['category'] = $result;
         }
 
@@ -514,8 +533,10 @@ function parse_section_url(
             } else {
                 $requested_tag_url_names[] = $tokens[$i];
             }
+
             $i++;
         }
+
         $next_token = $i;
 
         if ($requested_tag_ids === [] && $requested_tag_url_names === []) {
@@ -549,6 +570,7 @@ function parse_section_url(
         if (! isset($matches[1])) {
             bad_request('search identifier is missing');
         }
+
         $page['search'] = $matches[1];
         $next_token++;
     } elseif ($tokens[$next_token] == 'list') {
@@ -567,12 +589,15 @@ function parse_section_url(
             if (! preg_match('/^\d+(,\d+)*$/', (string) $tokens[$next_token])) {
                 bad_request('wrong format on list GET parameter');
             }
+
             foreach (explode(',', (string) $tokens[$next_token]) as $image_id) {
                 $page['list'][] = $image_id;
             }
         }
+
         $next_token++;
     }
+
     return $page;
 }
 
@@ -610,6 +635,7 @@ function parse_well_known_params_url(
                     $page['chronology_view'] = $chronology_tokens[0];
                     array_shift($chronology_tokens);
                 }
+
                 $page['chronology_date'] = $chronology_tokens;
 
                 foreach ($page['chronology_date'] as $date_token) {
@@ -627,8 +653,10 @@ function parse_well_known_params_url(
         } elseif (preg_match('/^startcat-(\d+)/', (string) $tokens[$i], $matches)) {
             $page['startcat'] = $matches[1];
         }
+
         $i++;
     }
+
     return $page;
 }
 
@@ -665,6 +693,7 @@ function get_element_url($element_info): mixed
     if (! url_is_remote($url)) {
         $url = embellish_url(get_root_url() . $url);
     }
+
     return $url;
 }
 
@@ -679,6 +708,7 @@ function set_make_full_url(): void
         if (isset($page['root_path'])) {
             $page['save_root_path']['path'] = $page['root_path'];
         }
+
         $page['save_root_path']['count'] = 1;
         $page['root_path'] = get_absolute_root_url();
     } else {
@@ -700,6 +730,7 @@ function unset_make_full_url(): void
             } else {
                 unset($page['root_path']);
             }
+
             unset($page['save_root_path']);
         } else {
             --$page['save_root_path']['count'];
@@ -723,6 +754,7 @@ function embellish_url(string $url): string
             break;
         }
     }
+
     return $url;
 }
 
@@ -736,6 +768,7 @@ function get_gallery_home_url()
         if (url_is_remote($conf['gallery_url']) || $conf['gallery_url'][0] == '/') {
             return $conf['gallery_url'];
         }
+
         return get_root_url() . $conf['gallery_url'];
     }
 

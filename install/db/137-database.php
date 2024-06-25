@@ -29,9 +29,11 @@ foreach ($cats as $id => &$data) {
             $order .= ' ASC';
         }
     }
+
     unset($order);
     $data['image_order'] = implode(',', $image_order);
 }
+
 unset($data);
 
 mass_updates(

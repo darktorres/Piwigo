@@ -42,6 +42,7 @@ class updates
         if (in_array($page, $this->types)) {
             $this->types = [$page];
         }
+
         $this->default_themes = ['modus', 'elegant', 'smartpocket'];
         $this->default_plugins = ['AdminTools', 'TakeATour', 'language_switch', 'LocalFilesEditor'];
 
@@ -119,6 +120,7 @@ class updates
                                     $new_versions['minor'] = $version_number;
                                     $new_versions['minor_php'] = $version_php;
                                 }
+
                                 break;
                             }
                         }
@@ -126,6 +128,7 @@ class updates
                 }
             }
         }
+
         return $new_versions;
     }
 
@@ -237,6 +240,7 @@ class updates
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
+
             $branch = get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
                 if (str_starts_with((string) $pem_version['name'], $branch)) {
@@ -244,6 +248,7 @@ class updates
                 }
             }
         }
+
         if ($versions_to_check === []) {
             return false;
         }
@@ -307,6 +312,7 @@ class updates
             $this->check_missing_extensions($ext_to_check);
             return true;
         }
+
         return false;
     }
 
@@ -346,8 +352,10 @@ class updates
                     }
                 }
             }
+
             $conf['updates_ignored'][$type] = $ignore_list;
         }
+
         conf_update_param('updates_ignored', pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
         return null;
     }
@@ -467,11 +475,13 @@ class updates
                     if ($input['remaining'] == 0) {
                         $end = true;
                     }
+
                     fwrite($zip, base64_decode((string) $input['data']));
                 } else {
                     $end = true;
                 }
             }
+
             fclose($zip);
 
             if (filesize($filename)) {

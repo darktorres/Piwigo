@@ -300,15 +300,19 @@ if (file_exists(
 )) {
     include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
+
 if (isset($conf['gallery_url'])) {
     $params['gallery_url'][0] = $conf['gallery_url'];
 }
+
 if (isset($conf['rate']) && is_bool($conf['rate'])) {
     $params['rate'][0] = $conf['rate'] ? 'true' : 'false';
 }
+
 if (isset($conf['rate_anonymous']) && is_bool($conf['rate_anonymous'])) {
     $params['rate_anonymous'][0] = $conf['rate_anonymous'] ? 'true' : 'false';
 }
+
 $conf = $conf_save;
 
 // Do I already have them in DB ?

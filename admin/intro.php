@@ -264,6 +264,7 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
                 $week = $i;
             }
         }
+
         $day_nb = $day_date->format('N');
 
         $activity_last_weeks[$week][$day_nb]['details'][ucfirst((string) $action['object'])][ucfirst(
@@ -325,7 +326,7 @@ $split = 0;
 //Split (split represented by -1)
 if ($diff_x !== []) {
     while (max($diff_x) > 120) {
-        $diff_x[array_search(max($diff_x), $diff_x)] = -1;
+        $diff_x[array_search(max($diff_x), $diff_x, true)] = -1;
         $split++;
     }
 }
@@ -343,6 +344,7 @@ $size = 1;
 if (isset($temp_data[0])) {
     $chart_data[$temp_data[0]['w']][$temp_data[0]['d']] = $size;
 }
+
 //Set sizes in chart data
 $counter = count($temp_data);
 
@@ -351,6 +353,7 @@ for ($i = 1; $i < $counter; $i++) {
     if ($diff_x[$i - 1] == -1) {
         $size++;
     }
+
     $chart_data[$temp_data[$i]['w']][$temp_data[$i]['d']] = $size;
 }
 
@@ -365,6 +368,7 @@ for ($i = 0; $i <= 6; $i++) {
     // first 3 letters of day name
     $day_labels[] = mb_substr((string) $lang['day'][($i + 1) % 7], 0, 3);
 }
+
 $template->assign('DAY_LABELS', $day_labels);
 
 // +-----------------------------------------------------------------------+
@@ -416,6 +420,7 @@ foreach ($file_extensions_of as $type => $extensions) {
     foreach ($extensions as $ext => $counter) {
         $details[] = $counter . 'x' . $ext;
     }
+
     $data_storage_details[$type] = implode(', ', $details);
 }
 

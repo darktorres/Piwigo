@@ -54,7 +54,7 @@ $query = '
 INSERT INTO ' . USER_FEED_TABLE . '
   (id, user_id, last_check)
   VALUES
-  (\'' . $page['feed'] . '\', ' . $user['id'] . ', NULL)
+  (\'' . $page['feed'] . "', " . $user['id'] . ', NULL)
 ;';
 pwg_query($query);
 

@@ -84,6 +84,7 @@ if (file_exists(
 )) {
     include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
+
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
@@ -189,6 +190,7 @@ if ($language === 'fr_FR') {
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
 }
+
 const PHPWG_URL = 'https://' . PHPWG_DOMAIN;
 
 load_language('common.lang', '', [
@@ -225,6 +227,7 @@ $template->set_filenames([
 if (! isset($step)) {
     $step = 1;
 }
+
 //---------------------------------------------------------------- form analyze
 include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $dblayer . '.inc.php');
 include(PHPWG_ROOT_PATH . 'admin/include/functions_install.inc.php');
@@ -237,9 +240,11 @@ if (isset($_POST['install'])) {
     } elseif (preg_match('/[\'"]/', $webmaster)) {
         $errors[] = l10n('webmaster login can\'t contain characters \' or "');
     }
+
     if ($admin_pass1 != $admin_pass2 || empty($admin_pass1)) {
         $errors[] = l10n('please enter your password again');
     }
+
     if (empty($admin_mail)) {
         $errors[] = l10n('mail address must be like xxx@yyy.eee (example : jack@altern.org)');
     } else {
@@ -255,8 +260,8 @@ if (isset($_POST['install'])) {
         pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], '');
 
         try {
-            $mysqli->query("DROP DATABASE IF EXISTS {$dbname};");
-            $mysqli->query("CREATE DATABASE {$dbname};");
+            $mysqli->query(sprintf('DROP DATABASE IF EXISTS %s;', $dbname));
+            $mysqli->query(sprintf('CREATE DATABASE %s;', $dbname));
         } catch (Throwable) {
             my_error($query, $conf['die_on_sql_error']);
         }
@@ -343,6 +348,7 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
                 'description' => 'upgrade included in installation',
             ];
         }
+
         mass_inserts(
             UPGRADE_TABLE,
             array_keys($datas[0]),
@@ -393,8 +399,10 @@ foreach ($languages->fs_languages as $language_code => $fs_language) {
     if ($language == $language_code) {
         $template->assign('language_selection', $language_code);
     }
+
     $languages_options[$language_code] = $fs_language['name'];
 }
+
 $template->assign('language_options', $languages_options);
 
 $template->assign(
@@ -443,6 +451,7 @@ if ($step == 1) {
             ini_set('session.use_trans_sid', intval($conf['session_use_trans_sid']));
             ini_set('session.cookie_httponly', 1);
         }
+
         session_name($conf['session_name']);
         session_set_cookie_params(0, cookie_path());
         register_shutdown_function('session_write_close');
@@ -479,7 +488,7 @@ if ($step == 1) {
                 get_l10n_args('Password: ********** (no copy by email)'),
                 get_l10n_args('Email: %s', $admin_mail),
                 get_l10n_args(''),
-                get_l10n_args('Don\'t hesitate to consult our forums for any help: %s', PHPWG_URL),
+                get_l10n_args("Don't hesitate to consult our forums for any help: %s", PHPWG_URL),
             ];
 
             // pwg_mail(
@@ -493,6 +502,7 @@ if ($step == 1) {
         }
     }
 }
+
 if (count($errors) != 0) {
     $template->assign('errors', $errors);
 }

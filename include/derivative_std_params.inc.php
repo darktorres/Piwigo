@@ -116,6 +116,7 @@ final class ImageStdParams
             self::$custom[$key] = time();
             self::save();
         }
+
         return $params;
     }
 
@@ -137,10 +138,12 @@ final class ImageStdParams
             if (! self::$watermark) {
                 self::$watermark = new WatermarkParams();
             }
+
             self::$custom = $arr['c'];
             if (! self::$custom) {
                 self::$custom = [];
             }
+
             if (isset($arr['q'])) {
                 self::$quality = $arr['q'];
             }
@@ -149,6 +152,7 @@ final class ImageStdParams
             self::$type_map = self::get_default_sizes();
             self::save();
         }
+
         self::build_maps();
     }
 
@@ -203,6 +207,7 @@ final class ImageStdParams
         foreach ($arr as $params) {
             $params->last_mod_time = $now;
         }
+
         return $arr;
     }
 
@@ -225,6 +230,7 @@ final class ImageStdParams
             $params->type = $type;
             self::apply_global($params);
         }
+
         self::$all_type_map = self::$type_map;
         $counter = count(self::$all_types);
 

@@ -50,6 +50,7 @@ if (is_writable($local_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php')) 
                 $new_local_config[] = $line;
             }
         }
+
         var_dump($new_local_config);
         file_put_contents(
             $local_file,

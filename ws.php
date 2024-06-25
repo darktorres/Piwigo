@@ -960,7 +960,7 @@ function ws_addDefaultMethods($arr): void
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Sets the representative photo for an album. The photo doesn\'t have to belong to the album.',
+        "Sets the representative photo for an album. The photo doesn't have to belong to the album.",
         $ws_functions_root . 'pwg.categories.php',
         [
             'admin_only' => true,
@@ -1884,7 +1884,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Adds the indicated image to the current user\'s favorite images.',
+        "Adds the indicated image to the current user's favorite images.",
         $ws_functions_root . 'pwg.users.php'
     );
 
@@ -1896,7 +1896,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Removes the indicated image from the current user\'s favorite images.',
+        "Removes the indicated image from the current user's favorite images.",
         $ws_functions_root . 'pwg.users.php'
     );
 

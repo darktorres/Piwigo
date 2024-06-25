@@ -27,6 +27,7 @@ abstract class PersistentCache
         if (is_array($key)) {
             $key = implode('&', $key);
         }
+
         $key .= $this->instance_key;
         return md5($key);
     }
@@ -81,6 +82,7 @@ class PersistentFileCache extends PersistentCache
             $value = $loaded['data'];
             return true;
         }
+
         return false;
     }
 
@@ -103,6 +105,7 @@ class PersistentFileCache extends PersistentCache
         if (! file_exists($this->dir)) {
             mkgetdir($this->dir, MKGETDIR_DEFAULT & ~MKGETDIR_DIE_ON_ERROR);
         }
+
         return file_put_contents($this->dir . $key . '.cache', $serialized) !== false;
     }
 

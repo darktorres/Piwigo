@@ -55,9 +55,11 @@ function cookie_path(): string
             if ($new === $scr) {
                 break;
             }
+
             $scr = $new;
         }
     }
+
     return $scr;
 }
 

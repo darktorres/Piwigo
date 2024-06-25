@@ -91,6 +91,7 @@ class PwgNamedArray
         $this->_xmlAttributes = array_flip($xmlAttributes);
     }
 }
+
 /**
  * Simple wrapper around a "struct" (php array whose keys are not consecutive
  * integers starting at 0). Provides naming clues for xml output (what is xml
@@ -194,6 +195,7 @@ abstract class PwgResponseEncoder
             if ($class === 'pwgnamedarray') {
                 $value = $value->_content;
             }
+
             if ($class === 'pwgnamedstruct') {
                 $value = $value->_content;
             }
@@ -345,12 +347,15 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                 if (! isset($data['flags'])) {
                     $data['flags'] = 0;
                 }
+
                 if (array_key_exists('default', $data)) {
                     $data['flags'] |= WS_PARAM_OPTIONAL;
                 }
+
                 if (! isset($data['type'])) {
                     $data['type'] = 0;
                 }
+
                 $params[$param] = $data;
             }
         }
@@ -429,6 +434,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain booleans');
                     }
                 }
+
                 unset($value);
             } elseif (self::hasFlag($type, WS_TYPE_INT)) {
                 foreach ($param as &$value) {
@@ -436,6 +442,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain' . $msg . ' integers');
                     }
                 }
+
                 unset($value);
             } elseif (self::hasFlag($type, WS_TYPE_FLOAT)) {
                 foreach ($param as &$value) {
@@ -446,6 +453,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain' . $msg . ' floats');
                     }
                 }
+
                 unset($value);
             }
         } elseif ($param !== '') {
@@ -567,6 +575,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
             if (! empty($method['include'])) {
                 include_once($method['include']);
             }
+
             $result = call_user_func_array($method['callback'], [$params, &$this]);
         }
 
@@ -620,9 +629,11 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
             if (isset($options['default'])) {
                 $param_data['defaultValue'] = $options['default'];
             }
+
             if (isset($options['maxValue'])) {
                 $param_data['maxValue'] = $options['maxValue'];
             }
+
             if (isset($options['info'])) {
                 $param_data['info'] = $options['info'];
             }
@@ -634,15 +645,18 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
             } elseif (self::hasFlag($options['type'], WS_TYPE_FLOAT)) {
                 $param_data['type'] = 'float';
             }
+
             if (self::hasFlag($options['type'], WS_TYPE_POSITIVE)) {
                 $param_data['type'] .= ' positive';
             }
+
             if (self::hasFlag($options['type'], WS_TYPE_NOTNULL)) {
                 $param_data['type'] .= ' notnull';
             }
 
             $res['params'][] = $param_data;
         }
+
         return $res;
     }
 }

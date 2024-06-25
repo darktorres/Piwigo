@@ -56,6 +56,7 @@ function parse_sort_variables(
             $ret[] = $field;
             $disp = '<em>' . $disp . '</em>';
         }
+
         if (isset($template_var)) {
             $template->assign(
                 $template_var . strtoupper((string) $field),
@@ -63,6 +64,7 @@ function parse_sort_variables(
             );
         }
     }
+
     return $ret;
 }
 
@@ -83,6 +85,7 @@ if (isset($_POST['set_permalink']) && $_POST['cat_id'] > 0) {
     } else {
         set_cat_permalink($_POST['cat_id'], $permalink, isset($_POST['save']));
     }
+
     $selected_cat = [$_POST['cat_id']];
 } elseif (isset($_GET['delete_permanent'])) {
     check_pwg_token();
@@ -133,6 +136,7 @@ SELECT id, permalink, uppercats, global_rank
 if ($sort_by[0] == 'id' || $sort_by[0] == 'permalink') {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
+
 $categories = [];
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
@@ -143,6 +147,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 if ($sort_by[0] == 'name') {
     usort($categories, 'global_rank_compare');
 }
+
 $template->assign('permalinks', $categories);
 
 // --- generate display of old permalinks --------------------------------------
@@ -161,6 +166,7 @@ $query = 'SELECT * FROM ' . OLD_PERMALINKS_TABLE;
 if ($sort_by !== []) {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
+
 $result = pwg_query($query);
 $deleted_permalinks = [];
 while ($row = pwg_db_fetch_assoc($result)) {

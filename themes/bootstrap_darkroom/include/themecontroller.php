@@ -64,18 +64,21 @@ class ThemeController
         ) && ! empty($conf['bootstrap_darkroom_navbar_main_style'])) {
             $this->config->navbar_main_style = $conf['bootstrap_darkroom_navbar_main_style'];
         }
+
         if (array_key_exists(
             'bootstrap_darkroom_navbar_main_bg',
             $conf
         ) && ! empty($conf['bootstrap_darkroom_navbar_main_bg'])) {
             $this->config->navbar_main_bg = $conf['bootstrap_darkroom_navbar_main_bg'];
         }
+
         if (array_key_exists(
             'bootstrap_darkroom_navbar_contextual_style',
             $conf
         ) && ! empty($conf['bootstrap_darkroom_navbar_contextual_style'])) {
             $this->config->navbar_contextual_style = $conf['bootstrap_darkroom_navbar_contextual_style'];
         }
+
         if (array_key_exists(
             'bootstrap_darkroom_navbar_contextual_bg',
             $conf
@@ -159,6 +162,7 @@ class ThemeController
                 }
             }
         }
+
         return $exif;
     }
 
@@ -186,6 +190,7 @@ class ThemeController
         if (empty($title)) {
             $title = $section_title;
         }
+
         if (! empty($title)) {
             $splt = strpos((string) $title, '[');
             if ($splt) {
@@ -204,6 +209,7 @@ class ThemeController
                     $title
                 ) . '</a>';
             }
+
             if (empty($section_title)) {
                 $template->assign('TITLE', $title);
             } else {

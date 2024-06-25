@@ -24,6 +24,7 @@ class RVTS
         ) < $page['nb_image_page'] + 3 && (! $page['start'] || script_basename() === 'picture')) {
             $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
         }
+
         add_event_handler('loc_begin_index', ['RVTS', 'on_index_begin'], EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
     }
 
@@ -44,10 +45,12 @@ class RVTS
                 if ($adj > 0 && $mult < 5) {
                     pwg_set_session_var('rvts_mult', ++$mult);
                 }
+
                 if ($adj < 0 && $mult > 1) {
                     pwg_set_session_var('rvts_mult', --$mult);
                 }
             }
+
             $page['nb_image_page'] = (int) $_GET['rvts'];
             add_event_handler(
                 'loc_end_index_thumbnails',
@@ -69,6 +72,7 @@ class RVTS
             add_event_handler('loc_end_index', ['RVTS', 'on_end_index']);
             return $thumbs;
         }
+
         $url_model = str_replace('123456789', '%start%', duplicate_index_url([
             'start' => 123456789,
         ]));
@@ -80,7 +84,7 @@ class RVTS
         $ajax_url_model = str_replace('&amp;', '&', $ajax_url_model);
 
         $my_base_name = basename(__DIR__);
-        $ajax_loader_image = get_root_url() . "plugins/{$my_base_name}/ajax-loader.gif";
+        $ajax_loader_image = get_root_url() . sprintf('plugins/%s/ajax-loader.gif', $my_base_name);
         $template->func_combine_script([
             'id' => 'jquery',
             'load' => 'footer',
@@ -138,6 +142,7 @@ jQuery('.navigationBar').hide();"
                 $req = $script->id;
             }
         }
+
         if ($req != null) {
             $my_base_name = basename(__DIR__);
             $template->func_combine_script([
@@ -148,6 +153,7 @@ jQuery('.navigationBar').hide();"
                 'version' => RVTS_VERSION,
             ]);
         }
+
         //var_export($template->scriptLoader);
     }
 }

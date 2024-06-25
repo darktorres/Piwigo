@@ -110,6 +110,7 @@ $page['items_number'] = $conf['comments_page_nb_comments'];
 if (isset($_GET['items_number'])) {
     $page['items_number'] = $_GET['items_number'];
 }
+
 if (! is_numeric($page['items_number']) && $page['items_number'] != 'all') {
     $page['items_number'] = 10;
 }
@@ -132,7 +133,7 @@ if (isset($_GET['cat']) && $_GET['cat'] != 0) {
 // search a particular author
 if (! empty($_GET['author'])) {
     $page['where_clauses'][] =
-      '(u.' . $conf['user_fields']['username'] . ' = \'' . $_GET['author'] . '\' OR author = \'' . $_GET['author'] . '\')';
+      '(u.' . $conf['user_fields']['username'] . " = '" . $_GET['author'] . "' OR author = '" . $_GET['author'] . "')";
 }
 
 // search a specific comment (if you're coming directly from an admin
@@ -160,7 +161,7 @@ if (! empty($_GET['keyword'])) {
       implode(
           ' AND ',
           array_map(
-              fn ($s) => "content LIKE '%{$s}%'",
+              fn ($s) => sprintf("content LIKE '%%%s%%'", $s),
               preg_split('/[\s,;]+/', (string) $_GET['keyword'])
           )
       ) .
@@ -171,7 +172,7 @@ $page['where_clauses'][] = $since_options[$page['since']]['clause'];
 
 // which status to filter on ?
 if (! is_admin()) {
-    $page['where_clauses'][] = 'validated=\'true\'';
+    $page['where_clauses'][] = "validated='true'";
 }
 
 $page['where_clauses'][] = get_sql_condition_FandF(
@@ -305,6 +306,7 @@ $tpl_var = [];
 foreach ($since_options as $id => $option) {
     $tpl_var[$id] = $option['label'];
 }
+
 $template->assign('since_options', $tpl_var);
 $template->assign('since_options_selected', $page['since']);
 
@@ -322,6 +324,7 @@ $tpl_var = [];
 foreach ($items_number as $option) {
     $tpl_var[$option] = is_numeric($option) ? $option : l10n($option);
 }
+
 $template->assign('item_number_options', $tpl_var);
 $template->assign('item_number_options_selected', $page['items_number']);
 
@@ -366,6 +369,7 @@ if ($page['items_number'] != 'all') {
     $query .= '
   LIMIT ' . $page['items_number'] . ' OFFSET ' . $start;
 }
+
 $query .= '
 ;';
 $result = pwg_query($query);
@@ -374,6 +378,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $element_ids[] = $row['image_id'];
     $category_ids[] = $row['category_id'];
 }
+
 [$counter] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
 
 $url = PHPWG_ROOT_PATH . 'comments.php'
@@ -482,6 +487,7 @@ SELECT *
                 ]
             );
         }
+
         $template->append('comments', $tpl_comment);
     }
 }
@@ -504,5 +510,6 @@ flush_page_messages();
 if ($comments !== []) {
     $template->assign_var_from_handle('COMMENT_LIST', 'comment_list');
 }
+
 $template->pparse('comments');
 include(PHPWG_ROOT_PATH . 'include/page_tail.php');

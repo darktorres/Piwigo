@@ -115,6 +115,7 @@ class Inflector_en
             if (! empty($rc)) {
                 $res[] = $rc;
             }
+
             return $res;
         }
 
@@ -123,12 +124,14 @@ class Inflector_en
         if (strlen((string) $word) > 4) {
             $this->run($this->er2ing, $word, $res);
         }
+
         if (strlen((string) $word) > 5) {
             $rc = $this->run($this->ing2er, $word, $res);
             if ($rc !== false) {
                 $this->run($this->pluralizers, $rc, $res);
             }
         }
+
         return $res;
     }
 
@@ -141,9 +144,11 @@ class Inflector_en
                     $res[] = $rc;
                     return $rc;
                 }
+
                 break;
             }
         }
+
         return false;
     }
 }

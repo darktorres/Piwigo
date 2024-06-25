@@ -21,6 +21,7 @@ function clean_iptc_value(string $value): string
     while (isset($value[0]) && $value[0] === chr(0)) {
         $value = substr($value, 1);
     }
+
     // remove binary nulls
     return str_replace(chr(0x00), ' ', $value);
 }
@@ -71,7 +72,7 @@ echo '</pre>';
 #        Display XMP metadata using ImageMagick PHP extension
 #
 
-print "<h3>XMP data in '{$filename}'</h3><br />";
+print sprintf("<h3>XMP data in '%s'</h3><br />", $filename);
 print ' (Requires Imagemagick PHP extension)<br />';
 print '<pre>';
 
@@ -91,6 +92,7 @@ if (extension_loaded('imagick') && class_exists('Imagick')) { //Check ImageMagic
     } else {
         print 'No data <br /> ';
     }
+
     print '[end of XMP]';
 
 } else {

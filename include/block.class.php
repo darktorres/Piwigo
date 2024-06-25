@@ -53,6 +53,7 @@ class BlockManager
         if (isset($this->registered_blocks[$block->get_id()])) {
             return false;
         }
+
         $this->registered_blocks[$block->get_id()] = $block;
         return true;
     }
@@ -78,8 +79,10 @@ class BlockManager
                 $this->display_blocks[$id] = new DisplayBlock($block);
                 $this->display_blocks[$id]->set_position($pos);
             }
+
             $idx++;
         }
+
         $this->sort_blocks();
         trigger_notify('blockmanager_prepare_display', [$this]);
         $this->sort_blocks();
@@ -138,6 +141,7 @@ class BlockManager
                 $this->hide_block($id);
             }
         }
+
         $this->sort_blocks();
         $template->assign('blocks', $this->display_blocks);
         $template->assign_var_from_handle($var, 'menubar');

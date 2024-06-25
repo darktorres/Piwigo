@@ -75,6 +75,7 @@ SELECT
     foreach ($output_lines as $line) {
         fputcsv($f, $line, ';');
     }
+
     fclose($f);
 
     exit();
@@ -129,6 +130,7 @@ foreach ($nb_lines_for_user as $id => $nb_line) {
         'nb_lines' => $nb_line,
     ];
 }
+
 $template->assign('ulist', $filterable_users);
 
 $query = '

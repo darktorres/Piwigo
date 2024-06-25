@@ -55,6 +55,7 @@ function get_iptc_data(
             }
         }
     }
+
     return $result;
 }
 
@@ -67,6 +68,7 @@ function clean_iptc_value(string $value): string
     while (isset($value[0]) && $value[0] === chr(0)) {
         $value = substr($value, 1);
     }
+
     // remove binary nulls
     $value = str_replace(chr(0x00), ' ', $value);
 
@@ -92,6 +94,7 @@ function clean_iptc_value(string $value): string
             $value = convert_charset($value, $input_encoding, 'utf-8');
         }
     }
+
     return $value;
 }
 
@@ -135,6 +138,7 @@ function get_exif_data(
                 }
             }
         }
+
         // GPS data
         $gps_exif = array_intersect_key(
             $exif,
@@ -182,6 +186,7 @@ function parse_exif_gps_data(
         $i = explode('/', $i);
         $i = $i[1] == 0 ? 0 : $i[0] / $i[1];
     }
+
     unset($i);
 
     $v = $raw[0] + $raw[1] / 60 + $raw[2] / 3600;

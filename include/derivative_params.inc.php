@@ -31,6 +31,7 @@ function size_to_url(
     if ($s[0] == $s[1]) {
         return $s[0];
     }
+
     return $s[0] . 'x' . $s[1];
 }
 
@@ -64,9 +65,9 @@ function fraction_to_char(float $f): string
  */
 final class ImageRect
 {
-    public int|float $l;
+    public int|float $l = 0;
 
-    public int|float $t;
+    public int|float $t = 0;
 
     public int|float $r;
 
@@ -78,7 +79,6 @@ final class ImageRect
     public function __construct(
         array $l
     ) {
-        $this->l = $this->t = 0;
         $this->r = (int) $l[0];
         $this->b = (int) $l[1];
     }
@@ -112,6 +112,7 @@ final class ImageRect
         if ($this->width() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
         if ($coi !== null && $coi !== '' && $coi !== '0') {
@@ -127,6 +128,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->l += $tlcrop;
         $this->r -= $pixels - $tlcrop;
     }
@@ -144,6 +146,7 @@ final class ImageRect
         if ($this->height() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
         if ($coi !== null && $coi !== '' && $coi !== '0') {
@@ -159,6 +162,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->t += $tlcrop;
         $this->b -= $pixels - $tlcrop;
     }
@@ -350,6 +354,7 @@ final class DerivativeParams
             return $min_size[0] <= $out_size[0]
               || $min_size[1] <= $out_size[1];
         }
+
         return false;
     }
 }

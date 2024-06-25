@@ -22,6 +22,7 @@ if (file_exists(
 )) {
     include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
+
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 if (file_exists(
@@ -29,6 +30,7 @@ if (file_exists(
 )) {
     include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
 }
+
 include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 include_once(PHPWG_ROOT_PATH . 'include/functions.inc.php');
@@ -58,8 +60,8 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $e) {
-    my_error(l10n($e->getMessage()), true);
+} catch (Exception $exception) {
+    my_error(l10n($exception->getMessage()), true);
 }
 
 // +-----------------------------------------------------------------------+
@@ -98,7 +100,7 @@ foreach ($to_apply as $upgrade_id) {
 INSERT INTO ' . PREFIX_TABLE . 'upgrade
   (id, applied, description)
   VALUES
-  (\'' . $upgrade_id . '\', NOW(), \'' . $upgrade_description . '\')
+  (\'' . $upgrade_id . "', NOW(), '" . $upgrade_description . '\')
 ;';
     pwg_query($query);
 }

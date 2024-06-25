@@ -45,6 +45,7 @@ function pwg_db_connect(
     if (mysqli_connect_error()) {
         throw new Exception("Can't connect to server");
     }
+
     if ($database !== '' && $database !== '0' && ! $mysqli->select_db($database)) {
         throw new Exception('Connection to server succeed, but it was impossible to connect to database');
     }
@@ -136,6 +137,7 @@ function pwg_query(string $query): mysqli_result|bool
             $output .= "\n" . '(affected rows   : ';
             $output .= pwg_db_changes() . ' )';
         }
+
         $output .= "</pre>\n";
 
         $debug .= $output;
@@ -263,13 +265,15 @@ UPDATE ' . protect_column_name($tablename) . '
                 $separator = $is_first ? '' : ",\n    ";
 
                 if (isset($data[$key]) && $data[$key] != '') {
-                    $query .= $separator . protect_column_name($key) . ' = \'' . $data[$key] . '\'';
+                    $query .= $separator . protect_column_name($key) . " = '" . $data[$key] . "'";
                 } else {
                     if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                         continue; // next field
                     }
+
                     $query .= $separator . protect_column_name($key) . ' = NULL';
                 }
+
                 $is_first = false;
             }
 
@@ -282,11 +286,13 @@ UPDATE ' . protect_column_name($tablename) . '
                     if (! $is_first) {
                         $query .= ' AND ';
                     }
+
                     if (isset($data[$key])) {
-                        $query .= protect_column_name($key) . ' = \'' . $data[$key] . '\'';
+                        $query .= protect_column_name($key) . " = '" . $data[$key] . "'";
                     } else {
                         $query .= protect_column_name($key) . ' IS NULL';
                     }
+
                     $is_first = false;
                 }
 
@@ -312,14 +318,17 @@ UPDATE ' . protect_column_name($tablename) . '
                     $column .= ' NOT NULL';
                     $nullable = false;
                 }
+
                 if (isset($row['Default'])) {
                     $column .= " default '" . $row['Default'] . "'";
                 } elseif ($nullable) {
                     $column .= ' default NULL';
                 }
+
                 if (isset($row['Collation']) && $row['Collation'] != 'NULL') {
                     $column .= " collate '" . $row['Collation'] . "'";
                 }
+
                 $columns[] = $column;
             }
         }
@@ -337,9 +346,9 @@ CREATE TABLE ' . protect_column_name($temporary_tablename) . '
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
         if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
-            $func_set = fn ($s) => "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})";
+            $func_set = fn ($s) => sprintf('t1.%s = IFNULL(t2.%s, t1.%s)', $s, $s, $s);
         } else {
-            $func_set = fn ($s) => "t1.{$s} = t2.{$s}";
+            $func_set = fn ($s) => sprintf('t1.%s = t2.%s', $s, $s);
         }
 
         // update of table by joining with temporary table
@@ -354,7 +363,7 @@ UPDATE ' . protect_column_name($tablename) . ' AS t1, ' . $temporary_tablename .
           implode(
               "\n    AND ",
               array_map(
-                  fn ($s) => "t1.{$s} = t2.{$s}",
+                  fn ($s) => sprintf('t1.%s = t2.%s', $s, $s),
                   $dbfields['primary']
               )
           );
@@ -389,13 +398,15 @@ UPDATE ' . protect_column_name($tablename) . '
         $separator = $is_first ? '' : ",\n    ";
 
         if (isset($value) && $value !== '') {
-            $query .= $separator . protect_column_name($key) . ' = \'' . $value . '\'';
+            $query .= $separator . protect_column_name($key) . " = '" . $value . "'";
         } else {
             if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                 continue; // next field
             }
+
             $query .= $separator . protect_column_name($key) . ' = NULL';
         }
+
         $is_first = false;
     }
 
@@ -409,11 +420,13 @@ UPDATE ' . protect_column_name($tablename) . '
             if (! $is_first) {
                 $query .= ' AND ';
             }
+
             if (isset($value)) {
-                $query .= protect_column_name($key) . ' = \'' . $value . '\'';
+                $query .= protect_column_name($key) . " = '" . $value . "'";
             } else {
                 $query .= protect_column_name($key) . ' IS NULL';
             }
+
             $is_first = false;
         }
 
@@ -474,6 +487,7 @@ function mass_inserts(
                 if ($query !== '' && $query !== '0') {
                     $query .= ', ';
                 }
+
                 $query .= $queryTemp;
             }
         }
@@ -520,6 +534,7 @@ INSERT ' . $ignore . ' INTO ' . protect_column_name($table_name) . '
                 $query .= "'" . $value . "'";
             }
         }
+
         $query .= ')';
 
         pwg_query($query);
@@ -548,7 +563,7 @@ function do_maintenance_all_tables(): void
     $all_tables = [];
 
     // List all tables
-    $query = 'SHOW TABLES LIKE \'' . $prefixeTable . '%\'';
+    $query = "SHOW TABLES LIKE '" . $prefixeTable . "%'";
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_row($result)) {
         $all_tables[] = '`' . $row[0] . '`';
@@ -595,7 +610,7 @@ function pwg_db_concat($array): string
 function pwg_db_concat_ws($array, $separator): string
 {
     $string = implode(',', $array);
-    return 'CONCAT_WS(\'' . $separator . '\',' . $string . ')';
+    return "CONCAT_WS('" . $separator . "'," . $string . ')';
 }
 
 function pwg_db_cast_to_text($string): mixed
@@ -657,7 +672,7 @@ function boolean_to_string(
 function pwg_db_get_recent_period_expression($period, string $date = 'CURRENT_DATE'): string
 {
     if ($date !== 'CURRENT_DATE') {
-        $date = '\'' . $date . '\'';
+        $date = "'" . $date . "'";
     }
 
     return 'SUBDATE(' . $date . ',INTERVAL ' . $period . ' DAY)';
@@ -684,12 +699,12 @@ function pwg_db_get_hour($date): string
 
 function pwg_db_get_date_YYYYMM($date): string
 {
-    return 'DATE_FORMAT(' . $date . ', \'%Y%m\')';
+    return 'DATE_FORMAT(' . $date . ", '%Y%m')";
 }
 
 function pwg_db_get_date_MMDD($date): string
 {
-    return 'DATE_FORMAT(' . $date . ', \'%m%d\')';
+    return 'DATE_FORMAT(' . $date . ", '%m%d')";
 }
 
 function pwg_db_get_year($date): string
@@ -748,6 +763,7 @@ function my_error(
     if ($die) {
         fatal_error($error);
     }
+
     echo '<pre>';
     trigger_error($error, E_USER_WARNING);
     echo '</pre>';

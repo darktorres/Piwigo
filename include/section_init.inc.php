@@ -114,10 +114,12 @@ if (! isset($page['section'])) {
                         $random_index_redirect[] = $random_url;
                     }
                 }
+
                 if ($random_index_redirect !== []) {
                     redirect($random_index_redirect[mt_rand(0, count($random_index_redirect) - 1)]);
                 }
             }
+
             $page['is_homepage'] = true;
             break;
 
@@ -200,6 +202,7 @@ if ($page['section'] == 'categories') {
     } else {
         $page['title'] = ''; // will be set later
     }
+
     // GET IMAGES LIST
     if (isset($page['combined_categories'])) {
         $cat_ids = [$page['category']['id']];
@@ -226,7 +229,7 @@ if ($page['section'] == 'categories') {
 SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE
-    uppercats LIKE \'' . $page['category']['uppercats'] . ',%\' '
+    uppercats LIKE \'' . $page['category']['uppercats'] . ",%' "
     . get_sql_condition_FandF(
         [
             'forbidden_categories' => 'id',
@@ -285,6 +288,7 @@ SELECT DISTINCT(image_id)
     foreach ($page['tags'] as $tag) {
         $page['tag_ids'][] = $tag['id'];
     }
+
     $items = get_image_ids_for_tags($page['tag_ids']);
     if (count($items) == 0) {
         $logger->info(
@@ -293,6 +297,7 @@ SELECT DISTINCT(image_id)
         );
         access_denied();
     }
+
     $page = array_merge($page, [
         'title' => get_tags_content_title(),
         'items' => $items,
@@ -523,6 +528,7 @@ if (isset($page['chronology_field'])
 } elseif ($page['section'] == 'search') {
     $page['meta_robots']['nofollow'] = 1;
 }
+
 if ($filter['enabled']) {
     $page['meta_robots']['noindex'] = 1;
 }
@@ -548,8 +554,10 @@ if ($page['section'] == 'categories' && isset($page['category']) && ! isset($pag
             set_status_header(301);
             redirect_http($redirect_url);
         }
+
         redirect($redirect_url);
     }
+
     unset($need_redirect, $page['hit_by']);
 }
 

@@ -67,6 +67,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
             'anon' => false,
         ];
     }
+
     $usr = $users_by_id[$row['user_id']];
     $user_key = $usr['anon'] ? $usr['name'] . '(' . $row['anonymous_id'] . ')' : $usr['name'];
     $rating = &$by_user_ratings[$user_key];
@@ -163,6 +164,7 @@ foreach ($by_user_ratings as $id => &$rating) {
         'cdtop' => $consensus_dev_top_count !== 0 ? $consensus_dev_top : '',
     ];
 }
+
 unset($rating);
 
 // filter
@@ -221,6 +223,7 @@ for ($i = 0; $i < $counter; $i++) {
         $available_order_by[$i][0]
     );
 }
+
 $template->assign('order_by_options_selected', [$order_by_index]);
 
 $x = uasort($by_user_ratings, $available_order_by[$order_by_index][1]);

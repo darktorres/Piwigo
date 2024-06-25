@@ -27,6 +27,7 @@ function get_nb_available_tags(): int
             ]
         );
     }
+
     return (int) $user['nb_available_tags'];
 }
 
@@ -75,6 +76,7 @@ SELECT *
             $tags[] = $row;
         }
     }
+
     return $tags;
 }
 
@@ -151,6 +153,7 @@ function add_level_to_tags(
             }
         }
     }
+
     unset($tag);
 
     return $tags;
@@ -207,6 +210,7 @@ SELECT id
         $query .= '
   HAVING COUNT(DISTINCT tag_id)=' . count($tag_ids);
     }
+
     $query .= "\n" . ($order_by === '' || $order_by === '0' ? $conf['order_by'] : $order_by);
 
     return query2array($query, null, 'id');
@@ -228,6 +232,7 @@ function get_common_tags(
     if ($items === []) {
         return [];
     }
+
     $query = '
 SELECT t.*, count(*) AS counter
   FROM ' . IMAGE_TAG_TABLE . '
@@ -237,6 +242,7 @@ SELECT t.*, count(*) AS counter
         $query .= '
     AND tag_id NOT IN (' . implode(',', $excluded_tag_ids) . ')';
     }
+
     $query .= '
   GROUP BY t.id
   ORDER BY ';
@@ -253,6 +259,7 @@ SELECT t.*, count(*) AS counter
         $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
         $tags[] = $row;
     }
+
     usort($tags, 'tag_alpha_compare');
     return $tags;
 }
@@ -275,14 +282,17 @@ function find_tags(
     if ($ids !== []) {
         $where_clauses[] = 'id IN (' . implode(',', $ids) . ')';
     }
+
     if ($url_names !== []) {
         $where_clauses[] =
-          'url_name IN (\'' . implode('\', \'', $url_names) . '\')';
+          "url_name IN ('" . implode("', '", $url_names) . "')";
     }
+
     if ($names !== []) {
         $where_clauses[] =
-          'name IN (\'' . implode('\', \'', $names) . '\')';
+          "name IN ('" . implode("', '", $names) . "')";
     }
+
     if ($where_clauses === []) {
         return [];
     }

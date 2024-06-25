@@ -32,6 +32,7 @@ if ($page['tab'] == TAB_SETTINGS && isset($_POST['boostrap_darkroom_settings']))
     $themeconfig->fromPost($_POST);
     $themeconfig->save();
 }
+
 // TabSheet
 $tabsheet = new tabsheet();
 $tabsheet->set_id('bsdark');

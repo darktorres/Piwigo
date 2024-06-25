@@ -38,7 +38,7 @@ function customErrorHandler(
     $error_type = $error_types[$errno] ?? 'Unknown Error';
 
     // Construct the error message
-    $errorMessage = "PHP: {$errstr} in {$errfile} on line {$errline}";
+    $errorMessage = sprintf('PHP: %s in %s on line %s', $errstr, $errfile, $errline);
 
     // Store in global var
     global $custom_error_log;
@@ -98,6 +98,7 @@ class Template
         if (! $this->smarty->debugging) {
             $this->smarty->error_reporting = error_reporting() & ~E_NOTICE;
         }
+
         $this->smarty->compile_check = $conf['template_compile_check'];
         $this->smarty->force_compile = $conf['template_force_compile'];
 
@@ -115,6 +116,7 @@ class Template
                     false // show trace
                 );
             }
+
             if (function_exists('pwg_query')) {
                 conf_update_param('data_dir_checked', 1);
             }
@@ -230,6 +232,7 @@ class Template
         if (! empty($themeconf['local_head']) && $load_local_head) {
             $tpl_var['local_head'] = realpath($root . '/' . $theme . '/' . $themeconf['local_head']);
         }
+
         $themeconf['id'] = $theme;
 
         if (! isset($themeconf['colorscheme'])) {
@@ -308,6 +311,7 @@ class Template
         if (! is_array($filename_array)) {
             return false;
         }
+
         reset($filename_array);
         foreach ($filename_array as $handle => $filename) {
             if ($filename === null) {
@@ -316,6 +320,7 @@ class Template
                 $this->files[$handle] = $this->get_extent($filename, $handle);
             }
         }
+
         return true;
     }
 
@@ -348,6 +353,7 @@ class Template
         if (! is_array($filename_array)) {
             return false;
         }
+
         foreach ($filename_array as $filename => $value) {
             if (is_array($value)) {
                 $handle = $value[0];
@@ -368,6 +374,7 @@ class Template
                 $this->extents[$handle] = realpath($dir . $filename);
             }
         }
+
         return true;
     }
 
@@ -383,6 +390,7 @@ class Template
         if (isset($this->extents[$handle])) {
             $filename = $this->extents[$handle];
         }
+
         return $filename;
     }
 
@@ -465,7 +473,7 @@ class Template
         bool $return = false
     ): ?string {
         if (! isset($this->files[$handle])) {
-            fatal_error("Template->parse(): Couldn't load template file for handle {$handle}");
+            fatal_error("Template->parse(): Couldn't load template file for handle " . $handle);
         }
 
         $this->smarty->assign('ROOT_URL', get_root_url());
@@ -486,6 +494,7 @@ class Template
         if ($return) {
             return $v;
         }
+
         $this->output .= $v;
         return null;
     }
@@ -535,10 +544,12 @@ class Template
             if ($combi->version !== false) {
                 $href .= '?v' . ($combi->version ?: PHPWG_VERSION);
             }
+
             // trigger the event for eventual use of a cdn
             $href = trigger_change('combined_css', $href, $combi);
             $content[] = '<link rel="stylesheet" type="text/css" href="' . $href . '">';
         }
+
         $this->output = str_replace(
             self::COMBINED_CSS_TAG,
             implode("\n", $content),
@@ -554,8 +565,11 @@ class Template
                 if (strlen($this->html_style) !== 0) {
                     $rep .= '<style type="text/css">' . $this->html_style . '</style>';
                 }
+
                 $this->output = substr_replace($this->output, $rep, $pos, 0);
-            } //else maybe error or warning ?
+            }
+
+            //else maybe error or warning ?
             $this->html_head_elements = [];
             $this->html_style = '';
         }
@@ -595,11 +609,12 @@ class Template
     public static function get_php_str_val(
         string $str
     ): mixed {
-        if (is_string($str) && strlen($str) > 1 && (($str[0] === '\'' && $str[strlen($str) - 1] === '\'')
+        if (is_string($str) && strlen($str) > 1 && (($str[0] === "'" && $str[strlen($str) - 1] === "'")
           || ($str[0] === '"' && $str[strlen($str) - 1] === '"'))) {
             eval('$tmp=' . $str . ';');
             return $tmp;
         }
+
         return null;
     }
 
@@ -623,6 +638,7 @@ class Template
                 ) {
                     return var_export($lang[$key], true);
                 }
+
                 return 'l10n(' . $params[0] . ')';
 
             default:
@@ -632,6 +648,7 @@ class Template
                     $ret .= ',' . implode(',', array_slice($params, 1));
                     return $ret . ')';
                 }
+
                 return 'l10n(' . $params[0] . ',' . implode(',', array_slice($params, 1)) . ')';
         }
     }
@@ -653,6 +670,7 @@ class Template
             } else {
                 $ret .= '($tmp=(' . $params[0] . '))>1';
             }
+
             $ret .= '?';
             $ret .= self::modcompiler_translate([$params[2]]);
             $ret .= ':';
@@ -660,6 +678,7 @@ class Template
             $ret .= ',$tmp';
             return $ret . ')';
         }
+
         return 'l10n_dec(' . $params[1] . ',' . $params[2] . ',' . $params[0] . ')';
     }
 
@@ -740,14 +759,17 @@ class Template
         if (empty($params['name'])) {
             fatal_error('define_derivative missing name');
         }
+
         if (isset($params['type'])) {
             $derivative = ImageStdParams::get_by_type($params['type']);
             $smarty->assign($params['name'], $derivative);
             return;
         }
+
         if (empty($params['width'])) {
             fatal_error('define_derivative missing width');
         }
+
         if (empty($params['height'])) {
             fatal_error('define_derivative missing height');
         }
@@ -770,6 +792,7 @@ class Template
                 if ($minw > $w) {
                     fatal_error('define_derivative invalid min_width');
                 }
+
                 $minh = empty($params['min_height']) ? $h : intval($params['min_height']);
                 if ($minh > $h) {
                     fatal_error('define_derivative invalid min_height');
@@ -798,6 +821,7 @@ class Template
         if (! isset($params['id'])) {
             trigger_error("combine_script: missing 'id' parameter", E_USER_ERROR);
         }
+
         $load = 0;
         if (isset($params['load'])) {
             switch ($params['load']) {
@@ -833,6 +857,7 @@ class Template
         if (! isset($params['load'])) {
             trigger_error("get_combined_scripts: missing 'load' parameter", E_USER_ERROR);
         }
+
         $load = $params['load'] == 'header' ? 0 : 1;
         $content = [];
 
@@ -847,6 +872,7 @@ class Template
               . $this->make_script_src($script)
               . '"></script>';
         }
+
         if ($this->scriptLoader->inline_scripts !== []) {
             // $content[]= '<script>';
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
@@ -859,13 +885,14 @@ class Template
 var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTagName(\'script\').length-1];';
             foreach ($scripts[1] as $id => $script) {
                 $content[] =
-                  's=document.createElement(\'script\'); s.type=\'text/javascript\'; s.async=true; s.src=\''
+                  "s=document.createElement('script'); s.type='text/javascript'; s.async=true; s.src='"
                   . $this->make_script_src(
                       $script
                   )
-                  . '\';';
+                  . "';";
                 $content[] = 'after = after.parentNode.insertBefore(s, after);';
             }
+
             $content[] = '})();';
             $content[] = '</script>';
         }
@@ -994,6 +1021,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
                     $this->smarty->registerFilter($type, $callback);
                 }
             }
+
             $this->smarty->compile_id .= '.' . base_convert(hash('crc32b', $compile_id), 16, 36);
         }
     }
@@ -1029,13 +1057,15 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         $regex = [];
         $tags = ['if', 'foreach', 'section', 'footer_script'];
         foreach ($tags as $tag) {
-            $regex[] = "#^[ \t]+({$ldq}{$tag}" . "[^{$ld}{$rd}]*{$rdq})\s*$#m";
-            $regex[] = "#^[ \t]+({$ldq}/{$tag}{$rdq})\s*$#m";
+            $regex[] = sprintf('#^[ 	]+(%s%s', $ldq, $tag) . sprintf('[^%s%s]*%s)\s*$#m', $ld, $rd, $rdq);
+            $regex[] = sprintf('#^[ 	]+(%s/%s%s)\s*$#m', $ldq, $tag, $rdq);
         }
+
         $tags = ['include', 'else', 'combine_script', 'html_head'];
         foreach ($tags as $tag) {
-            $regex[] = "#^[ \t]+({$ldq}{$tag}" . "[^{$ld}{$rd}]*{$rdq})\s*$#m";
+            $regex[] = sprintf('#^[ 	]+(%s%s', $ldq, $tag) . sprintf('[^%s%s]*%s)\s*$#m', $ld, $rd, $rdq);
         }
+
         return preg_replace($regex, '$1', $source);
     }
 
@@ -1068,12 +1098,13 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         foreach ($smarty->getTemplateVars('themes') as $theme) {
             $f = PWG_LOCAL_DIR . 'css/' . $theme['id'] . '-rules.css';
             if (file_exists(PHPWG_ROOT_PATH . $f)) {
-                $css[] = "{combine_css path='{$f}' order=10}";
+                $css[] = sprintf("{combine_css path='%s' order=10}", $f);
             }
         }
+
         $f = PWG_LOCAL_DIR . 'css/rules.css';
         if (file_exists(PHPWG_ROOT_PATH . $f)) {
-            $css[] = "{combine_css path='{$f}' order=10}";
+            $css[] = sprintf("{combine_css path='%s' order=10}", $f);
         }
 
         if ($css !== []) {
@@ -1098,6 +1129,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             // Put themeconf in cache
             $themeconfs[$dir] = $themeconf;
         }
+
         return $themeconfs[$dir];
     }
 
@@ -1132,6 +1164,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             foreach ($this->picture_buttons as $k => $row) {
                 $buttons = array_merge($buttons, $row);
             }
+
             $this->assign('PLUGIN_PICTURE_BUTTONS', $buttons);
 
             // only for PHP 5.3
@@ -1155,6 +1188,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             foreach ($this->index_buttons as $k => $row) {
                 $buttons = array_merge($buttons, $row);
             }
+
             $this->assign('PLUGIN_INDEX_BUTTONS', $buttons);
 
             // only for PHP 5.3
@@ -1182,6 +1216,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
                 $ret .= '?v' . ($script->version ?: PHPWG_VERSION);
             }
         }
+
         // trigger the event for eventual use of a cdn
         $ret = trigger_change('combined_script', $ret, $script);
         return embellish_url($ret);
@@ -1377,7 +1412,8 @@ class ScriptLoader
         $this->registered_scripts = [];
         $this->inline_scripts = [];
         $this->head_done_scripts = [];
-        $this->did_head = $this->did_footer = false;
+        $this->did_head = false;
+        $this->did_footer = false;
     }
 
     public function did_head(): bool
@@ -1401,17 +1437,20 @@ class ScriptLoader
         if ($this->did_footer) {
             trigger_error('Attempt to add inline script but the footer has been written', E_USER_WARNING);
         }
+
         if ($require !== []) {
             foreach ($require as $id) {
                 if (! isset($this->registered_scripts[$id]) && ! $this->load_known_required_script($id, 1)) {
-                    fatal_error("inline script not found require {$id}");
+                    fatal_error('inline script not found require ' . $id);
                 }
+
                 $s = $this->registered_scripts[$id];
                 if ($s->load_mode == 2) {
                     $s->load_mode = 1;
                 } // until now the implementation does not allow executing inline script depending on another async script
             }
         }
+
         $this->inline_scripts[] = $code;
     }
 
@@ -1427,10 +1466,11 @@ class ScriptLoader
         bool $is_template = false
     ): void {
         if ($this->did_head && $load_mode == 0) {
-            trigger_error("Attempt to add script {$id} but the head has been written", E_USER_WARNING);
+            trigger_error(sprintf('Attempt to add script %s but the head has been written', $id), E_USER_WARNING);
         } elseif ($this->did_footer) {
-            trigger_error("Attempt to add script {$id} but the footer has been written", E_USER_WARNING);
+            trigger_error(sprintf('Attempt to add script %s but the footer has been written', $id), E_USER_WARNING);
         }
+
         if (! isset($this->registered_scripts[$id])) {
             $script = new Script($load_mode, $id, $path, $version, $require);
             $script->is_template = $is_template;
@@ -1448,10 +1488,12 @@ class ScriptLoader
             if ($require !== []) {
                 $script->precedents = array_unique(array_merge($script->precedents, $require));
             }
+
             $script->set_path($path);
             if ($version && version_compare($script->version, $version) < 0) {
                 $script->version = $version;
             }
+
             if ($load_mode < $script->load_mode) {
                 $script->load_mode = $load_mode;
             }
@@ -1476,12 +1518,14 @@ class ScriptLoader
             if ($script->load_mode > 0) {
                 break;
             }
+
             if (! empty($script->path)) {
                 $this->head_done_scripts[$id] = $script;
             } else {
-                trigger_error("Script {$id} has an undefined path", E_USER_WARNING);
+                trigger_error(sprintf('Script %s has an undefined path', $id), E_USER_WARNING);
             }
         }
+
         $this->did_head = true;
         return $this->do_combine($this->head_done_scripts, 0);
     }
@@ -1494,6 +1538,7 @@ class ScriptLoader
         if (! $this->did_head) {
             $this->check_load_dep($this->registered_scripts);
         }
+
         $this->did_footer = true;
         $todo = [];
         foreach ($this->registered_scripts as $id => $script) {
@@ -1514,6 +1559,7 @@ class ScriptLoader
                 $result[$script->load_mode - 1][$id] = $script;
             }
         }
+
         return [$this->do_combine($result[0], 1), $this->do_combine($result[1], 2)];
     }
 
@@ -1547,10 +1593,12 @@ class ScriptLoader
                     if (! isset($scripts[$precedent])) {
                         continue;
                     }
+
                     if ($scripts[$precedent]->load_mode > $load) {
                         $scripts[$precedent]->load_mode = $load;
                         $changed = true;
                     }
+
                     if ($load == 2 && $scripts[$precedent]->load_mode == 2 && ($scripts[$precedent]->is_remote() || ! $conf['template_combine_files'])) {// we are async -> a predecessor cannot be async unlesss it can be merged; otherwise script execution order is not guaranteed
                         $scripts[$precedent]->load_mode = 1;
                         $changed = true;
@@ -1572,11 +1620,12 @@ class ScriptLoader
         if (($script->path === '' || $script->path === '0') && isset(self::$known_paths[$id])) {
             $script->path = self::$known_paths[$id];
         }
+
         if (str_starts_with($id, 'jquery.')) {
             $required_ids = ['jquery'];
 
             if (str_starts_with($id, 'jquery.ui.') && ($script->path === '' || $script->path === '0')) {
-                $script->path = dirname((string) self::$known_paths['jquery.ui']) . "/{$id}.js";
+                $script->path = dirname((string) self::$known_paths['jquery.ui']) . sprintf('/%s.js', $id);
             }
 
             foreach ($required_ids as $required_id) {
@@ -1605,6 +1654,7 @@ class ScriptLoader
 
             return true;
         }
+
         return false;
     }
 
@@ -1617,23 +1667,28 @@ class ScriptLoader
         int $recursion_limiter = 0
     ): int {
         if (! isset($this->registered_scripts[$script_id])) {
-            trigger_error("Undefined script {$script_id} is required by someone", E_USER_WARNING);
+            trigger_error(sprintf('Undefined script %s is required by someone', $script_id), E_USER_WARNING);
             return 0;
         }
+
         if ($recursion_limiter >= 5) {
             fatal_error('combined script circular dependency');
         }
+
         $script = $this->registered_scripts[$script_id];
         if (isset($script->extra['order'])) {
             return $script->extra['order'];
         }
+
         if (count($script->precedents) == 0) {
             return $script->extra['order'] = 0;
         }
+
         $max = 0;
         foreach ($script->precedents as $precedent) {
             $max = max($max, $this->compute_script_topological_order($precedent, $recursion_limiter + 1));
         }
+
         $max++;
         return $script->extra['order'] = $max;
     }
@@ -1656,6 +1711,7 @@ class ScriptLoader
         if ($s1->extra['order'] == 0 && ($s1->is_remote() xor $s2->is_remote())) {
             return $s1->is_remote() ? -1 : 1;
         }
+
         return strcmp($s1->id, $s2->id);
     }
 }
@@ -1688,13 +1744,13 @@ final class FileCombiner
         $combinedDir = PHPWG_ROOT_PATH . PWG_COMBINED_DIR;
 
         if (! is_dir($combinedDir)) {
-            throw new Exception("Combined directory does not exist: {$combinedDir}");
+            throw new Exception('Combined directory does not exist: ' . $combinedDir);
         }
 
         $dir = opendir($combinedDir);
 
         if (! $dir) {
-            throw new Exception("Failed to open directory: {$combinedDir}");
+            throw new Exception('Failed to open directory: ' . $combinedDir);
         }
 
         while ($file = readdir($dir)) {
@@ -1755,8 +1811,10 @@ final class FileCombiner
             if ($conf['template_compile_check']) {
                 $key[] = filemtime(PHPWG_ROOT_PATH . $combinable->path);
             }
+
             $pending[] = $combinable;
         }
+
         $this->flush_pending($result, $pending, $key, $force);
         return $result;
     }
@@ -1783,17 +1841,20 @@ final class FileCombiner
                     $output .= $this->process_combinable($combinable, true, $force, $header);
                     $output .= "\n";
                 }
+
                 $output = "/*BEGIN header */\n" . $header . "\n" . $output;
                 mkgetdir(dirname(PHPWG_ROOT_PATH . $file));
                 file_put_contents(PHPWG_ROOT_PATH . $file, $output);
                 chmod(PHPWG_ROOT_PATH . $file, 0644);
             }
+
             $result[] = new Combinable('combi', $file);
         } elseif (count($pending) == 1) {
             $header = '';
             $this->process_combinable($pending[0], false, $force, $header);
             $result[] = $pending[0];
         }
+
         $key = [];
         $pending = [];
     }
@@ -1818,6 +1879,7 @@ final class FileCombiner
                 if ($conf['template_compile_check']) {
                     $key[] = filemtime(PHPWG_ROOT_PATH . $combinable->path);
                 }
+
                 $file = PWG_COMBINED_DIR . 't' . base_convert(
                     hash('crc32b', implode(',', $key)),
                     16,
@@ -1854,6 +1916,7 @@ final class FileCombiner
             if (! file_exists(dirname(PHPWG_ROOT_PATH . $file))) {
                 mkgetdir(dirname(PHPWG_ROOT_PATH . $file));
             }
+
             file_put_contents(PHPWG_ROOT_PATH . $file, $content);
             $combinable->path = $file;
         } elseif ($return_content) {
@@ -1863,8 +1926,10 @@ final class FileCombiner
             } else {
                 $content = $this->process_js($content, $combinable->path);
             }
+
             return $content;
         }
+
         return null;
     }
 
@@ -1883,6 +1948,7 @@ final class FileCombiner
             } catch (Exception) {
             }
         }
+
         return trim($js, " \t\r\n;") . ";\n";
     }
 
@@ -1899,10 +1965,11 @@ final class FileCombiner
         string &$header
     ): string {
         $css = self::process_css_rec($css, dirname($file), $header);
-        if (! str_contains($file, '.min') && version_compare(PHP_VERSION, '5.2.4', '>=')) {
+        if (! str_contains($file, '.min') && PHP_VERSION_ID >= 50200) {
             $cssMin = new tubalmartin\CssMin\Minifier();
             $css = $cssMin->run($css);
         }
+
         return trigger_change('combined_css_postfilter', $css);
     }
 
@@ -1920,22 +1987,23 @@ final class FileCombiner
     ): string {
         static $PATTERN_URL = "#url\(\s*['|\"]{0,1}(.*?)['|\"]{0,1}\s*\)#";
         static $PATTERN_IMPORT = "#@import\s*['|\"]{0,1}(.*?)['|\"]{0,1};#";
-
         if (preg_match_all($PATTERN_URL, $css, $matches, PREG_SET_ORDER)) {
-            $search = $replace = [];
+            $search = [];
+            $replace = [];
             foreach ($matches as $match) {
                 if (! url_is_remote($match[1]) && $match[1][0] != '/' && ! str_contains($match[1], 'data:image/')) {
-                    $relative = $dir . "/{$match[1]}";
+                    $relative = $dir . ('/' . $match[1]);
                     $search[] = $match[0];
                     $replace[] = 'url(' . embellish_url(get_absolute_root_url(false) . $relative) . ')';
                 }
             }
+
             $css = str_replace($search, $replace, $css);
         }
 
         if (preg_match_all($PATTERN_IMPORT, $css, $matches, PREG_SET_ORDER)) {
-            $search = $replace = [];
-
+            $search = [];
+            $replace = [];
             foreach ($matches as $match) {
                 $search[] = $match[0];
 
@@ -1951,12 +2019,14 @@ final class FileCombiner
                     $header .= $match[0];
                     $replace[] = '';
                 } else {
-                    $sub_css = file_get_contents(PHPWG_ROOT_PATH . $dir . "/{$match[1]}");
-                    $replace[] = self::process_css_rec($sub_css, dirname($dir . "/{$match[1]}"), $header);
+                    $sub_css = file_get_contents(PHPWG_ROOT_PATH . $dir . ('/' . $match[1]));
+                    $replace[] = self::process_css_rec($sub_css, dirname($dir . ('/' . $match[1])), $header);
                 }
             }
+
             $css = str_replace($search, $replace, $css);
         }
+
         return $css;
     }
 }

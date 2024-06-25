@@ -82,6 +82,7 @@ function get_sql_search_clause(
             foreach ($fields as $field) {
                 $field_clauses[] = $field . " LIKE '%" . $word . "%'";
             }
+
             // adds brackets around where clauses
             $word_clauses[] = implode(
                 "\n          OR ",
@@ -210,6 +211,7 @@ SELECT DISTINCT(id)
         if ($images_where !== '' && $images_where !== '0') {
             $query .= "\n  AND " . $images_where;
         }
+
         $query .= $forbidden . '
   ' . $conf['order_by'];
         $items = query2array($query, null, 'id');
@@ -241,6 +243,7 @@ SELECT DISTINCT(id)
                 } else {
                     $items = array_values(array_intersect($items, $tag_items));
                 }
+
                 break;
             case 'OR':
                 $items = array_values(
@@ -341,6 +344,7 @@ class QNumericRangeScope extends QSearchScope
                             $requested_precision = strlen($matches[1]) - $dot_pos - 1;
                             $mult /= 10 ** $requested_precision;
                         }
+
                         if ($mult > 1) {
                             $val += $mult - 1;
                         }
@@ -349,6 +353,7 @@ class QNumericRangeScope extends QSearchScope
             } else {
                 $val = '';
             }
+
             if (is_numeric($val)) {
                 if (($i ^ $strict[$i]) !== 0) {
                     $val += $this->epsilon;
@@ -361,6 +366,7 @@ class QNumericRangeScope extends QSearchScope
         if (! $this->nullable && $range[0] === '' && $range[1] === '') {
             return false;
         }
+
         $token->scope_data = [
             'range' => $range,
             'strict' => $strict,
@@ -374,6 +380,7 @@ class QNumericRangeScope extends QSearchScope
         if ($token->scope_data['range'][0] !== '') {
             $clauses[] = $field . ' >' . ($token->scope_data['strict'][0] ? '' : '=') . $token->scope_data['range'][0] . ' ';
         }
+
         if ($token->scope_data['range'][1] !== '') {
             $clauses[] = $field . ' <' . ($token->scope_data['strict'][1] ? '' : '=') . $token->scope_data['range'][1] . ' ';
         }
@@ -385,6 +392,7 @@ class QNumericRangeScope extends QSearchScope
 
             return $field . ' IS NULL';
         }
+
         return '(' . implode(' AND ', $clauses) . ')';
     }
 }
@@ -430,9 +438,11 @@ class QDateRangeScope extends QSearchScope
                 if (! isset($matches[1])) {
                     $matches[1] = (($i ^ $strict[$i]) !== 0) ? 12 : 1;
                 }
+
                 if (! isset($matches[2])) {
                     $matches[2] = (($i ^ $strict[$i]) !== 0) ? 31 : 1;
                 }
+
                 $val = implode('-', $matches);
                 if (($i ^ $strict[$i]) !== 0) {
                     $val .= ' 23:59:59';
@@ -454,10 +464,11 @@ class QDateRangeScope extends QSearchScope
     {
         $clauses = [];
         if ($token->scope_data[0] != '') {
-            $clauses[] = $field . ' >= \'' . $token->scope_data[0] . '\'';
+            $clauses[] = $field . " >= '" . $token->scope_data[0] . "'";
         }
+
         if ($token->scope_data[1] != '') {
-            $clauses[] = $field . ' <= \'' . $token->scope_data[1] . '\'';
+            $clauses[] = $field . " <= '" . $token->scope_data[1] . "'";
         }
 
         if ($clauses === []) {
@@ -467,6 +478,7 @@ class QDateRangeScope extends QSearchScope
 
             return $field . ' IS NULL';
         }
+
         return '(' . implode(' AND ', $clauses) . ')';
     }
 }
@@ -505,19 +517,24 @@ class QSingleToken implements \Stringable
         if ($this->scope !== null) {
             $s .= $this->scope->id . ':';
         }
+
         if (($this->modifier & QST_WILDCARD_BEGIN) !== 0) {
             $s .= '*';
         }
+
         if (($this->modifier & QST_QUOTED) !== 0) {
             $s .= '"';
         }
+
         $s .= $this->term;
         if (($this->modifier & QST_QUOTED) !== 0) {
             $s .= '"';
         }
+
         if (($this->modifier & QST_WILDCARD_END) !== 0) {
             $s .= '*';
         }
+
         return $s;
     }
 }
@@ -541,12 +558,15 @@ class QMultiToken implements \Stringable
             if ($i !== 0) {
                 $s .= ' ';
             }
+
             if (($modifier & QST_OR) !== 0) {
                 $s .= 'OR ';
             }
+
             if (($modifier & QST_NOT) !== 0) {
                 $s .= 'NOT ';
             }
+
             if (! ($this->tokens[$i]->is_single)) {
                 $s .= '(';
                 $s .= $this->tokens[$i];
@@ -555,6 +575,7 @@ class QMultiToken implements \Stringable
                 $s .= $this->tokens[$i];
             }
         }
+
         return $s;
     }
 
@@ -583,6 +604,7 @@ class QMultiToken implements \Stringable
                         if (strlen((string) $crt_token) !== 0) {
                             $this->push($crt_token, $crt_modifier, $crt_scope);
                         }
+
                         $sub = new self();
                         $qi++;
                         $sub->parse_expression($q, $qi, $level + 1, $root);
@@ -590,6 +612,7 @@ class QMultiToken implements \Stringable
                         if (isset($crt_scope) && $crt_scope->is_text) {
                             $sub->apply_scope($crt_scope); // eg. 'tag:(John OR Bill)'
                         }
+
                         $this->tokens[] = $sub;
                         $crt_modifier = 0;
                         $crt_scope = null;
@@ -598,6 +621,7 @@ class QMultiToken implements \Stringable
                         if ($level > 0) {
                             $stop = true;
                         }
+
                         break;
                     case ':':
                         $scope = $root->scopes[strtolower((string) $crt_token)];
@@ -607,11 +631,13 @@ class QMultiToken implements \Stringable
                             $crt_token = '';
                             $crt_scope = $scope;
                         }
+
                         break;
                     case '"':
                         if (strlen((string) $crt_token) !== 0) {
                             $this->push($crt_token, $crt_modifier, $crt_scope);
                         }
+
                         $crt_modifier |= QST_QUOTED;
                         break;
                     case '-':
@@ -620,6 +646,7 @@ class QMultiToken implements \Stringable
                         } else {
                             $crt_modifier |= QST_NOT;
                         }
+
                         break;
                     case '*':
                         if (strlen((string) $crt_token) !== 0) {
@@ -628,13 +655,18 @@ class QMultiToken implements \Stringable
                         else {
                             $crt_modifier |= QST_WILDCARD_BEGIN;
                         }
+
                         break;
                     case '.':
                         if (isset($crt_scope) && ! $crt_scope->is_text) {
                             $crt_token .= $ch;
                             break;
                         }
-                        if (strlen((string) $crt_token) && preg_match('/\d/', substr((string) $crt_token, -1))
+
+                        if (strlen((string) $crt_token) && preg_match(
+                            '/\d/',
+                            substr((string) $crt_token, -1)
+                        )
                           && $qi + 1 < strlen($q) && preg_match(
                               '/\d/',
                               $q[$qi + 1]
@@ -652,6 +684,7 @@ class QMultiToken implements \Stringable
                                 $crt_token .= $ch;
                             }
                         }
+
                         break;
                 }
             } elseif ($ch === '"') {
@@ -660,6 +693,7 @@ class QMultiToken implements \Stringable
                     $crt_modifier |= QST_WILDCARD_END;
                     $qi++;
                 }
+
                 $this->push($crt_token, $crt_modifier, $crt_scope);
             } else {
                 $crt_token .= $ch;
@@ -685,14 +719,18 @@ class QMultiToken implements \Stringable
                         if ($i + 1 < count($this->tokens)) {
                             $this->tokens[$i + 1]->modifier |= QST_NOT;
                         }
+
                         $token->term = '';
                     }
+
                     if (strtolower($token->term) === 'or') {
                         if ($i + 1 < count($this->tokens)) {
                             $this->tokens[$i + 1]->modifier |= QST_OR;
                         }
+
                         $token->term = '';
                     }
+
                     if (strtolower($token->term) === 'and') {
                         $token->term = '';
                     }
@@ -710,11 +748,13 @@ class QMultiToken implements \Stringable
             } elseif (count($token->tokens) === 0) {
                 $remove = true;
             }
+
             if ($remove) {
                 array_splice($this->tokens, $i, 1);
                 if ($i < count($this->tokens) && $this->tokens[$i]->is_single) {
                     $this->tokens[$i]->modifier |= QST_BREAK;
                 }
+
                 $i--;
             }
         }
@@ -732,12 +772,15 @@ class QMultiToken implements \Stringable
             if (! $this->tokens[$i]->is_single) {
                 $this->tokens[$i]->check_operator_priority();
             }
+
             if ($i == 1) {
                 $crt_prio = $this->priority($this->tokens[$i]->modifier);
             }
+
             if ($i <= 1) {
                 continue;
             }
+
             $prio = $this->priority($this->tokens[$i]->modifier);
             if ($prio > $crt_prio) {// e.g. 'a OR b c d' i=2, operator(c)=AND -> prio(AND) > prio(OR) = operator(b)
                 $term_count = 2; // at least b and c to be regrouped
@@ -773,8 +816,10 @@ class QMultiToken implements \Stringable
             if (isset($scope)) {
                 $modifier |= QST_BREAK;
             }
+
             $this->tokens[] = new QSingleToken($token, $modifier, $scope);
         }
+
         $token = '';
         $modifier = 0;
         $scope = null;
@@ -823,6 +868,7 @@ class QExpression extends QMultiToken
                 $this->scopes[strtolower($alias)] = $scope;
             }
         }
+
         $i = 0;
         $this->parse_expression($q, $i, 0, $this);
         //manipulate the tree so that 'a OR b c' is the same as 'b c OR a'
@@ -847,6 +893,7 @@ class QExpression extends QMultiToken
                 } else {
                     $modifier &= ~QST_NOT;
                 }
+
                 $this->stoken_modifiers[] = $modifier;
             } else {
                 $this->build_single_tokens($token, $crt_is_not);
@@ -889,6 +936,7 @@ function qsearch_get_text_token_search_sql($token, $fields): array
         if (($token->modifier & QST_WILDCARD_BEGIN) !== 0) {
             $use_ft = false;
         }
+
         if (($token->modifier & (QST_QUOTED | QST_WILDCARD_END) === (QST_QUOTED | QST_WILDCARD_END)) !== 0) {
             $use_ft = false;
         }
@@ -917,25 +965,28 @@ function qsearch_get_text_token_search_sql($token, $fields): array
             $pre = (($token->modifier & QST_WILDCARD_BEGIN) !== 0) ? '' : ($page['use_regexp_ICU'] ? '\\\\b' : '[[:<:]]');
             $post = (($token->modifier & QST_WILDCARD_END) !== 0) ? '' : ($page['use_regexp_ICU'] ? '\\\\b' : '[[:>:]]');
             foreach ($fields as $field) {
-                $clauses[] = $field . ' REGEXP \'' . $pre . addslashes(preg_quote((string) $variant)) . $post . '\'';
+                $clauses[] = $field . " REGEXP '" . $pre . addslashes(preg_quote((string) $variant)) . $post . "'";
             }
         } else {
             $ft = $variant;
             if (($token->modifier & QST_QUOTED) !== 0) {
                 $ft = '"' . $ft . '"';
             }
+
             if (($token->modifier & QST_WILDCARD_END) !== 0) {
                 $ft .= '*';
             }
+
             $fts[] = $ft;
         }
     }
 
     if ($fts !== []) {
-        $clauses[] = 'MATCH(' . implode(', ', $fields) . ') AGAINST( \'' . addslashes(
+        $clauses[] = 'MATCH(' . implode(', ', $fields) . ") AGAINST( '" . addslashes(
             implode(' ', $fts)
-        ) . '\' IN BOOLEAN MODE)';
+        ) . "' IN BOOLEAN MODE)";
     }
+
     return $clauses;
 }
 
@@ -953,7 +1004,7 @@ function qsearch_get_images(QExpression $expr, QResults $qsr): void
 
         $like = addslashes($token->term);
         $like = str_replace(['%', '_'], ['\\%', '\\_'], $like); // escape LIKE specials %_
-        $file_like = 'CONVERT(file, CHAR) LIKE \'%' . $like . '%\'';
+        $file_like = "CONVERT(file, CHAR) LIKE '%" . $like . "%'";
 
         switch ($scope_id) {
             case 'photo':
@@ -972,6 +1023,7 @@ function qsearch_get_images(QExpression $expr, QResults $qsr): void
                 } else {
                     $clauses[] = 'author IS NULL';
                 }
+
                 break;
             case 'width':
             case 'height':
@@ -1011,6 +1063,7 @@ function qsearch_get_images(QExpression $expr, QResults $qsr): void
                 );
                 break;
         }
+
         if (! empty($clauses)) {
             $query = $query_base . '(' . implode("\n OR ", $clauses) . ')';
             $qsr->images_iids[$i] = query2array($query, null, 'id');
@@ -1020,7 +1073,8 @@ function qsearch_get_images(QExpression $expr, QResults $qsr): void
 
 function qsearch_get_tags(QExpression $expr, QResults $qsr): void
 {
-    $token_tag_ids = $qsr->tag_iids = array_fill(0, count($expr->stokens), []);
+    $token_tag_ids = array_fill(0, count($expr->stokens), []);
+    $qsr->tag_iids = $token_tag_ids;
     $all_tags = [];
     $counter = count($expr->stokens);
 
@@ -1029,6 +1083,7 @@ function qsearch_get_tags(QExpression $expr, QResults $qsr): void
         if (isset($token->scope) && $token->scope->id != 'tag') {
             continue;
         }
+
         if (empty($token->term)) {
             continue;
         }
@@ -1056,7 +1111,8 @@ WHERE (' . implode("\n OR ", $clauses) . ')';
     }
 
     // get images
-    $positive_ids = $not_ids = [];
+    $positive_ids = [];
+    $not_ids = [];
     $counter = count($expr->stokens);
     for ($i = 0; $i < $counter; $i++) {
         $tag_ids = $token_tag_ids[$i];
@@ -1101,6 +1157,7 @@ SELECT image_id FROM ' . IMAGE_TAG_TABLE . '
     foreach ($all_tags as &$tag) {
         $tag['name'] = trigger_change('render_tag_name', $tag['name'], $tag);
     }
+
     $qsr->all_tags = $all_tags;
     $qsr->tag_ids = $token_tag_ids;
 }
@@ -1108,8 +1165,8 @@ SELECT image_id FROM ' . IMAGE_TAG_TABLE . '
 function qsearch_get_categories(QExpression $expr, QResults $qsr): void
 {
     global $user, $conf;
-
-    $token_cat_ids = $qsr->cat_iids = array_fill(0, count($expr->stokens), []);
+    $token_cat_ids = array_fill(0, count($expr->stokens), []);
+    $qsr->cat_iids = $token_cat_ids;
     $all_cats = [];
     $counter = count($expr->stokens);
 
@@ -1118,6 +1175,7 @@ function qsearch_get_categories(QExpression $expr, QResults $qsr): void
         if (isset($token->scope) && $token->scope->id != 'category') { // not relevant yet
             continue;
         }
+
         if (empty($token->term)) {
             continue;
         }
@@ -1149,7 +1207,8 @@ SELECT
     }
 
     // get images
-    $positive_ids = $not_ids = [];
+    $positive_ids = [];
+    $not_ids = [];
     $counter = count($expr->stokens);
     for ($i = 0; $i < $counter; $i++) {
         $cat_ids = $token_cat_ids[$i];
@@ -1205,6 +1264,7 @@ SELECT image_id FROM ' . IMAGE_CATEGORY_TABLE . '
     foreach ($all_cats as &$cat) {
         $cat['name'] = trigger_change('render_category_name', $cat['name'], $cat);
     }
+
     $qsr->all_cats = $all_cats;
     $qsr->cat_ids = $token_cat_ids;
 }
@@ -1213,8 +1273,8 @@ function qsearch_eval(QMultiToken $expr, QResults $qsr, &$qualifies, &$ignored_t
 {
     $qualifies = false; // until we find at least one positive term
     $ignored_terms = [];
-
-    $ids = $not_ids = [];
+    $ids = [];
+    $not_ids = [];
     $counter = count($expr->tokens);
 
     for ($i = 0; $i < $counter; $i++) {
@@ -1251,6 +1311,7 @@ function qsearch_eval(QMultiToken $expr, QResults $qsr, &$qualifies, &$ignored_t
     if ($not_ids !== []) {
         $ids = array_diff($ids, $not_ids);
     }
+
     return $ids;
 }
 
@@ -1290,6 +1351,7 @@ function get_quick_search_results(
     if (count($res['items']) > 0) {// cache the results only if not empty - otherwise it is useless
         $persistent_cache->set($cache_key, $res, 300);
     }
+
     return $res;
 }
 
@@ -1334,6 +1396,7 @@ function get_quick_search_results_no_cache(
     } else {
         $postedDateAliases[] = 'date';
     }
+
     $scopes[] = new QDateRangeScope('created', $createdDateAliases, true);
     $scopes[] = new QDateRangeScope('posted', $postedDateAliases);
 
@@ -1352,9 +1415,10 @@ function get_quick_search_results_no_cache(
             if (isset($token->scope) && ! $token->scope->is_text) {
                 continue;
             }
+
             if (strlen($token->term) > 2
               && ($token->modifier & (QST_QUOTED | QST_WILDCARD)) == 0
-              && strcspn($token->term, '\'0123456789') == strlen($token->term)) {
+              && strcspn($token->term, "'0123456789") == strlen($token->term)) {
                 $token->variants = array_unique(array_diff($inflector->get_variants($token->term), [$token->term]));
             }
         }
@@ -1366,6 +1430,7 @@ function get_quick_search_results_no_cache(
     if (count($expression->stokens) == 0) {
         return $search_results;
     }
+
     $qsr = new QResults();
     qsearch_get_tags($expression, $qsr);
     qsearch_get_categories($expression, $qsr);
@@ -1394,6 +1459,7 @@ function get_quick_search_results_no_cache(
               implode(', ', $expression->stokens[$i]->variants)
           ));
     }
+
     $debug[] = 'before perms ' . count($ids);
 
     $search_results['qs']['matching_tags'] = $qsr->all_tags;
@@ -1418,6 +1484,7 @@ function get_quick_search_results_no_cache(
     if (! empty($options['images_where'])) {
         $where_clauses[] = '(' . $options['images_where'] . ')';
     }
+
     if ($permissions) {
         $where_clauses[] = get_sql_condition_FandF(
             [
@@ -1435,6 +1502,7 @@ SELECT DISTINCT(id) FROM ' . IMAGES_TABLE . ' i';
         $query .= '
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON id = ic.image_id';
     }
+
     $query .= '
   WHERE ' . implode("\n AND ", $where_clauses) . "\n" .
     $conf['order_by'];

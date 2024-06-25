@@ -20,7 +20,7 @@ include_once(PHPWG_ROOT_PATH . 'include/constants.php');
 //
 // Clean useless configuration settings
 //
-pwg_query('DELETE FROM ' . CONFIG_TABLE . ' WHERE param like \'upload_form_%\';');
+pwg_query('DELETE FROM ' . CONFIG_TABLE . " WHERE param like 'upload_form_%';");
 
 //
 // Remove useless columns

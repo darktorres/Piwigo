@@ -100,21 +100,25 @@ function mkgetdir(
         if (str_starts_with(PHP_OS, 'WIN')) {
             $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
         }
+
         $umask = umask(0);
         $mkd = mkdir($dir, $conf['chmod_value'], (bool) (($flags & MKGETDIR_RECURSIVE)));
         umask($umask);
         if (! $mkd) {
             if (($flags & MKGETDIR_DIE_ON_ERROR) !== 0) {
-                fatal_error("{$dir} " . l10n('no write access'));
+                fatal_error($dir . ' ' . l10n('no write access'));
             }
+
             return false;
         }
+
         if (($flags & MKGETDIR_PROTECT_HTACCESS) !== 0) {
             $file = $dir . '/.htaccess';
             if (! file_exists($file)) {
                 file_put_contents($file, 'deny from all');
             }
         }
+
         if (($flags & MKGETDIR_PROTECT_INDEX) !== 0) {
             $file = $dir . '/index.htm';
             if (! file_exists($file)) {
@@ -122,12 +126,15 @@ function mkgetdir(
             }
         }
     }
+
     if (! is_writable($dir)) {
         if (($flags & MKGETDIR_DIE_ON_ERROR) !== 0) {
-            fatal_error("{$dir} " . l10n('no write access'));
+            fatal_error($dir . ' ' . l10n('no write access'));
         }
+
         return false;
     }
+
     return true;
 }
 
@@ -143,7 +150,9 @@ function qualify_utf8(
     for ($i = 0; $i < strlen(string: $str); $i++) {
         if (ord($str[$i]) < 0x80) {
             continue;
-        } # 0bbbbbbb
+        }
+
+        # 0bbbbbbb
         $ret = 1;
         if ((ord($str[$i]) & 0xE0) == 0xC0) {
             $n = 1;
@@ -162,13 +171,16 @@ function qualify_utf8(
         } # 1111110b
         else {
             return -1;
-        } # Does not match any model
+        }
+
+        # Does not match any model
         for ($j = 0; $j < $n; $j++) { # n bytes matching 10bbbbbb follow ?
             if ((++$i == strlen($str)) || ((ord($str[$i]) & 0xC0) != 0x80)) {
                 return -1;
             }
         }
     }
+
     return $ret;
 }
 
@@ -439,9 +451,11 @@ if (function_exists('mb_strtolower')) {
  */
 function str2url(string $str): string
 {
-    $str = $safe = pwg_transliterate($str);
+    $str = pwg_transliterate($str);
+    $safe = $str;
     $str = preg_replace('/[^\x80-\xffa-z0-9_\s\'\:\/\[\],-]/', '', $str);
     $str = preg_replace('/[\s\'\:\/\[\],-]+/', ' ', trim((string) $str));
+
     $res = str_replace(' ', '_', $str);
 
     if (empty($res)) {
@@ -489,6 +503,7 @@ function pwg_log(
     if (empty($user['last_visit']) || strtotime((string) $user['last_visit']) < time() - $conf['session_length']) {
         $update_last_visit = true;
     }
+
     $update_last_visit = trigger_change('pwg_log_update_last_visit', $update_last_visit);
 
     if ($update_last_visit) {
@@ -505,6 +520,7 @@ UPDATE ' . USER_INFOS_TABLE . '
     if (is_admin()) {
         $do_log = $conf['history_admin'];
     }
+
     if (is_a_guest()) {
         $do_log = $conf['history_guest'];
     }
@@ -547,10 +563,10 @@ UPDATE ' . USER_INFOS_TABLE . '
 
             // alter history table structure, to include a new section
             pwg_query(
-                'ALTER TABLE ' . HISTORY_TABLE . ' CHANGE section section enum(\'' . implode(
+                'ALTER TABLE ' . HISTORY_TABLE . " CHANGE section section enum('" . implode(
                     "','",
                     array_unique($history_sections)
-                ) . '\') DEFAULT NULL;'
+                ) . "') DEFAULT NULL;"
             );
 
             // and refresh cache
@@ -790,9 +806,11 @@ function str2DateTime(
     if (is_string($original)) {
         $t = trim($original, '0123456789');
     }
+
     if ($t === '' || $t === '0') { // from timestamp
         return new DateTime('@' . $original);
     }
+
     // from unknown date format (assuming something like Y-m-d H:i:s)
 
     $ymdhms = [];
@@ -805,12 +823,15 @@ function str2DateTime(
     if (count($ymdhms) < 3) {
         return false;
     }
+
     if (! isset($ymdhms[3])) {
         $ymdhms[3] = 0;
     }
+
     if (! isset($ymdhms[4])) {
         $ymdhms[4] = 0;
     }
+
     if (! isset($ymdhms[5])) {
         $ymdhms[5] = 0;
     }
@@ -898,6 +919,7 @@ function format_fromto(
     } else {
         $from_str = format_date($from, ['day_name', 'day']);
     }
+
     $to_str = format_date($to);
 
     return l10n('from %s to %s', $from_str, $to_str);
@@ -945,7 +967,7 @@ function time_since(
         $chunks['day'] -= $chunks['week'] * 7;
     }
 
-    $j = array_search($stop, array_keys($chunks));
+    $j = array_search($stop, array_keys($chunks), true);
 
     $print = '';
     $i = 0;
@@ -955,9 +977,11 @@ function time_since(
             if ($value != 0) {
                 $print .= ' ' . l10n_dec('%d ' . $name, '%d ' . $name . 's', $value);
             }
+
             if ($print !== '' && $print !== '0' && $i >= $j) {
                 break;
             }
+
             $i++;
         }
     } else {
@@ -968,9 +992,11 @@ function time_since(
             if ($value != 0) {
                 $print = l10n_dec('%d ' . $name, '%d ' . $name . 's', $value);
             }
+
             if ($print !== '' && $print !== '0' && $i >= $j) {
                 break;
             }
+
             $i++;
         }
     }
@@ -1000,6 +1026,7 @@ function transform_date(
     if ($original === '' || $original === '0') {
         return $default;
     }
+
     $date = str2DateTime($original, $format_in);
     return $date->format($format_out);
 }
@@ -1014,6 +1041,7 @@ function pwg_debug(string $string): void
     $now = explode(' ', microtime());
     $now2 = explode('.', $now[0]);
     $now2 = $now[1] . '.' . $now2[1];
+
     $time = number_format($now2 - $t2, 3, '.', ' ') . ' s';
     $debug .= '<p>';
     $debug .= '[' . $time . ', ';
@@ -1032,6 +1060,7 @@ function redirect_http(
     if (ob_get_length() !== false) {
         ob_clean();
     }
+
     // default url is on html format
     $url = html_entity_decode($url);
     header('Request-URI: ' . $url);
@@ -1136,8 +1165,10 @@ SELECT
             if (! $show_mobile) {
                 continue;
             }
+
             $row['name'] .= ' (' . l10n('Mobile') . ')';
         }
+
         if (check_theme_installed($row['id'])) {
             $themes[$row['id']] = $row['name'];
         }
@@ -1195,6 +1226,7 @@ function get_element_path(
     if (! url_is_remote($path)) {
         $path = PHPWG_ROOT_PATH . $path;
     }
+
     return $path;
 }
 
@@ -1258,6 +1290,7 @@ function l10n(
         if ($conf['debug_l10n'] && ! isset($lang[$key]) && ($key !== '' && $key !== '0')) {
             trigger_error('[l10n] language key "' . $key . '" not defined', E_USER_WARNING);
         }
+
         $val = $key;
     }
 
@@ -1328,7 +1361,7 @@ function l10n_args(
 
             if ($key === 'key_args') {
                 array_unshift($element, l10n(array_shift($element))); // translate the key
-                $result .= call_user_func_array('sprintf', $element);
+                $result .= sprintf(...$element);
             } else {
                 $result .= l10n_args($element, $sep);
             }
@@ -1428,12 +1461,12 @@ function is_serialized(mixed $data, bool $strict = true): bool
         case 'a':
         case 'O':
         case 'E':
-            return (bool) preg_match("/^{$token}:[0-9]+:/s", $data);
+            return (bool) preg_match(sprintf('/^%s:[0-9]+:/s', $token), $data);
         case 'b':
         case 'i':
         case 'd':
             $end = $strict ? '$' : '';
-            return (bool) preg_match("/^{$token}:[0-9.E+-]+;{$end}/", $data);
+            return (bool) preg_match(sprintf('/^%s:[0-9.E+-]+;%s/', $token, $end), $data);
     }
 
     return false;
@@ -1465,15 +1498,19 @@ SELECT param, value
         if ($val === 'true') {
             $val = true;
         }
+
         if ($val === 'false') {
             $val = false;
         }
+
         if (is_serialized($val)) {
             $val = unserialize($val);
         }
+
         if (is_numeric($val)) {
             $val = str_contains($val, '.') ? (float) $val : (int) $val;
         }
+
         $conf[$row['param']] = $val;
     }
 
@@ -1504,7 +1541,7 @@ function conf_update_param(
     $query = '
 INSERT INTO
   ' . CONFIG_TABLE . ' (param, value)
-  VALUES(\'' . $param . '\', \'' . $dbValue . '\')
+  VALUES(\'' . $param . "', '" . $dbValue . '\')
   ON DUPLICATE KEY UPDATE value = \'' . $dbValue . '\'
 ;';
 
@@ -1528,13 +1565,14 @@ function conf_delete_param(
     if (! is_array($params)) {
         $params = [$params];
     }
+
     if ($params === []) {
         return;
     }
 
     $query = '
 DELETE FROM ' . CONFIG_TABLE . '
-  WHERE param IN(\'' . implode('\',\'', $params) . '\')
+  WHERE param IN(\'' . implode("','", $params) . '\')
 ;';
     pwg_query($query);
 
@@ -1566,6 +1604,7 @@ function safe_json_decode(array|string $value): array
     if (is_string($value)) {
         return json_decode($value, true);
     }
+
     return $value;
 }
 
@@ -1580,7 +1619,7 @@ function prepend_append_array_items(
     array_walk($array, function (&$value, $key) use (
         $prepend_str,
         $append_str
-    ) { $value = "{$prepend_str}{$value}{$append_str}"; });
+    ) { $value = $prepend_str . $value . $append_str; });
     return $array;
 }
 
@@ -1598,12 +1637,14 @@ function script_basename(): string
             if ($conf['php_extension_in_urls'] && get_extension($filename) !== 'php') {
                 continue;
             }
+
             $basename = basename($filename, '.php');
             if ($basename !== '' && $basename !== '0') {
                 return $basename;
             }
         }
     }
+
     return '';
 }
 
@@ -1678,9 +1719,11 @@ function load_language(
     if (! ($options['return'] ?? false)) {
         $filename .= '.php';
     }
+
     if ($dirname === '' || $dirname === '0') {
         $dirname = PHPWG_ROOT_PATH;
     }
+
     $dirname .= 'language/';
 
     $default_language = (defined('PHPWG_INSTALLED') && ! defined('UPGRADES_PATH')) ?
@@ -1691,20 +1734,25 @@ function load_language(
     if (! empty($options['language'])) { // explicit language
         $languages[] = $options['language'];
     }
+
     if (! empty($user['language'])) { // use language
         $languages[] = $user['language'];
     }
+
     if (($parent = get_parent_language()) != null) { // parent language
         // this is only for when the "child" language is missing
         $languages[] = $parent;
     }
+
     if (isset($options['force_fallback'])) { // fallback language
         // this is only for when the main language is missing
         if ($options['force_fallback'] === true) {
             $options['force_fallback'] = $default_language;
         }
+
         $languages[] = $options['force_fallback'];
     }
+
     if (! ($options['no_fallback'] ?? false)) { // default language
         $languages[] = $default_language;
     }
@@ -1743,6 +1791,7 @@ function load_language(
             if (! isset($lang)) {
                 $lang = [];
             }
+
             if (! isset($lang_info)) {
                 $lang_info = [];
             }
@@ -1787,18 +1836,23 @@ function convert_charset(
     if ($source_charset === $dest_charset) {
         return $str;
     }
+
     if ($source_charset === 'iso-8859-1' && $dest_charset === 'utf-8') {
         return mb_convert_encoding($str, 'UTF-8');
     }
+
     if ($source_charset === 'utf-8' && $dest_charset === 'iso-8859-1') {
         return mb_convert_encoding($str, 'ISO-8859-1');
     }
+
     if (function_exists('iconv')) {
         return iconv($source_charset, $dest_charset . '//TRANSLIT', $str);
     }
+
     if (function_exists('mb_convert_encoding')) {
         return mb_convert_encoding($str, $dest_charset, $source_charset);
     }
+
     return $str; // TODO
 }
 
@@ -1851,6 +1905,7 @@ function verify_ephemeral_key(
     ) {
         return false;
     }
+
     return true;
 }
 
@@ -1897,6 +1952,7 @@ function create_navigation_bar(
             $navbar['URL_FIRST'] = $url;
             $navbar['URL_PREV'] = $previous > 0 ? $url_start . $previous : $url;
         }
+
         // link on next page and last page?
         if ($cur_page != $maximum) {
             $navbar['URL_NEXT'] = $url_start . (min($next, $last));
@@ -1913,9 +1969,11 @@ function create_navigation_bar(
             $i < $stop; $i++) {
             $navbar['pages'][$i] = $url . $start_str . (($i - 1) * $nb_element_page);
         }
+
         $navbar['pages'][$maximum] = $url_start . $last;
         $navbar['NB_PAGE'] = $maximum;
     }
+
     return $navbar;
 }
 
@@ -2016,6 +2074,7 @@ function check_input_parameter(
         if ($mandatory) {
             fatal_error('[Hacking attempt] the input parameter "' . $param_name . '" is not valid');
         }
+
         return true;
     }
 
@@ -2023,6 +2082,7 @@ function check_input_parameter(
         if (! is_array($param_value)) {
             fatal_error('[Hacking attempt] the input parameter "' . $param_name . '" should be an array');
         }
+
         foreach ($param_value as $key => $item_to_check) {
             if (! preg_match(PATTERN_ID, (string) $key) || ! preg_match($pattern, (string) $item_to_check)) {
                 fatal_error('[Hacking attempt] an item is not valid in input parameter "' . $param_name . '"');
@@ -2051,10 +2111,13 @@ function get_privacy_level_options(): array
             if (strlen($label) !== 0) {
                 $label .= ', ';
             }
+
             $label .= l10n(sprintf('Level %d', $level));
         }
+
         $options[$level] = $label;
     }
+
     return $options;
 }
 
@@ -2086,6 +2149,7 @@ function get_device(): string
         } else {
             $device = 'desktop';
         }
+
         pwg_set_session_var('device', $device);
     }
 
@@ -2151,8 +2215,9 @@ function get_nb_available_comments(): int
     if (! isset($user['nb_available_comments'])) {
         $where = [];
         if (! is_admin()) {
-            $where[] = 'validated=\'true\'';
+            $where[] = "validated='true'";
         }
+
         $where[] = get_sql_condition_FandF(
             [
                 'forbidden_categories' => 'category_id',
@@ -2181,6 +2246,7 @@ SELECT COUNT(DISTINCT(com.id))
             ]
         );
     }
+
     return $user['nb_available_comments'];
 }
 

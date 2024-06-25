@@ -42,9 +42,11 @@ if (isset($_GET['incompatible_plugins'])) {
         if ($plugin == '~~expire~~') {
             continue;
         }
+
         $incompatible_plugins[] = $plugin;
 
     }
+
     echo json_encode($incompatible_plugins);
     exit;
 }
@@ -119,7 +121,7 @@ foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
 
     if (isset($fs_plugin['extension']) && isset($merged_extensions[$fs_plugin['extension']])) {
         // Deactivate manually plugin from database
-        $query = 'UPDATE ' . PLUGINS_TABLE . ' SET state=\'inactive\' WHERE id=\'' . $plugin_id . '\'';
+        $query = 'UPDATE ' . PLUGINS_TABLE . " SET state='inactive' WHERE id='" . $plugin_id . "'";
         pwg_query($query);
 
         $tpl_plugin['STATE'] = 'merged';
@@ -156,6 +158,7 @@ if ($missing_plugin_ids !== []) {
         ];
         $count_types_plugins['missing']++;
     }
+
     $template->append('plugin_states', 'missing');
 }
 

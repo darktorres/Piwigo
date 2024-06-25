@@ -83,6 +83,7 @@ SELECT id, path, representative_ext, width, height, rotation
                 if ($type != $derivative->get_type()) {
                     continue;
                 }
+
                 if (filemtime($derivative->get_path()) === false) {
                     $urls[] = $derivative->get_url() . $uid;
                 }
@@ -92,6 +93,7 @@ SELECT id, path, representative_ext, width, height, rotation
                 break;
             }
         }
+
         if ($is_last) {
             $start_id = 0;
         }
@@ -101,6 +103,7 @@ SELECT id, path, representative_ext, width, height, rotation
     if ($start_id) {
         $ret['next_page'] = $start_id;
     }
+
     $ret['urls'] = $urls;
     return $ret;
 }
@@ -162,7 +165,7 @@ function ws_getInfos(
 
     // unvalidated comments
     if ($infos['nb_comments'] > 0) {
-        $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . ' WHERE validated=\'false\';';
+        $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . " WHERE validated='false';";
         [$infos['nb_unvalidated_comments']] = pwg_db_fetch_row(pwg_query($query));
     }
 
@@ -176,6 +179,7 @@ function ws_getInfos(
             'value' => $value,
         ];
     }
+
     return [
         'infos' => new PwgNamedArray($output, 'item'),
     ];
@@ -222,6 +226,7 @@ function ws_getCacheSize(
         $infos['msizes'][$size_type] += $msizes[derivative_to_url($size_type)] ?? 0;
         $all += $infos['msizes'][$size_type];
     }
+
     $infos['msizes']['all'] = $all;
 
     // Compiled templates size
@@ -286,13 +291,11 @@ SELECT id
             'user_id' => $user['id'],
         ];
     }
+
     if ($datas !== []) {
-        mass_inserts(
-            CADDIE_TABLE,
-            ['element_id', 'user_id'],
-            $datas
-        );
+        mass_inserts(CADDIE_TABLE, ['element_id', 'user_id'], $datas);
     }
+
     return count($datas);
 }
 
@@ -311,8 +314,9 @@ DELETE FROM ' . RATE_TABLE . '
   WHERE user_id=' . $params['user_id'];
 
     if (! empty($params['anonymous_id'])) {
-        $query .= ' AND anonymous_id=\'' . $params['anonymous_id'] . '\'';
+        $query .= " AND anonymous_id='" . $params['anonymous_id'] . "'";
     }
+
     if (! empty($params['image_id'])) {
         $query .= ' AND element_id=' . $params['image_id'];
     }
@@ -323,6 +327,7 @@ DELETE FROM ' . RATE_TABLE . '
         include_once(PHPWG_ROOT_PATH . 'include/functions_rate.inc.php');
         update_rating_score();
     }
+
     return $changes;
 }
 
@@ -339,6 +344,7 @@ function ws_session_login(
     if (try_log_user($params['username'], $params['password'], false)) {
         return true;
     }
+
     return new PwgError(999, 'Invalid username/password');
 }
 
@@ -351,6 +357,7 @@ function ws_session_logout(array $params, &$service): true
     if (! is_a_guest()) {
         logout_user();
     }
+
     return true;
 }
 
@@ -368,6 +375,7 @@ function ws_session_getStatus(
     foreach (['status', 'theme', 'language'] as $k) {
         $res[$k] = $user[$k];
     }
+
     $res['pwg_token'] = get_pwg_token();
     $res['charset'] = 'utf-8';
 
@@ -465,6 +473,7 @@ SELECT
         if (isset($details['method'])) {
             $detailsType = 'method';
         }
+
         if (isset($details['script'])) {
             $detailsType = 'script';
         }
@@ -858,6 +867,7 @@ SELECT
         } else {
             $user_string .= $line['user_id'];
         }
+
         $user_string .= '&nbsp;<a href="';
         $user_string .= PHPWG_ROOT_PATH . 'admin.php?page=history';
         $user_string .= '&amp;search_id=' . $search_id;

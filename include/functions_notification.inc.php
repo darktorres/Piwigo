@@ -55,12 +55,14 @@ function custom_notification_query(
   WHERE 1=1';
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
-    AND c.validation_date > \'' . $start . '\'';
+    AND c.validation_date > \'' . $start . "'";
             }
+
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
-    AND c.validation_date <= \'' . $end . '\'';
+    AND c.validation_date <= \'' . $end . "'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND');
             break;
 
@@ -71,12 +73,14 @@ function custom_notification_query(
   WHERE 1=1';
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
-    AND date > \'' . $start . '\'';
+    AND date > \'' . $start . "'";
             }
+
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
-    AND date <= \'' . $end . '\'';
+    AND date <= \'' . $end . "'";
             }
+
             $query .= '
     AND validated = \'false\'';
             break;
@@ -90,12 +94,14 @@ function custom_notification_query(
   WHERE 1=1';
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
-    AND date_available > \'' . $start . '\'';
+    AND date_available > \'' . $start . "'";
             }
+
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
-    AND date_available <= \'' . $end . '\'';
+    AND date_available <= \'' . $end . "'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND', 'id');
             break;
 
@@ -106,12 +112,14 @@ function custom_notification_query(
   WHERE 1=1';
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= '
-    AND registration_date > \'' . $start . '\'';
+    AND registration_date > \'' . $start . "'";
             }
+
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= '
-    AND registration_date <= \'' . $end . '\'';
+    AND registration_date <= \'' . $end . "'";
             }
+
             break;
 
         default:
@@ -138,6 +146,7 @@ function custom_notification_query(
                     $field_id = 'user_id';
                     break;
             }
+
             $query = 'SELECT COUNT(DISTINCT ' . $field_id . ') ' . $query . ';';
             [$count] = pwg_db_fetch_row(pwg_query($query));
             return $count;
@@ -161,6 +170,7 @@ function custom_notification_query(
                     $field_id = 'user_id';
                     break;
             }
+
             $query = 'SELECT DISTINCT ' . $field_id . ' ' . $query . ';';
             return query2array($query);
 
@@ -332,6 +342,7 @@ function add_news_line(
         if ($add_url && ($url !== '' && $url !== '0')) {
             $line = '<a href="' . $url . '">' . $line . '</a>';
         }
+
         $news[] = $line;
     }
 }
@@ -439,6 +450,7 @@ function get_recent_post_dates(
     if ($persistent_cache->get($cache_key, $cached)) {
         return $cached;
     }
+
     $where_sql = get_std_sql_where_restrict_filter('WHERE', 'i.id', true);
 
     $query = '
@@ -550,6 +562,7 @@ function get_html_description_recent_post_date(
           )
           . '"><img src="' . $tn_src . '"></a>';
     }
+
     $description .= '...<br>';
 
     $description .=
@@ -566,6 +579,7 @@ function get_html_description_recent_post_date(
               l10n_dec('%d new photo', '%d new photos', $cat['img_count']) . ')'
               . '</li>';
     }
+
     $description .= '</ul>';
 
     return $description . '</ul>';
@@ -598,6 +612,7 @@ if (! function_exists('strptime')) {
         if ($fmt != '%Y-%m-%d %H:%M:%S') {
             die('Invalid strptime format ' . $fmt);
         }
+
         [$y, $m, $d, $H, $M, $S] = preg_split('/[-: ]/', (string) $date);
         return localtime(mktime((int) $H, (int) $M, (int) $S, (int) $m, (int) $d, (int) $y), true);
     }

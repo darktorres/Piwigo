@@ -79,6 +79,7 @@ function GDThumb_endsWith($needles, $haystack): bool
     if(! empty($needles) && ! empty($haystack)):
         $arr_needles = explode(',', (string) $needles);
     endif;
+
     return false;
 }
 
@@ -92,18 +93,23 @@ function GDThumb_media_type($params, $smarty): string
     if (GDThumb_endsWith('webm,webmv,ogv,m4v,flv,mp4', $file)) {
         return 'video';
     }
+
     if (GDThumb_endsWith('mp3,ogg,oga,m4a,webma,fla,wav', $file)) {
         return 'music';
     }
+
     if (GDThumb_endsWith('pdf', $file)) {
         return 'pdf';
     }
+
     if (GDThumb_endsWith('doc,docx,odt', $file)) {
         return 'doc';
     }
+
     if (GDThumb_endsWith('xls,xlsx,ods', $file)) {
         return 'xls';
     }
+
     if (GDThumb_endsWith('ppt,pptx,odp', $file)) {
         return 'ppt';
     }
@@ -135,6 +141,7 @@ function GDThumb_process_thumb($tpl_vars, $pictures): mixed
         else:
             $derivative_params = ImageStdParams::get_custom(9999, 2 * $confTemp['height'] + $confTemp['margin']);
         endif;
+
     $template->assign('GDThumb_big', new DerivativeImage($derivative_params, $tpl_vars[0]['src_image']));
     endif;
 
@@ -165,6 +172,7 @@ function GDThumb_process_category($tpl_vars): mixed
             else:
                 $derivative_params = ImageStdParams::get_custom(9999, 2 * $confTemp['height'] + $confTemp['margin']);
             endif;
+
         $template->assign('GDThumb_big', new DerivativeImage($derivative_params, $rep['src_image']));
     endif;
     endif;

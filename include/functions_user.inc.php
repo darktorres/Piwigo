@@ -35,8 +35,8 @@ function validate_mail_address(
         $query = '
 SELECT count(*)
 FROM ' . USERS_TABLE . '
-WHERE upper(' . $conf['user_fields']['email'] . ') = upper(\'' . $mail_address . '\')
-' . (is_numeric($user_id) ? 'AND ' . $conf['user_fields']['id'] . ' != \'' . $user_id . '\'' : '') . '
+WHERE upper(' . $conf['user_fields']['email'] . ") = upper('" . $mail_address . '\')
+' . (is_numeric($user_id) ? 'AND ' . $conf['user_fields']['id'] . " != '" . $user_id . "'" : '') . '
 ;';
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count != 0) {
@@ -70,6 +70,7 @@ WHERE LOWER(' . stripslashes((string) $conf['user_fields']['username']) . ") = '
         }
     }
 }
+
 /**
  * Searches for user with the same username in different case.
  *
@@ -92,6 +93,7 @@ function search_case_username(
     while ($r = pwg_db_fetch_assoc($q)) {
         $SCU_users[$r['username']] = strtolower((string) $r['username']);
     }
+
     // $SCU_users is now an associative table where the key is the account as
     // registered in the DB, and the value is this same account, in lower case
 
@@ -129,18 +131,23 @@ function register_user(
     if ($login === '') {
         $errors[] = l10n('Please, enter a login');
     }
+
     if (preg_match('/^.* $/', $login)) {
-        $errors[] = l10n('login mustn\'t end with a space character');
+        $errors[] = l10n("login mustn't end with a space character");
     }
+
     if (preg_match('/^ .*$/', $login)) {
-        $errors[] = l10n('login mustn\'t start with a space character');
+        $errors[] = l10n("login mustn't start with a space character");
     }
+
     if (get_userid($login)) {
         $errors[] = l10n('this login is already used');
     }
+
     if ($login !== strip_tags($login)) {
         $errors[] = l10n('html tags are not allowed in login');
     }
+
     $mail_error = validate_mail_address(null, $mail_address);
     if ($mail_error != '') {
         $errors[] = $mail_error;
@@ -241,7 +248,7 @@ SELECT id
                 get_l10n_args('Email: %s', $mail_address),
                 get_l10n_args(''),
                 get_l10n_args(
-                    'If you think you\'ve received this email in error, please contact us at %s',
+                    "If you think you've received this email in error, please contact us at %s",
                     get_webmaster_mail_address()
                 ),
             ];
@@ -325,11 +332,13 @@ SELECT ';
             $query .= '
      , ';
         }
+
         $query .= $dbfield . ' AS ' . $pwgfield;
     }
+
     $query .= '
   FROM ' . USERS_TABLE . '
-  WHERE ' . $conf['user_fields']['id'] . ' = \'' . $user_id . '\'';
+  WHERE ' . $conf['user_fields']['id'] . " = '" . $user_id . "'";
 
     $row = pwg_db_fetch_assoc(pwg_query($query));
 
@@ -376,6 +385,7 @@ SELECT
             $value = false;
         }
     }
+
     unset($value);
 
     $userdata['preferences'] = empty($userdata['preferences']) ? [] : unserialize($userdata['preferences']);
@@ -399,6 +409,7 @@ SELECT DISTINCT(id)
         if ($forbidden_ids === []) {
             $forbidden_ids[] = 0;
         }
+
         $userdata['image_access_type'] = 'NOT IN';
         //TODO maybe later
         $userdata['image_access_list'] = implode(',', $forbidden_ids);
@@ -418,6 +429,7 @@ SELECT COUNT(DISTINCT(image_id)) as total
                     remove_computed_category($user_cache_cats, $cat);
                 }
             }
+
             if ($forbidden_ids !== []) {
                 if (empty($userdata['forbidden_categories'])) {
                     $userdata['forbidden_categories'] = implode(',', $forbidden_ids);
@@ -426,6 +438,7 @@ SELECT COUNT(DISTINCT(image_id)) as total
                 }
             }
         }
+
         // delete user cache
         $query = '
 DELETE FROM ' . USER_CACHE_CATEGORIES_TABLE . '
@@ -458,11 +471,11 @@ INSERT IGNORE INTO ' . USER_CACHE_TABLE . '
     last_photo_date,
     image_access_type, image_access_list)
   VALUES
-  (' . $userdata['id'] . ',\'' . boolean_to_string($userdata['need_update']) . '\','
-  . $userdata['cache_update_time'] . ',\''
-  . $userdata['forbidden_categories'] . '\',' . $userdata['nb_total_images'] . ',' .
-  (empty($userdata['last_photo_date']) ? 'NULL' : '\'' . $userdata['last_photo_date'] . '\'') .
-  ',\'' . $userdata['image_access_type'] . '\',\'' . $userdata['image_access_list'] . '\')';
+  (' . $userdata['id'] . ",'" . boolean_to_string($userdata['need_update']) . "',"
+  . $userdata['cache_update_time'] . ",'"
+  . $userdata['forbidden_categories'] . "'," . $userdata['nb_total_images'] . ',' .
+  (empty($userdata['last_photo_date']) ? 'NULL' : "'" . $userdata['last_photo_date'] . "'") .
+  ",'" . $userdata['image_access_type'] . "','" . $userdata['image_access_list'] . "')";
         pwg_query($query);
     }
 
@@ -600,7 +613,7 @@ function get_userid(string $username): mixed
     $query = '
 SELECT ' . $conf['user_fields']['id'] . '
   FROM ' . USERS_TABLE . '
-  WHERE ' . $conf['user_fields']['username'] . ' = \'' . $username . '\'
+  WHERE ' . $conf['user_fields']['username'] . " = '" . $username . '\'
 ;';
     $result = pwg_query($query);
 
@@ -626,7 +639,7 @@ function get_userid_by_email(string $email): mixed
 SELECT
     ' . $conf['user_fields']['id'] . '
   FROM ' . USERS_TABLE . '
-  WHERE UPPER(' . $conf['user_fields']['email'] . ') = UPPER(\'' . $email . '\')
+  WHERE UPPER(' . $conf['user_fields']['email'] . ") = UPPER('" . $email . '\')
 ;';
     $result = pwg_query($query);
 
@@ -679,6 +692,7 @@ SELECT *
                 $value = false;
             }
         }
+
         return $default_user;
     }
 
@@ -877,6 +891,7 @@ WHERE ' . $conf['user_fields']['id'] . ' = ' . $user_id;
         $data = $time . $user_id . $username;
         return base64_encode(hash_hmac('sha1', $data, $conf['secret_key'] . $row['password'], true));
     }
+
     return false;
 }
 
@@ -915,12 +930,14 @@ function log_user(int $user_id, bool $remember_me): void
             ]
         );
     }
+
     if (session_id() != '') { // we regenerate the session for security reasons
         // see http://www.acros.si/papers/session_fixation.pdf
         session_regenerate_id(true);
     } else {
         session_start();
     }
+
     $_SESSION['pwg_uid'] = $user_id;
 
     $user['id'] = $_SESSION['pwg_uid'];
@@ -949,12 +966,14 @@ function auto_login(): bool
                 return true;
             }
         }
+
         setcookie($conf['remember_me_name'], '', [
             'expires' => 0,
             'path' => cookie_path(),
             'domain' => ini_get('session.cookie_domain'),
         ]);
     }
+
     return false;
 }
 
@@ -1024,7 +1043,7 @@ function pwg_login(
 SELECT ' . $conf['user_fields']['id'] . ' AS id,
        ' . $conf['user_fields']['password'] . ' AS password
   FROM ' . USERS_TABLE . '
-  WHERE ' . $conf['user_fields']['username'] . ' = \'' . pwg_db_real_escape_string($username) . '\'
+  WHERE ' . $conf['user_fields']['username'] . " = '" . pwg_db_real_escape_string($username) . '\'
 ;';
 
     $row = pwg_db_fetch_assoc(pwg_query($query));
@@ -1038,7 +1057,7 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id,
   SELECT ' . $conf['user_fields']['id'] . ' AS id,
          ' . $conf['user_fields']['password'] . ' AS password
     FROM ' . USERS_TABLE . '
-    WHERE ' . $conf['user_fields']['email'] . ' = \'' . pwg_db_real_escape_string($username) . '\'
+    WHERE ' . $conf['user_fields']['email'] . " = '" . pwg_db_real_escape_string($username) . '\'
     ;';
 
         $row = pwg_db_fetch_assoc(pwg_query($query));
@@ -1069,6 +1088,7 @@ SELECT
             return true;
         }
     }
+
     trigger_notify('login_failure', stripslashes($username));
     return false;
 }
@@ -1115,6 +1135,7 @@ function get_user_status(
     if ($user_status === '' || $user_status === '0') {
         $user_status = $user['status'] ?? '';
     }
+
     return $user_status;
 }
 
@@ -1248,6 +1269,7 @@ function can_manage_comment(
     if ($action === 'edit' && $conf['user_can_edit_comment'] && $comment_author_id == $user['id']) {
         return true;
     }
+
     return $action === 'delete' && $conf['user_can_delete_comment'] && $comment_author_id == $user['id'];
 }
 
@@ -1280,6 +1302,7 @@ function get_sql_condition_FandF(
                     $sql_list[] =
                       $field_name . ' NOT IN (' . $user['forbidden_categories'] . ')';
                 }
+
                 break;
 
             case 'visible_categories':
@@ -1288,6 +1311,7 @@ function get_sql_condition_FandF(
                     $sql_list[] =
                       $field_name . ' IN (' . $filter['visible_categories'] . ')';
                 }
+
                 break;
 
             case 'visible_images':
@@ -1308,6 +1332,7 @@ function get_sql_condition_FandF(
                     } elseif ($field_name == 'i.id') {
                         $table_prefix = 'i.';
                     }
+
                     if (isset($table_prefix)) {
                         $sql_list[] = $table_prefix . 'level<=' . $user['level'];
                     } elseif (! empty($user['image_access_list']) && ! empty($user['image_access_type'])) {
@@ -1315,6 +1340,7 @@ function get_sql_condition_FandF(
                             . ' (' . $user['image_access_list'] . ')';
                     }
                 }
+
                 break;
             default:
 
@@ -1346,6 +1372,7 @@ function get_recent_photos_sql(
     if (! isset($user['last_photo_date'])) {
         return '0=1';
     }
+
     return $db_field . '>=LEAST('
       . pwg_db_get_recent_period_expression($user['recent_period'])
       . ',' . pwg_db_get_recent_period_expression(1, $user['last_photo_date']) . ')';
@@ -1592,6 +1619,7 @@ function userprefs_delete_param(
     if (! is_array($params)) {
         $params = [$params];
     }
+
     if ($params === []) {
         return;
     }

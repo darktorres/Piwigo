@@ -67,6 +67,7 @@ function save_upload_form_config($data, array &$errors = [], array &$form_errors
         if (! isset($upload_form_config[$field])) {
             continue;
         }
+
         if (is_bool($upload_form_config[$field]['default'])) {
             $value = isset($value);
             $updates[] = [
@@ -215,6 +216,7 @@ SELECT
     } else {
         rename($source_filepath, $file_path);
     }
+
     chmod($file_path, 0644);
 
     // handle the uploaded file type by potentially making a
@@ -340,6 +342,7 @@ SELECT
     )) {
         $conf['use_exif'] = false;
     }
+
     sync_metadata([$image_id]);
 
     if (! $conf['lounge_active']) {
@@ -421,6 +424,7 @@ SELECT
     } else {
         rename($source_filepath, $format_path);
     }
+
     chmod($format_path, 0644);
 
     $file_infos = pwg_image_infos($format_path);
@@ -481,6 +485,7 @@ function upload_file_pdf($representative_ext, $file_path): mixed
     if ($ext == 'jpg') {
         $exec .= ' -quality ' . $jpg_quality;
     }
+
     $exec .= ' "' . realpath($file_path) . '"[0]';
     $exec .= ' "' . $representative_file_path . '"';
     $exec .= ' 2>&1';
@@ -594,7 +599,10 @@ function upload_file_video($representative_ext, $file_path): mixed
 
     // Get duration of video and determine time of poster
     exec(
-        'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1' . " '{$file_path}'",
+        'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1' . sprintf(
+            " '%s'",
+            $file_path
+        ),
         $O,
         $S
     );
@@ -634,6 +642,7 @@ function prepare_directory($directory): void
         if (str_starts_with(PHP_OS, 'WIN')) {
             $directory = str_replace('/', DIRECTORY_SEPARATOR, $directory);
         }
+
         umask(0000);
         $recursive = true;
         if (! mkdir($directory, 0777, $recursive)) {

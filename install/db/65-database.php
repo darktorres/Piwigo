@@ -27,13 +27,17 @@ function upgrade65_change_table_to_blob($table, $field_definitions): void
         if (! isset($row['Collation']) || $row['Collation'] == 'NULL') {
             continue;
         }
+
         [$type] = explode('(', (string) $row['Type']);
         if (! isset($types[$type])) {
             continue;
-        } // no need
+        }
+
+        // no need
         $binaryType = preg_replace('/' . $type . '/i', $types[$type], $row['Type']);
         $changes[] = 'MODIFY COLUMN ' . $row['Field'] . ' ' . $binaryType;
     }
+
     if ($changes !== []) {
         $query = 'ALTER TABLE ' . $table . ' ' . implode(', ', $changes);
         pwg_query($query);
@@ -47,11 +51,13 @@ function upgrade65_change_table_to_charset($table, $field_definitions, $db_chars
         if (! isset($row['Collation']) || $row['Collation'] == 'NULL') {
             continue;
         }
+
         $query = $row['Field'] . ' ' . $row['Type'];
         $query .= ' CHARACTER SET ' . $db_charset;
         if (str_contains((string) $row['Collation'], '_bin')) {
             $query .= ' BINARY';
         }
+
         if ($row['Null'] != 'YES') {
             $query .= ' NOT NULL';
             if (isset($row['Default'])) {
@@ -66,6 +72,7 @@ function upgrade65_change_table_to_charset($table, $field_definitions, $db_chars
         if ($row['Extra'] == 'auto_increment') {
             $query .= ' auto_increment';
         }
+
         $changes[] = 'MODIFY COLUMN ' . $query;
     }
 
@@ -99,6 +106,7 @@ SELECT language, COUNT(user_id) AS count FROM ' . USER_INFOS_TABLE . '
             $new_lang = 'en_UK';
             $charset = 'iso-8859-1';
         }
+
         $all_langs[$language] = [
             'count' => $row['count'],
             'new_lang' => $new_lang,
@@ -106,6 +114,7 @@ SELECT language, COUNT(user_id) AS count FROM ' . USER_INFOS_TABLE . '
         ];
         $upgrade_log .= ">>user_lang\t" . $language . "\t" . $row['count'] . "\n";
     }
+
     $upgrade_log .= "\n";
 
     // +-----------------------------------------------------------------------+
@@ -128,6 +137,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
     if ($row = pwg_db_fetch_assoc($result)) {
         $admin_charset = $all_langs[$row['language']]['charset'];
     }
+
     $upgrade_log .= ">>admin_charset\t" . $admin_charset . "\n";
 
     // +-----------------------------------------------------------------------+
@@ -151,8 +161,10 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
             if (! isset($row['Collation']) || $row['Collation'] == 'NULL') {
                 continue;
             }
+
             $field_definitions[] = $row;
         }
+
         $all_tables_definition[$table] = $field_definitions;
     }
 
@@ -191,6 +203,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
             $query = 'ALTER TABLE ' . $table . ' DEFAULT CHARACTER SET utf8';
             pwg_query($query);
         }
+
         $upgrade_log .= "< conversion\tchange utf8\n";
     }
     /*ALTER TABLE tbl_name CONVERT TO CHARACTER SET charset_name; (or change column character set)
@@ -207,10 +220,12 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
             if (! isset($safe_tables[substr((string) $table, strlen((string) $prefixeTable))])) {
                 upgrade65_change_table_to_blob($table, $all_tables_definition[$table]);
             }
+
             upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'utf8');
             $query = 'ALTER TABLE ' . $table . ' DEFAULT CHARACTER SET utf8';
             pwg_query($query);
         }
+
         $upgrade_log .= "< conversion\tchange binary\n";
         $upgrade_log .= "< conversion\tchange utf8\n";
     } elseif ($admin_charset === 'iso-8859-2'/*Central European*/) {
@@ -221,10 +236,12 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
                 upgrade65_change_table_to_blob($table, $all_tables_definition[$table]);
                 upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'latin2');
             }
+
             upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'utf8');
             $query = 'ALTER TABLE ' . $table . ' DEFAULT CHARACTER SET utf8';
             pwg_query($query);
         }
+
         $upgrade_log .= "< conversion\tchange binary\n";
         $upgrade_log .= "< conversion\tchange latin2\n";
         $upgrade_log .= "< conversion\tchange utf8\n";
@@ -233,7 +250,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
     // +-----------------------------------------------------------------------+
     // changes to write in database.inc.php
     $mysql_changes[] =
-'define(\'PWG_CHARSET\', \'' . $pwg_charset . '\');
+"define('PWG_CHARSET', '" . $pwg_charset . '\');
 define(\'DB_CHARSET\',  \'' . $db_charset . '\');
 define(\'DB_COLLATE\',  \'\');';
 

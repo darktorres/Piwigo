@@ -66,12 +66,15 @@ class CalendarWeekly extends CalendarBase
         if (count($page['chronology_date']) == 0) {
             $this->build_nav_bar(CYEAR); // years
         }
+
         if (count($page['chronology_date']) == 1) {
             $this->build_nav_bar(CWEEK, []); // week nav bar 1-53
         }
+
         if (count($page['chronology_date']) == 2) {
             $this->build_nav_bar(CDAY); // days nav bar Mon-Sun
         }
+
         $this->build_next_prev();
         return false;
     }
@@ -90,21 +93,25 @@ class CalendarWeekly extends CalendarBase
         while (count($date) > $max_levels) {
             array_pop($date);
         }
+
         $res = '';
         if (isset($date[CYEAR]) && $date[CYEAR] !== 'any') {
             $y = $date[CYEAR];
-            $res = " AND {$this->date_field} BETWEEN '{$y}-01-01' AND '{$y}-12-31 23:59:59'";
+            $res = sprintf(" AND %s BETWEEN '%s-01-01' AND '%s-12-31 23:59:59'", $this->date_field, $y, $y);
         }
 
         if (isset($date[CWEEK]) && $date[CWEEK] !== 'any') {
             $res .= ' AND ' . $this->calendar_levels[CWEEK]['sql'] . '=' . $date[CWEEK];
         }
+
         if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
             $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
         }
+
         if ($res === '' || $res === '0') {
             $res = ' AND ' . $this->date_field . ' IS NOT NULL';
         }
+
         return $res;
     }
 }

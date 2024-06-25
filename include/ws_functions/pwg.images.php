@@ -48,6 +48,7 @@ function ws_add_image_category_relations(
         if (! isset($rank)) {
             $rank = 'auto';
         }
+
         $rank_on_category[$cat_id] = $rank;
 
         if ($rank === 'auto') {
@@ -188,6 +189,7 @@ function merge_chunks(
                 $chunks[] = $upload_dir . '/' . $file;
             }
         }
+
         closedir($handle);
     }
 
@@ -245,6 +247,7 @@ function remove_chunks(
                 $chunks[] = $upload_dir . '/' . $file;
             }
         }
+
         closedir($handle);
     }
 
@@ -375,6 +378,7 @@ SELECT id, name, permalink, uppercats, global_rank, commentable
         if ($row['commentable'] == 'true') {
             $is_commentable = true;
         }
+
         unset($row['commentable']);
 
         $row['url'] = make_index_url(
@@ -394,6 +398,7 @@ SELECT id, name, permalink, uppercats, global_rank, commentable
         $row['id'] = (int) $row['id'];
         $related_categories[] = $row;
     }
+
     usort($related_categories, 'global_rank_compare');
 
     if ($related_categories === [] && ! is_admin()) {
@@ -493,6 +498,7 @@ SELECT id, date, author, content
             $ret[$k] = (int) $ret[$k];
         }
     }
+
     foreach (['path', 'storage_category_id'] as $k) {
         unset($ret[$k]);
     }
@@ -515,6 +521,7 @@ SELECT id, date, author, content
             WS_XML_ATTRIBUTES => $comment_post_data,
         ];
     }
+
     $ret['comments_paging'] = new PwgNamedStruct(
         [
             'page' => $params['comments_page'],
@@ -574,6 +581,7 @@ SELECT DISTINCT id
         global $conf;
         return new PwgError(403, 'Forbidden or rate not in ' . implode(',', $conf['rate_items']));
     }
+
     return $res;
 }
 
@@ -634,6 +642,7 @@ SELECT *
                     $image[$k] = (int) $row[$k];
                 }
             }
+
             foreach (['file', 'name', 'comment', 'date_creation', 'date_available'] as $k) {
                 $image[$k] = $row[$k];
             }
@@ -641,6 +650,7 @@ SELECT *
             $image = array_merge($image, ws_std_get_urls($row));
             $images[$image_ids[$image['id']]] = $image;
         }
+
         ksort($images, SORT_NUMERIC);
         $images = array_values($images);
     }
@@ -692,6 +702,7 @@ UPDATE ' . IMAGES_TABLE . '
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
         invalidate_user_cache();
     }
+
     return $affected_rows;
 }
 
@@ -988,6 +999,7 @@ SELECT COUNT(*)
         if ($conf['uniqueness_mode'] == 'md5sum') {
             $where_clause = "md5sum = '" . $params['original_sum'] . "'";
         }
+
         if ($conf['uniqueness_mode'] == 'filename') {
             $where_clause = "file = '" . $params['original_filename'] . "'";
         }
@@ -1128,7 +1140,7 @@ function ws_images_addSimple(
             UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload. ' .
                 'PHP does not provide a way to ascertain which extension caused the file ' .
                 'upload to stop; examining the list of loaded extensions with phpinfo() may help.',
-            default => "Error number {$_FILES['image']['error']} occurred while uploading a file.",
+            default => sprintf('Error number %s occurred while uploading a file.', $_FILES['image']['error']),
         };
 
         $logger->error(__FUNCTION__ . ' ' . $message);
@@ -1319,7 +1331,7 @@ function ws_images_upload(
     // file_put_contents('/tmp/plupload.log', "[".date('c')."] ".__FUNCTION__.', '.$fileName.' '.($chunk+1).'/'.$chunks."\n", FILE_APPEND);
 
     // Open temp file
-    if (! $out = fopen("{$filePath}.part", $chunks !== 0 ? 'ab' : 'wb')) {
+    if (! $out = fopen($filePath . '.part', $chunks !== 0 ? 'ab' : 'wb')) {
         die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
     }
 
@@ -1327,6 +1339,7 @@ function ws_images_upload(
         if ($_FILES['file']['error'] || ! is_uploaded_file($_FILES['file']['tmp_name'])) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
         }
+
         // Read binary input stream and append it to temp file
         if (! $in = fopen($_FILES['file']['tmp_name'], 'rb')) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
@@ -1345,7 +1358,7 @@ function ws_images_upload(
     // Check if file has been uploaded
     if (! $chunks || $chunk == $chunks - 1) {
         // Strip the temp .part suffix off
-        rename("{$filePath}.part", $filePath);
+        rename($filePath . '.part', $filePath);
 
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php');
 
@@ -1482,6 +1495,7 @@ SELECT COUNT(*)
     )) {
         return new PwgError(500, 'error during buffer directory creation');
     }
+
     secure_directory(dirname($chunkfile_path));
 
     // move uploaded file
@@ -1863,6 +1877,7 @@ function ws_images_formats_delete(
             PREG_SPLIT_NO_EMPTY
         );
     }
+
     $params['format_id'] = array_map('intval', $params['format_id']);
 
     $format_ids = [];
@@ -2167,6 +2182,7 @@ function ws_images_delete(
             PREG_SPLIT_NO_EMPTY
         );
     }
+
     $params['image_id'] = array_map('intval', $params['image_id']);
 
     $image_ids = [];
@@ -2239,6 +2255,7 @@ function ws_images_uploadCompleted(
             PREG_SPLIT_NO_EMPTY
         );
     }
+
     $params['image_id'] = array_map('intval', $params['image_id']);
 
     $image_ids = [];

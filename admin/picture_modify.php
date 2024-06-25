@@ -130,12 +130,14 @@ if (isset($_POST['submit'])) {
     if (! empty($_POST['tags'])) {
         $tag_ids = get_tag_ids($_POST['tags']);
     }
+
     set_tags($tag_ids, $_GET['image_id']);
 
     // association to albums
     if (! isset($_POST['associate'])) {
         $_POST['associate'] = [];
     }
+
     check_input_parameter('associate', $_POST, true, PATTERN_ID);
     move_images_to_categories([$_GET['image_id']], $_POST['associate']);
 
@@ -145,6 +147,7 @@ if (isset($_POST['submit'])) {
     if (! isset($_POST['represent'])) {
         $_POST['represent'] = [];
     }
+
     check_input_parameter('represent', $_POST, true, PATTERN_ID);
 
     $no_longer_thumbnail_for = array_diff($represented_albums, $_POST['represent']);

@@ -44,26 +44,28 @@ function ws_users_getList(
     }
 
     if (! empty($params['username'])) {
-        $where_clauses[] = 'u.' . $conf['user_fields']['username'] . ' LIKE \'' . pwg_db_real_escape_string(
+        $where_clauses[] = 'u.' . $conf['user_fields']['username'] . " LIKE '" . pwg_db_real_escape_string(
             $params['username']
-        ) . '\'';
+        ) . "'";
     }
 
     $filtered_groups = [];
     if (! empty($params['filter'])) {
-        $filter_query = 'SELECT id FROM ' . GROUPS_TABLE . ' WHERE name LIKE \'%' . $params['filter'] . '%\';';
+        $filter_query = 'SELECT id FROM ' . GROUPS_TABLE . " WHERE name LIKE '%" . $params['filter'] . "%';";
         $filtered_groups_res = pwg_query($filter_query);
         while ($row = pwg_db_fetch_assoc($filtered_groups_res)) {
             $filtered_groups[] = $row['id'];
         }
-        $filter_where_clause = '(u.' . $conf['user_fields']['username'] . ' LIKE \'%' .
-        pwg_db_real_escape_string($params['filter']) . '%\' OR '
-        . 'u.' . $conf['user_fields']['email'] . ' LIKE \'%' .
-        pwg_db_real_escape_string($params['filter']) . '%\'';
+
+        $filter_where_clause = '(u.' . $conf['user_fields']['username'] . " LIKE '%" .
+        pwg_db_real_escape_string($params['filter']) . "%' OR "
+        . 'u.' . $conf['user_fields']['email'] . " LIKE '%" .
+        pwg_db_real_escape_string($params['filter']) . "%'";
 
         if ($filtered_groups !== []) {
             $filter_where_clause .= 'OR ug.group_id IN (' . implode(',', $filtered_groups) . ')';
         }
+
         $where_clauses[] = $filter_where_clause . ')';
     }
 
@@ -72,7 +74,8 @@ function ws_users_getList(
         if (strlen($min_register_month) == 1) {
             $min_register_month = '0' . $min_register_month;
         }
-        $where_clauses[] = 'ui.registration_date >= \'' . $min_register_year . '-' . $min_register_month . '-01 00:00:00\'';
+
+        $where_clauses[] = "ui.registration_date >= '" . $min_register_year . '-' . $min_register_month . "-01 00:00:00'";
     }
 
     if (! empty($params['max_register'])) {
@@ -80,7 +83,8 @@ function ws_users_getList(
         if (strlen($max_register_month) == 1) {
             $max_register_month = '0' . $max_register_month;
         }
-        $where_clauses[] = 'ui.registration_date <= adddate(\'' . $max_register_year . '-' . $max_register_month . '-01 00:00:00\', interval 1 month)';
+
+        $where_clauses[] = "ui.registration_date <= adddate('" . $max_register_year . '-' . $max_register_month . "-01 00:00:00', interval 1 month)";
     }
 
     if (! empty($params['status'])) {
@@ -94,6 +98,7 @@ function ws_users_getList(
         if (! in_array($params['min_level'], $conf['available_permission_levels'])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
+
         $where_clauses[] = 'ui.level >= ' . $params['min_level'];
     }
 
@@ -101,6 +106,7 @@ function ws_users_getList(
         if (! in_array($params['max_level'], $conf['available_permission_levels'])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
+
         $where_clauses[] = 'ui.level <= ' . $params['max_level'];
     }
 
@@ -134,6 +140,7 @@ function ws_users_getList(
         } elseif (in_array('only_id', $params['display'])) {
             $params['display'] = [];
         }
+
         $params['display'] = array_flip($params['display']);
 
         // if registration_date_string or registration_date_since is requested,
@@ -151,6 +158,7 @@ function ws_users_getList(
         if (isset($params['display']['username'])) {
             $display['u.' . $conf['user_fields']['username']] = 'username';
         }
+
         if (isset($params['display']['email'])) {
             $display['u.' . $conf['user_fields']['email']] = 'email';
         }
@@ -176,6 +184,7 @@ SELECT DISTINCT ';
     if (isset($params['display']['total_count'])) {
         $query .= 'SQL_CALC_FOUND_ROWS ';
     }
+
     $first = true;
     foreach ($display as $field => $name) {
         if (! $first) {
@@ -183,6 +192,7 @@ SELECT DISTINCT ';
         } else {
             $first = false;
         }
+
         $query .= $field . ' AS ' . $name;
     }
 
@@ -190,8 +200,10 @@ SELECT DISTINCT ';
         if (! $first) {
             $query .= ', ';
         }
+
         $query .= 'ui.last_visit_from_history AS last_visit_from_history';
     }
+
     $query .= '
   FROM ' . USERS_TABLE . ' AS u
     INNER JOIN ' . USER_INFOS_TABLE . ' AS ui
@@ -207,6 +219,7 @@ SELECT DISTINCT ';
     OFFSET ' . ($params['per_page'] * $params['page']) . ';
     ;';
     }
+
     $users = [];
     $result = pwg_query($query);
 
@@ -215,11 +228,13 @@ SELECT DISTINCT ';
         $total_count_query_result = pwg_query('SELECT FOUND_ROWS();');
         [$total_count] = pwg_db_fetch_row($total_count_query_result);
     }
+
     while ($row = pwg_db_fetch_assoc($result)) {
         $row['id'] = intval($row['id']);
         if (isset($params['display']['groups'])) {
             $row['groups'] = []; // will be filled later
         }
+
         $users[$row['id']] = $row;
     }
 
@@ -236,6 +251,7 @@ SELECT DISTINCT ';
                 $users[$row['user_id']]['groups'][] = intval($row['group_id']);
             }
         }
+
         foreach ($users as $cur_user) {
             $users_id_arr[] = $cur_user['id'];
             if (isset($params['display']['registration_date_string'])) {
@@ -244,12 +260,14 @@ SELECT DISTINCT ';
                     ['day', 'month', 'year']
                 );
             }
+
             if (isset($params['display']['registration_date_since'])) {
                 $users[$cur_user['id']]['registration_date_since'] = time_since(
                     $cur_user['registration_date'],
                     'month'
                 );
             }
+
             if (isset($params['display']['last_visit'])) {
                 $last_visit = $cur_user['last_visit'] ?? '';
                 $users[$cur_user['id']]['last_visit'] = $last_visit;
@@ -310,6 +328,7 @@ SELECT DISTINCT ';
             }
           }*/
     }
+
     $users = trigger_change('ws_users_getList', $users);
     if ($params['per_page'] == 0 && empty($params['display'])) {
         $method_result = $users_id_arr;
@@ -325,9 +344,11 @@ SELECT DISTINCT ';
             'users' => new PwgNamedArray(array_values($users), 'user'),
         ];
     }
+
     if (isset($params['display']['total_count'])) {
         $method_result['total_count'] = $total_count;
     }
+
     return $method_result;
 }
 
@@ -483,8 +504,8 @@ function ws_users_setInfo(
     global $conf, $user;
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-
-    $updates = $updates_infos = [];
+    $updates = [];
+    $updates_infos = [];
     $update_status = null;
 
     if (count($params['user_id']) == 1) {
@@ -497,9 +518,11 @@ function ws_users_setInfo(
             if ($user_id && $user_id != $params['user_id'][0]) {
                 return new PwgError(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
             }
+
             if ($params['username'] != strip_tags((string) $params['username'])) {
                 return new PwgError(WS_ERR_INVALID_PARAM, l10n('html tags are not allowed in login'));
             }
+
             $updates[$conf['user_fields']['username']] = $params['username'];
         }
 
@@ -507,6 +530,7 @@ function ws_users_setInfo(
             if (($error = validate_mail_address($params['user_id'][0], $params['email'])) != '') {
                 return new PwgError(WS_ERR_INVALID_PARAM, $error);
             }
+
             $updates[$conf['user_fields']['email']] = $params['email'];
         }
 
@@ -577,6 +601,7 @@ SELECT
         if (! in_array($params['level'], $conf['available_permission_levels'])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
+
         $updates_infos['level'] = $params['level'];
     }
 
@@ -584,6 +609,7 @@ SELECT
         if (! in_array($params['language'], array_keys(get_languages()))) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid language');
         }
+
         $updates_infos['language'] = $params['language'];
     }
 
@@ -591,6 +617,7 @@ SELECT
         if (! in_array($params['theme'], array_keys(get_pwg_themes()))) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid theme');
         }
+
         $updates_infos['theme'] = $params['theme'];
     }
 
@@ -663,6 +690,7 @@ UPDATE ' . USER_INFOS_TABLE . ' SET ';
             } else {
                 $first = false;
             }
+
             $query .= $field . ' = "' . $value . '"';
         }
 

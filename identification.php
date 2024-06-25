@@ -33,6 +33,7 @@ trigger_notify('loc_begin_identification');
 if (isset($_POST['redirect'])) {
     $_POST['redirect_decoded'] = urldecode((string) $_POST['redirect']);
 }
+
 check_input_parameter('redirect_decoded', $_POST, false, '{^' . preg_quote(cookie_path()) . '}');
 
 $redirect_to = '';

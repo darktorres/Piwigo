@@ -38,6 +38,7 @@ INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id';
             if ($sub_ids === []) {
                 return; // nothing to do
             }
+
             $inner_sql .= '
 WHERE category_id IN (' . implode(',', $sub_ids) . ')';
             $inner_sql .= '
@@ -63,6 +64,7 @@ WHERE category_id IN (' . implode(',', $sub_ids) . ')';
         if (empty($page['items'])) {
             return; // nothing to do
         }
+
         $inner_sql .= '
 WHERE id IN (' . implode(',', $page['items']) . ')';
     }
@@ -109,6 +111,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     if (! isset($styles[$page['chronology_style']])) {
         $page['chronology_style'] = 'monthly';
     }
+
     $cal_style = $page['chronology_style'];
     $classname = $styles[$cal_style]['classname'];
 
@@ -130,6 +133,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     if (! isset($page['chronology_date'])) {
         $page['chronology_date'] = [];
     }
+
     while (count($page['chronology_date']) > 3) {
         array_pop($page['chronology_date']);
     }
@@ -142,8 +146,10 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
                 while ($i < count($page['chronology_date'])) {
                     array_pop($page['chronology_date']);
                 }
+
                 break;
             }
+
             $any_count++;
         } elseif ($page['chronology_date'][$i] == '') {
             while ($i < count($page['chronology_date'])) {
@@ -153,6 +159,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
             $page['chronology_date'][$i] = (int) $page['chronology_date'][$i];
         }
     }
+
     if ($any_count == 3) {
         array_pop($page['chronology_date']);
     }
@@ -184,6 +191,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
                     } else {
                         $chronology_date = $page['chronology_date'];
                     }
+
                     $url = duplicate_index_url(
                         [
                             'chronology_style' => $style,
@@ -207,6 +215,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
                 }
             }
         }
+
         $url = duplicate_index_url(
             [],
             ['start', 'chronology_date']
@@ -251,5 +260,6 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
             }
         }
     }
+
     pwg_debug('end initialize_calendar');
 }

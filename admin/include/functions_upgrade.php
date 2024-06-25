@@ -14,6 +14,7 @@ function check_upgrade(): bool
     if (defined('PHPWG_IN_UPGRADE')) {
         return PHPWG_IN_UPGRADE;
     }
+
     return false;
 }
 
@@ -72,7 +73,7 @@ function deactivate_non_standard_plugins(): void
 SELECT id
 FROM ' . PREFIX_TABLE . 'plugins
 WHERE state = \'active\'
-AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
+AND id NOT IN (\'' . implode("','", $standard_plugins) . '\')
 ;';
 
     $result = pwg_query($query);
@@ -85,7 +86,7 @@ AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
         $query = '
 UPDATE ' . PREFIX_TABLE . 'plugins
 SET state=\'inactive\'
-WHERE id IN (\'' . implode('\',\'', $plugins) . '\')
+WHERE id IN (\'' . implode("','", $plugins) . '\')
 ;';
         pwg_query($query);
 
@@ -232,9 +233,10 @@ SELECT u.password, ui.status
 FROM ' . USERS_TABLE . ' AS u
 INNER JOIN ' . USER_INFOS_TABLE . ' AS ui
 ON u.' . $conf['user_fields']['id'] . '=ui.user_id
-WHERE ' . $conf['user_fields']['username'] . '=\'' . $username . '\'
+WHERE ' . $conf['user_fields']['username'] . "='" . $username . '\'
 ;';
     }
+
     $row = pwg_db_fetch_assoc(pwg_query($query));
 
     if (! $conf['password_verify']($password, $row['password'])) {
@@ -263,6 +265,7 @@ function get_available_upgrade_ids(): array
             }
         }
     }
+
     natcasesort($available_upgrade_ids);
 
     return $available_upgrade_ids;
@@ -299,7 +302,7 @@ function upgrade_db_connect(): void
             $conf['db_base']
         );
         pwg_db_check_version();
-    } catch (Exception $e) {
-        my_error(l10n($e->getMessage()), true);
+    } catch (Exception $exception) {
+        my_error(l10n($exception->getMessage()), true);
     }
 }

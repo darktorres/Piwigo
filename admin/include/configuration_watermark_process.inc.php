@@ -24,9 +24,11 @@ function get_watermark_filename($list, $candidate, int $step = 0): string
     if ($step != 0) {
         $change_name .= '-' . $step;
     }
+
     if (in_array($change_name, $list)) {
         return get_watermark_filename($list, $candidate, $step + 1);
     }
+
     return $change_name . '.png';
 }
 
@@ -64,7 +66,7 @@ if (isset($_FILES['watermarkImage']) && ! empty($_FILES['watermarkImage']['tmp_n
             if (move_uploaded_file($_FILES['watermarkImage']['tmp_name'], $file_path)) {
                 $pwatermark['file'] = substr($file_path, strlen(PHPWG_ROOT_PATH));
             } else {
-                $page['errors'][] = $errors['watermarkImage'] = "{$file_path} " . l10n('no write access');
+                $page['errors'][] = $errors['watermarkImage'] = $file_path . ' ' . l10n('no write access');
             }
         } else {
             $page['errors'][] = $errors['watermarkImage'] = sprintf(
@@ -159,6 +161,7 @@ if (count($errors) == 0) {
         if (! $changed && $params->use_watermark) {
             $changed = $watermark_changed;
         }
+
         if (! $changed && $params->use_watermark) {
             // if thresholds change and before/after the threshold is lower than the corresponding derivative side -> some derivatives might switch the watermark
             $changed |= $watermark->min_size[0] != $old_watermark->min_size[0] && ($watermark->min_size[0] < $params->max_width() || $old_watermark->min_size[0] < $params->max_width());

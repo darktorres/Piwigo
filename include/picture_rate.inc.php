@@ -28,6 +28,7 @@ SELECT COUNT(rate) AS count
 ;';
         [$rate_summary['count'], $rate_summary['average']] = pwg_db_fetch_row(pwg_query($query));
     }
+
     $template->assign('rate_summary', $rate_summary);
 
     $user_rate = null;
@@ -43,8 +44,9 @@ SELECT COUNT(rate) AS count
                 if (count($ip_components) > 3) {
                     array_pop($ip_components);
                 }
+
                 $anonymous_id = implode('.', $ip_components);
-                $query .= ' AND anonymous_id = \'' . $anonymous_id . '\'';
+                $query .= " AND anonymous_id = '" . $anonymous_id . "'";
             }
 
             $result = pwg_query($query);
