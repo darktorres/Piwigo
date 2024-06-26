@@ -4,10 +4,7 @@
  * Smarty Internal Plugin Resource PHP
  * Implements the file system as resource for PHP templates
  *
- * @package    Smarty
  * @subpackage TemplateResources
- * @author     Uwe Tews
- * @author     Rodney Rehm
  */
 class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
 {
@@ -46,10 +43,10 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
      * @param Smarty_Template_Source $source source object
      *
      * @return string                 template source
-     * @throws SmartyException        if source cannot be loaded
      */
-    public function getContent(Smarty_Template_Source $source)
-    {
+    public function getContent(
+        Smarty_Template_Source $source
+    ) {
         if ($source->exists) {
             return '';
         }
@@ -62,17 +59,19 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
      * @param Smarty_Template_Compiled $compiled  compiled object
      * @param Smarty_Internal_Template $_template template object (is ignored)
      */
-    public function populateCompiledFilepath(Smarty_Template_Compiled $compiled, Smarty_Internal_Template $_template)
-    {
+    public function populateCompiledFilepath(
+        Smarty_Template_Compiled $compiled,
+        Smarty_Internal_Template $_template
+    ) {
         $compiled->filepath = $_template->source->filepath;
         $compiled->timestamp = $_template->source->timestamp;
         $compiled->exists = $_template->source->exists;
-        $compiled->file_dependency[ $_template->source->uid ] =
-            array(
+        $compiled->file_dependency[$_template->source->uid] =
+            [
                 $compiled->filepath,
                 $compiled->timestamp,
                 $_template->source->type,
-            );
+            ];
     }
 
     /**
@@ -80,16 +79,15 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
      *
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
-     *
-     * @return void
-     * @throws SmartyException          if template cannot be loaded or allow_php_templates is disabled
      */
-    public function renderUncompiled(Smarty_Template_Source $source, Smarty_Internal_Template $_template)
-    {
-        if (!$source->smarty->allow_php_templates) {
+    public function renderUncompiled(
+        Smarty_Template_Source $source,
+        Smarty_Internal_Template $_template
+    ) {
+        if (! $source->smarty->allow_php_templates) {
             throw new SmartyException('PHP templates are disabled');
         }
-        if (!$source->exists) {
+        if (! $source->exists) {
             throw new SmartyException(
                 "Unable to load template '{$source->type}:{$source->name}'" .
                 ($_template->_isSubTpl() ? " in '{$_template->parent->template_resource}'" : '')
@@ -102,8 +100,6 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
             ini_set('short_open_tag', '1');
         }
         /**
-         *
-         *
          * @var Smarty_Internal_Template $_smarty_template
          * used in included file
          */

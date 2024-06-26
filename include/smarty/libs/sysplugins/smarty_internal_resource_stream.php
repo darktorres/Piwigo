@@ -3,10 +3,7 @@
  * Smarty Internal Plugin Resource Stream
  * Implements the streams as resource for Smarty template
  *
- * @package    Smarty
  * @subpackage TemplateResources
- * @author     Uwe Tews
- * @author     Rodney Rehm
  */
 
 /**
@@ -14,7 +11,6 @@
  * Implements the streams as resource for Smarty template
  *
  * @link       https://php.net/streams
- * @package    Smarty
  * @subpackage TemplateResources
  */
 class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
@@ -24,11 +20,11 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
      *
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
-     *
-     * @return void
      */
-    public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null)
-    {
+    public function populate(
+        Smarty_Template_Source $source,
+        Smarty_Internal_Template $_template = null
+    ) {
         if (strpos($source->resource, '://') !== false) {
             $source->filepath = $source->resource;
         } else {
@@ -36,7 +32,7 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
         }
         $source->uid = false;
         $source->content = $this->getContent($source);
-        $source->timestamp = $source->exists = !!$source->content;
+        $source->timestamp = $source->exists = ! ! $source->content;
     }
 
     /**
@@ -46,20 +42,24 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
      *
      * @return string template source
      */
-    public function getContent(Smarty_Template_Source $source)
-    {
+    public function getContent(
+        Smarty_Template_Source $source
+    ) {
         $t = '';
         // the availability of the stream has already been checked in Smarty_Resource::fetch()
-        $fp = fopen($source->filepath, 'r+');
+        $fp = fopen(
+            $source->filepath,
+            'r+'
+        );
         if ($fp) {
-            while (!feof($fp) && ($current_line = fgets($fp)) !== false) {
+            while (! feof($fp) && ($current_line = fgets($fp)) !== false) {
                 $t .= $current_line;
             }
             fclose($fp);
             return $t;
-        } else {
-            return false;
         }
+        return false;
+
     }
 
     /**
@@ -71,8 +71,11 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
      *
      * @return string unique resource name
      */
-    public function buildUniqueResourceName(Smarty $smarty, $resource_name, $isConfig = false)
-    {
-        return get_class($this) . '#' . $resource_name;
+    public function buildUniqueResourceName(
+        Smarty $smarty,
+        $resource_name,
+        $isConfig = false
+    ) {
+        return static::class . '#' . $resource_name;
     }
 }

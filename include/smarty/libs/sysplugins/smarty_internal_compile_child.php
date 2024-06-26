@@ -10,8 +10,6 @@
 
 /**
  * Smarty Internal Plugin Compile Child Class
- *
- * @author Uwe Tews <uwe.tews@googlemail.com>
  */
 class Smarty_Internal_Compile_Child extends Smarty_Internal_CompileBase
 {
@@ -21,7 +19,9 @@ class Smarty_Internal_Compile_Child extends Smarty_Internal_CompileBase
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $optional_attributes = array('assign');
+    public $optional_attributes = [
+        'assign',
+    ];
 
     /**
      * Tag name
@@ -45,14 +45,16 @@ class Smarty_Internal_Compile_Child extends Smarty_Internal_CompileBase
      * @param array                                 $parameter array with compilation parameter
      *
      * @return string compiled code
-     * @throws \SmartyCompilerException
      */
-    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
-    {
+    public function compile(
+        $args,
+        Smarty_Internal_TemplateCompilerBase $compiler,
+        $parameter
+    ) {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-        $tag = isset($parameter[ 0 ]) ? "'{$parameter[0]}'" : "'{{$this->tag}}'";
-        if (!isset($compiler->_cache[ 'blockNesting' ])) {
+        $tag = isset($parameter[0]) ? "'{$parameter[0]}'" : "'{{$this->tag}}'";
+        if (! isset($compiler->_cache['blockNesting'])) {
             $compiler->trigger_template_error(
                 "{$tag} used outside {block} tags ",
                 $compiler->parser->lex->taglineno
@@ -61,9 +63,9 @@ class Smarty_Internal_Compile_Child extends Smarty_Internal_CompileBase
         $compiler->has_code = true;
         $compiler->suppressNocacheProcessing = true;
         if ($this->blockType === 'Child') {
-            $compiler->_cache[ 'blockParams' ][ $compiler->_cache[ 'blockNesting' ] ][ 'callsChild' ] = 'true';
+            $compiler->_cache['blockParams'][$compiler->_cache['blockNesting']]['callsChild'] = 'true';
         }
-        $_assign = isset($_attr[ 'assign' ]) ? $_attr[ 'assign' ] : null;
+        $_assign = isset($_attr['assign']) ? $_attr['assign'] : null;
         $output = "<?php \n";
         if (isset($_assign)) {
             $output .= "ob_start();\n";

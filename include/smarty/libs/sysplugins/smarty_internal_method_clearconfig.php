@@ -5,9 +5,7 @@
  *
  * Smarty::clearConfig() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_ClearConfig
 {
@@ -29,12 +27,14 @@ class Smarty_Internal_Method_ClearConfig
      *
      * @return \Smarty_Internal_Data|\Smarty_Internal_Template|\Smarty
      */
-    public function clearConfig(Smarty_Internal_Data $data, $name = null)
-    {
+    public function clearConfig(
+        Smarty_Internal_Data $data,
+        $name = null
+    ) {
         if (isset($name)) {
-            unset($data->config_vars[ $name ]);
+            unset($data->config_vars[$name]);
         } else {
-            $data->config_vars = array();
+            $data->config_vars = [];
         }
         return $data;
     }

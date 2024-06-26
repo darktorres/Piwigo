@@ -2,7 +2,6 @@
 /**
  * Smarty plugin
  *
- * @package    Smarty
  * @subpackage PluginsModifierCompiler
  */
 /**
@@ -16,13 +15,13 @@
  *
  * @link   https://www.smarty.net/manual/en/language.modifier.cat.php cat
  *           (Smarty online manual)
- * @author Uwe Tews
  *
  * @param array $params parameters
  *
  * @return string with compiled code
  */
-function smarty_modifiercompiler_cat($params)
-{
+function smarty_modifiercompiler_cat(
+    $params
+) {
     return '(' . implode(').(', $params) . ')';
 }

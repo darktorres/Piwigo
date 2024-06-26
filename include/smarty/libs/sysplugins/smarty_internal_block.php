@@ -3,9 +3,7 @@
 /**
  * Smarty {block} tag class
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Block
 {
@@ -81,10 +79,9 @@ class Smarty_Internal_Block
 
     /**
      * Compiled block code overloaded by {block} class
-     *
-     * @param \Smarty_Internal_Template $tpl
      */
-    public function callBlock(Smarty_Internal_Template $tpl)
-    {
+    public function callBlock(
+        Smarty_Internal_Template $tpl
+    ) {
     }
 }

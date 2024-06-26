@@ -2,17 +2,13 @@
 /**
  * Smarty Internal Plugin Resource Extends
  *
- * @package    Smarty
  * @subpackage TemplateResources
- * @author     Uwe Tews
- * @author     Rodney Rehm
  */
 
 /**
  * Smarty Internal Plugin Resource Extends
  * Implements the file system as resource for Smarty which {extend}s a chain of template files templates
  *
- * @package    Smarty
  * @subpackage TemplateResources
  */
 class Smarty_Internal_Resource_Extends extends Smarty_Resource
@@ -29,23 +25,23 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      *
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
-     *
-     * @throws SmartyException
      */
-    public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null)
-    {
+    public function populate(
+        Smarty_Template_Source $source,
+        Smarty_Internal_Template $_template = null
+    ) {
         $uid = '';
-        $sources = array();
+        $sources = [];
         $components = explode('|', $source->name);
         $smarty = &$source->smarty;
         $exists = true;
         foreach ($components as $component) {
-            /* @var \Smarty_Template_Source $_s */
+            /** @var \Smarty_Template_Source $_s */
             $_s = Smarty_Template_Source::load(null, $smarty, $component);
             if ($_s->type === 'php') {
                 throw new SmartyException("Resource type {$_s->type} cannot be used with the extends resource type");
             }
-            $sources[ $_s->uid ] = $_s;
+            $sources[$_s->uid] = $_s;
             $uid .= $_s->filepath;
             if ($_template) {
                 $exists = $exists && $_s->exists;
@@ -65,10 +61,11 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      *
      * @param Smarty_Template_Source $source source object
      */
-    public function populateTimestamp(Smarty_Template_Source $source)
-    {
+    public function populateTimestamp(
+        Smarty_Template_Source $source
+    ) {
         $source->exists = true;
-        /* @var \Smarty_Template_Source $_s */
+        /** @var \Smarty_Template_Source $_s */
         foreach ($source->components as $_s) {
             $source->exists = $source->exists && $_s->exists;
         }
@@ -81,16 +78,16 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      * @param Smarty_Template_Source $source source object
      *
      * @return string template source
-     * @throws SmartyException if source cannot be loaded
      */
-    public function getContent(Smarty_Template_Source $source)
-    {
-        if (!$source->exists) {
+    public function getContent(
+        Smarty_Template_Source $source
+    ) {
+        if (! $source->exists) {
             throw new SmartyException("Unable to load template '{$source->type}:{$source->name}'");
         }
         $_components = array_reverse($source->components);
         $_content = '';
-        /* @var \Smarty_Template_Source $_s */
+        /** @var \Smarty_Template_Source $_s */
         foreach ($_components as $_s) {
             // read content
             $_content .= $_s->getContent();
@@ -105,8 +102,9 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      *
      * @return string resource's basename
      */
-    public function getBasename(Smarty_Template_Source $source)
-    {
+    public function getBasename(
+        Smarty_Template_Source $source
+    ) {
         return str_replace(':', '.', basename($source->filepath));
     }
 

@@ -3,15 +3,12 @@
  * Smarty Internal Plugin Nocache Insert
  * Compiles the {insert} tag into the cache file
  *
- * @package    Smarty
  * @subpackage Compiler
- * @author     Uwe Tews
  */
 
 /**
  * Smarty Internal Plugin Compile Insert Class
  *
- * @package    Smarty
  * @subpackage Compiler
  */
 class Smarty_Internal_Nocache_Insert
@@ -27,8 +24,13 @@ class Smarty_Internal_Nocache_Insert
      *
      * @return string                   compiled code
      */
-    public static function compile($_function, $_attr, $_template, $_script, $_assign = null)
-    {
+    public static function compile(
+        $_function,
+        $_attr,
+        $_template,
+        $_script,
+        $_assign = null
+    ) {
         $_output = '<?php ';
         if ($_script !== 'null') {
             // script which must be included

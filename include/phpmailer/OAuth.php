@@ -6,10 +6,6 @@
  *
  * @see       https://github.com/PHPMailer/PHPMailer/ The PHPMailer GitHub project
  *
- * @author    Marcus Bointon (Synchro/coolbru) <phpmailer@synchromedia.co.uk>
- * @author    Jim Jagielski (jimjag) <jimjag@gmail.com>
- * @author    Andy Prevost (codeworxtech) <codeworxtech@users.sourceforge.net>
- * @author    Brent R. Matzelle (original founder)
  * @copyright 2012 - 2020 Marcus Bointon
  * @copyright 2010 - 2012 Jim Jagielski
  * @copyright 2004 - 2009 Andy Prevost
@@ -30,8 +26,6 @@ use League\OAuth2\Client\Token\AccessToken;
  * Uses the oauth2-client package from the League of Extraordinary Packages.
  *
  * @see     http://oauth2-client.thephpleague.com
- *
- * @author  Marcus Bointon (Synchro/coolbru) <phpmailer@synchromedia.co.uk>
  */
 class OAuth
 {
@@ -94,6 +88,27 @@ class OAuth
     }
 
     /**
+     * Generate a base64-encoded OAuth token.
+     *
+     * @return string
+     */
+    public function getOauth64()
+    {
+        //Get a new token if it's not available or has expired
+        if ($this->oauthToken === null || $this->oauthToken->hasExpired()) {
+            $this->oauthToken = $this->getToken();
+        }
+
+        return base64_encode(
+            'user=' .
+            $this->oauthUserEmail .
+            "\001auth=Bearer " .
+            $this->oauthToken .
+            "\001\001"
+        );
+    }
+
+    /**
      * Get a new RefreshToken.
      *
      * @return RefreshToken
@@ -112,28 +127,9 @@ class OAuth
     {
         return $this->provider->getAccessToken(
             $this->getGrant(),
-            ['refresh_token' => $this->oauthRefreshToken]
-        );
-    }
-
-    /**
-     * Generate a base64-encoded OAuth token.
-     *
-     * @return string
-     */
-    public function getOauth64()
-    {
-        //Get a new token if it's not available or has expired
-        if (null === $this->oauthToken || $this->oauthToken->hasExpired()) {
-            $this->oauthToken = $this->getToken();
-        }
-
-        return base64_encode(
-            'user=' .
-            $this->oauthUserEmail .
-            "\001auth=Bearer " .
-            $this->oauthToken .
-            "\001\001"
+            [
+                'refresh_token' => $this->oauthRefreshToken,
+            ]
         );
     }
 }

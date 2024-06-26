@@ -3,15 +3,12 @@
  * Smarty Internal Plugin Compile Function_Call
  * Compiles the calls of user defined tags defined by {function}
  *
- * @package    Smarty
  * @subpackage Compiler
- * @author     Uwe Tews
  */
 
 /**
  * Smarty Internal Plugin Compile Function_Call Class
  *
- * @package    Smarty
  * @subpackage Compiler
  */
 class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
@@ -22,7 +19,9 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $required_attributes = array('name');
+    public $required_attributes = [
+        'name',
+    ];
 
     /**
      * Attribute definition: Overwrites base class.
@@ -30,7 +29,9 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $shorttag_order = array('name');
+    public $shorttag_order = [
+        'name',
+    ];
 
     /**
      * Attribute definition: Overwrites base class.
@@ -38,7 +39,9 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $optional_attributes = array('_any');
+    public $optional_attributes = [
+        '_any',
+    ];
 
     /**
      * Compiles the calls of user defined tags defined by {function}
@@ -48,30 +51,32 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
      *
      * @return string compiled code
      */
-    public function compile($args, $compiler)
-    {
+    public function compile(
+        $args,
+        $compiler
+    ) {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         // save possible attributes
-        if (isset($_attr[ 'assign' ])) {
+        if (isset($_attr['assign'])) {
             // output will be stored in a smarty variable instead of being displayed
-            $_assign = $_attr[ 'assign' ];
+            $_assign = $_attr['assign'];
         }
         //$_name = trim($_attr['name'], "''");
-        $_name = $_attr[ 'name' ];
-        unset($_attr[ 'name' ], $_attr[ 'assign' ], $_attr[ 'nocache' ]);
+        $_name = $_attr['name'];
+        unset($_attr['name'], $_attr['assign'], $_attr['nocache']);
         // set flag (compiled code of {function} must be included in cache file
-        if (!$compiler->template->caching || $compiler->nocache || $compiler->tag_nocache) {
+        if (! $compiler->template->caching || $compiler->nocache || $compiler->tag_nocache) {
             $_nocache = 'true';
         } else {
             $_nocache = 'false';
         }
-        $_paramsArray = array();
+        $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             if (is_int($_key)) {
-                $_paramsArray[] = "$_key=>$_value";
+                $_paramsArray[] = "{$_key}=>{$_value}";
             } else {
-                $_paramsArray[] = "'$_key'=>$_value";
+                $_paramsArray[] = "'{$_key}'=>{$_value}";
             }
         }
         $_params = 'array(' . implode(',', $_paramsArray) . ')';

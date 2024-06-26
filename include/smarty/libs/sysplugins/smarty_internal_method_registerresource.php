@@ -5,9 +5,7 @@
  *
  * Smarty::registerResource() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_RegisterResource
 {
@@ -30,10 +28,13 @@ class Smarty_Internal_Method_RegisterResource
      *
      * @return \Smarty|\Smarty_Internal_Template
      */
-    public function registerResource(Smarty_Internal_TemplateBase $obj, $name, Smarty_Resource $resource_handler)
-    {
+    public function registerResource(
+        Smarty_Internal_TemplateBase $obj,
+        $name,
+        Smarty_Resource $resource_handler
+    ) {
         $smarty = $obj->_getSmartyObj();
-        $smarty->registered_resources[ $name ] = $resource_handler;
+        $smarty->registered_resources[$name] = $resource_handler;
         return $obj;
     }
 }

@@ -5,9 +5,7 @@
  *
  * Smarty::unregisterPlugin() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_UnregisterPlugin
 {
@@ -30,11 +28,14 @@ class Smarty_Internal_Method_UnregisterPlugin
      *
      * @return \Smarty|\Smarty_Internal_Template
      */
-    public function unregisterPlugin(Smarty_Internal_TemplateBase $obj, $type, $name)
-    {
+    public function unregisterPlugin(
+        Smarty_Internal_TemplateBase $obj,
+        $type,
+        $name
+    ) {
         $smarty = $obj->_getSmartyObj();
-        if (isset($smarty->registered_plugins[ $type ][ $name ])) {
-            unset($smarty->registered_plugins[ $type ][ $name ]);
+        if (isset($smarty->registered_plugins[$type][$name])) {
+            unset($smarty->registered_plugins[$type][$name]);
         }
         return $obj;
     }

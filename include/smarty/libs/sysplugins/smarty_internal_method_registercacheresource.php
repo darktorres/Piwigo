@@ -5,9 +5,7 @@
  *
  * Smarty::registerCacheResource() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_RegisterCacheResource
 {
@@ -26,7 +24,6 @@ class Smarty_Internal_Method_RegisterCacheResource
      *
      * @param \Smarty_Internal_TemplateBase|\Smarty_Internal_Template|\Smarty $obj
      * @param string                                                          $name name of resource type
-     * @param \Smarty_CacheResource                                           $resource_handler
      *
      * @return \Smarty|\Smarty_Internal_Template
      */
@@ -36,7 +33,7 @@ class Smarty_Internal_Method_RegisterCacheResource
         Smarty_CacheResource $resource_handler
     ) {
         $smarty = $obj->_getSmartyObj();
-        $smarty->registered_cache_resources[ $name ] = $resource_handler;
+        $smarty->registered_cache_resources[$name] = $resource_handler;
         return $obj;
     }
 }

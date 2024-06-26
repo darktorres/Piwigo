@@ -4,9 +4,7 @@
  * Smarty Resource Data Object
  * Meta Data Container for Template Files
  *
- * @package    Smarty
  * @subpackage TemplateResources
- * @author     Rodney Rehm
  */
 class Smarty_Template_Source
 {
@@ -130,13 +128,12 @@ class Smarty_Template_Source
      * @param string $type     type of resource
      * @param string $name     resource name
      *
-     * @throws   \SmartyException
      * @internal param \Smarty_Resource $handler Resource Handler this source object communicates with
      */
     public function __construct(Smarty $smarty, $resource, $type, $name)
     {
         $this->handler =
-            isset($smarty->_cache[ 'resource_handlers' ][ $type ]) ? $smarty->_cache[ 'resource_handlers' ][ $type ] :
+            isset($smarty->_cache['resource_handlers'][$type]) ? $smarty->_cache['resource_handlers'][$type] :
                 Smarty_Resource::load($smarty, $type);
         $this->smarty = $smarty;
         $this->resource = $resource;
@@ -153,7 +150,6 @@ class Smarty_Template_Source
      * @param string                   $template_resource resource identifier
      *
      * @return Smarty_Template_Source Source Object
-     * @throws SmartyException
      */
     public static function load(
         Smarty_Internal_Template $_template = null,
@@ -168,9 +164,13 @@ class Smarty_Template_Source
             throw new SmartyException('Source: Missing  name');
         }
         // parse resource_name, load resource handler, identify unique resource name
-        if (preg_match('/^([A-Za-z0-9_\-]{2,})[:]([\s\S]*)$/', $template_resource, $match)) {
-            $type = $match[ 1 ];
-            $name = $match[ 2 ];
+        if (preg_match(
+            '/^([A-Za-z0-9_\-]{2,})[:]([\s\S]*)$/',
+            $template_resource,
+            $match
+        )) {
+            $type = $match[1];
+            $name = $match[2];
         } else {
             // no resource given, use default
             // or single character before the colon is not a resource type, but part of the filepath
@@ -178,9 +178,9 @@ class Smarty_Template_Source
             $name = $template_resource;
         }
         // create new source  object
-        $source = new Smarty_Template_Source($smarty, $template_resource, $type, $name);
+        $source = new self($smarty, $template_resource, $type, $name);
         $source->handler->populate($source, $_template);
-        if (!$source->exists && isset($_template->smarty->default_template_handler_func)) {
+        if (! $source->exists && isset($_template->smarty->default_template_handler_func)) {
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
             $source->handler->populate($source, $_template);
         }
@@ -194,7 +194,7 @@ class Smarty_Template_Source
      */
     public function getTimeStamp()
     {
-        if (!isset($this->timestamp)) {
+        if (! isset($this->timestamp)) {
             $this->handler->populateTimestamp($this);
         }
         return $this->timestamp;
@@ -204,7 +204,6 @@ class Smarty_Template_Source
      * Get source content
      *
      * @return string
-     * @throws \SmartyException
      */
     public function getContent()
     {

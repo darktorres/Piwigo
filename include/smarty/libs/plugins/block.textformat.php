@@ -2,7 +2,6 @@
 /**
  * Smarty plugin to format text blocks
  *
- * @package    Smarty
  * @subpackage PluginsBlock
  */
 /**
@@ -26,25 +25,27 @@
  * @param array                    $params   parameters
  * @param string                   $content  contents of the block
  * @param Smarty_Internal_Template $template template object
- * @param boolean                  &$repeat  repeat flag
+ * @param boolean                  $repeat  repeat flag
  *
  * @return string content re-formatted
- * @author Monte Ohrt <monte at ohrt dot com>
- * @throws \SmartyException
  */
-function smarty_block_textformat($params, $content, Smarty_Internal_Template $template, &$repeat)
-{
-    if (is_null($content)) {
+function smarty_block_textformat(
+    $params,
+    $content,
+    Smarty_Internal_Template $template,
+    &$repeat
+) {
+    if ($content === null) {
         return;
     }
     if (Smarty::$_MBSTRING) {
         $template->_checkPlugins(
-            array(
-                array(
+            [
+                [
                     'function' => 'smarty_modifier_mb_wordwrap',
-                    'file'     => SMARTY_PLUGINS_DIR . 'modifier.mb_wordwrap.php'
-                )
-            )
+                    'file' => SMARTY_PLUGINS_DIR . 'modifier.mb_wordwrap.php',
+                ],
+            ]
         );
     }
     $style = null;
@@ -61,15 +62,15 @@ function smarty_block_textformat($params, $content, Smarty_Internal_Template $te
             case 'indent_char':
             case 'wrap_char':
             case 'assign':
-                $$_key = (string)$_val;
+                ${$_key} = (string) $_val;
                 break;
             case 'indent':
             case 'indent_first':
             case 'wrap':
-                $$_key = (int)$_val;
+                ${$_key} = (int) $_val;
                 break;
             case 'wrap_cut':
-                $$_key = (bool)$_val;
+                ${$_key} = (bool) $_val;
                 break;
             default:
                 trigger_error("textformat: unknown attribute '{$_key}'");
@@ -81,20 +82,20 @@ function smarty_block_textformat($params, $content, Smarty_Internal_Template $te
     // split into paragraphs
     $_paragraphs = preg_split('![\r\n]{2}!', $content);
     foreach ($_paragraphs as &$_paragraph) {
-        if (!$_paragraph) {
+        if (! $_paragraph) {
             continue;
         }
         // convert mult. spaces & special chars to single space
         $_paragraph =
             preg_replace(
-                array(
+                [
                     '!\s+!' . Smarty::$_UTF8_MODIFIER,
-                    '!(^\s+)|(\s+$)!' . Smarty::$_UTF8_MODIFIER
-                ),
-                array(
+                    '!(^\s+)|(\s+$)!' . Smarty::$_UTF8_MODIFIER,
+                ],
+                [
                     ' ',
-                    ''
-                ),
+                    '',
+                ],
                 $_paragraph
             );
         // indent first line
