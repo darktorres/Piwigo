@@ -47,7 +47,7 @@ class DummyPlugin_maintain extends PluginMaintain
     public function uninstall()
     {
         if (is_callable('plugin_uninstall')) {
-            return plugin_uninstall($this->plugin_id);
+            return plugin_uninstall();
         }
 
         return null;

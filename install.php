@@ -32,13 +32,13 @@ if (is_array($_GET)) {
             foreach ($_GET[$k] as $k2 => $v2) {
                 $_GET[$k][$k2] = addslashes((string) $v2);
             }
-            
+
             @reset($_GET[$k]);
         } else {
             $_GET[$k] = addslashes((string) $v);
         }
     }
-    
+
     @reset($_GET);
 }
 
@@ -48,13 +48,13 @@ if (is_array($_COOKIE)) {
             foreach ($_COOKIE[$k] as $k2 => $v2) {
                 $_COOKIE[$k][$k2] = addslashes((string) $v2);
             }
-            
+
             @reset($_COOKIE[$k]);
         } else {
             $_COOKIE[$k] = addslashes((string) $v);
         }
     }
-    
+
     @reset($_COOKIE);
 }
 

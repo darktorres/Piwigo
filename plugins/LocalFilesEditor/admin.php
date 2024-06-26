@@ -81,14 +81,14 @@ if (isset($_POST['submit'])) {
         if (get_extension($edited_file) == 'php') {
             $content_file = eval_syntax($content_file);
         }
-        
+
         if ($content_file === false) {
             $page['errors'][] = l10n('locfiledit_syntax_error');
         } else {
             if ($page['tab'] == 'plug' && ! is_dir(PHPWG_PLUGINS_PATH . 'PersonalPlugin')) {
                 @mkdir(PHPWG_PLUGINS_PATH . 'PersonalPlugin');
             }
-            
+
             if (file_exists($edited_file)) {
                 @copy($edited_file, get_bak_file($edited_file));
                 $page['infos'][] = l10n('locfiledit_saved_bak', substr((string) get_bak_file($edited_file), 2));
@@ -117,7 +117,7 @@ if (! empty($edited_file)) {
     if (! empty($page['errors'])) {
         $content_file = stripslashes((string) $_POST['text']);
     }
-    
+
     $template->assign(
         'zone_edit',
         [
@@ -129,7 +129,7 @@ if (! empty($edited_file)) {
     if (file_exists(get_bak_file($edited_file))) {
         $template->assign('restore', true);
     }
-    
+
     if (file_exists($edited_file)) {
         $template->assign('restore_infos', true);
     }
