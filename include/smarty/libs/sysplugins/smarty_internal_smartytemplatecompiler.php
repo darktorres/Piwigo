@@ -3,15 +3,12 @@
  * Smarty Internal Plugin Smarty Template Compiler Base
  * This file contains the basic classes and methods for compiling Smarty templates with lexer/parser
  *
- * @package    Smarty
  * @subpackage Compiler
- * @author     Uwe Tews
  */
 
 /**
  * Class SmartyTemplateCompiler
  *
- * @package    Smarty
  * @subpackage Compiler
  */
 class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCompilerBase
@@ -35,14 +32,14 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
      *
      * @var array
      */
-    public $local_var = array();
+    public $local_var = [];
 
     /**
      * array of callbacks called when the normal compile process of template is finished
      *
      * @var array
      */
-    public $postCompileCallbacks = array();
+    public $postCompileCallbacks = [];
 
     /**
      * prefix code
@@ -74,16 +71,53 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
     }
 
     /**
+     * Register a post compile callback
+     * - when the callback is called after template compiling the compiler object will be inserted as first parameter
+     *
+     * @param callback $callback
+     * @param array    $parameter optional parameter array
+     * @param string   $key       optional key for callback
+     * @param bool     $replace   if true replace existing keyed callback
+     */
+    public function registerPostCompileCallback(
+        $callback,
+        $parameter = [],
+        $key = null,
+        $replace = false
+    ) {
+        array_unshift($parameter, $callback);
+        if (isset($key)) {
+            if ($replace || ! isset($this->postCompileCallbacks[$key])) {
+                $this->postCompileCallbacks[$key] = $parameter;
+            }
+        } else {
+            $this->postCompileCallbacks[] = $parameter;
+        }
+    }
+
+    /**
+     * Remove a post compile callback
+     *
+     * @param string $key callback key
+     */
+    public function unregisterPostCompileCallback(
+        $key
+    ) {
+        unset($this->postCompileCallbacks[$key]);
+    }
+
+    /**
      * method to compile a Smarty template
      *
      * @param mixed $_content template source
      * @param bool  $isTemplateSource
      *
      * @return bool true if compiling succeeded, false if it failed
-     * @throws \SmartyCompilerException
      */
-    protected function doCompile($_content, $isTemplateSource = false)
-    {
+    protected function doCompile(
+        $_content,
+        $isTemplateSource = false
+    ) {
         /* here is where the compiling takes place. Smarty
           tags in the templates are replaces with PHP code,
           then written to compiled files. */
@@ -92,10 +126,10 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
             new $this->parser_class(
                 new $this->lexer_class(
                     str_replace(
-                        array(
+                        [
                             "\r\n",
-                            "\r"
-                        ),
+                            "\r",
+                        ],
                         "\n",
                         $_content
                     ),
@@ -104,11 +138,13 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
                 $this
             );
         if ($isTemplateSource && $this->template->caching) {
-            $this->parser->insertPhpCode("<?php\n\$_smarty_tpl->compiled->nocache_hash = '{$this->nocache_hash}';\n?>\n");
+            $this->parser->insertPhpCode(
+                "<?php\n\$_smarty_tpl->compiled->nocache_hash = '{$this->nocache_hash}';\n?>\n"
+            );
         }
         if (function_exists('mb_internal_encoding')
             && function_exists('ini_get')
-            && ((int)ini_get('mbstring.func_overload')) & 2
+            && ((int) ini_get('mbstring.func_overload')) & 2
         ) {
             $mbEncoding = mb_internal_encoding();
             mb_internal_encoding('ASCII');
@@ -123,7 +159,7 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         while ($this->parser->lex->yylex()) {
             if ($this->smarty->_parserdebug) {
                 echo "<pre>Line {$this->parser->lex->line} Parsing  {$this->parser->yyTokenName[$this->parser->lex->token]} Token " .
-                     htmlentities($this->parser->lex->value) . "</pre>";
+                     htmlentities($this->parser->lex->value) . '</pre>';
             }
             $this->parser->doParse($this->parser->lex->token, $this->parser->lex->value);
         }
@@ -144,41 +180,10 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         // call post compile callbacks
         foreach ($this->postCompileCallbacks as $cb) {
             $parameter = $cb;
-            $parameter[ 0 ] = $this;
-            call_user_func_array($cb[ 0 ], $parameter);
+            $parameter[0] = $this;
+            call_user_func_array($cb[0], $parameter);
         }
         // return compiled code
         return $this->prefixCompiledCode . $this->parser->retvalue . $this->postfixCompiledCode;
-    }
-
-    /**
-     * Register a post compile callback
-     * - when the callback is called after template compiling the compiler object will be inserted as first parameter
-     *
-     * @param callback $callback
-     * @param array    $parameter optional parameter array
-     * @param string   $key       optional key for callback
-     * @param bool     $replace   if true replace existing keyed callback
-     */
-    public function registerPostCompileCallback($callback, $parameter = array(), $key = null, $replace = false)
-    {
-        array_unshift($parameter, $callback);
-        if (isset($key)) {
-            if ($replace || !isset($this->postCompileCallbacks[ $key ])) {
-                $this->postCompileCallbacks[ $key ] = $parameter;
-            }
-        } else {
-            $this->postCompileCallbacks[] = $parameter;
-        }
-    }
-
-    /**
-     * Remove a post compile callback
-     *
-     * @param string $key callback key
-     */
-    public function unregisterPostCompileCallback($key)
-    {
-        unset($this->postCompileCallbacks[ $key ]);
     }
 }

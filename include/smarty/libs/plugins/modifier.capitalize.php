@@ -2,7 +2,6 @@
 /**
  * Smarty plugin
  *
- * @package    Smarty
  * @subpackage PluginsModifier
  */
 /**
@@ -17,17 +16,22 @@
  * @param boolean $lc_rest   capitalize first letters, lowercase all following letters "aAa" to "Aaa"
  *
  * @return string capitalized string
- * @author Monte Ohrt <monte at ohrt dot com>
- * @author Rodney Rehm
  */
-function smarty_modifier_capitalize($string, $uc_digits = false, $lc_rest = false)
-{
+function smarty_modifier_capitalize(
+    $string,
+    $uc_digits = false,
+    $lc_rest = false
+) {
     $string = (string) $string;
 
     if (Smarty::$_MBSTRING) {
         if ($lc_rest) {
             // uppercase (including hyphenated words)
-            $upper_string = mb_convert_case($string, MB_CASE_TITLE, Smarty::$_CHARSET);
+            $upper_string = mb_convert_case(
+                $string,
+                MB_CASE_TITLE,
+                Smarty::$_CHARSET
+            );
         } else {
             // uppercase word breaks
             $upper_string = preg_replace_callback(
@@ -37,7 +41,7 @@ function smarty_modifier_capitalize($string, $uc_digits = false, $lc_rest = fals
             );
         }
         // check uc_digits case
-        if (!$uc_digits) {
+        if (! $uc_digits) {
             if (preg_match_all(
                 "!\b([\p{L}]*[\p{N}]+[\p{L}]*)\b!" . Smarty::$_UTF8_MODIFIER,
                 $string,
@@ -45,13 +49,13 @@ function smarty_modifier_capitalize($string, $uc_digits = false, $lc_rest = fals
                 PREG_OFFSET_CAPTURE
             )
             ) {
-                foreach ($matches[ 1 ] as $match) {
+                foreach ($matches[1] as $match) {
                     $upper_string =
                         substr_replace(
                             $upper_string,
-                            mb_strtolower($match[ 0 ], Smarty::$_CHARSET),
-                            $match[ 1 ],
-                            strlen($match[ 0 ])
+                            mb_strtolower($match[0], Smarty::$_CHARSET),
+                            $match[1],
+                            strlen($match[0])
                         );
                 }
             }
@@ -76,7 +80,7 @@ function smarty_modifier_capitalize($string, $uc_digits = false, $lc_rest = fals
             $string
         );
     // check uc_digits case
-    if (!$uc_digits) {
+    if (! $uc_digits) {
         if (preg_match_all(
             "!\b([\p{L}]*[\p{N}]+[\p{L}]*)\b!" . Smarty::$_UTF8_MODIFIER,
             $string,
@@ -84,9 +88,9 @@ function smarty_modifier_capitalize($string, $uc_digits = false, $lc_rest = fals
             PREG_OFFSET_CAPTURE
         )
         ) {
-            foreach ($matches[ 1 ] as $match) {
+            foreach ($matches[1] as $match) {
                 $upper_string =
-                    substr_replace($upper_string, strtolower($match[ 0 ]), $match[ 1 ], strlen($match[ 0 ]));
+                    substr_replace($upper_string, strtolower($match[0]), $match[1], strlen($match[0]));
             }
         }
     }
@@ -99,49 +103,46 @@ function smarty_modifier_capitalize($string, $uc_digits = false, $lc_rest = fals
 }
 
 /**
- *
  * Bug: create_function() use exhausts memory when used in long loops
  * Fix: use declared functions for callbacks instead of using create_function()
  * Note: This can be fixed using anonymous functions instead, but that requires PHP >= 5.3
- *
- * @author Kyle Renfrow
  */
 /**
- * @param $matches
- *
  * @return string
  */
 function smarty_mod_cap_mbconvert_cb($matches)
 {
-    return stripslashes($matches[ 1 ]) . mb_convert_case(stripslashes($matches[ 2 ]), MB_CASE_UPPER, Smarty::$_CHARSET);
+    return stripslashes($matches[1]) . mb_convert_case(
+        stripslashes($matches[2]),
+        MB_CASE_UPPER,
+        Smarty::$_CHARSET
+    );
 }
 
 /**
- * @param $matches
- *
  * @return string
  */
 function smarty_mod_cap_mbconvert2_cb($matches)
 {
-    return stripslashes($matches[ 1 ]) . mb_convert_case(stripslashes($matches[ 3 ]), MB_CASE_UPPER, Smarty::$_CHARSET);
+    return stripslashes($matches[1]) . mb_convert_case(
+        stripslashes($matches[3]),
+        MB_CASE_UPPER,
+        Smarty::$_CHARSET
+    );
 }
 
 /**
- * @param $matches
- *
  * @return string
  */
 function smarty_mod_cap_ucfirst_cb($matches)
 {
-    return stripslashes($matches[ 1 ]) . ucfirst(stripslashes($matches[ 2 ]));
+    return stripslashes($matches[1]) . ucfirst(stripslashes($matches[2]));
 }
 
 /**
- * @param $matches
- *
  * @return string
  */
 function smarty_mod_cap_ucfirst2_cb($matches)
 {
-    return stripslashes($matches[ 1 ]) . ucfirst(stripslashes($matches[ 3 ]));
+    return stripslashes($matches[1]) . ucfirst(stripslashes($matches[3]));
 }

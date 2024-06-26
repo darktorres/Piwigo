@@ -5,9 +5,7 @@
  *
  * Smarty::getConfigVars() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_GetConfigVars
 {
@@ -30,14 +28,17 @@ class Smarty_Internal_Method_GetConfigVars
      *
      * @return mixed variable value or or array of variables
      */
-    public function getConfigVars(Smarty_Internal_Data $data, $varname = null, $search_parents = true)
-    {
+    public function getConfigVars(
+        Smarty_Internal_Data $data,
+        $varname = null,
+        $search_parents = true
+    ) {
         $_ptr = $data;
-        $var_array = array();
+        $var_array = [];
         while ($_ptr !== null) {
             if (isset($varname)) {
-                if (isset($_ptr->config_vars[ $varname ])) {
-                    return $_ptr->config_vars[ $varname ];
+                if (isset($_ptr->config_vars[$varname])) {
+                    return $_ptr->config_vars[$varname];
                 }
             } else {
                 $var_array = array_merge($_ptr->config_vars, $var_array);
@@ -51,8 +52,8 @@ class Smarty_Internal_Method_GetConfigVars
         }
         if (isset($varname)) {
             return '';
-        } else {
-            return $var_array;
         }
+        return $var_array;
+
     }
 }

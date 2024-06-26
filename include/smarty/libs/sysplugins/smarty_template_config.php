@@ -2,18 +2,14 @@
 /**
  * Smarty Config Source Plugin
  *
- * @package    Smarty
  * @subpackage TemplateResources
- * @author     Uwe Tews
  */
 
 /**
  * Smarty Config Resource Data Object
  * Meta Data Container for Template Files
  *
- * @package    Smarty
  * @subpackage TemplateResources
- * @author     Uwe Tews
  */
 class Smarty_Template_Config extends Smarty_Template_Source
 {
@@ -68,14 +64,16 @@ class Smarty_Template_Config extends Smarty_Template_Source
      * @param string                   $template_resource resource identifier
      *
      * @return Smarty_Template_Config Source Object
-     * @throws SmartyException
      */
     public static function load(
         Smarty_Internal_Template $_template = null,
         Smarty $smarty = null,
         $template_resource = null
     ) {
-        static $_incompatible_resources = array('extends' => true, 'php' => true);
+        static $_incompatible_resources = [
+            'extends' => true,
+            'php' => true,
+        ];
         if ($_template) {
             $smarty = $_template->smarty;
             $template_resource = $_template->template_resource;
@@ -84,14 +82,17 @@ class Smarty_Template_Config extends Smarty_Template_Source
             throw new SmartyException('Source: Missing  name');
         }
         // parse resource_name, load resource handler
-        list($name, $type) = Smarty_Resource::parseResourceName($template_resource, $smarty->default_config_type);
+        list($name, $type) = Smarty_Resource::parseResourceName(
+            $template_resource,
+            $smarty->default_config_type
+        );
         // make sure configs are not loaded via anything smarty can't handle
-        if (isset($_incompatible_resources[ $type ])) {
+        if (isset($_incompatible_resources[$type])) {
             throw new SmartyException("Unable to use resource '{$type}' for config");
         }
-        $source = new Smarty_Template_Config($smarty, $template_resource, $type, $name);
+        $source = new self($smarty, $template_resource, $type, $name);
         $source->handler->populate($source, $_template);
-        if (!$source->exists && isset($smarty->default_config_handler_func)) {
+        if (! $source->exists && isset($smarty->default_config_handler_func)) {
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
             $source->handler->populate($source, $_template);
         }

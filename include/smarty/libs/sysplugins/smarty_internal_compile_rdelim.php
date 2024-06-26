@@ -3,15 +3,12 @@
  * Smarty Internal Plugin Compile Rdelim
  * Compiles the {rdelim} tag
  *
- * @package    Smarty
  * @subpackage Compiler
- * @author     Uwe Tews
  */
 
 /**
  * Smarty Internal Plugin Compile Rdelim Class
  *
- * @package    Smarty
  * @subpackage Compiler
  */
 class Smarty_Internal_Compile_Rdelim extends Smarty_Internal_Compile_Ldelim
@@ -24,10 +21,11 @@ class Smarty_Internal_Compile_Rdelim extends Smarty_Internal_Compile_Ldelim
      * @param \Smarty_Internal_TemplateCompilerBase $compiler compiler object
      *
      * @return string compiled code
-     * @throws \SmartyCompilerException
      */
-    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler)
-    {
+    public function compile(
+        $args,
+        Smarty_Internal_TemplateCompilerBase $compiler
+    ) {
         parent::compile($args, $compiler);
         return $compiler->smarty->right_delimiter;
     }

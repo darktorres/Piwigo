@@ -5,9 +5,7 @@
  *
  * Smarty::compileAllTemplates() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_CompileAllTemplates
 {
@@ -44,7 +42,6 @@ class Smarty_Internal_Method_CompileAllTemplates
     /**
      * Compile all template or config files
      *
-     * @param \Smarty $smarty
      * @param string  $extension     template file name extension
      * @param bool    $force_compile force all to recompile
      * @param int     $time_limit    set maximum execution time
@@ -92,12 +89,12 @@ class Smarty_Internal_Method_CompileAllTemplates
                 $_start_time = microtime(true);
                 $_smarty = clone $smarty;
                 //
-                $_smarty->_cache = array();
+                $_smarty->_cache = [];
                 $_smarty->ext = new Smarty_Internal_Extension_Handler();
                 $_smarty->ext->objType = $_smarty->_objType;
                 $_smarty->force_compile = $force_compile;
                 try {
-                    /* @var Smarty_Internal_Template $_tpl */
+                    /** @var Smarty_Internal_Template $_tpl */
                     $_tpl = new $smarty->template_class($_file, $_smarty);
                     $_tpl->caching = Smarty::CACHING_OFF;
                     $_tpl->source =

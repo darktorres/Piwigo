@@ -2,8 +2,6 @@
 
 /**
  * Smarty exception class
- *
- * @package Smarty
  */
 class SmartyException extends Exception
 {

@@ -5,9 +5,7 @@
  *
  * Smarty::createData() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_CreateData
 {
@@ -31,9 +29,12 @@ class Smarty_Internal_Method_CreateData
      *
      * @return \Smarty_Data data object
      */
-    public function createData(Smarty_Internal_TemplateBase $obj, Smarty_Internal_Data $parent = null, $name = null)
-    {
-        /* @var Smarty $smarty */
+    public function createData(
+        Smarty_Internal_TemplateBase $obj,
+        Smarty_Internal_Data $parent = null,
+        $name = null
+    ) {
+        /** @var Smarty $smarty */
         $smarty = $obj->_getSmartyObj();
         $dataObj = new Smarty_Data($parent, $smarty, $name);
         if ($smarty->debugging) {

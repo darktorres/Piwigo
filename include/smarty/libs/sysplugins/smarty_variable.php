@@ -4,7 +4,6 @@
  * class for the Smarty variable object
  * This class defines the Smarty variable object
  *
- * @package    Smarty
  * @subpackage Template
  */
 #[\AllowDynamicProperties]
@@ -30,8 +29,10 @@ class Smarty_Variable
      * @param mixed   $value   the value to assign
      * @param boolean $nocache if true any output of this variable will be not cached
      */
-    public function __construct($value = null, $nocache = false)
-    {
+    public function __construct(
+        $value = null,
+        $nocache = false
+    ) {
         $this->value = $value;
         $this->nocache = $nocache;
     }
@@ -43,6 +44,6 @@ class Smarty_Variable
      */
     public function __toString()
     {
-        return (string)$this->value;
+        return (string) $this->value;
     }
 }

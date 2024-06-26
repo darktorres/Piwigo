@@ -5,9 +5,7 @@
  *
  * Smarty::registerObject() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_RegisterObject
 {
@@ -49,36 +47,35 @@ class Smarty_Internal_Method_RegisterObject
      *                                                                                                    block-methods
      *
      * @return \Smarty|\Smarty_Internal_Template
-     * @throws \SmartyException
      */
     public function registerObject(
         Smarty_Internal_TemplateBase $obj,
         $object_name,
         $object,
-        $allowed_methods_properties = array(),
+        $allowed_methods_properties = [],
         $format = true,
-        $block_methods = array()
+        $block_methods = []
     ) {
         $smarty = $obj->_getSmartyObj();
         // test if allowed methods callable
-        if (!empty($allowed_methods_properties)) {
-            foreach ((array)$allowed_methods_properties as $method) {
-                if (!is_callable(array($object, $method)) && !property_exists($object, $method)) {
-                    throw new SmartyException("Undefined method or property '$method' in registered object");
+        if (! empty($allowed_methods_properties)) {
+            foreach ((array) $allowed_methods_properties as $method) {
+                if (! is_callable([$object, $method]) && ! property_exists($object, $method)) {
+                    throw new SmartyException("Undefined method or property '{$method}' in registered object");
                 }
             }
         }
         // test if block methods callable
-        if (!empty($block_methods)) {
-            foreach ((array)$block_methods as $method) {
-                if (!is_callable(array($object, $method))) {
-                    throw new SmartyException("Undefined method '$method' in registered object");
+        if (! empty($block_methods)) {
+            foreach ((array) $block_methods as $method) {
+                if (! is_callable([$object, $method])) {
+                    throw new SmartyException("Undefined method '{$method}' in registered object");
                 }
             }
         }
         // register the object
-        $smarty->registered_objects[ $object_name ] =
-            array($object, (array)$allowed_methods_properties, (boolean)$format, (array)$block_methods);
+        $smarty->registered_objects[$object_name] =
+            [$object, (array) $allowed_methods_properties, (bool) $format, (array) $block_methods];
         return $obj;
     }
 }

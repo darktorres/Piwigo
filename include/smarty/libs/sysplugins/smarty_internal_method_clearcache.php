@@ -5,9 +5,7 @@
  *
  * Smarty::clearCache() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_ClearCache
 {
@@ -24,7 +22,6 @@ class Smarty_Internal_Method_ClearCache
      * @api  Smarty::clearCache()
      * @link https://www.smarty.net/docs/en/api.clear.cache.tpl
      *
-     * @param \Smarty $smarty
      * @param string  $template_name template name
      * @param string  $cache_id      cache id
      * @param string  $compile_id    compile id
@@ -32,7 +29,6 @@ class Smarty_Internal_Method_ClearCache
      * @param string  $type          resource type
      *
      * @return int number of cache files deleted
-     * @throws \SmartyException
      */
     public function clearCache(
         Smarty $smarty,

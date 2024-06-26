@@ -2,7 +2,6 @@
 /**
  * Smarty plugin
  *
- * @package    Smarty
  * @subpackage PluginsModifier
  */
 /**
@@ -12,8 +11,6 @@
  * Purpose:  simple search/replace
  *
  * @link   https://www.smarty.net/manual/en/language.modifier.replace.php replace (Smarty online manual)
- * @author Monte Ohrt <monte at ohrt dot com>
- * @author Uwe Tews
  *
  * @param string $string  input string
  * @param string $search  text to search for
@@ -21,12 +18,15 @@
  *
  * @return string
  */
-function smarty_modifier_replace($string, $search, $replace)
-{
+function smarty_modifier_replace(
+    $string,
+    $search,
+    $replace
+) {
     static $is_loaded = false;
     if (Smarty::$_MBSTRING) {
-        if (!$is_loaded) {
-            if (!is_callable('smarty_mb_str_replace')) {
+        if (! $is_loaded) {
+            if (! is_callable('smarty_mb_str_replace')) {
                 include_once SMARTY_PLUGINS_DIR . 'shared.mb_str_replace.php';
             }
             $is_loaded = true;

@@ -5,9 +5,7 @@
  *
  * Smarty::setAutoloadFilters() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_SetAutoloadFilters
 {
@@ -23,7 +21,12 @@ class Smarty_Internal_Method_SetAutoloadFilters
      *
      * @var array
      */
-    private $filterTypes = array('pre' => true, 'post' => true, 'output' => true, 'variable' => true);
+    private $filterTypes = [
+        'pre' => true,
+        'post' => true,
+        'output' => true,
+        'variable' => true,
+    ];
 
     /**
      * Set autoload filters
@@ -39,19 +42,21 @@ class Smarty_Internal_Method_SetAutoloadFilters
      *                                                                                 appropriate types
      *
      * @return \Smarty|\Smarty_Internal_Template
-     * @throws \SmartyException
      */
-    public function setAutoloadFilters(Smarty_Internal_TemplateBase $obj, $filters, $type = null)
-    {
+    public function setAutoloadFilters(
+        Smarty_Internal_TemplateBase $obj,
+        $filters,
+        $type = null
+    ) {
         $smarty = $obj->_getSmartyObj();
         if ($type !== null) {
             $this->_checkFilterType($type);
-            $smarty->autoload_filters[ $type ] = (array)$filters;
+            $smarty->autoload_filters[$type] = (array) $filters;
         } else {
-            foreach ((array)$filters as $type => $value) {
+            foreach ((array) $filters as $type => $value) {
                 $this->_checkFilterType($type);
             }
-            $smarty->autoload_filters = (array)$filters;
+            $smarty->autoload_filters = (array) $filters;
         }
         return $obj;
     }
@@ -60,12 +65,11 @@ class Smarty_Internal_Method_SetAutoloadFilters
      * Check if filter type is valid
      *
      * @param string $type
-     *
-     * @throws \SmartyException
      */
-    public function _checkFilterType($type)
-    {
-        if (!isset($this->filterTypes[ $type ])) {
+    public function _checkFilterType(
+        $type
+    ) {
+        if (! isset($this->filterTypes[$type])) {
             throw new SmartyException("Illegal filter type '{$type}'");
         }
     }

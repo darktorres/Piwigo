@@ -2,11 +2,30 @@
 
 /**
  * Smarty compiler exception class
- *
- * @package Smarty
  */
 class SmartyCompilerException extends SmartyException
 {
+    /**
+     * The template source snippet relating to the error
+     *
+     * @type string|null
+     */
+    public $source = null;
+
+    /**
+     * The raw text of the error message
+     *
+     * @type string|null
+     */
+    public $desc = null;
+
+    /**
+     * The resource identifier or template name
+     *
+     * @type string|null
+     */
+    public $template = null;
+
     /**
      * The constructor of the exception
      *
@@ -17,7 +36,7 @@ class SmartyCompilerException extends SmartyException
      * @param Throwable|null $previous The previous exception used for the exception chaining.
      */
     public function __construct(
-        string $message = "",
+        string $message = '',
         int $code = 0,
         ?string $filename = null,
         ?int $line = null,
@@ -49,25 +68,4 @@ class SmartyCompilerException extends SmartyException
     {
         $this->line = $line;
     }
-
-    /**
-     * The template source snippet relating to the error
-     *
-     * @type string|null
-     */
-    public $source = null;
-
-    /**
-     * The raw text of the error message
-     *
-     * @type string|null
-     */
-    public $desc = null;
-
-    /**
-     * The resource identifier or template name
-     *
-     * @type string|null
-     */
-    public $template = null;
 }

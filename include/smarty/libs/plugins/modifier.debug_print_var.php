@@ -2,7 +2,6 @@
 /**
  * Smarty plugin
  *
- * @package    Smarty
  * @subpackage Debug
  */
 /**
@@ -10,8 +9,6 @@
  * Type:     modifier
  * Name:     debug_print_var
  * Purpose:  formats variable contents for display in the console
- *
- * @author Monte Ohrt <monte at ohrt dot com>
  *
  * @param array|object $var     variable to be formatted
  * @param int          $max     maximum recursion depth if $var is an array or object
@@ -21,9 +18,18 @@
  *
  * @return string
  */
-function smarty_modifier_debug_print_var($var, $max = 10, $length = 40, $depth = 0, $objects = array())
-{
-    $_replace = array("\n" => '\n', "\r" => '\r', "\t" => '\t');
+function smarty_modifier_debug_print_var(
+    $var,
+    $max = 10,
+    $length = 40,
+    $depth = 0,
+    $objects = []
+) {
+    $_replace = [
+        "\n" => '\n',
+        "\r" => '\r',
+        "\t" => '\t',
+    ];
     switch (gettype($var)) {
         case 'array':
             $results = '<b>Array (' . count($var) . ')</b>';
@@ -57,20 +63,20 @@ function smarty_modifier_debug_print_var($var, $max = 10, $length = 40, $depth =
         case 'boolean':
         case 'NULL':
         case 'resource':
-            if (true === $var) {
+            if ($var === true) {
                 $results = 'true';
-            } elseif (false === $var) {
+            } elseif ($var === false) {
                 $results = 'false';
-            } elseif (null === $var) {
+            } elseif ($var === null) {
                 $results = 'null';
             } else {
-                $results = htmlspecialchars((string)$var);
+                $results = htmlspecialchars((string) $var);
             }
             $results = '<i>' . $results . '</i>';
             break;
         case 'integer':
         case 'float':
-            $results = htmlspecialchars((string)$var);
+            $results = htmlspecialchars((string) $var);
             break;
         case 'string':
             $results = strtr($var, $_replace);
@@ -79,7 +85,7 @@ function smarty_modifier_debug_print_var($var, $max = 10, $length = 40, $depth =
                     $results = mb_substr($var, 0, $length - 3, Smarty::$_CHARSET) . '...';
                 }
             } else {
-                if (isset($var[ $length ])) {
+                if (isset($var[$length])) {
                     $results = substr($var, 0, $length - 3) . '...';
                 }
             }
@@ -87,7 +93,7 @@ function smarty_modifier_debug_print_var($var, $max = 10, $length = 40, $depth =
             break;
         case 'unknown type':
         default:
-            $results = strtr((string)$var, $_replace);
+            $results = strtr((string) $var, $_replace);
             if (Smarty::$_MBSTRING) {
                 if (mb_strlen($results, Smarty::$_CHARSET) > $length) {
                     $results = mb_substr($results, 0, $length - 3, Smarty::$_CHARSET) . '...';

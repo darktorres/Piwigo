@@ -5,9 +5,7 @@
  *
  * Smarty::getTemplateVars() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_GetTemplateVars
 {
@@ -41,36 +39,36 @@ class Smarty_Internal_Method_GetTemplateVars
             $_var = $this->_getVariable($data, $varName, $_ptr, $searchParents, false);
             if (is_object($_var)) {
                 return $_var->value;
-            } else {
-                return null;
             }
-        } else {
-            $_result = array();
-            if ($_ptr === null) {
-                $_ptr = $data;
-            }
-            while ($_ptr !== null) {
-                foreach ($_ptr->tpl_vars as $key => $var) {
-                    if (!array_key_exists($key, $_result)) {
-                        $_result[ $key ] = $var->value;
-                    }
-                }
-                // not found, try at parent
-                if ($searchParents && isset($_ptr->parent)) {
-                    $_ptr = $_ptr->parent;
-                } else {
-                    $_ptr = null;
-                }
-            }
-            if ($searchParents && isset(Smarty::$global_tpl_vars)) {
-                foreach (Smarty::$global_tpl_vars as $key => $var) {
-                    if (!array_key_exists($key, $_result)) {
-                        $_result[ $key ] = $var->value;
-                    }
-                }
-            }
-            return $_result;
+            return null;
+
         }
+        $_result = [];
+        if ($_ptr === null) {
+            $_ptr = $data;
+        }
+        while ($_ptr !== null) {
+            foreach ($_ptr->tpl_vars as $key => $var) {
+                if (! array_key_exists($key, $_result)) {
+                    $_result[$key] = $var->value;
+                }
+            }
+            // not found, try at parent
+            if ($searchParents && isset($_ptr->parent)) {
+                $_ptr = $_ptr->parent;
+            } else {
+                $_ptr = null;
+            }
+        }
+        if ($searchParents && isset(Smarty::$global_tpl_vars)) {
+            foreach (Smarty::$global_tpl_vars as $key => $var) {
+                if (! array_key_exists($key, $_result)) {
+                    $_result[$key] = $var->value;
+                }
+            }
+        }
+        return $_result;
+
     }
 
     /**
@@ -95,9 +93,9 @@ class Smarty_Internal_Method_GetTemplateVars
             $_ptr = $data;
         }
         while ($_ptr !== null) {
-            if (isset($_ptr->tpl_vars[ $varName ])) {
+            if (isset($_ptr->tpl_vars[$varName])) {
                 // found it, return it
-                return $_ptr->tpl_vars[ $varName ];
+                return $_ptr->tpl_vars[$varName];
             }
             // not found, try at parent
             if ($searchParents && isset($_ptr->parent)) {
@@ -106,14 +104,14 @@ class Smarty_Internal_Method_GetTemplateVars
                 $_ptr = null;
             }
         }
-        if (isset(Smarty::$global_tpl_vars[ $varName ])) {
+        if (isset(Smarty::$global_tpl_vars[$varName])) {
             // found it, return it
-            return Smarty::$global_tpl_vars[ $varName ];
+            return Smarty::$global_tpl_vars[$varName];
         }
         if ($errorEnable && $data->_getSmartyObj()->error_unassigned) {
             // force a notice
-            $x = $$varName;
+            $x = ${$varName};
         }
-        return new Smarty_Undefined_Variable;
+        return new Smarty_Undefined_Variable();
     }
 }

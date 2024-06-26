@@ -5,9 +5,7 @@
  *
  * Smarty::assignGlobal() method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 class Smarty_Internal_Method_AssignGlobal
 {
@@ -29,13 +27,17 @@ class Smarty_Internal_Method_AssignGlobal
      *
      * @return \Smarty_Internal_Data|\Smarty_Internal_Template|\Smarty
      */
-    public function assignGlobal(Smarty_Internal_Data $data, $varName, $value = null, $nocache = false)
-    {
+    public function assignGlobal(
+        Smarty_Internal_Data $data,
+        $varName,
+        $value = null,
+        $nocache = false
+    ) {
         if ($varName !== '') {
-            Smarty::$global_tpl_vars[ $varName ] = new Smarty_Variable($value, $nocache);
+            Smarty::$global_tpl_vars[$varName] = new Smarty_Variable($value, $nocache);
             $ptr = $data;
             while ($ptr->_isTplObj()) {
-                $ptr->tpl_vars[ $varName ] = clone Smarty::$global_tpl_vars[ $varName ];
+                $ptr->tpl_vars[$varName] = clone Smarty::$global_tpl_vars[$varName];
                 $ptr = $ptr->parent;
             }
         }

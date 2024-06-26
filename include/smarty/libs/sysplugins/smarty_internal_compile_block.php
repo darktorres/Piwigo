@@ -10,8 +10,6 @@
 
 /**
  * Smarty Internal Plugin Compile Block Class
- *
- * @author Uwe Tews <uwe.tews@googlemail.com>
  */
 class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inheritance
 {
@@ -21,7 +19,9 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $required_attributes = array('name');
+    public $required_attributes = [
+        'name',
+    ];
 
     /**
      * Attribute definition: Overwrites base class.
@@ -29,7 +29,9 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $shorttag_order = array('name');
+    public $shorttag_order = [
+        'name',
+    ];
 
     /**
      * Attribute definition: Overwrites base class.
@@ -37,7 +39,10 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $option_flags = array('hide', 'nocache');
+    public $option_flags = [
+        'hide',
+        'nocache',
+    ];
 
     /**
      * Attribute definition: Overwrites base class.
@@ -45,7 +50,9 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $optional_attributes = array('assign');
+    public $optional_attributes = [
+        'assign',
+    ];
 
     /**
      * Compiles code for the {block} tag
@@ -54,34 +61,37 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
      * @param \Smarty_Internal_TemplateCompilerBase $compiler  compiler object
      * @param array                                 $parameter array with compilation parameter
      */
-    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
-    {
-        if (!isset($compiler->_cache[ 'blockNesting' ])) {
-            $compiler->_cache[ 'blockNesting' ] = 0;
+    public function compile(
+        $args,
+        Smarty_Internal_TemplateCompilerBase $compiler,
+        $parameter
+    ) {
+        if (! isset($compiler->_cache['blockNesting'])) {
+            $compiler->_cache['blockNesting'] = 0;
         }
-        if ($compiler->_cache[ 'blockNesting' ] === 0) {
+        if ($compiler->_cache['blockNesting'] === 0) {
             // make sure that inheritance gets initialized in template code
             $this->registerInit($compiler);
-            $this->option_flags = array('hide', 'nocache', 'append', 'prepend');
+            $this->option_flags = ['hide', 'nocache', 'append', 'prepend'];
         } else {
-            $this->option_flags = array('hide', 'nocache');
+            $this->option_flags = ['hide', 'nocache'];
         }
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-        ++$compiler->_cache[ 'blockNesting' ];
+        ++$compiler->_cache['blockNesting'];
         $_className = 'Block_' . preg_replace('![^\w]+!', '_', uniqid(mt_rand(), true));
-        $compiler->_cache[ 'blockName' ][ $compiler->_cache[ 'blockNesting' ] ] = $_attr[ 'name' ];
-        $compiler->_cache[ 'blockClass' ][ $compiler->_cache[ 'blockNesting' ] ] = $_className;
-        $compiler->_cache[ 'blockParams' ][ $compiler->_cache[ 'blockNesting' ] ] = array();
-        $compiler->_cache[ 'blockParams' ][ 1 ][ 'subBlocks' ][ trim($_attr[ 'name' ], '"\'') ][] = $_className;
+        $compiler->_cache['blockName'][$compiler->_cache['blockNesting']] = $_attr['name'];
+        $compiler->_cache['blockClass'][$compiler->_cache['blockNesting']] = $_className;
+        $compiler->_cache['blockParams'][$compiler->_cache['blockNesting']] = [];
+        $compiler->_cache['blockParams'][1]['subBlocks'][trim($_attr['name'], '"\'')][] = $_className;
         $this->openTag(
             $compiler,
             'block',
-            array(
+            [
                 $_attr, $compiler->nocache, $compiler->parser->current_buffer,
                 $compiler->template->compiled->has_nocache_code,
-                $compiler->template->caching
-            )
+                $compiler->template->caching,
+            ]
         );
         $compiler->saveRequiredPlugins(true);
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
@@ -105,21 +115,24 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_Compile_Shared_
      *
      * @return bool true
      */
-    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
-    {
-        list($_attr, $_nocache, $_buffer, $_has_nocache_code, $_caching) = $this->closeTag($compiler, array('block'));
+    public function compile(
+        $args,
+        Smarty_Internal_TemplateCompilerBase $compiler,
+        $parameter
+    ) {
+        list($_attr, $_nocache, $_buffer, $_has_nocache_code, $_caching) = $this->closeTag($compiler, ['block']);
         // init block parameter
-        $_block = $compiler->_cache[ 'blockParams' ][ $compiler->_cache[ 'blockNesting' ] ];
-        unset($compiler->_cache[ 'blockParams' ][ $compiler->_cache[ 'blockNesting' ] ]);
-        $_name = $_attr[ 'name' ];
-        $_assign = isset($_attr[ 'assign' ]) ? $_attr[ 'assign' ] : null;
-        unset($_attr[ 'assign' ], $_attr[ 'name' ]);
+        $_block = $compiler->_cache['blockParams'][$compiler->_cache['blockNesting']];
+        unset($compiler->_cache['blockParams'][$compiler->_cache['blockNesting']]);
+        $_name = $_attr['name'];
+        $_assign = isset($_attr['assign']) ? $_attr['assign'] : null;
+        unset($_attr['assign'], $_attr['name']);
         foreach ($_attr as $name => $stat) {
-            if ((is_bool($stat) && $stat !== false) || (!is_bool($stat) && $stat !== 'false')) {
-                $_block[ $name ] = 'true';
+            if ((is_bool($stat) && $stat !== false) || (! is_bool($stat) && $stat !== 'false')) {
+                $_block[$name] = 'true';
             }
         }
-        $_className = $compiler->_cache[ 'blockClass' ][ $compiler->_cache[ 'blockNesting' ] ];
+        $_className = $compiler->_cache['blockClass'][$compiler->_cache['blockNesting']];
         // get compiled block code
         $_functionCode = $compiler->parser->current_buffer;
         // setup buffer for template function code
@@ -172,15 +185,15 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_Compile_Shared_
         $compiler->nocache = $_nocache;
         $compiler->parser->current_buffer = $_buffer;
         $output = "<?php \n";
-        if ($compiler->_cache[ 'blockNesting' ] === 1) {
-            $output .= "\$_smarty_tpl->inheritance->instanceBlock(\$_smarty_tpl, '$_className', $_name);\n";
+        if ($compiler->_cache['blockNesting'] === 1) {
+            $output .= "\$_smarty_tpl->inheritance->instanceBlock(\$_smarty_tpl, '{$_className}', {$_name});\n";
         } else {
-            $output .= "\$_smarty_tpl->inheritance->instanceBlock(\$_smarty_tpl, '$_className', $_name, \$this->tplIndex);\n";
+            $output .= "\$_smarty_tpl->inheritance->instanceBlock(\$_smarty_tpl, '{$_className}', {$_name}, \$this->tplIndex);\n";
         }
         $output .= "?>\n";
-        --$compiler->_cache[ 'blockNesting' ];
-        if ($compiler->_cache[ 'blockNesting' ] === 0) {
-            unset($compiler->_cache[ 'blockNesting' ]);
+        --$compiler->_cache['blockNesting'];
+        if ($compiler->_cache['blockNesting'] === 0) {
+            unset($compiler->_cache['blockNesting']);
         }
         $compiler->has_code = true;
         $compiler->suppressNocacheProcessing = true;

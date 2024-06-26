@@ -3,14 +3,10 @@
  * Smarty Internal Plugin Templateparser Parsetree
  * These are classes to build parsetree in the template parser
  *
- * @package    Smarty
  * @subpackage Compiler
- * @author     Thue Kristensen
- * @author     Uwe Tews
  */
 
 /**
- * @package    Smarty
  * @subpackage Compiler
  * @ignore
  */
@@ -28,16 +24,7 @@ abstract class Smarty_Internal_ParseTree
      *
      * @var array
      */
-    public $subtrees = array();
-
-    /**
-     * Return buffer
-     *
-     * @param \Smarty_Internal_Templateparser $parser
-     *
-     * @return string buffer content
-     */
-    abstract public function to_smarty_php(Smarty_Internal_Templateparser $parser);
+    public $subtrees = [];
 
     /**
      * Template data object destructor
@@ -47,4 +34,13 @@ abstract class Smarty_Internal_ParseTree
         $this->data = null;
         $this->subtrees = null;
     }
+
+    /**
+     * Return buffer
+     *
+     * @return string buffer content
+     */
+    abstract public function to_smarty_php(
+        Smarty_Internal_Templateparser $parser
+    );
 }

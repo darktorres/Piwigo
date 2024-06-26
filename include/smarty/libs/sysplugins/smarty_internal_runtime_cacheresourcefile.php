@@ -2,15 +2,12 @@
 /**
  * Smarty cache resource file clear method
  *
- * @package    Smarty
  * @subpackage PluginsInternal
- * @author     Uwe Tews
  */
 
 /**
  * Smarty Internal Runtime Cache Resource File Class
  *
- * @package    Smarty
  * @subpackage PluginsInternal
  */
 class Smarty_Internal_Runtime_CacheResourceFile
@@ -18,7 +15,6 @@ class Smarty_Internal_Runtime_CacheResourceFile
     /**
      * Empty cache for a specific template
      *
-     * @param Smarty  $smarty
      * @param string  $resource_name template name
      * @param string  $cache_id      cache id
      * @param string  $compile_id    compile id
@@ -26,8 +22,13 @@ class Smarty_Internal_Runtime_CacheResourceFile
      *
      * @return integer number of cache files deleted
      */
-    public function clear(Smarty $smarty, $resource_name, $cache_id, $compile_id, $exp_time)
-    {
+    public function clear(
+        Smarty $smarty,
+        $resource_name,
+        $cache_id,
+        $compile_id,
+        $exp_time
+    ) {
         $_cache_id = isset($cache_id) ? preg_replace('![^\w\|]+!', '_', $cache_id) : null;
         $_compile_id = isset($compile_id) ? preg_replace('![^\w]+!', '_', $compile_id) : null;
         $_dir_sep = $smarty->use_sub_dirs ? '/' : '^';
@@ -68,10 +69,10 @@ class Smarty_Internal_Runtime_CacheResourceFile
                 if (substr(basename($_file->getPathname()), 0, 1) === '.') {
                     continue;
                 }
-                $_filepath = (string)$_file;
+                $_filepath = (string) $_file;
                 // directory ?
                 if ($_file->isDir()) {
-                    if (!$_cache->isDot()) {
+                    if (! $_cache->isDot()) {
                         // delete folder if empty
                         @rmdir($_file->getPathname());
                     }
@@ -84,13 +85,13 @@ class Smarty_Internal_Runtime_CacheResourceFile
                     $_parts_count = count($_parts);
                     // check name
                     if (isset($resource_name)) {
-                        if ($_parts[ $_parts_count - 1 ] !== $_resourcename_parts) {
+                        if ($_parts[$_parts_count - 1] !== $_resourcename_parts) {
                             continue;
                         }
                     }
                     // check compile id
-                    if (isset($_compile_id) && (!isset($_parts[ $_parts_count - 2 - $_compile_id_offset ])
-                                                || $_parts[ $_parts_count - 2 - $_compile_id_offset ] !== $_compile_id)
+                    if (isset($_compile_id) && (! isset($_parts[$_parts_count - 2 - $_compile_id_offset])
+                                                || $_parts[$_parts_count - 2 - $_compile_id_offset] !== $_compile_id)
                     ) {
                         continue;
                     }
@@ -103,7 +104,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                             continue;
                         }
                         for ($i = 0; $i < $_cache_id_parts_count; $i++) {
-                            if ($_parts[ $i ] !== $_cache_id_parts[ $i ]) {
+                            if ($_parts[$i] !== $_cache_id_parts[$i]) {
                                 continue 2;
                             }
                         }
@@ -113,7 +114,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                         if (isset($exp_time)) {
                             if ($exp_time < 0) {
                                 preg_match('#\'cache_lifetime\' =>\s*(\d*)#', file_get_contents($_filepath), $match);
-                                if ($_time < (filemtime($_filepath) + $match[ 1 ])) {
+                                if ($_time < (filemtime($_filepath) + $match[1])) {
                                     continue;
                                 }
                             } else {
@@ -124,7 +125,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                         }
                         $_count += @unlink($_filepath) ? 1 : 0;
                         if (function_exists('opcache_invalidate')
-                            && (!function_exists('ini_get') || strlen(ini_get("opcache.restrict_api")) < 1)
+                            && (! function_exists('ini_get') || strlen(ini_get('opcache.restrict_api')) < 1)
                         ) {
                             opcache_invalidate($_filepath, true);
                         } elseif (function_exists('apc_delete_file')) {

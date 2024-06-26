@@ -3,15 +3,12 @@
  * Smarty Internal Plugin Data
  * This file contains the basic classes and methods for template and variable creation
  *
- * @package    Smarty
  * @subpackage Template
- * @author     Uwe Tews
  */
 
 /**
  * Base class with template and variable methods
  *
- * @package    Smarty
  * @subpackage Template
  *
  * @property int    $scope
@@ -50,7 +47,7 @@ abstract class Smarty_Internal_Data
      *
      * @var Smarty_Variable[]
      */
-    public $tpl_vars = array();
+    public $tpl_vars = [];
 
     /**
      * parent template (if any)
@@ -64,7 +61,7 @@ abstract class Smarty_Internal_Data
      *
      * @var string[]
      */
-    public $config_vars = array();
+    public $config_vars = [];
 
     /**
      * extension handler
@@ -85,6 +82,21 @@ abstract class Smarty_Internal_Data
     }
 
     /**
+     * Handle unknown class methods
+     *
+     * @param string $name unknown method-name
+     * @param array  $args argument array
+     *
+     * @return mixed
+     */
+    public function __call(
+        $name,
+        $args
+    ) {
+        return $this->ext->_callExternalMethod($this, $name, $args);
+    }
+
+    /**
      * assigns a Smarty variable
      *
      * @param array|string $tpl_var the template variable name(s)
@@ -94,8 +106,11 @@ abstract class Smarty_Internal_Data
      * @return Smarty_Internal_Data current Smarty_Internal_Data (or Smarty or Smarty_Internal_Template) instance for
      *                              chaining
      */
-    public function assign($tpl_var, $value = null, $nocache = false)
-    {
+    public function assign(
+        $tpl_var,
+        $value = null,
+        $nocache = false
+    ) {
         if (is_array($tpl_var)) {
             foreach ($tpl_var as $_key => $_val) {
                 $this->assign($_key, $_val, $nocache);
@@ -103,14 +118,10 @@ abstract class Smarty_Internal_Data
         } else {
             if ($tpl_var !== '') {
                 if ($this->_objType === 2) {
-                    /**
-                     *
-                     *
-                     * @var Smarty_Internal_Template $this
-                     */
+                    /** @var Smarty_Internal_Template $this */
                     $this->_assignInScope($tpl_var, $value, $nocache);
                 } else {
-                    $this->tpl_vars[ $tpl_var ] = new Smarty_Variable($value, $nocache);
+                    $this->tpl_vars[$tpl_var] = new Smarty_Variable($value, $nocache);
                 }
             }
         }
@@ -131,8 +142,12 @@ abstract class Smarty_Internal_Data
      *
      * @return \Smarty_Internal_Data|\Smarty_Internal_Template|\Smarty
      */
-    public function append($tpl_var, $value = null, $merge = false, $nocache = false)
-    {
+    public function append(
+        $tpl_var,
+        $value = null,
+        $merge = false,
+        $nocache = false
+    ) {
         return $this->ext->append->append($this, $tpl_var, $value, $merge, $nocache);
     }
 
@@ -145,8 +160,11 @@ abstract class Smarty_Internal_Data
      *
      * @return \Smarty_Internal_Data|\Smarty_Internal_Template|\Smarty
      */
-    public function assignGlobal($varName, $value = null, $nocache = false)
-    {
+    public function assignGlobal(
+        $varName,
+        $value = null,
+        $nocache = false
+    ) {
         return $this->ext->assignGlobal->assignGlobal($this, $varName, $value, $nocache);
     }
 
@@ -154,13 +172,16 @@ abstract class Smarty_Internal_Data
      * appends values to template variables by reference
      *
      * @param string  $tpl_var the template variable name
-     * @param mixed   &$value  the referenced value to append
+     * @param mixed   $value  the referenced value to append
      * @param boolean $merge   flag if array elements shall be merged
      *
      * @return \Smarty_Internal_Data|\Smarty_Internal_Template|\Smarty
      */
-    public function appendByRef($tpl_var, &$value, $merge = false)
-    {
+    public function appendByRef(
+        $tpl_var,
+        &$value,
+        $merge = false
+    ) {
         return $this->ext->appendByRef->appendByRef($this, $tpl_var, $value, $merge);
     }
 
@@ -168,13 +189,15 @@ abstract class Smarty_Internal_Data
      * assigns values to template variables by reference
      *
      * @param string  $tpl_var the template variable name
-     * @param         $value
      * @param boolean $nocache if true any output of this variable will be not cached
      *
      * @return \Smarty_Internal_Data|\Smarty_Internal_Template|\Smarty
      */
-    public function assignByRef($tpl_var, &$value, $nocache = false)
-    {
+    public function assignByRef(
+        $tpl_var,
+        &$value,
+        $nocache = false
+    ) {
         return $this->ext->assignByRef->assignByRef($this, $tpl_var, $value, $nocache);
     }
 
@@ -190,23 +213,25 @@ abstract class Smarty_Internal_Data
      *
      * @return mixed variable value or or array of variables
      */
-    public function getTemplateVars($varName = null, Smarty_Internal_Data $_ptr = null, $searchParents = true)
-    {
+    public function getTemplateVars(
+        $varName = null,
+        self $_ptr = null,
+        $searchParents = true
+    ) {
         return $this->ext->getTemplateVars->getTemplateVars($this, $varName, $_ptr, $searchParents);
     }
 
     /**
      * Follow the parent chain an merge template and config variables
-     *
-     * @param \Smarty_Internal_Data|null $data
      */
-    public function _mergeVars(Smarty_Internal_Data $data = null)
-    {
+    public function _mergeVars(
+        self $data = null
+    ) {
         if (isset($data)) {
-            if (!empty($this->tpl_vars)) {
+            if (! empty($this->tpl_vars)) {
                 $data->tpl_vars = array_merge($this->tpl_vars, $data->tpl_vars);
             }
-            if (!empty($this->config_vars)) {
+            if (! empty($this->config_vars)) {
                 $data->config_vars = array_merge($this->config_vars, $data->config_vars);
             }
         } else {
@@ -255,18 +280,5 @@ abstract class Smarty_Internal_Data
     public function _getSmartyObj()
     {
         return $this->smarty;
-    }
-
-    /**
-     * Handle unknown class methods
-     *
-     * @param string $name unknown method-name
-     * @param array  $args argument array
-     *
-     * @return mixed
-     */
-    public function __call($name, $args)
-    {
-        return $this->ext->_callExternalMethod($this, $name, $args);
     }
 }
