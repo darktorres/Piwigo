@@ -78,7 +78,7 @@ function TAT_tour_setup()
         $TAT_restart = false;
         $template->assign('TAT_restart', true);
     }
-    
+
     $tat_path = str_replace(
         basename((string) $_SERVER['SCRIPT_NAME']),
         '',

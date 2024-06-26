@@ -105,7 +105,7 @@ SELECT id, name
         if (! isset($picture['current']['date_creation'])) {
             $picture['current']['date_creation'] = '';
         }
-        
+
         $tpl_vars['QUICK_EDIT'] = [
             'img' => $picture['current']['derivatives']['square']->get_url(),
             'name' => $picture['current']['name'],
@@ -317,7 +317,7 @@ function admintools_save_picture()
         if (! empty($_POST['tags'])) {
             $tag_ids = get_tag_ids($_POST['tags']);
         }
-        
+
         set_tags($tag_ids, $page['image_id']);
     }
 }
