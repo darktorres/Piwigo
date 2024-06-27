@@ -29,38 +29,7 @@ $logger = new Logger(array(
   ));
 
 
-function trigger_notify() {}
-function get_extension( $filename )
-{
-  return substr( strrchr( $filename, '.' ), 1, strlen ( $filename ) );
-}
-
-function mkgetdir($dir)
-{
-  if ( !is_dir($dir) )
-  {
-    global $conf;
-    if (substr(PHP_OS, 0, 3) == 'WIN')
-    {
-      $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
-    }
-    $umask = umask(0);
-    $mkd = @mkdir($dir, $conf['chmod_value'], true);
-    umask($umask);
-    if ($mkd==false && !is_dir($dir) /* retest existence because of potential concurrent i.php with slow file systems*/)
-    {
-      return false;
-    }
-
-    $file = $dir.'/index.htm';
-    file_exists($file) or @file_put_contents( $file, 'Not allowed!' );
-  }
-  if ( !is_writable($dir) )
-  {
-    return false;
-  }
-  return true;
-}
+include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 
 // end fast bootstrap
 
