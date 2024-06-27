@@ -25,7 +25,7 @@ function smarty_modifiercompiler_count_characters(
     }
 
     if (Smarty::$_MBSTRING) {
-        return 'mb_strlen((string) ' . $params[0] . ", '" . addslashes(Smarty::$_CHARSET) . "')";
+        return 'mb_strlen((string) ' . $params[0] . ", '" . addslashes((string) Smarty::$_CHARSET) . "')";
     }
 
     // no MBString fallback

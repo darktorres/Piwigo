@@ -22,6 +22,7 @@ class Smarty_Internal_Compile_Append extends Smarty_Internal_Compile_Assign
      *
      * @return string compiled code
      */
+    #[\Override]
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,

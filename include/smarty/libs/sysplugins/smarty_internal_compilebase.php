@@ -85,8 +85,8 @@ abstract class Smarty_Internal_CompileBase
             // shorthand ?
             if (! is_array($mixed)) {
                 // option flag ?
-                if (isset($this->mapCache['option'][trim($mixed, '\'"')])) {
-                    $_indexed_attr[trim($mixed, '\'"')] = true;
+                if (isset($this->mapCache['option'][trim((string) $mixed, '\'"')])) {
+                    $_indexed_attr[trim((string) $mixed, '\'"')] = true;
                     // shorthand attribute ?
                 } elseif (isset($this->shorttag_order[$key])) {
                     $_indexed_attr[$this->shorttag_order[$key]] = $mixed;
@@ -184,7 +184,7 @@ abstract class Smarty_Internal_CompileBase
     public function openTag(
         $compiler,
         $openTag,
-        $data = null
+        mixed $data = null
     ) {
         array_push($compiler->_tag_stack, [$openTag, $data]);
     }
@@ -204,7 +204,7 @@ abstract class Smarty_Internal_CompileBase
     ) {
         if (count($compiler->_tag_stack) > 0) {
             // get stacked info
-            list($_openTag, $_data) = array_pop($compiler->_tag_stack);
+            [$_openTag, $_data] = array_pop($compiler->_tag_stack);
             // open tag must match with the expected ones
             if (in_array($_openTag, (array) $expectedTag)) {
                 if ($_data === null) {

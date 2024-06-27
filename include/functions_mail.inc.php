@@ -82,14 +82,14 @@ function format_email(
     $name,
     $email
 ) {
-    $cvt_email = trim(preg_replace('#[\n\r]+#s', '', $email));
-    $cvt_name = trim(preg_replace('#[\n\r]+#s', '', $name));
+    $cvt_email = trim((string) preg_replace('#[\n\r]+#s', '', $email));
+    $cvt_name = trim((string) preg_replace('#[\n\r]+#s', '', $name));
 
     if ($cvt_name != '') {
         $cvt_name = '"' . addcslashes($cvt_name, '"') . '"' . ' ';
     }
 
-    if (strpos($cvt_email, '<') === false) {
+    if (! str_contains($cvt_email, '<')) {
         return $cvt_name . '<' . $cvt_email . '>';
     }
 
@@ -138,11 +138,10 @@ function unformat_email(
  *    - array of incomplete hashmaps
  * @since 2.6
  *
- * @param mixed $data
  * @return string[][]
  */
 function get_clean_recipients_list(
-    $data
+    mixed $data
 ) {
     if (empty($data)) {
         return [];
@@ -153,7 +152,7 @@ function get_clean_recipients_list(
             if (is_int($keys[0])) { // simple array of emails
                 foreach ($data as &$item) {
                     $item = [
-                        'email' => trim($item),
+                        'email' => trim((string) $item),
                         'name' => '',
                     ];
                 }
@@ -166,7 +165,7 @@ function get_clean_recipients_list(
             $data = array_map('unformat_email', $data);
         }
     } else {
-        $data = explode(',', $data);
+        $data = explode(',', (string) $data);
         $data = array_map('unformat_email', $data);
     }
 
@@ -196,11 +195,11 @@ function get_strict_email_list(
     $list = explode(',', $email_list);
 
     foreach ($list as $email) {
-        if (strpos($email, '<') !== false) {
+        if (str_contains($email, '<')) {
             $email = preg_replace('/.*<(.*)>.*/i', '$1', $email);
         }
 
-        $result[] = trim($email);
+        $result[] = trim((string) $email);
     }
 
     return implode(',', array_unique($result));
@@ -365,7 +364,7 @@ function pwg_mail_notification_admins(
     $tpl_vars = [];
     if ($send_technical_details) {
         $tpl_vars['TECHNICAL'] = [
-            'username' => stripslashes($user['username']),
+            'username' => stripslashes((string) $user['username']),
             'ip' => $_SERVER['REMOTE_ADDR'],
             'user_agent' => $_SERVER['HTTP_USER_AGENT'],
         ];
@@ -734,7 +733,7 @@ function pwg_mail(
             $template->assign(
                 [
                     'GALLERY_URL' => add_url_params(get_gallery_home_url(), $add_url_params),
-                    'GALLERY_TITLE' => isset($page['gallery_title']) ? $page['gallery_title'] : $conf['gallery_title'],
+                    'GALLERY_TITLE' => $page['gallery_title'] ?? $conf['gallery_title'],
                     'VERSION' => $conf['show_version'] ? PHPWG_VERSION : '',
                     'PHPWG_URL' => defined('PHPWG_URL') ? PHPWG_URL : '',
                     'CONTENT_ENCODING' => get_pwg_charset(),
@@ -774,16 +773,16 @@ function pwg_mail(
             $mail_content =
               '<p>' .
               nl2br(
-                  preg_replace(
+                  (string) preg_replace(
                       '/(https?:\/\/([-\w\.]+[-\w])+(:\d+)?(\/([\w\/_\.\#-]*(\?\S+)?[^\.\s])?)?)/i',
                       '<a href="$1">$1</a>',
-                      htmlspecialchars($args['content'])
+                      htmlspecialchars((string) $args['content'])
                   )
               ) .
               '</p>';
         } elseif ($args['content_format'] == 'text/html' and $content_type == 'text/plain') {
             // convert html text to plain text
-            $mail_content = strip_tags($args['content']);
+            $mail_content = strip_tags((string) $args['content']);
         } else {
             $mail_content = $args['content'];
         }
@@ -831,8 +830,8 @@ function pwg_mail(
 
     if ($conf_mail['use_smtp']) {
         // now we need to split port number
-        if (strpos($conf_mail['smtp_host'], ':') !== false) {
-            list($smtp_host, $smtp_port) = explode(':', $conf_mail['smtp_host']);
+        if (str_contains((string) $conf_mail['smtp_host'], ':')) {
+            [$smtp_host, $smtp_port] = explode(':', (string) $conf_mail['smtp_host']);
         } else {
             $smtp_host = $conf_mail['smtp_host'];
             $smtp_port = 25;
@@ -927,7 +926,9 @@ function pwg_send_mail_test(
 
     $dir = PHPWG_ROOT_PATH . $conf['data_location'] . 'tmp';
     if (mkgetdir($dir, MKGETDIR_DEFAULT & ~MKGETDIR_DIE_ON_ERROR)) {
-        $filename = $dir . '/mail.' . stripslashes($user['username']) . '.' . $lang_info['code'] . '-' . date(
+        $filename = $dir . '/mail.' . stripslashes(
+            (string) $user['username']
+        ) . '.' . $lang_info['code'] . '-' . date(
             'YmdHis'
         ) . ($success ? '' : '.ERROR');
         if ($args['content_format'] == 'text/plain') {

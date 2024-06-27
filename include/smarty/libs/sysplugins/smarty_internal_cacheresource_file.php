@@ -19,6 +19,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      * @param Smarty_Template_Cached   $cached    cached object
      * @param Smarty_Internal_Template $_template template object
      */
+    #[\Override]
     public function populate(
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template
@@ -77,6 +78,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @param Smarty_Template_Cached $cached cached object
      */
+    #[\Override]
     public function populateTimestamp(
         Smarty_Template_Cached $cached
     ) {
@@ -96,6 +98,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return boolean true or false if the cached content does not exist
      */
+    #[\Override]
     public function process(
         Smarty_Internal_Template $_smarty_tpl,
         Smarty_Template_Cached $cached = null,
@@ -119,6 +122,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return bool success
      */
+    #[\Override]
     public function writeCachedContent(
         Smarty_Internal_Template $_template,
         $content
@@ -156,6 +160,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return string  content
      */
+    #[\Override]
     public function readCachedContent(
         Smarty_Internal_Template $_template
     ) {
@@ -173,6 +178,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return integer number of cache files deleted
      */
+    #[\Override]
     public function clearAll(
         Smarty $smarty,
         $exp_time = null
@@ -190,6 +196,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return integer number of cache files deleted
      */
+    #[\Override]
     public function clear(
         Smarty $smarty,
         $resource_name,
@@ -208,6 +215,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return boolean true or false if cache is locked
      */
+    #[\Override]
     public function hasLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
@@ -230,6 +238,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return bool|void
      */
+    #[\Override]
     public function acquireLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
@@ -246,6 +255,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
      *
      * @return bool|void
      */
+    #[\Override]
     public function releaseLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached

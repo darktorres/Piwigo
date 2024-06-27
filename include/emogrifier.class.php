@@ -201,7 +201,7 @@ class Emogrifier
 
         $nodesWithStyleAttributes = $xpath->query('//*[@style]');
         if ($nodesWithStyleAttributes !== false) {
-            $callback = function ($m) { return strtolower($m[0]); };
+            $callback = fn ($m) => strtolower((string) $m[0]);
 
             /** @var \DOMNode $nodeWithStyleAttribute */
             foreach ($nodesWithStyleAttributes as $node) {
@@ -262,12 +262,12 @@ class Emogrifier
 
         $css = preg_replace($search, $replace, $css);
 
-        $cssKey = md5($css);
+        $cssKey = md5((string) $css);
         if (! isset($this->caches[self::CACHE_KEY_CSS][$cssKey])) {
             // process the CSS file for selectors and definitions
             preg_match_all(
                 '/(?:^|[^{}])\\s*([^{]+){([^}]*)}/mis',
-                $css,
+                (string) $css,
                 $matches,
                 PREG_SET_ORDER
             );
@@ -286,10 +286,10 @@ class Emogrifier
                 );
                 foreach ($selectors as $selector) {
                     // don't process pseudo-elements and behavioral (dynamic) pseudo-classes; ONLY allow structural pseudo-classes
-                    if (strpos(
+                    if (str_contains(
                         $selector,
                         ':'
-                    ) !== false && ! preg_match(
+                    ) && ! preg_match(
                         '/:\\S+\\-(child|type)\\(/i',
                         $selector
                     )) {
@@ -314,7 +314,7 @@ class Emogrifier
         foreach ($this->caches[self::CACHE_KEY_CSS][$cssKey] as $value) {
             // query the body for the xpath selector
             $nodesMatchingCssSelectors = $xpath->query(
-                $this->translateCssToXpath(trim($value['selector']))
+                $this->translateCssToXpath(trim((string) $value['selector']))
             );
 
             /** @var \DOMNode $node */
@@ -340,7 +340,7 @@ class Emogrifier
                     }
                 } else {
                     // otherwise create a new style
-                    $style = trim($value['attributes']);
+                    $style = trim((string) $value['attributes']);
                 }
 
                 $node->setAttribute('style', $style);
@@ -592,7 +592,7 @@ class Emogrifier
      */
     private function matchIdAttributes(array $match)
     {
-        return (strlen($match[1]) ? $match[1] : '*') . '[@id="' . $match[2] . '"]';
+        return (strlen((string) $match[1]) ? $match[1] : '*') . '[@id="' . $match[2] . '"]';
     }
 
     /**
@@ -600,10 +600,10 @@ class Emogrifier
      */
     private function matchClassAttributes(array $match)
     {
-        return (strlen($match[1]) ? $match[1] : '*') . '[contains(concat(" ",@class," "),concat(" ","' .
+        return (strlen((string) $match[1]) ? $match[1] : '*') . '[contains(concat(" ",@class," "),concat(" ","' .
             implode(
                 '"," "))][contains(concat(" ",@class," "),concat(" ","',
-                explode('.', substr($match[2], 1))
+                explode('.', substr((string) $match[2], 1))
             ) . '"," "))]';
     }
 
@@ -674,13 +674,13 @@ class Emogrifier
      */
     private function parseNth(array $match)
     {
-        if (in_array(strtolower($match[2]), ['even', 'odd'])) {
-            $index = strtolower($match[2]) == 'even' ? 0 : 1;
+        if (in_array(strtolower((string) $match[2]), ['even', 'odd'])) {
+            $index = strtolower((string) $match[2]) == 'even' ? 0 : 1;
             return [
                 self::MULTIPLIER => 2,
                 self::INDEX => $index,
             ];
-        } elseif (stripos($match[2], 'n') === false) {
+        } elseif (stripos((string) $match[2], 'n') === false) {
             // if there is a multiplier
             $index = intval(str_replace(' ', '', $match[2]));
             return [

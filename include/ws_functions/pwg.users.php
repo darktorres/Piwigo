@@ -32,7 +32,7 @@ function ws_users_getList(
 ) {
     global $conf;
 
-    if (! preg_match(PATTERN_ORDER, $params['order'])) {
+    if (! preg_match(PATTERN_ORDER, (string) $params['order'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
     }
 
@@ -69,7 +69,7 @@ function ws_users_getList(
     }
 
     if (! empty($params['min_register'])) {
-        list($min_register_month, $min_register_year) = explode(' ', $params['min_register']);
+        [$min_register_month, $min_register_year] = explode(' ', (string) $params['min_register']);
         if (strlen($min_register_month) == 1) {
             $min_register_month = '0' . $min_register_month;
         }
@@ -78,7 +78,7 @@ function ws_users_getList(
     }
 
     if (! empty($params['max_register'])) {
-        list($max_register_month, $max_register_year) = explode(' ', $params['max_register']);
+        [$max_register_month, $max_register_year] = explode(' ', (string) $params['max_register']);
         if (strlen($max_register_month) == 1) {
             $max_register_month = '0' . $max_register_month;
         }
@@ -122,7 +122,7 @@ function ws_users_getList(
     ];
 
     if ($params['display'] != 'none') {
-        $params['display'] = array_map('trim', explode(',', $params['display']));
+        $params['display'] = array_map('trim', explode(',', (string) $params['display']));
 
         if (in_array('all', $params['display'])) {
             $params['display'] = [
@@ -225,7 +225,7 @@ SELECT DISTINCT ';
     /* GET THE RESULT OF SQL_CALC_FOUND_ROWS if display total_count is requested*/
     if (isset($params['display']['total_count'])) {
         $total_count_query_result = pwg_query('SELECT FOUND_ROWS();');
-        list($total_count) = pwg_db_fetch_row($total_count_query_result);
+        [$total_count] = pwg_db_fetch_row($total_count_query_result);
     }
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -524,7 +524,7 @@ function ws_users_setInfo(
                 return new PwgError(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
             }
 
-            if ($params['username'] != strip_tags($params['username'])) {
+            if ($params['username'] != strip_tags((string) $params['username'])) {
                 return new PwgError(WS_ERR_INVALID_PARAM, l10n('html tags are not allowed in login'));
             }
 
@@ -766,16 +766,16 @@ function ws_users_preferences_set(
 ) {
     global $user;
 
-    if (! preg_match('/^[a-zA-Z0-9_-]+$/', $params['param'])) {
+    if (! preg_match('/^[a-zA-Z0-9_-]+$/', (string) $params['param'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid param name #' . $params['param'] . '#');
     }
 
-    $value = stripslashes($params['value']);
+    $value = stripslashes((string) $params['value']);
     if ($params['is_json']) {
         $value = json_decode($value, true);
     }
 
-    userprefs_update_param($params['param'], $value, true);
+    userprefs_update_param($params['param'], $value);
 
     return $user['preferences'];
 }
@@ -802,7 +802,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
@@ -812,9 +812,6 @@ SELECT COUNT(*)
         [
             'image_id' => $params['image_id'],
             'user_id' => $user['id'],
-        ],
-        [
-            'ignore' => true,
         ]
     );
 
@@ -843,7 +840,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }

@@ -156,7 +156,7 @@ abstract class Smarty_Resource
         $template_resource
     ) {
         $smarty = $obj->_getSmartyObj();
-        list($name, $type) = self::parseResourceName($template_resource, $smarty->default_resource_type);
+        [$name, $type] = self::parseResourceName($template_resource, $smarty->default_resource_type);
         // TODO: optimize for Smarty's internal resource types
         $resource = self::load($smarty, $type);
         // go relative to a given template?
@@ -268,7 +268,7 @@ abstract class Smarty_Resource
     public function getBasename(
         Smarty_Template_Source $source
     ) {
-        return basename(preg_replace('![^\w]+!', '_', $source->name));
+        return basename((string) preg_replace('![^\w]+!', '_', $source->name));
     }
 
     /**

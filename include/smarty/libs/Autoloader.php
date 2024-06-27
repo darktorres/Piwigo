@@ -75,7 +75,7 @@ class Smarty_Autoloader
         self::$SMARTY_DIR = defined('SMARTY_DIR') ? SMARTY_DIR : __DIR__ . DIRECTORY_SEPARATOR;
         self::$SMARTY_SYSPLUGINS_DIR = defined('SMARTY_SYSPLUGINS_DIR') ? SMARTY_SYSPLUGINS_DIR :
             self::$SMARTY_DIR . 'sysplugins' . DIRECTORY_SEPARATOR;
-        spl_autoload_register([__CLASS__, 'autoload'], true, $prepend);
+        spl_autoload_register(self::autoload(...), true, $prepend);
     }
 
     /**
@@ -86,7 +86,7 @@ class Smarty_Autoloader
     public static function autoload(
         $class
     ) {
-        if ($class[0] !== 'S' || strpos($class, 'Smarty') !== 0) {
+        if ($class[0] !== 'S' || ! str_starts_with($class, 'Smarty')) {
             return;
         }
 

@@ -17,7 +17,7 @@ function parse_sort_variables(
 ) {
     global $template;
 
-    $url_components = parse_url($_SERVER['REQUEST_URI']);
+    $url_components = parse_url((string) $_SERVER['REQUEST_URI']);
 
     $base_url = $url_components['path'];
 
@@ -57,7 +57,7 @@ function parse_sort_variables(
 
         if (isset($template_var)) {
             $template->assign(
-                $template_var . strtoupper($field),
+                $template_var . strtoupper((string) $field),
                 '<a href="' . $url . $anchor . '" title="' . l10n('Sort order') . '">' . $disp . '</a>'
             );
         }
@@ -92,7 +92,7 @@ DELETE FROM ' . OLD_PERMALINKS_TABLE . '
   WHERE permalink=\'' . pwg_db_real_escape_string($_GET['delete_permanent']) . '\'
   LIMIT 1';
     $result = pwg_query($query);
-    if (pwg_db_changes($result) == 0) {
+    if (pwg_db_changes() == 0) {
         $page['errors'][] = l10n('Cannot delete the old permalink !');
     }
 }

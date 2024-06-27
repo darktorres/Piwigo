@@ -26,6 +26,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
      */
+    #[\Override]
     public function populate(
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template = null
@@ -66,6 +67,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      *
      * @param Smarty_Template_Source $source source object
      */
+    #[\Override]
     public function populateTimestamp(
         Smarty_Template_Source $source
     ) {
@@ -85,6 +87,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      *
      * @return string template source
      */
+    #[\Override]
     public function getContent(
         Smarty_Template_Source $source
     ) {
@@ -110,6 +113,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      *
      * @return string resource's basename
      */
+    #[\Override]
     public function getBasename(
         Smarty_Template_Source $source
     ) {
@@ -125,6 +129,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
     /**
      * @return bool
      */
+    #[\Override]
     public function checkTimestamps()
     {
         return false;

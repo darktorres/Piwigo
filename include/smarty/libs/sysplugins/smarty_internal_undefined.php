@@ -10,20 +10,16 @@
 class Smarty_Internal_Undefined
 {
     /**
-     * Name of undefined extension class
-     *
-     * @var string|null
-     */
-    public $class = null;
-
-    /**
      * Smarty_Internal_Undefined constructor.
      *
      * @param null|string $class name of undefined extension class
      */
-    public function __construct($class = null)
-    {
-        $this->class = $class;
+    public function __construct(
+        /**
+         * Name of undefined extension class
+         */
+        public $class = null
+    ) {
     }
 
     /**
@@ -42,7 +38,7 @@ class Smarty_Internal_Undefined
             throw new SmartyException(sprintf("undefined extension class '%s'", $this->class));
         }
 
-        throw new SmartyException(get_class($args[0]) . sprintf('->%s() undefined method', $name));
+        throw new SmartyException($args[0]::class . sprintf('->%s() undefined method', $name));
     }
 
     /**

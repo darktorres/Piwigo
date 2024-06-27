@@ -24,7 +24,7 @@ function smarty_outputfilter_trimwhitespace(
     // capture Internet Explorer and KnockoutJS Conditional Comments
     if (preg_match_all(
         '#<!--((\[[^\]]+\]>.*?<!\[[^\]]+\])|(\s*/?ko\s+.+))-->#is',
-        $source,
+        (string) $source,
         $matches,
         PREG_OFFSET_CAPTURE | PREG_SET_ORDER
     )
@@ -50,7 +50,7 @@ function smarty_outputfilter_trimwhitespace(
     $_offset = 0;
     if (preg_match_all(
         '#(<script[^>]*>.*?</script[^>]*>)|(<textarea[^>]*>.*?</textarea[^>]*>)|(<pre[^>]*>.*?</pre[^>]*>)#is',
-        $source,
+        (string) $source,
         $matches,
         PREG_OFFSET_CAPTURE | PREG_SET_ORDER
     )
@@ -81,7 +81,12 @@ function smarty_outputfilter_trimwhitespace(
     // maybe a \0 byte or something is interfering?
     // $source = trim( $source );
     $_offset = 0;
-    if (preg_match_all('#@!@SMARTY:([0-9]+):SMARTY@!@#is', $source, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER)) {
+    if (preg_match_all(
+        '#@!@SMARTY:([0-9]+):SMARTY@!@#is',
+        (string) $source,
+        $matches,
+        PREG_OFFSET_CAPTURE | PREG_SET_ORDER
+    )) {
         foreach ($matches as $match) {
             $_length = strlen($match[0][0]);
             $replace = $store[$match[1][0]];

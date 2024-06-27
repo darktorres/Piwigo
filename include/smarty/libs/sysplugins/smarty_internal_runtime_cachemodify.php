@@ -19,7 +19,11 @@ class Smarty_Internal_Runtime_CacheModify
     ) {
         $_isCached = $_template->isCached() && ! $_template->compiled->has_nocache_code;
         $_last_modified_date =
-            @substr($_SERVER['HTTP_IF_MODIFIED_SINCE'], 0, strpos($_SERVER['HTTP_IF_MODIFIED_SINCE'], 'GMT') + 3);
+            @substr(
+                (string) $_SERVER['HTTP_IF_MODIFIED_SINCE'],
+                0,
+                strpos((string) $_SERVER['HTTP_IF_MODIFIED_SINCE'], 'GMT') + 3
+            );
         if ($_isCached && $cached->timestamp <= strtotime($_last_modified_date)) {
             switch (PHP_SAPI) {
                 case 'cgi': // php-cgi < 5.3

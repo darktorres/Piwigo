@@ -34,7 +34,7 @@ class Smarty_Internal_Method_Append
     public function append(
         Smarty_Internal_Data $data,
         $tpl_var,
-        $value = null,
+        mixed $value = null,
         $merge = false,
         $nocache = false
     ) {

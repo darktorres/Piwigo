@@ -52,7 +52,7 @@ $template->set_filenames([
 $search = get_search_array($_GET['search_id']);
 
 if (isset($search['q'])) {
-    $template->append('search_words', htmlspecialchars($search['q']));
+    $template->append('search_words', htmlspecialchars((string) $search['q']));
 } else {
     $template->assign(
         [

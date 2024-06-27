@@ -62,7 +62,7 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase
         }
 
         unset($_attr['nocache']);
-        $_name = trim($_attr['name'], '\'"');
+        $_name = trim((string) $_attr['name'], '\'"');
 
         if (! preg_match('/^[a-zA-Z0-9_\x80-\xff]+$/', $_name)) {
             $compiler->trigger_template_error('Function name contains invalid characters: ' . $_name, null, true);
@@ -111,7 +111,7 @@ class Smarty_Internal_Compile_Functionclose extends Smarty_Internal_CompileBase
         $this->compiler = $compiler;
         $saved_data = $this->closeTag($compiler, ['function']);
         $_attr = $saved_data[0];
-        $_name = trim($_attr['name'], '\'"');
+        $_name = trim((string) $_attr['name'], '\'"');
         $compiler->parent_compiler->tpl_function[$_name]['compiled_filepath'] =
             $compiler->parent_compiler->template->compiled->filepath;
         $compiler->parent_compiler->tpl_function[$_name]['uid'] = $compiler->template->source->uid;
@@ -186,7 +186,7 @@ class Smarty_Internal_Compile_Functionclose extends Smarty_Internal_CompileBase
                 $compiler->parser,
                 preg_replace_callback(
                     "/((<\?php )?echo '\/\*%%SmartyNocache:{$compiler->template->compiled->nocache_hash}%%\*\/([\S\s]*?)\/\*\/%%SmartyNocache:{$compiler->template->compiled->nocache_hash}%%\*\/';(\?>\n)?)/",
-                    [$this, 'removeNocache'],
+                    $this->removeNocache(...),
                     $_functionCode->to_smarty_php($compiler->parser)
                 )
             );

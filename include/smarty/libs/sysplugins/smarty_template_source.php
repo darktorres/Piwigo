@@ -16,25 +16,11 @@ class Smarty_Template_Source
     public $uid = null;
 
     /**
-     * Template Resource (Smarty_Internal_Template::$template_resource)
-     *
-     * @var string
-     */
-    public $resource = null;
-
-    /**
      * Resource Type
      *
      * @var string
      */
     public $type = null;
-
-    /**
-     * Resource Name
-     *
-     * @var string
-     */
-    public $name = null;
 
     /**
      * Source Filepath
@@ -130,15 +116,20 @@ class Smarty_Template_Source
      *
      * @internal param \Smarty_Resource $handler Resource Handler this source object communicates with
      */
-    public function __construct(Smarty $smarty, $resource, $type, $name)
-    {
+    public function __construct(
+        Smarty $smarty, /**
+     * Template Resource (Smarty_Internal_Template::$template_resource)
+     */
+        public $resource,
+        $type, /**
+     * Resource Name
+     */
+        public $name
+    ) {
         $this->handler =
-            isset($smarty->_cache['resource_handlers'][$type]) ? $smarty->_cache['resource_handlers'][$type] :
-                Smarty_Resource::load($smarty, $type);
+            $smarty->_cache['resource_handlers'][$type] ?? Smarty_Resource::load($smarty, $type);
         $this->smarty = $smarty;
-        $this->resource = $resource;
         $this->type = $type;
-        $this->name = $name;
     }
 
     /**
@@ -212,6 +203,6 @@ class Smarty_Template_Source
      */
     public function getContent()
     {
-        return isset($this->content) ? $this->content : $this->handler->getContent($this);
+        return $this->content ?? $this->handler->getContent($this);
     }
 }

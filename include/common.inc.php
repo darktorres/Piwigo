@@ -32,7 +32,7 @@ if (! function_exists(
 ) or ! @get_magic_quotes_gpc()) {
     function sanitize_mysql_kv(&$v, $k)
     {
-        $v = addslashes($v);
+        $v = addslashes((string) $v);
     }
 
     if (is_array($_GET)) {
@@ -49,7 +49,7 @@ if (! function_exists(
 }
 
 if (! empty($_SERVER['PATH_INFO'])) {
-    $_SERVER['PATH_INFO'] = addslashes($_SERVER['PATH_INFO']);
+    $_SERVER['PATH_INFO'] = addslashes((string) $_SERVER['PATH_INFO']);
 }
 
 //

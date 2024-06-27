@@ -76,7 +76,7 @@ class Smarty_Internal_Method_RegisterDefaultTemplateHandler
         } elseif ($_return === true) {
             $source->content = $_content;
             $source->exists = true;
-            $source->uid = sha1($_content);
+            $source->uid = sha1((string) $_content);
             $source->name = $source->uid;
             $source->handler = Smarty_Resource::load($source->smarty, 'eval');
         } else {

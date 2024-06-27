@@ -24,7 +24,7 @@ class Smarty_Internal_Runtime_Make_Nocache
                     '',
                     var_export($tpl->tpl_vars[$var], true)
                 );
-            if (preg_match('/(\w+)::__set_state/', $export, $match)) {
+            if (preg_match('/(\w+)::__set_state/', (string) $export, $match)) {
                 throw new SmartyException(
                     sprintf(
                         '{make_nocache $%s} in template \'%s\': variable does contain object \'%s\' not implementing method \'__set_state\'',

@@ -95,7 +95,7 @@ class Smarty_Internal_Compile_Else extends Smarty_Internal_CompileBase
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
     ) {
-        list($nesting, $compiler->tag_nocache) = $this->closeTag($compiler, ['if', 'elseif']);
+        [$nesting, $compiler->tag_nocache] = $this->closeTag($compiler, ['if', 'elseif']);
         $this->openTag($compiler, 'else', [$nesting, $compiler->tag_nocache]);
         return '<?php } else { ?>';
     }
@@ -124,7 +124,7 @@ class Smarty_Internal_Compile_Elseif extends Smarty_Internal_CompileBase
     ) {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-        list($nesting, $compiler->tag_nocache) = $this->closeTag($compiler, ['if', 'elseif']);
+        [$nesting, $compiler->tag_nocache] = $this->closeTag($compiler, ['if', 'elseif']);
         if (! isset($parameter['if condition'])) {
             $compiler->trigger_template_error('missing elseif condition', null, true);
         }
@@ -215,7 +215,7 @@ class Smarty_Internal_Compile_Ifclose extends Smarty_Internal_CompileBase
             $compiler->tag_nocache = true;
         }
 
-        list($nesting, $compiler->nocache) = $this->closeTag($compiler, ['if', 'else', 'elseif']);
+        [$nesting, $compiler->nocache] = $this->closeTag($compiler, ['if', 'else', 'elseif']);
         $tmp = '';
         for ($i = 0; $i < $nesting; $i++) {
             $tmp .= '}';

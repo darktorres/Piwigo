@@ -57,8 +57,11 @@ class updates
         $_SESSION['need_update' . PHPWG_VERSION] = null;
 
         if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches)
-          and @fetchRemote(PHPWG_URL . '/download/all_versions.php?rand=' . md5(uniqid(rand(), true)), $result)) {
-            $all_versions = @explode("\n", $result);
+          and @fetchRemote(
+              PHPWG_URL . '/download/all_versions.php?rand=' . md5(uniqid(random_int(0, mt_getrandmax()), true)),
+              $result
+          )) {
+            $all_versions = @explode("\n", (string) $result);
             $new_version = trim($all_versions[0]);
             $_SESSION['need_update' . PHPWG_VERSION] = version_compare(PHPWG_VERSION, $new_version, '<');
         }
@@ -87,15 +90,15 @@ class updates
             $actual_branch = get_branch_from_version(PHPWG_VERSION);
 
             $url = PHPWG_URL . '/download/all_versions.php';
-            $url .= '?rand=' . md5(uniqid(rand(), true)); // Avoid server cache
+            $url .= '?rand=' . md5(uniqid(random_int(0, mt_getrandmax()), true)); // Avoid server cache
             $url .= '&show_requirements';
 
             if (@fetchRemote($url, $result)
-                and $all_versions = @explode("\n", $result)
+                and $all_versions = @explode("\n", (string) $result)
                 and is_array($all_versions)) {
                 $new_versions['piwigo.org-checked'] = true;
                 $last_version = trim($all_versions[0]);
-                list($last_version_number, $last_version_php) = explode('/', trim($all_versions[0]));
+                [$last_version_number, $last_version_php] = explode('/', trim($all_versions[0]));
 
                 if (version_compare(PHPWG_VERSION, $last_version_number, '<')) {
                     $last_branch = get_branch_from_version($last_version_number);
@@ -109,7 +112,7 @@ class updates
 
                         // Check if new version exists in same branch
                         foreach ($all_versions as $version) {
-                            list($version_number, $version_php) = explode('/', trim($version));
+                            [$version_number, $version_php] = explode('/', trim($version));
                             $branch = get_branch_from_version($version_number);
 
                             if ($branch == $actual_branch) {
@@ -174,7 +177,9 @@ class updates
                 $notify = true;
             } elseif (
                 $conf['update_notify_reminder_period'] > 0
-                and strtotime($last_notification) < strtotime($conf['update_notify_reminder_period'] . ' seconds ago')
+                and strtotime((string) $last_notification) < strtotime(
+                    $conf['update_notify_reminder_period'] . ' seconds ago'
+                )
             ) {
                 $notify = true;
             }
@@ -233,13 +238,13 @@ class updates
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
         if (fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result)) {
-            if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
+            if (! preg_match('/^\d+\.\d+\.\d+$/', (string) $version)) {
                 $version = $pem_versions[0]['name'];
             }
 
             $branch = get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
-                if (strpos($pem_version['name'], $branch) === 0) {
+                if (str_starts_with((string) $pem_version['name'], $branch)) {
                     $versions_to_check[] = $pem_version['id'];
                 }
             }
@@ -267,7 +272,7 @@ class updates
             [
                 'last_revision_only' => 'true',
                 'version' => implode(',', $versions_to_check),
-                'lang' => substr($user['language'], 0, 2),
+                'lang' => substr((string) $user['language'], 0, 2),
                 'get_nb_downloads' => 'true',
             ]
         );
@@ -393,7 +398,7 @@ class updates
     public function get_merged_extensions($version)
     {
         if (fetchRemote($this->merged_extension_url, $result)) {
-            $rows = explode("\n", $result);
+            $rows = explode("\n", (string) $result);
             foreach ($rows as $row) {
                 if (preg_match('/^(\d+\.\d+): *(.*)$/', $row, $match)) {
                     if (version_compare($version, $match[1], '>=')) {
@@ -430,7 +435,7 @@ class updates
             // TODO why redirect to a plugin page? maybe a remaining code from when
             // the update system was provided as a plugin?
             redirect(
-                get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__))
+                get_root_url() . 'admin.php?page=plugin-' . basename(__DIR__)
             );
         }
 
@@ -469,7 +474,7 @@ class updates
                         $end = true;
                     }
 
-                    @fwrite($zip, base64_decode($input['data']));
+                    @fwrite($zip, base64_decode((string) $input['data']));
                 } else {
                     $end = true;
                 }

@@ -21,9 +21,9 @@ SELECT id, image_order
 $cats = hash_from_query($query, 'id');
 
 foreach ($cats as $id => &$data) {
-    $image_order = explode(',', $data['image_order']);
+    $image_order = explode(',', (string) $data['image_order']);
     foreach ($image_order as &$order) {
-        if (strpos($order, ' ASC') === false && strpos($order, ' DESC') === false) {
+        if (! str_contains($order, ' ASC') && ! str_contains($order, ' DESC')) {
             $order .= ' ASC';
         }
     }

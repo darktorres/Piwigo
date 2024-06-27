@@ -74,7 +74,7 @@ SELECT
         $subcat_ids = [];
 
         foreach ($uppercats_of as $id => $uppercats) {
-            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', $uppercats)) {
+            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', (string) $uppercats)) {
                 $subcat_ids[] = $id;
             }
         }
@@ -255,7 +255,7 @@ SELECT
     $subcats_of = [];
 
     foreach ($all_categories as $id => $uppercats) {
-        foreach (array_slice(explode(',', $uppercats), 0, -1) as $uppercat_id) {
+        foreach (array_slice(explode(',', (string) $uppercats), 0, -1) as $uppercat_id) {
             @$subcats_of[$uppercat_id][] = $id;
         }
     }
@@ -299,8 +299,8 @@ foreach ($categories as $category) {
                 $category['name'],
                 'admin_cat_list'
             ),
-          'NB_PHOTOS' => isset($nb_photos_in[$category['id']]) ? $nb_photos_in[$category['id']] : 0,
-          'NB_SUB_PHOTOS' => isset($nb_sub_photos[$category['id']]) ? $nb_sub_photos[$category['id']] : 0,
+          'NB_PHOTOS' => $nb_photos_in[$category['id']] ?? 0,
+          'NB_SUB_PHOTOS' => $nb_sub_photos[$category['id']] ?? 0,
           'NB_SUB_ALBUMS' => isset($subcats_of[$category['id']]) ? count($subcats_of[$category['id']]) : 0,
           'ID' => $category['id'],
           'RANK' => $category['rank'] * 10,

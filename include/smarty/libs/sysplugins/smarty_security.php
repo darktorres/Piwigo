@@ -649,7 +649,7 @@ class Smarty_Security
             $smarty->security_policy = $security_class;
             return $smarty;
         } elseif (is_object($security_class)) {
-            throw new SmartyException("Class '" . get_class($security_class) . "' must extend Smarty_Security.");
+            throw new SmartyException("Class '" . $security_class::class . "' must extend Smarty_Security.");
         }
 
         if ($security_class === null) {
@@ -699,8 +699,8 @@ class Smarty_Security
     public function registerCallBacks(
         Smarty_Internal_Template $template
     ) {
-        $template->startRenderCallbacks[] = [$this, 'startTemplate'];
-        $template->endRenderCallbacks[] = [$this, 'endTemplate'];
+        $template->startRenderCallbacks[] = $this->startTemplate(...);
+        $template->endRenderCallbacks[] = $this->endTemplate(...);
     }
 
     /**
@@ -715,9 +715,9 @@ class Smarty_Security
     ) {
         foreach ($oldDir as $directory) {
             //           $directory = $this->smarty->_realpath($directory, true);
-            $length = strlen($directory);
+            $length = strlen((string) $directory);
             foreach ($this->_resource_dir as $dir) {
-                if (substr($dir, 0, $length) === $directory) {
+                if (substr((string) $dir, 0, $length) === $directory) {
                     unset($this->_resource_dir[$dir]);
                 }
             }
@@ -741,7 +741,7 @@ class Smarty_Security
         $filepath,
         $dirs
     ) {
-        $directory = dirname($this->smarty->_realpath($filepath, true)) . DIRECTORY_SEPARATOR;
+        $directory = dirname((string) $this->smarty->_realpath($filepath, true)) . DIRECTORY_SEPARATOR;
         $_directory = [];
         if (! preg_match('#[\\\\/][.][.][\\\\/]#', $directory)) {
             while (true) {
@@ -751,7 +751,7 @@ class Smarty_Security
                 }
 
                 // abort if we've reached root
-                if (! preg_match('#[\\\\/][^\\\\/]+[\\\\/]$#', $directory)) {
+                if (! preg_match('#[\\\\/][^\\\\/]+[\\\\/]$#', (string) $directory)) {
                     // give up
                     break;
                 }

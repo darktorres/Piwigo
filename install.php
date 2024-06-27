@@ -20,12 +20,12 @@ if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
         foreach ($_POST as $k => $v) {
             if (is_array($_POST[$k])) {
                 foreach ($_POST[$k] as $k2 => $v2) {
-                    $_POST[$k][$k2] = addslashes($v2);
+                    $_POST[$k][$k2] = addslashes((string) $v2);
                 }
 
                 @reset($_POST[$k]);
             } else {
-                $_POST[$k] = addslashes($v);
+                $_POST[$k] = addslashes((string) $v);
             }
         }
 
@@ -36,12 +36,12 @@ if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
         foreach ($_GET as $k => $v) {
             if (is_array($_GET[$k])) {
                 foreach ($_GET[$k] as $k2 => $v2) {
-                    $_GET[$k][$k2] = addslashes($v2);
+                    $_GET[$k][$k2] = addslashes((string) $v2);
                 }
 
                 @reset($_GET[$k]);
             } else {
-                $_GET[$k] = addslashes($v);
+                $_GET[$k] = addslashes((string) $v);
             }
         }
 
@@ -52,12 +52,12 @@ if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
         foreach ($_COOKIE as $k => $v) {
             if (is_array($_COOKIE[$k])) {
                 foreach ($_COOKIE[$k] as $k2 => $v2) {
-                    $_COOKIE[$k][$k2] = addslashes($v2);
+                    $_COOKIE[$k][$k2] = addslashes((string) $v2);
                 }
 
                 @reset($_COOKIE[$k]);
             } else {
-                $_COOKIE[$k] = addslashes($v);
+                $_COOKIE[$k] = addslashes((string) $v);
             }
         }
 
@@ -150,7 +150,7 @@ include(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
 $languages = new languages('utf-8');
 
 if (isset($_GET['language'])) {
-    $language = strip_tags($_GET['language']);
+    $language = strip_tags((string) $_GET['language']);
 
     if (! in_array($language, array_keys($languages->fs_languages))) {
         $language = PHPWG_DEFAULT_LANGUAGE;
@@ -159,7 +159,7 @@ if (isset($_GET['language'])) {
     $language = 'en_UK';
     // Try to get browser language
     foreach ($languages->fs_languages as $language_code => $fs_language) {
-        if (substr($language_code, 0, 2) == @substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
+        if (substr((string) $language_code, 0, 2) == @substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
             $language = $language_code;
             break;
         }
@@ -363,7 +363,7 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
             [
                 'id' => 1,
                 'username' => $admin_name,
-                'password' => md5($admin_pass1),
+                'password' => md5((string) $admin_pass1),
                 'mail_address' => $admin_mail,
             ],
             [
@@ -380,7 +380,7 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
         // Available upgrades must be ignored after a fresh installation. To
         // make PWG avoid upgrading, we must tell it upgrades have already been
         // made.
-        list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
         define('CURRENT_DATE', $dbnow);
         $datas = [];
         foreach (get_available_upgrade_ids() as $upgrade_id) {

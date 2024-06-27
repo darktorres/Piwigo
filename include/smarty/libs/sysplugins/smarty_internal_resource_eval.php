@@ -20,10 +20,9 @@ class Smarty_Internal_Resource_Eval extends Smarty_Resource_Recompiled
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
      */
-    public function populate(
-        Smarty_Template_Source $source,
-        Smarty_Internal_Template $_template = null
-    ) {
+    #[\Override]
+    public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null)
+    {
         $source->uid = sha1($source->name);
         $source->filepath = $source->uid;
         $source->timestamp = true;
@@ -39,6 +38,7 @@ class Smarty_Internal_Resource_Eval extends Smarty_Resource_Recompiled
      *
      * @return string                 template source
      */
+    #[\Override]
     public function getContent(
         Smarty_Template_Source $source
     ) {
@@ -54,6 +54,7 @@ class Smarty_Internal_Resource_Eval extends Smarty_Resource_Recompiled
      *
      * @return string unique resource name
      */
+    #[\Override]
     public function buildUniqueResourceName(
         Smarty $smarty,
         $resource_name,
@@ -69,6 +70,7 @@ class Smarty_Internal_Resource_Eval extends Smarty_Resource_Recompiled
      *
      * @return string                 resource's basename
      */
+    #[\Override]
     public function getBasename(
         Smarty_Template_Source $source
     ) {

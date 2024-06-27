@@ -57,7 +57,7 @@ if (! function_exists('smarty_mb_str_replace')) {
 
             // See if charset used by Smarty is matching one used by regex...
             $current_charset = mb_regex_encoding();
-            $convert_result = (bool) strcasecmp(Smarty::$_CHARSET, $current_charset);
+            $convert_result = (bool) strcasecmp((string) Smarty::$_CHARSET, $current_charset);
             if ($convert_result) {
                 // ...convert to it if not.
                 $subject = mb_convert_encoding(

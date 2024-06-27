@@ -89,7 +89,7 @@ function smarty_function_html_checkboxes(
                             } else {
                                 trigger_error(
                                     "html_checkboxes: selected attribute contains an object of class '" .
-                                    get_class($_sel) . "' without __toString() method",
+                                    $_sel::class . "' without __toString() method",
                                     E_USER_NOTICE
                                 );
                                 continue;
@@ -105,7 +105,7 @@ function smarty_function_html_checkboxes(
                         $selected = smarty_function_escape_special_chars((string) $_val->__toString());
                     } else {
                         trigger_error(
-                            "html_checkboxes: selected attribute is an object of class '" . get_class($_val) .
+                            "html_checkboxes: selected attribute is an object of class '" . $_val::class .
                             "' without __toString() method",
                             E_USER_NOTICE
                         );
@@ -185,7 +185,7 @@ function smarty_function_html_checkboxes(
         }
     } else {
         foreach ($values as $_i => $_key) {
-            $_val = isset($output[$_i]) ? $output[$_i] : '';
+            $_val = $output[$_i] ?? '';
             $_html_result[] =
                 smarty_function_html_checkboxes_output(
                     $name,
@@ -230,7 +230,7 @@ function smarty_function_html_checkboxes_output(
             $value = (string) $value->__toString();
         } else {
             trigger_error(
-                "html_options: value is an object of class '" . get_class($value) .
+                "html_options: value is an object of class '" . $value::class .
                 "' without __toString() method",
                 E_USER_NOTICE
             );
@@ -245,7 +245,7 @@ function smarty_function_html_checkboxes_output(
             $output = (string) $output->__toString();
         } else {
             trigger_error(
-                "html_options: output is an object of class '" . get_class($output) .
+                "html_options: output is an object of class '" . $output::class .
                 "' without __toString() method",
                 E_USER_NOTICE
             );

@@ -39,7 +39,10 @@ class Smarty_Internal_TestInstall
             $template_dir = realpath($template_dir);
             // resolve include_path or fail existence
             if (! $template_dir) {
-                if ($smarty->use_include_path && ! preg_match('/^([\/\\\\]|[a-zA-Z]:[\/\\\\])/', $_template_dir)) {
+                if ($smarty->use_include_path && ! preg_match(
+                    '/^([\/\\\\]|[a-zA-Z]:[\/\\\\])/',
+                    (string) $_template_dir
+                )) {
                     // try PHP include_path
                     if ($_stream_resolve_include_path) {
                         $template_dir = stream_resolve_include_path($_template_dir);
@@ -167,7 +170,10 @@ class Smarty_Internal_TestInstall
             $plugin_dir = realpath($plugin_dir);
             // resolve include_path or fail existence
             if (! $plugin_dir) {
-                if ($smarty->use_include_path && ! preg_match('/^([\/\\\\]|[a-zA-Z]:[\/\\\\])/', $_plugin_dir)) {
+                if ($smarty->use_include_path && ! preg_match(
+                    '/^([\/\\\\]|[a-zA-Z]:[\/\\\\])/',
+                    (string) $_plugin_dir
+                )) {
                     // try PHP include_path
                     if ($_stream_resolve_include_path) {
                         $plugin_dir = stream_resolve_include_path($_plugin_dir);
@@ -306,7 +312,10 @@ class Smarty_Internal_TestInstall
             $_config_dir = $config_dir;
             // resolve include_path or fail existence
             if (! $config_dir) {
-                if ($smarty->use_include_path && ! preg_match('/^([\/\\\\]|[a-zA-Z]:[\/\\\\])/', $_config_dir)) {
+                if ($smarty->use_include_path && ! preg_match(
+                    '/^([\/\\\\]|[a-zA-Z]:[\/\\\\])/',
+                    (string) $_config_dir
+                )) {
                     // try PHP include_path
                     if ($_stream_resolve_include_path) {
                         $config_dir = stream_resolve_include_path($_config_dir);

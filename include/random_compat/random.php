@@ -49,7 +49,7 @@ if (PHP_VERSION_ID < 70000) {
         define('RANDOM_COMPAT_READ_BUFFER', 8);
     }
 
-    $RandomCompatDIR = dirname(__FILE__);
+    $RandomCompatDIR = __DIR__;
 
     require_once $RandomCompatDIR . '/byte_safe_strings.php';
     require_once $RandomCompatDIR . '/cast_to_int.php';
@@ -172,7 +172,7 @@ if (PHP_VERSION_ID < 70000) {
                         // See random_bytes_com_dotnet.php
                         require_once $RandomCompatDIR . '/random_bytes_com_dotnet.php';
                     }
-                } catch (com_exception $e) {
+                } catch (com_exception) {
                     // Don't try to use it.
                 }
             }
@@ -191,7 +191,7 @@ if (PHP_VERSION_ID < 70000) {
              */
             function random_bytes(
                 $length
-            ) {
+            ): never {
                 throw new Exception(
                     'There is no suitable CSPRNG installed on your system'
                 );

@@ -13,7 +13,7 @@ return RectorConfig::configure()
         __DIR__ . '/vendor',
     ])
     ->withRootFiles()
-    // ->withPhpSets()
+    ->withPhpSets()
     ->withPreparedSets(
         codeQuality: false,
         codingStyle: true,

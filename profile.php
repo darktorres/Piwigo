@@ -110,14 +110,14 @@ function save_profile_from_post(
     if ($conf['allow_user_customization'] or defined('IN_ADMIN')) {
         $int_pattern = '/^\d+$/';
         if (empty($_POST['nb_image_page'])
-            or (! preg_match($int_pattern, $_POST['nb_image_page']))) {
+            or (! preg_match($int_pattern, (string) $_POST['nb_image_page']))) {
             $errors[] = l10n('The number of photos per page must be a not null scalar');
         }
 
         // periods must be integer values, they represents number of days
         if (! preg_match(
             $int_pattern,
-            $_POST['recent_period']
+            (string) $_POST['recent_period']
         )
             or $_POST['recent_period'] < 0) {
             $errors[] = l10n('Recent period must be a positive integer value');
@@ -156,7 +156,7 @@ function save_profile_from_post(
     FROM ' . USERS_TABLE . '
     WHERE ' . $conf['user_fields']['id'] . " = '" . $userdata['id'] . '\'
   ;';
-            list($current_password) = pwg_db_fetch_row(pwg_query($query));
+            [$current_password] = pwg_db_fetch_row(pwg_query($query));
 
             if (! $conf['password_verify']($_POST['password'], $current_password)) {
                 $errors[] = l10n('Current password is wrong');
@@ -308,7 +308,7 @@ function load_profile_in_template(
 
     $template->assign(
         [
-            $template_prefixe . 'USERNAME' => stripslashes($userdata['username']),
+            $template_prefixe . 'USERNAME' => stripslashes((string) $userdata['username']),
             $template_prefixe . 'EMAIL' => @$userdata['email'],
             $template_prefixe . 'ALLOW_USER_CUSTOMIZATION' => $conf['allow_user_customization'],
             $template_prefixe . 'ACTIVATE_COMMENTS' => $conf['activate_comments'],

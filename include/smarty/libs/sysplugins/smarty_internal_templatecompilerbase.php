@@ -425,8 +425,8 @@ abstract class Smarty_Internal_TemplateCompilerBase
                 $this->smarty->_debug->start_compile($this->template);
             }
 
-            $this->parent_compiler = $parent_compiler ? $parent_compiler : $this;
-            $nocache = isset($nocache) ? $nocache : false;
+            $this->parent_compiler = $parent_compiler ?: $this;
+            $nocache ??= false;
             if (empty($template->compiled->nocache_hash)) {
                 $template->compiled->nocache_hash = $this->nocache_hash;
             } else {
@@ -675,7 +675,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         $text
     ) {
 
-        if (strpos($text, '<') === false) {
+        if (! str_contains($text, '<')) {
             return preg_replace($this->stripRegEx, '', $text);
         }
 
@@ -716,7 +716,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         $_offset = 0;
         if (preg_match_all(
             '#@!@SMARTY:([0-9]+):SMARTY@!@#is',
-            $text,
+            (string) $text,
             $matches,
             PREG_OFFSET_CAPTURE | PREG_SET_ORDER
         )
@@ -750,9 +750,9 @@ abstract class Smarty_Internal_TemplateCompilerBase
     public function callTagCompiler(
         $tag,
         $args,
-        $param1 = null,
-        $param2 = null,
-        $param3 = null
+        mixed $param1 = null,
+        mixed $param2 = null,
+        mixed $param3 = null
     ) {
         /** @var Smarty_Internal_CompileBase $tagCompiler */
         $tagCompiler = $this->getTagCompiler($tag);
@@ -1074,12 +1074,12 @@ abstract class Smarty_Internal_TemplateCompilerBase
     ) {
         $_scope = 0;
         if (isset($_attr['scope'])) {
-            $_scopeName = trim($_attr['scope'], '\'"');
+            $_scopeName = trim((string) $_attr['scope'], '\'"');
             if (is_numeric($_scopeName) && in_array($_scopeName, $validScopes)) {
                 $_scope = $_scopeName;
             } elseif (is_string($_scopeName)) {
                 $_scopeName = trim($_scopeName, '\'"');
-                $_scope = isset($validScopes[$_scopeName]) ? $validScopes[$_scopeName] : false;
+                $_scope = $validScopes[$_scopeName] ?? false;
             } else {
                 $_scope = false;
             }
@@ -1147,7 +1147,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         )
         ) {
             $templateName = $this->template->source->type . ':' . trim(
-                preg_replace(
+                (string) preg_replace(
                     '![\t\r\n]+!',
                     ' ',
                     strlen($lex->data) > 40 ?
@@ -1164,7 +1164,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         $error_text =
             'Syntax error in template "' . (empty($this->trace_filepath) ? $templateName : $this->trace_filepath) .
             '"  on line ' . ($line + $this->trace_line_offset) . ' "' .
-            trim(preg_replace('![\t\r\n]+!', ' ', $match[$line - 1])) . '" ';
+            trim((string) preg_replace('![\t\r\n]+!', ' ', $match[$line - 1])) . '" ';
         if (isset($args)) {
             // individual error message
             $error_text .= $args;
@@ -1200,7 +1200,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
             $this->template->source->filepath,
             $line
         );
-        $e->source = trim(preg_replace('![\t\r\n]+!', ' ', $match[$line - 1]));
+        $e->source = trim((string) preg_replace('![\t\r\n]+!', ' ', $match[$line - 1]));
         $e->desc = $args;
         $e->template = $this->template->source->filepath;
         throw $e;
@@ -1209,12 +1209,10 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * Return var_export() value with all white spaces removed
      *
-     * @param mixed $value
-     *
      * @return string
      */
     public function getVarExport(
-        $value
+        mixed $value
     ) {
         return preg_replace('/\s/', '', var_export($value, true));
     }
@@ -1277,7 +1275,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         if (! empty($literals)) {
             foreach ($literals as $key => $literal) {
                 $literalPreg = '';
-                foreach (str_split($literal, 1) as $chr) {
+                foreach (str_split((string) $literal, 1) as $chr) {
                     $literalPreg .= '[' . preg_quote($chr, '/') . ']';
                 }
 
@@ -1365,12 +1363,10 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * Check if $value contains variable elements
      *
-     * @param mixed $value
-     *
      * @return bool|int
      */
     public function isVariable(
-        $value
+        mixed $value
     ) {
         if (is_string($value)) {
             return preg_match('/[$(]/', $value);
@@ -1522,7 +1518,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * @return bool true if compiling succeeded, false if it failed
      */
     abstract protected function doCompile(
-        $_content,
+        mixed $_content,
         $isTemplateSource = false
     );
 
@@ -1536,7 +1532,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         $string
     ) {
         static $regex_pattern = '/^\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*((->)[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*|\[.*]*\])*$/';
-        return preg_match($regex_pattern, trim($string)) === 1;
+        return preg_match($regex_pattern, trim((string) $string)) === 1;
     }
 
     /**
@@ -1573,7 +1569,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                 }
             } else {
                 foreach ($arg as $k => $v) {
-                    if (($k === "'nocache'" || $k === 'nocache') && (trim($v, "'\" ") === 'true')) {
+                    if (($k === "'nocache'" || $k === 'nocache') && (trim((string) $v, "'\" ") === 'true')) {
                         $this->tag_nocache = true;
                     }
                 }
@@ -1619,7 +1615,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         }
 
         // not an internal compiler tag
-        if (strlen($tag) < 6 || substr($tag, -5) !== 'close') {
+        if (strlen($tag) < 6 || ! str_ends_with($tag, 'close')) {
             // check if tag is a registered object
             if (isset($this->smarty->registered_objects[$tag]) && isset($parameter['object_method'])) {
                 $method = $parameter['object_method'];

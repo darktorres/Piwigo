@@ -76,13 +76,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     public $inheritance = null;
 
     /**
-     * Template resource
-     *
-     * @var string
-     */
-    public $template_resource = null;
-
-    /**
      * flag if compiled template is invalid and must be (re)compiled
      *
      * @var bool
@@ -142,7 +135,10 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      * @param bool                                                         $_isConfig
      */
     public function __construct(
-        $template_resource,
+        /**
+         * Template resource
+         */
+        public $template_resource,
         Smarty $smarty,
         Smarty_Internal_Data $_parent = null,
         $_cache_id = null,
@@ -153,14 +149,12 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     ) {
         $this->smarty = $smarty;
         // Smarty parameter
-        $this->cache_id = $_cache_id === null ? $this->smarty->cache_id : $_cache_id;
-        $this->compile_id = $_compile_id === null ? $this->smarty->compile_id : $_compile_id;
-        $this->caching = (int) ($_caching === null ? $this->smarty->caching : $_caching);
-        $this->cache_lifetime = $_cache_lifetime === null ? $this->smarty->cache_lifetime : $_cache_lifetime;
+        $this->cache_id = $_cache_id ?? $this->smarty->cache_id;
+        $this->compile_id = $_compile_id ?? $this->smarty->compile_id;
+        $this->caching = (int) ($_caching ?? $this->smarty->caching);
+        $this->cache_lifetime = $_cache_lifetime ?? $this->smarty->cache_lifetime;
         $this->compile_check = (int) $smarty->compile_check;
         $this->parent = $_parent;
-        // Template resource
-        $this->template_resource = $template_resource;
         $this->source = $_isConfig ? Smarty_Template_Config::load($this) : Smarty_Template_Source::load($this);
         parent::__construct();
         if ($smarty->security_policy && method_exists($smarty->security_policy, 'registerCallBacks')) {
@@ -186,6 +180,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      *
      * @return mixed
      */
+    #[\Override]
     public function __call(
         $name,
         $args
@@ -237,7 +232,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function __set(
         $property_name,
-        $value
+        mixed $value
     ) {
         switch ($property_name) {
             case 'compiled':
@@ -312,7 +307,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
                 $this->smarty->ext->_cacheModify->cacheModifiedCheck(
                     $this->cached,
                     $this,
-                    isset($content) ? $content : ob_get_clean()
+                    $content ?? ob_get_clean()
                 );
             } else {
                 if ((! $this->caching || $this->cached->has_nocache_code || $this->source->handler->recompiled)
@@ -370,8 +365,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function _subTemplateRender(
         $template,
-        $cache_id,
-        $compile_id,
+        mixed $cache_id,
+        mixed $compile_id,
         $caching,
         $cache_lifetime,
         $data,
@@ -385,7 +380,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         $smarty = &$this->smarty;
         $_templateId = $smarty->_getTemplateId($template, $cache_id, $compile_id, $caching, $tpl);
         // recursive call ?
-        if ((isset($tpl->templateId) ? $tpl->templateId : $tpl->_getTemplateId()) !== $_templateId) {
+        if (($tpl->templateId ?? $tpl->_getTemplateId()) !== $_templateId) {
             // already in template cache?
             if (isset(self::$tplObjCache[$_templateId])) {
                 // copy data from cached object
@@ -413,7 +408,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
                 $tpl->compile_id = $compile_id;
                 if (isset($uid)) {
                     // for inline templates we can get all resource information from file dependency
-                    list($filepath, $timestamp, $type) = $tpl->compiled->file_dependency[$uid];
+                    [$filepath, $timestamp, $type] = $tpl->compiled->file_dependency[$uid];
                     $tpl->source = new Smarty_Template_Source($smarty, $filepath, $type, $filepath);
                     $tpl->source->filepath = $filepath;
                     $tpl->source->timestamp = $timestamp;
@@ -523,7 +518,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function _assignInScope(
         $varName,
-        $value,
+        mixed $value,
         $nocache = false,
         $scope = 0
     ) {
@@ -655,7 +650,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         } else {
             $tpl->mustCompile = ! $is_valid;
             $resource = $tpl->compiled;
-            $resource->includes = isset($properties['includes']) ? $properties['includes'] : [];
+            $resource->includes = $properties['includes'] ?? [];
         }
 
         if ($is_valid) {
@@ -697,14 +692,14 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function _getTemplateId()
     {
-        return isset($this->templateId) ? $this->templateId : $this->templateId =
-            $this->smarty->_getTemplateId($this->template_resource, $this->cache_id, $this->compile_id);
+        return $this->templateId ?? ($this->templateId =
+            $this->smarty->_getTemplateId($this->template_resource, $this->cache_id, $this->compile_id));
     }
 
     /**
      * runtime error not matching capture tags
      */
-    public function capture_error()
+    public function capture_error(): never
     {
         throw new SmartyException(sprintf("Not matching {capture} open/close in '%s'", $this->template_resource));
     }

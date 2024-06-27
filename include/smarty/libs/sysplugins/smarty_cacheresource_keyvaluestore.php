@@ -47,6 +47,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @param Smarty_Template_Cached   $cached    cached object
      * @param Smarty_Internal_Template $_template template object
      */
+    #[\Override]
     public function populate(
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template
@@ -61,6 +62,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @param Smarty_Template_Cached $cached cached object
      */
+    #[\Override]
     public function populateTimestamp(
         Smarty_Template_Cached $cached
     ) {
@@ -91,6 +93,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @return boolean                 true or false if the cached content does not exist
      */
+    #[\Override]
     public function process(
         Smarty_Internal_Template $_smarty_tpl,
         Smarty_Template_Cached $cached = null,
@@ -100,8 +103,8 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
             $cached = $_smarty_tpl->cached;
         }
 
-        $content = $cached->content ? $cached->content : null;
-        $timestamp = $cached->timestamp ? $cached->timestamp : null;
+        $content = $cached->content ?: null;
+        $timestamp = $cached->timestamp ?: null;
         if ($content === null || ! $timestamp) {
             if (! $this->fetch(
                 $_smarty_tpl->cached->filepath,
@@ -133,6 +136,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @return boolean                  success
      */
+    #[\Override]
     public function writeCachedContent(
         Smarty_Internal_Template $_template,
         $content
@@ -150,10 +154,11 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @return string|false  content
      */
+    #[\Override]
     public function readCachedContent(
         Smarty_Internal_Template $_template
     ) {
-        $content = $_template->cached->content ? $_template->cached->content : null;
+        $content = $_template->cached->content ?: null;
         $timestamp = null;
         if ($content === null) {
             if (! $this->fetch(
@@ -170,11 +175,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
             }
         }
 
-        if (isset($content)) {
-            return $content;
-        }
-
-        return false;
+        return $content ?? false;
     }
 
     /**
@@ -188,6 +189,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @uses   purge() to clear the whole store
      * @uses   invalidate() to mark everything outdated if purge() is inapplicable
      */
+    #[\Override]
     public function clearAll(
         Smarty $smarty,
         $exp_time = null
@@ -214,6 +216,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @uses   invalidate() to mark CacheIDs parent chain as outdated
      * @uses   delete() to remove CacheID from cache
      */
+    #[\Override]
     public function clear(
         Smarty $smarty,
         $resource_name,
@@ -237,6 +240,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @return boolean               true or false if cache is locked
      */
+    #[\Override]
     public function hasLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
@@ -254,6 +258,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @return bool|void
      */
+    #[\Override]
     public function acquireLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
@@ -273,6 +278,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @return bool|void
      */
+    #[\Override]
     public function releaseLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached

@@ -54,8 +54,7 @@ if ($pictures !== []) {
           ),
           [
               'slideshow' =>
-                      (isset($_GET['slideshow']) ? $_GET['slideshow']
-                                                 : ''),
+                      ($_GET['slideshow'] ?? ''),
           ]
       );
 

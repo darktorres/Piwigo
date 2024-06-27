@@ -25,7 +25,7 @@ DELETE FROM ' . CADDIE_TABLE . '
     pwg_query($query);
 
     $inserts = [];
-    foreach (explode(',', $_GET['batch']) as $image_id) {
+    foreach (explode(',', (string) $_GET['batch']) as $image_id) {
         $inserts[] = [
             'user_id' => $user['id'],
             'element_id' => $image_id,
@@ -49,26 +49,26 @@ SELECT registration_date
   ORDER BY user_id ASC
   LIMIT 1
 ;';
-    list($register_date) = pwg_db_fetch_row(pwg_query($query));
+    [$register_date] = pwg_db_fetch_row(pwg_query($query));
 
     $query = '
 SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-    list($nb_cats) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_cats] = pwg_db_fetch_row(pwg_query($query));
 
     $query = '
 SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
 ;';
-    list($nb_images) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
     include_once(PHPWG_ROOT_PATH . 'include/mdetect.php');
     $uagent_obj = new uagent_info();
     // To see the mobile app promote, the account must have 2 weeks ancient, 3 albums created and 30 photos uploaded
     $template->assign(
         'PROMOTE_MOBILE_APPS',
-        (! $uagent_obj->DetectIos() and strtotime($register_date) < strtotime(
+        (! $uagent_obj->DetectIos() and strtotime((string) $register_date) < strtotime(
             '2 weeks ago'
         ) and $nb_cats >= 3 and $nb_images >= 30)
     );
@@ -115,7 +115,7 @@ SELECT *
             $formats_original_info['formats'] = l10n('Formats: %s', implode(', ', $format_strings));
         }
 
-        $extTab = explode('.', $formats_original_info['file']);
+        $extTab = explode('.', (string) $formats_original_info['file']);
 
         $formats_original_info['ext'] = l10n('%s file type', strtoupper(end($extTab)));
 

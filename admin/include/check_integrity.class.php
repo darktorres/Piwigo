@@ -78,7 +78,10 @@ class check_integrity
                         $args = [];
                     }
 
-                    $this->retrieve_list[$i]['corrected'] = call_user_func_array($c13y['correction_fct'], $args);
+                    $this->retrieve_list[$i]['corrected'] = call_user_func_array(
+                        $c13y['correction_fct'],
+                        $args
+                    );
 
                     if ($this->retrieve_list[$i]['corrected']) {
                         ++$corrected_count;

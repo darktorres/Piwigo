@@ -64,9 +64,9 @@ $plugin_menu_links_deprec = trigger_change(
 $settings_url_for_plugin_deprec = [];
 
 foreach ($plugin_menu_links_deprec as $value) {
-    if (preg_match('/^admin\.php\?page=plugin-(.*)$/', $value['URL'], $matches)) {
+    if (preg_match('/^admin\.php\?page=plugin-(.*)$/', (string) $value['URL'], $matches)) {
         $settings_url_for_plugin_deprec[$matches[1]] = $value['URL'];
-    } elseif (preg_match('/^.*section=(.*?)[\/&%].*$/', $value['URL'], $matches)) {
+    } elseif (preg_match('/^.*section=(.*?)[\/&%].*$/', (string) $value['URL'], $matches)) {
         $settings_url_for_plugin_deprec[$matches[1]] = $value['URL'];
     }
 }
@@ -99,7 +99,7 @@ foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
     } elseif ($fs_plugin['hasSettings']) { // new version
         $setting_url = 'admin.php?page=plugin-' . $plugin_id;
 
-        if (preg_match('/^piwigo-(videojs|openstreetmap)$/', $plugin_id)) {
+        if (preg_match('/^piwigo-(videojs|openstreetmap)$/', (string) $plugin_id)) {
             $setting_url = str_replace('piwigo-', 'piwigo_', $setting_url);
         }
     }
@@ -176,7 +176,7 @@ function cmp($a, $b)
     ];
 
     if ($a['STATE'] == $b['STATE']) {
-        return strcasecmp($a['NAME'], $b['NAME']);
+        return strcasecmp((string) $a['NAME'], (string) $b['NAME']);
     }
 
     return $s[$a['STATE']] >= $s[$b['STATE']];

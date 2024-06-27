@@ -26,7 +26,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
     ) {
-        $_index = preg_split("/\]\[/", substr($parameter, 1, strlen($parameter) - 2));
+        $_index = preg_split("/\]\[/", substr((string) $parameter, 1, strlen((string) $parameter) - 2));
         $variable = smarty_strtolower_ascii($compiler->getId($_index[0]));
         if ($variable === false) {
             $compiler->trigger_template_error('special $Smarty variable name index can not be variable', null, true);
@@ -102,7 +102,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                         break;
                     }
 
-                    if (strpos($_index[1], '$') === false && strpos($_index[1], "'") === false) {
+                    if (! str_contains($_index[1], '$') && ! str_contains($_index[1], "'")) {
                         return sprintf("(defined('%s') ? constant('%s') : null)", $_index[1], $_index[1]);
                     }
 

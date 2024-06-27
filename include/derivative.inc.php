@@ -14,11 +14,11 @@
  */
 final class SrcImage
 {
-    public const IS_ORIGINAL = 0x01;
+    public const int IS_ORIGINAL = 0x01;
 
-    public const IS_MIMETYPE = 0x02;
+    public const int IS_MIMETYPE = 0x02;
 
-    public const DIM_NOT_GIVEN = 0x04;
+    public const int DIM_NOT_GIVEN = 0x04;
 
     /**
      * @var int
@@ -48,8 +48,9 @@ final class SrcImage
     /**
      * @param array $infos assoc array of data from images table
      */
-    public function __construct($infos)
-    {
+    public function __construct(
+        $infos
+    ) {
         global $conf;
 
         $this->id = $infos['id'];
@@ -177,11 +178,6 @@ final class SrcImage
 final class DerivativeImage
 {
     /**
-     * @var SrcImage
-     */
-    public $src_image;
-
-    /**
      * @var array
      */
     private $params;
@@ -206,16 +202,17 @@ final class DerivativeImage
      *    or a DerivativeParams object
      * @param SrcImage $src_image the source image of this derivative
      */
-    public function __construct($type, SrcImage $src_image)
-    {
-        $this->src_image = $src_image;
+    public function __construct(
+        $type,
+        public SrcImage $src_image
+    ) {
         if (is_string($type)) {
             $this->params = ImageStdParams::get_by_type($type);
         } else {
             $this->params = $type;
         }
 
-        self::build($src_image, $this->params, $this->rel_path, $this->rel_url, $this->is_cached);
+        self::build($this->src_image, $this->params, $this->rel_path, $this->rel_url, $this->is_cached);
     }
 
     /**

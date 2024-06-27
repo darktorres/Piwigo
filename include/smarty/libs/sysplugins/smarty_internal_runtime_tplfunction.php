@@ -21,8 +21,7 @@ class Smarty_Internal_Runtime_TplFunction
         $params,
         $nocache
     ) {
-        $funcParam = isset($tpl->tplFunctions[$name]) ? $tpl->tplFunctions[$name] :
-            (isset($tpl->smarty->tplFunctions[$name]) ? $tpl->smarty->tplFunctions[$name] : null);
+        $funcParam = $tpl->tplFunctions[$name] ?? $tpl->smarty->tplFunctions[$name] ?? null;
         if (isset($funcParam)) {
             if (! $tpl->caching || ($tpl->caching && $nocache)) {
                 $function = $funcParam['call_name'];
@@ -95,8 +94,7 @@ class Smarty_Internal_Runtime_TplFunction
         $name = null
     ) {
         if (isset($name)) {
-            return isset($tpl->tplFunctions[$name]) ? $tpl->tplFunctions[$name] :
-                (isset($tpl->smarty->tplFunctions[$name]) ? $tpl->smarty->tplFunctions[$name] : false);
+            return $tpl->tplFunctions[$name] ?? $tpl->smarty->tplFunctions[$name] ?? false;
         }
 
         return empty($tpl->tplFunctions) ? $tpl->smarty->tplFunctions : $tpl->tplFunctions;
@@ -149,7 +147,7 @@ class Smarty_Internal_Runtime_TplFunction
                             // check if we must update file dependency
                             if (! preg_match(
                                 sprintf("/'%s'(.*?)'nocache_hash'/", $funcParam['uid']),
-                                $content,
+                                (string) $content,
                                 $match2
                             )) {
                                 $content = preg_replace("/('file_dependency'(.*?)\()/", '\1' . $match1[0], $content);

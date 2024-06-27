@@ -30,7 +30,7 @@ function smarty_modifiercompiler_unescape(
     $esc_type = smarty_literal_compiler_param($params, 1, 'html');
 
     if (! isset($params[2])) {
-        $params[2] = "'" . addslashes(Smarty::$_CHARSET) . "'";
+        $params[2] = "'" . addslashes((string) Smarty::$_CHARSET) . "'";
     }
 
     switch ($esc_type) {

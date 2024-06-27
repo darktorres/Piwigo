@@ -65,7 +65,7 @@ class Smarty_Internal_Compile_Nocacheclose extends Smarty_Internal_CompileBase
     ) {
         $_attr = $this->getAttributes($compiler, $args);
         // leave nocache mode
-        list($compiler->nocache) = $this->closeTag($compiler, ['nocache']);
+        [$compiler->nocache] = $this->closeTag($compiler, ['nocache']);
         // this tag does not return compiled code
         $compiler->has_code = false;
         return true;

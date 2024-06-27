@@ -165,7 +165,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     if (empty($row['author_id'])) {
         $author_name = $row['author'];
     } else {
-        $author_name = stripslashes($row['username']);
+        $author_name = stripslashes((string) $row['username']);
     }
 
     $template->append(

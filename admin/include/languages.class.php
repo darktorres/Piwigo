@@ -126,7 +126,7 @@ UPDATE ' . USER_INFOS_TABLE . '
             $target_charset = get_pwg_charset();
         }
 
-        $target_charset = strtolower($target_charset);
+        $target_charset = strtolower((string) $target_charset);
 
         $dir = opendir(PHPWG_ROOT_PATH . 'language');
         while ($file = readdir($dir)) {
@@ -167,7 +167,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                     }
 
                     if (! empty($language['uri']) and strpos($language['uri'], 'extension_view.php?eid=')) {
-                        list(, $extension) = explode('extension_view.php?eid=', $language['uri']);
+                        [, $extension] = explode('extension_view.php?eid=', $language['uri']);
                         if (is_numeric($extension)) {
                             $language['extension'] = $extension;
                         }
@@ -221,7 +221,7 @@ UPDATE ' . USER_INFOS_TABLE . '
 
             $branch = get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
-                if (strpos($pem_version['name'], $branch) === 0) {
+                if (str_starts_with((string) $pem_version['name'], $branch)) {
                     $versions_to_check[] = $pem_version['id'];
                 }
             }
@@ -265,12 +265,12 @@ UPDATE ' . USER_INFOS_TABLE . '
             }
 
             foreach ($pem_languages as $language) {
-                if (preg_match('/^.*? \[[A-Z]{2}\]$/', $language['extension_name'])) {
+                if (preg_match('/^.*? \[[A-Z]{2}\]$/', (string) $language['extension_name'])) {
                     $this->server_languages[$language['extension_id']] = $language;
                 }
             }
 
-            @uasort($this->server_languages, [$this, 'extension_name_compare']);
+            @uasort($this->server_languages, $this->extension_name_compare(...));
             return true;
         }
 
@@ -305,9 +305,11 @@ UPDATE ' . USER_INFOS_TABLE . '
                 if ($list = $zip->listContent()) {
                     foreach ($list as $file) {
                         // we search common.lang.php in archive
-                        if (basename($file['filename']) == 'common.lang.php'
+                        if (basename(
+                            (string) $file['filename']
+                        ) == 'common.lang.php'
                           and (! isset($main_filepath)
-                          or strlen($file['filename']) < strlen($main_filepath))) {
+                          or strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
                             $main_filepath = $file['filename'];
                         }
                     }
@@ -315,7 +317,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                     $logger->debug(__FUNCTION__ . ', $main_filepath = ' . $main_filepath);
 
                     if (isset($main_filepath)) {
-                        $root = basename(dirname($main_filepath)); // common.lang.php path in archive
+                        $root = basename(dirname((string) $main_filepath)); // common.lang.php path in archive
                         if (preg_match('/^[a-z]{2}_[A-Z]{2}$/', $root)) {
                             if ($action == 'install') {
                                 $dest = $root;
@@ -370,7 +372,10 @@ UPDATE ' . USER_INFOS_TABLE . '
                                         $realpath = realpath(
                                             $path
                                         );
-                                        if ($realpath === false or strpos($realpath, $extract_path_realpath) !== 0) {
+                                        if ($realpath === false or ! str_starts_with(
+                                            $realpath,
+                                            $extract_path_realpath
+                                        )) {
                                             continue;
                                         }
 
@@ -411,6 +416,6 @@ UPDATE ' . USER_INFOS_TABLE . '
      */
     public function extension_name_compare($a, $b)
     {
-        return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
+        return strcmp(strtolower((string) $a['extension_name']), strtolower((string) $b['extension_name']));
     }
 }

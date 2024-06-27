@@ -85,13 +85,13 @@ function smarty_function_math(
     }
 
     // disallow backticks
-    if (strpos($equation, '`') !== false) {
+    if (str_contains($equation, '`')) {
         trigger_error('math: backtick character not allowed in equation', E_USER_WARNING);
         return;
     }
 
     // also disallow dollar signs
-    if (strpos($equation, '$') !== false) {
+    if (str_contains($equation, '$')) {
         trigger_error('math: dollar signs not allowed in equation', E_USER_WARNING);
         return;
     }
@@ -99,7 +99,7 @@ function smarty_function_math(
     foreach ($params as $key => $val) {
         if ($key !== 'equation' && $key !== 'format' && $key !== 'assign') {
             // make sure value is not empty
-            if (strlen($val) === 0) {
+            if (strlen((string) $val) === 0) {
                 trigger_error(sprintf("math: parameter '%s' is empty", $key), E_USER_WARNING);
                 return;
             }

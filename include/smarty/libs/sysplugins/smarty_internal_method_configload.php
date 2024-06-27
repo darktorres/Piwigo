@@ -32,7 +32,7 @@ class Smarty_Internal_Method_ConfigLoad
     public function configLoad(
         Smarty_Internal_Data $data,
         $config_file,
-        $sections = null
+        mixed $sections = null
     ) {
         $this->_loadConfigFile($data, $config_file, $sections, null);
         return $data;
@@ -54,7 +54,7 @@ class Smarty_Internal_Method_ConfigLoad
     public function _loadConfigFile(
         Smarty_Internal_Data $data,
         $config_file,
-        $sections = null,
+        mixed $sections = null,
         $scope = 0
     ) {
         /** @var \Smarty $smarty */

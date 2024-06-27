@@ -57,7 +57,7 @@ if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
 
     $url = preg_replace('/[\/]*$/', '', $_POST['galleries_url']);
     $url .= '/';
-    if (! (strpos($url, '.') === 0)) {
+    if (! (str_starts_with($url, '.'))) {
         $url = './' . $url;
     }
 
@@ -105,7 +105,7 @@ SELECT galleries_url
   FROM ' . SITES_TABLE . '
   WHERE id = ' . $page['site'] . '
 ;';
-    list($galleries_url) = pwg_db_fetch_row(pwg_query($query));
+    [$galleries_url] = pwg_db_fetch_row(pwg_query($query));
     switch ($_GET['action']) {
         case 'delete':
 

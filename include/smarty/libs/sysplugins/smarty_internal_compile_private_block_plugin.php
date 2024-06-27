@@ -75,13 +75,13 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
         $tag,
         $function = null
     ) {
-        if (! isset($tag[5]) || substr($tag, -5) !== 'close') {
+        if (! isset($tag[5]) || ! str_ends_with($tag, 'close')) {
             // opening tag of block plugin
             // check and get attributes
             $_attr = $this->getAttributes($compiler, $args);
             $this->nesting++;
             unset($_attr['nocache']);
-            list($callback, $_paramsArray, $callable) = $this->setup($compiler, $_attr, $tag, $function);
+            [$callback, $_paramsArray, $callable] = $this->setup($compiler, $_attr, $tag, $function);
             $_params = 'array(' . implode(',', $_paramsArray) . ')';
             // compile code
             $output = '<?php ';
@@ -106,7 +106,7 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
             }
 
             // closing tag of block plugin, restore nocache
-            list($_params, $compiler->nocache, $callback) = $this->closeTag(
+            [$_params, $compiler->nocache, $callback] = $this->closeTag(
                 $compiler,
                 substr($tag, 0, -5)
             );

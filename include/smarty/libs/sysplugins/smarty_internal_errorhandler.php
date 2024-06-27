@@ -44,8 +44,7 @@ class Smarty_Internal_ErrorHandler
             prepended by the @ error-control operator.
         */
         $this->previousErrorHandler = set_error_handler(
-            [
-                $this, 'handleError']
+            $this->handleError(...)
         );
     }
 
@@ -77,21 +76,21 @@ class Smarty_Internal_ErrorHandler
 
         if ($this->allowUndefinedVars && preg_match(
             '/^(Attempt to read property "value" on null|Trying to get property (\'value\' )?of non-object)/',
-            $errstr
+            (string) $errstr
         )) {
             return; // suppresses this error
         }
 
         if ($this->allowUndefinedArrayKeys && preg_match(
             '/^(Undefined index|Undefined array key|Trying to access array offset on value of type)/',
-            $errstr
+            (string) $errstr
         )) {
             return; // suppresses this error
         }
 
         if ($this->allowDereferencingNonObjects && preg_match(
             '/^Attempt to read property ".+?" on/',
-            $errstr
+            (string) $errstr
         )) {
             return; // suppresses this error
         }

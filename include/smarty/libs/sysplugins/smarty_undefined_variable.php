@@ -21,10 +21,9 @@ class Smarty_Undefined_Variable extends Smarty_Variable
 
     /**
      * Always returns an empty string.
-     *
-     * @return string
      */
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '';
     }

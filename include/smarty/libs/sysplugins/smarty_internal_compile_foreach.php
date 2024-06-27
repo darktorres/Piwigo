@@ -178,7 +178,11 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
             $namedAttr = $this->matchResults['named'];
         }
 
-        if (isset($_attr['properties']) && preg_match_all("/['](.*?)[']/", $_attr['properties'], $match)) {
+        if (isset($_attr['properties']) && preg_match_all(
+            "/['](.*?)[']/",
+            (string) $_attr['properties'],
+            $match
+        )) {
             foreach ($match[1] as $prop) {
                 if (in_array($prop, $this->itemProperties)) {
                     $itemAttr[$prop] = true;
@@ -367,7 +371,7 @@ class Smarty_Internal_Compile_Foreachelse extends Smarty_Internal_CompileBase
     ) {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-        list($openTag, $nocache, $local, $itemVar, $restore) = $this->closeTag($compiler, ['foreach']);
+        [$openTag, $nocache, $local, $itemVar, $restore] = $this->closeTag($compiler, ['foreach']);
         $this->openTag($compiler, 'foreachelse', ['foreachelse', $nocache, $local, $itemVar, 0]);
         $output = "<?php\n";
         if ($restore === 2) {
@@ -404,9 +408,10 @@ class Smarty_Internal_Compile_Foreachclose extends Smarty_Internal_CompileBase
             $compiler->tag_nocache = true;
         }
 
-        list(
-            $openTag, $compiler->nocache, $local, $itemVar, $restore
-        ) = $this->closeTag($compiler, ['foreach', 'foreachelse']);
+        [$openTag, $compiler->nocache, $local, $itemVar, $restore] = $this->closeTag(
+            $compiler,
+            ['foreach', 'foreachelse']
+        );
         $output = "<?php\n";
         if ($restore === 2) {
             $output .= "{$itemVar} = {$local}saved;\n";

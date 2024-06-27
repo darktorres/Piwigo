@@ -238,6 +238,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
      * @param Smarty_Internal_Template $_template template object
      * @param bool                     $update    flag if called because cache update
      */
+    #[\Override]
     public function process(
         Smarty_Internal_Template $_template,
         $update = false

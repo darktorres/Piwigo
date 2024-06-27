@@ -129,12 +129,12 @@ SELECT
     COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-list($nb_albums) = pwg_db_fetch_row(pwg_query($query));
+[$nb_albums] = pwg_db_fetch_row(pwg_query($query));
 // $nb_albums = 0;
 $template->assign('NB_ALBUMS', $nb_albums);
 
 // image level options
-$selected_level = isset($_POST['level']) ? $_POST['level'] : 0;
+$selected_level = $_POST['level'] ?? 0;
 $template->assign(
     [
         'level_options' => get_privacy_level_options(),

@@ -47,7 +47,7 @@ function smarty_modifier_debug_print_var(
             break;
         case 'object':
             $object_vars = get_object_vars($var);
-            $results = '<b>' . get_class($var) . ' Object (' . count($object_vars) . ')</b>';
+            $results = '<b>' . $var::class . ' Object (' . count($object_vars) . ')</b>';
             if (in_array($var, $objects)) {
                 $results .= ' called recursive';
                 break;

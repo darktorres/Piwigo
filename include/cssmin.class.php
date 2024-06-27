@@ -29,14 +29,16 @@
  * @license		http://opensource.org/licenses/mit-license.php MIT License
  * @version		3.0.1
  */
-abstract class aCssToken
+abstract class aCssToken implements \Stringable
 {
-    abstract public function __toString();
+    #[\Override]
+    abstract public function __toString(): string;
 } abstract class aCssRulesetStartToken extends aCssToken
 {
 } abstract class aCssRulesetEndToken extends aCssToken
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '}';
     }
@@ -48,8 +50,10 @@ abstract class aCssToken
 
     protected $buffer = '';
 
-    public function __construct(CssParser $parser, array $configuration = null)
-    {
+    public function __construct(
+        CssParser $parser,
+        array $configuration = null
+    ) {
         $this->configuration = $configuration;
         $this->parser = $parser;
     }
@@ -65,8 +69,10 @@ abstract class aCssToken
 
     protected $minifier = null;
 
-    public function __construct(CssMinifier $minifier, array $configuration = [])
-    {
+    public function __construct(
+        CssMinifier $minifier,
+        array $configuration = []
+    ) {
         $this->configuration = $configuration;
         $this->minifier = $minifier;
     }
@@ -80,14 +86,16 @@ abstract class aCssToken
 
     protected $minifier = null;
 
-    public function __construct(CssMinifier $minifier, array $configuration = [])
-    {
+    public function __construct(
+        CssMinifier $minifier,
+        array $configuration = []
+    ) {
         $this->configuration = $configuration;
         $this->minifier = $minifier;
     }
 
     abstract public function apply(array &$tokens);
-} abstract class aCssFormatter
+} abstract class aCssFormatter implements \Stringable
 {
     protected $indent = '    ';
 
@@ -95,33 +103,30 @@ abstract class aCssToken
 
     protected $tokens = [];
 
-    public function __construct(array $tokens, $indent = null, $padding = null)
-    {
+    public function __construct(
+        array $tokens,
+        $indent = null,
+        $padding = null
+    ) {
         $this->tokens = $tokens;
-        $this->indent = $indent !== null ? $indent : $this->indent;
-        $this->padding = $padding !== null ? $padding : $this->padding;
+        $this->indent = $indent ?? $this->indent;
+        $this->padding = $padding ?? $this->padding;
     }
 
-    abstract public function __toString();
+    #[\Override]
+    abstract public function __toString(): string;
 } abstract class aCssDeclarationToken extends aCssToken
 {
-    public $IsImportant = false;
-
-    public $IsLast = false;
-
-    public $Property = '';
-
-    public $Value = '';
-
-    public function __construct($property, $value, $isImportant = false, $isLast = false)
-    {
-        $this->Property = $property;
-        $this->Value = $value;
-        $this->IsImportant = $isImportant;
-        $this->IsLast = $isLast;
+    public function __construct(
+        public $Property,
+        public $Value,
+        public $IsImportant = false,
+        public $IsLast = false
+    ) {
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return $this->Property . ':' . $this->Value . ($this->IsImportant ? ' !important' : '') . ($this->IsLast ? '' : ';');
     }
@@ -129,13 +134,15 @@ abstract class aCssToken
 {
 } abstract class aCssAtBlockEndToken extends aCssToken
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '}';
     }
 } class CssWhitesmithsFormatter extends aCssFormatter
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         $r = [];
         $level = 0;
@@ -143,11 +150,9 @@ abstract class aCssToken
             $this->tokens
         ); $i < $l; $i++) {
             $token = $this->tokens[$i];
-            $class = get_class(
-                $token
-            );
+            $class = $token::class;
             $indent = str_repeat(
-                $this->indent,
+                (string) $this->indent,
                 $level
             );
             if ($class === 'CssCommentToken') {
@@ -158,11 +163,7 @@ abstract class aCssToken
                 for ($ii = 0, $ll = count(
                     $lines
                 ); $ii < $ll; $ii++) {
-                    $r[] = $indent . (substr(
-                        $lines[$ii],
-                        0,
-                        1
-                    ) == '*' ? ' ' : '') . $lines[$ii];
+                    $r[] = $indent . (str_starts_with($lines[$ii], '*') ? ' ' : '') . $lines[$ii];
                 }
             } elseif ($class === 'CssAtCharsetToken') {
                 $r[] = $indent . '@charset ' . $token->Charset . ';';
@@ -234,6 +235,7 @@ abstract class aCssToken
         return $this->variables;
     }
 
+    #[\Override]
     public function apply(aCssToken &$token)
     {
         if (stripos($token->Value, 'var') !== false && preg_match_all(
@@ -279,6 +281,7 @@ abstract class aCssToken
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -294,6 +297,7 @@ abstract class aCssToken
     }
 } class CssVariablesMinifierFilter extends aCssMinifierFilter
 {
+    #[\Override]
     public function apply(array &$tokens)
     {
         $variables = [];
@@ -305,9 +309,7 @@ abstract class aCssToken
         for ($i = 0, $l = count(
             $tokens
         ); $i < $l; $i++) {
-            if (get_class(
-                $tokens[$i]
-            ) === 'CssAtVariablesStartToken') {
+            if ($tokens[$i]::class === 'CssAtVariablesStartToken') {
                 $remove[] = $i;
                 $mediaTypes = (count(
                     $tokens[$i]->MediaTypes
@@ -317,15 +319,11 @@ abstract class aCssToken
                         $variables[$mediaType] = [];
                     }
                 } for ($i = $i; $i < $l; $i++) {
-                    if (get_class(
-                        $tokens[$i]
-                    ) === 'CssAtVariablesDeclarationToken') {
+                    if ($tokens[$i]::class === 'CssAtVariablesDeclarationToken') {
                         foreach ($mediaTypes as $mediaType) {
                             $variables[$mediaType][$tokens[$i]->Property] = $tokens[$i]->Value;
                         } $remove[] = $i;
-                    } elseif (get_class(
-                        $tokens[$i]
-                    ) === 'CssAtVariablesEndToken') {
+                    } elseif ($tokens[$i]::class === 'CssAtVariablesEndToken') {
                         $remove[] = $i;
                         break;
                     }
@@ -334,11 +332,11 @@ abstract class aCssToken
         } foreach ($variables as $mediaType => $null) {
             foreach ($variables[$mediaType] as $variable => $value) {
                 if (stripos(
-                    $value,
+                    (string) $value,
                     'var'
                 ) !== false && preg_match_all(
                     "/var\((.+)\)/iSU",
-                    $value,
+                    (string) $value,
                     $m
                 )) {
                     for ($i = 0, $l = count(
@@ -346,7 +344,7 @@ abstract class aCssToken
                     ); $i < $l; $i++) {
                         $variables[$mediaType][$variable] = str_replace(
                             $m[0][$i],
-                            (isset($variables[$mediaType][$m[1][$i]]) ? $variables[$mediaType][$m[1][$i]] : ''),
+                            ($variables[$mediaType][$m[1][$i]] ?? ''),
                             $variables[$mediaType][$variable]
                         );
                     }
@@ -361,7 +359,7 @@ abstract class aCssToken
                 new CssError(
                     __FILE__,
                     __LINE__,
-                    __METHOD__ . ': The plugin <code>CssVariablesMinifierPlugin</code> was not found but is required for <code>' . __CLASS__ . '</code>'
+                    __METHOD__ . ': The plugin <code>CssVariablesMinifierPlugin</code> was not found but is required for <code>' . self::class . '</code>'
                 )
             );
         } else {
@@ -374,35 +372,38 @@ abstract class aCssToken
     }
 } class CssUrlParserPlugin extends aCssParserPlugin
 {
+    #[\Override]
     public function getTriggerChars()
     {
         return ['(', ')'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return false;
     }
 
+    #[\Override]
     public function parse($index, $char, $previousChar, $state)
     {
         if ($char === '(' && strtolower(
-            substr($this->parser->getSource(), $index - 3, 4)
+            substr((string) $this->parser->getSource(), $index - 3, 4)
         ) === 'url(' && $state !== 'T_URL') {
             $this->parser->pushState(
                 'T_URL'
             );
             $this->parser->setExclusive(
-                __CLASS__
+                self::class
             );
         } elseif ($char === "\n" && $previousChar === '\\' && $state === 'T_URL') {
             $this->parser->setBuffer(
-                substr($this->parser->getBuffer(), 0, -2)
+                substr((string) $this->parser->getBuffer(), 0, -2)
             );
         } elseif ($char === "\n" && $previousChar !== '\\' && $state === 'T_URL') {
             $line = $this->parser->getBuffer();
             $this->parser->setBuffer(
-                substr($this->parser->getBuffer(), 0, -1) . ')'
+                substr((string) $this->parser->getBuffer(), 0, -1) . ')'
             );
             $this->parser->popState();
             $this->parser->unsetExclusive();
@@ -420,16 +421,19 @@ abstract class aCssToken
 {
     private $delimiterChar = null;
 
+    #[\Override]
     public function getTriggerChars()
     {
         return ['"', "'", "\n"];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return false;
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -442,18 +446,18 @@ abstract class aCssToken
                 'T_STRING'
             );
             $this->parser->setExclusive(
-                __CLASS__
+                self::class
             );
         } elseif ($char === "\n" && $previousChar === '\\' && $state === 'T_STRING') {
             $this->parser->setBuffer(
-                substr($this->parser->getBuffer(), 0, -2)
+                substr((string) $this->parser->getBuffer(), 0, -2)
             );
         } elseif ($char === "\n" && $previousChar !== '\\' && $state === 'T_STRING') {
             $line = $this->parser->getBuffer();
             $this->parser->popState();
             $this->parser->unsetExclusive();
             $this->parser->setBuffer(
-                substr($this->parser->getBuffer(), 0, -1) . $this->delimiterChar
+                substr((string) $this->parser->getBuffer(), 0, -1) . $this->delimiterChar
             );
             CssMin::triggerError(
                 new CssError(__FILE__, __LINE__, __METHOD__ . ': Unterminated string literal', $line . '_')
@@ -465,7 +469,7 @@ abstract class aCssToken
                 $c = 1;
                 $i = $index - 2;
                 while (substr(
-                    $source,
+                    (string) $source,
                     $i,
                     1
                 ) === '\\') {
@@ -483,19 +487,16 @@ abstract class aCssToken
     }
 } class CssSortRulesetPropertiesMinifierFilter extends aCssMinifierFilter
 {
+    #[\Override]
     public function apply(array &$tokens)
     {
         $r = 0;
         for ($i = 0, $l = count($tokens); $i < $l; $i++) {
-            if (get_class(
-                $tokens[$i]
-            ) !== 'CssRulesetStartToken') {
+            if ($tokens[$i]::class !== 'CssRulesetStartToken') {
                 continue;
             } $endIndex = false;
             for ($ii = $i + 1; $ii < $l; $ii++) {
-                if (get_class(
-                    $tokens[$ii]
-                ) !== 'CssRulesetEndToken') {
+                if ($tokens[$ii]::class !== 'CssRulesetEndToken') {
                     continue;
                 } $endIndex = $ii;
                 break;
@@ -506,9 +507,7 @@ abstract class aCssToken
             if ($endIndex - $startIndex <= 2) {
                 continue;
             } for ($ii = $startIndex + 1; $ii < $endIndex; $ii++) {
-                if (get_class(
-                    $tokens[$ii]
-                ) !== 'CssRulesetDeclarationToken') {
+                if ($tokens[$ii]::class !== 'CssRulesetDeclarationToken') {
                     continue 2;
                 }
             } $declarations = array_slice(
@@ -532,7 +531,7 @@ abstract class aCssToken
                 continue;
             } usort(
                 $declarations,
-                [__CLASS__, 'userDefinedSort1']
+                [self::class, 'userDefinedSort1']
             );
             for ($ii = 0, $ll = count(
                 $declarations
@@ -560,12 +559,14 @@ abstract class aCssToken
 {
     public $Selectors = [];
 
-    public function __construct(array $selectors = [])
-    {
+    public function __construct(
+        array $selectors = []
+    ) {
         $this->Selectors = $selectors;
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return implode(',', $this->Selectors) . '{';
     }
@@ -573,11 +574,13 @@ abstract class aCssToken
 {
     private $selectors = [];
 
+    #[\Override]
     public function getTriggerChars()
     {
         return [',', '{', '}', ':', ';'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return [
@@ -589,6 +592,7 @@ abstract class aCssToken
         ];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -642,10 +646,10 @@ abstract class aCssToken
                 ';}'
             );
             if (strtolower(
-                substr($value, -10, 10)
+                substr((string) $value, -10, 10)
             ) === '!important') {
                 $value = trim(
-                    substr($value, 0, -10)
+                    substr((string) $value, 0, -10)
                 );
                 $isImportant = true;
             } else {
@@ -678,24 +682,26 @@ abstract class aCssToken
 {
     public $MediaTypes = ['all'];
 
-    public function __construct($property, $value, $mediaTypes = null, $isImportant = false, $isLast = false)
-    {
+    public function __construct(
+        $property,
+        $value,
+        $mediaTypes = null,
+        $isImportant = false,
+        $isLast = false
+    ) {
         parent::__construct($property, $value, $isImportant, $isLast);
-        $this->MediaTypes = $mediaTypes ? $mediaTypes : [
+        $this->MediaTypes = $mediaTypes ?: [
             'all',
         ];
     }
 } class CssRemoveLastDelarationSemiColonMinifierFilter extends aCssMinifierFilter
 {
+    #[\Override]
     public function apply(array &$tokens)
     {
         for ($i = 0, $l = count($tokens); $i < $l; $i++) {
-            $current = get_class(
-                $tokens[$i]
-            );
-            $next = isset($tokens[$i + 1]) ? get_class(
-                $tokens[$i + 1]
-            ) : false;
+            $current = $tokens[$i]::class;
+            $next = isset($tokens[$i + 1]) ? $tokens[$i + 1]::class : false;
             if (($current === 'CssRulesetDeclarationToken' && $next === 'CssRulesetEndToken') || ($current === 'CssAtFontFaceDeclarationToken' && $next === 'CssAtFontFaceEndToken') || ($current === 'CssAtPageDeclarationToken' && $next === 'CssAtPageEndToken')) {
                 $tokens[$i]->IsLast = true;
             }
@@ -703,18 +709,15 @@ abstract class aCssToken
     }
 } class CssRemoveEmptyRulesetsMinifierFilter extends aCssMinifierFilter
 {
+    #[\Override]
     public function apply(array &$tokens)
     {
         $r = 0;
         for ($i = 0, $l = count(
             $tokens
         ); $i < $l; $i++) {
-            $current = get_class(
-                $tokens[$i]
-            );
-            $next = isset($tokens[$i + 1]) ? get_class(
-                $tokens[$i + 1]
-            ) : false;
+            $current = $tokens[$i]::class;
+            $next = isset($tokens[$i + 1]) ? $tokens[$i + 1]::class : false;
             if (($current === 'CssRulesetStartToken' && $next === 'CssRulesetEndToken') || ($current === 'CssAtKeyframesRulesetStartToken' && $next === 'CssAtKeyframesRulesetEndToken' && ! array_intersect(
                 [
                     'from',
@@ -733,18 +736,15 @@ abstract class aCssToken
     }
 } class CssRemoveEmptyAtBlocksMinifierFilter extends aCssMinifierFilter
 {
+    #[\Override]
     public function apply(array &$tokens)
     {
         $r = 0;
         for ($i = 0, $l = count(
             $tokens
         ); $i < $l; $i++) {
-            $current = get_class(
-                $tokens[$i]
-            );
-            $next = isset($tokens[$i + 1]) ? get_class(
-                $tokens[$i + 1]
-            ) : false;
+            $current = $tokens[$i]::class;
+            $next = isset($tokens[$i + 1]) ? $tokens[$i + 1]::class : false;
             if (($current === 'CssAtFontFaceStartToken' && $next === 'CssAtFontFaceEndToken') || ($current === 'CssAtKeyframesStartToken' && $next === 'CssAtKeyframesEndToken') || ($current === 'CssAtPageStartToken' && $next === 'CssAtPageEndToken') || ($current === 'CssAtMediaStartToken' && $next === 'CssAtMediaEndToken')) {
                 $tokens[$i] = null;
                 $tokens[$i + 1] = null;
@@ -755,13 +755,12 @@ abstract class aCssToken
     }
 } class CssRemoveCommentsMinifierFilter extends aCssMinifierFilter
 {
+    #[\Override]
     public function apply(array &$tokens)
     {
         $r = 0;
         for ($i = 0, $l = count($tokens); $i < $l; $i++) {
-            if (get_class(
-                $tokens[$i]
-            ) === 'CssCommentToken') {
+            if ($tokens[$i]::class === 'CssCommentToken') {
                 $tokens[$i] = null;
                 $r++;
             }
@@ -785,8 +784,10 @@ abstract class aCssToken
 
     private $tokens = [];
 
-    public function __construct($source = null, array $plugins = null)
-    {
+    public function __construct(
+        $source = null,
+        array $plugins = null
+    ) {
         $plugins = array_merge([
             'Comment' => true,
             'String' => true,
@@ -858,12 +859,12 @@ abstract class aCssToken
         $r = $this->buffer;
         if ($trim) {
             $r = trim(
-                $r,
+                (string) $r,
                 " \t\n\r\0\x0B" . $trim
             );
         } if ($tolower) {
             $r = strtolower(
-                $r
+                (string) $r
             );
         } return $r;
     }
@@ -891,9 +892,7 @@ abstract class aCssToken
             for ($i = 0, $l = count(
                 $this->plugins
             ); $i < $l; $i++) {
-                $index[get_class(
-                    $this->plugins[$i]
-                )] = $i;
+                $index[$this->plugins[$i]::class] = $i;
             }
         } return isset($index[$class]) ? $this->plugins[$index[$class]] : false;
     }
@@ -924,9 +923,7 @@ abstract class aCssToken
         for ($i = 0, $l = count(
             $plugins
         ); $i < $l; $i++) {
-            $tPluginClassName = get_class(
-                $plugins[$i]
-            );
+            $tPluginClassName = $plugins[$i]::class;
             $pluginTriggerChars[$i] = implode(
                 '',
                 $plugins[$i]->getTriggerChars()
@@ -945,10 +942,10 @@ abstract class aCssToken
                     $ii,
                     1
                 );
-                if (strpos(
+                if (! str_contains(
                     $globalTriggerChars,
                     $c
-                ) === false) {
+                )) {
                     $globalTriggerChars .= $c;
                 }
             }
@@ -979,19 +976,19 @@ abstract class aCssToken
                     continue;
                 }
             } $buffer .= $c;
-            if (strpos(
+            if (str_contains(
                 $globalTriggerChars,
                 $c
-            ) !== false) {
+            )) {
                 if ($exclusive) {
                     $tPluginIndex = $pluginIndex[$exclusive];
-                    if (strpos(
+                    if (str_contains(
                         $pluginTriggerChars[$tPluginIndex],
                         $c
-                    ) !== false && ($pluginTriggerStates[$tPluginIndex] === false || strpos(
+                    ) && ($pluginTriggerStates[$tPluginIndex] === false || str_contains(
                         $pluginTriggerStates[$tPluginIndex],
-                        $state
-                    ) !== false)) {
+                        (string) $state
+                    ))) {
                         $r = $plugins[$tPluginIndex]->parse(
                             $i,
                             $c,
@@ -1008,13 +1005,13 @@ abstract class aCssToken
                 } else {
                     $triggerState = '|' . $state . '|';
                     for ($ii = 0, $ll = $pluginCount; $ii < $ll; $ii++) {
-                        if (strpos(
+                        if (str_contains(
                             $pluginTriggerChars[$ii],
                             $c
-                        ) !== false && ($pluginTriggerStates[$ii] === false || strpos(
+                        ) && ($pluginTriggerStates[$ii] === false || str_contains(
                             $pluginTriggerStates[$ii],
                             $triggerState
-                        ) !== false)) {
+                        ))) {
                             $r = $plugins[$ii]->parse(
                                 $i,
                                 $c,
@@ -1091,7 +1088,8 @@ abstract class aCssToken
     }
 } class CssOtbsFormatter extends aCssFormatter
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         $r = [];
         $level = 0;
@@ -1099,11 +1097,9 @@ abstract class aCssToken
             $this->tokens
         ); $i < $l; $i++) {
             $token = $this->tokens[$i];
-            $class = get_class(
-                $token
-            );
+            $class = $token::class;
             $indent = str_repeat(
-                $this->indent,
+                (string) $this->indent,
                 $level
             );
             if ($class === 'CssCommentToken') {
@@ -1114,11 +1110,7 @@ abstract class aCssToken
                 for ($ii = 0, $ll = count(
                     $lines
                 ); $ii < $ll; $ii++) {
-                    $r[] = $indent . (substr(
-                        $lines[$ii],
-                        0,
-                        1
-                    ) == '*' ? ' ' : '') . $lines[$ii];
+                    $r[] = $indent . (str_starts_with($lines[$ii], '*') ? ' ' : '') . $lines[$ii];
                 }
             } elseif ($class === 'CssAtCharsetToken') {
                 $r[] = $indent . '@charset ' . $token->Charset . ';';
@@ -1178,7 +1170,8 @@ abstract class aCssToken
     }
 } class CssNullToken extends aCssToken
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '';
     }
@@ -1190,8 +1183,11 @@ abstract class aCssToken
 
     private $minified = '';
 
-    public function __construct($source = null, array $filters = null, array $plugins = null)
-    {
+    public function __construct(
+        $source = null,
+        array $filters = null,
+        array $plugins = null
+    ) {
         $filters = array_merge([
             'ImportImports' => false,
             'RemoveComments' => true,
@@ -1280,9 +1276,7 @@ abstract class aCssToken
             for ($i = 0, $l = count(
                 $this->plugins
             ); $i < $l; $i++) {
-                $index[get_class(
-                    $this->plugins[$i]
-                )] = $i;
+                $index[$this->plugins[$i]::class] = $i;
             }
         } return isset($index[$class]) ? $this->plugins[$index[$class]] : false;
     }
@@ -1308,9 +1302,7 @@ abstract class aCssToken
         for ($i = 0, $l = count(
             $plugins
         ); $i < $l; $i++) {
-            $tPluginClassName = get_class(
-                $plugins[$i]
-            );
+            $tPluginClassName = $plugins[$i]::class;
             $pluginTriggerTokens[$i] = $plugins[$i]->getTriggerTokens();
             foreach ($pluginTriggerTokens[$i] as $v) {
                 if (! in_array(
@@ -1340,18 +1332,16 @@ abstract class aCssToken
             $tokens
         );
         for ($i = 0; $i < $tokenCount; $i++) {
-            $triggerToken = '|' . get_class(
-                $tokens[$i]
-            ) . '|';
-            if (strpos(
+            $triggerToken = '|' . $tokens[$i]::class . '|';
+            if (str_contains(
                 $globalTriggerTokens,
                 $triggerToken
-            ) !== false) {
+            )) {
                 for ($ii = 0; $ii < $pluginCount; $ii++) {
-                    if (strpos(
-                        $pluginTriggerTokens[$ii],
+                    if (str_contains(
+                        (string) $pluginTriggerTokens[$ii],
                         $triggerToken
-                    ) !== false || $pluginTriggerTokens[$ii] === false) {
+                    ) || $pluginTriggerTokens[$ii] === false) {
                         if ($plugins[$ii]->apply(
                             $tokens[$i]
                         ) === true) {
@@ -1393,7 +1383,7 @@ abstract class aCssToken
 
     public static function initialise()
     {
-        $paths = [dirname(__FILE__)];
+        $paths = [__DIR__];
         for ($i = 0; $i < count(
             $paths
         ); $i++) {
@@ -1433,8 +1423,7 @@ abstract class aCssToken
             '__autoload'
         )) {
             spl_autoload_register(
-                [
-                    __CLASS__, 'autoload']
+                self::autoload(...)
             );
         } else {
             foreach (self::$classIndex as $class => $file) {
@@ -1493,6 +1482,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
     private $imported = [];
 
+    #[\Override]
     public function apply(array &$tokens)
     {
         if (! isset($this->configuration['BasePath']) || ! is_dir(
@@ -1502,16 +1492,14 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 new CssError(
                     __FILE__,
                     __LINE__,
-                    __METHOD__ . ': Base path <code>' . ($this->configuration['BasePath'] ? $this->configuration['BasePath'] : 'null') . '</code> is not a directory'
+                    __METHOD__ . ': Base path <code>' . ($this->configuration['BasePath'] ?: 'null') . '</code> is not a directory'
                 )
             );
             return 0;
         } for ($i = 0, $l = count(
             $tokens
         ); $i < $l; $i++) {
-            if (get_class(
-                $tokens[$i]
-            ) === 'CssAtImportToken') {
+            if ($tokens[$i]::class === 'CssAtImportToken') {
                 $import = $this->configuration['BasePath'] . '/' . $tokens[$i]->Import;
                 if (! is_file(
                     $import
@@ -1554,9 +1542,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         for ($ii = 0, $ll = count(
                             $import
                         ); $ii < $ll; $ii++) {
-                            if (get_class(
-                                $import[$ii]
-                            ) === 'CssAtImportToken') {
+                            if ($import[$ii]::class === 'CssAtImportToken') {
                                 if (count(
                                     $import[$ii]->MediaTypes
                                 ) == 0 || (count(
@@ -1586,9 +1572,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         } for ($ii = 0, $ll = count(
                             $import
                         ); $ii < $ll; $ii++) {
-                            if (get_class(
-                                $import[$ii]
-                            ) === 'CssAtMediaStartToken') {
+                            if ($import[$ii]::class === 'CssAtMediaStartToken') {
                                 foreach ($import[$ii]->MediaTypes as $index => $mediaType) {
                                     if (! in_array(
                                         $mediaType,
@@ -1603,21 +1587,15 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         } for ($ii = 0, $ll = count(
                             $import
                         ); $ii < $ll; $ii++) {
-                            if (get_class(
-                                $import[$ii]
-                            ) === 'CssAtMediaStartToken') {
+                            if ($import[$ii]::class === 'CssAtMediaStartToken') {
                                 if (count(
                                     $import[$ii]->MediaTypes
                                 ) === 0) {
                                     for ($iii = $ii; $iii < $ll; $iii++) {
-                                        if (get_class(
-                                            $import[$iii]
-                                        ) === 'CssAtMediaEndToken') {
+                                        if ($import[$iii]::class === 'CssAtMediaEndToken') {
                                             break;
                                         }
-                                    } if (get_class(
-                                        $import[$iii]
-                                    ) === 'CssAtMediaEndToken') {
+                                    } if ($import[$iii]::class === 'CssAtMediaEndToken') {
                                         array_splice(
                                             $import,
                                             $ii,
@@ -1633,21 +1611,15 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         } for ($ii = 0, $ll = count(
                             $import
                         ); $ii < $ll; $ii++) {
-                            if (get_class(
-                                $import[$ii]
-                            ) === 'CssAtMediaStartToken' && array_diff(
+                            if ($import[$ii]::class === 'CssAtMediaStartToken' && array_diff(
                                 $tokens[$i]->MediaTypes,
                                 $import[$ii]->MediaTypes
                             ) === []) {
                                 for ($iii = $ii; $iii < $ll; $iii++) {
-                                    if (get_class(
-                                        $import[$iii]
-                                    ) == 'CssAtMediaEndToken') {
+                                    if ($import[$iii]::class == 'CssAtMediaEndToken') {
                                         break;
                                     }
-                                } if (get_class(
-                                    $import[$iii]
-                                ) == 'CssAtMediaEndToken') {
+                                } if ($import[$iii]::class == 'CssAtMediaEndToken') {
                                     unset($import[$ii]);
                                     unset($import[$iii]);
                                     $import = array_values(
@@ -1661,9 +1633,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         } for ($ii = 0, $ll = count(
                             $import
                         ); $ii < $ll; $ii++) {
-                            $class = get_class(
-                                $import[$ii]
-                            );
+                            $class = $import[$ii]::class;
                             if ($class === 'CssAtImportToken' || $class === 'CssAtCharsetToken') {
                                 $blocks = array_merge(
                                     $blocks,
@@ -1676,20 +1646,14 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         } for ($ii = 0, $ll = count(
                             $import
                         ); $ii < $ll; $ii++) {
-                            $class = get_class(
-                                $import[$ii]
-                            );
+                            $class = $import[$ii]::class;
                             if ($class === 'CssAtFontFaceStartToken' || $class === 'CssAtMediaStartToken' || $class === 'CssAtPageStartToken' || $class === 'CssAtVariablesStartToken') {
                                 for ($iii = $ii; $iii < $ll; $iii++) {
-                                    $class = get_class(
-                                        $import[$iii]
-                                    );
+                                    $class = $import[$iii]::class;
                                     if ($class === 'CssAtFontFaceEndToken' || $class === 'CssAtMediaEndToken' || $class === 'CssAtPageEndToken' || $class === 'CssAtVariablesEndToken') {
                                         break;
                                     }
-                                } $class = get_class(
-                                    $import[$iii]
-                                );
+                                } $class = $import[$iii]::class;
                                 if (isset($import[$iii]) && ($class === 'CssAtFontFaceEndToken' || $class === 'CssAtMediaEndToken' || $class === 'CssAtPageEndToken' || $class === 'CssAtVariablesEndToken')) {
                                     $blocks = array_merge(
                                         $blocks,
@@ -1727,20 +1691,23 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 
     private $rightBraces = 0;
 
+    #[\Override]
     public function getTriggerChars()
     {
         return ['(', ')', ';', '}'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return false;
     }
 
+    #[\Override]
     public function parse($index, $char, $previousChar, $state)
     {
         if ($char === '(' && strtolower(
-            substr($this->parser->getSource(), $index - 10, 11)
+            substr((string) $this->parser->getSource(), $index - 10, 11)
         ) === 'expression(' && $state !== 'T_EXPRESSION') {
             $this->parser->pushState(
                 'T_EXPRESSION'
@@ -1759,25 +1726,18 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
             return false;
         } return true;
     }
-} class CssError
+} class CssError implements \Stringable
 {
-    public $File = '';
-
-    public $Line = 0;
-
-    public $Message = '';
-
-    public $Source = '';
-
-    public function __construct($file, $line, $message, $source = '')
-    {
-        $this->File = $file;
-        $this->Line = $line;
-        $this->Message = $message;
-        $this->Source = $source;
+    public function __construct(
+        public $File,
+        public $Line,
+        public $Message,
+        public $Source = ''
+    ) {
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return $this->Message . ($this->Source ? ': <br /><code>' . $this->Source . '</code>' : '') . '<br />in file ' . $this->File . ' at line ' . $this->Line;
     }
@@ -1785,6 +1745,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
     private $reMatch = "/rgb\s*\(\s*([0-9%]+)\s*,\s*([0-9%]+)\s*,\s*([0-9%]+)\s*\)/iS";
 
+    #[\Override]
     public function apply(aCssToken &$token)
     {
         if (stripos($token->Value, 'rgb') !== false && preg_match(
@@ -1795,10 +1756,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
             for ($i = 1, $l = count(
                 $m
             ); $i < $l; $i++) {
-                if (strpos(
+                if (str_contains(
                     '%',
                     $m[$i]
-                ) !== false) {
+                )) {
                     $m[$i] = substr(
                         $m[$i],
                         0,
@@ -1819,6 +1780,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -1972,8 +1934,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         'yellowgreen' => '#9acd32',
     ];
 
-    public function __construct(CssMinifier $minifier, array $configuration = [])
-    {
+    public function __construct(
+        CssMinifier $minifier,
+        array $configuration = []
+    ) {
         $this->reMatch = "/(^|\s)+(" . implode(
             '|',
             array_keys($this->transformation)
@@ -1981,6 +1945,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         parent::__construct($minifier, $configuration);
     }
 
+    #[\Override]
     public function apply(aCssToken &$token)
     {
         $lcValue = strtolower(
@@ -2000,6 +1965,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -2094,7 +2060,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         'column-span' => [null, '-webkit-column-span', null, null],
         'column-width' => ['-moz-column-width', '-webkit-column-width', null, null],
         'columns' => [null, '-webkit-columns', null, null],
-        'filter' => [__CLASS__, 'filter'],
+        'filter' => [self::class, 'filter'],
         'float-edge' => ['-moz-float-edge', null, null, null],
         'font-feature-settings' => ['-moz-font-feature-settings', null, null, null],
         'font-language-override' => ['-moz-font-language-override', null, null, null],
@@ -2155,7 +2121,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         'min-logical-width' => [null, '-webkit-min-logical-width', null, null],
         'object-fit' => [null, null, '-o-object-fit', null],
         'object-position' => [null, null, '-o-object-position', null],
-        'opacity' => [__CLASS__, 'opacity'],
+        'opacity' => [self::class, 'opacity'],
         'outline-radius' => ['-moz-outline-radius', null, null, null],
         'outline-bottom-left-radius' => ['-moz-outline-radius-bottomleft', null, null, null],
         'outline-bottom-right-radius' => ['-moz-outline-radius-bottomright', null, null, null],
@@ -2231,7 +2197,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         'user-input' => ['-moz-user-input', null, null, null],
         'user-modify' => ['-moz-user-modify', '-webkit-user-modify', null, null],
         'user-select' => ['-moz-user-select', '-webkit-user-select', null, null],
-        'white-space' => [__CLASS__, 'whiteSpace'],
+        'white-space' => [self::class, 'whiteSpace'],
         'window-shadow' => ['-moz-window-shadow', null, null, null],
         'word-break' => [null, null, null, '-ms-word-break'],
         'word-wrap' => [null, null, null, '-ms-word-wrap'],
@@ -2239,6 +2205,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         'zoom' => [null, null, null, '-ms-zoom'],
     ];
 
+    #[\Override]
     public function apply(array &$tokens)
     {
         $r = 0;
@@ -2246,9 +2213,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         for ($i = 0, $l = count(
             $tokens
         ); $i < $l; $i++) {
-            if (get_class(
-                $tokens[$i]
-            ) === 'CssRulesetDeclarationToken') {
+            if ($tokens[$i]::class === 'CssRulesetDeclarationToken') {
                 $tProperty = $tokens[$i]->Property;
                 if (isset($transformations[$tProperty])) {
                     $result = [];
@@ -2336,6 +2301,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
     }
 } class CssConvertLevel3AtKeyframesMinifierFilter extends aCssMinifierFilter
 {
+    #[\Override]
     public function apply(array &$tokens)
     {
         $r = 0;
@@ -2346,18 +2312,12 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         for ($i = 0, $l = count(
             $tokens
         ); $i < $l; $i++) {
-            if (get_class(
-                $tokens[$i]
-            ) === 'CssAtKeyframesStartToken') {
+            if ($tokens[$i]::class === 'CssAtKeyframesStartToken') {
                 for ($ii = $i; $ii < $l; $ii++) {
-                    if (get_class(
-                        $tokens[$ii]
-                    ) === 'CssAtKeyframesEndToken') {
+                    if ($tokens[$ii]::class === 'CssAtKeyframesEndToken') {
                         break;
                     }
-                } if (get_class(
-                    $tokens[$ii]
-                ) === 'CssAtKeyframesEndToken') {
+                } if ($tokens[$ii]::class === 'CssAtKeyframesEndToken') {
                     $add = [];
                     $source = [];
                     for ($iii = $i; $iii <= $ii; $iii++) {
@@ -2402,6 +2362,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
     private $reMatch = "/^hsl\s*\(\s*([0-9]+)\s*,\s*([0-9]+)\s*%\s*,\s*([0-9]+)\s*%\s*\)/iS";
 
+    #[\Override]
     public function apply(aCssToken &$token)
     {
         if (stripos($token->Value, 'hsl') !== false && preg_match(
@@ -2417,6 +2378,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -2507,8 +2469,9 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         'bold' => '700',
     ];
 
-    public function __construct(CssMinifier $minifier)
-    {
+    public function __construct(
+        CssMinifier $minifier
+    ) {
         $this->reMatch = "/(^|\s)+(" . implode(
             '|',
             array_keys($this->transformation)
@@ -2516,6 +2479,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         parent::__construct($minifier);
     }
 
+    #[\Override]
     public function apply(aCssToken &$token)
     {
         if (in_array($token->Property, $this->include) && preg_match(
@@ -2531,6 +2495,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -2549,6 +2514,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 
     private $reMatch = "/(^| |-)0\.([0-9]+?)(0+)?(%|em|ex|px|in|cm|mm|pt|pc)|(^| )-?(\.?)0(%|em|ex|px|in|cm|mm|pt|pc)|(^0\s0\s0\s0$)|(^0\s0\s0$)|(^0\s0$)/iS";
 
+    #[\Override]
     public function apply(aCssToken &$token)
     {
         if (preg_match(
@@ -2565,6 +2531,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -2575,6 +2542,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
     }
 } class CssCompressExpressionValuesMinifierPlugin extends aCssMinifierPlugin
 {
+    #[\Override]
     public function apply(aCssToken &$token)
     {
         if (class_exists('JSMin') && stripos(
@@ -2593,6 +2561,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -2605,9 +2574,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
     private $reMatch = "/\#([0-9a-f]{6})/iS";
 
+    #[\Override]
     public function apply(aCssToken &$token)
     {
-        if (strpos($token->Value, '#') !== false && preg_match(
+        if (str_contains($token->Value, '#') && preg_match(
             $this->reMatch,
             $token->Value,
             $m
@@ -2625,6 +2595,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return false;
     }
 
+    #[\Override]
     public function getTriggerTokens()
     {
         return [
@@ -2635,31 +2606,33 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
     }
 } class CssCommentToken extends aCssToken
 {
-    public $Comment = '';
-
-    public function __construct($comment)
-    {
-        $this->Comment = $comment;
+    public function __construct(
+        public $Comment
+    ) {
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
-        return $this->Comment;
+        return (string) $this->Comment;
     }
 } class CssCommentParserPlugin extends aCssParserPlugin
 {
     private $restoreBuffer = '';
 
+    #[\Override]
     public function getTriggerChars()
     {
         return ['*', '/'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return false;
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -2671,10 +2644,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 'T_COMMENT'
             );
             $this->parser->setExclusive(
-                __CLASS__
+                self::class
             );
             $this->restoreBuffer = substr(
-                $this->parser->getAndClearBuffer(),
+                (string) $this->parser->getAndClearBuffer(),
                 0,
                 -2
             );
@@ -2695,22 +2668,26 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
     public $MediaTypes = [];
 
-    public function __construct($mediaTypes = null)
-    {
-        $this->MediaTypes = $mediaTypes ? $mediaTypes : ['all'];
+    public function __construct(
+        $mediaTypes = null
+    ) {
+        $this->MediaTypes = $mediaTypes ?: ['all'];
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '';
     }
 } class CssAtVariablesParserPlugin extends aCssParserPlugin
 {
+    #[\Override]
     public function getTriggerChars()
     {
         return ['@', '{', '}', ':', ';'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return [
@@ -2721,6 +2698,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         ];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -2728,7 +2706,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $state
     ) {
         if ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 10)
+            substr((string) $this->parser->getSource(), $index, 10)
         ) === '@variables') {
             $this->parser->pushState(
                 'T_AT_VARIABLES::PREPARE'
@@ -2740,7 +2718,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 'T_AT_VARIABLES'
             );
             $mediaTypes = array_filter(
-                array_map('trim', explode(',', $this->parser->getAndClearBuffer('{')))
+                array_map('trim', explode(',', (string) $this->parser->getAndClearBuffer('{')))
             );
             $this->parser->appendToken(
                 new CssAtVariablesStartToken($mediaTypes)
@@ -2768,10 +2746,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 ';}'
             );
             if (strtolower(
-                substr($value, -10, 10)
+                substr((string) $value, -10, 10)
             ) === '!important') {
                 $value = trim(
-                    substr($value, 0, -10)
+                    substr((string) $value, 0, -10)
                 );
                 $isImportant = true;
             } else {
@@ -2793,36 +2771,39 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
     }
 } class CssAtVariablesEndToken extends aCssAtBlockEndToken
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '';
     }
 } class CssAtVariablesDeclarationToken extends aCssDeclarationToken
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '';
     }
 } class CssAtPageStartToken extends aCssAtBlockStartToken
 {
-    public $Selector = '';
-
-    public function __construct($selector = '')
-    {
-        $this->Selector = $selector;
+    public function __construct(
+        public $Selector = ''
+    ) {
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '@page' . ($this->Selector ? ' ' . $this->Selector : '') . '{';
     }
 } class CssAtPageParserPlugin extends aCssParserPlugin
 {
+    #[\Override]
     public function getTriggerChars()
     {
         return ['@', '{', '}', ':', ';'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return [
@@ -2833,6 +2814,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         ];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -2840,7 +2822,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $state
     ) {
         if ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 5)
+            substr((string) $this->parser->getSource(), $index, 5)
         ) === '@page') {
             $this->parser->pushState(
                 'T_AT_PAGE::SELECTOR'
@@ -2882,10 +2864,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 ';}'
             );
             if (strtolower(
-                substr($value, -10, 10)
+                substr((string) $value, -10, 10)
             ) == '!important') {
                 $value = trim(
-                    substr($value, 0, -10)
+                    substr((string) $value, 0, -10)
                 );
                 $isImportant = true;
             } else {
@@ -2916,27 +2898,32 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
 } class CssAtMediaStartToken extends aCssAtBlockStartToken
 {
-    public function __construct(array $mediaTypes = [])
-    {
+    public function __construct(
+        array $mediaTypes = []
+    ) {
         $this->MediaTypes = $mediaTypes;
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '@media ' . implode(',', $this->MediaTypes) . '{';
     }
 } class CssAtMediaParserPlugin extends aCssParserPlugin
 {
+    #[\Override]
     public function getTriggerChars()
     {
         return ['@', '{', '}'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return ['T_DOCUMENT', 'T_AT_MEDIA::PREPARE', 'T_AT_MEDIA'];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -2944,7 +2931,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $state
     ) {
         if ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 6)
+            substr((string) $this->parser->getSource(), $index, 6)
         ) === '@media') {
             $this->parser->pushState(
                 'T_AT_MEDIA::PREPARE'
@@ -2953,7 +2940,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
             return $index + 6;
         } elseif ($char === '{' && $state === 'T_AT_MEDIA::PREPARE') {
             $mediaTypes = array_filter(
-                array_map('trim', explode(',', $this->parser->getAndClearBuffer('{')))
+                array_map('trim', explode(',', (string) $this->parser->getAndClearBuffer('{')))
             );
             $this->parser->setMediaTypes(
                 $mediaTypes
@@ -2981,17 +2968,17 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
     public $AtRuleName = 'keyframes';
 
-    public $Name = '';
-
-    public function __construct($name, $atRuleName = null)
-    {
-        $this->Name = $name;
+    public function __construct(
+        public $Name,
+        $atRuleName = null
+    ) {
         if ($atRuleName !== null) {
             $this->AtRuleName = $atRuleName;
         }
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '@' . $this->AtRuleName . ' ' . $this->Name . '{';
     }
@@ -2999,12 +2986,14 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
     public $Selectors = [];
 
-    public function __construct(array $selectors = [])
-    {
+    public function __construct(
+        array $selectors = []
+    ) {
         $this->Selectors = $selectors;
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return implode(',', $this->Selectors) . '{';
     }
@@ -3018,11 +3007,13 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 
     private $selectors = [];
 
+    #[\Override]
     public function getTriggerChars()
     {
         return ['@', '{', '}', ':', ',', ';'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return [
@@ -3035,6 +3026,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         ];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -3042,7 +3034,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $state
     ) {
         if ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 10)
+            substr((string) $this->parser->getSource(), $index, 10)
         ) === '@keyframes') {
             $this->atRuleName = 'keyframes';
             $this->parser->pushState(
@@ -3051,7 +3043,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
             $this->parser->clearBuffer();
             return $index + 10;
         } elseif ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 15)
+            substr((string) $this->parser->getSource(), $index, 15)
         ) === '@-moz-keyframes') {
             $this->atRuleName = '-moz-keyframes';
             $this->parser->pushState(
@@ -3060,7 +3052,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
             $this->parser->clearBuffer();
             return $index + 15;
         } elseif ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 18)
+            substr((string) $this->parser->getSource(), $index, 18)
         ) === '@-webkit-keyframes') {
             $this->atRuleName = '-webkit-keyframes';
             $this->parser->pushState(
@@ -3120,10 +3112,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 ';}'
             );
             if (strtolower(
-                substr($value, -10, 10)
+                substr((string) $value, -10, 10)
             ) === '!important') {
                 $value = trim(
-                    substr($value, 0, -10)
+                    substr((string) $value, 0, -10)
                 );
                 $isImportant = true;
             } else {
@@ -3158,17 +3150,17 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
 } class CssAtImportToken extends aCssToken
 {
-    public $Import = '';
-
     public $MediaTypes = [];
 
-    public function __construct($import, $mediaTypes)
-    {
-        $this->Import = $import;
-        $this->MediaTypes = $mediaTypes ? $mediaTypes : [];
+    public function __construct(
+        public $Import,
+        $mediaTypes
+    ) {
+        $this->MediaTypes = $mediaTypes ?: [];
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '@import "' . $this->Import . '"' . (count(
             $this->MediaTypes
@@ -3179,16 +3171,19 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
     }
 } class CssAtImportParserPlugin extends aCssParserPlugin
 {
+    #[\Override]
     public function getTriggerChars()
     {
         return ['@', ';', ',', "\n"];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return ['T_DOCUMENT', 'T_AT_IMPORT'];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -3196,7 +3191,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $state
     ) {
         if ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 7)
+            substr((string) $this->parser->getSource(), $index, 7)
         ) === '@import') {
             $this->parser->pushState(
                 'T_AT_IMPORT'
@@ -3214,13 +3209,13 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 "'",
             ] as $needle) {
                 if (($pos = strrpos(
-                    $this->buffer,
+                    (string) $this->buffer,
                     $needle
                 )) !== false) {
                     break;
                 }
             } $import = substr(
-                $this->buffer,
+                (string) $this->buffer,
                 0,
                 $pos + 1
             );
@@ -3238,7 +3233,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 " \t\n\r\0\x0B'\""
             );
             $mediaTypes = array_filter(
-                array_map('trim', explode(',', trim(substr($this->buffer, $pos + 1), " \t\n\r\0\x0B{")))
+                array_map('trim', explode(',', trim(substr((string) $this->buffer, $pos + 1), " \t\n\r\0\x0B{")))
             );
             if ($pos) {
                 $this->parser->appendToken(
@@ -3260,17 +3255,20 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
     }
 } class CssAtFontFaceStartToken extends aCssAtBlockStartToken
 {
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '@font-face{';
     }
 } class CssAtFontFaceParserPlugin extends aCssParserPlugin
 {
+    #[\Override]
     public function getTriggerChars()
     {
         return ['@', '{', '}', ':', ';'];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return [
@@ -3281,6 +3279,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         ];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -3288,7 +3287,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $state
     ) {
         if ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 10)
+            substr((string) $this->parser->getSource(), $index, 10)
         ) === '@font-face') {
             $this->parser->pushState(
                 'T_AT_FONT_FACE::PREPARE'
@@ -3327,10 +3326,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 ';}'
             );
             if (strtolower(
-                substr($value, -10, 10)
+                substr((string) $value, -10, 10)
             ) === '!important') {
                 $value = trim(
-                    substr($value, 0, -10)
+                    substr((string) $value, 0, -10)
                 );
                 $isImportant = true;
             } else {
@@ -3362,29 +3361,31 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
 } class CssAtCharsetToken extends aCssToken
 {
-    public $Charset = '';
-
-    public function __construct($charset)
-    {
-        $this->Charset = $charset;
+    public function __construct(
+        public $Charset
+    ) {
     }
 
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return '@charset ' . $this->Charset . ';';
     }
 } class CssAtCharsetParserPlugin extends aCssParserPlugin
 {
+    #[\Override]
     public function getTriggerChars()
     {
         return ['@', ';', "\n"];
     }
 
+    #[\Override]
     public function getTriggerStates()
     {
         return ['T_DOCUMENT', 'T_AT_CHARSET'];
     }
 
+    #[\Override]
     public function parse(
         $index,
         $char,
@@ -3392,7 +3393,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $state
     ) {
         if ($char === '@' && $state === 'T_DOCUMENT' && strtolower(
-            substr($this->parser->getSource(), $index, 8)
+            substr((string) $this->parser->getSource(), $index, 8)
         ) === '@charset') {
             $this->parser->pushState(
                 'T_AT_CHARSET'

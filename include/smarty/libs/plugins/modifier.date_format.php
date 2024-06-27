@@ -54,7 +54,7 @@ function smarty_modifier_date_format(
         return;
     }
 
-    if ($formatter === 'strftime' || ($formatter === 'auto' && strpos($format, '%') !== false)) {
+    if ($formatter === 'strftime' || ($formatter === 'auto' && str_contains((string) $format, '%'))) {
         if (Smarty::$_IS_WINDOWS) {
             $_win_from = [
                 '%D',
@@ -74,12 +74,12 @@ function smarty_modifier_date_format(
                 "\t",
                 '%H:%M:%S',
             ];
-            if (strpos($format, '%e') !== false) {
+            if (str_contains((string) $format, '%e')) {
                 $_win_from[] = '%e';
                 $_win_to[] = sprintf("%' 2d", date('j', $timestamp));
             }
 
-            if (strpos($format, '%l') !== false) {
+            if (str_contains((string) $format, '%l')) {
                 $_win_from[] = '%l';
                 $_win_to[] = sprintf("%' 2d", date('h', $timestamp));
             }

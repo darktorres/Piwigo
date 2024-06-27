@@ -52,7 +52,7 @@ class Smarty_Internal_Compile_Break extends Smarty_Internal_CompileBase
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
     ) {
-        list($levels, $foreachLevels) = $this->checkLevels($args, $compiler);
+        [$levels, $foreachLevels] = $this->checkLevels($args, $compiler);
         $output = '<?php ';
         if ($foreachLevels > 0 && $this->tag === 'continue') {
             $foreachLevels--;

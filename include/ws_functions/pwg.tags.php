@@ -19,7 +19,7 @@ function ws_tags_getList(
 ) {
     $tags = get_available_tags();
     if ($params['sort_by_counter']) {
-        usort($tags, function ($a, $b) {  return -$a['counter'] + $b['counter']; });
+        usort($tags, fn ($a, $b) => -$a['counter'] + $b['counter']);
     } else {
         usort($tags, 'tag_alpha_compare');
     }
@@ -130,7 +130,7 @@ SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
 
         while ($row = pwg_db_fetch_assoc($result)) {
             $row['image_id'] = (int) $row['image_id'];
-            $image_tag_map[$row['image_id']] = explode(',', $row['tag_ids']);
+            $image_tag_map[$row['image_id']] = explode(',', (string) $row['tag_ids']);
         }
     }
 
@@ -260,7 +260,7 @@ SELECT COUNT(*)
   FROM `' . TAGS_TABLE . '`
   WHERE id in (' . implode(',', $params['tag_id']) . ')
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($params['tag_id'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
     }
@@ -297,7 +297,7 @@ SELECT COUNT(*)
   FROM `' . TAGS_TABLE . '`
   WHERE id = ' . $tag_id . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
@@ -315,7 +315,7 @@ SELECT name
         return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already token');
     } elseif (! empty($tag_name)) {
         $update = [
-            'name' => addslashes($tag_name),
+            'name' => addslashes((string) $tag_name),
             'url_name' => trigger_change('render_tag_url', $tag_name),
         ];
 
@@ -333,7 +333,7 @@ SELECT name
 
     return [
         'id' => $tag_id,
-        'name' => addslashes($tag_name),
+        'name' => addslashes((string) $tag_name),
         'url_name' => trigger_change('render_tag_url', $tag_name),
     ];
 }
@@ -356,7 +356,7 @@ SELECT COUNT(*)
   FROM `' . TAGS_TABLE . '`
   WHERE id = ' . $tag_id . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
@@ -366,7 +366,7 @@ SELECT COUNT(*)
   FROM `' . TAGS_TABLE . '`
   WHERE name = "' . $copy_name . '"
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already taken.');
     }
@@ -378,7 +378,7 @@ SELECT COUNT(*)
             'url_name' => trigger_change('render_tag_url', $copy_name),
         ]
     );
-    $destination_tag_id = pwg_db_insert_id(TAGS_TABLE);
+    $destination_tag_id = pwg_db_insert_id();
 
     pwg_activity('tag', $destination_tag_id, 'add', [
         'action' => 'duplicate',
@@ -438,7 +438,7 @@ SELECT COUNT(*)
   FROM `' . TAGS_TABLE . '`
   WHERE id in (' . implode(',', $all_tags) . ')
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($all_tags)) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
     }
