@@ -1,0 +1,11 @@
+# phpstan.neon
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
+parameters:
+    level: 8
+    paths:
+        - admin
+        - inc
+        - plugins
+        - themes
