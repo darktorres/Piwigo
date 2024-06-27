@@ -175,9 +175,9 @@ SELECT id
       OR storage_category_id IS NULL
     )
 ;';
-        $dissociables = array_from_query($query, 'id');
+        $dissociables = query2array($query, null, 'id');
 
-        if (! empty($dissociables)) {
+        if ($dissociables !== []) {
             $query = '
 DELETE
   FROM ' . IMAGE_CATEGORY_TABLE . '

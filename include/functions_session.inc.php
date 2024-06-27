@@ -64,7 +64,7 @@ function generate_key(
  * Called by PHP session manager, always return true.
  *
  * @param string $path
- * @param sring $name
+ * @param string $name
  * @return true
  */
 function pwg_session_open(
@@ -129,7 +129,7 @@ SELECT data
 /**
  * Called by PHP session manager, writes data in the sessions table.
  *
- * @param sring $data
+ * @param string $data
  * @return true
  */
 function pwg_session_write(

@@ -84,7 +84,7 @@ SELECT name
 ;';
     $template->assign(
         'search_tags',
-        array_from_query($query, 'name')
+        query2array($query, null, 'name')
     );
 }
 

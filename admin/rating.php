@@ -56,7 +56,7 @@ $page['cat_filter'] = '';
 if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
     $cat_ids = get_subcat_ids([$_GET['cat']]);
 
-    if (count($cat_ids) > 0) {
+    if ($cat_ids !== []) {
         $page['cat_filter'] = ' AND ic.category_id IN (' . implode(',', $cat_ids) . ')';
     }
 }
@@ -146,7 +146,7 @@ $user_options = [
 ];
 
 $template->assign('user_options', $user_options);
-$template->assign('user_options_selected', [@$_GET['users']]);
+$template->assign('user_options_selected', [$_GET['users'] ?? null]);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Rating'));
 
 $query = '

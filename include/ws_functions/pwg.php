@@ -83,7 +83,9 @@ SELECT id, path, representative_ext, width, height, rotation
                     continue;
                 }
 
-                if (@filemtime($derivative->get_path()) === false) {
+                $mtime = file_exists($derivative->get_path()) ? filemtime($derivative->get_path()) : false;
+
+                if ($mtime === false) {
                     $urls[] = $derivative->get_url() . $uid;
                 }
             }
@@ -283,7 +285,7 @@ SELECT id
   WHERE id IN (' . implode(',', $params['image_id']) . ')
     AND element_id IS NULL
 ;';
-    $result = array_from_query($query, 'id');
+    $result = query2array($query, null, 'id');
 
     $datas = [];
     foreach ($result as $id) {

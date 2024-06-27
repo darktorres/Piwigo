@@ -11,12 +11,16 @@ define('PHPWG_ROOT_PATH', './');
 
 // fast bootstrap - no db connection
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-@include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
+    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+}
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
-@include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+if (file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php')) {
+    include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+}
 
 include(PHPWG_ROOT_PATH . 'include/Logger.class.php');
 
@@ -291,7 +295,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime): bool
             '-' . derivative_to_url($candidate->type),
             $candidate_path
         );
-        $candidate_mtime = @filemtime($candidate_path);
+        $candidate_mtime = file_exists($candidate_path) ? filemtime($candidate_path) : false;
         if ($candidate_mtime === false
           || $candidate_mtime < $original_mtime
           || $candidate_mtime < $candidate->last_mod_time) {
@@ -384,13 +388,13 @@ parse_request();
 
 $params = $page['derivative_params'];
 
-$src_mtime = @filemtime($page['src_path']);
+$src_mtime = file_exists($page['src_path']) ? filemtime($page['src_path']) : false;
 if ($src_mtime === false) {
     ierror('Source not found', 404);
 }
 
 $need_generate = false;
-$derivative_mtime = @filemtime($page['derivative_path']);
+$derivative_mtime = file_exists($page['derivative_path']) ? filemtime($page['derivative_path']) : false;
 if ($derivative_mtime === false || $derivative_mtime < $src_mtime || $derivative_mtime < $params->last_mod_time) {
     $need_generate = true;
 }

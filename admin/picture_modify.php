@@ -69,7 +69,7 @@ SELECT category_id
 ;';
 
     $authorizeds = array_diff(
-        array_from_query($query, 'category_id'),
+        query2array($query, null, 'category_id'),
         explode(',', calculate_permissions($user['id'], $user['status']))
     );
 
@@ -312,7 +312,7 @@ SELECT *
 ;';
 $formats = query2array($query);
 
-if (! empty($formats)) {
+if ($formats !== []) {
     $format_strings = [];
 
     foreach ($formats as $format) {
@@ -387,7 +387,7 @@ SELECT category_id
 ;';
 
 $authorizeds = array_diff(
-    array_from_query($query, 'category_id'),
+    query2array($query, null, 'category_id'),
     explode(
         ',',
         calculate_permissions($user['id'], $user['status'])

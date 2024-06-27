@@ -1,5 +1,7 @@
 <?php
 
+namespace Piwigo\inc;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,66 +10,11 @@
 // +-----------------------------------------------------------------------+
 
 /**
- * Provides a persistent cache mechanism across multiple page loads/sessions etc...
- */
-abstract class PersistentCache
-{
-    public $default_lifetime = 86400;
-
-    protected $instance_key = PHPWG_VERSION;
-
-    /**
-     * @return string a key that can be safely be used with get/set methods
-     */
-    public function make_key(
-        $key
-    ) {
-        if (is_array($key)) {
-            $key = implode('&', $key);
-        }
-
-        $key .= $this->instance_key;
-        return md5($key);
-    }
-
-    /**
-     * Searches for a key in the persistent cache and fills corresponding value.
-     * @param string $key
-     * @param mixed $value out
-     * @return false if the $key is not found in cache ($value is not modified in this case)
-     */
-    abstract public function get(
-        $key,
-        mixed &$value
-    );
-
-    /**
-     * Sets a key/value pair in the persistent cache.
-     * @param string $key - it should be the return value of make_key function
-     * @param int $lifetime
-     * @return false on error
-     */
-    abstract public function set(
-        $key,
-        mixed $value,
-        $lifetime = null
-    );
-
-    /**
-     * Purge the persistent cache.
-     * @param boolean $all - if false only expired items will be purged
-     */
-    abstract public function purge(
-        $all
-    );
-}
-
-/**
  * Implementation of a persistent cache using files.
  */
 class PersistentFileCache extends PersistentCache
 {
-    private readonly string $dir;
+    private $dir;
 
     public function __construct()
     {
@@ -76,7 +23,7 @@ class PersistentFileCache extends PersistentCache
     }
 
     #[\Override]
-    public function get($key, &$value): bool
+    public function get($key, &$value)
     {
         $loaded = @file_get_contents($this->dir . $key . '.cache');
         if ($loaded !== false && ($loaded = unserialize($loaded)) !== false && $loaded['expire'] > time()) {
@@ -88,7 +35,7 @@ class PersistentFileCache extends PersistentCache
     }
 
     #[\Override]
-    public function set($key, $value, $lifetime = null): bool
+    public function set($key, $value, $lifetime = null)
     {
         if ($lifetime === null) {
             $lifetime = $this->default_lifetime;
@@ -114,7 +61,7 @@ class PersistentFileCache extends PersistentCache
     }
 
     #[\Override]
-    public function purge($all): void
+    public function purge($all)
     {
         $files = glob($this->dir . '*.cache');
         if ($files === [] || $files === false) {

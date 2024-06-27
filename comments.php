@@ -120,7 +120,7 @@ if (isset($_GET['cat']) && $_GET['cat'] != 0) {
     check_input_parameter('cat', $_GET, false, PATTERN_ID);
 
     $category_ids = get_subcat_ids([$_GET['cat']]);
-    if (empty($category_ids)) {
+    if ($category_ids === []) {
         $category_ids = [-1];
     }
 
@@ -387,7 +387,6 @@ $navbar = create_navigation_bar(
     $counter,
     $start,
     $page['items_number'],
-    ''
 );
 
 $template->assign('navbar', $navbar);

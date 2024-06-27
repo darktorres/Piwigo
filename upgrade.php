@@ -11,7 +11,10 @@ define('PHPWG_ROOT_PATH', './');
 
 // load config file
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-@include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
+    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+}
+
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 $config_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
@@ -297,7 +300,7 @@ if (! in_array('param', $columns_of[PREFIX_TABLE . 'config'])) {
 SELECT id
   FROM ' . PREFIX_TABLE . 'upgrade
 ;';
-    $applied_upgrades = array_from_query($query, 'id');
+    $applied_upgrades = query2array($query, null, 'id');
 
     if (! in_array(159, $applied_upgrades)) {
         $current_release = '2.10.0';

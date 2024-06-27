@@ -333,7 +333,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 if (strtolower($val[1]) === 'webmaster') {
                     global $user;
 
-                    if ($user['status'] == 'webmaster') {
+                    if (($user['status'] ?? null) == 'webmaster') {
                         $plugin['hasSettings'] = true;
                     }
                 } else {

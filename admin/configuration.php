@@ -347,9 +347,16 @@ switch ($page['section']) {
         {
             $conf = [];
             include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-            @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
-            if (isset($conf['local_dir_site'])) {
-                @include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
+            if (file_exists(
+                PHPWG_ROOT_PATH . 'local/config/config.inc.php'
+            )) {
+                include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+            }
+
+            if (isset($conf['local_dir_site']) && file_exists(
+                PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php'
+            )) {
+                include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
             }
 
             return isset($conf['order_by']) || isset($conf['order_by_inside_category']);

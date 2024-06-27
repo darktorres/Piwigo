@@ -131,7 +131,7 @@ WHERE ' . $where . '
         }
 
         $cats[] = $row;
-        if ($row['id'] == @$page['category']['id']) { //save the number of subcats for later optim
+        if ($row['id'] == ($page['category']['id'] ?? null)) { //save the number of subcats for later optim
             $page['category']['count_categories'] = $row['count_categories'];
         }
     }
@@ -161,7 +161,7 @@ SELECT *
 ;';
     $cat = pwg_db_fetch_assoc(pwg_query($query));
     if (empty($cat)) {
-        return null;
+        return [];
     }
 
     foreach ($cat as $k => $v) {

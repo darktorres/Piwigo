@@ -21,8 +21,6 @@ include_once(PHPWG_ROOT_PATH . 'include/derivative.inc.php');
 
 /**
  * returns the current microsecond since Unix epoch
- *
- * @return int
  */
 function micro_seconds(): string
 {
@@ -1345,7 +1343,7 @@ function l10n(
 ) {
     global $lang, $conf;
 
-    if (($val = @$lang[$key]) === null) {
+    if (($val = ($lang[$key] ?? null)) === null) {
         if ($conf['debug_l10n'] && ! isset($lang[$key]) && ($key !== null && $key !== '' && $key !== '0')) {
             trigger_error('[l10n] language key "' . $key . '" not defined', E_USER_WARNING);
         }
@@ -1392,7 +1390,7 @@ function l10n_dec(
  * @param string $key translation key
  * @param mixed $args arguments to use on sprintf($key, args)
  *   if args is a array, each values are used on sprintf
- * @return string
+ * @return array
  */
 function get_l10n_args(
     $key,
@@ -1509,14 +1507,13 @@ SELECT param, value
 /**
  * Add or update a config parameter
  *
- * @param string $value
  * @param boolean $updateGlobal update global *$conf* variable
  * @param callable $parser function to apply to the value before save in database
-      (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
+ *     (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
  */
 function conf_update_param(
     string $param,
-    $value,
+    mixed $value,
     $updateGlobal = false,
     $parser = null
 ): void {
@@ -1645,59 +1642,6 @@ function prepend_append_array_items(
 }
 
 /**
- * creates an simple hashmap based on a SQL query.
- * choose one to be the key, another one to be the value.
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $keyname
- * @param string $valuename
- */
-function simple_hash_from_query(
-    $query,
-    $keyname,
-    $valuename
-): array {
-    return query2array($query, $keyname, $valuename);
-}
-
-/**
- * creates an associative array based on a SQL query.
- * choose one to be the key
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $keyname
- */
-function hash_from_query(
-    $query,
-    $keyname
-): array {
-    return query2array($query, $keyname);
-}
-
-/**
- * creates a numeric array based on a SQL query.
- * if _$fieldname_ is empty the returned value will be an array of arrays
- * if _$fieldname_ is provided the returned value will be a one dimension array
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $fieldname
- */
-function array_from_query(
-    $query,
-    $fieldname = false
-): array {
-    if ($fieldname === false) {
-        return query2array($query);
-    }
-
-    return query2array($query, null, $fieldname);
-
-}
-
-/**
  * Return the basename of the current script.
  * The lowercase case filename of the current script without extension
  */
@@ -1807,12 +1751,12 @@ function load_language(
     global $user, $language_files;
 
     // keep trace of plugins loaded files for switch_lang_to() function
-    if (! empty($dirname) && ($filename !== '' && $filename !== '0') && ! @$options['return']
+    if (! empty($dirname) && ($filename !== '' && $filename !== '0') && ! ($options['return'] ?? null)
       && ! isset($language_files[$dirname][$filename])) {
         $language_files[$dirname][$filename] = $options;
     }
 
-    if (! @$options['return']) {
+    if (! ($options['return'] ?? null)) {
         $filename .= '.php';
     }
 
@@ -1849,7 +1793,7 @@ function load_language(
         $languages[] = $options['force_fallback'];
     }
 
-    if (! @$options['no_fallback']) { // default language
+    if (! ($options['no_fallback'] ?? null)) { // default language
         $languages[] = $default_language;
     }
 
@@ -1859,7 +1803,7 @@ function load_language(
     $source_file = '';
     $selected_language = '';
     foreach ($languages as $language) {
-        $f = @$options['local'] ?
+        $f = ($options['local'] ?? null) ?
           $dirname . $language . '.' . $filename :
           $dirname . $language . '/' . $filename;
 
@@ -1871,16 +1815,22 @@ function load_language(
     }
 
     if ($source_file !== '' && $source_file !== '0') {
-        if (! @$options['return']) {
+        if (! ($options['return'] ?? null)) {
             // load forced fallback
             if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language) {
-                @include(str_replace($selected_language, $options['force_fallback'], $source_file));
+                $tmp = str_replace($selected_language, $options['force_fallback'], $source_file);
+                if (file_exists($tmp)) {
+                    include($tmp);
+                }
             }
 
             // load language content
-            @include($source_file);
+            if (file_exists($source_file)) {
+                include($source_file);
+            }
+
             $load_lang = @$lang;
-            $load_lang_info = @$lang_info;
+            $load_lang_info = ($lang_info ?? null);
 
             // access already existing values
             global $lang, $lang_info;
@@ -1902,7 +1852,10 @@ function load_language(
             }
 
             if (! empty($parent_language) && $parent_language != $selected_language) {
-                @include(str_replace($selected_language, $parent_language, $source_file));
+                $tmp = str_replace($selected_language, $parent_language, $source_file);
+                if (file_exists($tmp)) {
+                    include($tmp);
+                }
             }
 
             // merge contents
@@ -2086,7 +2039,7 @@ function create_navigation_bar(
  *
  * @param string $date
  * @param bool $is_child_date
- * @return array
+ * @return array|bool
  */
 function get_icon(
     $date,

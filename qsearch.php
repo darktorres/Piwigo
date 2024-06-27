@@ -26,8 +26,8 @@ $query = '
 SElECT id FROM ' . SEARCH_TABLE . '
   WHERE rules = \'' . addslashes(serialize($search)) . '\'
 ;';
-$search_id = array_from_query($query, 'id');
-if (! empty($search_id)) {
+$search_id = query2array($query, null, 'id');
+if ($search_id !== []) {
     $search_id = $search_id[0];
     $query = '
 UPDATE ' . SEARCH_TABLE . '

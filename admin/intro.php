@@ -268,7 +268,7 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
         @$activity_last_weeks[$week][$day_nb]['details'][ucfirst((string) $action['object'])][ucfirst(
             (string) $action['action']
         )] = $action['activity_counter'];
-        @$activity_last_weeks[$week][$day_nb]['number'] += $action['activity_counter'];
+        $activity_last_weeks[$week][$day_nb]['number'] = ($activity_last_weeks[$week][$day_nb]['number'] ?? null) + $action['activity_counter'];
         @$activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
     }
 
@@ -407,7 +407,7 @@ foreach ($file_extensions as $ext => $ext_details) {
     }
 
     @$file_extensions_of[$type][strtoupper($ext)] = $ext_details['ext_counter'];
-    @$data_storage[$type] += $ext_details['filesize'];
+    $data_storage[$type] = ($data_storage[$type] ?? null) + $ext_details['filesize'];
 }
 
 $data_storage_details = [];

@@ -211,7 +211,7 @@ SELECT DISTINCT(id)
 
         $query .= $forbidden . '
   ' . $conf['order_by'];
-        $items = array_from_query($query, 'id');
+        $items = query2array($query, null, 'id');
 
         $logger->debug(__FUNCTION__ . ' ' . count($items) . ' items in $items');
     }
@@ -1411,7 +1411,10 @@ function get_quick_search_results_no_cache(
     // get inflections for terms
     $inflector = null;
     $lang_code = substr(get_default_language(), 0, 2);
-    @include_once(PHPWG_ROOT_PATH . 'include/inflectors/' . $lang_code . '.php');
+    if (file_exists(PHPWG_ROOT_PATH . 'include/inflectors/' . $lang_code . '.php')) {
+        include_once(PHPWG_ROOT_PATH . 'include/inflectors/' . $lang_code . '.php');
+    }
+
     $class_name = 'Inflector_' . $lang_code;
     if (class_exists($class_name)) {
         $inflector = new $class_name();
