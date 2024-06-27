@@ -74,13 +74,13 @@ class Smarty_Internal_Method_ClearCompiledTemplate
         try {
             $_compileDirs = new RecursiveDirectoryIterator($_dir);
             // NOTE: UnexpectedValueException thrown for PHP >= 5.3
-        } catch (Exception $exception) {
+        } catch (Exception) {
             return 0;
         }
 
         $_compile = new RecursiveIteratorIterator($_compileDirs, RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($_compile as $_file) {
-            if (substr(basename($_file->getPathname()), 0, 1) === '.') {
+            if (str_starts_with(basename((string) $_file->getPathname()), '.')) {
                 continue;
             }
 
@@ -92,7 +92,7 @@ class Smarty_Internal_Method_ClearCompiledTemplate
                 }
             } else {
                 // delete only php files
-                if (substr($_filepath, -4) !== '.php') {
+                if (! str_ends_with($_filepath, '.php')) {
                     continue;
                 }
 

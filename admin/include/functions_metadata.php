@@ -27,7 +27,7 @@ function get_sync_iptc_data(
 
     foreach ($iptc as $pwg_key => $value) {
         if (in_array($pwg_key, ['date_creation', 'date_available'])) {
-            if (preg_match('/(\d{4})(\d{2})(\d{2})/', $value, $matches)) {
+            if (preg_match('/(\d{4})(\d{2})(\d{2})/', (string) $value, $matches)) {
                 $year = $matches[1];
                 $month = $matches[2];
                 $day = $matches[3];
@@ -48,7 +48,7 @@ function get_sync_iptc_data(
     }
 
     foreach ($iptc as $pwg_key => $value) {
-        $iptc[$pwg_key] = addslashes($iptc[$pwg_key]);
+        $iptc[$pwg_key] = addslashes((string) $iptc[$pwg_key]);
     }
 
     return $iptc;
@@ -69,12 +69,12 @@ function get_sync_exif_data(
 
     foreach ($exif as $pwg_key => $value) {
         if (in_array($pwg_key, ['date_creation', 'date_available'])) {
-            if (preg_match('/^(\d{4}).(\d{2}).(\d{2}) (\d{2}).(\d{2}).(\d{2})/', $value, $matches)) {
+            if (preg_match('/^(\d{4}).(\d{2}).(\d{2}) (\d{2}).(\d{2}).(\d{2})/', (string) $value, $matches)) {
                 $exif[$pwg_key] = $matches[1] . '-' . $matches[2] . '-' . $matches[3] . ' ' . $matches[4] . ':' . $matches[5] . ':' . $matches[6];
                 if ($exif[$pwg_key] == '0000-00-00 00:00:00') {
                     $exif[$pwg_key] = null;
                 }
-            } elseif (preg_match('/^(\d{4}).(\d{2}).(\d{2})/', $value, $matches)) {
+            } elseif (preg_match('/^(\d{4}).(\d{2}).(\d{2})/', (string) $value, $matches)) {
                 $exif[$pwg_key] = $matches[1] . '-' . $matches[2] . '-' . $matches[3];
             } else {
                 unset($exif[$pwg_key]);
@@ -86,7 +86,7 @@ function get_sync_exif_data(
             $exif[$pwg_key] = metadata_normalize_keywords_string($exif[$pwg_key]);
         }
 
-        $exif[$pwg_key] = addslashes($exif[$pwg_key]);
+        $exif[$pwg_key] = addslashes((string) $exif[$pwg_key]);
     }
 
     return $exif;
@@ -168,13 +168,13 @@ function get_sync_metadata(
         $height = (int) $xmlattributes->height;
         $vb = (string) $xmlattributes->viewBox;
 
-        if (isset($width) and $width != '') {
+        if (isset($width) and $width != 0) {
             $infos['width'] = $width;
         } elseif (isset($vb)) {
             $infos['width'] = explode(' ', $vb)[2];
         }
 
-        if (isset($height) and $height != '') {
+        if (isset($height) and $height != 0) {
             $infos['height'] = $height;
         } elseif (isset($vb)) {
             $infos['height'] = explode(' ', $vb)[3];
@@ -245,7 +245,7 @@ SELECT id, path, representative_ext
                     $tags_of[$id] = [];
                 }
 
-                foreach (explode(',', $data[$key]) as $tag_name) {
+                foreach (explode(',', (string) $data[$key]) as $tag_name) {
                     $tags_of[$id][] = tag_id_from_tag_name($tag_name);
                 }
             }
@@ -362,7 +362,7 @@ function metadata_normalize_keywords_string(
         array_unique(
             explode(
                 ',',
-                $keywords_string
+                (string) $keywords_string
             )
         )
     );

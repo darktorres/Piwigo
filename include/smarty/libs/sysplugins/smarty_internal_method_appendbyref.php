@@ -25,7 +25,7 @@ class Smarty_Internal_Method_AppendByRef
     public static function appendByRef(
         Smarty_Internal_Data $data,
         $tpl_var,
-        &$value,
+        mixed &$value,
         $merge = false
     ) {
         if ($tpl_var !== '' && isset($value)) {

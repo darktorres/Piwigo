@@ -82,19 +82,11 @@ function do_timeout_treatment(
 function get_tab_status($mode)
 {
     $result = ACCESS_WEBMASTER;
-    switch ($mode) {
-        case 'param':
-        case 'subscribe':
-            $result = ACCESS_WEBMASTER;
-            break;
-        case 'send':
-            $result = ACCESS_ADMINISTRATOR;
-            break;
-        default:
-            $result = ACCESS_WEBMASTER;
-            break;
-    }
-
+    $result = match ($mode) {
+        'param', 'subscribe' => ACCESS_WEBMASTER,
+        'send' => ACCESS_ADMINISTRATOR,
+        default => ACCESS_WEBMASTER,
+    };
     return $result;
 }
 
@@ -151,7 +143,7 @@ order by
 
             $page['infos'][] = l10n(
                 'User %s [%s] added.',
-                stripslashes($nbm_user['username']),
+                stripslashes((string) $nbm_user['username']),
                 $nbm_user['mail_address']
             );
         }
@@ -197,11 +189,11 @@ function render_global_customize_mail_content(
 ) {
     global $conf;
 
-    if ($conf['nbm_send_html_mail'] and ! (strpos($customize_mail_content, '<') === 0)) {
+    if ($conf['nbm_send_html_mail'] and ! (str_starts_with((string) $customize_mail_content, '<'))) {
         // On HTML mail, detects if the content are HTML format.
         // If it's plain text format, convert content to readable HTML
         return nl2br(
-            htmlspecialchars($customize_mail_content)
+            htmlspecialchars((string) $customize_mail_content)
         );
     }
 
@@ -223,7 +215,7 @@ function do_action_send_mail_notification(
     $return_list = [];
 
     if (in_array($action, ['list_to_send', 'send'])) {
-        list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
         $is_action_send = ($action == 'send');
 
@@ -363,7 +355,7 @@ function do_action_send_mail_notification(
 
                             $ret = pwg_mail(
                                 [
-                                    'name' => stripslashes($nbm_user['username']),
+                                    'name' => stripslashes((string) $nbm_user['username']),
                                     'email' => $nbm_user['mail_address'],
                                 ],
                                 [
@@ -479,7 +471,7 @@ switch ($page['mode']) {
     case 'param':
 
         if (isset($_POST['param_submit'])) {
-            $_POST['nbm_send_mail_as'] = strip_tags($_POST['nbm_send_mail_as']);
+            $_POST['nbm_send_mail_as'] = strip_tags((string) $_POST['nbm_send_mail_as']);
 
             check_input_parameter('nbm_send_html_mail', $_POST, false, '/^(true|false)$/');
             check_input_parameter('nbm_send_detailed_content', $_POST, false, '/^(true|false)$/');
@@ -523,7 +515,7 @@ switch ($page['mode']) {
             $check_key_treated = do_action_send_mail_notification(
                 'send',
                 $_POST['send_selection'],
-                stripslashes($_POST['send_customize_mail_content'])
+                stripslashes((string) $_POST['send_customize_mail_content'])
             );
             do_timeout_treatment('send_selection', $check_key_treated);
         }
@@ -605,7 +597,7 @@ switch ($page['mode']) {
         foreach ($data_users as $nbm_user) {
             if (get_boolean($nbm_user['enabled'])) {
                 $opt_true[$nbm_user['check_key']] = stripslashes(
-                    $nbm_user['username']
+                    (string) $nbm_user['username']
                 ) . '[' . $nbm_user['mail_address'] . ']';
                 if ((isset($_POST['falsify']) and isset($_POST['cat_true']) and in_array(
                     $nbm_user['check_key'],
@@ -615,7 +607,7 @@ switch ($page['mode']) {
                 }
             } else {
                 $opt_false[$nbm_user['check_key']] = stripslashes(
-                    $nbm_user['username']
+                    (string) $nbm_user['username']
                 ) . '[' . $nbm_user['mail_address'] . ']';
                 if (isset($_POST['trueify']) and isset($_POST['cat_false']) and in_array(
                     $nbm_user['check_key'],
@@ -647,7 +639,7 @@ switch ($page['mode']) {
 
         $tpl_var['CUSTOMIZE_MAIL_CONTENT'] =
           isset($_POST['send_customize_mail_content'])
-            ? stripslashes($_POST['send_customize_mail_content'])
+            ? stripslashes((string) $_POST['send_customize_mail_content'])
             : $conf['nbm_complementary_mail_content'];
 
         if (count($data_users)) {
@@ -666,7 +658,7 @@ switch ($page['mode']) {
                               isset($_POST['send_selection']) and // not init
                               ! in_array($nbm_user['check_key'], $_POST['send_selection']) // not selected
                           ) ? '' : 'checked="checked"',
-                          'USERNAME' => stripslashes($nbm_user['username']),
+                          'USERNAME' => stripslashes((string) $nbm_user['username']),
                           'EMAIL' => $nbm_user['mail_address'],
                           'LAST_SEND' => $nbm_user['last_send'],
                       ];

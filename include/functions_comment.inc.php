@@ -43,11 +43,11 @@ function user_comment_check(
 
     $link_count = preg_match_all(
         '/https?:\/\//',
-        $comment['content'],
+        (string) $comment['content'],
         $matches
     );
 
-    if (strpos($comment['author'], 'http://') !== false) {
+    if (str_contains((string) $comment['author'], 'http://')) {
         $link_count++;
     }
 
@@ -107,7 +107,7 @@ function insert_user_comment(
             $query = '
 SELECT COUNT(*) AS user_exists
   FROM ' . USERS_TABLE . '
-  WHERE ' . $conf['user_fields']['username'] . " = '" . addslashes($comm['author']) . "'";
+  WHERE ' . $conf['user_fields']['username'] . " = '" . addslashes((string) $comm['author']) . "'";
             $row = pwg_db_fetch_assoc(pwg_query($query));
             if ($row['user_exists'] == 1) {
                 $infos[] = l10n('This login is already used by another user');
@@ -115,7 +115,7 @@ SELECT COUNT(*) AS user_exists
             }
         }
     } else {
-        $comm['author'] = addslashes($user['username']);
+        $comm['author'] = addslashes((string) $user['username']);
         $comm['author_id'] = $user['id'];
     }
 
@@ -134,7 +134,7 @@ SELECT COUNT(*) AS user_exists
             $comment_action = 'reject';
             $_POST['cr'][] = 'website_url';
         } else {
-            $comm['website_url'] = strip_tags($comm['website_url']);
+            $comm['website_url'] = strip_tags((string) $comm['website_url']);
             if (! preg_match('/^https?/i', $comm['website_url'])) {
                 $comm['website_url'] = 'http://' . $comm['website_url'];
             }
@@ -160,7 +160,7 @@ SELECT COUNT(*) AS user_exists
     }
 
     // anonymous id = ip address
-    $ip_components = explode('.', $comm['ip']);
+    $ip_components = explode('.', (string) $comm['ip']);
     if (count($ip_components) > 3) {
         array_pop($ip_components);
     }
@@ -182,7 +182,7 @@ SELECT count(1) FROM ' . COMMENTS_TABLE . '
         $query .= '
 ;';
 
-        list($counter) = pwg_db_fetch_row(pwg_query($query));
+        [$counter] = pwg_db_fetch_row(pwg_query($query));
         if ($counter > 0) {
             $infos[] = l10n('Anti-flood system : please wait for a moment before trying to post another comment');
             $comment_action = 'reject';
@@ -215,7 +215,7 @@ INSERT INTO ' . COMMENTS_TABLE . '
   )
 ';
         pwg_query($query);
-        $comm['id'] = pwg_db_insert_id(COMMENTS_TABLE);
+        $comm['id'] = pwg_db_insert_id();
 
         invalidate_user_cache_nb_comments();
 
@@ -226,9 +226,9 @@ INSERT INTO ' . COMMENTS_TABLE . '
             $comment_url = get_absolute_root_url() . 'comments.php?comment_id=' . $comm['id'];
 
             $keyargs_content = [
-                get_l10n_args('Author: %s', stripslashes($comm['author'])),
-                get_l10n_args('Email: %s', stripslashes($comm['email'])),
-                get_l10n_args('Comment: %s', stripslashes($comm['content'])),
+                get_l10n_args('Author: %s', stripslashes((string) $comm['author'])),
+                get_l10n_args('Email: %s', stripslashes((string) $comm['email'])),
+                get_l10n_args('Comment: %s', stripslashes((string) $comm['content'])),
                 get_l10n_args(''),
                 get_l10n_args('Manage this user comment: %s', $comment_url),
             ];
@@ -238,7 +238,7 @@ INSERT INTO ' . COMMENTS_TABLE . '
             }
 
             pwg_mail_notification_admins(
-                get_l10n_args('Comment by %s', stripslashes($comm['author'])),
+                get_l10n_args('Comment by %s', stripslashes((string) $comm['author'])),
                 $keyargs_content
             );
         }
@@ -275,7 +275,7 @@ DELETE FROM ' . COMMENTS_TABLE . '
 $user_where_clause . '
 ;';
 
-    if (pwg_db_changes(pwg_query($query))) {
+    if (pwg_db_changes()) {
         invalidate_user_cache_nb_comments();
 
         email_admin(
@@ -334,8 +334,8 @@ function update_user_comment(
 
     // website
     if (! empty($comment['website_url'])) {
-        $comm['website_url'] = strip_tags($comm['website_url']);
-        if (! preg_match('/^https?/i', $comment['website_url'])) {
+        $comm['website_url'] = strip_tags((string) $comm['website_url']);
+        if (! preg_match('/^https?/i', (string) $comment['website_url'])) {
             $comment['website_url'] = 'http://' . $comment['website_url'];
         }
 
@@ -370,15 +370,15 @@ $user_where_clause . '
             $comment_url = get_absolute_root_url() . 'comments.php?comment_id=' . $comment['comment_id'];
 
             $keyargs_content = [
-                get_l10n_args('Author: %s', stripslashes($GLOBALS['user']['username'])),
-                get_l10n_args('Comment: %s', stripslashes($comment['content'])),
+                get_l10n_args('Author: %s', stripslashes((string) $GLOBALS['user']['username'])),
+                get_l10n_args('Comment: %s', stripslashes((string) $comment['content'])),
                 get_l10n_args(''),
                 get_l10n_args('Manage this user comment: %s', $comment_url),
                 get_l10n_args('(!) This comment requires validation'),
             ];
 
             pwg_mail_notification_admins(
-                get_l10n_args('Comment by %s', stripslashes($GLOBALS['user']['username'])),
+                get_l10n_args('Comment by %s', stripslashes((string) $GLOBALS['user']['username'])),
                 $keyargs_content
             );
         }
@@ -386,7 +386,7 @@ $user_where_clause . '
         elseif ($result) {
             email_admin('edit', [
                 'author' => $GLOBALS['user']['username'],
-                'content' => stripslashes($comment['content']),
+                'content' => stripslashes((string) $comment['content']),
             ]);
         }
     }
@@ -458,7 +458,7 @@ SELECT
         }
     }
 
-    list($author_id) = pwg_db_fetch_row($result);
+    [$author_id] = pwg_db_fetch_row($result);
 
     return $author_id;
 }

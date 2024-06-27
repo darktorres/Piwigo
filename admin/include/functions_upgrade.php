@@ -140,7 +140,7 @@ SELECT theme
   FROM ' . PREFIX_TABLE . 'user_infos
   WHERE user_id = ' . $conf['default_user_id'] . '
 ;';
-        list($default_theme) = pwg_db_fetch_row(pwg_query($query));
+        [$default_theme] = pwg_db_fetch_row(pwg_query($query));
 
         // if the default theme has just been deactivated, let's set another core theme as default
         if (in_array(
@@ -154,7 +154,7 @@ SELECT
   FROM ' . PREFIX_TABLE . 'themes
   WHERE id = \'' . PHPWG_DEFAULT_TEMPLATE . '\'
 ;';
-            list($counter) = pwg_db_fetch_row(pwg_query($query));
+            [$counter] = pwg_db_fetch_row(pwg_query($query));
             if ($counter < 1) {
                 // we need to activate theme first
                 include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
@@ -215,8 +215,8 @@ SELECT status
     }
 
     if (version_compare($current_release, '2.0', '<')) {
-        $username = utf8_decode($username);
-        $password = utf8_decode($password);
+        $username = mb_convert_encoding($username, 'ISO-8859-1');
+        $password = mb_convert_encoding($password, 'ISO-8859-1');
     }
 
     if (version_compare($current_release, '1.5', '<')) {

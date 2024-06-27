@@ -727,7 +727,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      */
     public function __set(
         $name,
-        $value
+        mixed $value
     ) {
         if (isset($this->accessMap[$name])) {
             $method = 'set' . $this->accessMap[$name];
@@ -839,7 +839,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @return array|string list of template directories, or directory of $index
      */
     public function getTemplateDir(
-        $index = null,
+        mixed $index = null,
         $isConfig = false
     ) {
         if ($isConfig) {
@@ -853,7 +853,7 @@ class Smarty extends Smarty_Internal_TemplateBase
         }
 
         if ($index !== null) {
-            return isset($dir[$index]) ? $dir[$index] : null;
+            return $dir[$index] ?? null;
         }
 
         return $dir;
@@ -893,7 +893,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      */
     public function addConfigDir(
         $config_dir,
-        $key = null
+        mixed $key = null
     ) {
         return $this->addTemplateDir($config_dir, $key, true);
     }
@@ -906,7 +906,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @return array configuration directory
      */
     public function getConfigDir(
-        $index = null
+        mixed $index = null
     ) {
         return $this->getTemplateDir($index, true);
     }
@@ -1055,8 +1055,8 @@ class Smarty extends Smarty_Internal_TemplateBase
      */
     public function createTemplate(
         $template,
-        $cache_id = null,
-        $compile_id = null,
+        mixed $cache_id = null,
+        mixed $compile_id = null,
         $parent = null,
         $do_clone = true
     ) {
@@ -1107,7 +1107,7 @@ class Smarty extends Smarty_Internal_TemplateBase
             $tpl->smarty = clone $tpl->smarty;
         }
 
-        $tpl->parent = $parent ? $parent : $this;
+        $tpl->parent = $parent ?: $this;
         // fill data if present
         if (! empty($data) && is_array($data)) {
             // set up variable values
@@ -1161,18 +1161,18 @@ class Smarty extends Smarty_Internal_TemplateBase
         $caching = null,
         Smarty_Internal_Template $template = null
     ) {
-        $template_name = (strpos($template_name, ':') === false) ? sprintf(
+        $template_name = (! str_contains($template_name, ':')) ? sprintf(
             '%s:%s',
             $this->default_resource_type,
             $template_name
         ) :
             $template_name;
-        $cache_id = $cache_id === null ? $this->cache_id : $cache_id;
-        $compile_id = $compile_id === null ? $this->compile_id : $compile_id;
-        $caching = (int) ($caching === null ? $this->caching : $caching);
-        if ((isset($template) && strpos($template_name, ':.') !== false) || $this->allow_ambiguous_resources) {
+        $cache_id ??= $this->cache_id;
+        $compile_id ??= $this->compile_id;
+        $caching = (int) ($caching ?? $this->caching);
+        if ((isset($template) && str_contains($template_name, ':.')) || $this->allow_ambiguous_resources) {
             $_templateId =
-                Smarty_Resource::getUniqueTemplateName((isset($template) ? $template : $this), $template_name) .
+                Smarty_Resource::getUniqueTemplateName(($template ?? $this), $template_name) .
                 sprintf('#%s#%s#%d', $cache_id, $compile_id, $caching);
         } else {
             $_templateId = $this->_joined_template_dir . sprintf(
@@ -1428,6 +1428,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      *
      * @return Smarty
      */
+    #[\Override]
     public function _getSmartyObj()
     {
         return $this;

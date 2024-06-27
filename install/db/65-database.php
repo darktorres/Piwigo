@@ -26,7 +26,7 @@ function upgrade65_change_table_to_blob($table, $field_definitions)
             continue;
         }
 
-        list($type) = explode('(', $row['Type']);
+        [$type] = explode('(', (string) $row['Type']);
         if (! isset($types[$type])) {
             continue;
         }
@@ -52,20 +52,20 @@ function upgrade65_change_table_to_charset($table, $field_definitions, $db_chars
 
         $query = $row['Field'] . ' ' . $row['Type'];
         $query .= ' CHARACTER SET ' . $db_charset;
-        if (strpos($row['Collation'], '_bin') !== false) {
+        if (str_contains((string) $row['Collation'], '_bin')) {
             $query .= ' BINARY';
         }
 
         if ($row['Null'] != 'YES') {
             $query .= ' NOT NULL';
             if (isset($row['Default'])) {
-                $query .= ' DEFAULT "' . addslashes($row['Default']) . '"';
+                $query .= ' DEFAULT "' . addslashes((string) $row['Default']) . '"';
             }
         } else {
             if (! isset($row['Default'])) {
                 $query .= ' DEFAULT NULL';
             } else {
-                $query .= ' DEFAULT "' . addslashes($row['Default']) . '"';
+                $query .= ' DEFAULT "' . addslashes((string) $row['Default']) . '"';
             }
         }
 
@@ -98,7 +98,7 @@ SELECT language, COUNT(user_id) AS count FROM ' . USER_INFOS_TABLE . '
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $language = $row['language'];
-        $lang_def = explode('.', $language);
+        $lang_def = explode('.', (string) $language);
         if (count($lang_def) == 2) {
             $new_lang = $lang_def[0];
             $charset = strtolower($lang_def[1]);
@@ -217,7 +217,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
         $pwg_charset = 'utf-8';
         $db_charset = 'utf8';
         foreach ($all_tables as $table) {
-            if (! isset($safe_tables[substr($table, strlen($prefixeTable))])) {
+            if (! isset($safe_tables[substr((string) $table, strlen((string) $prefixeTable))])) {
                 upgrade65_change_table_to_blob($table, $all_tables_definition[$table]);
             }
 
@@ -232,7 +232,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
         $pwg_charset = 'utf-8';
         $db_charset = 'utf8';
         foreach ($all_tables as $table) {
-            if (! isset($safe_tables[substr($table, strlen($prefixeTable))])) {
+            if (! isset($safe_tables[substr((string) $table, strlen((string) $prefixeTable))])) {
                 upgrade65_change_table_to_blob($table, $all_tables_definition[$table]);
                 upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'latin2');
             }

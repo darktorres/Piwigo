@@ -50,7 +50,7 @@ function random_int(
 
     try {
         $min = RandomCompat_intval($min);
-    } catch (TypeError $typeError) {
+    } catch (TypeError) {
         throw new TypeError(
             'random_int(): $min must be an integer'
         );
@@ -58,7 +58,7 @@ function random_int(
 
     try {
         $max = RandomCompat_intval($max);
-    } catch (TypeError $typeError) {
+    } catch (TypeError) {
         throw new TypeError(
             'random_int(): $max must be an integer'
         );

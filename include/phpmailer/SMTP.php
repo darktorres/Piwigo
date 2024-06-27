@@ -589,7 +589,7 @@ class SMTP
             strpos($lines[0], ':')
         );
         $in_headers = false;
-        if (! empty($field) && strpos($field, ' ') === false) {
+        if (! empty($field) && ! str_contains($field, ' ')) {
             $in_headers = true;
         }
 
@@ -673,7 +673,10 @@ class SMTP
         }
 
         //Some servers shut down the SMTP service here (RFC 5321)
-        if (substr($this->helo_rply, 0, 3) == '421') {
+        if (str_starts_with(
+            (string) $this->helo_rply,
+            '421'
+        )) {
             return false;
         }
 
@@ -748,11 +751,11 @@ class SMTP
             $dsn = strtoupper($dsn);
             $notify = [];
 
-            if (strpos($dsn, 'NEVER') !== false) {
+            if (str_contains($dsn, 'NEVER')) {
                 $notify[] = 'NEVER';
             } else {
                 foreach (['SUCCESS', 'FAILURE', 'DELAY'] as $value) {
-                    if (strpos($dsn, $value) !== false) {
+                    if (str_contains($dsn, $value)) {
                         $notify[] = $value;
                     }
                 }
@@ -1085,7 +1088,7 @@ class SMTP
                 echo gmdate(
                     'Y-m-d H:i:s'
                 ), ' ', htmlentities(
-                    preg_replace('/[\r\n]+/', '', $str),
+                    (string) preg_replace('/[\r\n]+/', '', $str),
                     ENT_QUOTES,
                     'UTF-8'
                 ), "<br>\n";
@@ -1102,7 +1105,7 @@ class SMTP
                     str_replace(
                         "\n",
                         "\n                   \t                  ",
-                        trim($str)
+                        trim((string) $str)
                     )
                 ),
                 "\n";
@@ -1182,13 +1185,13 @@ class SMTP
 
         //SMTP server can take longer to respond, give longer timeout for first read
         //Windows does not have support for this timeout function
-        if (strpos(PHP_OS, 'WIN') !== 0) {
+        if (! str_starts_with(PHP_OS, 'WIN')) {
             $max = (int) ini_get('max_execution_time');
             //Don't bother if unlimited, or if set_time_limit is disabled
-            if ($max !== 0 && $timeout > $max && strpos(
+            if ($max !== 0 && $timeout > $max && ! str_contains(
                 ini_get('disable_functions'),
                 'set_time_limit'
-            ) === false) {
+            )) {
                 @set_time_limit($timeout);
             }
 
@@ -1274,7 +1277,7 @@ class SMTP
         $type
     ) {
         $this->server_caps = [];
-        $lines = explode("\n", $this->helo_rply);
+        $lines = explode("\n", (string) $this->helo_rply);
 
         foreach ($lines as $n => $s) {
             //First 4 chars contain response code followed by - or space
@@ -1331,10 +1334,10 @@ class SMTP
         }
 
         //Reject line breaks in all commands
-        if ((strpos($commandstring, "\n") !== false) || (strpos(
+        if ((str_contains($commandstring, "\n")) || (str_contains(
             $commandstring,
             "\r"
-        ) !== false)) {
+        ))) {
             $this->setError(sprintf("Command '%s' contained line breaks", $command));
 
             return false;
@@ -1430,7 +1433,7 @@ class SMTP
                 //stream_select returns false when the `select` system call is interrupted
                 //by an incoming signal, try the select again
                 if (stripos(
-                    $message,
+                    (string) $message,
                     'interrupted system call'
                 ) !== false) {
                     $this->edebug(

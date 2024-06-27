@@ -108,12 +108,12 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
      */
     public function fetch(
         $template = null,
-        $cache_id = null,
-        $compile_id = null,
+        mixed $cache_id = null,
+        mixed $compile_id = null,
         $parent = null
     ) {
         $result = $this->_execute($template, $cache_id, $compile_id, $parent, 0);
-        return $result === null ? ob_get_clean() : $result;
+        return $result ?? ob_get_clean();
     }
 
     /**
@@ -126,8 +126,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
      */
     public function display(
         $template = null,
-        $cache_id = null,
-        $compile_id = null,
+        mixed $cache_id = null,
+        mixed $compile_id = null,
         $parent = null
     ) {
         // display template
@@ -150,8 +150,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
      */
     public function isCached(
         $template = null,
-        $cache_id = null,
-        $compile_id = null,
+        mixed $cache_id = null,
+        mixed $compile_id = null,
         $parent = null
     ) {
         return $this->_execute($template, $cache_id, $compile_id, $parent, 2);
@@ -176,7 +176,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         $name,
         $callback,
         $cacheable = true,
-        $cache_attr = null
+        mixed $cache_attr = null
     ) {
         return $this->ext->registerPlugin->registerPlugin($this, $type, $name, $callback, $cacheable, $cache_attr);
     }
@@ -303,8 +303,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
      */
     private function _execute(
         $template,
-        $cache_id,
-        $compile_id,
+        mixed $cache_id,
+        mixed $compile_id,
         $parent,
         $function
     ) {
@@ -325,7 +325,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         } else {
             // get template object
             $saveVars = false;
-            $template = $smarty->createTemplate($template, $cache_id, $compile_id, $parent ? $parent : $this, false);
+            $template = $smarty->createTemplate($template, $cache_id, $compile_id, $parent ?: $this, false);
             if ($this->_objType === 1) {
                 // set caching in template object
                 $template->caching = $this->caching;

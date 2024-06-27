@@ -33,7 +33,7 @@ function rate_picture(
         return false;
     }
 
-    $ip_components = explode('.', $_SERVER['REMOTE_ADDR']);
+    $ip_components = explode('.', (string) $_SERVER['REMOTE_ADDR']);
     if (count($ip_components) > 3) {
         array_pop($ip_components);
     }
@@ -188,7 +188,7 @@ UPDATE ' . IMAGES_TABLE . '
         }
     }
 
-    return isset($return) ? $return : [
+    return $return ?? [
         'score' => null,
         'average' => null,
         'count' => 0,

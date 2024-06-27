@@ -85,7 +85,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
         $compiler->_cache['blockName'][$compiler->_cache['blockNesting']] = $_attr['name'];
         $compiler->_cache['blockClass'][$compiler->_cache['blockNesting']] = $_className;
         $compiler->_cache['blockParams'][$compiler->_cache['blockNesting']] = [];
-        $compiler->_cache['blockParams'][1]['subBlocks'][trim($_attr['name'], '"\'')][] = $_className;
+        $compiler->_cache['blockParams'][1]['subBlocks'][trim((string) $_attr['name'], '"\'')][] = $_className;
         $this->openTag(
             $compiler,
             'block',
@@ -122,12 +122,12 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_Compile_Shared_
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
     ) {
-        list($_attr, $_nocache, $_buffer, $_has_nocache_code, $_caching) = $this->closeTag($compiler, ['block']);
+        [$_attr, $_nocache, $_buffer, $_has_nocache_code, $_caching] = $this->closeTag($compiler, ['block']);
         // init block parameter
         $_block = $compiler->_cache['blockParams'][$compiler->_cache['blockNesting']];
         unset($compiler->_cache['blockParams'][$compiler->_cache['blockNesting']]);
         $_name = $_attr['name'];
-        $_assign = isset($_attr['assign']) ? $_attr['assign'] : null;
+        $_assign = $_attr['assign'] ?? null;
         unset($_attr['assign'], $_attr['name']);
         foreach ($_attr as $name => $stat) {
             if ((is_bool($stat) && $stat !== false) || (! is_bool($stat) && $stat !== 'false')) {

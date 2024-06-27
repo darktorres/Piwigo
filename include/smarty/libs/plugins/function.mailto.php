@@ -72,13 +72,18 @@ function smarty_function_mailto(
             case 'bcc':
             case 'followupto':
                 if (! empty($value)) {
-                    $mail_parms[] = $var . '=' . str_replace(['%40', '%2C'], ['@', ','], rawurlencode($value));
+                    $mail_parms[] = $var . '=' . str_replace(
+                        [
+                            '%40', '%2C'],
+                        ['@', ','],
+                        rawurlencode((string) $value)
+                    );
                 }
 
                 break;
             case 'subject':
             case 'newsgroups':
-                $mail_parms[] = $var . '=' . rawurlencode($value);
+                $mail_parms[] = $var . '=' . rawurlencode((string) $value);
                 break;
             case 'extra':
             case 'text':
@@ -102,12 +107,12 @@ function smarty_function_mailto(
     }
 
     $string = '<a href="mailto:' . htmlspecialchars(
-        $address,
+        (string) $address,
         ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401,
         Smarty::$_CHARSET
     ) .
         '" ' . $extra . '>' . htmlspecialchars(
-            $text,
+            (string) $text,
             ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401,
             Smarty::$_CHARSET
         ) . '</a>';
@@ -129,7 +134,7 @@ function smarty_function_mailto(
             $ord
         ) . '))</script>';
     } elseif ($encode === 'hex') {
-        preg_match('!^(.*)(\?.*)$!', $address, $match);
+        preg_match('!^(.*)(\?.*)$!', (string) $address, $match);
         if (! empty($match[2])) {
             trigger_error(
                 'mailto: hex encoding does not work with extra attributes. Try javascript.',
@@ -139,17 +144,17 @@ function smarty_function_mailto(
         }
 
         $address_encode = '';
-        for ($x = 0, $_length = strlen($address); $x < $_length; $x++) {
-            if (preg_match('!\w!' . Smarty::$_UTF8_MODIFIER, $address[$x])) {
-                $address_encode .= '%' . bin2hex($address[$x]);
+        for ($x = 0, $_length = strlen((string) $address); $x < $_length; $x++) {
+            if (preg_match('!\w!' . Smarty::$_UTF8_MODIFIER, (string) $address[$x])) {
+                $address_encode .= '%' . bin2hex((string) $address[$x]);
             } else {
                 $address_encode .= $address[$x];
             }
         }
 
         $text_encode = '';
-        for ($x = 0, $_length = strlen($text); $x < $_length; $x++) {
-            $text_encode .= '&#x' . bin2hex($text[$x]) . ';';
+        for ($x = 0, $_length = strlen((string) $text); $x < $_length; $x++) {
+            $text_encode .= '&#x' . bin2hex((string) $text[$x]) . ';';
         }
 
         $mailto = '&#109;&#97;&#105;&#108;&#116;&#111;&#58;';

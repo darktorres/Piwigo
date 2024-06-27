@@ -67,10 +67,10 @@ class Smarty_Internal_Runtime_Inheritance
         $blockNames = []
     ) {
         // if called while executing parent template it must be a sub-template with new inheritance root
-        if ($initChild && $this->state === 3 && (strpos(
+        if ($initChild && $this->state === 3 && (! str_contains(
             $tpl->template_resource,
             'extendsall'
-        ) === false)) {
+        ))) {
             $tpl->inheritance = new self();
             $tpl->inheritance->init($tpl, $initChild, $blockNames);
             return;
@@ -149,7 +149,7 @@ class Smarty_Internal_Runtime_Inheritance
         $name,
         $tplIndex = null
     ) {
-        $block = new $className($name, isset($tplIndex) ? $tplIndex : $this->tplIndex);
+        $block = new $className($name, $tplIndex ?? $this->tplIndex);
         if (isset($this->childRoot[$name])) {
             $block->child = $this->childRoot[$name];
         }

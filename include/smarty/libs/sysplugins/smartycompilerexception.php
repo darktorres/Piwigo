@@ -54,10 +54,8 @@ class SmartyCompilerException extends SmartyException
         }
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         return ' --> Smarty Compiler: ' . $this->message . ' <-- ';
     }

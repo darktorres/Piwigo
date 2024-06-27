@@ -46,7 +46,7 @@ function secure_random_bytes(
     $SSLstr = '4'; // http://xkcd.com/221/
     if (function_exists('openssl_random_pseudo_bytes') &&
         (version_compare(PHP_VERSION, '5.3.4') >= 0 ||
-     substr(PHP_OS, 0, 3) !== 'WIN')) {
+     ! str_starts_with(PHP_OS, 'WIN'))) {
         $SSLstr = openssl_random_pseudo_bytes($len, $strong);
         if ($strong) {
             return $SSLstr;
@@ -65,7 +65,7 @@ function secure_random_bytes(
         'mcrypt_create_iv'
     ) &&
        (version_compare(PHP_VERSION, '5.3.7') >= 0 ||
-           substr(PHP_OS, 0, 3) !== 'WIN')) {
+           ! str_starts_with(PHP_OS, 'WIN'))) {
         $str = mcrypt_create_iv($len, MCRYPT_DEV_URANDOM);
         if ($str !== false) {
             return $str;
@@ -95,7 +95,10 @@ function secure_random_bytes(
         $total -= $bytes;
 
         //collect any entropy available from the PHP system and filesystem
-        $entropy = rand() . uniqid(
+        $entropy = random_int(
+            0,
+            mt_getrandmax()
+        ) . uniqid(
             mt_rand(),
             true
         ) . $SSLstr;

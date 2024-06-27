@@ -840,10 +840,10 @@ class PHPMailer
         }
 
         //Pick an appropriate debug output format automatically
-        $this->Debugoutput = (strpos(
+        $this->Debugoutput = (str_contains(
             PHP_SAPI,
             'cli'
-        ) !== false ? 'echo' : 'html');
+        ) ? 'echo' : 'html');
     }
 
     /**
@@ -1041,7 +1041,7 @@ class PHPMailer
             foreach ($list as $address) {
                 $address = trim($address);
                 //Is there a separate name part?
-                if (strpos($address, '<') === false) {
+                if (! str_contains($address, '<')) {
                     //No separate name, just use the whole thing
                     if (static::validateAddress($address)) {
                         $addresses[] = [
@@ -1050,7 +1050,7 @@ class PHPMailer
                         ];
                     }
                 } else {
-                    list($name, $email) = explode('<', $address);
+                    [$name, $email] = explode('<', $address);
                     $email = trim(str_replace('>', '', $email));
                     $name = trim($name);
                     if (static::validateAddress($email)) {
@@ -1097,7 +1097,7 @@ class PHPMailer
         $auto = true
     ) {
         $address = trim($address);
-        $name = trim(preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
+        $name = trim((string) preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
         //Don't validate now addresses with IDN. Will be done in send().
         $pos = strrpos($address, '@');
         if (
@@ -1183,62 +1183,36 @@ class PHPMailer
         }
 
         //Reject line breaks in addresses; it's valid RFC5322, but not RFC5321
-        if (strpos(
+        if (str_contains(
             $address,
             "\n"
-        ) !== false || strpos(
+        ) || str_contains(
             $address,
             "\r"
-        ) !== false) {
+        )) {
             return false;
         }
 
-        switch ($patternselect) {
-            case 'pcre': //Kept for BC
-            case 'pcre8':
-                /*
-                 * A more complex and more permissive version of the RFC5322 regex on which FILTER_VALIDATE_EMAIL
-                 * is based.
-                 * In addition to the addresses allowed by filter_var, also permits:
-                 *  * dotless domains: `a@b`
-                 *  * comments: `1234 @ local(blah) .machine .example`
-                 *  * quoted elements: `'"test blah"@example.org'`
-                 *  * numeric TLDs: `a@b.123`
-                 *  * unbracketed IPv4 literals: `a@192.168.0.1`
-                 *  * IPv6 literals: 'first.last@[IPv6:a1::]'
-                 * Not all of these will necessarily work for sending!
-                 *
-                 * @see       http://squiloople.com/2009/12/20/email-address-validation/
-                 * @copyright 2009-2010 Michael Rushton
-                 * Feel free to use and redistribute this code. But please keep this copyright notice.
-                 */
-                return (bool) preg_match(
-                    '/^(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){255,})(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){65,}@)' .
-                    '((?>(?>(?>((?>(?>(?>\x0D\x0A)?[\t ])+|(?>[\t ]*\x0D\x0A)?[\t ]+)?)(\((?>(?2)' .
-                    '(?>[\x01-\x08\x0B\x0C\x0E-\'*-\[\]-\x7F]|\\\[\x00-\x7F]|(?3)))*(?2)\)))+(?2))|(?2))?)' .
-                    '([!#-\'*+\/-9=?^-~-]+|"(?>(?2)(?>[\x01-\x08\x0B\x0C\x0E-!#-\[\]-\x7F]|\\\[\x00-\x7F]))*' .
-                    '(?2)")(?>(?1)\.(?1)(?4))*(?1)@(?!(?1)[a-z0-9-]{64,})(?1)(?>([a-z0-9](?>[a-z0-9-]*[a-z0-9])?)' .
-                    '(?>(?1)\.(?!(?1)[a-z0-9-]{64,})(?1)(?5)){0,126}|\[(?:(?>IPv6:(?>([a-f0-9]{1,4})(?>:(?6)){7}' .
-                    '|(?!(?:.*[a-f0-9][:\]]){8,})((?6)(?>:(?6)){0,6})?::(?7)?))|(?>(?>IPv6:(?>(?6)(?>:(?6)){5}:' .
-                    '|(?!(?:.*[a-f0-9]:){6,})(?8)?::(?>((?6)(?>:(?6)){0,4}):)?))?(25[0-5]|2[0-4][0-9]|1[0-9]{2}' .
-                    '|[1-9]?[0-9])(?>\.(?9)){3}))\])(?1)$/isD',
-                    $address
-                );
-            case 'html5':
-                /*
-                 * This is the pattern used in the HTML5 spec for validation of 'email' type form input elements.
-                 *
-                 * @see https://html.spec.whatwg.org/#e-mail-state-(type=email)
-                 */
-                return (bool) preg_match(
-                    '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}' .
-                    '[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/sD',
-                    $address
-                );
-            case 'php':
-            default:
-                return filter_var($address, FILTER_VALIDATE_EMAIL) !== false;
-        }
+        return match ($patternselect) {
+            'pcre', 'pcre8' => (bool) preg_match(
+                '/^(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){255,})(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){65,}@)' .
+                '((?>(?>(?>((?>(?>(?>\x0D\x0A)?[\t ])+|(?>[\t ]*\x0D\x0A)?[\t ]+)?)(\((?>(?2)' .
+                '(?>[\x01-\x08\x0B\x0C\x0E-\'*-\[\]-\x7F]|\\\[\x00-\x7F]|(?3)))*(?2)\)))+(?2))|(?2))?)' .
+                '([!#-\'*+\/-9=?^-~-]+|"(?>(?2)(?>[\x01-\x08\x0B\x0C\x0E-!#-\[\]-\x7F]|\\\[\x00-\x7F]))*' .
+                '(?2)")(?>(?1)\.(?1)(?4))*(?1)@(?!(?1)[a-z0-9-]{64,})(?1)(?>([a-z0-9](?>[a-z0-9-]*[a-z0-9])?)' .
+                '(?>(?1)\.(?!(?1)[a-z0-9-]{64,})(?1)(?5)){0,126}|\[(?:(?>IPv6:(?>([a-f0-9]{1,4})(?>:(?6)){7}' .
+                '|(?!(?:.*[a-f0-9][:\]]){8,})((?6)(?>:(?6)){0,6})?::(?7)?))|(?>(?>IPv6:(?>(?6)(?>:(?6)){5}:' .
+                '|(?!(?:.*[a-f0-9]:){6,})(?8)?::(?>((?6)(?>:(?6)){0,4}):)?))?(25[0-5]|2[0-4][0-9]|1[0-9]{2}' .
+                '|[1-9]?[0-9])(?>\.(?9)){3}))\])(?1)$/isD',
+                $address
+            ),
+            'html5' => (bool) preg_match(
+                '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}' .
+                '[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/sD',
+                $address
+            ),
+            default => filter_var($address, FILTER_VALIDATE_EMAIL) !== false,
+        };
     }
 
     /**
@@ -1398,7 +1372,7 @@ class PHPMailer
                 'Sender',
                 'ConfirmReadingTo',
             ] as $address_kind) {
-                $this->{$address_kind} = trim($this->{$address_kind});
+                $this->{$address_kind} = trim((string) $this->{$address_kind});
                 if (empty($this->{$address_kind})) {
                     continue;
                 }
@@ -2194,7 +2168,7 @@ class PHPMailer
                 'PHPMailer ' . self::VERSION . ' (https://github.com/PHPMailer/PHPMailer)'
             );
         } else {
-            $myXmailer = trim($this->XMailer);
+            $myXmailer = trim((string) $this->XMailer);
             if ($myXmailer) {
                 $result .= $this->headerLine('X-Mailer', $myXmailer);
             }
@@ -2207,8 +2181,8 @@ class PHPMailer
         //Add custom headers
         foreach ($this->CustomHeader as $header) {
             $result .= $this->headerLine(
-                trim($header[0]),
-                $this->encodeHeader(trim($header[1]))
+                trim((string) $header[0]),
+                $this->encodeHeader(trim((string) $header[1]))
             );
         }
 
@@ -2719,7 +2693,7 @@ class PHPMailer
             case static::ENCODING_8BIT:
                 $encoded = static::normalizeBreaks($str);
                 //Make sure it ends with a line break
-                if (substr($encoded, -(strlen(static::$LE))) !== static::$LE) {
+                if (! str_ends_with($encoded, static::$LE)) {
                     $encoded .= static::$LE;
                 }
 
@@ -2793,7 +2767,7 @@ class PHPMailer
 
         //Q/B encoding adds 8 chars and the charset ("` =?<charset>?[QB]?<content>?=`").
         $overhead = 8 + strlen(
-            $charset
+            (string) $charset
         );
 
         if ($this->Mailer === 'mail') {
@@ -3236,9 +3210,7 @@ class PHPMailer
     ) {
         $this->RecipientsQueue = array_filter(
             $this->RecipientsQueue,
-            static function ($params) use ($kind) {
-                return $params[0] !== $kind;
-            }
+            static fn ($params) => $params[0] !== $kind
         );
     }
 
@@ -3248,7 +3220,7 @@ class PHPMailer
     public function clearAddresses()
     {
         foreach ($this->to as $to) {
-            unset($this->all_recipients[strtolower($to[0])]);
+            unset($this->all_recipients[strtolower((string) $to[0])]);
         }
 
         $this->to = [];
@@ -3261,7 +3233,7 @@ class PHPMailer
     public function clearCCs()
     {
         foreach ($this->cc as $cc) {
-            unset($this->all_recipients[strtolower($cc[0])]);
+            unset($this->all_recipients[strtolower((string) $cc[0])]);
         }
 
         $this->cc = [];
@@ -3274,7 +3246,7 @@ class PHPMailer
     public function clearBCCs()
     {
         foreach ($this->bcc as $bcc) {
-            unset($this->all_recipients[strtolower($bcc[0])]);
+            unset($this->all_recipients[strtolower((string) $bcc[0])]);
         }
 
         $this->bcc = [];
@@ -3356,11 +3328,10 @@ class PHPMailer
         }
 
         //Looks like a bracketed IPv6 address
-        if (strlen($host) > 2 && substr($host, 0, 1) === '[' && substr(
+        if (strlen($host) > 2 && str_starts_with($host, '[') && str_ends_with(
             $host,
-            -1,
-            1
-        ) === ']') {
+            ']'
+        )) {
             return filter_var(substr($host, 1, -1), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
         }
 
@@ -3403,9 +3374,9 @@ class PHPMailer
         $name,
         $value = null
     ) {
-        if ($value === null && strpos($name, ':') !== false) {
+        if ($value === null && str_contains($name, ':')) {
             //Value passed in as name:value
-            list($name, $value) = explode(':', $name, 2);
+            [$name, $value] = explode(':', $name, 2);
         }
 
         $name = trim($name);
@@ -3463,7 +3434,7 @@ class PHPMailer
     ) {
         preg_match_all('/(?<!-)(src|background)=["\'](.*)["\']/Ui', $message, $images);
         if (array_key_exists(2, $images)) {
-            if (strlen($basedir) > 1 && substr($basedir, -1) !== '/') {
+            if (strlen($basedir) > 1 && ! str_ends_with($basedir, '/')) {
                 //Ensure $basedir has a trailing /
                 $basedir .= '/';
             }
@@ -3512,9 +3483,9 @@ class PHPMailer
                     //Only process relative URLs if a basedir is provided (i.e. no absolute local paths)
                     ! empty($basedir)
                     //Ignore URLs containing parent dir traversal (..)
-                    && (strpos($url, '..') === false)
+                    && (! str_contains($url, '..'))
                     //Do not change urls that are already inline images
-                    && strpos($url, 'cid:') !== 0
+                    && ! str_starts_with($url, 'cid:')
                     //Do not change absolute URLs, including anonymous protocol
                     && ! preg_match(
                         '#^[a-z][a-z0-9+.-]*:?//#i',
@@ -3529,11 +3500,11 @@ class PHPMailer
 
                     //RFC2392 S 2
                     $cid = substr(hash('sha256', $url), 0, 32) . '@phpmailer.0';
-                    if (strlen($basedir) > 1 && substr($basedir, -1) !== '/') {
+                    if (strlen($basedir) > 1 && ! str_ends_with($basedir, '/')) {
                         $basedir .= '/';
                     }
 
-                    if (strlen($directory) > 1 && substr($directory, -1) !== '/') {
+                    if (strlen($directory) > 1 && ! str_ends_with($directory, '/')) {
                         $directory .= '/';
                     }
 
@@ -3603,7 +3574,7 @@ class PHPMailer
         }
 
         return html_entity_decode(
-            trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/si', '', $html))),
+            trim(strip_tags((string) preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/si', '', $html))),
             ENT_QUOTES,
             $this->CharSet
         );
@@ -3838,7 +3809,7 @@ class PHPMailer
      */
     public function set(
         $name,
-        $value = ''
+        mixed $value = ''
     ) {
         if (property_exists($this, $name)) {
             $this->{$name} = $value;
@@ -3991,7 +3962,7 @@ class PHPMailer
                 openssl_pkey_free($privKey);
             }
 
-            return base64_encode($signature);
+            return base64_encode((string) $signature);
         }
 
         if (\PHP_MAJOR_VERSION < 8) {
@@ -4030,16 +4001,16 @@ class PHPMailer
             $signHeader
         );
         //Break headers out into an array
-        $lines = explode(self::CRLF, $signHeader);
+        $lines = explode(self::CRLF, (string) $signHeader);
         foreach ($lines as $key => $line) {
             //If the header is missing a :, skip it as it's invalid
             //This is likely to happen because the explode() above will also split
             //on the trailing LE, leaving an empty line
-            if (strpos($line, ':') === false) {
+            if (! str_contains($line, ':')) {
                 continue;
             }
 
-            list($heading, $value) = explode(':', $line, 2);
+            [$heading, $value] = explode(':', $line, 2);
             //Lower-case header name
             $heading = strtolower($heading);
             //Collapse white space within the value, also convert WSP to space
@@ -4053,7 +4024,7 @@ class PHPMailer
             //Net result is the same as trimming both ends of the value.
             //By elimination, the same applies to the field name
             $lines[$key] = trim($heading, " \t") . ':' . trim(
-                $value,
+                (string) $value,
                 " \t"
             );
         }
@@ -4421,7 +4392,7 @@ class PHPMailer
             case 'html':
                 //Cleans up output a bit for a better looking, HTML-safe output
                 echo htmlentities(
-                    preg_replace('/[\r\n]+/', '', $str),
+                    (string) preg_replace('/[\r\n]+/', '', $str),
                     ENT_QUOTES,
                     'UTF-8'
                 ), "<br>\n";
@@ -4438,7 +4409,7 @@ class PHPMailer
                     str_replace(
                         "\n",
                         "\n                   \t                  ",
-                        trim($str)
+                        trim((string) $str)
                     )
                 ),
                 "\n";
@@ -4463,7 +4434,7 @@ class PHPMailer
         $name
     ) {
         $address = trim($address);
-        $name = trim(preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
+        $name = trim((string) preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
         $pos = strrpos($address, '@');
         if ($pos === false) {
             //At-sign is missing.
@@ -4716,10 +4687,10 @@ class PHPMailer
             //Note that this does permit non-Latin alphanumeric characters based on the current locale.
             if (! ctype_alnum(
                 $c
-            ) && strpos(
+            ) && ! str_contains(
                 '@_-.',
                 $c
-            ) === false) {
+            )) {
                 return false;
             }
         }
@@ -4762,10 +4733,10 @@ class PHPMailer
 
         $readable = file_exists($path);
         //If not a UNC path (expected to start with \\), check read permission, see #2069
-        if (strpos(
+        if (! str_starts_with(
             $path,
             '\\\\'
-        ) !== 0) {
+        )) {
             $readable = $readable && is_readable($path);
         }
 
@@ -4968,7 +4939,7 @@ class PHPMailer
         if (function_exists('random_bytes')) {
             try {
                 $bytes = random_bytes($len);
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 //Do nothing
             }
         } elseif (function_exists('openssl_random_pseudo_bytes')) {

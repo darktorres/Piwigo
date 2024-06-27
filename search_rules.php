@@ -52,7 +52,7 @@ $template->set_filenames([
 $search = get_search_array($_GET['search_id']);
 
 if (isset($search['q'])) {
-    $template->append('search_words', htmlspecialchars($search['q']));
+    $template->append('search_words', htmlspecialchars((string) $search['q']));
 } else {
     $template->assign(
         [
@@ -93,7 +93,7 @@ if (isset($search['fields']['author'])) {
         'search_words',
         l10n(
             'author(s) : %s',
-            join(', ', array_map('strip_tags', $search['fields']['author']['words']))
+            join(', ', array_map(strip_tags(...), $search['fields']['author']['words']))
         )
     );
 }
@@ -124,7 +124,7 @@ SELECT id, uppercats, global_rank
         }
     }
 
-    usort($categories, 'global_rank_compare');
+    usort($categories, global_rank_compare(...));
 
     foreach ($categories as $category) {
         $template->append(

@@ -75,7 +75,7 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
             $_assign = $_attr['assign'];
             // create variable to make sure that the compiler knows about its nocache status
             $var = trim(
-                $_attr['assign'],
+                (string) $_attr['assign'],
                 "'"
             );
             if (isset($compiler->template->tpl_vars[$var])) {

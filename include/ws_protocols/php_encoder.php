@@ -9,6 +9,7 @@
 
 class PwgSerialPhpEncoder extends PwgResponseEncoder
 {
+    #[\Override]
     public function encodeResponse($response)
     {
         if ($response instanceof PwgError) {
@@ -30,6 +31,7 @@ class PwgSerialPhpEncoder extends PwgResponseEncoder
         );
     }
 
+    #[\Override]
     public function getContentType()
     {
         return 'text/plain';

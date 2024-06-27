@@ -85,11 +85,11 @@ function pwg_query($query)
         $output .= number_format($page['queries_time'], 3, '.', ' ') . ' s)';
         $output .= "\n" . '(total time      : ';
         $output .= number_format(($time + $start - $t2), 3, '.', ' ') . ' s)';
-        if ($result != null and preg_match('/\s*SELECT\s+/i', $query)) {
+        if ($result != null and preg_match('/\s*SELECT\s+/i', (string) $query)) {
             $output .= "\n" . '(num rows        : ';
             $output .= mysql_num_rows($result) . ' )';
         } elseif ($result != null
-          and preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i', $query)) {
+          and preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i', (string) $query)) {
             $output .= "\n" . '(affected rows   : ';
             $output .= mysql_affected_rows() . ' )';
         }
@@ -107,7 +107,7 @@ function pwg_db_nextval($column, $table)
     $query = '
 SELECT IF(MAX(' . $column . ')+1 IS NULL, 1, MAX(' . $column . ')+1)
   FROM ' . $table;
-    list($next) = pwg_db_fetch_row(pwg_query($query));
+    [$next] = pwg_db_fetch_row(pwg_query($query));
 
     return $next;
 }
@@ -285,9 +285,9 @@ CREATE TABLE ' . $temporary_tablename . '
         pwg_query($query);
         mass_inserts($temporary_tablename, $all_fields, $datas);
         if ($flags & MASS_UPDATES_SKIP_EMPTY) {
-            $func_set = create_function('$s', 'return "t1.$s = IFNULL(t2.$s, t1.$s)";');
+            $func_set = fn ($s) => sprintf('t1.%s = IFNULL(t2.%s, t1.%s)', $s, $s, $s);
         } else {
-            $func_set = create_function('$s', 'return "t1.$s = t2.$s";');
+            $func_set = fn ($s) => sprintf('t1.%s = t2.%s', $s, $s);
         }
 
         // update of images table by joining with temporary table
@@ -302,7 +302,7 @@ UPDATE ' . $tablename . ' AS t1, ' . $temporary_tablename . ' AS t2
           implode(
               "\n    AND ",
               array_map(
-                  create_function('$s', 'return "t1.$s = t2.$s";'),
+                  fn ($s) => sprintf('t1.%s = t2.%s', $s, $s),
                   $dbfields['primary']
               )
           );
@@ -397,7 +397,7 @@ function mass_inserts(
         $first = true;
 
         $query = "SHOW VARIABLES LIKE 'max_allowed_packet'";
-        list(, $packet_size) = pwg_db_fetch_row(pwg_query($query));
+        [, $packet_size] = pwg_db_fetch_row(pwg_query($query));
         $packet_size = $packet_size - 2000; // The last list of values MUST not exceed 2000 character*/
         $query = '';
 
@@ -563,7 +563,7 @@ function get_enums(
         if ($row['Field'] == $field) {
             // retrieving possible values of the enum field
             // enum('blue','green','black')
-            $options = explode(',', substr($row['Type'], 5, -1));
+            $options = explode(',', substr((string) $row['Type'], 5, -1));
             foreach ($options as $i => $option) {
                 $options[$i] = str_replace("'", '', $option);
             }
@@ -577,13 +577,12 @@ function get_enums(
 /**
  * Smartly checks if a variable is equivalent to true or false
  *
- * @param mixed $input
  * @return bool
  */
 function get_boolean(
-    $input
+    mixed $input
 ) {
-    if (strtolower($input) === 'false') {
+    if (strtolower((string) $input) === 'false') {
         return false;
     }
 
@@ -593,11 +592,10 @@ function get_boolean(
 /**
  * returns boolean string 'true' or 'false' if the given var is boolean
  *
- * @param mixed $var
  * @return mixed
  */
 function boolean_to_string(
-    $var
+    mixed $var
 ) {
     if (is_bool($var)) {
         return $var ? 'true' : 'false';
@@ -626,7 +624,7 @@ function pwg_db_get_recent_period($period, $date = 'CURRENT_DATE')
 {
     $query = '
 SELECT ' . pwg_db_get_recent_period_expression($period);
-    list($d) = pwg_db_fetch_row(pwg_query($query));
+    [$d] = pwg_db_fetch_row(pwg_query($query));
 
     return $d;
 }

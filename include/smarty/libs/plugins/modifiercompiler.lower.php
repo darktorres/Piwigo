@@ -20,7 +20,7 @@ function smarty_modifiercompiler_lower(
     $params
 ) {
     if (Smarty::$_MBSTRING) {
-        return 'mb_strtolower((string) ' . $params[0] . ", '" . addslashes(Smarty::$_CHARSET) . "')";
+        return 'mb_strtolower((string) ' . $params[0] . ", '" . addslashes((string) Smarty::$_CHARSET) . "')";
     }
 
     // no MBString fallback

@@ -24,7 +24,7 @@ SELECT
     COUNT(*)
   FROM ' . IMAGES_TABLE . '
 ;';
-    list($nb_photos) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_photos] = pwg_db_fetch_row(pwg_query($query));
     if ($nb_photos == 0) {
         // make sure we don't use the mobile theme, which is not compatible with
         // the "no photo yet" feature
@@ -51,7 +51,7 @@ SELECT
 
         if (is_admin()) {
             $url = $conf['no_photo_yet_url'];
-            if (substr($url, 0, 4) != 'http') {
+            if (! str_starts_with((string) $url, 'http')) {
                 $url = get_root_url() . $url;
             }
 

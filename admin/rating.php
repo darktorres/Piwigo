@@ -72,7 +72,7 @@ SELECT ' . $conf['user_fields']['username'] . ' as username, ' . $conf['user_fie
 ;';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
-    $users[$row['id']] = stripslashes($row['username']);
+    $users[$row['id']] = stripslashes((string) $row['username']);
 }
 
 $query = '
@@ -88,14 +88,14 @@ if (! empty($page['cat_filter'])) {
 
 $query .= '
 WHERE 1=1' . $page['user_filter'];
-list($nb_images) = pwg_db_fetch_row(pwg_query($query));
+[$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
 $query = '
 SELECT
     COUNT(*)
   FROM ' . RATE_TABLE .
 ';';
-list($nb_elements) = pwg_db_fetch_row(pwg_query($query));
+[$nb_elements] = pwg_db_fetch_row(pwg_query($query));
 
 // +-----------------------------------------------------------------------+
 // |                             template init                             |
@@ -222,7 +222,7 @@ ORDER BY date DESC;';
             $user_rate = '? ' . $row['user_id'];
         }
 
-        if (strlen($row['anonymous_id']) > 0) {
+        if (strlen((string) $row['anonymous_id']) > 0) {
             $user_rate .= '(' . $row['anonymous_id'] . ')';
         }
 

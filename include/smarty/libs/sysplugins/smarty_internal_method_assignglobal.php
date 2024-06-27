@@ -30,7 +30,7 @@ class Smarty_Internal_Method_AssignGlobal
     public function assignGlobal(
         Smarty_Internal_Data $data,
         $varName,
-        $value = null,
+        mixed $value = null,
         $nocache = false
     ) {
         if ($varName !== '') {

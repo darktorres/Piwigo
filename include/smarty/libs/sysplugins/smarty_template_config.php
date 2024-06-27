@@ -65,6 +65,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
      *
      * @return Smarty_Template_Config Source Object
      */
+    #[\Override]
     public static function load(
         Smarty_Internal_Template $_template = null,
         Smarty $smarty = null,
@@ -84,7 +85,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
         }
 
         // parse resource_name, load resource handler
-        list($name, $type) = Smarty_Resource::parseResourceName(
+        [$name, $type] = Smarty_Resource::parseResourceName(
             $template_resource,
             $smarty->default_config_type
         );

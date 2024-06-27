@@ -33,7 +33,7 @@ trigger_notify('loc_begin_element_set_unit');
 
 if (isset($_POST['submit'])) {
     check_input_parameter('element_ids', $_POST, false, '/^\d+(,\d+)*$/');
-    $collection = explode(',', $_POST['element_ids']);
+    $collection = explode(',', (string) $_POST['element_ids']);
 
     $datas = [];
 
@@ -55,7 +55,7 @@ SELECT id, date_creation
         if ($conf['allow_html_descriptions']) {
             $data['comment'] = @$_POST['description-' . $row['id']];
         } else {
-            $data['comment'] = strip_tags(@$_POST['description-' . $row['id']]);
+            $data['comment'] = strip_tags((string) @$_POST['description-' . $row['id']]);
         }
 
         if (! empty($_POST['date_creation-' . $row['id']])) {
@@ -196,7 +196,7 @@ SELECT
             $legend .= ' (' . $row['file'] . ')';
         }
 
-        $extTab = explode('.', $row['path']);
+        $extTab = explode('.', (string) $row['path']);
 
         $template->append(
             'elements',
@@ -208,10 +208,10 @@ SELECT
                     'FILE_SRC' => DerivativeImage::url(IMG_LARGE, $src_image),
                     'LEGEND' => $legend,
                     'U_EDIT' => get_root_url() . 'admin.php?page=photo-' . $row['id'],
-                    'NAME' => htmlspecialchars(isset($row['name']) ? $row['name'] : ''),
-                    'AUTHOR' => htmlspecialchars(isset($row['author']) ? $row['author'] : ''),
+                    'NAME' => htmlspecialchars($row['name'] ?? ''),
+                    'AUTHOR' => htmlspecialchars($row['author'] ?? ''),
                     'LEVEL' => ! empty($row['level']) ? $row['level'] : '0',
-                    'DESCRIPTION' => htmlspecialchars(isset($row['comment']) ? $row['comment'] : ''),
+                    'DESCRIPTION' => htmlspecialchars($row['comment'] ?? ''),
                     'DATE_CREATION' => $row['date_creation'],
                     'TAGS' => $tag_selection,
                     'is_svg' => (strtoupper(end($extTab)) == 'SVG'),

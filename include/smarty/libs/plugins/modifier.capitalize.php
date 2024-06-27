@@ -36,7 +36,7 @@ function smarty_modifier_capitalize(
             // uppercase word breaks
             $upper_string = preg_replace_callback(
                 "!(^|[^\p{L}'])([\p{Ll}])!S" . Smarty::$_UTF8_MODIFIER,
-                'smarty_mod_cap_mbconvert_cb',
+                smarty_mod_cap_mbconvert_cb(...),
                 $string
             );
         }
@@ -65,7 +65,7 @@ function smarty_modifier_capitalize(
         $upper_string =
             preg_replace_callback(
                 "!((^|\s)['\"])(\w)!" . Smarty::$_UTF8_MODIFIER,
-                'smarty_mod_cap_mbconvert2_cb',
+                smarty_mod_cap_mbconvert2_cb(...),
                 $upper_string
             );
         return $upper_string;
@@ -80,7 +80,7 @@ function smarty_modifier_capitalize(
     $upper_string =
         preg_replace_callback(
             "!(^|[^\p{L}'])([\p{Ll}])!S" . Smarty::$_UTF8_MODIFIER,
-            'smarty_mod_cap_ucfirst_cb',
+            smarty_mod_cap_ucfirst_cb(...),
             $string
         );
     // check uc_digits case
@@ -101,7 +101,7 @@ function smarty_modifier_capitalize(
 
     $upper_string = preg_replace_callback(
         "!((^|\s)['\"])(\w)!" . Smarty::$_UTF8_MODIFIER,
-        'smarty_mod_cap_ucfirst2_cb',
+        smarty_mod_cap_ucfirst2_cb(...),
         $upper_string
     );
     return $upper_string;
@@ -117,8 +117,8 @@ function smarty_modifier_capitalize(
  */
 function smarty_mod_cap_mbconvert_cb($matches)
 {
-    return stripslashes($matches[1]) . mb_convert_case(
-        stripslashes($matches[2]),
+    return stripslashes((string) $matches[1]) . mb_convert_case(
+        stripslashes((string) $matches[2]),
         MB_CASE_UPPER,
         Smarty::$_CHARSET
     );
@@ -129,8 +129,8 @@ function smarty_mod_cap_mbconvert_cb($matches)
  */
 function smarty_mod_cap_mbconvert2_cb($matches)
 {
-    return stripslashes($matches[1]) . mb_convert_case(
-        stripslashes($matches[3]),
+    return stripslashes((string) $matches[1]) . mb_convert_case(
+        stripslashes((string) $matches[3]),
         MB_CASE_UPPER,
         Smarty::$_CHARSET
     );
@@ -141,7 +141,7 @@ function smarty_mod_cap_mbconvert2_cb($matches)
  */
 function smarty_mod_cap_ucfirst_cb($matches)
 {
-    return stripslashes($matches[1]) . ucfirst(stripslashes($matches[2]));
+    return stripslashes((string) $matches[1]) . ucfirst(stripslashes((string) $matches[2]));
 }
 
 /**
@@ -149,5 +149,5 @@ function smarty_mod_cap_ucfirst_cb($matches)
  */
 function smarty_mod_cap_ucfirst2_cb($matches)
 {
-    return stripslashes($matches[1]) . ucfirst(stripslashes($matches[3]));
+    return stripslashes((string) $matches[1]) . ucfirst(stripslashes((string) $matches[3]));
 }

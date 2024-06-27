@@ -214,9 +214,9 @@ SELECT
 
     while ($row = pwg_db_fetch_assoc($result)) {
         $time_keys = [
-            substr($row['date'], 0, 4), //yyyy
-            substr($row['date'], 0, 7), //yyyy-mm
-            substr($row['date'], 0, 10), //yyyy-mm-dd
+            substr((string) $row['date'], 0, 4), //yyyy
+            substr((string) $row['date'], 0, 7), //yyyy-mm
+            substr((string) $row['date'], 0, 10), //yyyy-mm-dd
             sprintf(
                 '%s-%02u',
                 $row['date'],
@@ -269,7 +269,7 @@ SELECT
     $inserts = [];
 
     if (isset($first_time_key)) {
-        list($year, $month, $day, $hour) = explode('-', $first_time_key);
+        [$year, $month, $day, $hour] = explode('-', $first_time_key);
 
         $query = '
 SELECT *
@@ -361,7 +361,7 @@ SELECT
     COUNT(*)
   FROM ' . HISTORY_TABLE . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
 
     if ($count <= $conf['history_autopurge_keep_lines']) {
         history_remove_summarized_column();
@@ -443,7 +443,7 @@ SELECT
     COUNT(*)
   FROM ' . HISTORY_TABLE . '
 ;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
 
     if ($count > $conf['history_autopurge_keep_lines'] + $conf['history_autopurge_blocksize']) {
         // it's not yet time to remove history.summarized

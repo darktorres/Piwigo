@@ -31,7 +31,7 @@ $updates = [];
 
 while ($row = pwg_db_fetch_assoc($result)) {
     if ($row['has_high'] == 'true') {
-        $high_path = dirname($row['path']) . '/pwg_high/' . basename($row['path']);
+        $high_path = dirname((string) $row['path']) . '/pwg_high/' . basename((string) $row['path']);
         rename($high_path, $row['path']);
 
         array_push(

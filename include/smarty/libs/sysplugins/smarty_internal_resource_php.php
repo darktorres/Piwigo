@@ -44,6 +44,7 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
      *
      * @return string                 template source
      */
+    #[\Override]
     public function getContent(
         Smarty_Template_Source $source
     ) {

@@ -15,20 +15,6 @@
 class Smarty_Internal_Config_File_Compiler
 {
     /**
-     * Lexer class name
-     *
-     * @var string
-     */
-    public $lexer_class;
-
-    /**
-     * Parser class name
-     *
-     * @var string
-     */
-    public $parser_class;
-
-    /**
      * Lexer object
      *
      * @var object
@@ -77,12 +63,17 @@ class Smarty_Internal_Config_File_Compiler
      * @param string $parser_class class name
      * @param Smarty $smarty       global instance
      */
-    public function __construct($lexer_class, $parser_class, Smarty $smarty)
-    {
+    public function __construct(
+        /**
+         * Lexer class name
+         */
+        public $lexer_class, /**
+     * Parser class name
+     */
+        public $parser_class,
+        Smarty $smarty
+    ) {
         $this->smarty = $smarty;
-        // get required plugins
-        $this->lexer_class = $lexer_class;
-        $this->parser_class = $parser_class;
         $this->smarty = $smarty;
         $this->config_data['sections'] = [];
         $this->config_data['vars'] = [];

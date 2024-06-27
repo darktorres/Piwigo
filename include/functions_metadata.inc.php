@@ -37,7 +37,7 @@ function get_iptc_data(
                     if ($iptc_key == '2#025') {
                         $value = implode(
                             $array_sep,
-                            array_map('clean_iptc_value', $iptc[$iptc_key])
+                            array_map(clean_iptc_value(...), $iptc[$iptc_key])
                         );
                     } else {
                         $value = clean_iptc_value($iptc[$iptc_key][0]);
@@ -137,12 +137,12 @@ function get_exif_data(
 
         // configured fields
         foreach ($map as $key => $field) {
-            if (strpos($field, ';') === false) {
+            if (! str_contains((string) $field, ';')) {
                 if (isset($exif[$field])) {
                     $result[$key] = $exif[$field];
                 }
             } else {
-                $tokens = explode(';', $field);
+                $tokens = explode(';', (string) $field);
                 if (isset($exif[$tokens[0]][$tokens[1]])) {
                     $result[$key] = $exif[$tokens[0]][$tokens[1]];
                 }
@@ -169,7 +169,7 @@ function get_exif_data(
         foreach ($result as $key => $value) {
             // in case the origin of the photo is unsecure (user upload), we remove
             // HTML tags to avoid XSS (malicious execution of javascript)
-            $result[$key] = strip_tags($value);
+            $result[$key] = strip_tags((string) $value);
         }
     }
 

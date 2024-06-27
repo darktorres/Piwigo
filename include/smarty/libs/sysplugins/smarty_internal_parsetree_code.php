@@ -29,6 +29,7 @@ class Smarty_Internal_ParseTree_Code extends Smarty_Internal_ParseTree
      *
      * @return string content
      */
+    #[\Override]
     public function to_smarty_php(
         Smarty_Internal_Templateparser $parser
     ) {

@@ -41,7 +41,7 @@ if (isset($imginfo['APP13'])) {
                     $value = implode(
                         ',',
                         array_map(
-                            'clean_iptc_value',
+                            clean_iptc_value(...),
                             $iptc[$iptc_key]
                         )
                     );

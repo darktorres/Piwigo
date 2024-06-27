@@ -28,13 +28,13 @@ function smarty_function_fetch(
     }
 
     // strip file protocol
-    if (stripos($params['file'], 'file://') === 0) {
-        $params['file'] = substr($params['file'], 7);
+    if (stripos((string) $params['file'], 'file://') === 0) {
+        $params['file'] = substr((string) $params['file'], 7);
     }
 
-    $protocol = strpos($params['file'], '://');
+    $protocol = strpos((string) $params['file'], '://');
     if ($protocol !== false) {
-        $protocol = strtolower(substr($params['file'], 0, $protocol));
+        $protocol = strtolower(substr((string) $params['file'], 0, $protocol));
     }
 
     if (isset($template->smarty->security_policy)) {
@@ -56,7 +56,7 @@ function smarty_function_fetch(
     $content = '';
     if ($protocol === 'http') {
         // http fetch
-        if ($uri_parts = parse_url($params['file'])) {
+        if ($uri_parts = parse_url((string) $params['file'])) {
             // set defaults
             $host = $uri_parts['host'];
             $server_name = $uri_parts['host'];
@@ -108,7 +108,7 @@ function smarty_function_fetch(
                         break;
                     case 'header':
                         if (! empty($param_value)) {
-                            if (! preg_match('![\w\d-]+: .+!', $param_value)) {
+                            if (! preg_match('![\w\d-]+: .+!', (string) $param_value)) {
                                 trigger_error(
                                     sprintf("[plugin] invalid header format '%s'", $param_value),
                                     E_USER_NOTICE
@@ -128,7 +128,7 @@ function smarty_function_fetch(
 
                         break;
                     case 'proxy_port':
-                        if (! preg_match('!\D!', $param_value)) {
+                        if (! preg_match('!\D!', (string) $param_value)) {
                             $proxy_port = (int) $param_value;
                         } else {
                             trigger_error(
@@ -152,7 +152,7 @@ function smarty_function_fetch(
 
                         break;
                     case 'timeout':
-                        if (! preg_match('!\D!', $param_value)) {
+                        if (! preg_match('!\D!', (string) $param_value)) {
                             $timeout = (int) $param_value;
                         } else {
                             trigger_error(

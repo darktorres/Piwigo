@@ -29,6 +29,7 @@ class Smarty_Internal_ParseTree_DqContent extends Smarty_Internal_ParseTree
      *
      * @return string doubled quoted string
      */
+    #[\Override]
     public function to_smarty_php(
         Smarty_Internal_Templateparser $parser
     ) {

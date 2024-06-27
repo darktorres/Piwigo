@@ -367,13 +367,6 @@ class Smarty_Internal_Configfileparser
     ];
 
     /**
-     * lexer object
-     *
-     * @var Smarty_Internal_Configfilelexer
-     */
-    private $lex;
-
-    /**
      * internal error flag
      *
      * @var bool
@@ -399,9 +392,13 @@ class Smarty_Internal_Configfileparser
     /**
      * constructor
      */
-    public function __construct(Smarty_Internal_Configfilelexer $lex, Smarty_Internal_Config_File_Compiler $compiler)
-    {
-        $this->lex = $lex;
+    public function __construct(
+        /**
+         * lexer object
+         */
+        private readonly Smarty_Internal_Configfilelexer $lex,
+        Smarty_Internal_Config_File_Compiler $compiler
+    ) {
         $this->smarty = $compiler->smarty;
         $this->compiler = $compiler;
         $this->configOverwrite = $this->smarty->config_overwrite;
@@ -1038,7 +1035,7 @@ class Smarty_Internal_Configfileparser
                             );
                         }
 
-                        $this->yy_destructor($yymajor, $yytokenvalue);
+                        static::yy_destructor($yymajor, $yytokenvalue);
                         $yymajor = self::YYNOCODE;
                     } else {
                         while ($this->yyidx >= 0 &&
@@ -1049,7 +1046,7 @@ class Smarty_Internal_Configfileparser
                         }
 
                         if ($this->yyidx < 0 || $yymajor == 0) {
-                            $this->yy_destructor($yymajor, $yytokenvalue);
+                            static::yy_destructor($yymajor, $yytokenvalue);
                             $this->yy_parse_failed();
                             $yymajor = self::YYNOCODE;
                         } elseif ($yymx !== self::YYERRORSYMBOL) {
@@ -1066,7 +1063,7 @@ class Smarty_Internal_Configfileparser
                     }
 
                     $this->yyerrcnt = 3;
-                    $this->yy_destructor($yymajor, $yytokenvalue);
+                    static::yy_destructor($yymajor, $yytokenvalue);
                     if ($yyendofinput) {
                         $this->yy_parse_failed();
                     }

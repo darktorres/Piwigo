@@ -140,6 +140,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
      *
      * @param Smarty_Internal_Template $_smarty_tpl do not change variable name, is used by compiled template
      */
+    #[\Override]
     public function process(
         Smarty_Internal_Template $_smarty_tpl
     ) {
@@ -252,7 +253,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
             return file_get_contents($this->filepath);
         }
 
-        return isset($this->content) ? $this->content : false;
+        return $this->content ?? false;
     }
 
     /**

@@ -152,7 +152,11 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
             $namedAttr = $this->matchResults['named'];
         }
 
-        if (isset($_attr['properties']) && preg_match_all("/['](.*?)[']/", $_attr['properties'], $match)) {
+        if (isset($_attr['properties']) && preg_match_all(
+            "/['](.*?)[']/",
+            (string) $_attr['properties'],
+            $match
+        )) {
             foreach ($match[1] as $prop) {
                 if (in_array($prop, $this->nameProperties)) {
                     $namedAttr[$prop] = true;
@@ -523,7 +527,7 @@ class Smarty_Internal_Compile_Sectionelse extends Smarty_Internal_CompileBase
     ) {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-        list($openTag, $nocache, $local, $sectionVar) = $this->closeTag($compiler, ['section']);
+        [$openTag, $nocache, $local, $sectionVar] = $this->closeTag($compiler, ['section']);
         $this->openTag($compiler, 'sectionelse', ['sectionelse', $nocache, $local, $sectionVar]);
         return "<?php }} else {\n ?>";
     }
@@ -554,7 +558,7 @@ class Smarty_Internal_Compile_Sectionclose extends Smarty_Internal_CompileBase
             $compiler->tag_nocache = true;
         }
 
-        list($openTag, $compiler->nocache, $local, $sectionVar) =
+        [$openTag, $compiler->nocache, $local, $sectionVar] =
             $this->closeTag($compiler, ['section', 'sectionelse']);
         $output = "<?php\n";
         if ($openTag === 'sectionelse') {

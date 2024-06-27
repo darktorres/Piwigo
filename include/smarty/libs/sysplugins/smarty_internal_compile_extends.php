@@ -61,14 +61,14 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
             $compiler->trigger_template_error('nocache option not allowed', $compiler->parser->lex->line - 1);
         }
 
-        if (strpos($_attr['file'], '$_tmp') !== false) {
+        if (str_contains((string) $_attr['file'], '$_tmp')) {
             $compiler->trigger_template_error('illegal value for file attribute', $compiler->parser->lex->line - 1);
         }
 
         // add code to initialize inheritance
         $this->registerInit($compiler, true);
-        $file = trim($_attr['file'], '\'"');
-        if (strlen($file) > 8 && substr($file, 0, 8) === 'extends:') {
+        $file = trim((string) $_attr['file'], '\'"');
+        if (strlen($file) > 8 && str_starts_with($file, 'extends:')) {
             // generate code for each template
             $files = array_reverse(explode('|', substr($file, 8)));
             $i = 0;

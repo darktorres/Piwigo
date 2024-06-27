@@ -45,11 +45,11 @@ function smarty_modifier_truncate(
             }
 
             if (! $middle) {
-                return mb_substr($string, 0, $length, Smarty::$_CHARSET) . $etc;
+                return mb_substr((string) $string, 0, $length, Smarty::$_CHARSET) . $etc;
             }
 
-            return mb_substr($string, 0, intval($length / 2), Smarty::$_CHARSET) . $etc .
-                   mb_substr($string, -intval($length / 2), $length, Smarty::$_CHARSET);
+            return mb_substr((string) $string, 0, intval($length / 2), Smarty::$_CHARSET) . $etc .
+                   mb_substr((string) $string, -intval($length / 2), $length, Smarty::$_CHARSET);
         }
 
         return $string;
@@ -63,10 +63,13 @@ function smarty_modifier_truncate(
         }
 
         if (! $middle) {
-            return substr($string, 0, $length) . $etc;
+            return substr((string) $string, 0, $length) . $etc;
         }
 
-        return substr($string, 0, intval($length / 2)) . $etc . substr($string, -intval($length / 2));
+        return substr((string) $string, 0, intval($length / 2)) . $etc . substr(
+            (string) $string,
+            -intval($length / 2)
+        );
     }
 
     return $string;

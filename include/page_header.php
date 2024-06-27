@@ -24,8 +24,7 @@ if (defined('IN_ADMIN') and IN_ADMIN) {
 $template->assign(
     [
         'GALLERY_TITLE' =>
-          isset($page['gallery_title']) ?
-            $page['gallery_title'] : $conf['gallery_title'],
+          $page['gallery_title'] ?? $conf['gallery_title'],
 
         'PAGE_BANNER' =>
           trigger_change(
@@ -33,16 +32,15 @@ $template->assign(
               str_replace(
                   '%gallery_title%',
                   $conf['gallery_title'],
-                  isset($page['page_banner']) ? $page['page_banner'] : $conf['page_banner']
+                  $page['page_banner'] ?? $conf['page_banner']
               )
           ),
 
         'BODY_ID' =>
-          isset($page['body_id']) ?
-            $page['body_id'] : '',
+          $page['body_id'] ?? '',
 
         'CONTENT_ENCODING' => get_pwg_charset(),
-        'PAGE_TITLE' => strip_tags($title),
+        'PAGE_TITLE' => strip_tags((string) $title),
 
         'U_HOME' => get_gallery_home_url(),
 

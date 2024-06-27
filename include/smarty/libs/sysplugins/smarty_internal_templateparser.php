@@ -2320,7 +2320,7 @@ class Smarty_Internal_Templateparser
         $this->compiler = $compiler;
         $this->template = $this->compiler->template;
         $this->smarty = $this->template->smarty;
-        $this->security = isset($this->smarty->security_policy) ? $this->smarty->security_policy : false;
+        $this->security = $this->smarty->security_policy ?? false;
         $this->current_buffer = new Smarty_Internal_ParseTree_Template();
         $this->root_buffer = $this->current_buffer;
     }
@@ -3766,7 +3766,7 @@ class Smarty_Internal_Templateparser
     // line 987 "../smarty/lexer/smarty_internal_templateparser.y"
     public function yy_r138()
     {
-        if ($this->security && substr($this->yystack[$this->yyidx + -1]->minor, 0, 1) === '_') {
+        if ($this->security && str_starts_with($this->yystack[$this->yyidx + -1]->minor, '_')) {
             $this->compiler->trigger_template_error(self::ERR1);
         }
 
@@ -3823,7 +3823,7 @@ class Smarty_Internal_Templateparser
     // line 1032 "../smarty/lexer/smarty_internal_templateparser.y"
     public function yy_r144()
     {
-        if ($this->security && substr($this->yystack[$this->yyidx + -3]->minor, 0, 1) === '_') {
+        if ($this->security && str_starts_with($this->yystack[$this->yyidx + -3]->minor, '_')) {
             $this->compiler->trigger_template_error(self::ERR1);
         }
 
@@ -4241,7 +4241,7 @@ class Smarty_Internal_Templateparser
                             );
                         }
 
-                        $this->yy_destructor($yymajor, $yytokenvalue);
+                        static::yy_destructor($yymajor, $yytokenvalue);
                         $yymajor = self::YYNOCODE;
                     } else {
                         while ($this->yyidx >= 0 &&
@@ -4252,7 +4252,7 @@ class Smarty_Internal_Templateparser
                         }
 
                         if ($this->yyidx < 0 || $yymajor == 0) {
-                            $this->yy_destructor($yymajor, $yytokenvalue);
+                            static::yy_destructor($yymajor, $yytokenvalue);
                             $this->yy_parse_failed();
                             $yymajor = self::YYNOCODE;
                         } elseif ($yymx !== self::YYERRORSYMBOL) {
@@ -4269,7 +4269,7 @@ class Smarty_Internal_Templateparser
                     }
 
                     $this->yyerrcnt = 3;
-                    $this->yy_destructor($yymajor, $yytokenvalue);
+                    static::yy_destructor($yymajor, $yytokenvalue);
                     if ($yyendofinput) {
                         $this->yy_parse_failed();
                     }

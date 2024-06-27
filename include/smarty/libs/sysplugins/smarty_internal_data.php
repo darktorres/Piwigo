@@ -108,7 +108,7 @@ abstract class Smarty_Internal_Data
      */
     public function assign(
         $tpl_var,
-        $value = null,
+        mixed $value = null,
         $nocache = false
     ) {
         if (is_array($tpl_var)) {
@@ -145,7 +145,7 @@ abstract class Smarty_Internal_Data
      */
     public function append(
         $tpl_var,
-        $value = null,
+        mixed $value = null,
         $merge = false,
         $nocache = false
     ) {
@@ -163,7 +163,7 @@ abstract class Smarty_Internal_Data
      */
     public function assignGlobal(
         $varName,
-        $value = null,
+        mixed $value = null,
         $nocache = false
     ) {
         return $this->ext->assignGlobal->assignGlobal($this, $varName, $value, $nocache);
@@ -180,7 +180,7 @@ abstract class Smarty_Internal_Data
      */
     public function appendByRef(
         $tpl_var,
-        &$value,
+        mixed &$value,
         $merge = false
     ) {
         return $this->ext->appendByRef->appendByRef($this, $tpl_var, $value, $merge);

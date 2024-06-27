@@ -35,8 +35,8 @@ $history_lines = query2array(
 if (count($history_lines) > 0) {
     $last_summarized = $history_lines[0];
 
-    list($year, $month, $day) = explode('-', $last_summarized['date']);
-    list($hour) = explode(':', $last_summarized['time']);
+    [$year, $month, $day] = explode('-', (string) $last_summarized['date']);
+    [$hour] = explode(':', (string) $last_summarized['time']);
 
     single_update(
         PREFIX_TABLE . 'history_summary',

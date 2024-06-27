@@ -11,12 +11,12 @@ if (isset($conf['session_save_handler'])
   and ($conf['session_save_handler'] == 'db')
   and defined('PHPWG_INSTALLED')) {
     session_set_save_handler(
-        'pwg_session_open',
-        'pwg_session_close',
-        'pwg_session_read',
-        'pwg_session_write',
-        'pwg_session_destroy',
-        'pwg_session_gc'
+        pwg_session_open(...),
+        pwg_session_close(...),
+        pwg_session_read(...),
+        pwg_session_write(...),
+        pwg_session_destroy(...),
+        pwg_session_gc(...)
     );
 
     if (function_exists('ini_set')) {
@@ -28,7 +28,7 @@ if (isset($conf['session_save_handler'])
 
     session_name($conf['session_name']);
     session_set_cookie_params(0, cookie_path());
-    register_shutdown_function('session_write_close');
+    register_shutdown_function(session_write_close(...));
 }
 
 /**
@@ -45,7 +45,7 @@ function generate_key(
 
     try {
         $bytes = random_bytes($size + 10);
-    } catch (Exception $exception) {
+    } catch (Exception) {
         include_once(PHPWG_ROOT_PATH . 'include/srand.php');
         $bytes = secure_random_bytes($size + 10);
     }
@@ -54,7 +54,7 @@ function generate_key(
         str_replace(
             ['+', '/'],
             '',
-            base64_encode($bytes)
+            base64_encode((string) $bytes)
         ),
         0,
         $size
@@ -98,10 +98,10 @@ function get_remote_addr_session_hash()
         return '';
     }
 
-    if (strpos($_SERVER['REMOTE_ADDR'], ':') === false) {//ipv4
+    if (! str_contains((string) $_SERVER['REMOTE_ADDR'], ':')) {//ipv4
         return vsprintf(
             '%02X%02X',
-            explode('.', $_SERVER['REMOTE_ADDR'])
+            explode('.', (string) $_SERVER['REMOTE_ADDR'])
         );
     }
 
@@ -191,12 +191,11 @@ DELETE
  * Persistently stores a variable for the current session.
  *
  * @param string $var
- * @param mixed $value
  * @return bool
  */
 function pwg_set_session_var(
     $var,
-    $value
+    mixed $value
 ) {
     if (! isset($_SESSION)) {
         return false;
@@ -210,18 +209,13 @@ function pwg_set_session_var(
  * Retrieves the value of a persistent variable for the current session.
  *
  * @param string $var
- * @param mixed $default
  * @return mixed
  */
 function pwg_get_session_var(
     $var,
-    $default = null
+    mixed $default = null
 ) {
-    if (isset($_SESSION['pwg_' . $var])) {
-        return $_SESSION['pwg_' . $var];
-    }
-
-    return $default;
+    return $_SESSION['pwg_' . $var] ?? $default;
 }
 
 /**

@@ -231,7 +231,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         $debObj->debugging_ctrl = 'NONE';
         $debObj->error_reporting = E_ALL & ~E_NOTICE;
         $debObj->debug_tpl =
-            isset($smarty->debug_tpl) ? $smarty->debug_tpl : 'file:' . __DIR__ . '/../debug.tpl';
+            $smarty->debug_tpl ?? 'file:' . __DIR__ . '/../debug.tpl';
         $debObj->registered_plugins = [];
         $debObj->registered_resources = [];
         $debObj->registered_filters = [];
@@ -393,12 +393,12 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             $_query_string = '';
         }
 
-        if (strpos($_query_string, $smarty->smarty_debug_id) !== false) {
-            if (strpos($_query_string, $smarty->smarty_debug_id . '=on') !== false) {
+        if (str_contains((string) $_query_string, $smarty->smarty_debug_id)) {
+            if (str_contains((string) $_query_string, $smarty->smarty_debug_id . '=on')) {
                 // enable debugging for this browser session
                 setcookie('SMARTY_DEBUG', true);
                 $smarty->debugging = true;
-            } elseif (strpos($_query_string, $smarty->smarty_debug_id . '=off') !== false) {
+            } elseif (str_contains((string) $_query_string, $smarty->smarty_debug_id . '=off')) {
                 // disable debugging for this browser session
                 setcookie('SMARTY_DEBUG', false);
                 $smarty->debugging = false;

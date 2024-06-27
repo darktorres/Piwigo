@@ -56,7 +56,7 @@ check_input_parameter(
     '/^[0-9a-z]{50}$/i'
 );
 
-$feed_id = isset($_GET['feed']) ? $_GET['feed'] : '';
+$feed_id = $_GET['feed'] ?? '';
 $image_only = isset($_GET['image_only']);
 
 // echo '<pre>'.generate_key(50).'</pre>';
@@ -85,7 +85,7 @@ SELECT user_id,
 // Check the status now after the user has been loaded
 check_status(ACCESS_GUEST);
 
-list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 include_once(PHPWG_ROOT_PATH . 'include/feedcreator.class.php');
 
@@ -94,7 +94,7 @@ set_make_full_url();
 $rss = new UniversalFeedCreator();
 $rss->encoding = get_pwg_charset();
 $rss->title = $conf['gallery_title'];
-$rss->title .= ' (as ' . stripslashes($user['username']) . ')';
+$rss->title .= ' (as ' . stripslashes((string) $user['username']) . ')';
 
 $rss->link = get_gallery_home_url();
 
@@ -158,7 +158,7 @@ foreach ($dates as $date_detail) { // for each recent post date we create a feed
             'chronology_field' => 'posted',
             'chronology_style' => 'monthly',
             'chronology_view' => 'calendar',
-            'chronology_date' => explode('-', substr($date, 0, 10)),
+            'chronology_date' => explode('-', substr((string) $date, 0, 10)),
         ]
     );
 

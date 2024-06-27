@@ -19,6 +19,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
      */
+    #[\Override]
     public function populate(
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template = null
@@ -30,7 +31,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
             $source->timestamp = $mtime;
         } else {
             $this->fetch($source->name, $content, $timestamp);
-            $source->timestamp = isset($timestamp) ? $timestamp : false;
+            $source->timestamp = $timestamp ?? false;
             if (isset($content)) {
                 $source->content = $content;
             }
@@ -46,6 +47,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
      *
      * @return string                 template source
      */
+    #[\Override]
     public function getContent(
         Smarty_Template_Source $source
     ) {
@@ -64,6 +66,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
      *
      * @return string                 resource's basename
      */
+    #[\Override]
     public function getBasename(
         Smarty_Template_Source $source
     ) {
@@ -104,6 +107,6 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
     private function generateSafeName(
         $name
     ): string {
-        return substr(preg_replace('/[^A-Za-z0-9._]/', '', (string) $name), 0, 127);
+        return substr((string) preg_replace('/[^A-Za-z0-9._]/', '', (string) $name), 0, 127);
     }
 }

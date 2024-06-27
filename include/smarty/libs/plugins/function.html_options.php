@@ -72,7 +72,7 @@ function smarty_function_html_options(
                             } else {
                                 trigger_error(
                                     "html_options: selected attribute contains an object of class '" .
-                                    get_class($_sel) . "' without __toString() method",
+                                    $_sel::class . "' without __toString() method",
                                     E_USER_NOTICE
                                 );
                                 continue;
@@ -88,7 +88,7 @@ function smarty_function_html_options(
                         $selected = smarty_function_escape_special_chars((string) $_val->__toString());
                     } else {
                         trigger_error(
-                            "html_options: selected attribute is an object of class '" . get_class($_val) .
+                            "html_options: selected attribute is an object of class '" . $_val::class .
                             "' without __toString() method",
                             E_USER_NOTICE
                         );
@@ -149,7 +149,7 @@ function smarty_function_html_options(
         }
     } else {
         foreach ($values as $_i => $_key) {
-            $_val = isset($output[$_i]) ? $output[$_i] : '';
+            $_val = $output[$_i] ?? '';
             $_html_result .= smarty_function_html_options_optoutput($_key, $_val, $selected, $id, $class, $_idx);
         }
     }
@@ -194,7 +194,7 @@ function smarty_function_html_options_optoutput(
                 $value = smarty_function_escape_special_chars((string) $value->__toString());
             } else {
                 trigger_error(
-                    "html_options: value is an object of class '" . get_class($value) .
+                    "html_options: value is an object of class '" . $value::class .
                     "' without __toString() method",
                     E_USER_NOTICE
                 );

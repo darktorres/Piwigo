@@ -21,11 +21,12 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
      * @param Smarty_Template_Source   $source    source object
      * @param Smarty_Internal_Template $_template template object
      */
+    #[\Override]
     public function populate(
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template = null
     ) {
-        if (strpos($source->resource, '://') !== false) {
+        if (str_contains($source->resource, '://')) {
             $source->filepath = $source->resource;
         } else {
             $source->filepath = str_replace(':', '://', $source->resource);
@@ -44,6 +45,7 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
      *
      * @return string template source
      */
+    #[\Override]
     public function getContent(
         Smarty_Template_Source $source
     ) {
@@ -75,6 +77,7 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
      *
      * @return string unique resource name
      */
+    #[\Override]
     public function buildUniqueResourceName(
         Smarty $smarty,
         $resource_name,

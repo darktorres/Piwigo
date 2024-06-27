@@ -112,7 +112,7 @@ function smarty_block_textformat(
         if (Smarty::$_MBSTRING) {
             $_paragraph = smarty_modifier_mb_wordwrap($_paragraph, $wrap - $indent, $wrap_char, $wrap_cut);
         } else {
-            $_paragraph = wordwrap($_paragraph, $wrap - $indent, $wrap_char, $wrap_cut);
+            $_paragraph = wordwrap((string) $_paragraph, $wrap - $indent, $wrap_char, $wrap_cut);
         }
 
         // indent lines

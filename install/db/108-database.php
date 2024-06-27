@@ -20,7 +20,7 @@ if (is_writable($local_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php')) 
     $order_by = str_ireplace(
         ['order by ', 'asc', 'desc'],
         [null, 'ASC', 'DESC'],
-        trim($conf['order_by_inside_category'])
+        trim((string) $conf['order_by_inside_category'])
     );
 
     // for a simple patern
@@ -29,7 +29,7 @@ if (is_writable($local_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php')) 
         // update database
         $query = '
     UPDATE ' . PREFIX_TABLE . 'config
-      SET value = \'' . preg_replace('# rank (ASC|DESC)(,?)#', null, $order_by) . '\'
+      SET value = \'' . preg_replace('# rank (ASC|DESC)(,?)#', '', $order_by) . '\'
       WHERE param = \'order_by\'
     ;';
         pwg_query($query);
@@ -44,7 +44,7 @@ if (is_writable($local_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php')) 
         $local_config = file($local_file);
         $new_local_config = [];
         foreach ($local_config as $line) {
-            if (strpos($line, 'order_by') === false) {
+            if (! str_contains($line, 'order_by')) {
                 $new_local_config[] = $line;
             }
         }

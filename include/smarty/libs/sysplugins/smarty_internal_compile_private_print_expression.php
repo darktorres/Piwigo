@@ -107,7 +107,7 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
             // autoescape html
             if ($compiler->template->smarty->escape_html) {
                 $output = sprintf("htmlspecialchars((string) %s, ENT_QUOTES, '", $output) . addslashes(
-                    Smarty::$_CHARSET
+                    (string) Smarty::$_CHARSET
                 ) . "')";
             }
 

@@ -22,6 +22,7 @@ class Smarty_Internal_Compile_Rdelim extends Smarty_Internal_Compile_Ldelim
      *
      * @return string compiled code
      */
+    #[\Override]
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler

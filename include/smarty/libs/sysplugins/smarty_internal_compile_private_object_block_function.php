@@ -22,6 +22,7 @@ class Smarty_Internal_Compile_Private_Object_Block_Function extends Smarty_Inter
      *
      * @return array
      */
+    #[\Override]
     public function setup(
         Smarty_Internal_TemplateCompilerBase $compiler,
         $_attr,

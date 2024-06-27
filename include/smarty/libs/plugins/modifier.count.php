@@ -19,7 +19,7 @@
  * @return int
  */
 function smarty_modifier_count(
-    $arrayOrObject,
+    mixed $arrayOrObject,
     $mode = 0
 ) {
     /*
@@ -28,7 +28,7 @@ function smarty_modifier_count(
      * > 1 would be returned, unless value was null, in which case 0 would be returned.
      */
 
-    if ($arrayOrObject instanceof Countable || is_array(
+    if (is_countable(
         $arrayOrObject
     )) {
         return count($arrayOrObject, (int) $mode);

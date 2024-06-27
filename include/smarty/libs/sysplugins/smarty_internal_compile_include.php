@@ -96,7 +96,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
         // parse resource_name
         if (preg_match(
             '/^([\'"])(([A-Za-z0-9_\-]{2,})[:])?(([^$()]+)|(.+))\1$/',
-            $source_resource,
+            (string) $source_resource,
             $match
         )) {
             $type = ! empty($match[3]) ? $match[3] : $compiler->template->smarty->default_resource_type;
@@ -231,7 +231,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
 
         $has_compiled_template = false;
         if ($merge_compiled_includes) {
-            $c_id = isset($_attr['compile_id']) ? $_attr['compile_id'] : $compiler->template->compile_id;
+            $c_id = $_attr['compile_id'] ?? $compiler->template->compile_id;
             // we must observe different compile_id and caching
             $t_hash = sha1(
                 $c_id . ($_caching ? '--caching' : '--nocaching')
@@ -239,7 +239,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             $compiler->smarty->allow_ambiguous_resources = true;
             /** @var Smarty_Internal_Template $tpl */
             $tpl = new $compiler->smarty->template_class(
-                trim($fullResourceName, '"\''),
+                trim((string) $fullResourceName, '"\''),
                 $compiler->smarty,
                 $compiler->template,
                 $compiler->template->cache_id,
@@ -367,7 +367,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             } else {
                 $basename = $tpl->source->handler->getBasename($tpl->source);
                 $sourceInfo = $tpl->source->type . ':' .
-                              ($basename ? $basename : $tpl->source->name);
+                              ($basename ?: $tpl->source->name);
             }
 
             // get compiled code

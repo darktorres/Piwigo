@@ -218,7 +218,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
     ) {
-        $tag = smarty_strtolower_ascii(trim($parameter[0], '"\''));
+        $tag = smarty_strtolower_ascii(trim((string) $parameter[0], '"\''));
         $name = isset($parameter[1]) ? $compiler->getId($parameter[1]) : false;
         if (! $name) {
             $compiler->trigger_template_error(

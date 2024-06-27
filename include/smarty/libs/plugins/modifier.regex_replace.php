@@ -53,10 +53,10 @@ function _smarty_regex_replace_check(
     }
 
     // remove eval-modifier from $search
-    if (preg_match('!([a-zA-Z\s]+)$!s', $search, $match) && (strpos(
+    if (preg_match('!([a-zA-Z\s]+)$!s', $search, $match) && (str_contains(
         $match[1],
         'e'
-    ) !== false)) {
+    ))) {
         $search = substr($search, 0, -strlen($match[1])) . preg_replace('![e\s]+!', '', $match[1]);
     }
 

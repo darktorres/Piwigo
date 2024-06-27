@@ -74,7 +74,7 @@ function process_password_request()
 
     $activation_key = generate_key(20);
 
-    list($expire) = pwg_db_fetch_row(pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
+    [$expire] = pwg_db_fetch_row(pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
 
     single_update(
         USER_INFOS_TABLE,
@@ -99,7 +99,7 @@ function process_password_request()
     );
     $message .= "\r\n\r\n";
     $message .= l10n('To reset your password, visit the following address:') . "\r\n";
-    $message .= get_root_url() . 'password.php?key=' . $activation_key . '-' . urlencode($userdata['email']);
+    $message .= get_root_url() . 'password.php?key=' . $activation_key . '-' . urlencode((string) $userdata['email']);
     $message .= "\r\n\r\n";
     $message .= l10n('If this was a mistake, just ignore this email and nothing will happen.') . "\r\n";
 
@@ -134,7 +134,7 @@ function check_password_reset_key(
 ) {
     global $page, $conf;
 
-    list($key, $email) = explode('-', $reset_key, 2);
+    [$key, $email] = explode('-', (string) $reset_key, 2);
 
     if (! preg_match('/^[a-z0-9]{20}$/i', $key)) {
         $page['errors'][] = l10n('Invalid key');
@@ -171,7 +171,7 @@ SELECT
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         if (pwg_password_verify($key, $row['activation_key'])) {
-            if (strtotime($row['dbnow']) > strtotime($row['activation_key_expire'])) {
+            if (strtotime((string) $row['dbnow']) > strtotime((string) $row['activation_key_expire'])) {
                 // key has expired
                 $page['errors'][] = l10n('Invalid key');
                 return false;
@@ -306,7 +306,7 @@ if ($page['action'] == 'lost') {
     $title = l10n('Forgot your password?');
 
     if (isset($_POST['username_or_email'])) {
-        $template->assign('username_or_email', htmlspecialchars(stripslashes($_POST['username_or_email'])));
+        $template->assign('username_or_email', htmlspecialchars(stripslashes((string) $_POST['username_or_email'])));
     }
 }
 
@@ -320,7 +320,7 @@ $template->assign(
         'title' => $title,
         'form_action' => get_root_url() . 'password.php',
         'action' => $page['action'],
-        'username' => isset($page['username']) ? $page['username'] : $user['username'],
+        'username' => $page['username'] ?? $user['username'],
         'PWG_TOKEN' => get_pwg_token(),
     ]
 );
