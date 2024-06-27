@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------------+
 
 /**
-  Provides a persistent cache mechanism across multiple page loads/sessions etc...
+ * Provides a persistent cache mechanism across multiple page loads/sessions etc...
  */
 abstract class PersistentCache
 {
@@ -17,10 +17,11 @@ abstract class PersistentCache
     protected $instance_key = PHPWG_VERSION;
 
     /**
-    @return a key that can be safely be used with get/set methods
+     * @return string a key that can be safely be used with get/set methods
      */
-    public function make_key($key)
-    {
+    public function make_key(
+        $key
+    ) {
         if (is_array($key)) {
             $key = implode('&', $key);
         }
@@ -30,21 +31,21 @@ abstract class PersistentCache
     }
 
     /**
-    Searches for a key in the persistent cache and fills corresponding value.
-    @param string $key
-    @param out mixed $value
-    @return false if the $key is not found in cache ($value is not modified in this case)
+     * Searches for a key in the persistent cache and fills corresponding value.
+     * @param string $key
+     * @param mixed $value out
+     * @return false if the $key is not found in cache ($value is not modified in this case)
      */
     abstract public function get(
         $key,
-        &$value
+        mixed &$value
     );
 
     /**
-        Sets a key/value pair in the persistent cache.
-        @param string $key - it should be the return value of make_key function
-        @param int $lifetime
-        @return false on error
+     * Sets a key/value pair in the persistent cache.
+     * @param string $key - it should be the return value of make_key function
+     * @param int $lifetime
+     * @return false on error
      */
     abstract public function set(
         $key,
@@ -53,8 +54,8 @@ abstract class PersistentCache
     );
 
     /**
-    Purge the persistent cache.
-    @param boolean $all - if false only expired items will be purged
+     * Purge the persistent cache.
+     * @param boolean $all - if false only expired items will be purged
      */
     abstract public function purge(
         $all
@@ -62,7 +63,7 @@ abstract class PersistentCache
 }
 
 /**
-  Implementation of a persistent cache using files.
+ * Implementation of a persistent cache using files.
  */
 class PersistentFileCache extends PersistentCache
 {

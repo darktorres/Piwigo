@@ -40,7 +40,7 @@ function get_std_sql_where_restrict_filter(
  * @param string $type 'new_comments', 'unvalidated_comments', 'new_elements', 'updated_categories', 'new_users'
  * @param string $start (mysql datetime format)
  * @param string $end (mysql datetime format)
- * @return int|array int for action count array for info
+ * @return int|array|null int for action count array for info
  */
 function custom_notification_query(
     $action,
@@ -172,7 +172,6 @@ function custom_notification_query(
             $query = 'SELECT COUNT(DISTINCT ' . $field_id . ') ' . $query . ';';
             [$count] = pwg_db_fetch_row(pwg_query($query));
             return $count;
-            break;
 
         case 'info':
 
@@ -196,7 +195,6 @@ function custom_notification_query(
 
             $query = 'SELECT DISTINCT ' . $field_id . ' ' . $query . ';';
             return query2array($query);
-            break;
 
         default:
             return null; // stop and return nothing

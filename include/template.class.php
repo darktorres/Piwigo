@@ -190,6 +190,9 @@ class Template
         $this->smarty->registerPlugin('modifier', 'explode', ['Template', 'mod_explode']);
         $this->smarty->registerPlugin('modifier', 'ternary', ['Template', 'mod_ternary']);
         $this->smarty->registerPlugin('modifier', 'get_extent', $this->get_extent(...));
+        $this->smarty->registerPlugin('modifier', 'is_admin', 'is_admin');
+        $this->smarty->registerPlugin('modifier', 'strpos', 'strpos');
+        $this->smarty->registerPlugin('modifier', 'count', 'count');
         $this->smarty->registerPlugin('block', 'html_head', $this->block_html_head(...));
         $this->smarty->registerPlugin('block', 'html_style', $this->block_html_style(...));
         $this->smarty->registerPlugin('function', 'combine_script', $this->func_combine_script(...));
@@ -521,11 +524,9 @@ class Template
     /**
      * Removes an assigned template variable.
      * @see http://www.smarty.net/manual/en/api.clear_assign.php
-     *
-     * @param string $tpl_var
      */
     public function clear_assign(
-        $tpl_var
+        mixed $tpl_var
     ) {
         $this->smarty->clearAssign($tpl_var);
     }
@@ -939,7 +940,7 @@ class Template
             empty($params['require']) ? [] : explode(',', (string) $params['require']),
             @$params['path'],
             $params['version'] ?? 0,
-            @$params['template']
+            ($params['template'] ?? null)
         );
     }
 
@@ -1047,8 +1048,8 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             $params['id'],
             $params['path'],
             $params['version'] ?? 0,
-            (int) @$params['order'],
-            (bool) @$params['template']
+            (int) ($params['order'] ?? null),
+            (bool) ($params['template'] ?? null)
         );
     }
 
@@ -1164,7 +1165,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      *
      * @param string $source
      * @param Smarty $smarty
-     * @param return string
+     * @return string
      */
     public static function prefilter_white_space(
         $source,
@@ -1195,7 +1196,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      *
      * @param string $source
      * @param Smarty $smarty
-     * @param return string
+     * @return string
      */
     public static function postfilter_language(
         $source,
@@ -1218,7 +1219,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      *
      * @param string $source
      * @param Smarty $smarty
-     * @param return string
+     * @return string
      */
     public static function prefilter_local_css(
         $source,
@@ -1397,7 +1398,7 @@ class PwgTemplateAdapter
 
     /**
      * @param string $type
-     * @param array $img
+     * @param SrcImage $img
      * @return DerivativeImage
      */
     public function derivative(
@@ -1788,7 +1789,7 @@ class ScriptLoader
     /**
      * Returns combined scripts loaded in footer.
      *
-     * @return Combinable[]
+     * @return array Combinable
      */
     public function get_footer_scripts()
     {
@@ -1823,7 +1824,7 @@ class ScriptLoader
     /**
      * @param Script[] $scripts
      * @param int $load_mode
-     * @return Combinable[]
+     * @return array Combinable
      */
     private function do_combine(
         $scripts,

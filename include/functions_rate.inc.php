@@ -12,7 +12,7 @@
  *
  * @param int $image_id
  * @param float $rate
- * @return array as return by update_rating_score()
+ * @return array|bool as return by update_rating_score()
  */
 function rate_picture(
     $image_id,
@@ -50,7 +50,7 @@ SELECT element_id
   WHERE user_id = ' . $user['id'] . '
     AND anonymous_id = \'' . $anonymous_id . '\'
 ;';
-            $already_there = array_from_query($query, 'element_id');
+            $already_there = query2array($query, null, 'element_id');
 
             if (count($already_there) > 0) {
                 $query = '
@@ -177,7 +177,7 @@ SELECT id FROM ' . IMAGES_TABLE . '
   LEFT JOIN ' . RATE_TABLE . ' ON id=element_id
   WHERE element_id IS NULL AND rating_score IS NOT NULL';
 
-        $to_update = array_from_query($query, 'id');
+        $to_update = query2array($query, null, 'id');
 
         if (! empty($to_update)) {
             $query = '

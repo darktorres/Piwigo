@@ -448,7 +448,7 @@ SELECT
     $query .= '
   ORDER BY name
 ;';
-    $admins = array_from_query($query);
+    $admins = query2array($query);
 
     if (empty($admins)) {
         return $return;
@@ -503,7 +503,7 @@ SELECT DISTINCT language
 
     $query .= '
 ;';
-    $languages = array_from_query($query, 'language');
+    $languages = query2array($query, null, 'language');
 
     if (empty($languages)) {
         return $return;
@@ -526,7 +526,7 @@ SELECT
     AND ' . $conf['user_fields']['email'] . ' <> ""
     AND language = \'' . $language . '\'
 ;';
-        $users = array_from_query($query);
+        $users = query2array($query);
 
         if (empty($users)) {
             continue;

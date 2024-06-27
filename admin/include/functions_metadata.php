@@ -128,7 +128,7 @@ function get_sync_metadata_attributes()
  * Get all metadata of a file.
  *
  * @param array $infos - (path[, representative_ext])
- * @return array - includes data provided in $infos
+ * @return array|bool - includes data provided in $infos
  */
 function get_sync_metadata(
     $infos
@@ -339,7 +339,7 @@ SELECT id, path, representative_ext
 
     $query .= '
 ;';
-    return hash_from_query($query, 'id');
+    return query2array($query, 'id');
 }
 
 /**

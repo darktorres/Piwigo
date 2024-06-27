@@ -69,7 +69,7 @@ SELECT category_id
 ;';
 
     $authorizeds = array_diff(
-        array_from_query($query, 'category_id'),
+        query2array($query, null, 'category_id'),
         explode(',', calculate_permissions($user['id'], $user['status']))
     );
 
@@ -387,7 +387,7 @@ SELECT category_id
 ;';
 
 $authorizeds = array_diff(
-    array_from_query($query, 'category_id'),
+    query2array($query, null, 'category_id'),
     explode(
         ',',
         calculate_permissions($user['id'], $user['status'])

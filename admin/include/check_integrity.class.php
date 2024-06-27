@@ -21,8 +21,6 @@ class check_integrity
 
     /**
      * Check integrities
-     *
-     * @param void
      */
     public function check()
     {
@@ -138,8 +136,6 @@ class check_integrity
 
     /**
      * Display anomalies list
-     *
-     * @param void
      */
     public function display()
     {
@@ -163,7 +159,6 @@ class check_integrity
                     'show_correction_success_fct' => false,
                     'correction_error_fct' => '',
                     'show_correction_fct' => false,
-                    'correction_error_fct' => '',
                     'show_correction_bad_fct' => false,
                     'correction_msg' => '',
                 ];
@@ -218,8 +213,6 @@ class check_integrity
 
     /**
      * Add anomaly data
-     *
-     * @param arguments $anomaly
      */
     public function add_anomaly(
         $anomaly,
@@ -247,7 +240,7 @@ class check_integrity
     /**
      * Update table config
      *
-     * @param ignore $conf_ignore_list list array
+     * @param array $conf_ignore_list
      */
     public function update_conf(
         $conf_ignore_list = []
@@ -263,8 +256,6 @@ class check_integrity
 
     /**
      * Apply maintenance
-     *
-     * @param void
      */
     public function maintenance()
     {
@@ -273,9 +264,7 @@ class check_integrity
 
     /**
      * Returns links more informations
-     *
-     * @param void
-     * @return html links
+     * @return string html links
      */
     public function get_htlm_links_more_info()
     {

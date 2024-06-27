@@ -132,7 +132,7 @@ class PwgXmlWriter
 
 class PwgRestEncoder extends PwgResponseEncoder
 {
-    public $_writer;
+    private PwgXmlWriter $_writer;
 
     #[\Override]
     public function encodeResponse($response)

@@ -216,7 +216,7 @@ SELECT DISTINCT(id)
 
         $query .= $forbidden . '
   ' . $conf['order_by'];
-        $items = array_from_query($query, 'id');
+        $items = query2array($query, null, 'id');
 
         $logger->debug(__FUNCTION__ . ' ' . count($items) . ' items in $items');
     }

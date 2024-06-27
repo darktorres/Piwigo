@@ -26,7 +26,7 @@ $query = '
 SElECT id FROM ' . SEARCH_TABLE . '
   WHERE rules = \'' . addslashes(serialize($search)) . '\'
 ;';
-$search_id = array_from_query($query, 'id');
+$search_id = query2array($query, null, 'id');
 if (! empty($search_id)) {
     $search_id = $search_id[0];
     $query = '

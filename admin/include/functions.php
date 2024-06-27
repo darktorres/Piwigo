@@ -1767,7 +1767,7 @@ DELETE
  *
  * @since 2.9
  * @param array $image_ids
- * @return associative array, image_id => list of tag ids
+ * @return array associative array, image_id => list of tag ids
  */
 function get_image_tag_ids(
     $image_ids
@@ -1860,7 +1860,7 @@ function fill_lounge(
  *
  * @since 12
  * @param boolean $invalidate_user_cache
- * @return int number of images moved
+ * @return array of images moved
  */
 function empty_lounge(
     $invalidate_user_cache = true
@@ -1896,7 +1896,7 @@ INSERT IGNORE
 
     if ($running_exec_id != $exec_id) {
         $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ', skip');
-        return;
+        return [];
     }
 
     $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ' wins the race and gets the token!');
@@ -2165,7 +2165,7 @@ function create_table_add_character_set(
     $query
 ) {
     defined('DB_CHARSET') || fatal_error('create_table_add_character_set DB_CHARSET undefined');
-    if ('DB_CHARSET' !== '') {
+    if (DB_CHARSET !== '') {
         if (version_compare(pwg_get_db_version(), '4.1.0', '<')) {
             return $query;
         }
@@ -2316,7 +2316,7 @@ function cat_admin_access(
  * Retrieve data from external URL.
  *
  * @param string $src
- * @param string|Ressource $dest - can be a file ressource or string
+ * @param string|resource $dest - can be a file ressource or string
  * @param array $get_data - data added to request url
  * @param array $post_data - data transmitted with POST
  * @param string $user_agent
@@ -2771,11 +2771,10 @@ function order_by_name(
 /**
  * Grant access to a list of categories for a list of users.
  *
- * @param int[] $category_ids
  * @param int[] $user_ids
  */
 function add_permission_on_category(
-    $category_ids,
+    mixed $category_ids,
     $user_ids
 ) {
     if (! is_array($category_ids)) {

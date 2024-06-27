@@ -15,7 +15,7 @@
 function get_root_url()
 {
     global $page;
-    if (($root_url = @$page['root_path']) == null) {// TODO - add HERE the possibility to call PWG functions from external scripts
+    if (($root_url = ($page['root_path'] ?? null)) == null) {// TODO - add HERE the possibility to call PWG functions from external scripts
         $root_url = PHPWG_ROOT_PATH;
         if (str_starts_with($root_url, './')) {
             return substr($root_url, 2);
@@ -115,8 +115,7 @@ function add_url_params(
 /**
  * build an index URL for a specific section
  *
- * @param array
- $params
+ * @param array $params
  * @return string
  */
 function make_index_url(
@@ -213,8 +212,7 @@ function duplicate_picture_url(
 /**
  * create a picture URL on a specific section for a specific picture
  *
- * @param array
- $params
+ * @param array $params
  * @return string
  */
 function make_picture_url(
@@ -262,7 +260,7 @@ function make_picture_url(
 }
 
 /**
- *adds to the url the chronology and start parameters
+ * adds to the url the chronology and start parameters
  */
 function add_well_known_params_in_url($url, $params)
 {
@@ -295,8 +293,7 @@ function add_well_known_params_in_url($url, $params)
  * Depending on section, other parameters are required (see function code
  * for details)
  *
- * @param array
- $params
+ * @param array $params
  * @return string
  */
 function make_section_in_url(
@@ -304,7 +301,7 @@ function make_section_in_url(
 ) {
     global $conf;
     $section_string = '';
-    $section = @$params['section'];
+    $section = ($params['section'] ?? null);
     if (! isset($section)) {
         $section_of = [
             'category' => 'categories',
@@ -696,11 +693,11 @@ function parse_well_known_params_url(
 }
 
 /**
- * @param image $id id
+ * @param mixed $id image id
  * @param string $what_part one of 'e' (element), 'r' (representative)
  */
 function get_action_url(
-    $id,
+    mixed $id,
     $what_part,
     $download
 ) {
@@ -715,7 +712,7 @@ function get_action_url(
     return add_url_params(get_root_url() . 'action.php', $params);
 }
 
-/*
+/**
  * @param array $element_info containing element information from db;
  * at least 'id', 'path' should be present
  */
@@ -732,8 +729,6 @@ function get_element_url(
 
 /**
  * Indicate to build url with full path
- *
- * @param null
  */
 function set_make_full_url()
 {
@@ -753,8 +748,6 @@ function set_make_full_url()
 
 /**
  * Restore old parameter to build url with full path
- *
- * @param null
  */
 function unset_make_full_url()
 {
@@ -778,7 +771,7 @@ function unset_make_full_url()
 /**
  * Embellish the url argument
  *
- * @return embellished
+ * @return array|string embellished
  */
 function embellish_url($url)
 {
@@ -818,7 +811,7 @@ function get_gallery_home_url()
  *
  * @param string[] $rejects
  * @param boolean $escape escape *&* to *&amp;*
- * @returns string
+ * @return string
  */
 function get_query_string_diff(
     $rejects = [],
@@ -839,7 +832,7 @@ function get_query_string_diff(
  * returns true if the url is absolute (begins with http)
  *
  * @param string $url
- * @returns boolean
+ * @return boolean
  */
 function url_is_remote(
     $url

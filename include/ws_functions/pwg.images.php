@@ -843,7 +843,7 @@ function ws_images_add_chunk(
             '[ws_images_add_chunk] input param "%s" : "%s"',
             $param_key,
             $param_value ?? 'NULL'
-        ), 'WS');
+        ), ['WS']);
     }
 
     $upload_dir = $conf['upload_dir'] . '/buffer';
@@ -985,7 +985,7 @@ function ws_images_add(
             '[pwg.images.add] input param "%s" : "%s"',
             $param_key,
             $param_value ?? 'NULL'
-        ), 'WS');
+        ), ['WS']);
     }
 
     if ($params['image_id'] > 0) {
@@ -2288,7 +2288,7 @@ function ws_images_uploadCompleted(
     }
 
     // the list of images moved from the lounge might not be the same than
-    // $image_ids (canbe a subset or more image_ids from another upload too)
+    // $image_ids (can be a subset or more image_ids from another upload too)
     $moved_from_lounge = empty_lounge();
 
     $query = '

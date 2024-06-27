@@ -49,7 +49,7 @@ try {
         $conf['db_base']
     );
 } catch (Exception $exception) {
-    my_error(l10n($exception->getMessage(), true));
+    my_error(l10n($exception->getMessage()), true);
 }
 
 pwg_db_check_charset();
@@ -63,7 +63,7 @@ $query = '
 SELECT id
   FROM ' . PREFIX_TABLE . 'upgrade
 ;';
-$applied = array_from_query($query, 'id');
+$applied = query2array($query, null, 'id');
 
 // retrieve existing upgrades
 $existing = get_available_upgrade_ids();

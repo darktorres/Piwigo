@@ -70,7 +70,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
         'DESC' => $fs_theme['description'],
         'AUTHOR' => $fs_theme['author'],
         'AUTHOR_URL' => @$fs_theme['author uri'],
-        'PARENT' => @$fs_theme['parent'],
+        'PARENT' => ($fs_theme['parent'] ?? null),
         'SCREENSHOT' => $fs_theme['screenshot'],
         'IS_MOBILE' => $fs_theme['mobile'],
         'ADMIN_URI' => @$fs_theme['admin_uri'],
@@ -139,11 +139,11 @@ function cmp($a, $b)
         'inactive' => 1,
     ];
 
-    if (@$a['IS_DEFAULT']) {
+    if (($a['IS_DEFAULT'] ?? null)) {
         return -1;
     }
 
-    if (@$b['IS_DEFAULT']) {
+    if (($b['IS_DEFAULT'] ?? null)) {
         return 1;
     }
 

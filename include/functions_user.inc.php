@@ -10,7 +10,7 @@
 /**
  * Checks if an email is well formed and not already in use.
  *
- * @param int $user_id
+ * @param int|null $user_id
  * @param string $mail_address
  * @return string|void error message or nothing
  */
@@ -677,7 +677,7 @@ SELECT
 /**
  * Returns a array with default user valuees.
  *
- * @param ceonferts $convert_str 'true' and 'false' into booleans
+ * @param bool $convert_str 'true' and 'false' into booleans
  * @return array
  */
 function get_default_user_info(
@@ -1455,7 +1455,6 @@ function get_sql_condition_FandF(
             default:
 
                 die('Unknow condition');
-                break;
 
         }
     }
@@ -1557,7 +1556,7 @@ SELECT
  *
  * @since 2.8
  * @param int $user_id
- * @return array
+ * @return array|bool
  */
 function create_user_auth_key(
     $user_id,
