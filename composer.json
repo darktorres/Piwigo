@@ -26,5 +26,8 @@
                 "Patch strftime": "patches/strftime.patch"
             }
         }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.11.9"
     }
 }
