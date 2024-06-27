@@ -76,7 +76,7 @@ function get_columns_of($tables): array
 
     foreach ($tables as $table) {
         $query = '
-DESC `' . $table . '`
+DESC ' . $table . '
 ;';
         $result = pwg_query($query);
 

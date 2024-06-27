@@ -28,7 +28,7 @@ $groups = [];
 
 $query = '
 SELECT id, name
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   ORDER BY name ASC
 ;';
 $result = pwg_query($query);
@@ -154,7 +154,7 @@ $template->assign('level_selected', $default_user['level']);
 
 $query = '
 SELECT id, name, is_default
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   ORDER BY name ASC
 ;';
 $result = pwg_query($query);
