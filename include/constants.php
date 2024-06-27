@@ -42,137 +42,137 @@ define('PATTERN_ORDER', '/^(rand(om)?|[a-z_]+(\s+(asc|desc))?)(\s*,\s*(rand(om)?
 
 // Table names
 if (! defined('CATEGORIES_TABLE')) {
-    define('CATEGORIES_TABLE', $prefixeTable . 'categories');
+    define('CATEGORIES_TABLE', sprintf('`%scategories`', $prefixeTable));
 }
 
 if (! defined('COMMENTS_TABLE')) {
-    define('COMMENTS_TABLE', $prefixeTable . 'comments');
+    define('COMMENTS_TABLE', sprintf('`%scomments`', $prefixeTable));
 }
 
 if (! defined('CONFIG_TABLE')) {
-    define('CONFIG_TABLE', $prefixeTable . 'config');
+    define('CONFIG_TABLE', sprintf('`%sconfig`', $prefixeTable));
 }
 
 if (! defined('FAVORITES_TABLE')) {
-    define('FAVORITES_TABLE', $prefixeTable . 'favorites');
+    define('FAVORITES_TABLE', sprintf('`%sfavorites`', $prefixeTable));
 }
 
 if (! defined('GROUP_ACCESS_TABLE')) {
-    define('GROUP_ACCESS_TABLE', $prefixeTable . 'group_access');
+    define('GROUP_ACCESS_TABLE', sprintf('`%sgroup_access`', $prefixeTable));
 }
 
 if (! defined('GROUPS_TABLE')) {
-    define('GROUPS_TABLE', $prefixeTable . 'groups');
+    define('GROUPS_TABLE', sprintf('`%sgroups`', $prefixeTable));
 }
 
 if (! defined('HISTORY_TABLE')) {
-    define('HISTORY_TABLE', $prefixeTable . 'history');
+    define('HISTORY_TABLE', sprintf('`%shistory`', $prefixeTable));
 }
 
 if (! defined('HISTORY_SUMMARY_TABLE')) {
-    define('HISTORY_SUMMARY_TABLE', $prefixeTable . 'history_summary');
+    define('HISTORY_SUMMARY_TABLE', sprintf('`%shistory_summary`', $prefixeTable));
 }
 
 if (! defined('IMAGE_CATEGORY_TABLE')) {
-    define('IMAGE_CATEGORY_TABLE', $prefixeTable . 'image_category');
+    define('IMAGE_CATEGORY_TABLE', sprintf('`%simage_category`', $prefixeTable));
 }
 
 if (! defined('IMAGES_TABLE')) {
-    define('IMAGES_TABLE', $prefixeTable . 'images');
+    define('IMAGES_TABLE', sprintf('`%simages`', $prefixeTable));
 }
 
 if (! defined('SESSIONS_TABLE')) {
-    define('SESSIONS_TABLE', $prefixeTable . 'sessions');
+    define('SESSIONS_TABLE', sprintf('`%ssessions`', $prefixeTable));
 }
 
 if (! defined('SITES_TABLE')) {
-    define('SITES_TABLE', $prefixeTable . 'sites');
+    define('SITES_TABLE', sprintf('`%ssites`', $prefixeTable));
 }
 
 if (! defined('USER_ACCESS_TABLE')) {
-    define('USER_ACCESS_TABLE', $prefixeTable . 'user_access');
+    define('USER_ACCESS_TABLE', sprintf('`%suser_access`', $prefixeTable));
 }
 
 if (! defined('USER_GROUP_TABLE')) {
-    define('USER_GROUP_TABLE', $prefixeTable . 'user_group');
+    define('USER_GROUP_TABLE', sprintf('`%suser_group`', $prefixeTable));
 }
 
 if (! defined('USERS_TABLE')) {
-    define('USERS_TABLE', $conf['users_table'] ?? $prefixeTable . 'users');
+    define('USERS_TABLE', $conf['users_table'] ?? sprintf('`%susers`', $prefixeTable));
 }
 
 if (! defined('USER_INFOS_TABLE')) {
-    define('USER_INFOS_TABLE', $prefixeTable . 'user_infos');
+    define('USER_INFOS_TABLE', sprintf('`%suser_infos`', $prefixeTable));
 }
 
 if (! defined('USER_FEED_TABLE')) {
-    define('USER_FEED_TABLE', $prefixeTable . 'user_feed');
+    define('USER_FEED_TABLE', sprintf('`%suser_feed`', $prefixeTable));
 }
 
 if (! defined('RATE_TABLE')) {
-    define('RATE_TABLE', $prefixeTable . 'rate');
+    define('RATE_TABLE', sprintf('`%srate`', $prefixeTable));
 }
 
 if (! defined('USER_AUTH_KEYS_TABLE')) {
-    define('USER_AUTH_KEYS_TABLE', $prefixeTable . 'user_auth_keys');
+    define('USER_AUTH_KEYS_TABLE', sprintf('`%suser_auth_keys`', $prefixeTable));
 }
 
 if (! defined('USER_CACHE_TABLE')) {
-    define('USER_CACHE_TABLE', $prefixeTable . 'user_cache');
+    define('USER_CACHE_TABLE', sprintf('`%suser_cache`', $prefixeTable));
 }
 
 if (! defined('USER_CACHE_CATEGORIES_TABLE')) {
-    define('USER_CACHE_CATEGORIES_TABLE', $prefixeTable . 'user_cache_categories');
+    define('USER_CACHE_CATEGORIES_TABLE', sprintf('`%suser_cache_categories`', $prefixeTable));
 }
 
 if (! defined('CADDIE_TABLE')) {
-    define('CADDIE_TABLE', $prefixeTable . 'caddie');
+    define('CADDIE_TABLE', sprintf('`%scaddie`', $prefixeTable));
 }
 
 if (! defined('UPGRADE_TABLE')) {
-    define('UPGRADE_TABLE', $prefixeTable . 'upgrade');
+    define('UPGRADE_TABLE', sprintf('`%supgrade`', $prefixeTable));
 }
 
 if (! defined('SEARCH_TABLE')) {
-    define('SEARCH_TABLE', $prefixeTable . 'search');
+    define('SEARCH_TABLE', sprintf('`%ssearch`', $prefixeTable));
 }
 
 if (! defined('USER_MAIL_NOTIFICATION_TABLE')) {
-    define('USER_MAIL_NOTIFICATION_TABLE', $prefixeTable . 'user_mail_notification');
+    define('USER_MAIL_NOTIFICATION_TABLE', sprintf('`%suser_mail_notification`', $prefixeTable));
 }
 
 if (! defined('TAGS_TABLE')) {
-    define('TAGS_TABLE', $prefixeTable . 'tags');
+    define('TAGS_TABLE', sprintf('`%stags`', $prefixeTable));
 }
 
 if (! defined('IMAGE_TAG_TABLE')) {
-    define('IMAGE_TAG_TABLE', $prefixeTable . 'image_tag');
+    define('IMAGE_TAG_TABLE', sprintf('`%simage_tag`', $prefixeTable));
 }
 
 if (! defined('PLUGINS_TABLE')) {
-    define('PLUGINS_TABLE', $prefixeTable . 'plugins');
+    define('PLUGINS_TABLE', sprintf('`%splugins`', $prefixeTable));
 }
 
 if (! defined('OLD_PERMALINKS_TABLE')) {
-    define('OLD_PERMALINKS_TABLE', $prefixeTable . 'old_permalinks');
+    define('OLD_PERMALINKS_TABLE', sprintf('`%sold_permalinks`', $prefixeTable));
 }
 
 if (! defined('THEMES_TABLE')) {
-    define('THEMES_TABLE', $prefixeTable . 'themes');
+    define('THEMES_TABLE', sprintf('`%sthemes`', $prefixeTable));
 }
 
 if (! defined('LANGUAGES_TABLE')) {
-    define('LANGUAGES_TABLE', $prefixeTable . 'languages');
+    define('LANGUAGES_TABLE', sprintf('`%slanguages`', $prefixeTable));
 }
 
 if (! defined('IMAGE_FORMAT_TABLE')) {
-    define('IMAGE_FORMAT_TABLE', $prefixeTable . 'image_format');
+    define('IMAGE_FORMAT_TABLE', sprintf('`%simage_format`', $prefixeTable));
 }
 
 if (! defined('ACTIVITY_TABLE')) {
-    define('ACTIVITY_TABLE', $prefixeTable . 'activity');
+    define('ACTIVITY_TABLE', sprintf('`%sactivity`', $prefixeTable));
 }
 
 if (! defined('LOUNGE_TABLE')) {
-    define('LOUNGE_TABLE', $prefixeTable . 'lounge');
+    define('LOUNGE_TABLE', sprintf('`%slounge`', $prefixeTable));
 }

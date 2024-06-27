@@ -120,7 +120,7 @@ SELECT COUNT(*)
 
 $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
 ;';
 [$nb_groups] = pwg_db_fetch_row(pwg_query($query));
 
@@ -244,7 +244,7 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
       object,
       action,
       COUNT(*) AS activity_counter
-    FROM `' . ACTIVITY_TABLE . '`
+    FROM ' . ACTIVITY_TABLE . '
     WHERE occured_on >= \'' . $date_string . '\'
     GROUP BY activity_day, object, action
   ;';
@@ -390,7 +390,7 @@ SELECT
   COUNT(*) AS ext_counter,
    SUBSTRING_INDEX(path,".",-1) AS ext,
    SUM(filesize) AS filesize
-  FROM `' . IMAGES_TABLE . '`
+  FROM ' . IMAGES_TABLE . '
   GROUP BY ext
 ;';
 
@@ -425,7 +425,7 @@ foreach ($file_extensions_of as $type => $extensions) {
 //Select files from format table
 $query = '
 SELECT SUM(filesize)
-  FROM `' . IMAGE_FORMAT_TABLE . '`
+  FROM ' . IMAGE_FORMAT_TABLE . '
 ;';
 
 $result = query2array($query);

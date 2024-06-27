@@ -152,7 +152,7 @@ function ws_getInfos(
     $query = 'SELECT COUNT(*) FROM ' . USERS_TABLE . ';';
     [$infos['nb_users']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM `' . GROUPS_TABLE . '`;';
+    $query = 'SELECT COUNT(*) FROM ' . GROUPS_TABLE . ';';
     [$infos['nb_groups']] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . ';';

@@ -35,7 +35,7 @@ function ws_groups_getList(
     $query = '
 SELECT
     g.*, COUNT(user_id) AS nb_users
-  FROM `' . GROUPS_TABLE . '` AS g
+  FROM ' . GROUPS_TABLE . ' AS g
     LEFT JOIN ' . USER_GROUP_TABLE . ' AS ug
     ON ug.group_id = g.id
   WHERE ' . implode(' AND ', $where_clauses) . '
@@ -73,7 +73,7 @@ function ws_groups_add(
     // is the name not already used ?
     $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE name = \'' . $params['name'] . '\'
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
@@ -150,7 +150,7 @@ function ws_groups_setInfo(
     // does the group exist ?
     $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
@@ -164,7 +164,7 @@ SELECT COUNT(*)
         // is the name not already used ?
         $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE name = \'' . $params['name'] . '\'
   AND id != ' . $params['group_id'] . '
 ;';
@@ -213,7 +213,7 @@ function ws_groups_addUser(
     // does the group exist ?
     $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
@@ -273,7 +273,7 @@ function ws_groups_merge(
 
     $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE id in (' . implode(',', $all_groups) . ')
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
@@ -287,7 +287,7 @@ SELECT COUNT(*)
 
     $query = '
 SELECT DISTINCT(user_id) 
-  FROM `' . USER_GROUP_TABLE . '` 
+  FROM ' . USER_GROUP_TABLE . ' 
   WHERE 
     group_id IN (' . implode(',', $merge_group) . ')
 ;';
@@ -295,7 +295,7 @@ SELECT DISTINCT(user_id)
 
     $query = '
 SELECT user_id 
-  FROM `' . USER_GROUP_TABLE . '` 
+  FROM ' . USER_GROUP_TABLE . ' 
   WHERE group_id = ' . $params['destination_group_id'] . '
 ;';
 
@@ -360,7 +360,7 @@ function ws_groups_duplicate(
 
     $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE name = \'' . pwg_db_real_escape_string($params['copy_name']) . '\'
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
@@ -370,7 +370,7 @@ SELECT COUNT(*)
 
     $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
@@ -380,7 +380,7 @@ SELECT COUNT(*)
 
     $query = '
 SELECT is_default 
-  FROM `' . GROUPS_TABLE . '` 
+  FROM ' . GROUPS_TABLE . ' 
   WHERE id = ' . $params['group_id'] . '
 ;';
 
@@ -400,7 +400,7 @@ SELECT is_default
 
     $query = '
   SELECT user_id 
-    FROM `' . USER_GROUP_TABLE . '` 
+    FROM ' . USER_GROUP_TABLE . ' 
     WHERE group_id = ' . $params['group_id'] . '
   ;';
 
@@ -455,7 +455,7 @@ function ws_groups_deleteUser(
     // does the group exist ?
     $query = '
 SELECT COUNT(*)
-  FROM `' . GROUPS_TABLE . '`
+  FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
     [$count] = pwg_db_fetch_row(pwg_query($query));
