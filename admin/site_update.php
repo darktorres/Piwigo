@@ -209,7 +209,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
         $fs_fulldirs,
         array_keys($db_fulldirs)
     ) as $fulldir) {
-        $dir = basename((string) $fulldir);
+        $dir = $mysqli->real_escape_string(basename((string) $fulldir));
         $insert = [
             'id' => $next_id++,
             'dir' => $dir,
