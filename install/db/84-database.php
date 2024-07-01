@@ -55,13 +55,10 @@ while ($row = pwg_db_fetch_assoc($result)) {
             $user_theme = 'Sylvia';
     }
 
-    array_push(
-        $users,
-        [
-            'user_id' => $row['user_id'],
-            'theme' => $user_theme,
-        ]
-    );
+    $users[] = [
+        'user_id' => $row['user_id'],
+        'theme' => $user_theme,
+    ];
 }
 
 mass_updates(

@@ -74,14 +74,13 @@ class Smarty_Internal_Compile_Capture extends Smarty_Internal_CompileBase
         $append = $_attr['append'] ?? 'null';
         $compiler->_cache['capture_stack'][] = [$compiler->nocache];
         // maybe nocache because of nocache variables
-        $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
-        $_output = sprintf(
+        $compiler->nocache |= $compiler->tag_nocache;
+        return sprintf(
             '<?php $_smarty_tpl->smarty->ext->_capture->open($_smarty_tpl, %s, %s, %s);?>',
             $buffer,
             $assign,
             $append
         );
-        return $_output;
     }
 }
 

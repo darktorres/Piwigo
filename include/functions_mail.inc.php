@@ -52,7 +52,7 @@ function get_mail_configuration()
 {
     global $conf;
 
-    $conf_mail = [
+    return [
         'send_bcc_mail_webmaster' => $conf['send_bcc_mail_webmaster'],
         'mail_allow_html' => $conf['mail_allow_html'],
         'mail_theme' => $conf['mail_theme'],
@@ -64,8 +64,6 @@ function get_mail_configuration()
         'email_webmaster' => get_mail_sender_email(),
         'name_webmaster' => get_mail_sender_name(),
     ];
-
-    return $conf_mail;
 }
 
 /**
@@ -85,7 +83,7 @@ function format_email(
     $cvt_email = trim((string) preg_replace('#[\n\r]+#s', '', $email));
     $cvt_name = trim((string) preg_replace('#[\n\r]+#s', '', $name));
 
-    if ($cvt_name != '') {
+    if ($cvt_name !== '') {
         $cvt_name = '"' . addcslashes($cvt_name, '"') . '"' . ' ';
     }
 
@@ -248,7 +246,7 @@ function switch_lang_to(
 
     // Treatment with current user
     // Language of current user is saved (it's considered OK on firt call)
-    if (! isset($switch_lang['initialisation']) and ! isset($switch_lang['language'][$user['language']])) {
+    if (! isset($switch_lang['initialisation']) && ! isset($switch_lang['language'][$user['language']])) {
         $switch_lang['initialisation'] = true;
         $switch_lang['language'][$user['language']]['lang_info'] = $lang_info;
         $switch_lang['language'][$user['language']]['lang'] = $lang;
@@ -341,13 +339,13 @@ function pwg_mail_notification_admins(
     $send_technical_details = true,
     $group_id = null
 ) {
-    if (empty($subject) or empty($content)) {
+    if (empty($subject) || empty($content)) {
         return false;
     }
 
     global $conf, $user;
 
-    if (is_array($subject) or is_array($content)) {
+    if (is_array($subject) || is_array($content)) {
         switch_lang_to(get_default_language());
 
         if (is_array($subject)) {
@@ -405,7 +403,7 @@ function pwg_mail_admins(
     $only_webmasters = false,
     $group_id = null
 ) {
-    if (empty($args['content']) and empty($tpl)) {
+    if (empty($args['content']) && empty($tpl)) {
         return false;
     }
 
@@ -481,7 +479,7 @@ function pwg_mail_group(
     $tpl = [
     ]
 ) {
-    if (empty($group_id) or (empty($args['content']) and empty($tpl))) {
+    if (empty($group_id) || empty($args['content']) && empty($tpl)) {
         return false;
     }
 
@@ -601,7 +599,7 @@ function pwg_mail(
 ) {
     global $conf, $conf_mail, $lang_info, $page;
 
-    if (empty($to) and empty($args['Cc']) and empty($args['Bcc'])) {
+    if (empty($to) && empty($args['Cc']) && empty($args['Bcc'])) {
         return true;
     }
 
@@ -668,7 +666,7 @@ function pwg_mail(
     }
 
     // theme
-    if (empty($args['theme']) or ! in_array($args['theme'], ['clear', 'dark'])) {
+    if (empty($args['theme']) || ! in_array($args['theme'], ['clear', 'dark'])) {
         $args['theme'] = $conf_mail['mail_theme'];
     }
 
@@ -678,11 +676,13 @@ function pwg_mail(
     }
 
     // try to decompose subject like "[....] ...."
-    if (! isset($args['mail_title']) and ! isset($args['mail_subtitle'])) {
-        if (preg_match('#^\[(.*)\](.*)$#', $args['subject'], $matches)) {
-            $args['mail_title'] = $matches[1];
-            $args['mail_subtitle'] = $matches[2];
-        }
+    if ((! isset($args['mail_title']) && ! isset($args['mail_subtitle'])) && preg_match(
+        '#^\[(.*)\](.*)$#',
+        $args['subject'],
+        $matches
+    )) {
+        $args['mail_title'] = $matches[1];
+        $args['mail_subtitle'] = $matches[2];
     }
 
     if (! isset($args['mail_title'])) {
@@ -699,7 +699,7 @@ function pwg_mail(
     }
 
     $content_type_list = [];
-    if ($conf_mail['mail_allow_html'] and @$args['email_format'] != 'text/plain') {
+    if ($conf_mail['mail_allow_html'] && @$args['email_format'] != 'text/plain') {
         $content_type_list[] = 'text/html';
     }
 
@@ -741,7 +741,7 @@ function pwg_mail(
                 ]
             );
 
-            if ($content_type == 'text/html') {
+            if ($content_type === 'text/html') {
                 if ($template->smarty->templateExists('global-mail-css.tpl')) {
                     $template->set_filename('global-css', 'global-mail-css.tpl');
                     $template->assign_var_from_handle('GLOBAL_MAIL_CSS', 'global-css');
@@ -768,7 +768,7 @@ function pwg_mail(
         // Content
         // Stored in a temp variable, if a content template is used it will be assigned
         // to the $CONTENT template variable, otherwise it will be appened to the mail
-        if ($args['content_format'] == 'text/plain' and $content_type == 'text/html') {
+        if ($args['content_format'] == 'text/plain' && $content_type === 'text/html') {
             // convert plain text to html
             $mail_content =
               '<p>' .
@@ -780,7 +780,7 @@ function pwg_mail(
                   )
               ) .
               '</p>';
-        } elseif ($args['content_format'] == 'text/html' and $content_type == 'text/plain') {
+        } elseif ($args['content_format'] == 'text/html' && $content_type === 'text/plain') {
             // convert html text to plain text
             $mail_content = strip_tags((string) $args['content']);
         } else {
@@ -845,7 +845,7 @@ function pwg_mail(
         $mail->Host = $smtp_host;
         $mail->Port = $smtp_port;
 
-        if (! empty($conf_mail['smtp_secure']) and in_array($conf_mail['smtp_secure'], ['ssl', 'tls'])) {
+        if (! empty($conf_mail['smtp_secure']) && in_array($conf_mail['smtp_secure'], ['ssl', 'tls'])) {
             $mail->SMTPSecure = $conf_mail['smtp_secure'];
         }
 
@@ -861,7 +861,7 @@ function pwg_mail(
 
     if ($pre_result) {
         $ret = $mail->send();
-        if (! $ret and (! ini_get('display_errors') or is_admin())) {
+        if (! $ret && (! ini_get('display_errors') || is_admin())) {
             trigger_error('Mailer Error: ' . $mail->ErrorInfo, E_USER_WARNING);
         }
 

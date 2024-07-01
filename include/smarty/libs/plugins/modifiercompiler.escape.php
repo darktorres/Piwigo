@@ -89,5 +89,5 @@ function smarty_modifiercompiler_escape(
             'smarty_modifier_escape';
     }
 
-    return 'smarty_modifier_escape(' . join(', ', $params) . ')';
+    return 'smarty_modifier_escape(' . implode(', ', $params) . ')';
 }

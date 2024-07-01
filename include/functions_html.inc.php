@@ -29,10 +29,9 @@ function get_cat_display_name(
     $is_first = true;
 
     foreach ($cat_informations as $cat) {
-        is_array($cat) or trigger_error(
-            'get_cat_display_name wrong type for category ',
-            E_USER_WARNING
-        );
+        if (! is_array($cat)) {
+            trigger_error('get_cat_display_name wrong type for category ', E_USER_WARNING);
+        }
 
         $cat['name'] = trigger_change(
             'render_category_name',
@@ -125,7 +124,7 @@ SELECT id, name, permalink
             $output .= '<span>' . $conf['level_separator'] . '</span>';
         }
 
-        if (! isset($url) or $single_link) {
+        if (! isset($url) || $single_link) {
             $output .= $cat['name'];
         } elseif ($url == '') {
             $output .= '
@@ -145,7 +144,7 @@ SELECT id, name, permalink
         }
     }
 
-    if ($single_link and isset($single_url)) {
+    if ($single_link && isset($single_url)) {
         $output .= '</a>';
     }
 
@@ -202,11 +201,10 @@ function render_comment_content(
     // replace /word/ by an italic word
     $pattern = "/\/(\S*)\/(\s)/";
     $replacement = '<span style="font-style:italic;">$1$2</span>';
-    $content = preg_replace($pattern, $replacement, $content);
 
     // TODO : add a trigger
 
-    return $content;
+    return preg_replace($pattern, $replacement, $content);
 }
 
 /**
@@ -244,7 +242,7 @@ function access_denied()
         get_root_url() . 'identification.php?redirect='
         . urlencode(urlencode((string) $_SERVER['REQUEST_URI']));
 
-    if (isset($user) and ! is_a_guest()) {
+    if (isset($user) && ! is_a_guest()) {
         set_status_header(401);
 
         echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
@@ -255,7 +253,7 @@ function access_denied()
         echo '<a href="' . make_index_url() . '">' . l10n('Home') . '</a></div>';
         echo str_repeat(' ', 512); //IE6 doesn't error output if below a size
         exit();
-    } elseif (! $conf['guest_access'] and is_a_guest()) {
+    } elseif (! $conf['guest_access'] && is_a_guest()) {
         redirect_http($login_url);
     } else {
         redirect_html($login_url);
@@ -355,9 +353,10 @@ function fatal_error(
     }
 
     $btrace_msg = '';
-    if ($show_trace and function_exists('debug_backtrace')) {
+    if ($show_trace && function_exists('debug_backtrace')) {
         $bt = debug_backtrace();
-        for ($i = 1; $i < count($bt); $i++) {
+        $counter = count($bt);
+        for ($i = 1; $i < $counter; $i++) {
             $class = isset($bt[$i]['class']) ? (@$bt[$i]['class'] . '::') : '';
             $btrace_msg .= sprintf(
                 '#%d	',
@@ -401,8 +400,9 @@ function get_tags_content_title()
     $title = '<a href="' . get_root_url() . 'tags.php" title="' . l10n('display available tags') . '">'
       . l10n(count($page['tags']) > 1 ? 'Tags' : 'Tag')
       . '</a> ';
+    $counter = count($page['tags']);
 
-    for ($i = 0; $i < count($page['tags']); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         $title .= $i > 0 ? ' + ' : '';
 
         $title .=
@@ -544,7 +544,10 @@ function set_status_header(
 function render_category_literal_description(
     $desc
 ) {
-    ! isset($desc) ? $desc = '' : false;
+    if (! isset($desc)) {
+        $desc = '';
+    }
+
     return strip_tags($desc, '<span><p><a><br><b><i><small><big><strong><em>');
 }
 
@@ -632,11 +635,11 @@ function get_thumbnail_title(
         $details[] = $info['hit'] . ' ' . strtolower(l10n('Visits'));
     }
 
-    if ($conf['rate'] and ! empty($info['rating_score'])) {
+    if ($conf['rate'] && ! empty($info['rating_score'])) {
         $details[] = strtolower(l10n('Rating score')) . ' ' . $info['rating_score'];
     }
 
-    if (isset($info['nb_comments']) and $info['nb_comments'] != 0) {
+    if (isset($info['nb_comments']) && $info['nb_comments'] != 0) {
         $details[] = l10n_dec('%d comment', '%d comments', $info['nb_comments']);
     }
 
@@ -650,9 +653,8 @@ function get_thumbnail_title(
     }
 
     $title = htmlspecialchars(strip_tags($title));
-    $title = trigger_change('get_thumbnail_title', $title, $info);
 
-    return $title;
+    return trigger_change('get_thumbnail_title', $title, $info);
 }
 
 /**

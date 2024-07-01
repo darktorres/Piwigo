@@ -610,7 +610,7 @@ class uagent_info
             (string) $this->useragent,
             (string) $this->devicePpc
         ) > -1
-            && ! (stripos((string) $this->useragent, (string) $this->deviceMacPpc) > 1)) {
+            && stripos((string) $this->useragent, (string) $this->deviceMacPpc) <= 1) {
             return $this->true;
         }
 
@@ -1310,7 +1310,7 @@ class uagent_info
         }
 
         if ((stripos((string) $this->useragent, (string) $this->devicePda) > -1) &&
-          ! (stripos((string) $this->useragent, (string) $this->disUpdate) > -1)) {
+          stripos((string) $this->useragent, (string) $this->disUpdate) <= -1) {
             return $this->true;
         }
 

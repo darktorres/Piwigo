@@ -28,6 +28,8 @@
  */
 abstract class Smarty_Internal_Data
 {
+    public $smarty;
+
     /**
      * This object type (Smarty = 1, template = 2, data = 4)
      *
@@ -115,14 +117,12 @@ abstract class Smarty_Internal_Data
             foreach ($tpl_var as $_key => $_val) {
                 $this->assign($_key, $_val, $nocache);
             }
-        } else {
-            if ($tpl_var !== '') {
-                if ($this->_objType === 2) {
-                    /** @var Smarty_Internal_Template $this */
-                    $this->_assignInScope($tpl_var, $value, $nocache);
-                } else {
-                    $this->tpl_vars[$tpl_var] = new Smarty_Variable($value, $nocache);
-                }
+        } elseif ($tpl_var !== '') {
+            if ($this->_objType === 2) {
+                /** @var Smarty_Internal_Template $this */
+                $this->_assignInScope($tpl_var, $value, $nocache);
+            } else {
+                $this->tpl_vars[$tpl_var] = new Smarty_Variable($value, $nocache);
             }
         }
 
@@ -233,14 +233,14 @@ abstract class Smarty_Internal_Data
                 $data->tpl_vars = array_merge($this->tpl_vars, $data->tpl_vars);
             }
 
-            if (! empty($this->config_vars)) {
+            if ($this->config_vars !== []) {
                 $data->config_vars = array_merge($this->config_vars, $data->config_vars);
             }
         } else {
             $data = $this;
         }
 
-        if (isset($this->parent)) {
+        if ($this->parent !== null) {
             $this->parent->_mergeVars($data);
         }
     }

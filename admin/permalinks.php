@@ -24,7 +24,7 @@ function parse_sort_variables(
     parse_str($url_components['query'], $vars);
     $is_first = true;
     foreach ($vars as $key => $value) {
-        if (! in_array($key, $get_rejects) and $key != $get_param) {
+        if (! in_array($key, $get_rejects) && $key != $get_param) {
             $base_url .= $is_first ? '?' : '&amp;';
             $is_first = false;
 
@@ -42,11 +42,11 @@ function parse_sort_variables(
         $disp = '↓'; // TODO: an small image is better
 
         if ($field !== @$_GET[$get_param]) {
-            if (! isset($default_field) or $default_field != $field) { // the first should be the default
+            if (! isset($default_field) || $default_field != $field) { // the first should be the default
                 $url = add_url_params($url, [
                     $get_param => $field,
                 ]);
-            } elseif (isset($default_field) and ! isset($_GET[$get_param])) {
+            } elseif (isset($default_field) && ! isset($_GET[$get_param])) {
                 $ret[] = $field;
                 $disp = '<em>' . $disp . '</em>';
             }
@@ -75,7 +75,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions_permalinks.php');
 check_input_parameter('cat_id', $_POST, false, PATTERN_ID);
 
 $selected_cat = [];
-if (isset($_POST['set_permalink']) and $_POST['cat_id'] > 0) {
+if (isset($_POST['set_permalink']) && $_POST['cat_id'] > 0) {
     check_pwg_token();
     $permalink = $_POST['permalink'];
     if (empty($permalink)) {
@@ -131,7 +131,7 @@ SELECT id, permalink, uppercats, global_rank
   FROM ' . CATEGORIES_TABLE . '
   WHERE permalink IS NOT NULL
 ';
-if ($sort_by[0] == 'id' or $sort_by[0] == 'permalink') {
+if ($sort_by[0] == 'id' || $sort_by[0] == 'permalink') {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
 
@@ -161,7 +161,7 @@ $sort_by = parse_sort_variables(
 
 $url_del_base = get_root_url() . 'admin.php?page=permalinks';
 $query = 'SELECT * FROM ' . OLD_PERMALINKS_TABLE;
-if (count($sort_by)) {
+if (count($sort_by) > 0) {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
 

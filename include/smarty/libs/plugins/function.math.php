@@ -99,7 +99,7 @@ function smarty_function_math(
     foreach ($params as $key => $val) {
         if ($key !== 'equation' && $key !== 'format' && $key !== 'assign') {
             // make sure value is not empty
-            if (strlen((string) $val) === 0) {
+            if ((string) $val === '') {
                 trigger_error(sprintf("math: parameter '%s' is empty", $key), E_USER_WARNING);
                 return;
             }
@@ -127,7 +127,7 @@ function smarty_function_math(
         }
     }
 
-    foreach ($params as $key => $val) {
+    foreach (array_keys($params) as $key) {
         if ($key !== 'equation' && $key !== 'format' && $key !== 'assign') {
             $equation = preg_replace(sprintf('/\b%s\b/', $key), sprintf(' $params[\'%s\'] ', $key), $equation);
         }
@@ -142,12 +142,9 @@ function smarty_function_math(
         }
 
         $template->assign($params['assign'], $smarty_math_result);
-
+    } elseif (empty($params['assign'])) {
+        printf($params['format'], $smarty_math_result);
     } else {
-        if (empty($params['assign'])) {
-            printf($params['format'], $smarty_math_result);
-        } else {
-            $template->assign($params['assign'], sprintf($params['format'], $smarty_math_result));
-        }
+        $template->assign($params['assign'], sprintf($params['format'], $smarty_math_result));
     }
 }

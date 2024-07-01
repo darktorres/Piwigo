@@ -34,7 +34,7 @@ class Smarty_Internal_Undefined
         $name,
         $args
     ) {
-        if (isset($this->class)) {
+        if ($this->class !== null) {
             throw new SmartyException(sprintf("undefined extension class '%s'", $this->class));
         }
 

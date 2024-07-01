@@ -197,18 +197,10 @@ class POP3
     ) {
         $this->host = $host;
         //If no port value provided, use default
-        if ($port === false) {
-            $this->port = static::DEFAULT_PORT;
-        } else {
-            $this->port = (int) $port;
-        }
+        $this->port = $port === false ? static::DEFAULT_PORT : (int) $port;
 
         //If no timeout value provided, use default
-        if ($timeout === false) {
-            $this->tval = static::DEFAULT_TIMEOUT;
-        } else {
-            $this->tval = (int) $timeout;
-        }
+        $this->tval = $timeout === false ? static::DEFAULT_TIMEOUT : (int) $timeout;
 
         $this->do_debug = $debug_level;
         $this->username = $username;

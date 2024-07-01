@@ -275,7 +275,7 @@ class Emogrifier
             $allSelectors = [];
             foreach ($matches as $key => $selectorString) {
                 // if there is a blank definition, skip
-                if (! strlen(trim($selectorString[2]))) {
+                if (trim($selectorString[2]) === '') {
                     continue;
                 }
 
@@ -449,7 +449,7 @@ class Emogrifier
      */
     private function getUnifiedHtml()
     {
-        if (! empty($this->unprocessableHtmlTags)) {
+        if ($this->unprocessableHtmlTags !== []) {
             $unprocessableHtmlTags = implode('|', $this->unprocessableHtmlTags);
             $bodyWithoutUnprocessableTags = preg_replace(
                 '/<\\/?(' . $unprocessableHtmlTags . ')[^>]*>/i',
@@ -497,7 +497,7 @@ class Emogrifier
             $search = ['\\#', '\\.', ''];
 
             foreach ($search as $s) {
-                if (trim($selector == '')) {
+                if (trim($selector == '') !== '' && trim($selector == '') !== '0') {
                     break;
                 }
 
@@ -592,7 +592,7 @@ class Emogrifier
      */
     private function matchIdAttributes(array $match)
     {
-        return (strlen((string) $match[1]) ? $match[1] : '*') . '[@id="' . $match[2] . '"]';
+        return (strlen((string) $match[1]) !== 0 ? $match[1] : '*') . '[@id="' . $match[2] . '"]';
     }
 
     /**
@@ -600,7 +600,9 @@ class Emogrifier
      */
     private function matchClassAttributes(array $match)
     {
-        return (strlen((string) $match[1]) ? $match[1] : '*') . '[contains(concat(" ",@class," "),concat(" ","' .
+        return (strlen(
+            (string) $match[1]
+        ) !== 0 ? $match[1] : '*') . '[contains(concat(" ",@class," "),concat(" ","' .
             implode(
                 '"," "))][contains(concat(" ",@class," "),concat(" ","',
                 explode('.', substr((string) $match[2], 1))
@@ -675,7 +677,7 @@ class Emogrifier
     private function parseNth(array $match)
     {
         if (in_array(strtolower((string) $match[2]), ['even', 'odd'])) {
-            $index = strtolower((string) $match[2]) == 'even' ? 0 : 1;
+            $index = strtolower((string) $match[2]) === 'even' ? 0 : 1;
             return [
                 self::MULTIPLIER => 2,
                 self::INDEX => $index,
@@ -698,7 +700,7 @@ class Emogrifier
 
         $multiplier = str_ireplace('n', '', $multipleTerm);
 
-        if (! strlen($multiplier)) {
+        if ((string) $multiplier === '') {
             $multiplier = 1;
         } elseif ($multiplier == 0) {
             return [

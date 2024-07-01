@@ -31,11 +31,7 @@ class Smarty_Internal_Compile_Private_Object_Block_Function extends Smarty_Inter
     ) {
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
-            if (is_int($_key)) {
-                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
-            } else {
-                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
-            }
+            $_paramsArray[] = is_int($_key) ? sprintf('%d=>%s', $_key, $_value) : sprintf("'%s'=>%s", $_key, $_value);
         }
 
         $callback = [sprintf('$_smarty_tpl->smarty->registered_objects[\'%s\'][0]', $tag), '->' . $method];

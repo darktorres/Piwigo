@@ -105,14 +105,14 @@ foreach (['comment', 'dir', 'site_id', 'id_uppercat'] as $nullable) {
     }
 }
 
-$category['is_virtual'] = empty($category['dir']) ? true : false;
+$category['is_virtual'] = empty($category['dir']);
 
 $query = 'SELECT DISTINCT category_id
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id = ' . $_GET['cat_id'] . '
   LIMIT 1';
 $result = pwg_query($query);
-$category['has_images'] = pwg_db_num_rows($result) > 0 ? true : false;
+$category['has_images'] = pwg_db_num_rows($result) > 0;
 
 // number of sub-categories
 $subcat_ids = get_subcat_ids([$category['id']]);
@@ -166,7 +166,7 @@ $template->assign(
             ' ',
             preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $parent_navigation)
         ),
-        'PARENT_CAT_ID' => ! empty($category['id_uppercat']) ? $category['id_uppercat'] : 0,
+        'PARENT_CAT_ID' => empty($category['id_uppercat']) ? 0 : $category['id_uppercat'],
         'CAT_ID' => $category['id'],
         'CAT_NAME' => @htmlspecialchars((string) $category['name']),
         'CAT_COMMENT' => @htmlspecialchars((string) $category['comment']),
@@ -340,7 +340,7 @@ if (! $category['is_virtual']) {
 }
 
 // representant management
-if ($category['has_images'] or ! empty($category['representative_picture_id'])) {
+if ($category['has_images'] || ! empty($category['representative_picture_id'])) {
     $tpl_representant = [];
 
     // picture to display : the identified representant or the generic random
@@ -353,15 +353,11 @@ if ($category['has_images'] or ! empty($category['representative_picture_id'])) 
     }
 
     // can the admin choose to set a new random representant ?
-    $tpl_representant['ALLOW_SET_RANDOM'] = ($category['has_images'] ? true : false);
+    $tpl_representant['ALLOW_SET_RANDOM'] = ((bool) $category['has_images']);
 
     // can the admin delete the current representant ?
     if (
-        ($category['has_images']
-         and $conf['allow_random_representative'])
-        or
-        (! $category['has_images']
-         and ! empty($category['representative_picture_id']))) {
+        $category['has_images'] && $conf['allow_random_representative'] || ! $category['has_images'] && ! empty($category['representative_picture_id'])) {
         $tpl_representant['ALLOW_DELETE'] = true;
     }
 

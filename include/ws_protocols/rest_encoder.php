@@ -9,27 +9,20 @@
 
 class PwgXmlWriter
 {
-    public $_indent;
+    public $_indent = true;
 
-    public $_indentStr;
+    public $_indentStr = "\t";
 
-    public $_elementStack;
+    public $_elementStack = [];
 
-    public $_lastTagOpen;
+    public $_lastTagOpen = false;
 
-    public $_indentLevel;
+    public $_indentLevel = 0;
 
-    public $_encodedXml;
+    public $_encodedXml = '';
 
     public function __construct()
     {
-        $this->_elementStack = [];
-        $this->_lastTagOpen = false;
-        $this->_indentLevel = 0;
-
-        $this->_encodedXml = '';
-        $this->_indent = true;
-        $this->_indentStr = "\t";
     }
 
     public function &getOutput()
@@ -124,8 +117,7 @@ class PwgXmlWriter
 
     public function _indent()
     {
-        if ($this->_indent and
-            $this->_indentLevel > count($this->_elementStack)) {
+        if ($this->_indent && $this->_indentLevel > count($this->_elementStack)) {
             $this->_output(
                 str_repeat((string) $this->_indentStr, count($this->_elementStack))
             );
@@ -140,26 +132,26 @@ class PwgXmlWriter
 
 class PwgRestEncoder extends PwgResponseEncoder
 {
+    public $_writer;
+
     #[\Override]
     public function encodeResponse($response)
     {
         if ($response instanceof PwgError) {
-            $ret = '<?xml version="1.0"?>
+            return '<?xml version="1.0"?>
 <rsp stat="fail">
 	<err code="' . $response->code() . '" msg="' . htmlspecialchars((string) $response->message()) . '" />
 </rsp>';
-            return $ret;
         }
 
         $this->_writer = new PwgXmlWriter();
         $this->encode($response);
         $ret = $this->_writer->getOutput();
-        $ret = '<?xml version="1.0" encoding="' . get_pwg_charset() . '" ?>
+
+        return '<?xml version="1.0" encoding="' . get_pwg_charset() . '" ?>
 <rsp stat="ok">
 ' . $ret . '
 </rsp>';
-
-        return $ret;
     }
 
     #[\Override]
@@ -184,7 +176,7 @@ class PwgRestEncoder extends PwgResponseEncoder
                 continue;
             }
 
-            if ($skip_underscore and $name[0] == '_') {
+            if ($skip_underscore && $name[0] == '_') {
                 continue;
             }
 
@@ -210,7 +202,7 @@ class PwgRestEncoder extends PwgResponseEncoder
                 continue;
             }
 
-            if ($skip_underscore and $name[0] == '_') {
+            if ($skip_underscore && $name[0] == '_') {
                 continue;
             }
 

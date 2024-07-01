@@ -319,7 +319,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
 
         } elseif (is_object($template)) {
             /** @var Smarty_Internal_Template $template */
-            if (! isset($template->_objType) || ! $template->_isTplObj()) {
+            if ($template->_objType === null || ! $template->_isTplObj()) {
                 throw new SmartyException($function . '():Template object expected');
             }
         } else {
@@ -338,7 +338,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         $level = ob_get_level();
         try {
             $_smarty_old_error_level =
-                isset($smarty->error_reporting) ? error_reporting($smarty->error_reporting) : null;
+                $smarty->error_reporting !== null ? error_reporting($smarty->error_reporting) : null;
 
             if ($smarty->isMutingUndefinedOrNullWarnings()) {
                 $errorHandler = new Smarty_Internal_ErrorHandler();
@@ -352,14 +352,14 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             }
 
             /** @var Smarty_Internal_Template $parent */
-            if (isset($parent->_objType) && ($parent->_objType === 2) && ! empty($parent->tplFunctions)) {
+            if ($parent->_objType !== null && ($parent->_objType === 2) && $parent->tplFunctions !== []) {
                 $template->tplFunctions = array_merge($parent->tplFunctions, $template->tplFunctions);
             }
 
             if ($function === 2) {
-                if ($template->caching) {
+                if ($template->caching !== 0) {
                     // return cache status of template
-                    if (! isset($template->cached)) {
+                    if ($template->cached === null) {
                         $template->loadCached();
                     }
 
@@ -385,13 +385,11 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                 if ($saveVars) {
                     $template->tpl_vars = $savedTplVars;
                     $template->config_vars = $savedConfigVars;
-                } else {
-                    if (! $function && ! isset(Smarty_Internal_Template::$tplObjCache[$template->templateId])) {
-                        $template->parent = null;
-                        $template->tpl_vars = [];
-                        $template->config_vars = [];
-                        Smarty_Internal_Template::$tplObjCache[$template->templateId] = $template;
-                    }
+                } elseif (! $function && ! isset(Smarty_Internal_Template::$tplObjCache[$template->templateId])) {
+                    $template->parent = null;
+                    $template->tpl_vars = [];
+                    $template->config_vars = [];
+                    Smarty_Internal_Template::$tplObjCache[$template->templateId] = $template;
                 }
             }
 

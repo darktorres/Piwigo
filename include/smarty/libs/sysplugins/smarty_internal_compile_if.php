@@ -31,7 +31,7 @@ class Smarty_Internal_Compile_If extends Smarty_Internal_CompileBase
         $_attr = $this->getAttributes($compiler, $args);
         $this->openTag($compiler, 'if', [1, $compiler->nocache]);
         // must whole block be nocache ?
-        $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
+        $compiler->nocache |= $compiler->tag_nocache;
         if (! isset($parameter['if condition'])) {
             $compiler->trigger_template_error('missing if condition', null, true);
         }
@@ -67,8 +67,7 @@ class Smarty_Internal_Compile_If extends Smarty_Internal_CompileBase
                 $_output .= $assignCompiler->compile($assignAttr, $compiler, []);
             }
 
-            $_output .= sprintf('<?php if (%s) {?>', $prefixVar);
-            return $_output;
+            return $_output . sprintf('<?php if (%s) {?>', $prefixVar);
         }
 
         return sprintf('<?php if (%s) {?>', $parameter['if condition']);

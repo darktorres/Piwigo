@@ -30,10 +30,8 @@ $template->set_filenames([
 ]);
 
 $page['display_mode'] = $conf['tags_default_display_mode'];
-if (isset($_GET['display_mode'])) {
-    if (in_array($_GET['display_mode'], ['cloud', 'letters'])) {
-        $page['display_mode'] = $_GET['display_mode'];
-    }
+if (isset($_GET['display_mode']) && in_array($_GET['display_mode'], ['cloud', 'letters'])) {
+    $page['display_mode'] = $_GET['display_mode'];
 }
 
 foreach (['cloud', 'letters'] as $mode) {
@@ -75,8 +73,7 @@ if ($page['display_mode'] == 'letters') {
 
         //lettre precedente differente de la lettre suivante
         if ($tag_letter !== $current_letter) {
-            if ($current_column < $conf['tag_letters_column_number']
-                and $current_tag_idx > $current_column * $nb_tags / $conf['tag_letters_column_number']) {
+            if ($current_column < $conf['tag_letters_column_number'] && $current_tag_idx > $current_column * $nb_tags / $conf['tag_letters_column_number']) {
                 $letter['CHANGE_COLUMN'] = true;
                 $current_column++;
             }
@@ -151,7 +148,7 @@ if ($page['display_mode'] == 'letters') {
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theTagsPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theTagsPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 

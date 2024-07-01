@@ -37,7 +37,7 @@ function smarty_function_fetch(
         $protocol = strtolower(substr((string) $params['file'], 0, $protocol));
     }
 
-    if (isset($template->smarty->security_policy)) {
+    if ($template->smarty->security_policy !== null) {
         if ($protocol) {
             // remote resource (or php stream, …)
             if (! $template->smarty->security_policy->isTrustedUri(
@@ -45,11 +45,9 @@ function smarty_function_fetch(
             )) {
                 return;
             }
-        } else {
+        } elseif (! $template->smarty->security_policy->isTrustedResourceDir($params['file'])) {
             // local file
-            if (! $template->smarty->security_policy->isTrustedResourceDir($params['file'])) {
-                return;
-            }
+            return;
         }
     }
 
@@ -64,20 +62,16 @@ function smarty_function_fetch(
             $accept = 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*';
             $agent = 'Smarty Template Engine ' . Smarty::SMARTY_VERSION;
             $referer = '';
-            $uri = ! empty($uri_parts['path']) ? $uri_parts['path'] : '/';
-            $uri .= ! empty($uri_parts['query']) ? '?' . $uri_parts['query'] : '';
+            $uri = empty($uri_parts['path']) ? '/' : $uri_parts['path'];
+            $uri .= empty($uri_parts['query']) ? '' : '?' . $uri_parts['query'];
             $_is_proxy = false;
-            if (empty($uri_parts['port'])) {
-                $port = 80;
-            } else {
-                $port = $uri_parts['port'];
-            }
+            $port = empty($uri_parts['port']) ? 80 : $uri_parts['port'];
 
-            if (! empty($uri_parts['user'])) {
+            if (isset($uri_parts['user']) && ($uri_parts['user'] !== '' && $uri_parts['user'] !== '0')) {
                 $user = $uri_parts['user'];
             }
 
-            if (! empty($uri_parts['pass'])) {
+            if (isset($uri_parts['pass']) && ($uri_parts['pass'] !== '' && $uri_parts['pass'] !== '0')) {
                 $pass = $uri_parts['pass'];
             }
 
@@ -169,7 +163,7 @@ function smarty_function_fetch(
                 }
             }
 
-            if (! empty($proxy_host) && ! empty($proxy_port)) {
+            if (! empty($proxy_host) && $proxy_port !== 0) {
                 $_is_proxy = true;
                 $fp = fsockopen($proxy_host, $proxy_port, $errno, $errstr, $timeout);
             } else {
@@ -182,38 +176,38 @@ function smarty_function_fetch(
             }
 
             if ($_is_proxy) {
-                fputs($fp, 'GET ' . $params['file'] . " HTTP/1.0\r\n");
+                fwrite($fp, 'GET ' . $params['file'] . " HTTP/1.0\r\n");
             } else {
-                fputs($fp, "GET {$uri} HTTP/1.0\r\n");
+                fwrite($fp, "GET {$uri} HTTP/1.0\r\n");
             }
 
             if (! empty($host)) {
-                fputs($fp, "Host: {$host}\r\n");
+                fwrite($fp, "Host: {$host}\r\n");
             }
 
             if (! empty($accept)) {
-                fputs($fp, "Accept: {$accept}\r\n");
+                fwrite($fp, "Accept: {$accept}\r\n");
             }
 
             if (! empty($agent)) {
-                fputs($fp, "User-Agent: {$agent}\r\n");
+                fwrite($fp, "User-Agent: {$agent}\r\n");
             }
 
             if (! empty($referer)) {
-                fputs($fp, "Referer: {$referer}\r\n");
+                fwrite($fp, "Referer: {$referer}\r\n");
             }
 
             if (isset($extra_headers) && is_array($extra_headers)) {
                 foreach ($extra_headers as $curr_header) {
-                    fputs($fp, $curr_header . "\r\n");
+                    fwrite($fp, $curr_header . "\r\n");
                 }
             }
 
             if (! empty($user) && ! empty($pass)) {
-                fputs($fp, 'Authorization: BASIC ' . base64_encode(sprintf('%s:%s', $user, $pass)) . "\r\n");
+                fwrite($fp, 'Authorization: BASIC ' . base64_encode(sprintf('%s:%s', $user, $pass)) . "\r\n");
             }
 
-            fputs($fp, "\r\n");
+            fwrite($fp, "\r\n");
             while (! feof($fp)) {
                 $content .= fgets($fp, 4096);
             }

@@ -90,10 +90,8 @@ function smarty_modifier_debug_print_var(
                 if (mb_strlen($var, Smarty::$_CHARSET) > $length) {
                     $results = mb_substr($var, 0, $length - 3, Smarty::$_CHARSET) . '...';
                 }
-            } else {
-                if (isset($var[$length])) {
-                    $results = substr($var, 0, $length - 3) . '...';
-                }
+            } elseif (isset($var[$length])) {
+                $results = substr($var, 0, $length - 3) . '...';
             }
 
             $results = htmlspecialchars('"' . $results . '"', ENT_QUOTES, Smarty::$_CHARSET);
@@ -105,10 +103,8 @@ function smarty_modifier_debug_print_var(
                 if (mb_strlen($results, Smarty::$_CHARSET) > $length) {
                     $results = mb_substr($results, 0, $length - 3, Smarty::$_CHARSET) . '...';
                 }
-            } else {
-                if (strlen($results) > $length) {
-                    $results = substr($results, 0, $length - 3) . '...';
-                }
+            } elseif (strlen($results) > $length) {
+                $results = substr($results, 0, $length - 3) . '...';
             }
 
             $results = htmlspecialchars($results, ENT_QUOTES, Smarty::$_CHARSET);

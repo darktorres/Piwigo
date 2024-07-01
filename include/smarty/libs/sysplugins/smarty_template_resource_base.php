@@ -137,7 +137,7 @@ abstract class Smarty_Template_Resource_Base
                 ob_end_clean();
             }
 
-            if (isset($smarty->security_policy)) {
+            if ($smarty->security_policy !== null) {
                 $smarty->security_policy->endTemplate();
             }
 

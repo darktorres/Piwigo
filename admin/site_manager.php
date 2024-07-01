@@ -23,7 +23,7 @@ if (! $conf['enable_synchronization']) {
 
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST) or isset($_GET['action'])) {
+if ($_POST !== [] || isset($_GET['action'])) {
     check_pwg_token();
 }
 
@@ -49,7 +49,7 @@ $tabsheet->assign();
 // +-----------------------------------------------------------------------+
 // |                        new site creation form                         |
 // +-----------------------------------------------------------------------+
-if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
+if (isset($_POST['submit']) && ! empty($_POST['galleries_url'])) {
     $is_remote = url_is_remote($_POST['galleries_url']);
     if ($is_remote) {
         fatal_error('remote sites not supported');
@@ -72,10 +72,8 @@ SELECT COUNT(id) AS count
         $page['errors'][] = l10n('This site already exists') . ' [' . $url . ']';
     }
 
-    if (count($page['errors']) == 0) {
-        if (! file_exists($url)) {
-            $page['errors'][] = l10n('Directory does not exist') . ' [' . $url . ']';
-        }
+    if (count($page['errors']) == 0 && ! file_exists($url)) {
+        $page['errors'][] = l10n('Directory does not exist') . ' [' . $url . ']';
     }
 
     if (count($page['errors']) == 0) {
@@ -93,26 +91,22 @@ INSERT INTO ' . SITES_TABLE . '
 // +-----------------------------------------------------------------------+
 // |                            actions on site                            |
 // +-----------------------------------------------------------------------+
-if (isset($_GET['site']) and is_numeric(
+if (isset($_GET['site']) && is_numeric(
     $_GET['site']
 )) {
     $page['site'] = $_GET['site'];
 }
 
-if (isset($_GET['action']) and isset($page['site'])) {
+if (isset($_GET['action']) && isset($page['site'])) {
     $query = '
 SELECT galleries_url
   FROM ' . SITES_TABLE . '
   WHERE id = ' . $page['site'] . '
 ;';
     [$galleries_url] = pwg_db_fetch_row(pwg_query($query));
-    switch ($_GET['action']) {
-        case 'delete':
-
-            delete_site($page['site']);
-            $page['infos'][] = $galleries_url . ' ' . l10n('deleted');
-            break;
-
+    if ($_GET['action'] === 'delete') {
+        delete_site($page['site']);
+        $page['infos'][] = $galleries_url . ' ' . l10n('deleted');
     }
 }
 

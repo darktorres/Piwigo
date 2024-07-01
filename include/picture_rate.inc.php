@@ -30,7 +30,7 @@ SELECT COUNT(rate) AS count
     $template->assign('rate_summary', $rate_summary);
 
     $user_rate = null;
-    if ($conf['rate_anonymous'] or is_autorize_status(ACCESS_CLASSIC)) {
+    if ($conf['rate_anonymous'] || is_autorize_status(ACCESS_CLASSIC)) {
         if ($rate_summary['count'] > 0) {
             $query = 'SELECT rate
       FROM ' . RATE_TABLE . '

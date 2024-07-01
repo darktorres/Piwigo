@@ -79,7 +79,6 @@ class Smarty_Internal_Compile_Child extends Smarty_Internal_CompileBase
             $output .= "\$_smarty_tpl->assign({$_assign}, ob_get_clean());\n";
         }
 
-        $output .= "?>\n";
-        return $output;
+        return $output . "?>\n";
     }
 }

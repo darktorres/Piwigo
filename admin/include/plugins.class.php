@@ -19,6 +19,8 @@ class DummyPlugin_maintain extends PluginMaintain
         if (is_callable('plugin_install')) {
             return plugin_install($this->plugin_id, $plugin_version, $errors);
         }
+
+        return null;
     }
 
     #[\Override]
@@ -27,6 +29,8 @@ class DummyPlugin_maintain extends PluginMaintain
         if (is_callable('plugin_activate')) {
             return plugin_activate($this->plugin_id, $plugin_version, $errors);
         }
+
+        return null;
     }
 
     #[\Override]
@@ -35,6 +39,8 @@ class DummyPlugin_maintain extends PluginMaintain
         if (is_callable('plugin_deactivate')) {
             return plugin_deactivate($this->plugin_id);
         }
+
+        return null;
     }
 
     #[\Override]
@@ -43,6 +49,8 @@ class DummyPlugin_maintain extends PluginMaintain
         if (is_callable('plugin_uninstall')) {
             return plugin_uninstall($this->plugin_id);
         }
+
+        return null;
     }
 
     #[\Override]
@@ -87,7 +95,7 @@ class plugins
     ) {
         global $conf;
 
-        if (! $conf['enable_extensions_install'] and $action == 'delete') {
+        if (! $conf['enable_extensions_install'] && $action == 'delete') {
             die('Piwigo extensions install/update/delete system is disabled');
         }
 
@@ -96,7 +104,7 @@ class plugins
         }
 
         if ($action !== 'update') { // wait for files to be updated
-            $plugin_maintain = self::build_maintain_class($plugin_id);
+            $plugin_maintain = $this->build_maintain_class($plugin_id);
         }
 
         $activity_details = [
@@ -107,14 +115,14 @@ class plugins
 
         switch ($action) {
             case 'install':
-                if (! empty($crt_db_plugin) or ! isset($this->fs_plugins[$plugin_id])) {
+                if (! empty($crt_db_plugin) || ! isset($this->fs_plugins[$plugin_id])) {
                     break;
                 }
 
                 $plugin_maintain->install($this->fs_plugins[$plugin_id]['version'], $errors);
                 $activity_details['version'] = $this->fs_plugins[$plugin_id]['version'];
 
-                if (empty($errors)) {
+                if ($errors === []) {
                     $query = '
 INSERT INTO ' . PLUGINS_TABLE . ' (id,version)
   VALUES (\'' . $plugin_id . "', '" . $this->fs_plugins[$plugin_id]['version'] . '\')
@@ -136,7 +144,7 @@ INSERT INTO ' . PLUGINS_TABLE . ' (id,version)
                     $new_version = $this->fs_plugins[$plugin_id]['version'];
                     $activity_details['to_version'] = $new_version;
 
-                    $plugin_maintain = self::build_maintain_class($plugin_id);
+                    $plugin_maintain = $this->build_maintain_class($plugin_id);
                     $plugin_maintain->update($previous_version, $new_version, $errors);
 
                     if ($new_version != 'auto') {
@@ -181,7 +189,7 @@ UPDATE ' . PLUGINS_TABLE . '
                 break;
 
             case 'deactivate':
-                if (! isset($crt_db_plugin) or $crt_db_plugin['state'] != 'active') {
+                if (! isset($crt_db_plugin) || $crt_db_plugin['state'] != 'active') {
                     $activity_details['result'] = 'error';
                     break;
                 }
@@ -263,10 +271,8 @@ DELETE FROM ' . PLUGINS_TABLE . '
     {
         $dir = opendir(PHPWG_PLUGINS_PATH);
         while ($file = readdir($dir)) {
-            if ($file != '.' and $file != '..') {
-                if (preg_match('/^[a-zA-Z0-9-_]+$/', $file)) {
-                    $this->get_fs_plugin($file);
-                }
+            if (($file !== '.' && $file !== '..') && preg_match('/^[a-zA-Z0-9-_]+$/', $file)) {
+                $this->get_fs_plugin($file);
             }
         }
 
@@ -283,8 +289,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
     ) {
         $path = PHPWG_PLUGINS_PATH . $plugin_id;
 
-        if (is_dir($path) and ! is_link($path)
-            and file_exists($path . '/main.inc.php')
+        if (is_dir($path) && ! is_link($path) && file_exists($path . '/main.inc.php')
         ) {
             $plugin = [
                 'name' => $plugin_id,
@@ -325,7 +330,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
             }
 
             if (preg_match('/Has Settings:\\s*([Tt]rue|[Ww]ebmaster)/', $plg_data, $val)) {
-                if (strtolower($val[1]) == 'webmaster') {
+                if (strtolower($val[1]) === 'webmaster') {
                     global $user;
 
                     if ($user['status'] == 'webmaster') {
@@ -336,7 +341,10 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 }
             }
 
-            if (! empty($plugin['uri']) and strpos($plugin['uri'], 'extension_view.php?eid=')) {
+            if (isset($plugin['uri']) && ($plugin['uri'] !== '' && $plugin['uri'] !== '0') && strpos(
+                $plugin['uri'],
+                'extension_view.php?eid='
+            )) {
                 [, $extension] = explode('extension_view.php?eid=', $plugin['uri']);
                 if (is_numeric($extension)) {
                     $plugin['extension'] = $extension;
@@ -384,7 +392,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
 
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php?category_id=' . $conf['pem_plugins_category'] . '&format=php';
-        if (fetchRemote($url, $result) and $pem_versions = @unserialize($result)) {
+        if (fetchRemote($url, $result) && ($pem_versions = @unserialize($result))) {
             $i = 0;
 
             // If the actual version exist, put the PEM id in $versions_to_check
@@ -469,7 +477,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
             'get_nb_downloads' => 'true',
         ];
 
-        if (! empty($plugins_to_check)) {
+        if ($plugins_to_check !== []) {
             if ($new) {
                 $get_data['extension_exclude'] = implode(',', $plugins_to_check);
             } else {
@@ -495,8 +503,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
 
     public function get_incompatible_plugins($actualize = false)
     {
-        if (isset($_SESSION['incompatible_plugins']) and ! $actualize
-          and $_SESSION['incompatible_plugins']['~~expire~~'] > time()) {
+        if (isset($_SESSION['incompatible_plugins']) && ! $actualize && $_SESSION['incompatible_plugins']['~~expire~~'] > time()) {
             return $_SESSION['incompatible_plugins'];
         }
 
@@ -544,13 +551,13 @@ DELETE FROM ' . PLUGINS_TABLE . '
             }
 
             foreach ($this->fs_plugins as $plugin_id => $fs_plugin) {
-                if (isset($fs_plugin['extension'])
-                  and ! in_array($plugin_id, $this->default_plugins)
-                  and $fs_plugin['version'] != 'auto'
-                  and (! isset($server_plugins[$fs_plugin['extension']]) or ! in_array(
-                      $fs_plugin['version'],
-                      $server_plugins[$fs_plugin['extension']]
-                  ))) {
+                if (isset($fs_plugin['extension']) && ! in_array(
+                    $plugin_id,
+                    $this->default_plugins
+                ) && $fs_plugin['version'] != 'auto' && (! isset($server_plugins[$fs_plugin['extension']]) || ! in_array(
+                    $fs_plugin['version'],
+                    $server_plugins[$fs_plugin['extension']]
+                ))) {
                     $_SESSION['incompatible_plugins'][$plugin_id] = $fs_plugin['version'];
                 }
             }
@@ -606,16 +613,20 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data)) {
+            if (($handle = @fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 include_once(PHPWG_ROOT_PATH . 'admin/include/pclzip.lib.php');
                 $zip = new PclZip($archive);
                 if ($list = $zip->listContent()) {
                     foreach ($list as $file) {
                         // we search main.inc.php in archive
-                        if (basename((string) $file['filename']) == 'main.inc.php'
-                          and (! isset($main_filepath)
-                          or strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
+                        if (basename(
+                            (string) $file['filename']
+                        ) === 'main.inc.php' && (! isset($main_filepath) || strlen(
+                            (string) $file['filename']
+                        ) < strlen(
+                            (string) $main_filepath
+                        ))) {
                             $main_filepath = $file['filename'];
                         }
                     }
@@ -627,7 +638,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                         if ($action == 'upgrade') {
                             $plugin_id = $dest;
                         } else {
-                            $plugin_id = ($root == '.' ? 'extension_' . $dest : basename($root));
+                            $plugin_id = ($root === '.' ? 'extension_' . $dest : basename($root));
                         }
 
                         $extract_path = PHPWG_PLUGINS_PATH . $plugin_id;
@@ -647,11 +658,14 @@ DELETE FROM ' . PLUGINS_TABLE . '
                                 }
                             }
 
-                            if (file_exists($extract_path . '/obsolete.list')
-                              and $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)
-                              and ! empty($old_files)) {
+                            if (file_exists(
+                                $extract_path . '/obsolete.list'
+                            ) && ($old_files = file(
+                                $extract_path . '/obsolete.list',
+                                FILE_IGNORE_NEW_LINES
+                            )) && $old_files !== []) {
                                 $old_files[] = 'obsolete.list';
-                                $logger->debug(__FUNCTION__ . ', $old_files = {' . join('},{', $old_files) . '}');
+                                $logger->debug(__FUNCTION__ . ', $old_files = {' . implode('},{', $old_files) . '}');
 
                                 $extract_path_realpath = realpath($extract_path);
 
@@ -659,7 +673,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                                     $old_file = trim($old_file);
                                     $old_file = trim($old_file, '/'); // prevent path starting with a "/"
 
-                                    if (empty($old_file)) { // empty here means the extension itself
+                                    if ($old_file === '' || $old_file === '0') { // empty here means the extension itself
                                         continue;
                                     }
 
@@ -669,7 +683,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                                     $realpath = realpath(
                                         $path
                                     );
-                                    if ($realpath === false or ! str_starts_with($realpath, $extract_path_realpath)) {
+                                    if ($realpath === false || ! str_starts_with($realpath, $extract_path_realpath)) {
                                         continue;
                                     }
 
@@ -707,7 +721,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
         $file = PHPWG_ROOT_PATH . 'install/obsolete_extensions.list';
         $merged_extensions = [];
 
-        if (file_exists($file) and $obsolete_ext = file($file, FILE_IGNORE_NEW_LINES) and ! empty($obsolete_ext)) {
+        if (file_exists($file) && ($obsolete_ext = file($file, FILE_IGNORE_NEW_LINES)) && $obsolete_ext !== []) {
             foreach ($obsolete_ext as $ext) {
                 if (preg_match('/^(\d+) ?: ?(.*?)$/', $ext, $matches)) {
                     $merged_extensions[$matches[1]] = $matches[2];
@@ -789,7 +803,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
      * or build a new class with the procedural methods
      * @param string $plugin_id
      */
-    private static function build_maintain_class(
+    private function build_maintain_class(
         $plugin_id
     ) {
         $file_to_include = PHPWG_PLUGINS_PATH . $plugin_id . '/maintain';

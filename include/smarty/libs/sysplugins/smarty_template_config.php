@@ -75,7 +75,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
             'extends' => true,
             'php' => true,
         ];
-        if ($_template !== null) {
+        if ($_template instanceof \Smarty_Internal_Template) {
             $smarty = $_template->smarty;
             $template_resource = $_template->template_resource;
         }
@@ -96,7 +96,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
 
         $source = new self($smarty, $template_resource, $type, $name);
         $source->handler->populate($source, $_template);
-        if (! $source->exists && isset($smarty->default_config_handler_func)) {
+        if (! $source->exists && $smarty->default_config_handler_func !== null) {
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
             $source->handler->populate($source, $_template);
         }

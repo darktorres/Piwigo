@@ -37,7 +37,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
             }
         }
 
-        $source->exists = ! ! $source->timestamp;
+        $source->exists = (bool) $source->timestamp;
     }
 
     /**

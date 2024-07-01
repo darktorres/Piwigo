@@ -1016,12 +1016,13 @@ $core = [
       <td>' . $trigger['name'] . '</td>
       <td>' . $trigger['type'] . '</td>
       <td>';
-        for ($i = 0; $i < count($trigger['vars']); $i += 2) {
+        $counter = count($trigger['vars']);
+        for ($i = 0; $i < $counter; $i += 2) {
             if ($i > 0) {
                 echo ', ';
             }
 
-            echo $trigger['vars'][$i] . ' ' . (! empty($trigger['vars'][$i + 1]) ? '<i>$' . $trigger['vars'][$i + 1] . '</i>' : null);
+            echo $trigger['vars'][$i] . ' ' . (empty($trigger['vars'][$i + 1]) ? null : '<i>$' . $trigger['vars'][$i + 1] . '</i>');
         }
 
         echo '
@@ -1029,7 +1030,7 @@ $core = [
       <td>';
         $f = 1;
         foreach ($trigger['files'] as $file) {
-            if (! $f) {
+            if ($f === 0) {
                 echo '<br>';
             } $f = 0;
             echo preg_replace('#\((.+)\)#', '(<i>$1</i>)', $file);

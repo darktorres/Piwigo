@@ -24,11 +24,7 @@ function ws_plugins_getList(
     $plugin_list = [];
 
     foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
-        if (isset($plugins->db_plugins_by_id[$plugin_id])) {
-            $state = $plugins->db_plugins_by_id[$plugin_id]['state'];
-        } else {
-            $state = 'uninstalled';
-        }
+        $state = isset($plugins->db_plugins_by_id[$plugin_id]) ? $plugins->db_plugins_by_id[$plugin_id]['state'] : 'uninstalled';
 
         $plugin_list[] = [
             'id' => $plugin_id,
@@ -64,7 +60,7 @@ function ws_plugins_performAction(
         return new PwgError(403, l10n('Webmaster status is required.'));
     }
 
-    if (! $conf['enable_extensions_install'] and $params['action'] == 'delete') {
+    if (! $conf['enable_extensions_install'] && $params['action'] == 'delete') {
         return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
     }
 
@@ -104,7 +100,7 @@ function ws_themes_performAction(
         return new PwgError(403, 'Invalid security token');
     }
 
-    if (! $conf['enable_extensions_install'] and $params['action'] == 'delete') {
+    if (! $conf['enable_extensions_install'] && $params['action'] == 'delete') {
         return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
     }
 
@@ -169,8 +165,7 @@ function ws_extensions_update(
 
     if ($type == 'plugins') {
         if (
-            isset($extension->db_plugins_by_id[$extension_id])
-            and $extension->db_plugins_by_id[$extension_id]['state'] == 'active'
+            isset($extension->db_plugins_by_id[$extension_id]) && $extension->db_plugins_by_id[$extension_id]['state'] == 'active'
         ) {
             $extension->perform_action('deactivate', $extension_id);
 
@@ -259,7 +254,7 @@ function ws_extensions_ignoreupdate(
 
     // Reset ignored extension
     if ($params['reset']) {
-        if (! empty($params['type']) and isset($conf['updates_ignored'][$params['type']])) {
+        if (! empty($params['type']) && isset($conf['updates_ignored'][$params['type']])) {
             $conf['updates_ignored'][$params['type']] = [];
         } else {
             $conf['updates_ignored'] = [
@@ -274,7 +269,7 @@ function ws_extensions_ignoreupdate(
         return true;
     }
 
-    if (empty($params['id']) or empty($params['type']) or ! in_array(
+    if (empty($params['id']) || empty($params['type']) || ! in_array(
         $params['type'],
         ['plugins', 'themes', 'languages']
     )) {
@@ -328,7 +323,7 @@ function ws_extensions_checkupdates(
     if (! is_array($_SESSION['extensions_need_update'])) {
         $result['ext_need_update'] = null;
     } else {
-        $result['ext_need_update'] = ! empty($_SESSION['extensions_need_update']);
+        $result['ext_need_update'] = isset($_SESSION['extensions_need_update']) && $_SESSION['extensions_need_update'] !== [];
     }
 
     return $result;

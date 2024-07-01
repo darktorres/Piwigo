@@ -11,7 +11,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('This page cannot be loaded directly, load upgrade.php');
 }
 
-if (! defined('PHPWG_IN_UPGRADE') or ! PHPWG_IN_UPGRADE) {
+if (! defined('PHPWG_IN_UPGRADE') || ! PHPWG_IN_UPGRADE) {
     die('Hacking attempt!');
 }
 
@@ -37,17 +37,14 @@ foreach ($to_apply as $upgrade_id) {
         break;
     }
 
-    array_push(
-        $inserts,
-        [
-            'id' => $upgrade_id,
-            'applied' => CURRENT_DATE,
-            'description' => '[migration from 2.3.0 to ' . PHPWG_VERSION . '] not applied',
-        ]
-    );
+    $inserts[] = [
+        'id' => $upgrade_id,
+        'applied' => CURRENT_DATE,
+        'description' => '[migration from 2.3.0 to ' . PHPWG_VERSION . '] not applied',
+    ];
 }
 
-if (! empty($inserts)) {
+if ($inserts !== []) {
     mass_inserts(
         '`' . UPGRADE_TABLE . '`',
         array_keys($inserts[0]),

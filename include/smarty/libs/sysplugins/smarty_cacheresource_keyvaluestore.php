@@ -81,7 +81,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
 
         $cached->content = $content;
         $cached->timestamp = (int) $timestamp;
-        $cached->exists = ! ! $cached->timestamp;
+        $cached->exists = (bool) $cached->timestamp;
     }
 
     /**
@@ -99,25 +99,22 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         Smarty_Template_Cached $cached = null,
         $update = false
     ) {
-        if ($cached === null) {
+        if (! $cached instanceof \Smarty_Template_Cached) {
             $cached = $_smarty_tpl->cached;
         }
 
         $content = $cached->content ?: null;
         $timestamp = $cached->timestamp ?: null;
-        if ($content === null || ! $timestamp) {
-            if (! $this->fetch(
-                $_smarty_tpl->cached->filepath,
-                $_smarty_tpl->source->name,
-                $_smarty_tpl->cache_id,
-                $_smarty_tpl->compile_id,
-                $content,
-                $timestamp,
-                $_smarty_tpl->source->uid
-            )
-            ) {
-                return false;
-            }
+        if (($content === null || ! $timestamp) && ! $this->fetch(
+            $_smarty_tpl->cached->filepath,
+            $_smarty_tpl->source->name,
+            $_smarty_tpl->cache_id,
+            $_smarty_tpl->compile_id,
+            $content,
+            $timestamp,
+            $_smarty_tpl->source->uid
+        )) {
+            return false;
         }
 
         if (isset($content)) {
@@ -160,19 +157,16 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     ) {
         $content = $_template->cached->content ?: null;
         $timestamp = null;
-        if ($content === null) {
-            if (! $this->fetch(
-                $_template->cached->filepath,
-                $_template->source->name,
-                $_template->cache_id,
-                $_template->compile_id,
-                $content,
-                $timestamp,
-                $_template->source->uid
-            )
-            ) {
-                return false;
-            }
+        if ($content === null && ! $this->fetch(
+            $_template->cached->filepath,
+            $_template->source->name,
+            $_template->cache_id,
+            $_template->compile_id,
+            $content,
+            $timestamp,
+            $_template->source->uid
+        )) {
+            return false;
         }
 
         return $content ?? false;
@@ -321,7 +315,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         $string
     ) {
         $string = trim((string) $string, '|');
-        if (! $string) {
+        if ($string === '' || $string === '0') {
             return '';
         }
 
@@ -351,7 +345,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         $resource_uid = null
     ) {
         $t = $this->read([$cid]);
-        $content = ! empty($t[$cid]) ? $t[$cid] : null;
+        $content = empty($t[$cid]) ? null : $t[$cid];
         $timestamp = null;
         if ($content && ($timestamp = $this->getMetaTimestamp($content))) {
             $invalidated =
@@ -362,7 +356,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
             }
         }
 
-        return ! ! $content;
+        return (bool) $content;
     }
 
     /**
@@ -418,24 +412,14 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         // invalidate everything
         if (! $resource_name && ! $cache_id && ! $compile_id) {
             $key = 'IVK#ALL';
-        } // invalidate all caches by template
-        else {
-            if ($resource_name && ! $cache_id && ! $compile_id) {
-                $key = 'IVK#TEMPLATE#' . $resource_uid . '#' . $this->sanitize($resource_name);
-            } // invalidate all caches by cache group
-            else {
-                if (! $resource_name && $cache_id && ! $compile_id) {
-                    $key = 'IVK#CACHE#' . $this->sanitize($cache_id);
-                } // invalidate all caches by compile id
-                else {
-                    if (! $resource_name && ! $cache_id && $compile_id) {
-                        $key = 'IVK#COMPILE#' . $this->sanitize($compile_id);
-                    } // invalidate by combination
-                    else {
-                        $key = 'IVK#CID#' . $cid;
-                    }
-                }
-            }
+        } elseif ($resource_name && ! $cache_id && ! $compile_id) {
+            $key = 'IVK#TEMPLATE#' . $resource_uid . '#' . $this->sanitize($resource_name);
+        } elseif (! $resource_name && $cache_id && ! $compile_id) {
+            $key = 'IVK#CACHE#' . $this->sanitize($cache_id);
+        } elseif (! $resource_name && ! $cache_id && $compile_id) {
+            $key = 'IVK#COMPILE#' . $this->sanitize($compile_id);
+        } else {
+            $key = 'IVK#CID#' . $cid;
         }
 
         $this->write([
@@ -522,7 +506,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
 
         $_name .= '#';
         $cid = trim((string) $cache_id, '|');
-        if (! $cid) {
+        if ($cid === '' || $cid === '0') {
             return $t;
         }
 

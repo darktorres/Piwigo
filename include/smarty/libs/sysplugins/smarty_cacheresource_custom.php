@@ -23,8 +23,8 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template
     ) {
-        $_cache_id = isset($cached->cache_id) ? preg_replace('![^\w\|]+!', '_', $cached->cache_id) : null;
-        $_compile_id = isset($cached->compile_id) ? preg_replace('![^\w]+!', '_', $cached->compile_id) : null;
+        $_cache_id = $cached->cache_id !== null ? preg_replace('![^\w\|]+!', '_', $cached->cache_id) : null;
+        $_compile_id = $cached->compile_id !== null ? preg_replace('![^\w]+!', '_', $cached->compile_id) : null;
         $path = $cached->source->uid . $_cache_id . $_compile_id;
         $cached->filepath = sha1($path);
         if ($_template->smarty->cache_locking) {
@@ -45,7 +45,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
             $this->fetchTimestamp($cached->filepath, $cached->source->name, $cached->cache_id, $cached->compile_id);
         if ($mtime !== null) {
             $cached->timestamp = $mtime;
-            $cached->exists = ! ! $cached->timestamp;
+            $cached->exists = (bool) $cached->timestamp;
             return;
         }
 
@@ -59,7 +59,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
             $timestamp
         );
         $cached->timestamp = $timestamp ?? false;
-        $cached->exists = ! ! $cached->timestamp;
+        $cached->exists = (bool) $cached->timestamp;
     }
 
     /**
@@ -77,7 +77,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
         Smarty_Template_Cached $cached = null,
         $update = false
     ) {
-        if ($cached === null) {
+        if (! $cached instanceof \Smarty_Template_Cached) {
             $cached = $_smarty_tpl->cached;
         }
 

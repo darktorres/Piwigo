@@ -272,8 +272,8 @@ class Smarty_Security
         $function_name,
         $compiler
     ) {
-        if (isset($this->php_functions)
-            && (empty($this->php_functions) || in_array($function_name, $this->php_functions))
+        if ($this->php_functions !== null
+            && ($this->php_functions === [] || in_array($function_name, $this->php_functions))
         ) {
             return true;
         }
@@ -296,8 +296,8 @@ class Smarty_Security
         $class_name,
         $compiler
     ) {
-        if (isset($this->static_classes)
-            && (empty($this->static_classes) || in_array($class_name, $this->static_classes))
+        if ($this->static_classes !== null
+            && ($this->static_classes === [] || in_array($class_name, $this->static_classes))
         ) {
             return true;
         }
@@ -372,8 +372,8 @@ class Smarty_Security
         $modifier_name,
         $compiler
     ) {
-        if (isset($this->php_modifiers)
-            && (empty($this->php_modifiers) || in_array($modifier_name, $this->php_modifiers))
+        if ($this->php_modifiers !== null
+            && ($this->php_modifiers === [] || in_array($modifier_name, $this->php_modifiers))
         ) {
             return true;
         }
@@ -409,8 +409,8 @@ class Smarty_Security
         }
 
         // check security settings
-        if (empty($this->allowed_tags)) {
-            if (empty($this->disabled_tags) || ! in_array($tag_name, $this->disabled_tags)) {
+        if ($this->allowed_tags === []) {
+            if ($this->disabled_tags === [] || ! in_array($tag_name, $this->disabled_tags)) {
                 return true;
             }
 
@@ -471,13 +471,13 @@ class Smarty_Security
         $compiler
     ) {
         // check for internal always allowed modifier
-        if (in_array($modifier_name, ['default'])) {
+        if ($modifier_name == 'default') {
             return true;
         }
 
         // check security settings
-        if (empty($this->allowed_modifiers)) {
-            if (empty($this->disabled_modifiers) || ! in_array($modifier_name, $this->disabled_modifiers)) {
+        if ($this->allowed_modifiers === []) {
+            if ($this->disabled_modifiers === [] || ! in_array($modifier_name, $this->disabled_modifiers)) {
                 return true;
             }
 
@@ -518,7 +518,7 @@ class Smarty_Security
             return true;
         }
 
-        if (! empty($this->trusted_constants)) {
+        if ($this->trusted_constants !== []) {
             if (! in_array(strtolower($const), $this->trusted_constants)) {
                 $compiler->trigger_template_error(sprintf("Security: access to constant '%s' not permitted", $const));
                 return false;
@@ -545,7 +545,7 @@ class Smarty_Security
     public function isTrustedStream(
         $stream_name
     ) {
-        if (isset($this->streams) && (empty($this->streams) || in_array($stream_name, $this->streams))) {
+        if ($this->streams !== null && ($this->streams === [] || in_array($stream_name, $this->streams))) {
             return true;
         }
 
@@ -622,7 +622,7 @@ class Smarty_Security
         $uri
     ) {
         $_uri = parse_url($uri);
-        if (! empty($_uri['scheme']) && ! empty($_uri['host'])) {
+        if (isset($_uri['scheme']) && ($_uri['scheme'] !== '' && $_uri['scheme'] !== '0') && ! empty($_uri['host'])) {
             $_uri = $_uri['scheme'] . '://' . $_uri['host'];
             foreach ($this->trusted_uri as $pattern) {
                 if (preg_match($pattern, $_uri)) {

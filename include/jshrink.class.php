@@ -300,7 +300,7 @@ class Minifier
     protected function getChar()
     {
         // Check to see if we had anything in the look ahead buffer and use that.
-        if (isset($this->c)) {
+        if ($this->c !== null) {
             $char = $this->c;
             unset($this->c);
         } else {
@@ -594,11 +594,9 @@ class Minifier
         }
 
         $this->locks[$lock] = $matches[2];
-
-        $js = preg_replace('/([+-])\s+([+-])/S', sprintf('$1%s$2', $lock), $js);
         /* -- */
 
-        return $js;
+        return preg_replace('/([+-])\s+([+-])/S', sprintf('$1%s$2', $lock), $js);
     }
 
     /**
@@ -610,7 +608,7 @@ class Minifier
     protected function unlock(
         $js
     ) {
-        if (empty($this->locks)) {
+        if ($this->locks === []) {
             return $js;
         }
 

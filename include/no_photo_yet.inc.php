@@ -11,13 +11,9 @@
 // gallery displays only a big box to show you the way for adding your first
 // photos
 if (
-    ! (defined('IN_ADMIN') and IN_ADMIN)   // no message inside administration
-    and script_basename() != 'identification' // keep the ability to login
-    and script_basename() != 'password'       // keep the ability to reset password
-    and script_basename() != 'ws'             // keep the ability to discuss with web API
-    and script_basename() != 'popuphelp'      // keep the ability to display help popups
-    and (is_a_guest() or is_admin())          // normal users are not concerned by no_photo_yet
-    and ! isset($_SESSION['no_photo_yet'])     // temporary hide
+    ! (defined(
+        'IN_ADMIN'
+    ) && IN_ADMIN) && script_basename() != 'identification' && script_basename() != 'password' && script_basename() != 'ws' && script_basename() != 'popuphelp' && (is_a_guest() || is_admin()) && ! isset($_SESSION['no_photo_yet'])     // temporary hide
 ) {
     $query = '
 SELECT

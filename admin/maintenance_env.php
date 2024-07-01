@@ -119,10 +119,12 @@ SELECT
         $sessions_to_delete = [];
 
         foreach ($sessions as $session) {
-            if (preg_match('/pwg_uid\|i:(\d+);/', (string) $session['data'], $matches)) {
-                if (! isset($all_user_ids[$matches[1]])) {
-                    $sessions_to_delete[] = $session['id'];
-                }
+            if (preg_match(
+                '/pwg_uid\|i:(\d+);/',
+                (string) $session['data'],
+                $matches
+            ) && ! isset($all_user_ids[$matches[1]])) {
+                $sessions_to_delete[] = $session['id'];
             }
         }
 
@@ -213,7 +215,7 @@ DELETE
             }
             // concatenation needed to avoid automatic transformation by release
             // script generator
-            elseif ('%' . 'PWGVERSION' . '%' == $versions['current']) {
+            elseif ($versions['current'] == '%PWGVERSION%') {
                 $page['infos'][] = l10n('You are running on development sources, no check possible.');
             } elseif (version_compare($versions['current'], $versions['latest']) < 0) {
                 $page['infos'][] = l10n('A new version of Piwigo is available.');

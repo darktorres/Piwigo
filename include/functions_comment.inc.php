@@ -83,7 +83,7 @@ function insert_user_comment(
     );
 
     $infos = [];
-    if (! $conf['comments_validation'] or is_admin()) {
+    if (! $conf['comments_validation'] || is_admin()) {
         $comment_action = 'validate'; //one of validate, moderate, reject
     } else {
         $comment_action = 'moderate'; //one of validate, moderate, reject
@@ -167,7 +167,7 @@ SELECT COUNT(*) AS user_exists
 
     $anonymous_id = implode('.', $ip_components);
 
-    if ($comment_action != 'reject' and $conf['anti-flood_time'] > 0 and ! is_admin()) { // anti-flood system
+    if ($comment_action !== 'reject' && $conf['anti-flood_time'] > 0 && ! is_admin()) { // anti-flood system
         $reference_date = pwg_db_get_flood_period_expression($conf['anti-flood_time']);
 
         $query = '
@@ -210,8 +210,8 @@ INSERT INTO ' . COMMENTS_TABLE . '
     \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
     ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . ',
     ' . $comm['image_id'] . ',
-    ' . (! empty($comm['website_url']) ? "'" . $comm['website_url'] . "'" : 'NULL') . ',
-    ' . (! empty($comm['email']) ? "'" . $comm['email'] . "'" : 'NULL') . '
+    ' . (empty($comm['website_url']) ? 'NULL' : "'" . $comm['website_url'] . "'") . ',
+    ' . (empty($comm['email']) ? 'NULL' : "'" . $comm['email'] . "'") . '
   )
 ';
         pwg_query($query);
@@ -219,8 +219,7 @@ INSERT INTO ' . COMMENTS_TABLE . '
 
         invalidate_user_cache_nb_comments();
 
-        if (($conf['email_admin_on_comment'] && $comment_action == 'validate')
-            or ($conf['email_admin_on_comment_validation'] and $comment_action == 'moderate')) {
+        if ($conf['email_admin_on_comment'] && $comment_action == 'validate' || $conf['email_admin_on_comment_validation'] && $comment_action == 'moderate') {
             include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
 
             $comment_url = get_absolute_root_url() . 'comments.php?comment_id=' . $comm['id'];
@@ -263,11 +262,7 @@ function delete_user_comment(
         $user_where_clause = "   AND author_id = '" . $GLOBALS['user']['id'] . "'";
     }
 
-    if (is_array($comment_id)) {
-        $where_clause = 'id IN(' . implode(',', $comment_id) . ')';
-    } else {
-        $where_clause = 'id = ' . $comment_id;
-    }
+    $where_clause = is_array($comment_id) ? 'id IN(' . implode(',', $comment_id) . ')' : 'id = ' . $comment_id;
 
     $query = '
 DELETE FROM ' . COMMENTS_TABLE . '
@@ -313,7 +308,7 @@ function update_user_comment(
 
     if (! verify_ephemeral_key($post_key, $comment['image_id'])) {
         $comment_action = 'reject';
-    } elseif (! $conf['comments_validation'] or is_admin()) { // should the updated comment must be validated
+    } elseif (! $conf['comments_validation'] || is_admin()) { // should the updated comment must be validated
         $comment_action = 'validate'; //one of validate, moderate, reject
     } else {
         $comment_action = 'moderate'; //one of validate, moderate, reject
@@ -355,7 +350,7 @@ function update_user_comment(
         $query = '
 UPDATE ' . COMMENTS_TABLE . '
   SET content = \'' . $comment['content'] . '\',
-      website_url = ' . (! empty($comment['website_url']) ? "'" . $comment['website_url'] . "'" : 'NULL') . ',
+      website_url = ' . (empty($comment['website_url']) ? 'NULL' : "'" . $comment['website_url'] . "'") . ',
       validated = \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
       validation_date = ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . '
   WHERE id = ' . $comment['comment_id'] .
@@ -364,7 +359,7 @@ $user_where_clause . '
         $result = pwg_query($query);
 
         // mail admin and ask to validate the comment
-        if ($result and $conf['email_admin_on_comment_validation'] and $comment_action == 'moderate') {
+        if ($result && $conf['email_admin_on_comment_validation'] && $comment_action == 'moderate') {
             include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
 
             $comment_url = get_absolute_root_url() . 'comments.php?comment_id=' . $comment['comment_id'];
@@ -407,9 +402,10 @@ function email_admin(
 ) {
     global $conf;
 
-    if (! in_array($action, ['edit', 'delete'])
-        or (($action == 'edit') and ! $conf['email_admin_on_comment_edition'])
-        or (($action == 'delete') and ! $conf['email_admin_on_comment_deletion'])) {
+    if (! in_array(
+        $action,
+        ['edit', 'delete']
+    ) || $action == 'edit' && ! $conf['email_admin_on_comment_edition'] || $action == 'delete' && ! $conf['email_admin_on_comment_deletion']) {
         return;
     }
 
@@ -471,11 +467,7 @@ SELECT
 function validate_user_comment(
     $comment_id
 ) {
-    if (is_array($comment_id)) {
-        $where_clause = 'id IN(' . implode(',', $comment_id) . ')';
-    } else {
-        $where_clause = 'id = ' . $comment_id;
-    }
+    $where_clause = is_array($comment_id) ? 'id IN(' . implode(',', $comment_id) . ')' : 'id = ' . $comment_id;
 
     $query = '
 UPDATE ' . COMMENTS_TABLE . '

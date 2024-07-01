@@ -11,7 +11,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('This page cannot be loaded directly, load upgrade.php');
 }
 
-if (! defined('PHPWG_IN_UPGRADE') or ! PHPWG_IN_UPGRADE) {
+if (! defined('PHPWG_IN_UPGRADE') || ! PHPWG_IN_UPGRADE) {
     die('Hacking attempt!');
 }
 
@@ -178,7 +178,7 @@ $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     $row['user_id'] = $row['id'];
     $row['registration_date'] = $dbnow;
-    array_push($datas, $row);
+    $datas[] = $row;
 }
 
 include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
@@ -257,12 +257,9 @@ foreach ($queries as $query) {
 }
 
 if ($prefix_thumbnail != 'TN-') {
-    array_push(
-        $page['infos'],
-        'the thumbnail prefix configuration parameter was moved to configuration
+    $page['infos'][] = 'the thumbnail prefix configuration parameter was moved to configuration
 file, copy config.inc.php from "tools" directory to "local/config" directory
-and edit $conf[\'prefix_thumbnail\'] = ' . $prefix_thumbnail
-    );
+and edit $conf[\'prefix_thumbnail\'] = ' . $prefix_thumbnail;
 }
 
 // now we upgrade from 1.5.0 to 1.6.0

@@ -62,14 +62,14 @@ if (! is_array($mb_conf)) {
     $mb_conf = [];
 }
 
-foreach ($mb_conf as $id => $pos) {
+foreach (array_keys($mb_conf) as $id) {
     if (! isset($reg_blocks[$id])) {
         unset($mb_conf[$id]);
     }
 }
 
 $idx = 1;
-foreach ($reg_blocks as $id => $block) {
+foreach (array_keys($reg_blocks) as $id) {
     if (! isset($mb_conf[$id])) {
         $mb_conf[$id] = $idx * 50;
     }
@@ -77,7 +77,7 @@ foreach ($reg_blocks as $id => $block) {
     $idx++;
 }
 
-if (isset($_POST['submit']) and is_webmaster()) {
+if (isset($_POST['submit']) && is_webmaster()) {
     foreach ($mb_conf as $id => $pos) {
         $hide = isset($_POST['hide_' . $id]);
         $mb_conf[$id] = ($hide ? -1 : +1) * abs($pos);

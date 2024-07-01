@@ -87,7 +87,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
             $this->buildPropertyPreg(true, $attributes);
         }
 
-        if (isset($this->itemProperties)) {
+        if ($this->itemProperties !== null) {
             if ($this->isNamed) {
                 $this->propertyPreg .= '|';
             }
@@ -115,13 +115,13 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
         $attributes
     ) {
         if ($named) {
-            $this->resultOffsets['named'] = $this->startOffset = $this->startOffset + 3;
+            $this->resultOffsets['named'] = $this->startOffset += 3;
             $this->propertyPreg .= sprintf('(([$]smarty[.]%s[.]', $this->tagName) .
                                    ($this->tagName === 'section' ? "|[\[]\s*" : '') .
                                    sprintf(')%s[.](', $attributes['name']);
             $properties = $this->nameProperties;
         } else {
-            $this->resultOffsets['item'] = $this->startOffset = $this->startOffset + 2;
+            $this->resultOffsets['item'] = $this->startOffset += 2;
             $this->propertyPreg .= sprintf('([$]%s[@](', $attributes['item']);
             $properties = $this->itemProperties;
         }

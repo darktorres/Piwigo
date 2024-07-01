@@ -90,18 +90,10 @@ class Smarty_Internal_Compile_Config_Load extends Smarty_Internal_CompileBase
 
         // save possible attributes
         $conf_file = $_attr['file'];
-        if (isset($_attr['section'])) {
-            $section = $_attr['section'];
-        } else {
-            $section = 'null';
-        }
+        $section = $_attr['section'] ?? 'null';
 
         // scope setup
-        if ($_attr['noscope']) {
-            $_scope = -1;
-        } else {
-            $_scope = $compiler->convertScope($_attr, $this->valid_scopes);
-        }
+        $_scope = $_attr['noscope'] ? -1 : $compiler->convertScope($_attr, $this->valid_scopes);
 
         // create config object
         $_output =

@@ -32,7 +32,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
             $compiler->trigger_template_error('special $Smarty variable name index can not be variable', null, true);
         }
 
-        if (! isset($compiler->smarty->security_policy)
+        if ($compiler->smarty->security_policy === null
             || $compiler->smarty->security_policy->isTrustedSpecialSmartyVar($variable, $compiler)
         ) {
             switch ($variable) {
@@ -57,7 +57,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 case 'now':
                     return 'time()';
                 case 'cookies':
-                    if (isset($compiler->smarty->security_policy)
+                    if ($compiler->smarty->security_policy !== null
                         && ! $compiler->smarty->security_policy->allow_super_globals
                     ) {
                         $compiler->trigger_template_error('(secure mode) super globals not permitted');
@@ -72,7 +72,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 case 'server':
                 case 'session':
                 case 'request':
-                    if (isset($compiler->smarty->security_policy)
+                    if ($compiler->smarty->security_policy !== null
                         && ! $compiler->smarty->security_policy->allow_super_globals
                     ) {
                         $compiler->trigger_template_error('(secure mode) super globals not permitted');
@@ -84,7 +84,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 case 'template':
                     return 'basename($_smarty_tpl->source->filepath)';
                 case 'template_object':
-                    if (isset($compiler->smarty->security_policy)) {
+                    if ($compiler->smarty->security_policy !== null) {
                         $compiler->trigger_template_error('(secure mode) template_object not permitted');
                         break;
                     }
@@ -95,7 +95,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 case 'version':
                     return 'Smarty::SMARTY_VERSION';
                 case 'const':
-                    if (isset($compiler->smarty->security_policy)
+                    if ($compiler->smarty->security_policy !== null
                         && ! $compiler->smarty->security_policy->allow_constants
                     ) {
                         $compiler->trigger_template_error('(secure mode) constants not permitted');
@@ -134,11 +134,13 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
             if (isset($_index[1])) {
                 array_shift($_index);
                 foreach ($_index as $_ind) {
-                    $compiled_ref = $compiled_ref . sprintf('[%s]', $_ind);
+                    $compiled_ref .= sprintf('[%s]', $_ind);
                 }
             }
 
             return $compiled_ref;
         }
+
+        return null;
     }
 }

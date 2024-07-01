@@ -18,9 +18,9 @@ $env_nbm =
         ];
 
 if (
-    (! isset($env_nbm['sendmail_timeout'])) or
-    (! is_numeric($env_nbm['sendmail_timeout'])) or
-    ($env_nbm['sendmail_timeout'] <= 0)
+    ! isset($env_nbm['sendmail_timeout']) || ! is_numeric(
+        $env_nbm['sendmail_timeout']
+    ) || $env_nbm['sendmail_timeout'] <= 0
 ) {
     $env_nbm['sendmail_timeout'] = $conf['nbm_treatment_timeout_default'];
 }
@@ -124,7 +124,7 @@ where 1=1';
 
         $query .= $query_and_check_key;
 
-        if (isset($enabled_filter_value) and ($enabled_filter_value != '')) {
+        if (isset($enabled_filter_value) && $enabled_filter_value != '') {
             $query .= ' and
         N.enabled = \'' . boolean_to_string($enabled_filter_value) . "'";
         }
@@ -174,7 +174,7 @@ function begin_users_env_nbm(
     if ($is_to_send_mail) {
         // Init mail configuration
         $env_nbm['email_format'] = get_str_email_format($conf['nbm_send_html_mail']);
-        $env_nbm['send_as_name'] = ((isset($conf['nbm_send_mail_as']) and ! empty($conf['nbm_send_mail_as'])) ? $conf['nbm_send_mail_as'] : get_mail_sender_name());
+        $env_nbm['send_as_name'] = ((isset($conf['nbm_send_mail_as']) && ! empty($conf['nbm_send_mail_as'])) ? $conf['nbm_send_mail_as'] : get_mail_sender_name());
         $env_nbm['send_as_mail_address'] = get_webmaster_mail_address();
         $env_nbm['send_as_mail_formated'] = format_email($env_nbm['send_as_name'], $env_nbm['send_as_mail_address']);
         // Init mail counter
@@ -300,7 +300,6 @@ function display_counter_info()
             '%d mails were not sent.',
             $env_nbm['error_on_mail_count']
         );
-
         if ($env_nbm['sent_mail_count'] != 0) {
             $page['infos'][] = l10n_dec(
                 '%d mail was sent.',
@@ -308,16 +307,14 @@ function display_counter_info()
                 $env_nbm['sent_mail_count']
             );
         }
+    } elseif ($env_nbm['sent_mail_count'] == 0) {
+        $page['infos'][] = l10n('No mail to send.');
     } else {
-        if ($env_nbm['sent_mail_count'] == 0) {
-            $page['infos'][] = l10n('No mail to send.');
-        } else {
-            $page['infos'][] = l10n_dec(
-                '%d mail was sent.',
-                '%d mails were sent.',
-                $env_nbm['sent_mail_count']
-            );
-        }
+        $page['infos'][] = l10n_dec(
+            '%d mail was sent.',
+            '%d mails were sent.',
+            $env_nbm['sent_mail_count']
+        );
     }
 }
 

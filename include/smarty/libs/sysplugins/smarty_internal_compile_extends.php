@@ -73,11 +73,7 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
             $files = array_reverse(explode('|', substr($file, 8)));
             $i = 0;
             foreach ($files as $file) {
-                if ($file[0] === '"') {
-                    $file = trim($file, '".');
-                } else {
-                    $file = sprintf("'%s'", $file);
-                }
+                $file = $file[0] === '"' ? trim($file, '".') : sprintf("'%s'", $file);
 
                 $i++;
                 if ($i === count($files) && isset($_attr['extends_resource'])) {
@@ -111,7 +107,7 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
             $resources[] = $source->resource;
         }
 
-        return $template->smarty->left_delimiter . "extends file='extends:" . join('|', $resources) .
+        return $template->smarty->left_delimiter . "extends file='extends:" . implode('|', $resources) .
                "' extends_resource=true" . $template->smarty->right_delimiter;
     }
 

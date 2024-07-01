@@ -147,7 +147,7 @@ class Smarty_Template_Source
         Smarty $smarty = null,
         $template_resource = null
     ) {
-        if ($_template !== null) {
+        if ($_template instanceof \Smarty_Internal_Template) {
             $smarty = $_template->smarty;
             $template_resource = $_template->template_resource;
         }
@@ -174,7 +174,7 @@ class Smarty_Template_Source
         // create new source  object
         $source = new self($smarty, $template_resource, $type, $name);
         $source->handler->populate($source, $_template);
-        if (! $source->exists && isset($_template->smarty->default_template_handler_func)) {
+        if (! $source->exists && $_template->smarty->default_template_handler_func !== null) {
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
             $source->handler->populate($source, $_template);
         }
@@ -189,7 +189,7 @@ class Smarty_Template_Source
      */
     public function getTimeStamp()
     {
-        if (! isset($this->timestamp)) {
+        if ($this->timestamp === null) {
             $this->handler->populateTimestamp($this);
         }
 

@@ -297,10 +297,8 @@ class Logger
         $line
     ) {
         $this->open();
-        if ($this->status() == self::STATUS_LOG_OPEN) {
-            if (fwrite($this->_fileHandle, $line) === false) {
-                throw new RuntimeException(self::$_messages['writefail']);
-            }
+        if ($this->status() == self::STATUS_LOG_OPEN && fwrite($this->_fileHandle, $line) === false) {
+            throw new RuntimeException(self::$_messages['writefail']);
         }
     }
 

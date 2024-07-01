@@ -270,6 +270,5 @@ function smarty_function_html_radios_output(
         $_output .= '</label>';
     }
 
-    $_output .= $separator;
-    return $_output;
+    return $_output . $separator;
 }

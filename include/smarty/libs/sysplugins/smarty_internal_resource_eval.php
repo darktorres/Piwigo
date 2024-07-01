@@ -89,9 +89,9 @@ class Smarty_Internal_Resource_Eval extends Smarty_Resource_Recompiled
     ) {
         // decode if specified
         if (($pos = strpos($string, ':')) !== false) {
-            if (! strncmp($string, 'base64', 6)) {
+            if (str_starts_with($string, 'base64')) {
                 return base64_decode(substr($string, 7));
-            } elseif (! strncmp($string, 'urlencode', 9)) {
+            } elseif (str_starts_with($string, 'urlencode')) {
                 return urldecode(substr($string, 10));
             }
         }

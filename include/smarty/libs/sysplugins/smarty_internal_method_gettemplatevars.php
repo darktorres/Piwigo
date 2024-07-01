@@ -46,7 +46,7 @@ class Smarty_Internal_Method_GetTemplateVars
         }
 
         $_result = [];
-        if ($_ptr === null) {
+        if (! $_ptr instanceof \Smarty_Internal_Data) {
             $_ptr = $data;
         }
 
@@ -58,11 +58,7 @@ class Smarty_Internal_Method_GetTemplateVars
             }
 
             // not found, try at parent
-            if ($searchParents && isset($_ptr->parent)) {
-                $_ptr = $_ptr->parent;
-            } else {
-                $_ptr = null;
-            }
+            $_ptr = $searchParents && $_ptr->parent !== null ? $_ptr->parent : null;
         }
 
         if ($searchParents && isset(Smarty::$global_tpl_vars)) {
@@ -95,7 +91,7 @@ class Smarty_Internal_Method_GetTemplateVars
         $searchParents = true,
         $errorEnable = true
     ) {
-        if ($_ptr === null) {
+        if (! $_ptr instanceof \Smarty_Internal_Data) {
             $_ptr = $data;
         }
 
@@ -106,11 +102,7 @@ class Smarty_Internal_Method_GetTemplateVars
             }
 
             // not found, try at parent
-            if ($searchParents && isset($_ptr->parent)) {
-                $_ptr = $_ptr->parent;
-            } else {
-                $_ptr = null;
-            }
+            $_ptr = $searchParents && $_ptr->parent !== null ? $_ptr->parent : null;
         }
 
         if (isset(Smarty::$global_tpl_vars[$varName])) {

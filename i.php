@@ -13,8 +13,8 @@ define('PHPWG_ROOT_PATH', './');
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
-defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
+defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
+defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
 @include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
 
@@ -124,8 +124,7 @@ function parse_request()
 {
     global $conf, $page;
 
-    if ($conf['question_mark_in_urls'] == false and
-         isset($_SERVER['PATH_INFO']) and ! empty($_SERVER['PATH_INFO'])) {
+    if ($conf['question_mark_in_urls'] == false && isset($_SERVER['PATH_INFO']) && ! empty($_SERVER['PATH_INFO'])) {
         $req = $_SERVER['PATH_INFO'];
         $req = str_replace('//', '/', $req);
         $path_count = count(explode('/', $req));
@@ -148,19 +147,25 @@ function parse_request()
     $req = ltrim($req, '/');
 
     foreach (preg_split('#/+#', $req) as $token) {
-        preg_match($conf['sync_chars_regex'], $token) or ierror('Invalid chars in request', 400);
+        preg_match($conf['sync_chars_regex'], $token) || ierror('Invalid chars in request', 400);
     }
 
     $page['derivative_path'] = PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $req;
 
     $pos = strrpos($req, '.');
-    $pos !== false || ierror('Missing .', 400);
+    if ($pos === false) {
+        ierror('Missing .', 400);
+    }
+
     $ext = substr($req, $pos);
     $page['derivative_ext'] = $ext;
     $req = substr($req, 0, $pos);
 
     $pos = strrpos($req, '-');
-    $pos !== false || ierror('Missing -', 400);
+    if ($pos === false) {
+        ierror('Missing -', 400);
+    }
+
     $deriv = substr($req, $pos + 1);
     $req = substr($req, 0, $pos);
 
@@ -187,11 +192,11 @@ function parse_request()
         $params = $page['derivative_params'] = parse_custom_params($deriv);
         ImageStdParams::apply_global($params);
 
-        if ($params->sizing->ideal_size[0] < 20 or $params->sizing->ideal_size[1] < 20) {
+        if ($params->sizing->ideal_size[0] < 20 || $params->sizing->ideal_size[1] < 20) {
             ierror('Invalid size', 400);
         }
 
-        if ($params->sizing->max_crop < 0 or $params->sizing->max_crop > 1) {
+        if ($params->sizing->max_crop < 0 || $params->sizing->max_crop > 1) {
             ierror('Invalid crop', 400);
         }
 
@@ -308,7 +313,7 @@ function send_derivative($expires)
 {
     global $page;
 
-    if (isset($_GET['ajaxload']) and $_GET['ajaxload'] == 'true') {
+    if (isset($_GET['ajaxload']) && $_GET['ajaxload'] == 'true') {
         include_once(PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php');
         include_once(PHPWG_ROOT_PATH . 'include/functions_url.inc.php');
 
@@ -386,9 +391,7 @@ if ($src_mtime === false) {
 
 $need_generate = false;
 $derivative_mtime = @filemtime($page['derivative_path']);
-if ($derivative_mtime === false or
-    $derivative_mtime < $src_mtime or
-    $derivative_mtime < $params->last_mod_time) {
+if ($derivative_mtime === false || $derivative_mtime < $src_mtime || $derivative_mtime < $params->last_mod_time) {
     $need_generate = true;
 }
 
@@ -405,10 +408,9 @@ if (isset($_GET['b'])) {
 }
 
 if (! $need_generate) {
-    if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-      and strtotime(
-          (string) $_SERVER['HTTP_IF_MODIFIED_SINCE']
-      ) == $derivative_mtime) {// send the last mod time of the file back
+    if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime(
+        (string) $_SERVER['HTTP_IF_MODIFIED_SINCE']
+    ) === $derivative_mtime) {// send the last mod time of the file back
         header(
             'Last-Modified: ' . gmdate('D, d M Y H:i:s', $derivative_mtime) . ' GMT',
             true,
@@ -524,7 +526,7 @@ if ($params->will_watermark($d_size)) {
     $wm = ImageStdParams::get_watermark();
     $wm_image = new pwg_image(PHPWG_ROOT_PATH . $wm->file);
     $wm_size = [$wm_image->get_width(), $wm_image->get_height()];
-    if ($d_size[0] < $wm_size[0] or $d_size[1] < $wm_size[1]) {
+    if ($d_size[0] < $wm_size[0] || $d_size[1] < $wm_size[1]) {
         $wm_scaling_params = SizingParams::classic($d_size[0], $d_size[1]);
         $wm_scaling_params->compute($wm_size, null, $tmp, $wm_scaled_size);
         $wm_size = $wm_scaled_size;
@@ -548,10 +550,13 @@ if ($params->will_watermark($d_size)) {
                     $x2 = $x + $i * $xpad;
                     $y2 = $y + $j * $ypad;
                     if ($x2 >= 0 && $x2 + $wm_size[0] < $d_size[0] &&
-                        $y2 >= 0 && $y2 + $wm_size[1] < $d_size[1]) {
-                        if (! $image->compose($wm_image, $x2, $y2, $wm->opacity)) {
-                            break;
-                        }
+                        $y2 >= 0 && $y2 + $wm_size[1] < $d_size[1] && ! $image->compose(
+                            $wm_image,
+                            $x2,
+                            $y2,
+                            $wm->opacity
+                        )) {
+                        break;
                     }
                 }
             }

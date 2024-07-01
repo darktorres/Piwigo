@@ -37,10 +37,8 @@ class Smarty_Internal_ParseTree_Template extends Smarty_Internal_ParseTree
     ) {
         if (! empty($subtree->subtrees)) {
             $this->subtrees = array_merge($this->subtrees, $subtree->subtrees);
-        } else {
-            if ($subtree->data !== '') {
-                $this->subtrees[] = $subtree;
-            }
+        } elseif ($subtree->data !== '') {
+            $this->subtrees[] = $subtree;
         }
     }
 

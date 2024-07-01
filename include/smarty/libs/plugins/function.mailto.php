@@ -93,8 +93,8 @@ function smarty_function_mailto(
         }
     }
 
-    if ($mail_parms) {
-        $address .= '?' . join('&', $mail_parms);
+    if ($mail_parms !== []) {
+        $address .= '?' . implode('&', $mail_parms);
     }
 
     $encode = (empty($params['encode'])) ? 'none' : $params['encode'];

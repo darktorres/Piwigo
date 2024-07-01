@@ -90,7 +90,7 @@ SELECT id, file, path, representative_ext
         ],
     ];
 
-    if ($_POST['who'] == 'users' and isset($_POST['users']) and count($_POST['users']) > 0) {
+    if ($_POST['who'] == 'users' && isset($_POST['users']) && count($_POST['users']) > 0) {
         check_input_parameter('users', $_POST, true, PATTERN_ID);
 
         // TODO code very similar to function pwg_mail_group. We'd better create
@@ -151,7 +151,7 @@ SELECT
         $message .= ' (' . implode(', ', $usernames) . ')';
 
         $page['infos'][] = $message;
-    } elseif ($_POST['who'] == 'group' and ! empty($_POST['group'])) {
+    } elseif ($_POST['who'] == 'group' && ! empty($_POST['group'])) {
         check_input_parameter('group', $_POST, false, PATTERN_ID);
 
         pwg_mail_group($_POST['group'], $args, $tpl);
@@ -265,7 +265,7 @@ $all_user_ids = query2array($query, null, 'user_id');
 if ($category['status'] == 'private') {
     $user_ids_access_indirect = [];
 
-    if (isset($group_ids) and count($group_ids) > 0) {
+    if (isset($group_ids) && count($group_ids) > 0) {
         $query = '
 SELECT
     user_id

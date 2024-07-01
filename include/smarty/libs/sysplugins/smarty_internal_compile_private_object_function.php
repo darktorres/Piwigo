@@ -56,11 +56,11 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
             if ($compiler->smarty->registered_objects[$tag][2]) {
                 $_paramsArray = [];
                 foreach ($_attr as $_key => $_value) {
-                    if (is_int($_key)) {
-                        $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
-                    } else {
-                        $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
-                    }
+                    $_paramsArray[] = is_int($_key) ? sprintf('%d=>%s', $_key, $_value) : sprintf(
+                        "'%s'=>%s",
+                        $_key,
+                        $_value
+                    );
                 }
 
                 $_params = 'array(' . implode(',', $_paramsArray) . ')';

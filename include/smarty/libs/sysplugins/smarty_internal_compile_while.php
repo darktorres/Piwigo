@@ -36,7 +36,7 @@ class Smarty_Internal_Compile_While extends Smarty_Internal_CompileBase
         }
 
         // maybe nocache because of nocache variables
-        $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
+        $compiler->nocache |= $compiler->tag_nocache;
         if (is_array($parameter['if condition'])) {
             if ($compiler->nocache) {
                 // create nocache var to make it know for further compiling

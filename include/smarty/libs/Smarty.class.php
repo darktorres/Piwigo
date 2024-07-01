@@ -816,15 +816,13 @@ class Smarty extends Smarty_Internal_TemplateBase
                     unset($processed[$key]);
                 }
             }
+        } elseif ($key !== null) {
+            // override directory at specified index
+            $dir[$key] = $template_dir;
+            unset($processed[$key]);
         } else {
-            if ($key !== null) {
-                // override directory at specified index
-                $dir[$key] = $template_dir;
-                unset($processed[$key]);
-            } else {
-                // append new directory
-                $dir[] = $template_dir;
-            }
+            // append new directory
+            $dir[] = $template_dir;
         }
 
         return $this;
@@ -1109,7 +1107,7 @@ class Smarty extends Smarty_Internal_TemplateBase
 
         $tpl->parent = $parent ?: $this;
         // fill data if present
-        if (! empty($data) && is_array($data)) {
+        if ($data !== null && $data !== [] && is_array($data)) {
             // set up variable values
             foreach ($data as $_key => $_val) {
                 $tpl->tpl_vars[$_key] = new Smarty_Variable($_val);
@@ -1161,12 +1159,12 @@ class Smarty extends Smarty_Internal_TemplateBase
         $caching = null,
         Smarty_Internal_Template $template = null
     ) {
-        $template_name = (! str_contains($template_name, ':')) ? sprintf(
-            '%s:%s',
-            $this->default_resource_type,
-            $template_name
-        ) :
-            $template_name;
+        $template_name = (str_contains($template_name, ':')) ? $template_name :
+            sprintf(
+                '%s:%s',
+                $this->default_resource_type,
+                $template_name
+            );
         $cache_id ??= $this->cache_id;
         $compile_id ??= $this->compile_id;
         $caching = (int) ($caching ?? $this->caching);
@@ -1220,10 +1218,8 @@ class Smarty extends Smarty_Internal_TemplateBase
         $path = $parts['path'];
         if ($parts['root'] === '\\') {
             $parts['root'] = substr(getcwd(), 0, 2) . $parts['root'];
-        } else {
-            if ($realpath !== null && ! $parts['root']) {
-                $path = getcwd() . DIRECTORY_SEPARATOR . $path;
-            }
+        } elseif ($realpath !== null && ! $parts['root']) {
+            $path = getcwd() . DIRECTORY_SEPARATOR . $path;
         }
 
         // normalize DIRECTORY_SEPARATOR
@@ -1494,7 +1490,7 @@ class Smarty extends Smarty_Internal_TemplateBase
         }
 
         $isConfig ? $this->_configDirNormalized = true : $this->_templateDirNormalized = true;
-        $isConfig ? $this->_joined_config_dir = join('#', $this->config_dir) :
-            $this->_joined_template_dir = join('#', $this->template_dir);
+        $isConfig ? $this->_joined_config_dir = implode('#', $this->config_dir) :
+            $this->_joined_template_dir = implode('#', $this->template_dir);
     }
 }

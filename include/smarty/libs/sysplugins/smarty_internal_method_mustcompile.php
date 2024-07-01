@@ -27,12 +27,10 @@ class Smarty_Internal_Method_MustCompile
         Smarty_Internal_Template $_template
     ) {
         if (! $_template->source->exists) {
-            if ($_template->_isSubTpl()) {
-                $parent_resource = sprintf(" in '%s'", $_template->parent->template_resource);
-            } else {
-                $parent_resource = '';
-            }
-
+            $parent_resource = $_template->_isSubTpl() ? sprintf(
+                " in '%s'",
+                $_template->parent->template_resource
+            ) : '';
             throw new SmartyException(
                 sprintf(
                     "Unable to load template %s '%s'%s",

@@ -123,62 +123,60 @@ class Smarty_Internal_Extension_Handler
     ) {
         /** @var Smarty $data ->smarty */
         $smarty = $data->smarty ?? $data;
-        if (! isset($smarty->ext->{$name})) {
-            if (preg_match('/^((set|get)|(.*?))([A-Z].*)$/', $name, $match)) {
-                $basename = $this->upperCase($match[4]);
-                if (! isset($smarty->ext->{$basename}) && isset($this->_property_info[$basename])
-                    && is_string($this->_property_info[$basename])
-                ) {
-                    $class = 'Smarty_Internal_Method_' . $this->_property_info[$basename];
-                    if (class_exists($class)) {
-                        $classObj = new $class();
-                        $methodes = get_class_methods($classObj);
-                        foreach ($methodes as $method) {
-                            $smarty->ext->{$method} = $classObj;
-                        }
+        if (! isset($smarty->ext->{$name}) && preg_match('/^((set|get)|(.*?))([A-Z].*)$/', $name, $match)) {
+            $basename = $this->upperCase($match[4]);
+            if (! isset($smarty->ext->{$basename}) && isset($this->_property_info[$basename])
+                && is_string($this->_property_info[$basename])
+            ) {
+                $class = 'Smarty_Internal_Method_' . $this->_property_info[$basename];
+                if (class_exists($class)) {
+                    $classObj = new $class();
+                    $methodes = get_class_methods($classObj);
+                    foreach ($methodes as $method) {
+                        $smarty->ext->{$method} = $classObj;
                     }
                 }
+            }
 
-                if (! empty($match[2]) && ! isset($smarty->ext->{$name})) {
-                    $class = 'Smarty_Internal_Method_' . $this->upperCase($name);
-                    if (! class_exists($class)) {
-                        $objType = $data->_objType;
-                        $propertyType = false;
-                        if (! isset($this->resolvedProperties[$match[0]][$objType])) {
-                            $property = $this->resolvedProperties['property'][$basename] ??
-                                $this->resolvedProperties['property'][$basename] = smarty_strtolower_ascii(
-                                    join(
-                                        '_',
-                                        preg_split(
-                                            '/([A-Z][^A-Z]*)/',
-                                            $basename,
-                                            -1,
-                                            PREG_SPLIT_NO_EMPTY |
-                                            PREG_SPLIT_DELIM_CAPTURE
-                                        )
+            if (! empty($match[2]) && ! isset($smarty->ext->{$name})) {
+                $class = 'Smarty_Internal_Method_' . $this->upperCase($name);
+                if (! class_exists($class)) {
+                    $objType = $data->_objType;
+                    $propertyType = false;
+                    if (! isset($this->resolvedProperties[$match[0]][$objType])) {
+                        $property = $this->resolvedProperties['property'][$basename] ??
+                            $this->resolvedProperties['property'][$basename] = smarty_strtolower_ascii(
+                                implode(
+                                    '_',
+                                    preg_split(
+                                        '/([A-Z][^A-Z]*)/',
+                                        $basename,
+                                        -1,
+                                        PREG_SPLIT_NO_EMPTY |
+                                        PREG_SPLIT_DELIM_CAPTURE
                                     )
-                                );
-                            if ($property !== false) {
-                                if (property_exists($data, $property)) {
-                                    $propertyType = $this->resolvedProperties[$match[0]][$objType] = 1;
-                                } elseif (property_exists($smarty, $property)) {
-                                    $propertyType = $this->resolvedProperties[$match[0]][$objType] = 2;
-                                } else {
-                                    $this->resolvedProperties['property'][$basename] = $property = false;
-                                }
+                                )
+                            );
+                        if ($property !== false) {
+                            if (property_exists($data, $property)) {
+                                $propertyType = $this->resolvedProperties[$match[0]][$objType] = 1;
+                            } elseif (property_exists($smarty, $property)) {
+                                $propertyType = $this->resolvedProperties[$match[0]][$objType] = 2;
+                            } else {
+                                $this->resolvedProperties['property'][$basename] = $property = false;
                             }
-                        } else {
-                            $propertyType = $this->resolvedProperties[$match[0]][$objType];
-                            $property = $this->resolvedProperties['property'][$basename];
                         }
+                    } else {
+                        $propertyType = $this->resolvedProperties[$match[0]][$objType];
+                        $property = $this->resolvedProperties['property'][$basename];
+                    }
 
-                        if ($propertyType) {
-                            $obj = $propertyType === 1 ? $data : $smarty;
-                            if ($match[2] === 'get') {
-                                return $obj->{$property};
-                            } elseif ($match[2] === 'set') {
-                                return $obj->{$property} = $args[0];
-                            }
+                    if ($propertyType) {
+                        $obj = $propertyType === 1 ? $data : $smarty;
+                        if ($match[2] === 'get') {
+                            return $obj->{$property};
+                        } elseif ($match[2] === 'set') {
+                            return $obj->{$property} = $args[0];
                         }
                     }
                 }

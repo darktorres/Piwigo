@@ -137,13 +137,11 @@ function random_bytes(
         /**
          * Is our result valid?
          */
-        if ($buf !== false) {
-            if (RandomCompat_strlen($buf) === $bytes) {
-                /**
-                 * Return our random entropy buffer here:
-                 */
-                return $buf;
-            }
+        if ($buf !== false && RandomCompat_strlen($buf) === $bytes) {
+            /**
+             * Return our random entropy buffer here:
+             */
+            return $buf;
         }
     }
 

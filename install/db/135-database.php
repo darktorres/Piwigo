@@ -9,7 +9,7 @@
 
 defined(
     'PHPWG_ROOT_PATH'
-) or die('Hacking attempt!');
+) || die('Hacking attempt!');
 
 $upgrade_description = 'add nb available comments/tags';
 

@@ -88,8 +88,7 @@ SELECT
         }
     }
 
-    if (isset($search['fields']['user'])
-        and $search['fields']['user'] != -1) {
+    if (isset($search['fields']['user']) && $search['fields']['user'] != -1) {
         $clauses[] = 'user_id = ' . $search['fields']['user'];
     }
 
@@ -98,12 +97,10 @@ SELECT
     }
 
     if (isset($search['fields']['filename'])) {
-        if (count($search['image_ids']) == 0) {
-            // a clause that is always false
-            $clauses[] = '1 = 2 ';
-        } else {
-            $clauses[] = 'image_id IN (' . implode(', ', $search['image_ids']) . ')';
-        }
+        $clauses[] = count($search['image_ids']) == 0 ? '1 = 2 ' : 'image_id IN (' . implode(
+            ', ',
+            $search['image_ids']
+        ) . ')';
     }
 
     if (isset($search['fields']['ip'])) {
@@ -418,7 +415,7 @@ SELECT
 
     $history_id_delete_before = min($search_min);
 
-    $logger->debug(__FUNCTION__ . ', ' . join('/', $search_min));
+    $logger->debug(__FUNCTION__ . ', ' . implode('/', $search_min));
 
     $query = '
 DELETE
@@ -434,7 +431,7 @@ function history_remove_summarized_column()
 {
     global $conf;
 
-    if (isset($conf['history_summarized_dropped']) and $conf['history_summarized_dropped']) {
+    if (isset($conf['history_summarized_dropped']) && $conf['history_summarized_dropped']) {
         return;
     }
 

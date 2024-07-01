@@ -294,6 +294,5 @@ function smarty_function_html_checkboxes_output(
         $_output .= '</label>';
     }
 
-    $_output .= $separator;
-    return $_output;
+    return $_output . $separator;
 }

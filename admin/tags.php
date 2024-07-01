@@ -31,7 +31,7 @@ $tabsheet->assign();
 // |                           delete orphan tags                          |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['action']) and $_GET['action'] == 'delete_orphans') {
+if (isset($_GET['action']) && $_GET['action'] == 'delete_orphans') {
     check_pwg_token();
 
     delete_orphan_tags();

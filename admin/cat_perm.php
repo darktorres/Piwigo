@@ -28,10 +28,10 @@ $page['cat'] = $category['id'];
 // |                           form submission                             |
 // +-----------------------------------------------------------------------+
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
 
-    if ($category['status'] != $_POST['status'] or ($category['status'] != 'public' and isset($_POST['apply_on_sub']))) {
+    if ($category['status'] != $_POST['status'] || $category['status'] != 'public' && isset($_POST['apply_on_sub'])) {
         $cat_ids = [$page['cat']];
         if (isset($_POST['apply_on_sub'])) {
             $cat_ids = array_merge($cat_ids, get_subcat_ids([$page['cat']]));

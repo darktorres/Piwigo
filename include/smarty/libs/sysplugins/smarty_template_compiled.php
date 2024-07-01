@@ -47,7 +47,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
         $source = &$_template->source;
         $smarty = &$_template->smarty;
         $this->filepath = $smarty->getCompileDir();
-        if (isset($_template->compile_id)) {
+        if ($_template->compile_id !== null) {
             $this->filepath .= preg_replace('![^\w]+!', '_', $_template->compile_id) .
                                ($smarty->use_sub_dirs ? DIRECTORY_SEPARATOR : '^');
         }
@@ -104,7 +104,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
         }
 
         if ($_template->smarty->debugging) {
-            if (! isset($_template->smarty->_debug)) {
+            if ($_template->smarty->_debug === null) {
                 $_template->smarty->_debug = new Smarty_Internal_Debug();
             }
 
@@ -115,7 +115,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
             $this->process($_template);
         }
 
-        if (isset($_template->cached)) {
+        if ($_template->cached !== null) {
             $_template->cached->file_dependency =
                 array_merge($_template->cached->file_dependency, $this->file_dependency);
         }

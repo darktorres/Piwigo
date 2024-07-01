@@ -249,7 +249,7 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
             ['foreach', $compiler->nocache, $local, $itemVar, empty($itemAttr) ? 1 : 2]
         );
         // maybe nocache because of nocache variables
-        $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
+        $compiler->nocache |= $compiler->tag_nocache;
         // generate output code
         $output = "<?php\n";
         $output .= sprintf('$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, %s, ', $from) .
@@ -332,8 +332,7 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
             $output .= "{$local}saved = {$itemVar};\n";
         }
 
-        $output .= '?>';
-        return $output;
+        return $output . '?>';
     }
 
     /**
@@ -378,8 +377,7 @@ class Smarty_Internal_Compile_Foreachelse extends Smarty_Internal_CompileBase
             $output .= "{$itemVar} = {$local}saved;\n";
         }
 
-        $output .= "}\nif ({$itemVar}->do_else) {\n?>";
-        return $output;
+        return $output . "}\nif ({$itemVar}->do_else) {\n?>";
     }
 }
 
@@ -423,7 +421,6 @@ class Smarty_Internal_Compile_Foreachclose extends Smarty_Internal_CompileBase
             'foreach'
         );
         $output .= $foreachCompiler->compileRestore(1);
-        $output .= '?>';
-        return $output;
+        return $output . '?>';
     }
 }

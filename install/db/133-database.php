@@ -9,7 +9,7 @@
 
 defined(
     'PHPWG_ROOT_PATH'
-) or die('Hacking attempt!');
+) || die('Hacking attempt!');
 
 $upgrade_description = '#categories.site_id default value.';
 

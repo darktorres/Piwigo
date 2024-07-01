@@ -33,7 +33,7 @@
  */
 class PasswordHash
 {
-    public $itoa64;
+    public $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
     public $iteration_count_log2;
 
@@ -43,8 +43,6 @@ class PasswordHash
         $iteration_count_log2,
         public $portable_hashes
     ) {
-        $this->itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
         if ($iteration_count_log2 < 4 || $iteration_count_log2 > 31) {
             $iteration_count_log2 = 8;
         }
@@ -122,21 +120,20 @@ class PasswordHash
         $output = '$P$';
         $output .= $this->itoa64[min($this->iteration_count_log2 +
             ((PHP_VERSION >= '5') ? 5 : 3), 30)];
-        $output .= $this->encode64($input, 6);
 
-        return $output;
+        return $output . $this->encode64($input, 6);
     }
 
     public function crypt_private($password, $setting)
     {
         $output = '*0';
-        if (substr((string) $setting, 0, 2) == $output) {
+        if (substr((string) $setting, 0, 2) === $output) {
             $output = '*1';
         }
 
         $id = substr((string) $setting, 0, 3);
         # We use "$P$", phpBB3 uses "$H$" for the same thing
-        if ($id != '$P$' && $id != '$H$') {
+        if ($id !== '$P$' && $id !== '$H$') {
             return $output;
         }
 
@@ -171,9 +168,8 @@ class PasswordHash
         }
 
         $output = substr((string) $setting, 0, 12);
-        $output .= $this->encode64($hash, 16);
 
-        return $output;
+        return $output . $this->encode64($hash, 16);
     }
 
     public function gensalt_extended($input)
@@ -189,9 +185,7 @@ class PasswordHash
         $output .= $this->itoa64[($count >> 12) & 0x3f];
         $output .= $this->itoa64[($count >> 18) & 0x3f];
 
-        $output .= $this->encode64($input, 3);
-
-        return $output;
+        return $output . $this->encode64($input, 3);
     }
 
     public function gensalt_blowfish($input)
@@ -243,7 +237,7 @@ class PasswordHash
 
         $random = '';
 
-        if (CRYPT_BLOWFISH == 1 && ! $this->portable_hashes) {
+        if (CRYPT_BLOWFISH === 1 && ! $this->portable_hashes) {
             $random = $this->get_random_bytes(16);
             $hash =
                 crypt((string) $password, (string) $this->gensalt_blowfish($random));
@@ -252,7 +246,7 @@ class PasswordHash
             }
         }
 
-        if (CRYPT_EXT_DES == 1 && ! $this->portable_hashes) {
+        if (CRYPT_EXT_DES === 1 && ! $this->portable_hashes) {
             if (strlen((string) $random) < 3) {
                 $random = $this->get_random_bytes(3);
             }

@@ -78,11 +78,9 @@ class PersistentFileCache extends PersistentCache
     public function get($key, &$value)
     {
         $loaded = @file_get_contents($this->dir . $key . '.cache');
-        if ($loaded !== false && ($loaded = unserialize($loaded)) !== false) {
-            if ($loaded['expire'] > time()) {
-                $value = $loaded['data'];
-                return true;
-            }
+        if ($loaded !== false && ($loaded = unserialize($loaded)) !== false && $loaded['expire'] > time()) {
+            $value = $loaded['data'];
+            return true;
         }
 
         return false;
@@ -118,7 +116,7 @@ class PersistentFileCache extends PersistentCache
     public function purge($all)
     {
         $files = glob($this->dir . '*.cache');
-        if (empty($files)) {
+        if ($files === [] || $files === false) {
             return;
         }
 

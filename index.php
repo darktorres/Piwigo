@@ -73,7 +73,7 @@ if (isset($_GET['caddie'])) {
     redirect(duplicate_index_url());
 }
 
-if (isset($page['is_homepage']) and $page['is_homepage']) {
+if (isset($page['is_homepage']) && $page['is_homepage']) {
     $canonical_url = get_gallery_home_url();
 } else {
     $start = $page['nb_image_page'] * round($page['start'] / $page['nb_image_page']);
@@ -107,14 +107,14 @@ if (empty($page['is_external'])) {
     //----------------------------------------------------- template initialization
     $page['body_id'] = 'theCategoryPage';
 
-    if (isset($page['flat']) or isset($page['chronology_field'])) {
+    if (isset($page['flat']) || isset($page['chronology_field'])) {
         $template->assign(
             'U_MODE_NORMAL',
             duplicate_index_url([], ['chronology_field', 'start', 'flat'])
         );
     }
 
-    if ($conf['index_flat_icon'] and ! isset($page['flat']) and $page['section'] == 'categories') {
+    if ($conf['index_flat_icon'] && ! isset($page['flat']) && $page['section'] == 'categories') {
         $template->assign(
             'U_MODE_FLAT',
             duplicate_index_url([
@@ -144,12 +144,7 @@ if (empty($page['is_external'])) {
             );
         }
     } else {
-        if ($page['chronology_field'] == 'created') {
-            $chronology_field = 'posted';
-        } else {
-            $chronology_field = 'created';
-        }
-
+        $chronology_field = $page['chronology_field'] == 'created' ? 'posted' : 'created';
         if ($conf['index_' . $chronology_field . '_date_icon']) {
             $url = duplicate_index_url(
                 [
@@ -171,14 +166,14 @@ if (empty($page['is_external'])) {
         );
     }
 
-    if (isset($page['category']) and is_admin() and $conf['index_edit_icon']) {
+    if (isset($page['category']) && is_admin() && $conf['index_edit_icon']) {
         $template->assign(
             'U_EDIT',
             get_root_url() . 'admin.php?page=album-' . $page['category']['id']
         );
     }
 
-    if (is_admin() and ! empty($page['items']) and $conf['index_caddie_icon']) {
+    if (is_admin() && ! empty($page['items']) && $conf['index_caddie_icon']) {
         $template->assign(
             'U_CADDIE',
             add_url_params(duplicate_index_url(), [
@@ -187,8 +182,7 @@ if (empty($page['is_external'])) {
         );
     }
 
-    if ($page['section'] == 'search' and $page['start'] == 0 and
-        ! isset($page['chronology_field']) and isset($page['qsearch_details'])) {
+    if ($page['section'] == 'search' && $page['start'] == 0 && ! isset($page['chronology_field']) && isset($page['qsearch_details'])) {
         $cats = array_merge(
             (array) @$page['qsearch_details']['matching_cats_no_images'],
             (array) @$page['qsearch_details']['matching_cats']
@@ -222,10 +216,9 @@ if (empty($page['is_external'])) {
     }
 
     // image order
-    if ($conf['index_sort_order_input']
-        and count($page['items']) > 0
-        and $page['section'] != 'most_visited'
-        and $page['section'] != 'best_rated') {
+    if ($conf['index_sort_order_input'] && count(
+        $page['items']
+    ) > 0 && $page['section'] != 'most_visited' && $page['section'] != 'best_rated') {
         $preferred_image_orders = get_category_preferred_image_orders();
         $order_idx = pwg_get_session_var('image_order', 0);
 
@@ -267,22 +260,18 @@ if (empty($page['is_external'])) {
     }
 
     // category comment
-    if (($page['start'] == 0 or $conf['album_description_on_all_pages']) and ! isset($page['chronology_field']) and ! empty($page['comment'])) {
+    if (($page['start'] == 0 || $conf['album_description_on_all_pages']) && ! isset($page['chronology_field']) && ! empty($page['comment'])) {
         $template->assign('CONTENT_DESCRIPTION', $page['comment']);
     }
 
-    if (isset($page['category']['count_categories']) and $page['category']['count_categories'] == 0) {// count_categories might be computed by menubar - if the case unassign flat link if no sub albums
+    if (isset($page['category']['count_categories']) && $page['category']['count_categories'] == 0) {// count_categories might be computed by menubar - if the case unassign flat link if no sub albums
         $template->clear_assign(
             'U_MODE_FLAT'
         );
     }
 
     //------------------------------------------------------ main part : thumbnails
-    if ($page['start'] == 0
-      and ! isset($page['flat'])
-      and ! isset($page['chronology_field'])
-      and ($page['section'] == 'recent_cats' or $page['section'] == 'categories')
-      and (! isset($page['category']['count_categories']) or $page['category']['count_categories'] > 0)
+    if ($page['start'] == 0 && ! isset($page['flat']) && ! isset($page['chronology_field']) && ($page['section'] == 'recent_cats' || $page['section'] == 'categories') && (! isset($page['category']['count_categories']) || $page['category']['count_categories'] > 0)
     ) {
         include(PHPWG_ROOT_PATH . 'include/category_cats.inc.php');
     }
@@ -310,7 +299,7 @@ if (empty($page['is_external'])) {
                     [
                         'DISPLAY' => l10n($params->type),
                         'URL' => $url . $params->type,
-                        'SELECTED' => ($params->type == $selected_type ? true : false),
+                        'SELECTED' => ($params->type == $selected_type),
                     ]
                 );
             }

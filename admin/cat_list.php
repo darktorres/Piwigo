@@ -20,7 +20,7 @@ check_status(ACCESS_ADMINISTRATOR);
 
 trigger_notify('loc_begin_cat_list');
 
-if (! empty($_POST) or isset($_GET['delete'])) {
+if ($_POST !== [] || isset($_GET['delete'])) {
     check_pwg_token();
 }
 
@@ -131,7 +131,7 @@ include(PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php');
 // |                    virtual categories management                      |
 // +-----------------------------------------------------------------------+
 // request to delete a virtual category
-if (isset($_GET['delete']) and is_numeric($_GET['delete'])) {
+if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $photo_deletion_mode = 'no_delete';
     if (isset($_GET['photo_deletion_mode'])) {
         $photo_deletion_mode = $_GET['photo_deletion_mode'];
@@ -322,10 +322,8 @@ foreach ($categories as $category) {
     if (empty($category['dir'])) {
         $tpl_cat['U_DELETE'] = $self_url . '&amp;delete=' . $category['id'];
         $tpl_cat['U_DELETE'] .= '&amp;pwg_token=' . get_pwg_token();
-    } else {
-        if ($conf['enable_synchronization']) {
-            $tpl_cat['U_SYNC'] = $base_url . 'site_update&amp;site=1&amp;cat_id=' . $category['id'];
-        }
+    } elseif ($conf['enable_synchronization']) {
+        $tpl_cat['U_SYNC'] = $base_url . 'site_update&amp;site=1&amp;cat_id=' . $category['id'];
     }
 
     $template->append('categories', $tpl_cat);

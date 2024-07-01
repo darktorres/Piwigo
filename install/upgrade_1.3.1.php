@@ -15,7 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('This page cannot be loaded directly, load upgrade.php');
 }
 
-if (! defined('PHPWG_IN_UPGRADE') or ! PHPWG_IN_UPGRADE) {
+if (! defined('PHPWG_IN_UPGRADE') || ! PHPWG_IN_UPGRADE) {
     die('Hacking attempt!');
 }
 
@@ -333,7 +333,7 @@ ALTER TABLE ' . PREFIX_TABLE . $table . '
 ;';
                 pwg_query($query);
             } else {
-                array_push($existing_indexes, $row['Key_name']);
+                $existing_indexes[] = $row['Key_name'];
             }
         }
     }
@@ -510,7 +510,7 @@ SELECT DISTINCT(storage_category_id) AS unique_storage_category_id
 ;';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
-    array_push($cat_ids, $row['unique_storage_category_id']);
+    $cat_ids[] = $row['unique_storage_category_id'];
 }
 
 $fulldirs = get_fulldirs($cat_ids);
@@ -534,7 +534,7 @@ SELECT id
 ;';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
-    array_push($cat_ids, $row['id']);
+    $cat_ids[] = $row['id'];
 }
 
 if ($cat_ids !== []) {
@@ -555,7 +555,7 @@ if ($config_file_contents === false) {
     die('CANNOT LOAD ' . $config_file);
 }
 
-$php_end_tag = strrpos($config_file_contents, '?' . '>');
+$php_end_tag = strrpos($config_file_contents, '?>');
 if ($php_end_tag === false) {
     die('CANNOT FIND PHP END TAG IN ' . $config_file);
 }
@@ -565,7 +565,7 @@ if (! is_writable($config_file)) {
 }
 
 // changes to write in database.inc.php
-array_push($mysql_changes, "define('PHPWG_INSTALLED', true);");
+$mysql_changes[] = "define('PHPWG_INSTALLED', true);";
 
 // Send infos
 $page['infos'] = array_merge(

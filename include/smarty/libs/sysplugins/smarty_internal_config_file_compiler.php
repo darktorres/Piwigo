@@ -95,7 +95,7 @@ class Smarty_Internal_Config_File_Compiler
                 $this->template->source->type,
             ];
         if ($this->smarty->debugging) {
-            if (! isset($this->smarty->_debug)) {
+            if ($this->smarty->_debug === null) {
                 $this->smarty->_debug = new Smarty_Internal_Debug();
             }
 

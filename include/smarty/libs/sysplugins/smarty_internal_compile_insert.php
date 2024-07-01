@@ -91,15 +91,10 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
             $_smarty_tpl = $compiler->template;
             $_filepath = false;
             eval('$_script = @' . $_attr['script'] . ';');
-            if (! isset($compiler->smarty->security_policy) && file_exists($_script)) {
+            if ($compiler->smarty->security_policy === null && file_exists($_script)) {
                 $_filepath = $_script;
             } else {
-                if (isset($compiler->smarty->security_policy)) {
-                    $_dir = $compiler->smarty->security_policy->trusted_dir;
-                } else {
-                    $_dir = null;
-                }
-
+                $_dir = $compiler->smarty->security_policy !== null ? $compiler->smarty->security_policy->trusted_dir : null;
                 if (! empty($_dir)) {
                     foreach ((array) $_dir as $_script_dir) {
                         $_script_dir = rtrim($_script_dir ?? '', '/\\') . DIRECTORY_SEPARATOR;
@@ -129,15 +124,13 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
             $_filepath = 'null';
             $_function = 'insert_' . $_name;
             // function in PHP script ?
-            if (! is_callable($_function)) {
-                // try plugin
-                if (! $_function = $compiler->getPlugin($_name, 'insert')) {
-                    $compiler->trigger_template_error(
-                        sprintf("{insert} no function or plugin found for '%s'", $_name),
-                        null,
-                        true
-                    );
-                }
+            // try plugin
+            if (! is_callable($_function) && ! $_function = $compiler->getPlugin($_name, 'insert')) {
+                $compiler->trigger_template_error(
+                    sprintf("{insert} no function or plugin found for '%s'", $_name),
+                    null,
+                    true
+                );
             }
         }
 
@@ -168,17 +161,15 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
                     $_params
                 );
             }
+        } elseif ($_smarty_tpl->caching && ! $nocacheParam) {
+            $_output .= sprintf(
+                'echo Smarty_Internal_Nocache_Insert::compile (\'%s\',%s, $_smarty_tpl, \'%s\');?>',
+                $_function,
+                $_params,
+                $_filepath
+            );
         } else {
-            if ($_smarty_tpl->caching && ! $nocacheParam) {
-                $_output .= sprintf(
-                    'echo Smarty_Internal_Nocache_Insert::compile (\'%s\',%s, $_smarty_tpl, \'%s\');?>',
-                    $_function,
-                    $_params,
-                    $_filepath
-                );
-            } else {
-                $_output .= sprintf('echo %s(%s,$_smarty_tpl);?>', $_function, $_params);
-            }
+            $_output .= sprintf('echo %s(%s,$_smarty_tpl);?>', $_function, $_params);
         }
 
         $compiler->template->compiled->has_nocache_code = true;

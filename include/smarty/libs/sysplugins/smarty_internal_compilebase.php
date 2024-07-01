@@ -152,7 +152,7 @@ abstract class Smarty_Internal_CompileBase
                     );
             }
 
-            foreach ($_indexed_attr as $key => $dummy) {
+            foreach (array_keys($_indexed_attr) as $key) {
                 if (! isset($this->mapCache['all'][$key]) && $key !== 0) {
                     $compiler->trigger_template_error(sprintf("unexpected '%s' attribute", $key), null, true);
                 }
@@ -186,7 +186,7 @@ abstract class Smarty_Internal_CompileBase
         $openTag,
         mixed $data = null
     ) {
-        array_push($compiler->_tag_stack, [$openTag, $data]);
+        $compiler->_tag_stack[] = [$openTag, $data];
     }
 
     /**
@@ -226,11 +226,11 @@ abstract class Smarty_Internal_CompileBase
                     $compiler->smarty->right_delimiter
                 )
             );
-            return;
+            return null;
         }
 
         // wrong nesting of tags
         $compiler->trigger_template_error('unexpected closing tag', null, true);
-        return;
+        return null;
     }
 }

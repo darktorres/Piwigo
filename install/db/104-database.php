@@ -42,13 +42,10 @@ foreach ($upload_form_config as $param_shortname => $param) {
     if (! isset($conf[$param_name])) {
         $conf[$param_name] = $param;
 
-        array_push(
-            $inserts,
-            [
-                'param' => $param_name,
-                'value' => boolean_to_string($param),
-            ]
-        );
+        $inserts[] = [
+            'param' => $param_name,
+            'value' => boolean_to_string($param),
+        ];
     }
 }
 

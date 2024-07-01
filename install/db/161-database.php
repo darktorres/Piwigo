@@ -28,7 +28,7 @@ SELECT
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     if (isset($tag_ids_added[$row['object_id']])) {
-        array_push($to_delete_activities, $row['activity_id']);
+        $to_delete_activities[] = $row['activity_id'];
     } else {
         $tag_ids_added[$row['object_id']] = 1;
     }

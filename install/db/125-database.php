@@ -166,11 +166,9 @@ function replace_hotlinks($string)
         $string
     );
 
-    $string = preg_replace(
+    return preg_replace(
         '#(galleries/.*?)/pwg_high(/.*?\.[a-z0-9]{3,4})#',
         '$1$2',
         $string
     );
-
-    return $string;
 }

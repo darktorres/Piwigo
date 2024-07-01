@@ -22,8 +22,7 @@ function ws_isInvokeAllowed(
         return $res;
     }
 
-    if (! is_autorize_status(ACCESS_GUEST) and
-        ! str_starts_with((string) $methodName, 'pwg.session.')) {
+    if (! is_autorize_status(ACCESS_GUEST) && ! str_starts_with((string) $methodName, 'pwg.session.')) {
         return new PwgError(401, 'Access denied');
     }
 
@@ -104,7 +103,8 @@ function ws_std_image_sql_order(
         (string) $params['order'],
         $matches
     );
-    for ($i = 0; $i < count($matches[1]); $i++) {
+    $counter = count($matches[1]);
+    for ($i = 0; $i < $counter; $i++) {
         switch ($matches[1][$i]) {
             case 'date_created':
                 $matches[1][$i] = 'date_creation';
@@ -120,7 +120,7 @@ function ws_std_image_sql_order(
         $sortable_fields = ['id', 'file', 'name', 'hit', 'rating_score',
             'date_creation', 'date_available', DB_RANDOM_FUNCTION . '()'];
         if (in_array($matches[1][$i], $sortable_fields)) {
-            if (! empty($ret)) {
+            if ($ret !== '' && $ret !== '0') {
                 $ret .= ', ';
             }
 
@@ -167,7 +167,10 @@ function ws_std_get_urls(
     $derivatives_arr = [];
     foreach ($derivatives as $type => $derivative) {
         $size = $derivative->get_size();
-        $size != null or $size = [null, null];
+        if ($size == null) {
+            $size = [null, null];
+        }
+
         $derivatives_arr[$type] = [
             'url' => $derivative->get_url(),
             'width' => $size[0],

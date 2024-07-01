@@ -93,7 +93,7 @@ if (PHP_VERSION_ID < 70000) {
             $RandomCompatUrandom = true;
             $RandomCompat_basedir = ini_get('open_basedir');
 
-            if (! empty($RandomCompat_basedir)) {
+            if (! ($RandomCompat_basedir === '' || $RandomCompat_basedir === '0' || $RandomCompat_basedir === false)) {
                 $RandomCompat_open_basedir = explode(
                     PATH_SEPARATOR,
                     strtolower($RandomCompat_basedir)
@@ -131,24 +131,20 @@ if (PHP_VERSION_ID < 70000) {
         /**
          * mcrypt_create_iv()
          */
+        // Prevent this code from hanging indefinitely on non-Windows;
+        // see https://bugs.php.net/bug.php?id=69833
         if (
             ! function_exists('random_bytes')
             &&
             PHP_VERSION_ID >= 50307
             &&
-            extension_loaded('mcrypt')
-            &&
-            (DIRECTORY_SEPARATOR !== '/' || $RandomCompatUrandom)
+            extension_loaded(
+                'mcrypt'
+            ) && (DIRECTORY_SEPARATOR !== '/' || $RandomCompatUrandom) && (DIRECTORY_SEPARATOR !== '/' ||
+            (PHP_VERSION_ID <= 50609 || PHP_VERSION_ID >= 50613))
         ) {
-            // Prevent this code from hanging indefinitely on non-Windows;
-            // see https://bugs.php.net/bug.php?id=69833
-            if (
-                DIRECTORY_SEPARATOR !== '/' ||
-                (PHP_VERSION_ID <= 50609 || PHP_VERSION_ID >= 50613)
-            ) {
-                // See random_bytes_mcrypt.php
-                require_once $RandomCompatDIR . '/random_bytes_mcrypt.php';
-            }
+            // See random_bytes_mcrypt.php
+            require_once $RandomCompatDIR . '/random_bytes_mcrypt.php';
         }
 
         $RandomCompatUrandom = null;
