@@ -9,11 +9,11 @@
 
 class tabsheet
 {
-    public $sheets;
+    public $sheets = [];
 
-    public $uniqid;
+    public $uniqid = null;
 
-    public $selected;
+    public $selected = '';
 
     /*
       $name is the tabsheet's name inside the template .tpl file
@@ -23,9 +23,6 @@ class tabsheet
         public $name = 'TABSHEET',
         public $titlename = 'TABSHEET_TITLE'
     ) {
-        $this->sheets = [];
-        $this->uniqid = null;
-        $this->selected = '';
     }
 
     public function set_id($id)

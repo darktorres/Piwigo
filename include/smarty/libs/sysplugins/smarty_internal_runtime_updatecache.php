@@ -28,7 +28,7 @@ class Smarty_Internal_Runtime_UpdateCache
         $no_output_filter
     ) {
         ob_start();
-        if (! isset($_template->compiled)) {
+        if ($_template->compiled === null) {
             $_template->loadCompiled();
         }
 
@@ -150,7 +150,7 @@ class Smarty_Internal_Runtime_UpdateCache
             return false;
         }
 
-        if (! isset($_template->cached)) {
+        if ($_template->cached === null) {
             $_template->loadCached();
         }
 

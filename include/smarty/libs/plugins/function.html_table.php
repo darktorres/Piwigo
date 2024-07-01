@@ -68,10 +68,10 @@ function smarty_function_html_table(
                 ${$_key} = (array) $_value;
                 break;
             case 'cols':
-                if (is_array($_value) && ! empty($_value)) {
+                if (is_array($_value) && $_value !== []) {
                     $cols = $_value;
                     $cols_count = count($_value);
-                } elseif (! is_numeric($_value) && is_string($_value) && ! empty($_value)) {
+                } elseif (! is_numeric($_value) && is_string($_value) && ($_value !== '' && $_value !== '0')) {
                     $cols = explode(',', $_value);
                     $cols_count = count($cols);
                 } elseif (! empty($_value)) {
@@ -112,7 +112,7 @@ function smarty_function_html_table(
     }
 
     $output = "<table {$table_attr}>\n";
-    if (! empty($caption)) {
+    if ($caption !== '' && $caption !== '0') {
         $output .= '<caption>' . $caption . "</caption>\n";
     }
 
@@ -154,8 +154,7 @@ function smarty_function_html_table(
     }
 
     $output .= "</tbody>\n";
-    $output .= "</table>\n";
-    return $output;
+    return $output . "</table>\n";
 }
 
 /**
@@ -163,11 +162,7 @@ function smarty_function_html_table(
  */
 function smarty_function_html_table_cycle($name, $var, $no)
 {
-    if (! is_array($var)) {
-        $ret = $var;
-    } else {
-        $ret = $var[$no % count($var)];
-    }
+    $ret = is_array($var) ? $var[$no % count($var)] : $var;
 
     return ($ret) ? ' ' . $ret : '';
 }

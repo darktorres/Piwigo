@@ -29,21 +29,17 @@ $tabsheet->assign();
 // +-----------------------------------------------------------------------+
 // |                            initialization                             |
 // +-----------------------------------------------------------------------+
-if (isset($_GET['start']) and is_numeric(
+$start = isset($_GET['start']) && is_numeric(
     $_GET['start']
-)) {
-    $start = $_GET['start'];
-} else {
-    $start = 0;
-}
+) ? $_GET['start'] : 0;
 
 $elements_per_page = 10;
-if (isset($_GET['display']) and is_numeric($_GET['display'])) {
+if (isset($_GET['display']) && is_numeric($_GET['display'])) {
     $elements_per_page = $_GET['display'];
 }
 
 $order_by_index = 0;
-if (isset($_GET['order_by']) and is_numeric($_GET['order_by'])) {
+if (isset($_GET['order_by']) && is_numeric($_GET['order_by'])) {
     $order_by_index = $_GET['order_by'];
 }
 
@@ -57,7 +53,7 @@ if (isset($_GET['users'])) {
 }
 
 $page['cat_filter'] = '';
-if (isset($_GET['cat']) and is_numeric($_GET['cat'])) {
+if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
     $cat_ids = get_subcat_ids([$_GET['cat']]);
 
     if (count($cat_ids) > 0) {
@@ -80,7 +76,7 @@ SELECT
     COUNT(DISTINCT(r.element_id))
   FROM ' . RATE_TABLE . ' AS r';
 
-if (! empty($page['cat_filter'])) {
+if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= '
     JOIN ' . IMAGES_TABLE . ' AS i ON r.element_id = i.id
     JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON ic.image_id = i.id';
@@ -132,8 +128,9 @@ $available_order_by = [
     [l10n('Creation date'), 'date_creation DESC'],
     [l10n('Post date'), 'date_available DESC'],
 ];
+$counter = count($available_order_by);
 
-for ($i = 0; $i < count($available_order_by); $i++) {
+for ($i = 0; $i < $counter; $i++) {
     $template->append(
         'order_by_options',
         $available_order_by[$i][0]
@@ -165,7 +162,7 @@ SELECT i.id,
   FROM ' . RATE_TABLE . ' AS r
     LEFT JOIN ' . IMAGES_TABLE . ' AS i ON r.element_id = i.id';
 
-if (! empty($page['cat_filter'])) {
+if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= '
     JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON ic.image_id = i.id';
 }
@@ -216,11 +213,7 @@ ORDER BY date DESC;';
       ];
 
     while ($row = pwg_db_fetch_assoc($result)) {
-        if (isset($users[$row['user_id']])) {
-            $user_rate = $users[$row['user_id']];
-        } else {
-            $user_rate = '? ' . $row['user_id'];
-        }
+        $user_rate = $users[$row['user_id']] ?? '? ' . $row['user_id'];
 
         if (strlen((string) $row['anonymous_id']) > 0) {
             $user_rate .= '(' . $row['anonymous_id'] . ')';

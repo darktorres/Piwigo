@@ -25,7 +25,7 @@ check_status(ACCESS_ADMINISTRATOR);
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['action']) and $_GET['action'] == 'hide_newsletter_subscription') {
+if (isset($_GET['action']) && $_GET['action'] == 'hide_newsletter_subscription') {
     userprefs_update_param('show_newsletter_subscription', 'false');
     exit();
 }
@@ -79,7 +79,7 @@ $template->set_filenames([
     'intro' => 'intro.tpl',
 ]);
 
-if ($conf['show_newsletter_subscription'] and userprefs_get_param('show_newsletter_subscription', true)) {
+if ($conf['show_newsletter_subscription'] && userprefs_get_param('show_newsletter_subscription', true)) {
     $template->assign(
         [
             'EMAIL' => $user['email'],
@@ -191,7 +191,7 @@ SELECT COUNT(*)
 if ($conf['show_piwigo_latest_news']) {
     $latest_news = get_piwigo_news();
 
-    if (isset($latest_news['id']) and $latest_news['posted_on'] > time() - 60 * 60 * 24 * 30) {
+    if (isset($latest_news['id']) && $latest_news['posted_on'] > time() - 60 * 60 * 24 * 30) {
         $page['messages'][] = sprintf(
             '%s <a href="%s" title="%s" target="_blank"><i class="icon-bell"></i> %s</a>',
             l10n('Latest Piwigo news'),
@@ -233,7 +233,7 @@ while ($mondays < $nb_weeks) {
 $week_number = array_reverse($week_number);
 $date_string = $date->format('Y-m-d');
 
-if (! isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime(
+if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime(
     '5 minutes ago'
 )) {
     $start_time = get_moment();
@@ -314,8 +314,9 @@ usort($temp_data, 'cmp_day');
 
 //Get the percent difference
 $diff_x = [];
+$counter = count($temp_data);
 
-for ($i = 1; $i < count($temp_data); $i++) {
+for ($i = 1; $i < $counter; $i++) {
     $diff_x[] = $temp_data[$i]['x'] / $temp_data[$i - 1]['x'] * 100;
 }
 
@@ -343,7 +344,10 @@ if (isset($temp_data[0])) {
 }
 
 //Set sizes in chart data
-for ($i = 1; $i < count($temp_data); $i++) {
+$counter = count($temp_data);
+
+//Set sizes in chart data
+for ($i = 1; $i < $counter; $i++) {
     if ($diff_x[$i - 1] == -1) {
         $size++;
     }
@@ -433,10 +437,8 @@ if (isset($result[0]['SUM(filesize)'])) {
 // Add cache size if requested and known.
 if ($conf['add_cache_to_storage_chart'] && isset($conf['cache_sizes'])) {
     $cache_sizes = unserialize($conf['cache_sizes']);
-    if (isset($cache_sizes)) {
-        if (isset($cache_sizes[0]) && isset($cache_sizes[0]['value'])) {
-            $data_storage['Cache'] = $cache_sizes[0]['value'] / 1024;
-        }
+    if (isset($cache_sizes) && (isset($cache_sizes[0]) && isset($cache_sizes[0]['value']))) {
+        $data_storage['Cache'] = $cache_sizes[0]['value'] / 1024;
     }
 }
 

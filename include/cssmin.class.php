@@ -329,7 +329,7 @@ abstract class aCssToken implements \Stringable
                     }
                 }
             }
-        } foreach ($variables as $mediaType => $null) {
+        } foreach (array_keys($variables) as $mediaType) {
             foreach ($variables[$mediaType] as $variable => $value) {
                 if (stripos(
                     (string) $value,
@@ -475,7 +475,7 @@ abstract class aCssToken implements \Stringable
                 ) === '\\') {
                     $c++;
                     $i--;
-                } if ($c % 2) {
+                } if ($c % 2 !== 0) {
                     return false;
                 }
             } $this->parser->popState();
@@ -518,14 +518,12 @@ abstract class aCssToken implements \Stringable
             $sortRequired = false;
             $lastPropertyName = false;
             foreach ($declarations as $declaration) {
-                if ($lastPropertyName) {
-                    if (strcmp(
-                        $lastPropertyName,
-                        $declaration->Property
-                    ) > 0) {
-                        $sortRequired = true;
-                        break;
-                    }
+                if ($lastPropertyName && strcmp(
+                    $lastPropertyName,
+                    $declaration->Property
+                ) > 0) {
+                    $sortRequired = true;
+                    break;
                 } $lastPropertyName = $declaration->Property;
             } if (! $sortRequired) {
                 continue;
@@ -536,11 +534,7 @@ abstract class aCssToken implements \Stringable
             for ($ii = 0, $ll = count(
                 $declarations
             ) - 1; $ii <= $ll; $ii++) {
-                if ($ii == $ll) {
-                    $declarations[$ii]->IsLast = true;
-                } else {
-                    $declarations[$ii]->IsLast = false;
-                }
+                $declarations[$ii]->IsLast = $ii === $ll;
             } array_splice(
                 $tokens,
                 $startIndex + 1,
@@ -612,7 +606,7 @@ abstract class aCssToken implements \Stringable
                 $this->selectors[] = $this->parser->getAndClearBuffer(
                     ',{'
                 );
-                if ($state == 'T_RULESET::SELECTORS') {
+                if ($state === 'T_RULESET::SELECTORS') {
                     $this->parser->popState();
                 } $this->parser->pushState(
                     'T_RULESET'
@@ -730,7 +724,7 @@ abstract class aCssToken implements \Stringable
                 $tokens[$i] = null;
                 $tokens[$i + 1] = null;
                 $i++;
-                $r = $r + 2;
+                $r += 2;
             }
         } return $r;
     }
@@ -749,7 +743,7 @@ abstract class aCssToken implements \Stringable
                 $tokens[$i] = null;
                 $tokens[$i + 1] = null;
                 $i++;
-                $r = $r + 2;
+                $r += 2;
             }
         } return $r;
     }
@@ -1067,10 +1061,7 @@ abstract class aCssToken implements \Stringable
     public function setState($state)
     {
         $r = array_pop($this->states);
-        array_push(
-            $this->states,
-            $state
-        );
+        $this->states[] = $state;
         $this->state = $this->states[count(
             $this->states
         ) - 1];
@@ -1338,15 +1329,13 @@ abstract class aCssToken implements \Stringable
                 $triggerToken
             )) {
                 for ($ii = 0; $ii < $pluginCount; $ii++) {
-                    if (str_contains(
+                    if ((str_contains(
                         (string) $pluginTriggerTokens[$ii],
                         $triggerToken
-                    ) || $pluginTriggerTokens[$ii] === false) {
-                        if ($plugins[$ii]->apply(
-                            $tokens[$i]
-                        ) === true) {
-                            continue 2;
-                        }
+                    ) || $pluginTriggerTokens[$ii] === false) && $plugins[$ii]->apply(
+                        $tokens[$i]
+                    ) === true) {
+                        continue 2;
                     }
                 }
             }
@@ -1384,9 +1373,10 @@ abstract class aCssToken implements \Stringable
     public static function initialise()
     {
         $paths = [__DIR__];
-        for ($i = 0; $i < count(
+        $counter = count(
             $paths
-        ); $i++) {
+        );
+        for ($i = 0; $i < $counter; $i++) {
             $path = $paths[$i];
             $subDirectorys = glob(
                 $path . '*',
@@ -1551,7 +1541,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                                     $import[$ii]->MediaTypes = $tokens[$i]->MediaTypes;
                                 } elseif (count(
                                     $import[$ii]->MediaTypes > 0
-                                )) {
+                                ) > 0) {
                                     foreach ($import[$ii]->MediaTypes as $index => $mediaType) {
                                         if (! in_array(
                                             $mediaType,
@@ -1587,25 +1577,25 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         } for ($ii = 0, $ll = count(
                             $import
                         ); $ii < $ll; $ii++) {
-                            if ($import[$ii]::class === 'CssAtMediaStartToken') {
-                                if (count(
-                                    $import[$ii]->MediaTypes
-                                ) === 0) {
-                                    for ($iii = $ii; $iii < $ll; $iii++) {
-                                        if ($import[$iii]::class === 'CssAtMediaEndToken') {
-                                            break;
-                                        }
-                                    } if ($import[$iii]::class === 'CssAtMediaEndToken') {
-                                        array_splice(
-                                            $import,
-                                            $ii,
-                                            $iii - $ii + 1,
-                                            []
-                                        );
-                                        $ll = count(
-                                            $import
-                                        );
+                            if ($import[$ii]::class === 'CssAtMediaStartToken' && count(
+                                $import[$ii]->MediaTypes
+                            ) === 0) {
+                                for ($iii = $ii; $iii < $ll; $iii++) {
+                                    if ($import[$iii]::class === 'CssAtMediaEndToken') {
+                                        break;
                                     }
+                                }
+
+                                if ($import[$iii]::class === 'CssAtMediaEndToken') {
+                                    array_splice(
+                                        $import,
+                                        $ii,
+                                        $iii - $ii + 1,
+                                        []
+                                    );
+                                    $ll = count(
+                                        $import
+                                    );
                                 }
                             }
                         } for ($ii = 0, $ll = count(
@@ -1684,6 +1674,8 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                 }
             }
         }
+
+        return null;
     }
 } class CssExpressionParserPlugin extends aCssParserPlugin
 {
@@ -2267,36 +2259,33 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } return $r;
     }
 
-    private static function filter($token)
+    private function filter($token)
     {
-        $r = [
+        return [
             new CssRulesetDeclarationToken('-ms-filter', '"' . $token->Value . '"', $token->MediaTypes),
         ];
-        return $r;
     }
 
-    private static function opacity($token)
+    private function opacity($token)
     {
         $ieValue = (int) ((float) $token->Value * 100);
-        $r = [
+        return [
             new CssRulesetDeclarationToken('-ms-filter', '"alpha(opacity=' . $ieValue . ')"', $token->MediaTypes),
             new CssRulesetDeclarationToken('filter', 'alpha(opacity=' . $ieValue . ')', $token->MediaTypes),
             new CssRulesetDeclarationToken('zoom', '1', $token->MediaTypes),
         ];
-        return $r;
     }
 
-    private static function whiteSpace($token)
+    private function whiteSpace($token)
     {
         if (strtolower($token->Value) === 'pre-wrap') {
-            $r = [
+            return [
                 new CssRulesetDeclarationToken('white-space', '-moz-pre-wrap', $token->MediaTypes),
                 new CssRulesetDeclarationToken('white-space', '-webkit-pre-wrap', $token->MediaTypes),
                 new CssRulesetDeclarationToken('white-space', '-pre-wrap', $token->MediaTypes),
                 new CssRulesetDeclarationToken('white-space', '-o-pre-wrap', $token->MediaTypes),
                 new CssRulesetDeclarationToken('word-wrap', 'break-word', $token->MediaTypes),
             ];
-            return $r;
         }   return [];
     }
 } class CssConvertLevel3AtKeyframesMinifierFilter extends aCssMinifierFilter
@@ -2393,34 +2382,19 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         $saturation,
         $lightness
     ) {
-        $hue = $hue / 360;
-        $saturation = $saturation / 100;
-        $lightness = $lightness / 100;
+        $hue /= 360;
+        $saturation /= 100;
+        $lightness /= 100;
         if ($saturation == 0) {
             $red = $lightness * 255;
             $green = $lightness * 255;
             $blue = $lightness * 255;
         } else {
-            if ($lightness < 0.5) {
-                $v2 = $lightness * (1 + $saturation);
-            } else {
-                $v2 = ($lightness + $saturation) - ($saturation * $lightness);
-            } $v1 = 2 * $lightness - $v2;
-            $red = 255 * self::hue2rgb(
-                $v1,
-                $v2,
-                $hue + (1 / 3)
-            );
-            $green = 255 * self::hue2rgb(
-                $v1,
-                $v2,
-                $hue
-            );
-            $blue = 255 * self::hue2rgb(
-                $v1,
-                $v2,
-                $hue - (1 / 3)
-            );
+            $v2 = $lightness < 0.5 ? $lightness * (1 + $saturation) : ($lightness + $saturation) - ($saturation * $lightness);
+            $v1 = 2 * $lightness - $v2;
+            $red = 255 * self::hue2rgb($v1, $v2, $hue + (1 / 3));
+            $green = 255 * self::hue2rgb($v1, $v2, $hue);
+            $blue = 255 * self::hue2rgb($v1, $v2, $hue - (1 / 3));
         } return '#' . str_pad(
             dechex(round($red)),
             2,
@@ -2585,7 +2559,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
             $value = strtolower(
                 $m[1]
             );
-            if ($value[0] == $value[1] && $value[2] == $value[3] && $value[4] == $value[5]) {
+            if ($value[0] === $value[1] && $value[2] === $value[3] && $value[4] === $value[5]) {
                 $token->Value = str_replace(
                     $m[0],
                     '#' . $value[0] . $value[2] . $value[4],
@@ -2865,7 +2839,7 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
             );
             if (strtolower(
                 substr((string) $value, -10, 10)
-            ) == '!important') {
+            ) === '!important') {
                 $value = trim(
                     substr((string) $value, 0, -10)
                 );
@@ -2898,6 +2872,8 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
 {
 } class CssAtMediaStartToken extends aCssAtBlockStartToken
 {
+    public $MediaTypes;
+
     public function __construct(
         array $mediaTypes = []
     ) {

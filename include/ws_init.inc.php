@@ -9,7 +9,7 @@
 
 defined(
     'PHPWG_ROOT_PATH'
-) or trigger_error(
+) || trigger_error(
     'Hacking attempt!',
     E_USER_ERROR
 );
@@ -26,7 +26,7 @@ if (isset($_GET['format'])) {
     $responseFormat = $_GET['format'];
 }
 
-if (! isset($responseFormat) and isset($requestFormat)) {
+if (! isset($responseFormat) && isset($requestFormat)) {
     $responseFormat = $requestFormat;
 }
 
@@ -34,11 +34,9 @@ $service = new PwgServer();
 
 if ($requestFormat !== null) {
     $handler = null;
-    switch ($requestFormat) {
-        case 'rest':
-            include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php');
-            $handler = new PwgRestRequestHandler();
-            break;
+    if ($requestFormat === 'rest') {
+        include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php');
+        $handler = new PwgRestRequestHandler();
     }
 
     $service->setHandler($requestFormat, $handler);

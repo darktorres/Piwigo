@@ -9,7 +9,7 @@
 
 defined(
     'PHPWG_ROOT_PATH'
-) or die('Hacking attempt!');
+) || die('Hacking attempt!');
 
 $upgrade_description = 'Rename #images.average_rate to ratingscore.';
 include_once(PHPWG_ROOT_PATH . 'include/constants.php');

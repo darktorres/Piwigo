@@ -103,11 +103,9 @@ class Smarty_Internal_TestInstall
                 } else {
                     $errors['template_dir'] = $message;
                 }
-            } else {
-                if ($errors === null) {
-                    echo $template_dir . ' is OK.
+            } elseif ($errors === null) {
+                echo $template_dir . ' is OK.
 ';
-                }
             }
         }
 
@@ -150,11 +148,9 @@ class Smarty_Internal_TestInstall
             } else {
                 $errors['compile_dir'] = $message;
             }
-        } else {
-            if ($errors === null) {
-                echo $_compile_dir . ' is OK.
+        } elseif ($errors === null) {
+            echo $_compile_dir . ' is OK.
 ';
-            }
         }
 
         if ($errors === null) {
@@ -239,11 +235,9 @@ class Smarty_Internal_TestInstall
                     echo $plugin_dir . ' is OK.
 ';
                 }
-            } else {
-                if ($errors === null) {
-                    echo $plugin_dir . ' is OK.
+            } elseif ($errors === null) {
+                echo $plugin_dir . ' is OK.
 ';
-                }
             }
         }
 
@@ -296,11 +290,9 @@ class Smarty_Internal_TestInstall
             } else {
                 $errors['cache_dir'] = $message;
             }
-        } else {
-            if ($errors === null) {
-                echo $_cache_dir . ' is OK.
+        } elseif ($errors === null) {
+            echo $_cache_dir . ' is OK.
 ';
-            }
         }
 
         if ($errors === null) {
@@ -375,11 +367,9 @@ class Smarty_Internal_TestInstall
                 } else {
                     $errors['config_dir'] = $message;
                 }
-            } else {
-                if ($errors === null) {
-                    echo $config_dir . ' is OK.
+            } elseif ($errors === null) {
+                echo $config_dir . ' is OK.
 ';
-                }
             }
         }
 
@@ -551,9 +541,9 @@ class Smarty_Internal_TestInstall
                 }
             }
 
-            if ($expectedSysplugins) {
+            if ($expectedSysplugins !== []) {
                 $status = false;
-                $message = 'FAILED: files missing from libs/sysplugins: ' . join(
+                $message = 'FAILED: files missing from libs/sysplugins: ' . implode(
                     ', ',
                     array_keys($expectedSysplugins)
                 );
@@ -641,9 +631,9 @@ class Smarty_Internal_TestInstall
                 }
             }
 
-            if ($expectedPlugins) {
+            if ($expectedPlugins !== []) {
                 $status = false;
-                $message = 'FAILED: files missing from libs/plugins: ' . join(', ', array_keys($expectedPlugins));
+                $message = 'FAILED: files missing from libs/plugins: ' . implode(', ', array_keys($expectedPlugins));
                 if ($errors === null) {
                     echo $message . ".\n";
                 } else {

@@ -25,12 +25,10 @@ class Smarty_Internal_Runtime_TplFunction
         if (isset($funcParam)) {
             if (! $tpl->caching || ($tpl->caching && $nocache)) {
                 $function = $funcParam['call_name'];
+            } elseif (isset($funcParam['call_name_caching'])) {
+                $function = $funcParam['call_name_caching'];
             } else {
-                if (isset($funcParam['call_name_caching'])) {
-                    $function = $funcParam['call_name_caching'];
-                } else {
-                    $function = $funcParam['call_name'];
-                }
+                $function = $funcParam['call_name'];
             }
 
             if (function_exists($function)) {

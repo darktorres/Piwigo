@@ -66,8 +66,7 @@ class Smarty_Internal_Compile_Break extends Smarty_Internal_CompileBase
             $output .= $foreachCompiler->compileRestore($foreachLevels);
         }
 
-        $output .= sprintf('%s %s;?>', $this->tag, $levels);
-        return $output;
+        return $output . sprintf('%s %s;?>', $this->tag, $levels);
     }
 
     /**

@@ -7,9 +7,9 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-if (isset($conf['session_save_handler'])
-  and ($conf['session_save_handler'] == 'db')
-  and defined('PHPWG_INSTALLED')) {
+if (isset($conf['session_save_handler']) && $conf['session_save_handler'] == 'db' && defined(
+    'PHPWG_INSTALLED'
+)) {
     session_set_save_handler(
         'pwg_session_open',
         'pwg_session_close',

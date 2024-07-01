@@ -26,7 +26,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
     ) {
         $source->filepath = $this->buildFilepath($source, $_template);
         if ($source->filepath !== false) {
-            if (isset($source->smarty->security_policy) && is_object($source->smarty->security_policy)) {
+            if ($source->smarty->security_policy !== null && is_object($source->smarty->security_policy)) {
                 $source->smarty->security_policy->isTrustedResourceDir($source->filepath, $source->isConfig);
             }
 
@@ -171,7 +171,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
                 }
             }
 
-            if (empty($_index_dirs)) {
+            if ($_index_dirs === []) {
                 // index not found
                 return false;
             }

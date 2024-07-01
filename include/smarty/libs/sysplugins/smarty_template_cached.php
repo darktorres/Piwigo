@@ -116,7 +116,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
     ) {
         if ($this->isCached($_template)) {
             if ($_template->smarty->debugging) {
-                if (! isset($_template->smarty->_debug)) {
+                if ($_template->smarty->_debug === null) {
                     $_template->smarty->_debug = new Smarty_Internal_Debug();
                 }
 
@@ -247,11 +247,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
             $this->valid = false;
         }
 
-        if ($this->valid) {
-            $this->processed = true;
-        } else {
-            $this->processed = false;
-        }
+        $this->processed = $this->valid;
     }
 
     /**

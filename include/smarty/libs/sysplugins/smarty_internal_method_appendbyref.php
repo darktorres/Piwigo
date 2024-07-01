@@ -34,11 +34,11 @@ class Smarty_Internal_Method_AppendByRef
             }
 
             if (! is_array($data->tpl_vars[$tpl_var]->value)) {
-                settype($data->tpl_vars[$tpl_var]->value, 'array');
+                $data->tpl_vars[$tpl_var]->value = (array) $data->tpl_vars[$tpl_var]->value;
             }
 
             if ($merge && is_array($value)) {
-                foreach ($value as $_key => $_val) {
+                foreach (array_keys($value) as $_key) {
                     $data->tpl_vars[$tpl_var]->value[$_key] = &$value[$_key];
                 }
             } else {

@@ -48,7 +48,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
 
             $sources[$_s->uid] = $_s;
             $uid .= $_s->filepath;
-            if ($_template !== null) {
+            if ($_template instanceof \Smarty_Internal_Template) {
                 $exists = $exists && $_s->exists;
             }
         }
@@ -57,7 +57,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
         $source->filepath = $_s->filepath;
         $source->uid = sha1($uid . $source->smarty->_joined_template_dir);
         $source->exists = $exists;
-        if ($_template !== null) {
+        if ($_template instanceof \Smarty_Internal_Template) {
             $source->timestamp = $_s->timestamp;
         }
     }

@@ -164,9 +164,7 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
             }
         }
 
-        $output = "<?php echo {$output};?>\n";
-
-        return $output;
+        return "<?php echo {$output};?>\n";
     }
 
     /**

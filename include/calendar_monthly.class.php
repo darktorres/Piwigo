@@ -53,19 +53,26 @@ class CalendarMonthly extends CalendarBase
         if ($view_type == CAL_VIEW_CALENDAR) {
             global $template;
             $tpl_var = [];
-            if (count($page['chronology_date']) == 0) {//case A: no year given - display all years+months
-                if ($this->build_global_calendar($tpl_var)) {
-                    $template->assign('chronology_calendar', $tpl_var);
-                    return true;
-                }
+            //case A: no year given - display all years+months
+            if (count(
+                $page['chronology_date']
+            ) == 0 && $this->build_global_calendar(
+                $tpl_var
+            )) {
+                $template->assign('chronology_calendar', $tpl_var);
+                return true;
             }
 
-            if (count($page['chronology_date']) == 1) {//case B: year given - display all days in given year
-                if ($this->build_year_calendar($tpl_var)) {
-                    $template->assign('chronology_calendar', $tpl_var);
-                    $this->build_nav_bar(CYEAR); // years
-                    return true;
-                }
+            //case B: year given - display all days in given year
+            if (count(
+                $page['chronology_date']
+            ) == 1 && $this->build_year_calendar(
+                $tpl_var
+            )) {
+                $template->assign('chronology_calendar', $tpl_var);
+                $this->build_nav_bar(CYEAR);
+                // years
+                return true;
             }
 
             if (count($page['chronology_date']) == 2) {//case C: year+month given - display a nice month calendar
@@ -78,7 +85,7 @@ class CalendarMonthly extends CalendarBase
             }
         }
 
-        if ($view_type == CAL_VIEW_LIST or count($page['chronology_date']) == 3) {
+        if ($view_type == CAL_VIEW_LIST || count($page['chronology_date']) == 3) {
             if (count($page['chronology_date']) == 0) {
                 $this->build_nav_bar(CYEAR); // years
             }
@@ -121,13 +128,13 @@ class CalendarMonthly extends CalendarBase
         }
 
         $res = '';
-        if (isset($date[CYEAR]) and $date[CYEAR] !== 'any') {
+        if (isset($date[CYEAR]) && $date[CYEAR] !== 'any') {
             $b = $date[CYEAR] . '-';
             $e = $date[CYEAR] . '-';
-            if (isset($date[CMONTH]) and $date[CMONTH] !== 'any') {
+            if (isset($date[CMONTH]) && $date[CMONTH] !== 'any') {
                 $b .= sprintf('%02d-', $date[CMONTH]);
                 $e .= sprintf('%02d-', $date[CMONTH]);
-                if (isset($date[CDAY]) and $date[CDAY] !== 'any') {
+                if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
                     $b .= sprintf('%02d', $date[CDAY]);
                     $e .= sprintf('%02d', $date[CDAY]);
                 } else {
@@ -137,11 +144,11 @@ class CalendarMonthly extends CalendarBase
             } else {
                 $b .= '01-01';
                 $e .= '12-31';
-                if (isset($date[CMONTH]) and $date[CMONTH] !== 'any') {
+                if (isset($date[CMONTH]) && $date[CMONTH] !== 'any') {
                     $res .= ' AND ' . $this->calendar_levels[CMONTH]['sql'] . '=' . $date[CMONTH];
                 }
 
-                if (isset($date[CDAY]) and $date[CDAY] !== 'any') {
+                if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
                     $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
                 }
             }
@@ -149,11 +156,11 @@ class CalendarMonthly extends CalendarBase
             $res = sprintf(" AND %s BETWEEN '%s' AND '%s 23:59:59'", $this->date_field, $b, $e) . $res;
         } else {
             $res = ' AND ' . $this->date_field . ' IS NOT NULL';
-            if (isset($date[CMONTH]) and $date[CMONTH] !== 'any') {
+            if (isset($date[CMONTH]) && $date[CMONTH] !== 'any') {
                 $res .= ' AND ' . $this->calendar_levels[CMONTH]['sql'] . '=' . $date[CMONTH];
             }
 
-            if (isset($date[CDAY]) and $date[CDAY] !== 'any') {
+            if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
                 $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
             }
         }
@@ -187,9 +194,9 @@ class CalendarMonthly extends CalendarBase
             31,
         ];
 
-        if (is_numeric($year) and $month == 2) {
+        if (is_numeric($year) && $month == 2) {
             $nb_days = $md[2];
-            if (($year % 4 == 0) and (($year % 100 != 0) or ($year % 400 != 0))) {
+            if ($year % 4 == 0 && ($year % 100 != 0 || $year % 400 != 0)) {
                 $nb_days++;
             }
         } elseif (is_numeric($month)) {
@@ -369,7 +376,7 @@ class CalendarMonthly extends CalendarBase
             ];
         }
 
-        foreach ($items as $day => $data) {
+        foreach (array_keys($items) as $day) {
             $page['chronology_date'][CDAY] = $day;
             $query = '
   SELECT id, file,representative_ext,path,width,height,rotation, ' . pwg_db_get_dayofweek(
@@ -389,7 +396,7 @@ class CalendarMonthly extends CalendarBase
             $items[$day]['dow'] = $row['dow'];
         }
 
-        if (! empty($items)) {
+        if ($items !== []) {
             [$known_day] = array_keys($items);
             $known_dow = $items[$known_day]['dow'];
             $first_day_dow = ($known_dow - ($known_day - 1)) % 7;
@@ -427,7 +434,7 @@ class CalendarMonthly extends CalendarBase
                 );
                 $day++) {
                 $dow = ($first_day_dow + $day - 1) % 7;
-                if ($dow == 0 and $day != 1) {
+                if ($dow == 0 && $day != 1) {
                     $tpl_weeks[] = $tpl_crt_week; // add finished week to week list
                     $tpl_crt_week = []; // start new week
                 }

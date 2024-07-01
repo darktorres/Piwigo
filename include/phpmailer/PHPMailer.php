@@ -136,6 +136,8 @@ class PHPMailer
      */
     public const STD_LINE_LENGTH = 76;
 
+    public $charSet;
+
     /**
      * Email priority.
      * Options: null (default), 1 = High, 3 = Normal, 5 = low.
@@ -863,11 +865,7 @@ class PHPMailer
     public function isHTML(
         $isHtml = true
     ) {
-        if ($isHtml) {
-            $this->ContentType = static::CONTENT_TYPE_TEXT_HTML;
-        } else {
-            $this->ContentType = static::CONTENT_TYPE_PLAINTEXT;
-        }
+        $this->ContentType = $isHtml ? static::CONTENT_TYPE_TEXT_HTML : static::CONTENT_TYPE_PLAINTEXT;
     }
 
     /**
@@ -893,11 +891,10 @@ class PHPMailer
     {
         $ini_sendmail_path = ini_get('sendmail_path');
 
-        if (stripos($ini_sendmail_path, 'sendmail') === false) {
-            $this->Sendmail = '/usr/sbin/sendmail';
-        } else {
-            $this->Sendmail = $ini_sendmail_path;
-        }
+        $this->Sendmail = stripos(
+            $ini_sendmail_path,
+            'sendmail'
+        ) === false ? '/usr/sbin/sendmail' : $ini_sendmail_path;
 
         $this->Mailer = 'sendmail';
     }
@@ -909,11 +906,10 @@ class PHPMailer
     {
         $ini_sendmail_path = ini_get('sendmail_path');
 
-        if (stripos($ini_sendmail_path, 'qmail') === false) {
-            $this->Sendmail = '/var/qmail/bin/qmail-inject';
-        } else {
-            $this->Sendmail = $ini_sendmail_path;
-        }
+        $this->Sendmail = stripos(
+            $ini_sendmail_path,
+            'qmail'
+        ) === false ? '/var/qmail/bin/qmail-inject' : $ini_sendmail_path;
 
         $this->Mailer = 'qmail';
     }
@@ -1373,7 +1369,7 @@ class PHPMailer
                 'ConfirmReadingTo',
             ] as $address_kind) {
                 $this->{$address_kind} = trim((string) $this->{$address_kind});
-                if (empty($this->{$address_kind})) {
+                if ($this->{$address_kind} === '' || $this->{$address_kind} === '0') {
                     continue;
                 }
 
@@ -1611,11 +1607,9 @@ class PHPMailer
 
             //Do we need the OpenSSL extension?
             $sslext = defined('OPENSSL_ALGO_SHA256');
-            if (static::ENCRYPTION_STARTTLS === $secure || static::ENCRYPTION_SMTPS === $secure) {
-                //Check for an OpenSSL constant rather than using extension_loaded, which is sometimes disabled
-                if (! $sslext) {
-                    throw new Exception($this->lang('extension_missing') . 'openssl', self::STOP_CRITICAL);
-                }
+            //Check for an OpenSSL constant rather than using extension_loaded, which is sometimes disabled
+            if ((static::ENCRYPTION_STARTTLS === $secure || static::ENCRYPTION_SMTPS === $secure) && ! $sslext) {
+                throw new Exception($this->lang('extension_missing') . 'openssl', self::STOP_CRITICAL);
             }
 
             $host = $hostinfo[2];
@@ -1631,11 +1625,7 @@ class PHPMailer
 
             if ($this->smtp->connect($prefix . $host, $port, $this->Timeout, $options)) {
                 try {
-                    if ($this->Helo) {
-                        $hello = $this->Helo;
-                    } else {
-                        $hello = $this->serverHostname();
-                    }
+                    $hello = $this->Helo ?: $this->serverHostname();
 
                     $this->smtp->hello($hello);
                     //Automatically enable TLS encryption if:
@@ -1682,7 +1672,7 @@ class PHPMailer
         //If we get here, all connection attempts have failed, so close connection hard
         $this->smtp->close();
         //As we've caught all exceptions, just report whatever the last one was
-        if ($this->exceptions && $lastexception !== null) {
+        if ($this->exceptions && $lastexception instanceof \PHPMailer\PHPMailer\Exception) {
             throw $lastexception;
         }
 
@@ -1784,7 +1774,7 @@ class PHPMailer
         //There is no English translation file
         if ($langcode !== 'en') {
             $langcodes = [];
-            if (! empty($matches['script']) && ! empty($matches['country'])) {
+            if (! empty($matches['script']) && (isset($matches['country']) && ($matches['country'] !== '' && $matches['country'] !== '0'))) {
                 $langcodes[] = $matches['lang'] . $matches['script'] . $matches['country'];
             }
 
@@ -1912,11 +1902,7 @@ class PHPMailer
         $length,
         $qp_mode = false
     ) {
-        if ($qp_mode) {
-            $soft_break = sprintf(' =%s', static::$LE);
-        } else {
-            $soft_break = static::$LE;
-        }
+        $soft_break = $qp_mode ? sprintf(' =%s', static::$LE) : static::$LE;
 
         //If utf-8 encoding is used, we will need to make sure we don't
         //split multibyte characters when we wrap
@@ -2169,7 +2155,7 @@ class PHPMailer
             );
         } else {
             $myXmailer = trim((string) $this->XMailer);
-            if ($myXmailer) {
+            if ($myXmailer !== '' && $myXmailer !== '0') {
                 $result .= $this->headerLine('X-Mailer', $myXmailer);
             }
         }
@@ -2759,22 +2745,14 @@ class PHPMailer
                 break;
         }
 
-        if ($this->has8bitChars($str)) {
-            $charset = $this->CharSet;
-        } else {
-            $charset = static::CHARSET_ASCII;
-        }
+        $charset = $this->has8bitChars($str) ? $this->CharSet : static::CHARSET_ASCII;
 
         //Q/B encoding adds 8 chars and the charset ("` =?<charset>?[QB]?<content>?=`").
         $overhead = 8 + strlen(
             (string) $charset
         );
 
-        if ($this->Mailer === 'mail') {
-            $maxlen = static::MAIL_MAX_LINE_LENGTH - $overhead;
-        } else {
-            $maxlen = static::MAX_LINE_LENGTH - $overhead;
-        }
+        $maxlen = $this->Mailer === 'mail' ? static::MAIL_MAX_LINE_LENGTH - $overhead : static::MAX_LINE_LENGTH - $overhead;
 
         //Select the encoding that produces the shortest output and/or prevents corruption.
         if ($matchcount > strlen(
@@ -3344,12 +3322,8 @@ class PHPMailer
             return filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
         }
 
-        if (filter_var('http://' . $host, FILTER_VALIDATE_URL) !== false) {
-            //Is it a syntactically valid hostname?
-            return true;
-        }
-
-        return false;
+        //Is it a syntactically valid hostname?
+        return filter_var('http://' . $host, FILTER_VALIDATE_URL) !== false;
     }
 
     /**
@@ -3382,7 +3356,7 @@ class PHPMailer
         $name = trim($name);
         $value = ($value === null) ? '' : trim($value);
         //Ensure name is not empty, and that neither name nor value contain line breaks
-        if (empty($name) || strpbrk(
+        if ($name === '' || $name === '0' || strpbrk(
             $name . $value,
             "\r\n"
         ) !== false) {
@@ -3948,9 +3922,9 @@ class PHPMailer
             return '';
         }
 
-        $privKeyStr = ! empty($this->DKIM_private_string) ?
-            $this->DKIM_private_string :
-            file_get_contents($this->DKIM_private);
+        $privKeyStr = empty($this->DKIM_private_string) ?
+            file_get_contents($this->DKIM_private) :
+            $this->DKIM_private_string;
         if ($this->DKIM_passphrase !== '') {
             $privKey = openssl_pkey_get_private($privKeyStr, $this->DKIM_passphrase);
         } else {
@@ -4218,8 +4192,7 @@ class PHPMailer
         //The DKIM-Signature header is included in the signature *except for* the value of the `b` tag
         //which is appended after calculating the signature
         //https://tools.ietf.org/html/rfc6376#section-3.5
-        $dkimSignatureHeader = 'DKIM-Signature: v=1;' .
-            ' d=' . $this->DKIM_domain . ';' .
+        $dkimSignatureHeader = 'DKIM-Signature: v=1; d=' . $this->DKIM_domain . ';' .
             ' s=' . $this->DKIM_selector . ';' . static::$LE .
             ' a=' . $DKIMsignatureType . ';' .
             ' q=' . $DKIMquery . ';' .
@@ -4567,9 +4540,13 @@ class PHPMailer
         //Sendmail docs: http://www.sendmail.org/~ca/email/man/sendmail.html
         //Qmail docs: http://www.qmail.org/man/man8/qmail-inject.html
         //Example problem: https://www.drupal.org/node/1057954
-        if (empty($this->Sender) && ! empty(ini_get(
+        if (empty($this->Sender) && ! (ini_get(
             'sendmail_from'
-        ))) {
+        ) === '' || ini_get(
+            'sendmail_from'
+        ) === '0' || ini_get(
+            'sendmail_from'
+        ) === false)) {
             //PHP config has a sender address we can use
             $this->Sender = ini_get('sendmail_from');
         }
@@ -4580,11 +4557,7 @@ class PHPMailer
         ) && self::isShellSafe(
             $this->Sender
         )) {
-            if ($this->Mailer === 'qmail') {
-                $sendmailFmt = '%s -f%s';
-            } else {
-                $sendmailFmt = '%s -oi -f%s -t';
-            }
+            $sendmailFmt = $this->Mailer === 'qmail' ? '%s -f%s' : '%s -oi -f%s -t';
         } else {
             //allow sendmail to choose a default envelope sender. It may
             //seem preferable to force it to use the From header as with
@@ -4775,9 +4748,13 @@ class PHPMailer
         //Qmail docs: http://www.qmail.org/man/man8/qmail-inject.html
         //Example problem: https://www.drupal.org/node/1057954
         //CVE-2016-10033, CVE-2016-10045: Don't pass -f if characters will be escaped.
-        if (empty($this->Sender) && ! empty(ini_get(
+        if (empty($this->Sender) && ! (ini_get(
             'sendmail_from'
-        ))) {
+        ) === '' || ini_get(
+            'sendmail_from'
+        ) === '0' || ini_get(
+            'sendmail_from'
+        ) === false)) {
             //PHP config has a sender address we can use
             $this->Sender = ini_get('sendmail_from');
         }
@@ -4847,11 +4824,7 @@ class PHPMailer
         }
 
         //Sender already validated in preSend()
-        if ($this->Sender === '') {
-            $smtp_from = $this->From;
-        } else {
-            $smtp_from = $this->Sender;
-        }
+        $smtp_from = $this->Sender === '' ? $this->From : $this->Sender;
 
         if (! $this->smtp->mail($smtp_from)) {
             $this->setError($this->lang('from_failed') . $smtp_from . ' : ' . implode(',', $this->smtp->getError()));
@@ -5003,9 +4976,7 @@ class PHPMailer
             $result .= $this->headerLine('Content-Transfer-Encoding', $encoding);
         }
 
-        $result .= static::$LE;
-
-        return $result;
+        return $result . static::$LE;
     }
 
     /**
@@ -5124,7 +5095,7 @@ class PHPMailer
                 }
 
                 //Allow for bypassing the Content-Disposition header
-                if (! empty($disposition)) {
+                if ($disposition !== '' && $disposition !== '0') {
                     $encoded_name = $this->encodeHeader($this->secureHeader($name));
                     if (! empty($encoded_name)) {
                         $mime[] = sprintf(
@@ -5145,11 +5116,13 @@ class PHPMailer
                 }
 
                 //Encode as string attachment
-                if ($bString) {
-                    $mime[] = $this->encodeString($string, $encoding);
-                } else {
-                    $mime[] = $this->encodeFile($path, $encoding);
-                }
+                $mime[] = $bString ? $this->encodeString(
+                    $string,
+                    $encoding
+                ) : $this->encodeFile(
+                    $path,
+                    $encoding
+                );
 
                 if ($this->isError()) {
                     return '';
@@ -5187,9 +5160,7 @@ class PHPMailer
                 throw new Exception($this->lang('file_open') . $path, self::STOP_CONTINUE);
             }
 
-            $file_buffer = $this->encodeString($file_buffer, $encoding);
-
-            return $file_buffer;
+            return $this->encodeString($file_buffer, $encoding);
         } catch (Exception $exception) {
             $this->setError($exception->getMessage());
             $this->edebug($exception->getMessage());

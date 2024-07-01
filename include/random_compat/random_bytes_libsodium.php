@@ -70,10 +70,8 @@ function random_bytes(
         $buf = \Sodium\randombytes_buf($bytes);
     }
 
-    if ($buf !== false) {
-        if (RandomCompat_strlen($buf) === $bytes) {
-            return $buf;
-        }
+    if ($buf !== false && RandomCompat_strlen($buf) === $bytes) {
+        return $buf;
     }
 
     /**

@@ -47,20 +47,18 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
                 switch ($type) {
                     case 1:
                         // registered modifier
-                        if (isset($compiler->smarty->registered_plugins[Smarty::PLUGIN_MODIFIER][$modifier])) {
-                            if (is_callable(
-                                $compiler->smarty->registered_plugins[Smarty::PLUGIN_MODIFIER][$modifier][0]
-                            )) {
-                                $output =
-                                    sprintf(
-                                        'call_user_func_array($_smarty_tpl->registered_plugins[ \'%s\' ][ %s ][ 0 ], array( %s ))',
-                                        Smarty::PLUGIN_MODIFIER,
-                                        var_export($modifier, true),
-                                        $params
-                                    );
-                                $compiler->known_modifier_type[$modifier] = $type;
-                                break 2;
-                            }
+                        if (isset($compiler->smarty->registered_plugins[Smarty::PLUGIN_MODIFIER][$modifier]) && is_callable(
+                            $compiler->smarty->registered_plugins[Smarty::PLUGIN_MODIFIER][$modifier][0]
+                        )) {
+                            $output =
+                                sprintf(
+                                    'call_user_func_array($_smarty_tpl->registered_plugins[ \'%s\' ][ %s ][ 0 ], array( %s ))',
+                                    Smarty::PLUGIN_MODIFIER,
+                                    var_export($modifier, true),
+                                    $params
+                                );
+                            $compiler->known_modifier_type[$modifier] = $type;
+                            break 2;
                         }
 
                         break;
@@ -145,12 +143,10 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
                             ) {
                                 if (! is_array($function)) {
                                     $output = sprintf('%s(%s)', $function, $params);
+                                } elseif (is_object($function[0])) {
+                                    $output = $function[0] . '->' . $function[1] . '(' . $params . ')';
                                 } else {
-                                    if (is_object($function[0])) {
-                                        $output = $function[0] . '->' . $function[1] . '(' . $params . ')';
-                                    } else {
-                                        $output = $function[0] . '::' . $function[1] . '(' . $params . ')';
-                                    }
+                                    $output = $function[0] . '::' . $function[1] . '(' . $params . ')';
                                 }
                             }
 

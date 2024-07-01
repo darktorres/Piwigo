@@ -237,14 +237,14 @@ abstract class Smarty_Resource
         $isConfig = false
     ) {
         if ($isConfig) {
-            if (! isset($smarty->_joined_config_dir)) {
+            if ($smarty->_joined_config_dir === null) {
                 $smarty->getTemplateDir(null, true);
             }
 
             return static::class . '#' . $smarty->_joined_config_dir . '#' . $resource_name;
         }
 
-        if (! isset($smarty->_joined_template_dir)) {
+        if ($smarty->_joined_template_dir === null) {
             $smarty->getTemplateDir();
         }
 

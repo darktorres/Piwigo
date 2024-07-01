@@ -154,9 +154,9 @@ function smarty_function_html_options(
         }
     }
 
-    if (! empty($name)) {
-        $_html_class = ! empty($class) ? ' class="' . $class . '"' : '';
-        $_html_id = ! empty($id) ? ' id="' . $id . '"' : '';
+    if ($name !== null) {
+        $_html_class = $class === null ? '' : ' class="' . $class . '"';
+        $_html_id = $id === null ? '' : ' id="' . $id . '"';
         $_html_result =
             '<select name="' . $name . '"' . $_html_class . $_html_id . $extra . '>' . "\n" . $_html_result .
             '</select>' . "\n";
@@ -187,8 +187,8 @@ function smarty_function_html_options_optoutput(
             $_html_result .= ' selected="selected"';
         }
 
-        $_html_class = ! empty($class) ? ' class="' . $class . ' option"' : '';
-        $_html_id = ! empty($id) ? ' id="' . $id . '-' . $idx . '"' : '';
+        $_html_class = empty($class) ? '' : ' class="' . $class . ' option"';
+        $_html_id = empty($id) ? '' : ' id="' . $id . '-' . $idx . '"';
         if (is_object($value)) {
             if (method_exists($value, '__toString')) {
                 $value = smarty_function_escape_special_chars((string) $value->__toString());
@@ -213,7 +213,7 @@ function smarty_function_html_options_optoutput(
                 $key,
                 $value,
                 $selected,
-                ! empty($id) ? ($id . '-' . $idx) : null,
+                empty($id) ? (null) : $id . '-' . $idx,
                 $class,
                 $_idx
             );
@@ -239,6 +239,5 @@ function smarty_function_html_options_optgroup(
         $optgroup_html .= smarty_function_html_options_optoutput($key, $value, $selected, $id, $class, $idx);
     }
 
-    $optgroup_html .= "</optgroup>\n";
-    return $optgroup_html;
+    return $optgroup_html . "</optgroup>\n";
 }

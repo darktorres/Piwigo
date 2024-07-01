@@ -109,7 +109,7 @@ $test_get = $_GET;
 unset($test_get['page']);
 unset($test_get['section']);
 unset($test_get['tag']);
-if (count($test_get) == 0 and ! empty($_SERVER['QUERY_STRING'])) {
+if (count($test_get) == 0 && ! empty($_SERVER['QUERY_STRING'])) {
     $change_theme_url .= str_replace('&', '&amp;', $_SERVER['QUERY_STRING']) . '&amp;';
 }
 
@@ -117,7 +117,7 @@ $change_theme_url .= 'change_theme=1';
 
 // ?page=plugin-community-pendings is an clean alias of
 // ?page=plugin&section=community/admin.php&tab=pendings
-if (isset($_GET['page']) and preg_match(
+if (isset($_GET['page']) && preg_match(
     '/^plugin-([^-]*)(?:-(.*))?$/',
     (string) $_GET['page'],
     $matches
@@ -136,7 +136,7 @@ if (isset($_GET['page']) and preg_match(
 
 // ?page=album-134-properties is an clean alias of
 // ?page=album&cat_id=134&tab=properties
-if (isset($_GET['page']) and preg_match(
+if (isset($_GET['page']) && preg_match(
     '/^album-(\d+)(?:-(.*))?$/',
     (string) $_GET['page'],
     $matches
@@ -150,7 +150,7 @@ if (isset($_GET['page']) and preg_match(
 
 // ?page=photo-1234-properties is an clean alias of
 // ?page=photo&image_id=1234&tab=properties
-if (isset($_GET['page']) and preg_match(
+if (isset($_GET['page']) && preg_match(
     '/^photo-(\d+)(?:-(.*))?$/',
     (string) $_GET['page'],
     $matches
@@ -162,9 +162,9 @@ if (isset($_GET['page']) and preg_match(
     }
 }
 
-if (isset($_GET['page'])
-    and preg_match('/^[a-z_]*$/', (string) $_GET['page'])
-    and is_file(PHPWG_ROOT_PATH . 'admin/' . $_GET['page'] . '.php')) {
+if (isset($_GET['page']) && preg_match('/^[a-z_]*$/', (string) $_GET['page']) && is_file(
+    PHPWG_ROOT_PATH . 'admin/' . $_GET['page'] . '.php'
+)) {
     $page['page'] = $_GET['page'];
 } else {
     $page['page'] = 'intro';
@@ -313,8 +313,7 @@ if (
             'site_manager', // delete site
             'site_update',  // ?only POST
         ]
-    )
-    or (! empty($_POST) and in_array(
+    ) || $_POST !== [] && in_array(
         $page['page'],
         [
             'album',        // public/private; lock/unlock, permissions
@@ -323,7 +322,6 @@ if (
             'user_list',    // group assoc; user level
             'user_perm',
         ]
-    )
     )
 ) {
     invalidate_user_cache();

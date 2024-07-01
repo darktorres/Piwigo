@@ -50,7 +50,7 @@ if (! in_array(
     $is_inserted = false;
 
     foreach ($items_number as $number) {
-        if ($number > $conf['comments_page_nb_comments'] or ($number == 'all' and ! $is_inserted)) {
+        if ($number > $conf['comments_page_nb_comments'] || $number == 'all' && ! $is_inserted) {
             $items_number_new[] = $conf['comments_page_nb_comments'];
             $is_inserted = true;
         }
@@ -84,17 +84,13 @@ $since_options = [
 
 trigger_notify('loc_begin_comments');
 
-if (! empty($_GET['since'])) {
-    $page['since'] = intval($_GET['since']);
-} else {
-    $page['since'] = 4;
-}
+$page['since'] = empty($_GET['since']) ? 4 : intval($_GET['since']);
 
 // on which field sorting
 //
 $page['sort_by'] = 'date';
 // if the form was submitted, it overloads default behaviour
-if (isset($_GET['sort_by']) and isset($sort_by[$_GET['sort_by']])) {
+if (isset($_GET['sort_by']) && isset($sort_by[$_GET['sort_by']])) {
     $page['sort_by'] = $_GET['sort_by'];
 }
 
@@ -102,7 +98,7 @@ if (isset($_GET['sort_by']) and isset($sort_by[$_GET['sort_by']])) {
 //
 $page['sort_order'] = 'DESC';
 // if the form was submitted, it overloads default behaviour
-if (isset($_GET['sort_order']) and isset($sort_order[$_GET['sort_order']])) {
+if (isset($_GET['sort_order']) && isset($sort_order[$_GET['sort_order']])) {
     $page['sort_order'] = $_GET['sort_order'];
 }
 
@@ -113,14 +109,14 @@ if (isset($_GET['items_number'])) {
     $page['items_number'] = $_GET['items_number'];
 }
 
-if (! is_numeric($page['items_number']) and $page['items_number'] != 'all') {
+if (! is_numeric($page['items_number']) && $page['items_number'] != 'all') {
     $page['items_number'] = 10;
 }
 
 $page['where_clauses'] = [];
 
 // which category to filter on ?
-if (isset($_GET['cat']) and $_GET['cat'] != 0) {
+if (isset($_GET['cat']) && $_GET['cat'] != 0) {
     check_input_parameter('cat', $_GET, false, PATTERN_ID);
 
     $category_ids = get_subcat_ids([$_GET['cat']]);
@@ -210,19 +206,19 @@ if (isset($action)) {
     if (can_manage_comment($action, $comment_author_id)) {
         $perform_redirect = false;
 
-        if ($action == 'delete') {
+        if ($action === 'delete') {
             check_pwg_token();
             delete_user_comment($comment_id);
             $perform_redirect = true;
         }
 
-        if ($action == 'validate') {
+        if ($action === 'validate') {
             check_pwg_token();
             validate_user_comment($comment_id);
             $perform_redirect = true;
         }
 
-        if ($action == 'edit') {
+        if ($action === 'edit') {
             if (! empty($_POST['content'])) {
                 check_pwg_token();
                 $comment_action = update_user_comment(
@@ -334,11 +330,9 @@ $template->assign('item_number_options_selected', $page['items_number']);
 // |                            navigation bar                             |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['start'])) {
-    $start = intval($_GET['start']);
-} else {
-    $start = 0;
-}
+$start = isset($_GET['start']) ? intval(
+    $_GET['start']
+) : 0;
 
 // +-----------------------------------------------------------------------+
 // |                        last comments display                          |
@@ -472,7 +466,7 @@ SELECT *
                 ]
             );
 
-            if (isset($edit_comment) and ($comment['comment_id'] == $edit_comment)) {
+            if (isset($edit_comment) && $comment['comment_id'] == $edit_comment) {
                 $tpl_comment['IN_EDIT'] = true;
                 $key = get_ephemeral_key(2, $comment['image_id']);
                 $tpl_comment['KEY'] = $key;
@@ -483,16 +477,14 @@ SELECT *
             }
         }
 
-        if (can_manage_comment('validate', $comment['author_id'])) {
-            if ($comment['validated'] != 'true') {
-                $tpl_comment['U_VALIDATE'] = add_url_params(
-                    $url_self,
-                    [
-                        'validate' => $comment['comment_id'],
-                        'pwg_token' => get_pwg_token(),
-                    ]
-                );
-            }
+        if (can_manage_comment('validate', $comment['author_id']) && $comment['validated'] != 'true') {
+            $tpl_comment['U_VALIDATE'] = add_url_params(
+                $url_self,
+                [
+                    'validate' => $comment['comment_id'],
+                    'pwg_token' => get_pwg_token(),
+                ]
+            );
         }
 
         $template->append('comments', $tpl_comment);
@@ -504,7 +496,7 @@ $template->assign('comment_derivative_params', $derivative_params);
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theCommentsPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theCommentsPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 

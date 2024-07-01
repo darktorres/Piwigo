@@ -112,7 +112,7 @@ class Smarty_Internal_Runtime_Inheritance
         $func = null
     ) {
         --$this->inheritanceLevel;
-        if (! $this->inheritanceLevel) {
+        if ($this->inheritanceLevel === 0) {
             ob_end_clean();
             $this->state = 2;
         }
@@ -175,11 +175,11 @@ class Smarty_Internal_Runtime_Inheritance
         Smarty_Internal_Block $block,
         Smarty_Internal_Block $parent = null
     ) {
-        if ($block->hide && ! isset($block->child)) {
+        if ($block->hide && $block->child === null) {
             return;
         }
 
-        if (isset($block->child) && $block->child->hide && ! isset($block->child->child)) {
+        if ($block->child !== null && $block->child->hide && ! isset($block->child->child)) {
             $block->child = null;
         }
 
@@ -188,7 +188,7 @@ class Smarty_Internal_Runtime_Inheritance
             $this->callParent($tpl, $block, "'{block append}'");
         }
 
-        if ($block->callsChild || ! isset($block->child) || ($block->child->hide && ! isset($block->child->child))) {
+        if ($block->callsChild || $block->child === null || ($block->child->hide && ! isset($block->child->child))) {
             $this->callBlock($block, $tpl);
         } else {
             $this->process($tpl, $block->child, $block);
@@ -197,7 +197,7 @@ class Smarty_Internal_Runtime_Inheritance
         if ($block->prepend && isset($parent)) {
             $this->callParent($tpl, $block, '{block prepend}');
             if ($block->append) {
-                if ($block->callsChild || ! isset($block->child)
+                if ($block->callsChild || $block->child === null
                     || ($block->child->hide && ! isset($block->child->child))
                 ) {
                     $this->callBlock($block, $tpl);
@@ -219,7 +219,7 @@ class Smarty_Internal_Runtime_Inheritance
         Smarty_Internal_Template $tpl,
         Smarty_Internal_Block $block
     ) {
-        if (isset($block->child)) {
+        if ($block->child !== null) {
             $this->process($tpl, $block->child, $block);
         }
     }
@@ -236,7 +236,7 @@ class Smarty_Internal_Runtime_Inheritance
         Smarty_Internal_Block $block,
         $tag
     ) {
-        if (isset($block->parent)) {
+        if ($block->parent !== null) {
             $this->callBlock($block->parent, $tpl);
         } else {
             throw new SmartyException(

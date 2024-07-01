@@ -47,11 +47,7 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
     ) {
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
-            if (is_int($_key)) {
-                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
-            } else {
-                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
-            }
+            $_paramsArray[] = is_int($_key) ? sprintf('%d=>%s', $_key, $_value) : sprintf("'%s'=>%s", $_key, $_value);
         }
 
         return [$function, $_paramsArray, null];
@@ -98,7 +94,7 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
             $output .= "\$_block_repeat=true;\necho {$callback}({$_params}, null, \$_smarty_tpl, \$_block_repeat);\nwhile (\$_block_repeat) {\nob_start();?>";
             $this->openTag($compiler, $tag, [$_params, $compiler->nocache, $callback]);
             // maybe nocache because of nocache variables or nocache plugin
-            $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
+            $compiler->nocache |= $compiler->tag_nocache;
         } else {
             // must endblock be nocache?
             if ($compiler->nocache) {

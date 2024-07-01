@@ -78,9 +78,9 @@ final class ImageRect
      * @var int
      * @var int
      */
-    public $l;
+    public $l = 0;
 
-    public $t;
+    public $t = 0;
 
     public $r;
 
@@ -92,8 +92,6 @@ final class ImageRect
     public function __construct(
         $l
     ) {
-        $this->l = 0;
-        $this->t = 0;
         $this->r = $l[0];
         $this->b = $l[1];
     }
@@ -396,12 +394,7 @@ final class DerivativeParams
     public function is_identity(
         $in_size
     ) {
-        if ($in_size[0] > $this->sizing->ideal_size[0] or
-            $in_size[1] > $this->sizing->ideal_size[1]) {
-            return false;
-        }
-
-        return true;
+        return $in_size[0] <= $this->sizing->ideal_size[0] && $in_size[1] <= $this->sizing->ideal_size[1];
     }
 
     /**

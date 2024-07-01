@@ -62,11 +62,7 @@ abstract class CalendarBase
         $inner_sql
     ) {
         global $page;
-        if ($page['chronology_field'] == 'posted') {
-            $this->date_field = 'date_available';
-        } else {
-            $this->date_field = 'date_creation';
-        }
+        $this->date_field = $page['chronology_field'] == 'posted' ? 'date_available' : 'date_creation';
 
         $this->inner_sql = $inner_sql;
     }
@@ -80,8 +76,9 @@ abstract class CalendarBase
     {
         global $conf, $page;
         $res = '';
+        $counter = count($page['chronology_date']);
 
-        for ($i = 0; $i < count($page['chronology_date']); $i++) {
+        for ($i = 0; $i < $counter; $i++) {
             $res .= $conf['level_separator'];
             if (isset($page['chronology_date'][$i + 1])) {
                 $chronology_date = array_slice($page['chronology_date'], 0, $i + 1);
@@ -139,7 +136,7 @@ abstract class CalendarBase
         for ($i = count($date_components) - 1; $i >= 0; $i--) {
             if ($date_components[$i] !== 'any') {
                 $label = $this->get_date_component_label($i, $date_components[$i]);
-                if ($res != '') {
+                if ($res !== '') {
                     $res .= ' ';
                 }
 
@@ -171,8 +168,8 @@ abstract class CalendarBase
 
         $nav_bar_datas = [];
 
-        if ($conf['calendar_show_empty'] and $show_empty and ! empty($labels)) {
-            foreach ($labels as $item => $label) {
+        if ($conf['calendar_show_empty'] && $show_empty && ! empty($labels)) {
+            foreach (array_keys($labels) as $item) {
                 if (! isset($items[$item])) {
                     $items[$item] = -1;
                 }
@@ -212,8 +209,9 @@ abstract class CalendarBase
 
         }
 
-        if ($conf['calendar_show_any'] and $show_any and count($items) > 1 and
-              count($date_components) < count($this->calendar_levels) - 1) {
+        if ($conf['calendar_show_any'] && $show_any && count($items) > 1 && count($date_components) < count(
+            $this->calendar_levels
+        ) - 1) {
             $url = duplicate_index_url(
                 [
                     'chronology_date' => array_merge($date_components, ['any']),
@@ -249,16 +247,13 @@ $this->get_date_where($level) . '
 
         $level_items = query2array($query, 'period', 'nb_images');
 
-        if (count($level_items) == 1 and
-             count($page['chronology_date']) < count($this->calendar_levels) - 1) {
-            if (! isset($page['chronology_date'][$level])) {
-                [$key] = array_keys($level_items);
-                $page['chronology_date'][$level] = (int) $key;
-
-                if ($level < count($page['chronology_date']) and
-                     $level != count($this->calendar_levels) - 1) {
-                    return;
-                }
+        if ((count($level_items) == 1 && count($page['chronology_date']) < count(
+            $this->calendar_levels
+        ) - 1) && ! isset($page['chronology_date'][$level])) {
+            [$key] = array_keys($level_items);
+            $page['chronology_date'][$level] = (int) $key;
+            if ($level < count($page['chronology_date']) && $level != count($this->calendar_levels) - 1) {
+                return;
             }
         }
 
@@ -359,7 +354,7 @@ GROUP BY period';
         if (! empty($tpl_var)) {
             $existing = $template->smarty->getTemplateVars('chronology_navigation_bars');
             if (! empty($existing)) {
-                $existing[sizeof($existing) - 1] = array_merge($existing[sizeof($existing) - 1], $tpl_var);
+                $existing[count($existing) - 1] = array_merge($existing[count($existing) - 1], $tpl_var);
                 $template->assign('chronology_navigation_bars', $existing);
             } else {
                 $template->append('chronology_navigation_bars', $tpl_var);

@@ -89,10 +89,8 @@ class Smarty_Internal_Runtime_CacheResourceFile
                     $_parts = explode($_dir_sep, str_replace('\\', '/', substr($_filepath, $_dir_length)));
                     $_parts_count = count($_parts);
                     // check name
-                    if (isset($resource_name)) {
-                        if ($_parts[$_parts_count - 1] !== $_resourcename_parts) {
-                            continue;
-                        }
+                    if (isset($resource_name) && $_parts[$_parts_count - 1] !== $_resourcename_parts) {
+                        continue;
                     }
 
                     // check compile id
@@ -126,10 +124,8 @@ class Smarty_Internal_Runtime_CacheResourceFile
                                 if ($_time < (filemtime($_filepath) + $match[1])) {
                                     continue;
                                 }
-                            } else {
-                                if ($_time - filemtime($_filepath) < $exp_time) {
-                                    continue;
-                                }
+                            } elseif ($_time - filemtime($_filepath) < $exp_time) {
+                                continue;
                             }
                         }
 

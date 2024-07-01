@@ -47,7 +47,7 @@ class Smarty_Internal_Runtime_Foreach
                     $total = $this->count($from);
                 }
             } else {
-                settype($from, 'array');
+                $from = (array) $from;
             }
         }
 
@@ -65,17 +65,15 @@ class Smarty_Internal_Runtime_Foreach
         $tpl->tpl_vars[$item] = new Smarty_Variable(null, $tpl->isRenderingCache);
         if ($total === 0) {
             $from = null;
-        } else {
-            if ($key) {
-                if (isset($tpl->tpl_vars[$key])) {
-                    $saveVars['key'] = [
-                        $key,
-                        $tpl->tpl_vars[$key],
-                    ];
-                }
-
-                $tpl->tpl_vars[$key] = new Smarty_Variable(null, $tpl->isRenderingCache);
+        } elseif ($key) {
+            if (isset($tpl->tpl_vars[$key])) {
+                $saveVars['key'] = [
+                    $key,
+                    $tpl->tpl_vars[$key],
+                ];
             }
+
+            $tpl->tpl_vars[$key] = new Smarty_Variable(null, $tpl->isRenderingCache);
         }
 
         if ($needTotal) {

@@ -96,7 +96,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
             ]
         );
         $compiler->saveRequiredPlugins(true);
-        $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
+        $compiler->nocache |= $compiler->tag_nocache;
         $compiler->parser->current_buffer = new Smarty_Internal_ParseTree_Template();
         $compiler->template->compiled->has_nocache_code = false;
         $compiler->suppressNocacheProcessing = true;
@@ -130,7 +130,7 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_Compile_Shared_
         $_assign = $_attr['assign'] ?? null;
         unset($_attr['assign'], $_attr['name']);
         foreach ($_attr as $name => $stat) {
-            if ((is_bool($stat) && $stat !== false) || (! is_bool($stat) && $stat !== 'false')) {
+            if ((is_bool($stat) && $stat) || (! is_bool($stat) && $stat !== 'false')) {
                 $_block[$name] = 'true';
             }
         }

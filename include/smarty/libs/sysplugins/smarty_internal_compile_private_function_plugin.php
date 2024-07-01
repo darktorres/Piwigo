@@ -55,11 +55,7 @@ class Smarty_Internal_Compile_Private_Function_Plugin extends Smarty_Internal_Co
         // convert attributes into parameter array string
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
-            if (is_int($_key)) {
-                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
-            } else {
-                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
-            }
+            $_paramsArray[] = is_int($_key) ? sprintf('%d=>%s', $_key, $_value) : sprintf("'%s'=>%s", $_key, $_value);
         }
 
         $_params = 'array(' . implode(',', $_paramsArray) . ')';
@@ -76,7 +72,6 @@ class Smarty_Internal_Compile_Private_Function_Plugin extends Smarty_Internal_Co
             );
         }
 
-        $output = "<?php echo {$output};?>\n";
-        return $output;
+        return "<?php echo {$output};?>\n";
     }
 }

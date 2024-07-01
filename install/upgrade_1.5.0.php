@@ -11,7 +11,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('This page cannot be loaded directly, load upgrade.php');
 }
 
-if (! defined('PHPWG_IN_UPGRADE') or ! PHPWG_IN_UPGRADE) {
+if (! defined('PHPWG_IN_UPGRADE') || ! PHPWG_IN_UPGRADE) {
     die('Hacking attempt!');
 }
 
@@ -69,26 +69,20 @@ SELECT id, keywords
                 $tag_images[$tag_id[$keyword]] = [];
             }
 
-            array_push(
-                $tag_images[$tag_id[$keyword]],
-                $row['id']
-            );
+            $tag_images[$tag_id[$keyword]][] = $row['id'];
         }
     }
 
     $datas = [];
     foreach ($tag_id as $tag_name => $tag_id) {
-        array_push(
-            $datas,
-            [
-                'id' => $tag_id,
-                'name' => $tag_name,
-                'url_name' => str2url($tag_name),
-            ]
-        );
+        $datas[] = [
+            'id' => $tag_id,
+            'name' => $tag_name,
+            'url_name' => str2url($tag_name),
+        ];
     }
 
-    if (! empty($datas)) {
+    if ($datas !== []) {
         mass_inserts(
             PREFIX_TABLE . 'tags',
             array_keys($datas[0]),
@@ -99,17 +93,14 @@ SELECT id, keywords
     $datas = [];
     foreach ($tag_images as $tag_id => $images) {
         foreach (array_unique($images) as $image_id) {
-            array_push(
-                $datas,
-                [
-                    'tag_id' => $tag_id,
-                    'image_id' => $image_id,
-                ]
-            );
+            $datas[] = [
+                'tag_id' => $tag_id,
+                'image_id' => $image_id,
+            ];
         }
     }
 
-    if (! empty($datas)) {
+    if ($datas !== []) {
         mass_inserts(
             PREFIX_TABLE . 'image_tag',
             array_keys($datas[0]),
@@ -307,11 +298,11 @@ if (isset($conf['gallery_url'])) {
     $params['gallery_url'][0] = $conf['gallery_url'];
 }
 
-if (isset($conf['rate']) and is_bool($conf['rate'])) {
+if (isset($conf['rate']) && is_bool($conf['rate'])) {
     $params['rate'][0] = $conf['rate'] ? 'true' : 'false';
 }
 
-if (isset($conf['rate_anonymous']) and is_bool($conf['rate_anonymous'])) {
+if (isset($conf['rate_anonymous']) && is_bool($conf['rate_anonymous'])) {
     $params['rate_anonymous'][0] = $conf['rate_anonymous'] ? 'true' : 'false';
 }
 

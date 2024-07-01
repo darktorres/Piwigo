@@ -165,7 +165,9 @@ function remove_event_handler(
         return false;
     }
 
-    for ($i = 0; $i < count($pwg_event_handlers[$event][$priority]); $i++) {
+    $counter = count($pwg_event_handlers[$event][$priority]);
+
+    for ($i = 0; $i < $counter; $i++) {
         if ($pwg_event_handlers[$event][$priority][$i]['function'] == $func) {
             unset($pwg_event_handlers[$event][$priority][$i]);
             $pwg_event_handlers[$event][$priority] =
@@ -260,7 +262,7 @@ function trigger_notify(
 ) {
     global $pwg_event_handlers;
 
-    if (isset($pwg_event_handlers['trigger']) and $event != 'trigger') {// debugging - avoid recursive calls
+    if (isset($pwg_event_handlers['trigger']) && $event != 'trigger') {// debugging - avoid recursive calls
         trigger_notify(
             'trigger',
             [

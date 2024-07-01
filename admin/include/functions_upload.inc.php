@@ -59,7 +59,7 @@ function get_upload_form_config()
 
 function save_upload_form_config($data, &$errors = [], &$form_errors = [])
 {
-    if (! is_array($data) or empty($data)) {
+    if (! is_array($data) || $data === []) {
         return false;
     }
 
@@ -72,17 +72,12 @@ function save_upload_form_config($data, &$errors = [], &$form_errors = [])
         }
 
         if (is_bool($upload_form_config[$field]['default'])) {
-            if (isset($value)) {
-                $value = true;
-            } else {
-                $value = false;
-            }
-
+            $value = isset($value);
             $updates[] = [
                 'param' => $field,
                 'value' => boolean_to_string($value),
             ];
-        } elseif ($upload_form_config[$field]['can_be_null'] and empty($value)) {
+        } elseif ($upload_form_config[$field]['can_be_null'] && empty($value)) {
             $updates[] = [
                 'param' => $field,
                 'value' => 'false',
@@ -92,7 +87,7 @@ function save_upload_form_config($data, &$errors = [], &$form_errors = [])
             $max = $upload_form_config[$field]['max'];
             $pattern = $upload_form_config[$field]['pattern'];
 
-            if (preg_match($pattern, (string) $value) and $value >= $min and $value <= $max) {
+            if (preg_match($pattern, (string) $value) && $value >= $min && $value <= $max) {
                 $updates[] = [
                     'param' => $field,
                     'value' => $value,
@@ -147,11 +142,7 @@ function add_uploaded_file(
         $original_filename = htmlspecialchars((string) $original_filename);
     }
 
-    if (isset($original_md5sum)) {
-        $md5sum = $original_md5sum;
-    } else {
-        $md5sum = md5_file($source_filepath);
-    }
+    $md5sum = $original_md5sum ?? md5_file($source_filepath);
 
     $file_path = null;
 
@@ -203,7 +194,7 @@ SELECT
             $file_path .= 'gif';
         } elseif ($type == IMAGETYPE_JPEG) {
             $file_path .= 'jpg';
-        } elseif (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types']) {
+        } elseif (isset($conf['upload_form_all_types']) && $conf['upload_form_all_types']) {
             $original_extension = strtolower(get_extension($original_filename));
 
             if (in_array($original_extension, $conf['file_ext'])) {
@@ -243,28 +234,25 @@ SELECT
         $representative_ext = null;
     }
 
-    if (pwg_image::get_library() != 'gd') {
-        if ($conf['original_resize']) {
-            $need_resize = need_resize(
+    if (pwg_image::get_library() != 'gd' && $conf['original_resize']) {
+        $need_resize = need_resize(
+            $file_path,
+            $conf['original_resize_maxwidth'],
+            $conf['original_resize_maxheight']
+        );
+        if ($need_resize) {
+            $img = new pwg_image($file_path);
+
+            $img->pwg_resize(
                 $file_path,
                 $conf['original_resize_maxwidth'],
-                $conf['original_resize_maxheight']
+                $conf['original_resize_maxheight'],
+                $conf['original_resize_quality'],
+                $conf['upload_form_automatic_rotation'],
+                false
             );
 
-            if ($need_resize) {
-                $img = new pwg_image($file_path);
-
-                $img->pwg_resize(
-                    $file_path,
-                    $conf['original_resize_maxwidth'],
-                    $conf['original_resize_maxheight'],
-                    $conf['original_resize_quality'],
-                    $conf['upload_form_automatic_rotation'],
-                    false
-                );
-
-                $img->destroy();
-            }
+            $img->destroy();
         }
     }
 
@@ -345,7 +333,7 @@ SELECT
         }
     }
 
-    if (isset($categories) and count($categories) > 0) {
+    if (isset($categories) && count($categories) > 0) {
         if ($conf['lounge_active']) {
             fill_lounge([$image_id], $categories);
         } else {
@@ -354,7 +342,7 @@ SELECT
     }
 
     // update metadata from the uploaded file (exif/iptc)
-    if ($conf['use_exif'] and ! function_exists(
+    if ($conf['use_exif'] && ! function_exists(
         'exif_read_data'
     )) {
         $conf['use_exif'] = false;
@@ -481,7 +469,7 @@ function upload_file_pdf($representative_ext, $file_path)
         return $representative_ext;
     }
 
-    if (! in_array(strtolower(get_extension($file_path)), ['pdf'])) {
+    if (strtolower(get_extension($file_path)) !== 'pdf') {
         return $representative_ext;
     }
 
@@ -688,12 +676,7 @@ function need_resize($image_filepath, $max_width, $max_height)
     // rotation must be applied to the resized photo, then we should test
     // invert width and height.
     [$width, $height] = getimagesize($image_filepath);
-
-    if ($width > $max_width or $height > $max_height) {
-        return true;
-    }
-
-    return false;
+    return $width > $max_width || $height > $max_height;
 }
 
 function pwg_image_infos($path)
@@ -712,7 +695,7 @@ function is_valid_image_extension($extension)
 {
     global $conf;
 
-    if (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types']) {
+    if (isset($conf['upload_form_all_types']) && $conf['upload_form_all_types']) {
         $extensions = $conf['file_ext'];
     } else {
         $extensions = $conf['picture_ext'];
@@ -756,11 +739,11 @@ function convert_shorthand_notation_to_bytes($value)
     $suffix = substr((string) $value, -1);
     $multiply_by = null;
 
-    if ($suffix == 'K') {
+    if ($suffix === 'K') {
         $multiply_by = 1024;
-    } elseif ($suffix == 'M') {
+    } elseif ($suffix === 'M') {
         $multiply_by = 1024 * 1024;
-    } elseif ($suffix == 'G') {
+    } elseif ($suffix === 'G') {
         $multiply_by = 1024 * 1024 * 1024;
     }
 
@@ -790,16 +773,13 @@ function ready_for_upload_message()
                 $relative_dir
             );
         }
-    } else {
+    } elseif (! is_writable($conf['upload_dir'])) {
+        @chmod($conf['upload_dir'], 0777);
         if (! is_writable($conf['upload_dir'])) {
-            @chmod($conf['upload_dir'], 0777);
-
-            if (! is_writable($conf['upload_dir'])) {
-                return sprintf(
-                    l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
-                    $relative_dir
-                );
-            }
+            return sprintf(
+                l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
+                $relative_dir
+            );
         }
     }
 

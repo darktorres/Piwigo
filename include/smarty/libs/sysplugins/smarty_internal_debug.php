@@ -301,16 +301,12 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             foreach ($var as $varkey => $varvalue) {
                 if ($varkey === 'value') {
                     $tpl_vars[$key][$varkey] = $varvalue;
-                } else {
-                    if ($varkey === 'nocache') {
-                        if ($varvalue === true) {
-                            $tpl_vars[$key][$varkey] = $varvalue;
-                        }
-                    } else {
-                        if ($varkey !== 'scope' || $varvalue !== 0) {
-                            $tpl_vars[$key]['attributes'][$varkey] = $varvalue;
-                        }
+                } elseif ($varkey === 'nocache') {
+                    if ($varvalue === true) {
+                        $tpl_vars[$key][$varkey] = $varvalue;
                     }
+                } elseif ($varkey !== 'scope' || $varvalue !== 0) {
+                    $tpl_vars[$key]['attributes'][$varkey] = $varvalue;
                 }
             }
 
@@ -345,16 +341,12 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                     foreach ($var as $varkey => $varvalue) {
                         if ($varkey === 'value') {
                             $tpl_vars[$key][$varkey] = $varvalue;
-                        } else {
-                            if ($varkey === 'nocache') {
-                                if ($varvalue === true) {
-                                    $tpl_vars[$key][$varkey] = $varvalue;
-                                }
-                            } else {
-                                if ($varkey !== 'scope' || $varvalue !== 0) {
-                                    $tpl_vars[$key]['attributes'][$varkey] = $varvalue;
-                                }
+                        } elseif ($varkey === 'nocache') {
+                            if ($varvalue === true) {
+                                $tpl_vars[$key][$varkey] = $varvalue;
                             }
+                        } elseif ($varkey !== 'scope' || $varvalue !== 0) {
+                            $tpl_vars[$key]['attributes'][$varkey] = $varvalue;
                         }
                     }
 
@@ -387,11 +379,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
      */
     public function debugUrl(Smarty $smarty)
     {
-        if (isset($_SERVER['QUERY_STRING'])) {
-            $_query_string = $_SERVER['QUERY_STRING'];
-        } else {
-            $_query_string = '';
-        }
+        $_query_string = $_SERVER['QUERY_STRING'] ?? '';
 
         if (str_contains((string) $_query_string, $smarty->smarty_debug_id)) {
             if (str_contains((string) $_query_string, $smarty->smarty_debug_id . '=on')) {
@@ -406,10 +394,8 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                 // enable debugging for this page
                 $smarty->debugging = true;
             }
-        } else {
-            if (isset($_COOKIE['SMARTY_DEBUG'])) {
-                $smarty->debugging = true;
-            }
+        } elseif (isset($_COOKIE['SMARTY_DEBUG'])) {
+            $smarty->debugging = true;
         }
     }
 

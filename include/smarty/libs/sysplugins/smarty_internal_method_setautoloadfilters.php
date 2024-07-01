@@ -53,7 +53,7 @@ class Smarty_Internal_Method_SetAutoloadFilters
             $this->_checkFilterType($type);
             $smarty->autoload_filters[$type] = (array) $filters;
         } else {
-            foreach ((array) $filters as $type => $value) {
+            foreach (array_keys((array) $filters) as $type) {
                 $this->_checkFilterType($type);
             }
 

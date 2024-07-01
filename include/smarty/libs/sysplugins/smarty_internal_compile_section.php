@@ -128,7 +128,7 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
         $sectionVar = sprintf('$_smarty_tpl->tpl_vars[\'__smarty_section_%s\']', $attributes['name']);
         $this->openTag($compiler, 'section', ['section', $compiler->nocache, $local, $sectionVar]);
         // maybe nocache because of nocache variables
-        $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
+        $compiler->nocache |= $compiler->tag_nocache;
         $initLocal = [];
         $initNamedProperty = [];
         $initFor = [];
@@ -256,11 +256,9 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
         } elseif ($propType['max'] !== 0) {
             $propValue['max'] = sprintf('%s < 0 ? %s : %s', $propValue['max'], $propValue['loop'], $propValue['max']);
             $propType['max'] = 1;
-        } else {
-            if ($propValue['max'] < 0) {
-                $propValue['max'] = $propValue['loop'];
-                $propType['max'] = $propType['loop'];
-            }
+        } elseif ($propValue['max'] < 0) {
+            $propValue['max'] = $propValue['loop'];
+            $propType['max'] = $propType['loop'];
         }
 
         if (! isset($propValue['start'])) {
@@ -291,7 +289,7 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
                 $propType['start'] = 1;
             }
 
-            $propValue['start'] = join('', $start_code);
+            $propValue['start'] = implode('', $start_code);
         } else {
             $start_code =
                 [
@@ -360,7 +358,7 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
                 }
             }
 
-            $propValue['start'] = join('', $start_code);
+            $propValue['start'] = implode('', $start_code);
         }
 
         if ($propType['start'] !== 0) {
@@ -434,7 +432,7 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
                     }
                 }
 
-                $propValue['total'] = join('', $total_code);
+                $propValue['total'] = implode('', $total_code);
             }
         }
 
@@ -457,15 +455,11 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
             $output .= "{$local}{$key} = {$code};\n";
         }
 
-        $_vars = 'array(' . join(', ', $initNamedProperty) . ')';
+        $_vars = 'array(' . implode(', ', $initNamedProperty) . ')';
         $output .= "{$sectionVar} = new Smarty_Variable({$_vars});\n";
         $cond_code = $propValue['total'] . ' !== 0';
         if ($propType['total'] === 0) {
-            if ($propValue['total'] === 0) {
-                $cond_code = 'false';
-            } else {
-                $cond_code = 'true';
-            }
+            $cond_code = $propValue['total'] === 0 ? 'false' : 'true';
         }
 
         if ($propType['show'] > 0) {
@@ -477,9 +471,9 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
             $output .= "if (false) {\n";
         }
 
-        $jinit = join(', ', $initFor);
-        $jcmp = join(', ', $cmpFor);
-        $jinc = join(', ', $incFor);
+        $jinit = implode(', ', $initFor);
+        $jcmp = implode(', ', $cmpFor);
+        $jinc = implode(', ', $incFor);
         $output .= "for ({$jinit}; {$jcmp}; {$jinc}){\n";
         if (isset($namedAttr['rownum'])) {
             $output .= "{$sectionVar}->value['rownum'] = {$propValue['iteration']};\n";
@@ -501,8 +495,7 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
             $output .= "{$sectionVar}->value['last'] = ({$propValue['iteration']} === {$propValue['total']});\n";
         }
 
-        $output .= '?>';
-        return $output;
+        return $output . '?>';
     }
 }
 
@@ -567,7 +560,6 @@ class Smarty_Internal_Compile_Sectionclose extends Smarty_Internal_CompileBase
             $output .= "}\n}\n";
         }
 
-        $output .= '?>';
-        return $output;
+        return $output . '?>';
     }
 }

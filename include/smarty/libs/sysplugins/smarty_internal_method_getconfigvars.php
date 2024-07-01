@@ -45,11 +45,7 @@ class Smarty_Internal_Method_GetConfigVars
             }
 
             // not found, try at parent
-            if ($search_parents) {
-                $_ptr = $_ptr->parent;
-            } else {
-                $_ptr = null;
-            }
+            $_ptr = $search_parents ? $_ptr->parent : null;
         }
 
         if (isset($varname)) {

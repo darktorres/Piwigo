@@ -56,10 +56,10 @@ class Smarty_Internal_Method_Append
                     }
                 }
 
-                if (! (is_array($data->tpl_vars[$tpl_var]->value)
-                      || $data->tpl_vars[$tpl_var]->value instanceof ArrayAccess)
-                ) {
-                    settype($data->tpl_vars[$tpl_var]->value, 'array');
+                if (! is_array(
+                    $data->tpl_vars[$tpl_var]->value
+                ) && ! $data->tpl_vars[$tpl_var]->value instanceof ArrayAccess) {
+                    $data->tpl_vars[$tpl_var]->value = (array) $data->tpl_vars[$tpl_var]->value;
                 }
 
                 if ($merge && is_array($value)) {

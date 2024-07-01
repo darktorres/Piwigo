@@ -91,16 +91,12 @@ function smarty_function_html_image(
         }
     }
 
-    if (empty($file)) {
+    if ($file === '' || $file === '0') {
         trigger_error("html_image: missing 'file' parameter", E_USER_NOTICE);
         return;
     }
 
-    if ($file[0] === '/') {
-        $_image_path = $basedir . $file;
-    } else {
-        $_image_path = $file;
-    }
+    $_image_path = $file[0] === '/' ? $basedir . $file : $file;
 
     // strip file protocol
     if (stripos((string) $params['file'], 'file://') === 0) {
@@ -120,11 +116,9 @@ function smarty_function_html_image(
             )) {
                 return;
             }
-        } else {
+        } elseif (! $template->smarty->security_policy->isTrustedResourceDir($_image_path)) {
             // local file
-            if (! $template->smarty->security_policy->isTrustedResourceDir($_image_path)) {
-                return;
-            }
+            return;
         }
     }
 
@@ -156,14 +150,7 @@ function smarty_function_html_image(
     }
 
     if (isset($params['dpi'])) {
-        if (strstr((string) $_SERVER['HTTP_USER_AGENT'], 'Mac')) {
-            // FIXME: (rodneyrehm) wrong dpi assumption
-            // don't know who thought this up… even if it was true in 1998, it's definitely wrong in 2011.
-            $dpi_default = 72;
-        } else {
-            $dpi_default = 96;
-        }
-
+        $dpi_default = strstr((string) $_SERVER['HTTP_USER_AGENT'], 'Mac') ? 72 : 96;
         $_resize = $dpi_default / $params['dpi'];
         $width = round($width * $_resize);
         $height = round($height * $_resize);

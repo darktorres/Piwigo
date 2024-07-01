@@ -86,7 +86,7 @@ function smarty_block_textformat(
     // split into paragraphs
     $_paragraphs = preg_split('![\r\n]{2}!', $content);
     foreach ($_paragraphs as &$_paragraph) {
-        if (! $_paragraph) {
+        if ($_paragraph === '' || $_paragraph === '0') {
             continue;
         }
 

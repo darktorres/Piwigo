@@ -99,34 +99,32 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             (string) $source_resource,
             $match
         )) {
-            $type = ! empty($match[3]) ? $match[3] : $compiler->template->smarty->default_resource_type;
-            $name = ! empty($match[5]) ? $match[5] : $match[6];
+            $type = empty($match[3]) ? $compiler->template->smarty->default_resource_type : $match[3];
+            $name = empty($match[5]) ? $match[6] : $match[5];
             $handler = Smarty_Resource::load($compiler->smarty, $type);
             if ($handler->recompiled || $handler->uncompiled) {
                 $variable_template = true;
             }
 
-            if (! $variable_template) {
-                if ($type !== 'string') {
-                    $fullResourceName = sprintf('%s:%s', $type, $name);
-                    $compiled = $compiler->parent_compiler->template->compiled;
-                    if (isset($compiled->includes[$fullResourceName])) {
-                        $compiled->includes[$fullResourceName]++;
-                        $cache_tpl = true;
-                    } else {
-                        if (sprintf('%s:%s', $compiler->template->source->type, $compiler->template->source->name) ==
-                            $fullResourceName
-                        ) {
-                            // recursive call of current template
-                            $compiled->includes[$fullResourceName] = 2;
-                            $cache_tpl = true;
-                        } else {
-                            $compiled->includes[$fullResourceName] = 1;
-                        }
-                    }
-
-                    $fullResourceName = $match[1] . $fullResourceName . $match[1];
+            if (! $variable_template && $type !== 'string') {
+                $fullResourceName = sprintf('%s:%s', $type, $name);
+                $compiled = $compiler->parent_compiler->template->compiled;
+                if (isset($compiled->includes[$fullResourceName])) {
+                    $compiled->includes[$fullResourceName]++;
+                    $cache_tpl = true;
+                } elseif (sprintf(
+                    '%s:%s',
+                    $compiler->template->source->type,
+                    $compiler->template->source->name
+                ) === $fullResourceName) {
+                    // recursive call of current template
+                    $compiled->includes[$fullResourceName] = 2;
+                    $cache_tpl = true;
+                } else {
+                    $compiled->includes[$fullResourceName] = 1;
                 }
+
+                $fullResourceName = $match[1] . $fullResourceName . $match[1];
             }
 
             if (empty($match[5])) {
@@ -139,11 +137,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
         // scope setup
         $_scope = $compiler->convertScope($_attr, $this->valid_scopes);
         // set flag to cache subtemplate object when called within loop or template name is variable.
-        if ($cache_tpl || $variable_template || $compiler->loopNesting > 0) {
-            $_cache_tpl = 'true';
-        } else {
-            $_cache_tpl = 'false';
-        }
+        $_cache_tpl = $cache_tpl || $variable_template || $compiler->loopNesting > 0 ? 'true' : 'false';
 
         // assume caching is off
         $_caching = Smarty::CACHING_OFF;
@@ -200,11 +194,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             $_cache_id = '$_smarty_tpl->cache_id';
         }
 
-        if (isset($_attr['compile_id'])) {
-            $_compile_id = $_attr['compile_id'];
-        } else {
-            $_compile_id = '$_smarty_tpl->compile_id';
-        }
+        $_compile_id = $_attr['compile_id'] ?? '$_smarty_tpl->compile_id';
 
         // if subtemplate will be called in nocache mode do not merge
         if ($compiler->template->caching && $call_nocache) {
@@ -234,7 +224,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             $c_id = $_attr['compile_id'] ?? $compiler->template->compile_id;
             // we must observe different compile_id and caching
             $t_hash = sha1(
-                $c_id . ($_caching ? '--caching' : '--nocaching')
+                $c_id . ($_caching !== 0 ? '--caching' : '--nocaching')
             );
             $compiler->smarty->allow_ambiguous_resources = true;
             /** @var Smarty_Internal_Template $tpl */
@@ -267,7 +257,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
                 $_pairs[] = sprintf("'%s'=>%s", $key, $value);
             }
 
-            $_vars = 'array(' . join(',', $_pairs) . ')';
+            $_vars = 'array(' . implode(',', $_pairs) . ')';
         }
 
         $update_compile_id = $compiler->template->caching && ! $compiler->tag_nocache && ! $compiler->nocache &&
@@ -302,8 +292,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
                 );
             }
 
-            $_output .= '?>';
-            return $_output;
+            return $_output . '?>';
         }
 
         if ($call_nocache) {
@@ -329,8 +318,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             $_output .= "\$_smarty_tpl->compile_id = array_pop(\$_compile_id_save);\n";
         }
 
-        $_output .= '?>';
-        return $_output;
+        return $_output . '?>';
     }
 
     /**
@@ -348,7 +336,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
         $uid = $tpl->source->type . $tpl->source->uid;
         if (! ($tpl->source->handler->uncompiled) && $tpl->source->exists) {
             $compiler->parent_compiler->mergedSubTemplatesData[$uid][$t_hash]['uid'] = $tpl->source->uid;
-            if (isset($compiler->template->inheritance)) {
+            if ($compiler->template->inheritance !== null) {
                 $tpl->inheritance = clone $compiler->template->inheritance;
             }
 

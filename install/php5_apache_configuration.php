@@ -13,8 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $script = script_basename();
 
-if (($script != 'install' and $script != 'upgrade')
-  or version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '>=')) {
+if ($script != 'install' && $script != 'upgrade' || version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '>=')) {
     die('Nothing to do here...');
 }
 
@@ -23,18 +22,22 @@ function initPHP5()
     include(PHPWG_ROOT_PATH . 'install/hosting.php');
     $htaccess = PHPWG_ROOT_PATH . '.htaccess';
 
-    if ((file_exists($htaccess) and (! is_readable($htaccess) or ! is_writable($htaccess)))
-      or ! ($my_hostname = @gethostbyaddr($_SERVER['SERVER_ADDR']))) {
+    if (file_exists($htaccess) && (! is_readable($htaccess) || ! is_writable(
+        $htaccess
+    )) || ! ($my_hostname = @gethostbyaddr(
+        $_SERVER['SERVER_ADDR']
+    ))) {
         return false;
     }
 
     foreach ($hosting as $hostname => $rule) {
-        if (preg_match('!' . preg_quote((string) $hostname) . '$!', $my_hostname)) {
-            if (false !== ($fh = @fopen($htaccess, 'ab'))) {
-                fwrite($fh, "\n" . $rule);
-                fclose($fh);
-                return true;
-            }
+        if (preg_match('!' . preg_quote((string) $hostname) . '$!', $my_hostname) && false !== ($fh = @fopen(
+            $htaccess,
+            'ab'
+        ))) {
+            fwrite($fh, "\n" . $rule);
+            fclose($fh);
+            return true;
         }
     }
 

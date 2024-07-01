@@ -64,11 +64,7 @@ class Smarty_Internal_Compile_Assign extends Smarty_Internal_CompileBase
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         // nocache ?
-        if ($_var = $compiler->getId($_attr['var'])) {
-            $_var = sprintf("'%s'", $_var);
-        } else {
-            $_var = $_attr['var'];
-        }
+        $_var = ($_var = $compiler->getId($_attr['var'])) ? sprintf("'%s'", $_var) : $_attr['var'];
 
         if ($compiler->tag_nocache || $compiler->nocache) {
             $_nocache = true;
@@ -79,11 +75,7 @@ class Smarty_Internal_Compile_Assign extends Smarty_Internal_CompileBase
         }
 
         // scope setup
-        if ($_attr['noscope']) {
-            $_scope = -1;
-        } else {
-            $_scope = $compiler->convertScope($_attr, $this->valid_scopes);
-        }
+        $_scope = $_attr['noscope'] ? -1 : $compiler->convertScope($_attr, $this->valid_scopes);
 
         // optional parameter
         $_params = '';

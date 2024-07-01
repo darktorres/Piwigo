@@ -95,20 +95,20 @@ class CalendarWeekly extends CalendarBase
         }
 
         $res = '';
-        if (isset($date[CYEAR]) and $date[CYEAR] !== 'any') {
+        if (isset($date[CYEAR]) && $date[CYEAR] !== 'any') {
             $y = $date[CYEAR];
             $res = sprintf(" AND %s BETWEEN '%s-01-01' AND '%s-12-31 23:59:59'", $this->date_field, $y, $y);
         }
 
-        if (isset($date[CWEEK]) and $date[CWEEK] !== 'any') {
+        if (isset($date[CWEEK]) && $date[CWEEK] !== 'any') {
             $res .= ' AND ' . $this->calendar_levels[CWEEK]['sql'] . '=' . $date[CWEEK];
         }
 
-        if (isset($date[CDAY]) and $date[CDAY] !== 'any') {
+        if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
             $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
         }
 
-        if (empty($res)) {
+        if ($res === '' || $res === '0') {
             $res = ' AND ' . $this->date_field . ' IS NOT NULL';
         }
 

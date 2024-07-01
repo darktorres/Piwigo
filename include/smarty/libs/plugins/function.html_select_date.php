@@ -400,7 +400,7 @@ function smarty_function_html_select_date(
             case 'Y':
             case 'y':
                 if (isset($_html_years)) {
-                    if ($_html) {
+                    if ($_html !== '' && $_html !== '0') {
                         $_html .= $field_separator;
                     }
 
@@ -411,7 +411,7 @@ function smarty_function_html_select_date(
             case 'm':
             case 'M':
                 if (isset($_html_months)) {
-                    if ($_html) {
+                    if ($_html !== '' && $_html !== '0') {
                         $_html .= $field_separator;
                     }
 
@@ -422,7 +422,7 @@ function smarty_function_html_select_date(
             case 'd':
             case 'D':
                 if (isset($_html_days)) {
-                    if ($_html) {
+                    if ($_html !== '' && $_html !== '0') {
                         $_html .= $field_separator;
                     }
 

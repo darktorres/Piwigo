@@ -27,8 +27,7 @@ if (isset($_POST['submit'])) {
         }
     }
 
-    if (isset($_POST['search_allwords'])
-        and ! preg_match('/^\s*$/', (string) $_POST['search_allwords'])) {
+    if (isset($_POST['search_allwords']) && ! preg_match('/^\s*$/', (string) $_POST['search_allwords'])) {
         check_input_parameter('mode', $_POST, false, '/^(OR|AND)$/');
         check_input_parameter('fields', $_POST, true, '/^(name|comment|file)$/');
 
@@ -70,7 +69,7 @@ if (isset($_POST['submit'])) {
         ];
     }
 
-    if (isset($_POST['authors']) and is_array($_POST['authors']) and $_POST['authors'] !== []) {
+    if (isset($_POST['authors']) && is_array($_POST['authors']) && $_POST['authors'] !== []) {
         $authors = [];
 
         foreach ($_POST['authors'] as $author) {
@@ -88,7 +87,7 @@ if (isset($_POST['submit'])) {
 
         $search['fields']['cat'] = [
             'words' => $_POST['cat'],
-            'sub_inc' => ($_POST['subcats-included'] == 1) ? true : false,
+            'sub_inc' => $_POST['subcats-included'] == 1,
         ];
     }
 
@@ -142,7 +141,7 @@ INSERT INTO ' . SEARCH_TABLE . '
 }
 
 //----------------------------------------------------------------- redirection
-if (isset($_POST['submit']) and count(
+if (isset($_POST['submit']) && count(
     $page['errors']
 ) == 0) {
     redirect(
@@ -246,7 +245,7 @@ display_select_cat_wrapper($query, [], 'category_options', true);
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theSearchPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theSearchPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 

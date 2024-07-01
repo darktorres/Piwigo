@@ -18,11 +18,10 @@ function smarty_mb_to_unicode(
     $string,
     $encoding = null
 ) {
-    if ($encoding) {
-        $expanded = mb_convert_encoding($string, 'UTF-32BE', $encoding);
-    } else {
-        $expanded = mb_convert_encoding($string, 'UTF-32BE');
-    }
+    $expanded = $encoding ? mb_convert_encoding($string, 'UTF-32BE', $encoding) : mb_convert_encoding(
+        $string,
+        'UTF-32BE'
+    );
 
     return unpack('N*', $expanded);
 }

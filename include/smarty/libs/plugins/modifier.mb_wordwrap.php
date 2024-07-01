@@ -39,19 +39,17 @@ function smarty_modifier_mb_wordwrap(
     foreach ($tokens as $_token) {
         $token_length = mb_strlen($_token, Smarty::$_CHARSET);
         $_tokens = [$_token];
-        if ($token_length > $width) {
-            if ($cut) {
-                $_tokens = preg_split(
-                    '!(.{' . $width . '})!S' . Smarty::$_UTF8_MODIFIER,
-                    $_token,
-                    -1,
-                    PREG_SPLIT_NO_EMPTY + PREG_SPLIT_DELIM_CAPTURE
-                );
-            }
+        if ($token_length > $width && $cut) {
+            $_tokens = preg_split(
+                '!(.{' . $width . '})!S' . Smarty::$_UTF8_MODIFIER,
+                $_token,
+                -1,
+                PREG_SPLIT_NO_EMPTY + PREG_SPLIT_DELIM_CAPTURE
+            );
         }
 
         foreach ($_tokens as $token) {
-            $_space = ! ! preg_match('!^\s$!S' . Smarty::$_UTF8_MODIFIER, $token);
+            $_space = (bool) preg_match('!^\s$!S' . Smarty::$_UTF8_MODIFIER, $token);
             $token_length = mb_strlen($token, Smarty::$_CHARSET);
             $length += $token_length;
             if ($length > $width) {
@@ -62,7 +60,7 @@ function smarty_modifier_mb_wordwrap(
 
                 if (! $_space) {
                     // add the break before the token
-                    if (! empty($t)) {
+                    if ($t !== '' && $t !== '0') {
                         $t .= $break;
                     }
 

@@ -26,7 +26,7 @@ $base_url = get_root_url() . 'admin.php?page=' . $page['page'] . '&tab=' . $page
 $plugins = new plugins();
 
 //------------------------------------------------------automatic installation
-if (isset($_GET['revision']) and isset($_GET['extension'])) {
+if (isset($_GET['revision']) && isset($_GET['extension'])) {
     if (! is_webmaster()) {
         $page['errors'][] = l10n('Webmaster status is required.');
     } else {
@@ -189,7 +189,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
             'CERTIFICATION' => $certification,
             'RATING' => $plugin['rating_score'],
             'NB_RATINGS' => $plugin['nb_ratings'],
-            'SCREENSHOT' => (key_exists('screenshot_url', $plugin)) ? $plugin['screenshot_url'] : '',
+            'SCREENSHOT' => (array_key_exists('screenshot_url', $plugin)) ? $plugin['screenshot_url'] : '',
             'TAGS' => $plugin['tags'],
         ]);
     }
@@ -198,7 +198,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
     $page['errors'][] = l10n("Can't connect to server.");
 }
 
-if (! $beta_test and preg_match('/(beta|RC)/', PHPWG_VERSION)) {
+if (! $beta_test && preg_match('/(beta|RC)/', PHPWG_VERSION)) {
     $template->assign('BETA_URL', $base_url . '&amp;beta-test=true');
 }
 

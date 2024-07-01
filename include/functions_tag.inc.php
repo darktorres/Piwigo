@@ -70,7 +70,7 @@ SELECT *
     $tags = [];
     while ($row = pwg_db_fetch_assoc($result)) {
         $counter = intval(@$tag_counters[$row['id']]);
-        if ($counter) {
+        if ($counter !== 0) {
             $row['counter'] = $counter;
             $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
             $tags[] = $row;
@@ -208,7 +208,7 @@ SELECT id
     $query .= (empty($extra_images_where_sql) ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
   GROUP BY id';
 
-    if ($mode == 'AND' and count($tag_ids) > 1) {
+    if ($mode == 'AND' && count($tag_ids) > 1) {
         $query .= '
   HAVING COUNT(DISTINCT tag_id)=' . count($tag_ids);
     }
@@ -296,7 +296,7 @@ function find_tags(
           "name IN ('" . implode("', '", $names) . "')";
     }
 
-    if (empty($where_clauses)) {
+    if ($where_clauses === []) {
         return [];
     }
 

@@ -29,7 +29,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
         $_compile_dir_sep = $smarty->use_sub_dirs ? DIRECTORY_SEPARATOR : '^';
         $_filepath = sha1($source->uid . $smarty->_joined_template_dir);
         $cached->filepath = $smarty->getCacheDir();
-        if (isset($_template->cache_id)) {
+        if ($_template->cache_id !== null) {
             $cached->filepath .= preg_replace(
                 [
                     '![^\w|]+!',
@@ -43,7 +43,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
             ) . $_compile_dir_sep;
         }
 
-        if (isset($_template->compile_id)) {
+        if ($_template->compile_id !== null) {
             $cached->filepath .= preg_replace('![^\w]+!', '_', $_template->compile_id) . $_compile_dir_sep;
         }
 

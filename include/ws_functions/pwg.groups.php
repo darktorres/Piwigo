@@ -176,7 +176,7 @@ SELECT COUNT(*)
         $updates['name'] = $params['name'];
     }
 
-    if (! empty($params['is_default']) or @$params['is_default'] === false) {
+    if (! empty($params['is_default']) || @$params['is_default'] === false) {
         $updates['is_default'] = boolean_to_string($params['is_default']);
     }
 
@@ -263,7 +263,7 @@ function ws_groups_merge(
     }
 
     $all_groups = $params['merge_group_id'];
-    array_push($all_groups, $params['destination_group_id']);
+    $all_groups[] = $params['destination_group_id'];
 
     $all_groups = array_unique($all_groups);
     $merge_group = array_diff($params['merge_group_id'], [$params['destination_group_id']]);

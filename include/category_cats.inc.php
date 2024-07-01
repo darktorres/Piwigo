@@ -33,7 +33,7 @@ if ($page['section'] == 'recent_cats') {
   WHERE ' . get_recent_photos_sql('date_last');
 } else {
     $query .= '
-  WHERE id_uppercat ' . (! isset($page['category']) ? 'is NULL' : '= ' . $page['category']['id']);
+  WHERE id_uppercat ' . (isset($page['category']) ? '= ' . $page['category']['id'] : 'is NULL');
 }
 
 $query .= '
@@ -66,7 +66,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
         $image_id = get_random_image_in_category(
             $row
         );
-    } elseif ($row['count_categories'] > 0 and $row['count_images'] > 0) { // searching a random representant among representant of sub-categories
+    } elseif ($row['count_categories'] > 0 && $row['count_images'] > 0) { // searching a random representant among representant of sub-categories
         $query = '
 SELECT representative_picture_id
   FROM ' . CATEGORIES_TABLE . ' INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . '
@@ -89,7 +89,7 @@ SELECT representative_picture_id
     }
 
     if (isset($image_id)) {
-        if ($conf['representative_cache_on_subcats'] and $row['user_representative_picture_id'] != $image_id) {
+        if ($conf['representative_cache_on_subcats'] && $row['user_representative_picture_id'] != $image_id) {
             $user_representative_updates_for[$row['id']] = $image_id;
         }
 
@@ -102,9 +102,8 @@ SELECT representative_picture_id
     unset($image_id);
 }
 
-if ($conf['display_fromto']) {
-    if ($category_ids !== []) {
-        $query = '
+if ($conf['display_fromto'] && $category_ids !== []) {
+    $query = '
 SELECT
     category_id,
     MIN(date_creation) AS `from`,
@@ -113,16 +112,15 @@ SELECT
     INNER JOIN ' . IMAGES_TABLE . ' ON image_id = id
   WHERE category_id IN (' . implode(',', $category_ids) . ')
 ' . get_sql_condition_FandF(
-            [
-                'visible_categories' => 'category_id',
-                'visible_images' => 'id',
-            ],
-            'AND'
-        ) . '
+        [
+            'visible_categories' => 'category_id',
+            'visible_images' => 'id',
+        ],
+        'AND'
+    ) . '
   GROUP BY category_id
 ;';
-        $dates_of_category = query2array($query, 'category_id');
-    }
+    $dates_of_category = query2array($query, 'category_id');
 }
 
 if ($page['section'] == 'recent_cats') {
@@ -158,7 +156,7 @@ SELECT *
                         $category
                     );
 
-                    if (isset($image_id) and ! in_array($image_id, $image_ids)) {
+                    if (isset($image_id) && ! in_array($image_id, $image_ids)) {
                         $new_image_ids[] = $image_id;
                     }
 
@@ -278,14 +276,11 @@ if ($categories !== []) {
             $tpl_var['icon_ts'] = get_icon($category['max_date_last'], $category['is_child_date_last']);
         }
 
-        if ($conf['display_fromto']) {
-            if (isset($dates_of_category[$category['id']])) {
-                $from = $dates_of_category[$category['id']]['from'];
-                $to = $dates_of_category[$category['id']]['to'];
-
-                if (! empty($from)) {
-                    $tpl_var['INFO_DATES'] = format_fromto($from, $to);
-                }
+        if ($conf['display_fromto'] && isset($dates_of_category[$category['id']])) {
+            $from = $dates_of_category[$category['id']]['from'];
+            $to = $dates_of_category[$category['id']]['to'];
+            if (! empty($from)) {
+                $tpl_var['INFO_DATES'] = format_fromto($from, $to);
             }
         }
 

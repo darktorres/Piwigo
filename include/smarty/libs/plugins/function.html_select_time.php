@@ -237,7 +237,7 @@ function smarty_function_html_select_time(
                 $_hour12 = $_hour == 0 ? 12 : ($_hour <= 12 ? $_hour : $_hour - 12);
             }
 
-            $selected = $_hour !== null ? ($use_24_hours ? $_hour == $_val : $_hour12 == $_val) : null;
+            $selected = $_hour !== null ? ($use_24_hours ? $_hour === $_val : $_hour12 == $_val) : null;
             $_html_hours .= '<option value="' . $_value . '"' . ($selected ? ' selected="selected"' : '') . '>' .
                             $_text . '</option>' . $option_separator;
         }
@@ -382,7 +382,7 @@ function smarty_function_html_select_time(
         '_html_meridian',
     ] as $k) {
         if (isset(${$k})) {
-            if ($_html) {
+            if ($_html !== '' && $_html !== '0') {
                 $_html .= $field_separator;
             }
 

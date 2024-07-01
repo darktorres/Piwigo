@@ -21,20 +21,20 @@ function initialize_menu()
     $menu = new BlockManager('menubar');
 
     // if guest_access is disabled, we only display the menus if the user is identified
-    if ($conf['guest_access'] or ! is_a_guest()) {
+    if ($conf['guest_access'] || ! is_a_guest()) {
         $menu->load_registered_blocks();
     }
 
     $menu->prepare_display();
 
-    if (@$page['section'] == 'search' and isset($page['qsearch_details'])) {
+    if (@$page['section'] == 'search' && isset($page['qsearch_details'])) {
         $template->assign('QUERY_SEARCH', htmlspecialchars((string) $page['qsearch_details']['q']));
     }
 
     //--------------------------------------------------------------- external links
     if (($block = $menu->get_block(
         'mbLinks'
-    )) and ! empty($conf['links'])) {
+    )) && ! empty($conf['links'])) {
         $block->data = [];
         foreach ($conf['links'] as $url => $url_data) {
             if (! is_array($url_data)) {
@@ -44,16 +44,14 @@ function initialize_menu()
             }
 
             if (
-                (! isset($url_data['eval_visible']))
-                or
-                (eval($url_data['eval_visible']))
+                ! isset($url_data['eval_visible']) || eval($url_data['eval_visible'])
             ) {
                 $tpl_var = [
                     'URL' => $url,
                     'LABEL' => $url_data['label'],
                 ];
 
-                if (! isset($url_data['new_window']) or $url_data['new_window']) {
+                if (! isset($url_data['new_window']) || $url_data['new_window']) {
                     $tpl_var['new_window'] =
                       [
                           'NAME' => ($url_data['nw_name'] ?? ''),
@@ -65,7 +63,7 @@ function initialize_menu()
             }
         }
 
-        if (! empty($block->data)) {
+        if ($block->data !== null && $block->data !== []) {
             $block->template = 'menubar_links.tpl';
         }
     }
@@ -75,7 +73,7 @@ function initialize_menu()
         'mbCategories'
     );
     //------------------------------------------------------------------------ filter
-    if ($conf['menubar_filter_icon'] and ! empty($conf['filter_pages']) and get_filter_page_value(
+    if ($conf['menubar_filter_icon'] && ! empty($conf['filter_pages']) && get_filter_page_value(
         'used'
     )) {
         if ($filter['enabled']) {
@@ -112,10 +110,9 @@ function initialize_menu()
     );
 
     if (
-        isset($page['items'])
-        and count($page['items']) < $conf['related_albums_maximum_items_to_compute']
-        and $block != null
-        and ! empty($page['items'])
+        isset($page['items']) && count(
+            $page['items']
+        ) < $conf['related_albums_maximum_items_to_compute'] && $block != null && ! empty($page['items'])
     ) {
         $exclude_cat_ids = [];
         if (isset($page['category'])) {
@@ -138,7 +135,7 @@ function initialize_menu()
 
     //------------------------------------------------------------------------ tags
     $block = $menu->get_block('mbTags');
-    if ($block != null and script_basename() != 'picture') {
+    if ($block != null && script_basename() != 'picture') {
         if (@$page['section'] == 'tags') {
             $tags = get_common_tags(
                 $page['items'],
@@ -171,7 +168,7 @@ function initialize_menu()
             $template->assign('IS_RELATED', false);
         }
         //displays all tags available for the current user
-        elseif ($conf['menubar_tag_cloud_content'] == 'always_all' or ($conf['menubar_tag_cloud_content'] == 'all_or_current' and empty($page['items']))) {
+        elseif ($conf['menubar_tag_cloud_content'] == 'always_all' || $conf['menubar_tag_cloud_content'] == 'all_or_current' && empty($page['items'])) {
             $tags = get_available_tags();
             usort($tags, 'tags_counter_compare');
             $tags = array_slice($tags, 0, $conf['menubar_tag_cloud_items_number']);
@@ -189,7 +186,7 @@ function initialize_menu()
             $template->assign('IS_RELATED', false);
         }
         //displays only the tags available from the current thumbnails displayed
-        elseif (! empty($page['items']) and ($conf['menubar_tag_cloud_content'] == 'current_only' or $conf['menubar_tag_cloud_content'] == 'all_or_current')) {
+        elseif (! empty($page['items']) && ($conf['menubar_tag_cloud_content'] == 'current_only' || $conf['menubar_tag_cloud_content'] == 'all_or_current')) {
             $selection = array_slice($page['items'], $page['start'], $page['nb_image_page']);
             $tags = add_level_to_tags(get_common_tags($selection, $conf['content_tag_cloud_items_number']));
             foreach ($tags as $tag) {

@@ -175,7 +175,7 @@ class SMTP
         'exim' => '/[\d]{3} OK id=(.*)/',
         'sendmail' => '/[\d]{3} 2.0.0 (.*) Message/',
         'postfix' => '/[\d]{3} 2.0.0 Ok: queued as (.*)/',
-        'Microsoft_ESMTP' => '/[0-9]{3} 2.[\d].0 (.*)@(?:.*) Queued mail for delivery/',
+        'Microsoft_ESMTP' => '/\d{3} 2.[\d].0 (.*)@(?:.*) Queued mail for delivery/',
         'Amazon_SES' => '/[\d]{3} Ok (.*)/',
         'SendGrid' => '/[\d]{3} Ok: queued as (.*)/',
         'CampaignMonitor' => '/[\d]{3} 2.0.0 OK:([a-zA-Z\d]{48})/',
@@ -408,7 +408,7 @@ class SMTP
                     }
                 }
 
-                if (empty($authtype)) {
+                if ($authtype === '' || $authtype === '0' || ($authtype === '' || $authtype === '0') || $authtype === null) {
                     $this->setError('No supported authentication methods found');
 
                     return false;
@@ -589,7 +589,7 @@ class SMTP
             strpos($lines[0], ':')
         );
         $in_headers = false;
-        if (! empty($field) && ! str_contains($field, ' ')) {
+        if ($field !== '' && $field !== '0' && ! str_contains($field, ' ')) {
             $in_headers = true;
         }
 
@@ -633,7 +633,7 @@ class SMTP
             foreach ($lines_out as $line_out) {
                 //Dot-stuffing as per RFC5321 section 4.5.2
                 //https://tools.ietf.org/html/rfc5321#section-4.5.2
-                if (! empty($line_out) && $line_out[0] === '.') {
+                if ($line_out !== '' && $line_out !== '0' && $line_out[0] === '.') {
                     $line_out = '.' . $line_out;
                 }
 
@@ -917,7 +917,7 @@ class SMTP
         if (! $this->server_caps) {
             $this->setError('No HELO/EHLO was sent');
 
-            return;
+            return null;
         }
 
         if (! array_key_exists($name, $this->server_caps)) {
@@ -931,7 +931,7 @@ class SMTP
 
             $this->setError('HELO handshake was used; No information about server extensions available');
 
-            return;
+            return null;
         }
 
         return $this->server_caps[$name];
@@ -1282,20 +1282,20 @@ class SMTP
         foreach ($lines as $n => $s) {
             //First 4 chars contain response code followed by - or space
             $s = trim(substr($s, 4));
-            if (empty($s)) {
+            if ($s === '' || $s === '0') {
                 continue;
             }
 
             $fields = explode(' ', $s);
-            if (! empty($fields)) {
-                if (! $n) {
+            if ($fields !== []) {
+                if ($n === 0) {
                     $name = $type;
                     $fields = $fields[0];
                 } else {
                     $name = array_shift($fields);
                     switch ($name) {
                         case 'SIZE':
-                            $fields = ($fields ? $fields[0] : 0);
+                            $fields = ($fields !== [] ? $fields[0] : 0);
                             break;
                         case 'AUTH':
                             if (! is_array($fields)) {
@@ -1447,7 +1447,7 @@ class SMTP
                 break;
             }
 
-            if (! $n) {
+            if ($n === 0) {
                 $this->edebug(
                     'SMTP -> get_lines(): select timed-out in (' . $this->Timelimit . ' sec)',
                     self::DEBUG_LOWLEVEL

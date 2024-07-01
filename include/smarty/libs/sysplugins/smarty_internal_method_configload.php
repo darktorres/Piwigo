@@ -103,7 +103,7 @@ class Smarty_Internal_Method_ConfigLoad
 
             if ($tpl->parent->_isTplObj() && ($tagScope || $tpl->parent->scope)) {
                 $mergedScope = $tagScope | $tpl->scope;
-                if ($mergedScope) {
+                if ($mergedScope !== 0) {
                     // update scopes
                     /** @var \Smarty_Internal_Template|\Smarty|\Smarty_Internal_Data $ptr */
                     foreach ($tpl->smarty->ext->_updateScope->_getAffectedScopes($tpl->parent, $mergedScope) as $ptr) {

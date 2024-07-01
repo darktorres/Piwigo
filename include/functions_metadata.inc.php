@@ -70,7 +70,7 @@ function get_iptc_data(
 function clean_iptc_value($value)
 {
     // strip leading zeros (weird Kodak Scanner software)
-    while (isset($value[0]) and $value[0] == chr(0)) {
+    while (isset($value[0]) && $value[0] === chr(0)) {
         $value = substr($value, 1);
     }
 
@@ -86,7 +86,7 @@ function clean_iptc_value($value)
                 $input_encoding = 'utf-8';
             } else {
                 $input_encoding = 'iso-8859-1';
-                if (function_exists('iconv') or function_exists('mb_convert_encoding')) {
+                if (function_exists('iconv') || function_exists('mb_convert_encoding')) {
                     // using windows-1252 because it supports additional characters
                     // such as "oe" in a single character (ligature). About the
                     // difference between Windows-1252 and ISO-8859-1: the characters
@@ -123,18 +123,13 @@ function get_exif_data(
     }
 
     // Read EXIF data
-    if ($exif = @exif_read_data($filename) or $exif2 = trigger_change(
+    if (($exif = @exif_read_data($filename)) || ($exif2 = trigger_change(
         'format_exif_data',
         $exif = null,
         $filename,
         $map
-    )) {
-        if (! empty($exif2)) {
-            $exif = $exif2;
-        } else {
-            $exif = trigger_change('format_exif_data', $exif, $filename, $map);
-        }
-
+    ))) {
+        $exif = empty($exif2) ? trigger_change('format_exif_data', $exif, $filename, $map) : $exif2;
         // configured fields
         foreach ($map as $key => $field) {
             if (! str_contains((string) $field, ';')) {
@@ -154,14 +149,17 @@ function get_exif_data(
             $exif,
             array_flip(['GPSLatitudeRef', 'GPSLatitude', 'GPSLongitudeRef', 'GPSLongitude'])
         );
-        if (count($gps_exif) == 4) {
-            if (
-                is_array($gps_exif['GPSLatitude']) and in_array($gps_exif['GPSLatitudeRef'], ['S', 'N']) and
-                is_array($gps_exif['GPSLongitude']) and in_array($gps_exif['GPSLongitudeRef'], ['W', 'E'])
-            ) {
-                $result['latitude'] = parse_exif_gps_data($gps_exif['GPSLatitude'], $gps_exif['GPSLatitudeRef']);
-                $result['longitude'] = parse_exif_gps_data($gps_exif['GPSLongitude'], $gps_exif['GPSLongitudeRef']);
-            }
+        if (count($gps_exif) == 4 && (is_array($gps_exif['GPSLatitude']) && in_array(
+            $gps_exif['GPSLatitudeRef'],
+            ['S', 'N']
+        ) && is_array(
+            $gps_exif['GPSLongitude']
+        ) && in_array(
+            $gps_exif['GPSLongitudeRef'],
+            ['W', 'E']
+        ))) {
+            $result['latitude'] = parse_exif_gps_data($gps_exif['GPSLatitude'], $gps_exif['GPSLatitudeRef']);
+            $result['longitude'] = parse_exif_gps_data($gps_exif['GPSLongitude'], $gps_exif['GPSLongitudeRef']);
         }
     }
 
@@ -201,7 +199,7 @@ function parse_exif_gps_data(
     $v = $raw[0] + $raw[1] / 60 + $raw[2] / 3600;
 
     $ref = strtoupper($ref);
-    if ($ref == 'S' or $ref == 'W') {
+    if ($ref === 'S' || $ref === 'W') {
         $v = -$v;
     }
 

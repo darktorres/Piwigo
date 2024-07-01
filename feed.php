@@ -135,16 +135,16 @@ UPDATE ' . USER_FEED_TABLE . '
     }
 }
 
-if (! empty($feed_id) and empty($news)) {// update the last check from time to time to avoid deletion by maintenance tasks
-    if (! isset($feed_row['last_check'])
-      or time() - datetime_to_ts($feed_row['last_check']) > 30 * 24 * 3600) {
-        $query = '
+// update the last check from time to time to avoid deletion by maintenance tasks
+if ((! empty($feed_id) && empty($news)) && (! isset($feed_row['last_check']) || time() - datetime_to_ts(
+    $feed_row['last_check']
+) > 30 * 24 * 3600)) {
+    $query = '
 UPDATE ' . USER_FEED_TABLE . '
   SET last_check = ' . pwg_db_get_recent_period_expression(-15, $dbnow) . '
   WHERE id = \'' . $feed_id . '\'
 ;';
-        pwg_query($query);
-    }
+    pwg_query($query);
 }
 
 $dates = get_recent_post_dates_array($conf['recent_post_dates']['RSS']);
@@ -171,7 +171,7 @@ foreach ($dates as $date_detail) { // for each recent post date we create a feed
 
     $item->date = ts_to_iso8601(datetime_to_ts($date));
     $item->author = $conf['rss_feed_author'];
-    $item->guid = sprintf('%s', 'pics-' . $date);
+    $item->guid = 'pics-' . $date;
 
     $rss->addItem($item);
 }

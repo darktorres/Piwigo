@@ -114,7 +114,7 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
         $output .= '?>';
         $this->openTag($compiler, 'for', ['for', $compiler->nocache]);
         // maybe nocache because of nocache variables
-        $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
+        $compiler->nocache |= $compiler->tag_nocache;
         // return compiled code
         return $output;
     }
@@ -184,7 +184,6 @@ class Smarty_Internal_Compile_Forclose extends Smarty_Internal_CompileBase
             $output .= "}\n";
         }
 
-        $output .= '?>';
-        return $output;
+        return $output . '?>';
     }
 }

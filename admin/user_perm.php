@@ -18,7 +18,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
     check_input_parameter('cat_true', $_POST, true, PATTERN_ID);
     check_input_parameter('cat_false', $_POST, true, PATTERN_ID);
@@ -28,7 +28,7 @@ if (! empty($_POST)) {
 // |                            variables init                             |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['user_id']) and is_numeric(
+if (isset($_GET['user_id']) && is_numeric(
     $_GET['user_id']
 )) {
     $page['user'] = $_GET['user_id'];
@@ -40,9 +40,9 @@ if (isset($_GET['user_id']) and is_numeric(
 // |                                updates                                |
 // +-----------------------------------------------------------------------+
 
-if (isset($_POST['falsify'])
-    and isset($_POST['cat_true'])
-    and count($_POST['cat_true']) > 0) {
+if (isset($_POST['falsify']) && isset($_POST['cat_true']) && count(
+    $_POST['cat_true']
+) > 0) {
     // if you forbid access to a category, all sub-categories become
     // automatically forbidden
     $subcats = get_subcat_ids($_POST['cat_true']);
@@ -52,9 +52,7 @@ DELETE FROM ' . USER_ACCESS_TABLE . '
     AND cat_id IN (' . implode(',', $subcats) . ')
 ;';
     pwg_query($query);
-} elseif (isset($_POST['trueify'])
-    and isset($_POST['cat_false'])
-    and count($_POST['cat_false']) > 0) {
+} elseif (isset($_POST['trueify']) && isset($_POST['cat_false']) && count($_POST['cat_false']) > 0) {
     add_permission_on_category($_POST['cat_false'], $page['user']);
 }
 

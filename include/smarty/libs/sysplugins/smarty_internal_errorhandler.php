@@ -78,21 +78,21 @@ class Smarty_Internal_ErrorHandler
             '/^(Attempt to read property "value" on null|Trying to get property (\'value\' )?of non-object)/',
             (string) $errstr
         )) {
-            return; // suppresses this error
+            return null; // suppresses this error
         }
 
         if ($this->allowUndefinedArrayKeys && preg_match(
             '/^(Undefined index|Undefined array key|Trying to access array offset on value of type)/',
             (string) $errstr
         )) {
-            return; // suppresses this error
+            return null; // suppresses this error
         }
 
         if ($this->allowDereferencingNonObjects && preg_match(
             '/^Attempt to read property ".+?" on/',
             (string) $errstr
         )) {
-            return; // suppresses this error
+            return null; // suppresses this error
         }
 
         // pass all other errors through to the previous error handler or to the default PHP error handler

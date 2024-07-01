@@ -74,19 +74,15 @@ class Smarty_Internal_Method_LoadPlugin
             $match[4]
         );
         $_lower_filename = smarty_strtolower_ascii($_plugin_filename);
-        if (isset($this->plugin_files)) {
-            if (isset($this->plugin_files['plugins_dir'][$_lower_filename])) {
-                if (! $smarty->use_include_path || $this->plugin_files['plugins_dir'][$_lower_filename] !== false) {
-                    return $this->plugin_files['plugins_dir'][$_lower_filename];
-                }
+        if ($this->plugin_files !== null) {
+            if (isset($this->plugin_files['plugins_dir'][$_lower_filename]) && (! $smarty->use_include_path || $this->plugin_files['plugins_dir'][$_lower_filename] !== false)) {
+                return $this->plugin_files['plugins_dir'][$_lower_filename];
             }
 
             if (! $smarty->use_include_path || $smarty->ext->_getIncludePath->isNewIncludePath($smarty)) {
                 unset($this->plugin_files['include_path']);
-            } else {
-                if (isset($this->plugin_files['include_path'][$_lower_filename])) {
-                    return $this->plugin_files['include_path'][$_lower_filename];
-                }
+            } elseif (isset($this->plugin_files['include_path'][$_lower_filename])) {
+                return $this->plugin_files['include_path'][$_lower_filename];
             }
         }
 

@@ -120,14 +120,10 @@ class Smarty_Internal_Compile_Functionclose extends Smarty_Internal_CompileBase
         // default parameter
         $_paramsArray = [];
         foreach ($_parameter as $_key => $_value) {
-            if (is_int($_key)) {
-                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
-            } else {
-                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
-            }
+            $_paramsArray[] = is_int($_key) ? sprintf('%d=>%s', $_key, $_value) : sprintf("'%s'=>%s", $_key, $_value);
         }
 
-        if (! empty($_paramsArray)) {
+        if ($_paramsArray !== []) {
             $_params = 'array(' . implode(',', $_paramsArray) . ')';
             $_paramsCode = "\$params = array_merge({$_params}, \$params);\n";
         } else {
@@ -248,7 +244,6 @@ class Smarty_Internal_Compile_Functionclose extends Smarty_Internal_CompileBase
                 '',
                 $match[0]
             );
-        $code = str_replace(['\\\'', '\\\\\''], ["'", '\\\''], $code);
-        return $code;
+        return str_replace(['\\\'', '\\\\\''], ["'", '\\\''], $code);
     }
 }

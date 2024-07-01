@@ -94,7 +94,6 @@ class Smarty_Internal_Compile_Private_Registered_Function extends Smarty_Interna
             );
         }
 
-        $output = "<?php echo {$output};?>\n";
-        return $output;
+        return "<?php echo {$output};?>\n";
     }
 }
