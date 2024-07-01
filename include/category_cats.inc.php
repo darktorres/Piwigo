@@ -302,7 +302,6 @@ if ($categories !== []) {
         $tpl_thumbnails_var_selection
     );
     $template->assign([
-        'maxRequests' => $conf['max_requests'],
         'category_thumbnails' => $tpl_thumbnails_var_selection,
         'derivative_params' => $derivative_params,
     ]);

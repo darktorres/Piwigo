@@ -197,11 +197,6 @@ final class DerivativeImage
     private $rel_url;
 
     /**
-     * @var bool
-     */
-    private $is_cached = true;
-
-    /**
      * @param string|DerivativeParams $type standard derivative param type (e.g. IMG_*)
      *    or a DerivativeParams object
      * @param SrcImage $src_image the source image of this derivative
@@ -212,7 +207,7 @@ final class DerivativeImage
     ) {
         $this->params = is_string($type) ? ImageStdParams::get_by_type($type) : $type;
 
-        self::build($this->src_image, $this->params, $this->rel_path, $this->rel_url, $this->is_cached);
+        self::build($this->src_image, $this->params, $this->rel_path, $this->rel_url);
     }
 
     /**
@@ -405,7 +400,7 @@ final class DerivativeImage
             return 'width="' . $size[0] . '" height="' . $size[1] . '"';
         }
 
-        return null;
+        return '';
     }
 
     /**
@@ -466,14 +461,6 @@ final class DerivativeImage
     }
 
     /**
-     * @return bool
-     */
-    public function is_cached()
-    {
-        return $this->is_cached;
-    }
-
-    /**
      * @todo : documentation of DerivativeImage::build
      */
     private static function build(
@@ -481,7 +468,6 @@ final class DerivativeImage
         &$params,
         &$rel_path,
         &$rel_url,
-        &$is_cached = null
     ) {
         if ($src->has_size() && $params->is_identity(
             $src->get_size()
@@ -505,7 +491,7 @@ final class DerivativeImage
                             $src->get_size()
                         )) {
                             $params = $smaller;
-                            self::build($src, $params, $rel_path, $rel_url, $is_cached);
+                            self::build($src, $params, $rel_path, $rel_url);
                             return;
                         }
                     }
@@ -537,12 +523,7 @@ final class DerivativeImage
         $url_style = $conf['derivative_url_style'];
         if (! $url_style) {
             $mtime = file_exists(PHPWG_ROOT_PATH . $rel_path) ? filemtime(PHPWG_ROOT_PATH . $rel_path) : false;
-            if ($mtime === false || $mtime < $params->last_mod_time) {
-                $is_cached = false;
-                $url_style = 2;
-            } else {
-                $url_style = 1;
-            }
+            $url_style = $mtime === false || $mtime < $params->last_mod_time ? 2 : 1;
         }
 
         if ($url_style == 2) {
