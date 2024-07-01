@@ -361,6 +361,7 @@ try {
 [$conf['derivatives']] = pwg_db_fetch_row(
     pwg_query('SELECT value FROM ' . $prefixeTable . "config WHERE param='derivatives'")
 );
+$conf['derivatives'] = unserialize($conf['derivatives']);
 ImageStdParams::load_from_db();
 
 parse_request();

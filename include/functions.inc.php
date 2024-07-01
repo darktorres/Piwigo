@@ -591,8 +591,6 @@ UPDATE ' . USER_INFOS_TABLE . '
             conf_update_param('history_sections_cache', get_enums(HISTORY_TABLE, 'section'), true);
         }
 
-        $conf['history_sections_cache'] = safe_unserialize($conf['history_sections_cache']);
-
         if (in_array($page['section'], $conf['history_sections_cache'])) {
             $section = $page['section'];
         } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', (string) $page['section'])) {
@@ -1490,6 +1488,78 @@ SELECT ' . $conf['user_fields']['email'] . '
     return trigger_change('get_webmaster_mail_address', $email);
 }
 
+function is_serialized(mixed $data, bool $strict = true): bool
+{
+    // If it isn't a string, it isn't serialized.
+    if (! is_string($data)) {
+        return false;
+    }
+
+    $data = trim($data);
+
+    if ($data === 'N;') {
+        return true;
+    }
+
+    if (strlen($data) < 4) {
+        return false;
+    }
+
+    if ($data[1] !== ':') {
+        return false;
+    }
+
+    if ($strict) {
+        $lastc = substr($data, -1);
+
+        if ($lastc !== ';' && $lastc !== '}') {
+            return false;
+        }
+    } else {
+        $semicolon = strpos($data, ';');
+        $brace = strpos($data, '}');
+
+        // Either ; or } must exist.
+        if ($semicolon === false && $brace === false) {
+            return false;
+        }
+
+        // But neither must be in the first X characters.
+        if ($semicolon !== false && $semicolon < 3) {
+            return false;
+        }
+
+        if ($brace !== false && $brace < 4) {
+            return false;
+        }
+    }
+
+    $token = $data[0];
+
+    switch ($token) {
+        case 's':
+            if ($strict) {
+                if (substr($data, -2, 1) !== '"') {
+                    return false;
+                }
+            } elseif (! str_contains($data, '"')) {
+                return false;
+            }
+            // no break
+        case 'a':
+        case 'O':
+        case 'E':
+            return (bool) preg_match(sprintf('/^%s:[0-9]+:/s', $token), $data);
+        case 'b':
+        case 'i':
+        case 'd':
+            $end = $strict ? '$' : '';
+            return (bool) preg_match(sprintf('/^%s:[0-9.E+-]+;%s/', $token, $end), $data);
+    }
+
+    return false;
+}
+
 /**
  * Add configuration parameters from database to global $conf array
  *
@@ -1513,11 +1583,20 @@ SELECT param, value
 
     while ($row = pwg_db_fetch_assoc($result)) {
         $val = $row['value'] ?? '';
-        // If the field is true or false, the variable is transformed into a boolean value.
-        if ($val == 'true') {
+        if ($val === 'true') {
             $val = true;
-        } elseif ($val == 'false') {
+        }
+
+        if ($val === 'false') {
             $val = false;
+        }
+
+        if (is_serialized($val)) {
+            $val = unserialize($val);
+        }
+
+        if (is_numeric($val)) {
+            $val = str_contains($val, '.') ? (float) $val : (int) $val;
         }
 
         $conf[$row['param']] = $val;
@@ -1608,23 +1687,6 @@ function conf_get_param(
 ) {
     global $conf;
     return $conf[$param] ?? $default_value;
-}
-
-/**
- * Apply *unserialize* on a value only if it is a string
- * @since 2.7
- *
- * @param array|string $value
- * @return array
- */
-function safe_unserialize(
-    $value
-) {
-    if (is_string($value)) {
-        return unserialize($value);
-    }
-
-    return $value;
 }
 
 /**
