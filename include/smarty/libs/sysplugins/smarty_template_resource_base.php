@@ -111,28 +111,37 @@ abstract class Smarty_Template_Resource_Base
             if (! isset($unifunc)) {
                 $unifunc = $this->unifunc;
             }
+
             if (empty($unifunc) || ! function_exists($unifunc)) {
-                throw new SmartyException("Invalid compiled template for '{$_template->template_resource}'");
+                throw new SmartyException(sprintf(
+                    "Invalid compiled template for '%s'",
+                    $_template->template_resource
+                ));
             }
+
             if ($_template->startRenderCallbacks) {
                 foreach ($_template->startRenderCallbacks as $callback) {
                     call_user_func($callback, $_template);
                 }
             }
+
             $unifunc($_template);
             foreach ($_template->endRenderCallbacks as $callback) {
                 call_user_func($callback, $_template);
             }
+
             $_template->isRenderingCache = false;
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $_template->isRenderingCache = false;
             while (ob_get_level() > $level) {
                 ob_end_clean();
             }
+
             if (isset($smarty->security_policy)) {
                 $smarty->security_policy->endTemplate();
             }
-            throw $e;
+
+            throw $exception;
         }
     }
 
@@ -146,6 +155,7 @@ abstract class Smarty_Template_Resource_Base
         if ($this->exists && ! $this->timestamp) {
             $this->timestamp = filemtime($this->filepath);
         }
+
         return $this->timestamp;
     }
 }

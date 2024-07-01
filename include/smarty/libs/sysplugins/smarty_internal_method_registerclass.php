@@ -37,8 +37,9 @@ class Smarty_Internal_Method_RegisterClass
         $smarty = $obj->_getSmartyObj();
         // test if exists
         if (! class_exists($class_impl)) {
-            throw new SmartyException("Undefined class '{$class_impl}' in register template class");
+            throw new SmartyException(sprintf("Undefined class '%s' in register template class", $class_impl));
         }
+
         // register the class
         $smarty->registered_classes[$class_name] = $class_impl;
         return $obj;

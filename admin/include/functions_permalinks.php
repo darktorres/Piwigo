@@ -15,11 +15,12 @@ function get_cat_id_from_permalink(
 ) {
     $query = '
 SELECT id FROM ' . CATEGORIES_TABLE . '
-  WHERE permalink=\'' . $permalink . '\'';
+  WHERE permalink=\'' . $permalink . "'";
     $ids = array_from_query($query, 'id');
     if (! empty($ids)) {
         return $ids[0];
     }
+
     return null;
 }
 
@@ -41,6 +42,7 @@ SELECT c.id
     if (pwg_db_num_rows($result)) {
         list($cat_id) = pwg_db_fetch_row($result);
     }
+
     return $cat_id;
 }
 
@@ -64,9 +66,11 @@ SELECT permalink
     if (pwg_db_num_rows($result)) {
         list($permalink) = pwg_db_fetch_row($result);
     }
+
     if (! isset($permalink)) {// no permalink; nothing to do
         return true;
     }
+
     if ($save) {
         $old_cat_id = get_cat_id_from_old_permalink($permalink);
         if (isset($old_cat_id) and $old_cat_id != $cat_id) {
@@ -79,6 +83,7 @@ SELECT permalink
             return false;
         }
     }
+
     $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET permalink=NULL
@@ -92,16 +97,18 @@ UPDATE ' . CATEGORIES_TABLE . '
             $query = '
 UPDATE ' . OLD_PERMALINKS_TABLE . '
   SET date_deleted=NOW()
-  WHERE cat_id=' . $cat_id . ' AND permalink=\'' . $permalink . '\'';
+  WHERE cat_id=' . $cat_id . " AND permalink='" . $permalink . "'";
         } else {
             $query = '
 INSERT INTO ' . OLD_PERMALINKS_TABLE . '
   (permalink, cat_id, date_deleted)
 VALUES
-  ( \'' . $permalink . '\',' . $cat_id . ',NOW() )';
+  ( \'' . $permalink . "'," . $cat_id . ',NOW() )';
         }
+
         pwg_query($query);
     }
+
     return true;
 }
 
@@ -167,7 +174,7 @@ function set_cat_permalink(
         assert($old_cat_id == $cat_id);
         $query = '
 DELETE FROM ' . OLD_PERMALINKS_TABLE . '
-  WHERE cat_id=' . $old_cat_id . ' AND permalink=\'' . $permalink . '\'';
+  WHERE cat_id=' . $old_cat_id . " AND permalink='" . $permalink . "'";
         pwg_query($query);
     }
 

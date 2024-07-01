@@ -49,6 +49,7 @@ function smarty_modifier_mb_wordwrap(
                 );
             }
         }
+
         foreach ($_tokens as $token) {
             $_space = ! ! preg_match('!^\s$!S' . Smarty::$_UTF8_MODIFIER, $token);
             $token_length = mb_strlen($token, Smarty::$_CHARSET);
@@ -58,21 +59,25 @@ function smarty_modifier_mb_wordwrap(
                 if ($_previous) {
                     $t = mb_substr($t, 0, -1, Smarty::$_CHARSET);
                 }
+
                 if (! $_space) {
                     // add the break before the token
                     if (! empty($t)) {
                         $t .= $break;
                     }
+
                     $length = $token_length;
                 }
             } elseif ($token === "\n") {
                 // hard break must reset counters
                 $length = 0;
             }
+
             $_previous = $_space;
             // add the token
             $t .= $token;
         }
     }
+
     return $t;
 }

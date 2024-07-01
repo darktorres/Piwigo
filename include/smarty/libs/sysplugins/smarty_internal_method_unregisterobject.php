@@ -35,6 +35,7 @@ class Smarty_Internal_Method_UnregisterObject
         if (isset($smarty->registered_objects[$object_name])) {
             unset($smarty->registered_objects[$object_name]);
         }
+
         return $obj;
     }
 }

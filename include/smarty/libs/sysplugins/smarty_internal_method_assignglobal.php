@@ -41,6 +41,7 @@ class Smarty_Internal_Method_AssignGlobal
                 $ptr = $ptr->parent;
             }
         }
+
         return $data;
     }
 }

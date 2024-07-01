@@ -37,6 +37,7 @@ class Smarty_Internal_Method_AddDefaultModifiers
         } else {
             $smarty->default_modifiers[] = $modifiers;
         }
+
         return $obj;
     }
 }

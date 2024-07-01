@@ -236,6 +236,7 @@ SELECT id, path, representative_ext
         if ($data === false) {
             continue;
         }
+
         // print_r($data);
         $id = $data['id'];
         foreach (['keywords', 'tags'] as $key) {
@@ -255,7 +256,7 @@ SELECT id, path, representative_ext
         $datas[] = $data;
     }
 
-    if (count($datas) > 0) {
+    if ($datas !== []) {
         $update_fields = get_sync_metadata_attributes();
         $update_fields[] = 'date_metadata_update';
 
@@ -305,7 +306,7 @@ SELECT id
     if (is_numeric($category_id)) {
         if ($recursive) {
             $query .= '
-    AND uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $category_id . '(,|$)\'
+    AND uppercats ' . DB_REGEX_OPERATOR . " '(^|,)" . $category_id . '(,|$)\'
 ';
         } else {
             $query .= '
@@ -313,6 +314,7 @@ SELECT id
 ';
         }
     }
+
     $query .= '
 ;';
     $result = pwg_query($query);
@@ -333,6 +335,7 @@ SELECT id, path, representative_ext
     AND date_metadata_update IS NULL
 ';
     }
+
     $query .= '
 ;';
     return hash_from_query($query, 'id');

@@ -84,6 +84,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
         if (! class_exists('Smarty_CacheResource', false)) {
             include SMARTY_SYSPLUGINS_DIR . 'smarty_cacheresource.php';
         }
+
         $this->handler = Smarty_CacheResource::load($_template->smarty);
     }
 
@@ -100,6 +101,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
         ) {
             $_template->cached->valid = false;
         }
+
         return $_template->cached;
     }
 
@@ -117,17 +119,22 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
                 if (! isset($_template->smarty->_debug)) {
                     $_template->smarty->_debug = new Smarty_Internal_Debug();
                 }
+
                 $_template->smarty->_debug->start_cache($_template);
             }
+
             if (! $this->processed) {
                 $this->process($_template);
             }
+
             $this->getRenderedTemplateCode($_template);
             if ($_template->smarty->debugging) {
                 $_template->smarty->_debug->end_cache($_template);
             }
+
             return;
         }
+
         $_template->smarty->ext->_updateCache->updateCache($this, $_template, $no_output_filter);
 
     }
@@ -143,6 +150,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
         if ($this->valid !== null) {
             return $this->valid;
         }
+
         while (true) {
             while (true) {
                 if ($this->exists === false || $_template->smarty->force_compile || $_template->smarty->force_cache) {
@@ -150,26 +158,32 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
                 } else {
                     $this->valid = true;
                 }
+
                 if ($this->valid && $_template->caching === Smarty::CACHING_LIFETIME_CURRENT
                     && $_template->cache_lifetime >= 0 && time() > ($this->timestamp + $_template->cache_lifetime)
                 ) {
                     // lifetime expired
                     $this->valid = false;
                 }
+
                 if ($this->valid && $_template->compile_check === Smarty::COMPILECHECK_ON
                     && $_template->source->getTimeStamp() > $this->timestamp
                 ) {
                     $this->valid = false;
                 }
+
                 if ($this->valid || ! $_template->smarty->cache_locking) {
                     break;
                 }
+
                 if (! $this->handler->locked($_template->smarty, $this)) {
                     $this->handler->acquireLock($_template->smarty, $this);
                     break 2;
                 }
+
                 $this->handler->populate($this, $_template);
             }
+
             if ($this->valid) {
                 if (! $_template->smarty->cache_locking || $this->handler->locked(
                     $_template->smarty,
@@ -179,11 +193,13 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
                     if ($_template->smarty->debugging) {
                         $_template->smarty->_debug->start_cache($_template);
                     }
+
                     if ($this->handler->process($_template, $this) === false) {
                         $this->valid = false;
                     } else {
                         $this->processed = true;
                     }
+
                     if ($_template->smarty->debugging) {
                         $_template->smarty->_debug->end_cache($_template);
                     }
@@ -194,12 +210,14 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
             } else {
                 return $this->valid;
             }
+
             if ($this->valid && $_template->caching === Smarty::CACHING_LIFETIME_SAVED
                 && $_template->cached->cache_lifetime >= 0
                 && (time() > ($_template->cached->timestamp + $_template->cached->cache_lifetime))
             ) {
                 $this->valid = false;
             }
+
             if ($_template->smarty->cache_locking) {
                 if (! $this->valid) {
                     $this->handler->acquireLock($_template->smarty, $this);
@@ -207,8 +225,10 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
                     $this->handler->releaseLock($_template->smarty, $this);
                 }
             }
+
             return $this->valid;
         }
+
         return $this->valid;
     }
 
@@ -225,6 +245,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
         if ($this->handler->process($_template, $this, $update) === false) {
             $this->valid = false;
         }
+
         if ($this->valid) {
             $this->processed = true;
         } else {
@@ -245,6 +266,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
         if (! $_template->source->handler->recompiled) {
             return $this->handler->readCachedContent($_template);
         }
+
         return false;
     }
 }

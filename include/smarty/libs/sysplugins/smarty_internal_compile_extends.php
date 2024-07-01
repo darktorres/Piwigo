@@ -60,9 +60,11 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
         if ($_attr['nocache'] === true) {
             $compiler->trigger_template_error('nocache option not allowed', $compiler->parser->lex->line - 1);
         }
+
         if (strpos($_attr['file'], '$_tmp') !== false) {
             $compiler->trigger_template_error('illegal value for file attribute', $compiler->parser->lex->line - 1);
         }
+
         // add code to initialize inheritance
         $this->registerInit($compiler, true);
         $file = trim($_attr['file'], '\'"');
@@ -74,20 +76,24 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
                 if ($file[0] === '"') {
                     $file = trim($file, '".');
                 } else {
-                    $file = "'{$file}'";
+                    $file = sprintf("'%s'", $file);
                 }
+
                 $i++;
                 if ($i === count($files) && isset($_attr['extends_resource'])) {
                     $this->compileEndChild($compiler);
                 }
+
                 $this->compileInclude($compiler, $file);
             }
+
             if (! isset($_attr['extends_resource'])) {
                 $this->compileEndChild($compiler);
             }
         } else {
             $this->compileEndChild($compiler, $_attr['file']);
         }
+
         $compiler->has_code = false;
         return '';
     }
@@ -104,8 +110,9 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
         foreach ($template->source->components as $source) {
             $resources[] = $source->resource;
         }
-        return $template->smarty->left_delimiter . 'extends file=\'extends:' . join('|', $resources) .
-               '\' extends_resource=true' . $template->smarty->right_delimiter;
+
+        return $template->smarty->left_delimiter . "extends file='extends:" . join('|', $resources) .
+               "' extends_resource=true" . $template->smarty->right_delimiter;
     }
 
     /**
@@ -127,11 +134,12 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
                 $inlineUids = $match[1];
             }
         }
+
         $compiler->parser->template_postfix[] = new Smarty_Internal_ParseTree_Tag(
             $compiler->parser,
             '<?php $_smarty_tpl->inheritance->endChild($_smarty_tpl' .
             (isset($template) ?
-                ", {$template}{$inlineUids}" :
+                sprintf(', %s%s', $template, $inlineUids) :
                 '') . ");\n?>"
         );
     }

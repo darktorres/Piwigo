@@ -86,12 +86,15 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
         if (isset($attributes['name'])) {
             $this->buildPropertyPreg(true, $attributes);
         }
+
         if (isset($this->itemProperties)) {
             if ($this->isNamed) {
                 $this->propertyPreg .= '|';
             }
+
             $this->buildPropertyPreg(false, $attributes);
         }
+
         $this->propertyPreg .= ')\W~i';
         // Template source
         $this->matchTemplateSource($compiler);
@@ -113,23 +116,25 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
     ) {
         if ($named) {
             $this->resultOffsets['named'] = $this->startOffset = $this->startOffset + 3;
-            $this->propertyPreg .= "(([\$]smarty[.]{$this->tagName}[.]" .
+            $this->propertyPreg .= sprintf('(([$]smarty[.]%s[.]', $this->tagName) .
                                    ($this->tagName === 'section' ? "|[\[]\s*" : '') .
-                                   "){$attributes['name']}[.](";
+                                   sprintf(')%s[.](', $attributes['name']);
             $properties = $this->nameProperties;
         } else {
             $this->resultOffsets['item'] = $this->startOffset = $this->startOffset + 2;
-            $this->propertyPreg .= "([\$]{$attributes['item']}[@](";
+            $this->propertyPreg .= sprintf('([$]%s[@](', $attributes['item']);
             $properties = $this->itemProperties;
         }
+
         $propName = reset($properties);
         while ($propName) {
-            $this->propertyPreg .= "{$propName}";
+            $this->propertyPreg .= $propName;
             $propName = next($properties);
             if ($propName) {
                 $this->propertyPreg .= '|';
             }
         }
+
         $this->propertyPreg .= '))';
     }
 
@@ -184,6 +189,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
                             $nextCompiler->template
                         );
                     }
+
                     $this->matchProperty($_content);
                 }
             }
@@ -215,13 +221,29 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
         $tag = smarty_strtolower_ascii(trim($parameter[0], '"\''));
         $name = isset($parameter[1]) ? $compiler->getId($parameter[1]) : false;
         if (! $name) {
-            $compiler->trigger_template_error("missing or illegal \$smarty.{$tag} name attribute", null, true);
+            $compiler->trigger_template_error(
+                sprintf('missing or illegal $smarty.%s name attribute', $tag),
+                null,
+                true
+            );
         }
+
         $property = isset($parameter[2]) ? smarty_strtolower_ascii($compiler->getId($parameter[2])) : false;
         if (! $property || ! in_array($property, $this->nameProperties)) {
-            $compiler->trigger_template_error("missing or illegal \$smarty.{$tag} property attribute", null, true);
+            $compiler->trigger_template_error(
+                sprintf('missing or illegal $smarty.%s property attribute', $tag),
+                null,
+                true
+            );
         }
-        $tagVar = "'__smarty_{$tag}_{$name}'";
-        return "(isset(\$_smarty_tpl->tpl_vars[{$tagVar}]->value['{$property}']) ? \$_smarty_tpl->tpl_vars[{$tagVar}]->value['{$property}'] : null)";
+
+        $tagVar = sprintf("'__smarty_%s_%s'", $tag, $name);
+        return sprintf(
+            '(isset($_smarty_tpl->tpl_vars[%s]->value[\'%s\']) ? $_smarty_tpl->tpl_vars[%s]->value[\'%s\'] : null)',
+            $tagVar,
+            $property,
+            $tagVar,
+            $property
+        );
     }
 }

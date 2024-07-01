@@ -23,6 +23,7 @@ function pwg_db_connect($host, $user, $password, $database)
     if (! $link) {
         throw new Exception("Can't connect to server");
     }
+
     if (! mysql_select_db($database, $link)) {
         throw new Exception('Connection to server succeed, but it was impossible to connect to database');
     }
@@ -34,6 +35,7 @@ function pwg_db_check_charset()
     if (defined('DB_CHARSET') and DB_CHARSET != '') {
         $db_charset = DB_CHARSET;
     }
+
     mysql_set_charset($db_charset);
 }
 
@@ -91,6 +93,7 @@ function pwg_query($query)
             $output .= "\n" . '(affected rows   : ';
             $output .= mysql_affected_rows() . ' )';
         }
+
         $output .= "</pre>\n";
 
         $debug .= $output;
@@ -203,15 +206,19 @@ UPDATE ' . $tablename . '
                 $separator = $is_first ? '' : ",\n    ";
 
                 if (isset($data[$key]) and $data[$key] != '') {
-                    $query .= $separator . $key . ' = \'' . $data[$key] . '\'';
+                    $query .= $separator . $key . " = '" . $data[$key] . "'";
                 } else {
                     if ($flags & MASS_UPDATES_SKIP_EMPTY) {
                         continue;
-                    } // next field
-                    $query .= "{$separator}{$key} = NULL";
+                    }
+
+                    // next field
+                    $query .= sprintf('%s%s = NULL', $separator, $key);
                 }
+
                 $is_first = false;
             }
+
             if (! $is_first) {// only if one field at least updated
                 $query .= '
   WHERE ';
@@ -220,13 +227,16 @@ UPDATE ' . $tablename . '
                     if (! $is_first) {
                         $query .= ' AND ';
                     }
+
                     if (isset($data[$key])) {
-                        $query .= $key . ' = \'' . $data[$key] . '\'';
+                        $query .= $key . " = '" . $data[$key] . "'";
                     } else {
                         $query .= $key . ' IS NULL';
                     }
+
                     $is_first = false;
                 }
+
                 pwg_query($query);
             }
         } // foreach update
@@ -248,14 +258,17 @@ SHOW FULL COLUMNS FROM ' . $tablename;
                     $column .= ' NOT NULL';
                     $nullable = false;
                 }
+
                 if (isset($row['Default'])) {
                     $column .= " default '" . $row['Default'] . "'";
                 } elseif ($nullable) {
                     $column .= ' default NULL';
                 }
+
                 if (isset($row['Collation']) and $row['Collation'] != 'NULL') {
                     $column .= " collate '" . $row['Collation'] . "'";
                 }
+
                 $columns[] = $column;
             }
         }
@@ -326,15 +339,19 @@ UPDATE ' . $tablename . '
         $separator = $is_first ? '' : ",\n    ";
 
         if (isset($value) and $value !== '') {
-            $query .= $separator . $key . ' = \'' . $value . '\'';
+            $query .= $separator . $key . " = '" . $value . "'";
         } else {
             if ($flags & MASS_UPDATES_SKIP_EMPTY) {
                 continue;
-            } // next field
-            $query .= "{$separator}{$key} = NULL";
+            }
+
+            // next field
+            $query .= sprintf('%s%s = NULL', $separator, $key);
         }
+
         $is_first = false;
     }
+
     if (! $is_first) {// only if one field at least updated
         $query .= '
   WHERE ';
@@ -343,13 +360,16 @@ UPDATE ' . $tablename . '
             if (! $is_first) {
                 $query .= ' AND ';
             }
+
             if (isset($value)) {
-                $query .= $key . ' = \'' . $value . '\'';
+                $query .= $key . " = '" . $value . "'";
             } else {
                 $query .= $key . ' IS NULL';
             }
+
             $is_first = false;
         }
+
         pwg_query($query);
     }
 }
@@ -376,7 +396,7 @@ function mass_inserts(
     if (count($datas) != 0) {
         $first = true;
 
-        $query = 'SHOW VARIABLES LIKE \'max_allowed_packet\'';
+        $query = "SHOW VARIABLES LIKE 'max_allowed_packet'";
         list(, $packet_size) = pwg_db_fetch_row(pwg_query($query));
         $packet_size = $packet_size - 2000; // The last list of values MUST not exceed 2000 character*/
         $query = '';
@@ -410,8 +430,10 @@ INSERT ' . $ignore . ' INTO ' . $table_name . '
                     $query .= "'" . $insert[$dbfield] . "'";
                 }
             }
+
             $query .= ')';
         }
+
         pwg_query($query);
     }
 }
@@ -448,6 +470,7 @@ INSERT INTO ' . $table_name . '
                 $query .= "'" . $value . "'";
             }
         }
+
         $query .= ')';
 
         pwg_query($query);
@@ -466,7 +489,7 @@ function do_maintenance_all_tables()
     $all_tables = [];
 
     // List all tables
-    $query = 'SHOW TABLES LIKE \'' . $prefixeTable . '%\'';
+    $query = "SHOW TABLES LIKE '" . $prefixeTable . "%'";
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_row($result)) {
         $all_tables[] = $row[0];
@@ -513,7 +536,7 @@ function pwg_db_concat($array)
 function pwg_db_concat_ws($array, $separator)
 {
     $string = implode(',', $array);
-    return 'CONCAT_WS(\'' . $separator . '\',' . $string . ')';
+    return "CONCAT_WS('" . $separator . "'," . $string . ')';
 }
 
 function pwg_db_cast_to_text($string)
@@ -546,6 +569,7 @@ function get_enums(
             }
         }
     }
+
     pwg_db_free_result($result);
     return $options;
 }
@@ -592,7 +616,7 @@ function pwg_db_get_recent_period_expression(
     $date = 'CURRENT_DATE'
 ) {
     if ($date != 'CURRENT_DATE') {
-        $date = '\'' . $date . '\'';
+        $date = "'" . $date . "'";
     }
 
     return 'SUBDATE(' . $date . ',INTERVAL ' . $period . ' DAY)';
@@ -619,12 +643,12 @@ function pwg_db_get_hour($date)
 
 function pwg_db_get_date_YYYYMM($date)
 {
-    return 'DATE_FORMAT(' . $date . ', \'%Y%m\')';
+    return 'DATE_FORMAT(' . $date . ", '%Y%m')";
 }
 
 function pwg_db_get_date_MMDD($date)
 {
-    return 'DATE_FORMAT(' . $date . ', \'%m%d\')';
+    return 'DATE_FORMAT(' . $date . ", '%m%d')";
 }
 
 function pwg_db_get_year($date)
@@ -677,6 +701,7 @@ function my_error($header, $die)
     if ($die) {
         fatal_error($error);
     }
+
     echo '<pre>';
     trigger_error($error, E_USER_WARNING);
     echo '</pre>';

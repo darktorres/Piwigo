@@ -48,22 +48,25 @@ class Smarty_Internal_Method_LoadFilter
     ) {
         $smarty = $obj->_getSmartyObj();
         $this->_checkFilterType($type);
-        $_plugin = "smarty_{$type}filter_{$name}";
+        $_plugin = sprintf('smarty_%sfilter_%s', $type, $name);
         $_filter_name = $_plugin;
         if (is_callable($_plugin)) {
             $smarty->registered_filters[$type][$_filter_name] = $_plugin;
             return true;
         }
+
         if ($smarty->loadPlugin($_plugin)) {
             if (class_exists($_plugin, false)) {
                 $_plugin = [$_plugin, 'execute'];
             }
+
             if (is_callable($_plugin)) {
                 $smarty->registered_filters[$type][$_filter_name] = $_plugin;
                 return true;
             }
         }
-        throw new SmartyException("{$type}filter '{$name}' not found or callable");
+
+        throw new SmartyException(sprintf("%sfilter '%s' not found or callable", $type, $name));
     }
 
     /**
@@ -75,7 +78,7 @@ class Smarty_Internal_Method_LoadFilter
         $type
     ) {
         if (! isset($this->filterTypes[$type])) {
-            throw new SmartyException("Illegal filter type '{$type}'");
+            throw new SmartyException(sprintf("Illegal filter type '%s'", $type));
         }
     }
 }

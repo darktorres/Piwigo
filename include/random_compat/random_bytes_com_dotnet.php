@@ -40,7 +40,7 @@ function random_bytes(
 ) {
     try {
         $bytes = RandomCompat_intval($bytes);
-    } catch (TypeError $ex) {
+    } catch (TypeError $typeError) {
         throw new TypeError(
             'random_bytes(): $bytes must be an integer'
         );
@@ -68,6 +68,7 @@ function random_bytes(
              */
             return RandomCompat_substr($buf, 0, $bytes);
         }
+
         ++$execCount;
     } while ($execCount < $bytes);
 

@@ -156,13 +156,15 @@ class Smarty_Template_Source
         Smarty $smarty = null,
         $template_resource = null
     ) {
-        if ($_template) {
+        if ($_template !== null) {
             $smarty = $_template->smarty;
             $template_resource = $_template->template_resource;
         }
+
         if (empty($template_resource)) {
             throw new SmartyException('Source: Missing  name');
         }
+
         // parse resource_name, load resource handler, identify unique resource name
         if (preg_match(
             '/^([A-Za-z0-9_\-]{2,})[:]([\s\S]*)$/',
@@ -177,6 +179,7 @@ class Smarty_Template_Source
             $type = $smarty->default_resource_type;
             $name = $template_resource;
         }
+
         // create new source  object
         $source = new self($smarty, $template_resource, $type, $name);
         $source->handler->populate($source, $_template);
@@ -184,6 +187,7 @@ class Smarty_Template_Source
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
             $source->handler->populate($source, $_template);
         }
+
         return $source;
     }
 
@@ -197,6 +201,7 @@ class Smarty_Template_Source
         if (! isset($this->timestamp)) {
             $this->handler->populateTimestamp($this);
         }
+
         return $this->timestamp;
     }
 

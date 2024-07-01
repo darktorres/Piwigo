@@ -48,11 +48,12 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             if (is_int($_key)) {
-                $_paramsArray[] = "{$_key}=>{$_value}";
+                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
             } else {
-                $_paramsArray[] = "'{$_key}'=>{$_value}";
+                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
             }
         }
+
         return [$function, $_paramsArray, null];
     }
 
@@ -86,11 +87,13 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
             $output = '<?php ';
             if (is_array($callback)) {
                 $output .= "\$_block_plugin{$this->nesting} = isset({$callback[0]}) ? {$callback[0]} : null;\n";
-                $callback = "\$_block_plugin{$this->nesting}{$callback[1]}";
+                $callback = sprintf('$_block_plugin%d%s', $this->nesting, $callback[1]);
             }
+
             if (isset($callable)) {
                 $output .= "if (!is_callable({$callable})) {\nthrow new SmartyException('block tag \'{$tag}\' not callable or registered');\n}\n";
             }
+
             $output .= "\$_smarty_tpl->smarty->_cache['_tag_stack'][] = array('{$tag}', {$_params});\n";
             $output .= "\$_block_repeat=true;\necho {$callback}({$_params}, null, \$_smarty_tpl, \$_block_repeat);\nwhile (\$_block_repeat) {\nob_start();?>";
             $this->openTag($compiler, $tag, [$_params, $compiler->nocache, $callback]);
@@ -101,6 +104,7 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
             if ($compiler->nocache) {
                 $compiler->tag_nocache = true;
             }
+
             // closing tag of block plugin, restore nocache
             list($_params, $compiler->nocache, $callback) = $this->closeTag(
                 $compiler,
@@ -108,10 +112,12 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
             );
             // compile code
             if (! isset($parameter['modifier_list'])) {
-                $mod_pre = $mod_post = $mod_content = '';
+                $mod_pre = '';
+                $mod_post = '';
+                $mod_content = '';
                 $mod_content2 = 'ob_get_clean()';
             } else {
-                $mod_content2 = "\$_block_content{$this->nesting}";
+                $mod_content2 = '$_block_content' . $this->nesting;
                 $mod_content = "\$_block_content{$this->nesting} = ob_get_clean();\n";
                 $mod_pre = "ob_start();\n";
                 $mod_post = 'echo ' . $compiler->compileTag(
@@ -123,10 +129,12 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
                     ]
                 ) . ";\n";
             }
+
             $output =
                 "<?php {$mod_content}\$_block_repeat=false;\n{$mod_pre}echo {$callback}({$_params}, {$mod_content2}, \$_smarty_tpl, \$_block_repeat);\n{$mod_post}}\n";
             $output .= 'array_pop($_smarty_tpl->smarty->_cache[\'_tag_stack\']);?>';
         }
+
         return $output;
     }
 }

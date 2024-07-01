@@ -132,12 +132,14 @@ if (isset($_POST['submit'])) {
     if (! empty($_POST['tags'])) {
         $tag_ids = get_tag_ids($_POST['tags']);
     }
+
     set_tags($tag_ids, $_GET['image_id']);
 
     // association to albums
     if (! isset($_POST['associate'])) {
         $_POST['associate'] = [];
     }
+
     check_input_parameter('associate', $_POST, true, PATTERN_ID);
     move_images_to_categories([$_GET['image_id']], $_POST['associate']);
 
@@ -147,15 +149,16 @@ if (isset($_POST['submit'])) {
     if (! isset($_POST['represent'])) {
         $_POST['represent'] = [];
     }
+
     check_input_parameter('represent', $_POST, true, PATTERN_ID);
 
     $no_longer_thumbnail_for = array_diff($represented_albums, $_POST['represent']);
-    if (count($no_longer_thumbnail_for) > 0) {
+    if ($no_longer_thumbnail_for !== []) {
         set_random_representant($no_longer_thumbnail_for);
     }
 
     $new_thumbnail_for = array_diff($_POST['represent'], $represented_albums);
-    if (count($new_thumbnail_for) > 0) {
+    if ($new_thumbnail_for !== []) {
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = ' . $_GET['image_id'] . '

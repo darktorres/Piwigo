@@ -61,15 +61,15 @@ if (isset($_GET['installstatus'])) {
             break;
 
         case 'temp_path_error':
-            $page['errors'][] = l10n('Can\'t create temporary file.');
+            $page['errors'][] = l10n("Can't create temporary file.");
             break;
 
         case 'dl_archive_error':
-            $page['errors'][] = l10n('Can\'t download archive.');
+            $page['errors'][] = l10n("Can't download archive.");
             break;
 
         case 'archive_error':
-            $page['errors'][] = l10n('Can\'t read or extract archive.');
+            $page['errors'][] = l10n("Can't read or extract archive.");
             break;
 
         default:
@@ -107,8 +107,9 @@ if ($languages->get_server_languages(
         ]);
     }
 } else {
-    $page['errors'][] = l10n('Can\'t connect to server.');
+    $page['errors'][] = l10n("Can't connect to server.");
 }
+
 $template->assign('ADMIN_PAGE_TITLE', l10n('Languages'));
 $template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
 

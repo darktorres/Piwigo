@@ -80,6 +80,7 @@ abstract class Smarty_Internal_CompileBase
         if (! isset($this->mapCache['option'])) {
             $this->mapCache['option'] = array_fill_keys($this->option_flags, true);
         }
+
         foreach ($attributes as $key => $mixed) {
             // shorthand ?
             if (! is_array($mixed)) {
@@ -97,6 +98,7 @@ abstract class Smarty_Internal_CompileBase
                         true
                     );
                 }
+
                 // named attribute
             } else {
                 foreach ($mixed as $k => $v) {
@@ -108,17 +110,19 @@ abstract class Smarty_Internal_CompileBase
                             if (is_string($v)) {
                                 $v = trim($v, '\'" ');
                             }
+
                             if (isset($this->optionMap[$v])) {
                                 $_indexed_attr[$k] = $this->optionMap[$v];
                             } else {
                                 $compiler->trigger_template_error(
                                     "illegal value '" . var_export($v, true) .
-                                    "' for option flag '{$k}'",
+                                    sprintf("' for option flag '%s'", $k),
                                     null,
                                     true
                                 );
                             }
                         }
+
                         // must be named attribute
                     } else {
                         $_indexed_attr[$k] = $v;
@@ -126,12 +130,14 @@ abstract class Smarty_Internal_CompileBase
                 }
             }
         }
+
         // check if all required attributes present
         foreach ($this->required_attributes as $attr) {
             if (! isset($_indexed_attr[$attr])) {
-                $compiler->trigger_template_error("missing '{$attr}' attribute", null, true);
+                $compiler->trigger_template_error(sprintf("missing '%s' attribute", $attr), null, true);
             }
         }
+
         // check for not allowed attributes
         if ($this->optional_attributes !== ['_any']) {
             if (! isset($this->mapCache['all'])) {
@@ -145,21 +151,25 @@ abstract class Smarty_Internal_CompileBase
                         true
                     );
             }
+
             foreach ($_indexed_attr as $key => $dummy) {
                 if (! isset($this->mapCache['all'][$key]) && $key !== 0) {
-                    $compiler->trigger_template_error("unexpected '{$key}' attribute", null, true);
+                    $compiler->trigger_template_error(sprintf("unexpected '%s' attribute", $key), null, true);
                 }
             }
         }
+
         // default 'false' for all option flags not set
         foreach ($this->option_flags as $flag) {
             if (! isset($_indexed_attr[$flag])) {
                 $_indexed_attr[$flag] = false;
             }
         }
+
         if (isset($_indexed_attr['nocache']) && $_indexed_attr['nocache']) {
             $compiler->tag_nocache = true;
         }
+
         return $_indexed_attr;
     }
 
@@ -201,16 +211,24 @@ abstract class Smarty_Internal_CompileBase
                     // return opening tag
                     return $_openTag;
                 }
+
                 // return restored data
                 return $_data;
 
             }
+
             // wrong nesting of tags
             $compiler->trigger_template_error(
-                "unclosed '{$compiler->smarty->left_delimiter}{$_openTag}{$compiler->smarty->right_delimiter}' tag"
+                sprintf(
+                    "unclosed '%s%s%s' tag",
+                    $compiler->smarty->left_delimiter,
+                    $_openTag,
+                    $compiler->smarty->right_delimiter
+                )
             );
             return;
         }
+
         // wrong nesting of tags
         $compiler->trigger_template_error('unexpected closing tag', null, true);
         return;

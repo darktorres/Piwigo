@@ -516,7 +516,8 @@ abstract class aCssToken
                 $startIndex + 1,
                 $endIndex - $startIndex - 1
             );
-            $sortRequired = $lastPropertyName = false;
+            $sortRequired = false;
+            $lastPropertyName = false;
             foreach ($declarations as $declaration) {
                 if ($lastPropertyName) {
                     if (strcmp(
@@ -965,7 +966,8 @@ abstract class aCssToken
         $buffer = &$this->buffer;
         $exclusive = &$this->stateExclusive;
         $state = &$this->state;
-        $c = $p = null;
+        $c = null;
+        $p = null;
         for ($i = 0, $l = strlen(
             $source
         ); $i < $l; $i++) {
@@ -1633,9 +1635,10 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
                         ); $ii < $ll; $ii++) {
                             if (get_class(
                                 $import[$ii]
-                            ) === 'CssAtMediaStartToken' && count(
-                                array_diff($tokens[$i]->MediaTypes, $import[$ii]->MediaTypes)
-                            ) === 0) {
+                            ) === 'CssAtMediaStartToken' && array_diff(
+                                $tokens[$i]->MediaTypes,
+                                $import[$ii]->MediaTypes
+                            ) === []) {
                                 for ($iii = $ii; $iii < $ll; $iii++) {
                                     if (get_class(
                                         $import[$iii]
@@ -1748,7 +1751,8 @@ class CssImportImportsMinifierFilter extends aCssMinifierFilter
         } elseif ($char === ')' && $state === 'T_EXPRESSION') {
             $this->rightBraces++;
         } elseif (($char === ';' || $char === '}') && $state === 'T_EXPRESSION' && $this->leftBraces === $this->rightBraces) {
-            $this->leftBraces = $this->rightBraces = 0;
+            $this->leftBraces = 0;
+            $this->rightBraces = 0;
             $this->parser->popState();
             return $index - 1;
         } else {

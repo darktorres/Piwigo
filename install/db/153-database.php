@@ -23,13 +23,15 @@ function value_display_fromto()
             return 'true';
         }
     }
+
     return 'false';
 }
+
 $value = value_display_fromto();
 
 $query = '
 INSERT INTO ' . PREFIX_TABLE . 'config (param,value,comment)
-  VALUES (\'display_fromto\',\'' . $value . '\', \'' . $upgrade_description . '\')
+  VALUES (\'display_fromto\',\'' . $value . "', '" . $upgrade_description . '\')
 ;';
 
 pwg_query($query);

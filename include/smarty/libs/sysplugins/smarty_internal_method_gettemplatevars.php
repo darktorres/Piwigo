@@ -40,19 +40,23 @@ class Smarty_Internal_Method_GetTemplateVars
             if (is_object($_var)) {
                 return $_var->value;
             }
+
             return null;
 
         }
+
         $_result = [];
         if ($_ptr === null) {
             $_ptr = $data;
         }
+
         while ($_ptr !== null) {
             foreach ($_ptr->tpl_vars as $key => $var) {
                 if (! array_key_exists($key, $_result)) {
                     $_result[$key] = $var->value;
                 }
             }
+
             // not found, try at parent
             if ($searchParents && isset($_ptr->parent)) {
                 $_ptr = $_ptr->parent;
@@ -60,6 +64,7 @@ class Smarty_Internal_Method_GetTemplateVars
                 $_ptr = null;
             }
         }
+
         if ($searchParents && isset(Smarty::$global_tpl_vars)) {
             foreach (Smarty::$global_tpl_vars as $key => $var) {
                 if (! array_key_exists($key, $_result)) {
@@ -67,6 +72,7 @@ class Smarty_Internal_Method_GetTemplateVars
                 }
             }
         }
+
         return $_result;
 
     }
@@ -92,11 +98,13 @@ class Smarty_Internal_Method_GetTemplateVars
         if ($_ptr === null) {
             $_ptr = $data;
         }
+
         while ($_ptr !== null) {
             if (isset($_ptr->tpl_vars[$varName])) {
                 // found it, return it
                 return $_ptr->tpl_vars[$varName];
             }
+
             // not found, try at parent
             if ($searchParents && isset($_ptr->parent)) {
                 $_ptr = $_ptr->parent;
@@ -104,14 +112,17 @@ class Smarty_Internal_Method_GetTemplateVars
                 $_ptr = null;
             }
         }
+
         if (isset(Smarty::$global_tpl_vars[$varName])) {
             // found it, return it
             return Smarty::$global_tpl_vars[$varName];
         }
+
         if ($errorEnable && $data->_getSmartyObj()->error_unassigned) {
             // force a notice
             $x = ${$varName};
         }
+
         return new Smarty_Undefined_Variable();
     }
 }

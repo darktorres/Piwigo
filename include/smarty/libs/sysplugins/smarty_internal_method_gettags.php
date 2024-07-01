@@ -42,9 +42,14 @@ class Smarty_Internal_Method_GetTags
             $tpl = new $smarty->template_class($template, $smarty);
             // checks if template exists
             if (! $tpl->source->exists) {
-                throw new SmartyException("Unable to load template {$tpl->source->type} '{$tpl->source->name}'");
+                throw new SmartyException(sprintf(
+                    "Unable to load template %s '%s'",
+                    $tpl->source->type,
+                    $tpl->source->name
+                ));
             }
         }
+
         if (isset($tpl)) {
             $tpl->smarty = clone $tpl->smarty;
             $tpl->smarty->_cache['get_used_tags'] = true;
@@ -56,6 +61,7 @@ class Smarty_Internal_Method_GetTags
             $tpl->compiler->compileTemplate($tpl);
             return $tpl->_cache['used_tags'];
         }
+
         throw new SmartyException('Missing template specification');
     }
 }

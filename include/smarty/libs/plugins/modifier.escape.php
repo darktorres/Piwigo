@@ -41,6 +41,7 @@ function smarty_modifier_escape(
                 $string = mb_convert_encoding($string, 'UTF-8', $char_set);
                 return htmlentities($string, ENT_QUOTES, 'UTF-8', $double_encode);
             }
+
             // no MBString fallback
             return htmlentities($string, ENT_QUOTES, $char_set, $double_encode);
         case 'url':
@@ -58,6 +59,7 @@ function smarty_modifier_escape(
             for ($x = 0; $x < $_length; $x++) {
                 $return .= '%' . bin2hex($string[$x]);
             }
+
             return $return;
         case 'hexentity':
             $return = '';
@@ -66,19 +68,24 @@ function smarty_modifier_escape(
                     if (! is_callable('smarty_mb_to_unicode')) {
                         include_once SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php';
                     }
+
                     $is_loaded_1 = true;
                 }
+
                 $return = '';
                 foreach (smarty_mb_to_unicode($string, Smarty::$_CHARSET) as $unicode) {
                     $return .= '&#x' . strtoupper(dechex($unicode)) . ';';
                 }
+
                 return $return;
             }
+
             // no MBString fallback
             $_length = strlen($string);
             for ($x = 0; $x < $_length; $x++) {
                 $return .= '&#x' . bin2hex($string[$x]) . ';';
             }
+
             return $return;
         case 'decentity':
             $return = '';
@@ -87,19 +94,24 @@ function smarty_modifier_escape(
                     if (! is_callable('smarty_mb_to_unicode')) {
                         include_once SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php';
                     }
+
                     $is_loaded_1 = true;
                 }
+
                 $return = '';
                 foreach (smarty_mb_to_unicode($string, Smarty::$_CHARSET) as $unicode) {
                     $return .= '&#' . $unicode . ';';
                 }
+
                 return $return;
             }
+
             // no MBString fallback
             $_length = strlen($string);
             for ($x = 0; $x < $_length; $x++) {
                 $return .= '&#' . ord($string[$x]) . ';';
             }
+
             return $return;
         case 'javascript':
             // escape quotes and backslashes, newlines, etc.
@@ -126,8 +138,10 @@ function smarty_modifier_escape(
                     if (! is_callable('smarty_mb_str_replace')) {
                         include_once SMARTY_PLUGINS_DIR . 'shared.mb_str_replace.php';
                     }
+
                     $is_loaded_2 = true;
                 }
+
                 return smarty_mb_str_replace(
                     [
                         '@',
@@ -140,6 +154,7 @@ function smarty_modifier_escape(
                     $string
                 );
             }
+
             // no MBString fallback
             return str_replace(
                 [
@@ -160,8 +175,10 @@ function smarty_modifier_escape(
                     if (! is_callable('smarty_mb_to_unicode')) {
                         include_once SMARTY_PLUGINS_DIR . 'shared.mb_unicode.php';
                     }
+
                     $is_loaded_1 = true;
                 }
+
                 foreach (smarty_mb_to_unicode($string, Smarty::$_CHARSET) as $unicode) {
                     if ($unicode >= 126) {
                         $return .= '&#' . $unicode . ';';
@@ -169,8 +186,10 @@ function smarty_modifier_escape(
                         $return .= chr($unicode);
                     }
                 }
+
                 return $return;
             }
+
             $_length = strlen($string);
             for ($_i = 0; $_i < $_length; $_i++) {
                 $_ord = ord(substr($string, $_i, 1));
@@ -181,9 +200,13 @@ function smarty_modifier_escape(
                     $return .= substr($string, $_i, 1);
                 }
             }
+
             return $return;
         default:
-            trigger_error("escape: unsupported type: {$esc_type} - returning unmodified string", E_USER_NOTICE);
+            trigger_error(
+                sprintf('escape: unsupported type: %s - returning unmodified string', $esc_type),
+                E_USER_NOTICE
+            );
             return $string;
     }
 }

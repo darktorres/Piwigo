@@ -32,9 +32,11 @@ class Smarty_Internal_Method_AppendByRef
             if (! isset($data->tpl_vars[$tpl_var])) {
                 $data->tpl_vars[$tpl_var] = new Smarty_Variable();
             }
+
             if (! is_array($data->tpl_vars[$tpl_var]->value)) {
                 settype($data->tpl_vars[$tpl_var]->value, 'array');
             }
+
             if ($merge && is_array($value)) {
                 foreach ($value as $_key => $_val) {
                     $data->tpl_vars[$tpl_var]->value[$_key] = &$value[$_key];
@@ -42,10 +44,12 @@ class Smarty_Internal_Method_AppendByRef
             } else {
                 $data->tpl_vars[$tpl_var]->value[] = &$value;
             }
+
             if ($data->_isTplObj() && $data->scope) {
                 $data->ext->_updateScope->_updateScope($data, $tpl_var);
             }
         }
+
         return $data;
     }
 }

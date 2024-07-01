@@ -63,15 +63,17 @@ if (isset($_POST['submit'])) {
                 if (! empty($image_order)) {
                     $image_order .= ',';
                 }
+
                 $image_order .= $_POST['image_order'][$i];
             }
         }
     } elseif ($image_order_choice == 'rank') {
         $image_order = '`rank` ASC';
     }
+
     $query = '
 UPDATE ' . CATEGORIES_TABLE . ' 
-  SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
+  SET image_order = ' . (isset($image_order) ? "'" . $image_order . "'" : 'NULL') . '
   WHERE id=' . $page['category_id'];
     pwg_query($query);
 
@@ -80,8 +82,8 @@ UPDATE ' . CATEGORIES_TABLE . '
 
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
-  SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
-  WHERE uppercats LIKE \'' . $cat_info['uppercats'] . ',%\'';
+  SET image_order = ' . (isset($image_order) ? "'" . $image_order . "'" : 'NULL') . '
+  WHERE uppercats LIKE \'' . $cat_info['uppercats'] . ",%'";
         pwg_query($query);
     }
 
@@ -157,6 +159,7 @@ if (pwg_db_num_rows($result) > 0) {
             $file_wo_ext = get_filename_wo_extension($row['file']);
             $thumbnail_name = str_replace('_', ' ', $file_wo_ext);
         }
+
         $current_rank++;
         $template->append(
             'thumbnails',
@@ -170,6 +173,7 @@ if (pwg_db_num_rows($result) > 0) {
         );
     }
 }
+
 // image order management
 $sort_fields = [
     '' => '',

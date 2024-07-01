@@ -125,6 +125,7 @@ abstract class Smarty_Internal_Data
                 }
             }
         }
+
         return $this;
     }
 
@@ -231,12 +232,14 @@ abstract class Smarty_Internal_Data
             if (! empty($this->tpl_vars)) {
                 $data->tpl_vars = array_merge($this->tpl_vars, $data->tpl_vars);
             }
+
             if (! empty($this->config_vars)) {
                 $data->config_vars = array_merge($this->config_vars, $data->config_vars);
             }
         } else {
             $data = $this;
         }
+
         if (isset($this->parent)) {
             $this->parent->_mergeVars($data);
         }

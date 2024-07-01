@@ -48,7 +48,8 @@ function smarty_function_html_table(
     $tr_attr = '';
     $th_attr = '';
     $td_attr = '';
-    $cols = $cols_count = 3;
+    $cols = 3;
+    $cols_count = 3;
     $rows = 3;
     $trailpad = '&nbsp;';
     $vdir = 'down';
@@ -60,6 +61,7 @@ function smarty_function_html_table(
         trigger_error("html_table: missing 'loop' parameter", E_USER_WARNING);
         return;
     }
+
     foreach ($params as $_key => $_value) {
         switch ($_key) {
             case 'loop':
@@ -77,6 +79,7 @@ function smarty_function_html_table(
                 } else {
                     $cols_count = $cols;
                 }
+
                 break;
             case 'rows':
                 ${$_key} = (int) $_value;
@@ -96,6 +99,7 @@ function smarty_function_html_table(
                 break;
         }
     }
+
     $loop_count = count($loop);
     if (empty($params['rows'])) {
         /* no rows specified */
@@ -106,10 +110,12 @@ function smarty_function_html_table(
             $cols_count = ceil($loop_count / $rows);
         }
     }
+
     $output = "<table {$table_attr}>\n";
     if (! empty($caption)) {
         $output .= '<caption>' . $caption . "</caption>\n";
     }
+
     if (is_array($cols)) {
         $cols = ($hdir === 'right') ? $cols : array_reverse($cols);
         $output .= "<thead><tr>\n";
@@ -118,8 +124,10 @@ function smarty_function_html_table(
             $output .= $cols[$r];
             $output .= "</th>\n";
         }
+
         $output .= "</tr></thead>\n";
     }
+
     $output .= "<tbody>\n";
     for ($r = 0; $r < $rows; $r++) {
         $output .= '<tr' . smarty_function_html_table_cycle('tr', $tr_attr, $r) . ">\n";
@@ -130,6 +138,7 @@ function smarty_function_html_table(
                 /* shuffle x to loop over rows*/
                 $x = floor($x / $cols_count) + ($x % $cols_count) * $rows;
             }
+
             if ($x < $loop_count) {
                 $output .= '<td' . smarty_function_html_table_cycle(
                     'td',
@@ -140,8 +149,10 @@ function smarty_function_html_table(
                 $output .= '<td' . smarty_function_html_table_cycle('td', $td_attr, $c) . ">{$trailpad}</td>\n";
             }
         }
+
         $output .= "</tr>\n";
     }
+
     $output .= "</tbody>\n";
     $output .= "</table>\n";
     return $output;
@@ -157,5 +168,6 @@ function smarty_function_html_table_cycle($name, $var, $no)
     } else {
         $ret = $var[$no % count($var)];
     }
+
     return ($ret) ? ' ' . $ret : '';
 }

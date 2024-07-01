@@ -296,7 +296,7 @@ $core = [
         'type' => 'trigger_notify',
         'vars' => ['string', 'condition'],
         'files' => ['include\functions.inc.php (load_conf_from_db)'],
-        'infos' => 'New in 2.6. <b>Warning:</b> you can\'t trigger the first call done une common.inc.php. Use <i>init</i> instead.',
+        'infos' => "New in 2.6. <b>Warning:</b> you can't trigger the first call done une common.inc.php. Use <i>init</i> instead.",
     ],
     [
         'name' => 'list_check_integrity',
@@ -1020,8 +1020,10 @@ $core = [
             if ($i > 0) {
                 echo ', ';
             }
+
             echo $trigger['vars'][$i] . ' ' . (! empty($trigger['vars'][$i + 1]) ? '<i>$' . $trigger['vars'][$i + 1] . '</i>' : null);
         }
+
         echo '
       </td>
       <td>';
@@ -1032,6 +1034,7 @@ $core = [
             } $f = 0;
             echo preg_replace('#\((.+)\)#', '(<i>$1</i>)', $file);
         }
+
         echo '
       </td>
       <td>' . @$trigger['infos'] . '</td>

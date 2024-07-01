@@ -41,7 +41,7 @@ if ($banner_orig != $banner_new) {
 $is_plugin_installed = false;
 $plugin_table = $prefixeTable . 'additionalpages';
 
-$query = 'SHOW TABLES LIKE \'' . $plugin_table . '\';';
+$query = "SHOW TABLES LIKE '" . $plugin_table . "';";
 $result = pwg_query($query);
 
 while ($row = pwg_db_fetch_row($result)) {
@@ -83,7 +83,7 @@ SELECT
 $is_plugin_installed = false;
 $plugin_table = $prefixeTable . 'stuffs';
 
-$query = 'SHOW TABLES LIKE \'' . $plugin_table . '\';';
+$query = "SHOW TABLES LIKE '" . $plugin_table . "';";
 $result = pwg_query($query);
 
 while ($row = pwg_db_fetch_row($result)) {

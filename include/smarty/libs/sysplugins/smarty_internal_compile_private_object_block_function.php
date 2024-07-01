@@ -31,12 +31,13 @@ class Smarty_Internal_Compile_Private_Object_Block_Function extends Smarty_Inter
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             if (is_int($_key)) {
-                $_paramsArray[] = "{$_key}=>{$_value}";
+                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
             } else {
-                $_paramsArray[] = "'{$_key}'=>{$_value}";
+                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
             }
         }
-        $callback = ["\$_smarty_tpl->smarty->registered_objects['{$tag}'][0]", "->{$method}"];
-        return [$callback, $_paramsArray, "array(\$_block_plugin{$this->nesting}, '{$method}')"];
+
+        $callback = [sprintf('$_smarty_tpl->smarty->registered_objects[\'%s\'][0]', $tag), '->' . $method];
+        return [$callback, $_paramsArray, sprintf('array($_block_plugin%d, \'%s\')', $this->nesting, $method)];
     }
 }

@@ -115,6 +115,7 @@ ORDER BY
     if (count(query2array($query . ';')) > 1) {
         return set_missing_values('month', query2array($query . ';'));
     }
+
     $last_year_date = new DateTime();
     return set_missing_values(
         'month',
@@ -179,6 +180,7 @@ ORDER BY
         if ($lastDate > new DateTime()) {
             $lastDate = new DateTime();
         }
+
         $result['month'][] = set_missing_values('day', $val, new DateTime($key), $lastDate);
     }
 
@@ -254,6 +256,7 @@ function set_missing_values(
     } else {
         $date = $firstDate;
     }
+
     if ($lastDate == null) {
         $date_end = get_date_object($data[0]);
     } else {

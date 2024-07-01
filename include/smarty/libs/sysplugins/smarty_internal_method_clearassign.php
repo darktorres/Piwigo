@@ -38,6 +38,7 @@ class Smarty_Internal_Method_ClearAssign
         } else {
             unset($data->tpl_vars[$tpl_var]);
         }
+
         return $data;
     }
 }

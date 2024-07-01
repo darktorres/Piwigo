@@ -40,6 +40,7 @@ class Smarty_Internal_Method_CreateData
         if ($smarty->debugging) {
             Smarty_Internal_Debug::register_data($dataObj);
         }
+
         return $dataObj;
     }
 }

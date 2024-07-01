@@ -35,5 +35,6 @@ function smarty_modifier_count(
     } elseif ($arrayOrObject === null) {
         return 0;
     }
+
     return 1;
 }

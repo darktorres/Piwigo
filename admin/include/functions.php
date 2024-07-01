@@ -225,6 +225,7 @@ SELECT
             break;
         }
     }
+
     return $new_ids;
 }
 
@@ -247,6 +248,7 @@ function delete_elements(
     if (count($ids) == 0) {
         return 0;
     }
+
     trigger_notify('begin_delete_elements', $ids);
 
     if ($physical_deletion) {
@@ -439,6 +441,7 @@ function update_category(
         if (count($ids) == 0) {
             return false;
         }
+
         $where_cats = '%s IN(' . wordwrap(implode(', ', $ids), 120, "\n") . ')';
     }
 
@@ -533,7 +536,7 @@ SELECT
 ;';
         $orphans = array_unique(query2array($query, null, $column));
 
-        if (count($orphans) > 0) {
+        if ($orphans !== []) {
             $query = '
 DELETE
   FROM ' . $table . '
@@ -582,6 +585,7 @@ function get_fs_directories(
                     }
                 }
             }
+
             closedir($contents);
         }
     }
@@ -612,6 +616,7 @@ function save_categories_order(
             if (! isset($current_rank_for_id_uppercat[$id_uppercat])) {
                 $current_rank_for_id_uppercat[$id_uppercat] = 0;
             }
+
             $current_rank = ++$current_rank_for_id_uppercat[$id_uppercat];
         } else {
             $id = $category;
@@ -623,6 +628,7 @@ function save_categories_order(
             'rank' => $current_rank,
         ];
     }
+
     $fields = [
         'primary' => ['id'],
         'update' => ['rank'],
@@ -655,6 +661,7 @@ SELECT id, id_uppercat, uppercats, `rank`, global_rank
             $current_rank = 0;
             $current_uppercat = $row['id_uppercat'];
         }
+
         ++$current_rank;
         $cat =
           [
@@ -712,7 +719,7 @@ function set_cat_visible(
     $unlock_child = false
 ) {
     if (($value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) === null) {
-        trigger_error("set_cat_visible invalid param {$value}", E_USER_WARNING);
+        trigger_error('set_cat_visible invalid param ' . $value, E_USER_WARNING);
         return false;
     }
 
@@ -722,6 +729,7 @@ function set_cat_visible(
         if ($unlock_child) {
             $cats = array_merge($cats, get_subcat_ids($categories));
         }
+
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET visible = \'true\'
@@ -750,7 +758,7 @@ function set_cat_status(
     $value
 ) {
     if (! in_array($value, ['public', 'private'])) {
-        trigger_error("set_cat_status invalid param {$value}", E_USER_WARNING);
+        trigger_error('set_cat_status invalid param ' . $value, E_USER_WARNING);
         return false;
     }
 
@@ -850,7 +858,7 @@ SELECT
         // to find the reference of each top album, we will need the parent albums
         $parent_cats = [];
 
-        if (count($parent_ids) > 0) {
+        if ($parent_ids !== []) {
             $query = '
 SELECT
     id,
@@ -932,6 +940,7 @@ SELECT uppercats
             explode(',', $row['uppercats'])
         );
     }
+
     $uppercats = array_unique($uppercats);
 
     return $uppercats;
@@ -951,6 +960,7 @@ SELECT id,representative_ext,path
     } else {
         $src = DerivativeImage::url($size, $row);
     }
+
     $url = get_root_url() . 'admin.php?page=photo-' . $image_id;
 
     return [
@@ -1071,6 +1081,7 @@ function get_fs(
     if (! isset($conf['flip_picture_ext'])) {
         $conf['flip_picture_ext'] = array_flip($conf['picture_ext']);
     }
+
     if (! isset($conf['flip_file_ext'])) {
         $conf['flip_file_ext'] = array_flip($conf['file_ext']);
     }
@@ -1106,6 +1117,7 @@ function get_fs(
                 }
             }
         }
+
         closedir($contents);
 
         foreach ($subdirs as $subdir) {
@@ -1127,6 +1139,7 @@ function get_fs(
             );
         }
     }
+
     return $fs;
 }
 
@@ -1160,7 +1173,7 @@ SELECT user_id
         $infos_users
     );
 
-    if (count($to_create) > 0) {
+    if ($to_create !== []) {
         create_user_infos($to_create);
     }
 
@@ -1186,7 +1199,7 @@ SELECT DISTINCT user_id
             $base_users
         );
 
-        if (count($to_delete) > 0) {
+        if ($to_delete !== []) {
             $query = '
 DELETE
   FROM ' . $table . '
@@ -1226,6 +1239,7 @@ SELECT id, id_uppercat, uppercats
             ];
         }
     }
+
     $fields = [
         'primary' => ['id'],
         'update' => ['uppercats'],
@@ -1412,6 +1426,7 @@ SELECT MAX(`rank`) AS max_rank
     } else {
         $insert['commentable'] = $conf['newcat_default_commentable'];
     }
+
     $insert['commentable'] = boolean_to_string($insert['commentable']);
 
     // is the album temporarily locked? (only visible by administrators,
@@ -1422,6 +1437,7 @@ SELECT MAX(`rank`) AS max_rank
     } else {
         $insert['visible'] = $conf['newcat_default_visible'];
     }
+
     $insert['visible'] = boolean_to_string($insert['visible']);
 
     // is the album private? (may be overwritten if parent album is private)
@@ -1496,6 +1512,7 @@ SELECT id, uppercats, global_rank, visible, status
                 'cat_id' => $inserted_id,
             ];
         }
+
         mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $inserts);
 
         $query = '
@@ -1571,6 +1588,7 @@ DELETE
             ];
         }
     }
+
     mass_inserts(
         IMAGE_TAG_TABLE,
         array_keys($inserts[0]),
@@ -1731,7 +1749,7 @@ DELETE
             }
         }
 
-        if (count($inserts)) {
+        if ($inserts !== []) {
             mass_inserts(
                 IMAGE_TAG_TABLE,
                 array_keys($inserts[0]),
@@ -1836,7 +1854,7 @@ function fill_lounge(
         }
     }
 
-    if (count($inserts)) {
+    if ($inserts !== []) {
         mass_inserts(
             LOUNGE_TABLE,
             array_keys($inserts[0]),
@@ -1888,6 +1906,7 @@ INSERT IGNORE
         $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ', skip');
         return;
     }
+
     $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ' wins the race and gets the token!');
 
     $max_image_id = 0;
@@ -1996,6 +2015,7 @@ SELECT
         if (! isset($current_rank_of[$category_id])) {
             $current_rank_of[$category_id] = 0;
         }
+
         if (! isset($existing[$category_id])) {
             $existing[$category_id] = [];
         }
@@ -2013,7 +2033,7 @@ SELECT
         }
     }
 
-    if (count($inserts)) {
+    if ($inserts !== []) {
         mass_inserts(
             IMAGE_CATEGORY_TABLE,
             array_keys($inserts[0]),
@@ -2048,7 +2068,7 @@ DELETE ' . IMAGE_CATEGORY_TABLE . '.*
   WHERE id IN (' . implode(',', $images) . ')
 ';
 
-    if (is_array($categories) and count($categories) > 0) {
+    if (is_array($categories) and $categories !== []) {
         $query .= '
     AND category_id NOT IN (' . implode(',', $categories) . ')
 ';
@@ -2059,7 +2079,7 @@ DELETE ' . IMAGE_CATEGORY_TABLE . '.*
 ;';
     pwg_query($query);
 
-    if (is_array($categories) and count($categories) > 0) {
+    if (is_array($categories) and $categories !== []) {
         associate_images_to_categories($images, $categories);
     }
 }
@@ -2126,6 +2146,7 @@ UPDATE ' . USER_CACHE_TABLE . '
   SET need_update = \'true\';';
         pwg_query($query);
     }
+
     trigger_notify('invalidate_user_cache', $full);
 }
 
@@ -2158,10 +2179,12 @@ function create_table_add_character_set(
         if (version_compare(pwg_get_db_version(), '4.1.0', '<')) {
             return $query;
         }
+
         $charset_collate = ' DEFAULT CHARACTER SET ' . DB_CHARSET;
         if (DB_COLLATE != '') {
             $charset_collate .= ' COLLATE ' . DB_COLLATE;
         }
+
         if (is_array($query)) {
             foreach ($query as $id => $q) {
                 $q = trim($q);
@@ -2169,6 +2192,7 @@ function create_table_add_character_set(
                 if (preg_match('/^CREATE\s+TABLE/i', $q)) {
                     $q .= $charset_collate;
                 }
+
                 $q .= ';';
                 $query[$id] = $q;
             }
@@ -2178,9 +2202,11 @@ function create_table_add_character_set(
             if (preg_match('/^CREATE\s+TABLE/i', $query)) {
                 $query .= $charset_collate;
             }
+
             $query .= ';';
         }
     }
+
     return $query;
 }
 
@@ -2199,6 +2225,7 @@ function get_user_access_level_html_options(
     for ($level = $MinLevelAccess; $level <= $MaxLevelAccess; $level++) {
         $tpl_options[$level] = l10n(sprintf('ACCESS_%d', $level));
     }
+
     return $tpl_options;
 }
 
@@ -2215,6 +2242,7 @@ function get_extents(
     if ($start == '') {
         $start = './template-extension';
     }
+
     $dir = opendir($start);
     $extents = [];
 
@@ -2222,6 +2250,7 @@ function get_extents(
         if ($file == '.' or $file == '..' or $file == '.svn') {
             continue;
         }
+
         $path = $start . '/' . $file;
         if (is_dir($path)) {
             $extents = array_merge($extents, get_extents($path));
@@ -2230,6 +2259,7 @@ function get_extents(
             $extents[] = substr($path, 21);
         }
     }
+
     return $extents;
 }
 
@@ -2294,6 +2324,7 @@ function cat_admin_access(
     )) {
         return false;
     }
+
     return true;
 }
 
@@ -2367,6 +2398,7 @@ function fetchRemote(
             @curl_setopt($ch, CURLOPT_POST, 1);
             @curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         }
+
         $content = @curl_exec($ch);
         $header_length = @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $status = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -2375,6 +2407,7 @@ function fetchRemote(
             if (preg_match('/Location:\s+?(.+)/', substr($content, 0, $header_length), $m)) {
                 return fetchRemote($m[1], $dest, [], [], $user_agent, $step + 1);
             }
+
             $content = substr($content, $header_length);
             is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
             return true;
@@ -2392,6 +2425,7 @@ function fetchRemote(
         if ($method == 'POST') {
             $opts['http']['content'] = $request;
         }
+
         $context = @stream_context_create($opts);
         $content = @file_get_contents($src, false, $context);
         if ($content !== false) {
@@ -2416,6 +2450,7 @@ function fetchRemote(
         $http_request .= "Content-Type: application/x-www-form-urlencoded;\r\n";
         $http_request .= 'Content-Length: ' . strlen($request) . "\r\n";
     }
+
     $http_request .= 'User-Agent: ' . $user_agent . "\r\n";
     $http_request .= "Accept: */*\r\n";
     $http_request .= "\r\n";
@@ -2433,28 +2468,34 @@ function fetchRemote(
             $i++;
             continue;
         }
+
         if ($i == 0) {
             if (! preg_match('/HTTP\/(\\d\\.\\d)\\s*(\\d+)\\s*(.*)/', rtrim($line, "\r\n"), $m)) {
                 fclose($s);
                 return false;
             }
+
             $status = (int) $m[2];
             if ($status < 200 || $status >= 400) {
                 fclose($s);
                 return false;
             }
         }
+
         if (! $in_content) {
             if (preg_match('/Location:\s+?(.+)$/', rtrim($line, "\r\n"), $m)) {
                 fclose($s);
                 return fetchRemote(trim($m[1]), $dest, [], [], $user_agent, $step + 1);
             }
+
             $i++;
             continue;
         }
+
         is_resource($dest) ? @fwrite($dest, $line) : $dest .= $line;
         $i++;
     }
+
     fclose($s);
     return true;
 }
@@ -2678,7 +2719,7 @@ function get_taglist(
     }
 
     usort($taglist, 'tag_alpha_compare');
-    if (count($altlist)) {
+    if ($altlist !== []) {
         usort($altlist, 'tag_alpha_compare');
         $taglist = array_merge($taglist, $altlist);
     }
@@ -2736,6 +2777,7 @@ function order_by_name(
         $key = strtolower($name[$element_id]) . '-' . $name[$element_id] . '-' . $k_id;
         $ordered_element_ids[$key] = $element_id;
     }
+
     ksort($ordered_element_ids);
     return $ordered_element_ids;
 }
@@ -2753,6 +2795,7 @@ function add_permission_on_category(
     if (! is_array($category_ids)) {
         $category_ids = [$category_ids];
     }
+
     if (! is_array($user_ids)) {
         $user_ids = [$user_ids];
     }
@@ -2849,6 +2892,7 @@ function clear_derivative_cache(
         } else {//assume a custom type
             $type = derivative_to_url(IMG_CUSTOM) . '_' . $type;
         }
+
         $types[$i] = $type;
     }
 
@@ -2858,6 +2902,7 @@ function clear_derivative_cache(
     } else {
         $pattern .= $types[0];
     }
+
     $pattern .= '\.[a-zA-Z0-9]{3,4}$#';
 
     if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
@@ -2868,6 +2913,7 @@ function clear_derivative_cache(
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
             }
         }
+
         closedir($contents);
     }
 }
@@ -2886,6 +2932,7 @@ function clear_derivative_cache_rec($path, $pattern)
             if ($node == '.' or $node == '..') {
                 continue;
             }
+
             if (is_dir($path . '/' . $node)) {
                 $rmdir &= clear_derivative_cache_rec($path . '/' . $node, $pattern);
             } else {
@@ -2898,15 +2945,18 @@ function clear_derivative_cache_rec($path, $pattern)
                 }
             }
         }
+
         closedir($contents);
 
         if ($rmdir) {
             if ($rm_index) {
                 unlink($path . '/index.htm');
             }
+
             clearstatcache();
             @rmdir($path);
         }
+
         return $rmdir;
     }
 }
@@ -2925,15 +2975,18 @@ function delete_element_derivatives(
     if (! empty($infos['representative_ext'])) {
         $path = original_to_representative($path, $infos['representative_ext']);
     }
+
     if (substr_compare($path, '../', 0, 3) == 0) {
         $path = substr($path, 3);
     }
+
     $dot = strrpos($path, '.');
     if ($type == 'all') {
         $pattern = '-*';
     } else {
         $pattern = '-' . derivative_to_url($type) . '*';
     }
+
     $path = substr_replace($path, $pattern, $dot, 0);
     if (($glob = glob(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $path)) !== false) {
         foreach ($glob as $file) {
@@ -2961,8 +3014,10 @@ function get_dirs(
                 $sub_dirs[] = $file;
             }
         }
+
         closedir($opendir);
     }
+
     return $sub_dirs;
 }
 
@@ -2988,6 +3043,7 @@ function deltree(
                 }
             }
         }
+
         closedir($fh);
 
         if (@rmdir($path)) {
@@ -2996,6 +3052,7 @@ function deltree(
             if (! is_dir($trash_path)) {
                 @mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
             }
+
             while ($r = $trash_path . '/' . md5(uniqid(rand(), true))) {
                 if (! is_dir($r)) {
                     @rename($path, $r);
@@ -3032,6 +3089,7 @@ function get_admin_client_cache_keys(
     if (! is_array($requested)) {
         $requested = [$requested];
     }
+
     if (empty($requested)) {
         $requested = array_keys($tables);
     } else {
@@ -3096,6 +3154,7 @@ SELECT path
             'md5sum' => $md5sum,
         ];
     }
+
     mass_updates(
         IMAGES_TABLE,
         [
@@ -3163,6 +3222,7 @@ function save_images_order(
             'rank' => ++$current_rank,
         ];
     }
+
     $fields = [
         'primary' => ['image_id', 'category_id'],
         'update' => ['rank'],
@@ -3289,8 +3349,10 @@ function get_cache_size_derivatives($path)
                 }
             }
         }
+
         closedir($contents);
     }
+
     return $msizes;
 }
 

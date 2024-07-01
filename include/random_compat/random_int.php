@@ -50,7 +50,7 @@ function random_int(
 
     try {
         $min = RandomCompat_intval($min);
-    } catch (TypeError $ex) {
+    } catch (TypeError $typeError) {
         throw new TypeError(
             'random_int(): $min must be an integer'
         );
@@ -58,7 +58,7 @@ function random_int(
 
     try {
         $max = RandomCompat_intval($max);
-    } catch (TypeError $ex) {
+    } catch (TypeError $typeError) {
         throw new TypeError(
             'random_int(): $max must be an integer'
         );
@@ -87,7 +87,11 @@ function random_int(
      * $mask => an integer bitmask (for use with the &) operator
      *          so we can minimize the number of discards
      */
-    $attempts = $bits = $bytes = $mask = $valueShift = 0;
+    $attempts = 0;
+    $bits = 0;
+    $bytes = 0;
+    $mask = 0;
+    $valueShift = 0;
 
     /**
      * At this point, $range is a positive number greater than 0. It might
@@ -125,10 +129,12 @@ function random_int(
             if ($bits % 8 === 0) {
                 ++$bytes;
             }
+
             ++$bits;
             $range >>= 1;
             $mask = $mask << 1 | 1;
         }
+
         $valueShift = $min;
     }
 

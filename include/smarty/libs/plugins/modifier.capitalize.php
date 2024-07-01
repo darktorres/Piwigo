@@ -40,6 +40,7 @@ function smarty_modifier_capitalize(
                 $string
             );
         }
+
         // check uc_digits case
         if (! $uc_digits) {
             if (preg_match_all(
@@ -60,6 +61,7 @@ function smarty_modifier_capitalize(
                 }
             }
         }
+
         $upper_string =
             preg_replace_callback(
                 "!((^|\s)['\"])(\w)!" . Smarty::$_UTF8_MODIFIER,
@@ -68,10 +70,12 @@ function smarty_modifier_capitalize(
             );
         return $upper_string;
     }
+
     // lowercase first
     if ($lc_rest) {
         $string = strtolower($string);
     }
+
     // uppercase (including hyphenated words)
     $upper_string =
         preg_replace_callback(
@@ -94,6 +98,7 @@ function smarty_modifier_capitalize(
             }
         }
     }
+
     $upper_string = preg_replace_callback(
         "!((^|\s)['\"])(\w)!" . Smarty::$_UTF8_MODIFIER,
         'smarty_mod_cap_ucfirst2_cb',

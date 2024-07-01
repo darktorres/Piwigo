@@ -30,6 +30,7 @@ function execute_sqlfile(
         if (preg_match('/(^--|^$)/', $sql_line)) {
             continue;
         }
+
         $query .= ' ' . $sql_line;
         // if we reached the end of query, we execute it and reinitialize the
         // variable "query"
@@ -43,8 +44,10 @@ function execute_sqlfile(
                         $query = $matches[1] . ' DEFAULT CHARACTER SET utf8' . ';';
                     }
                 }
+
                 pwg_query($query);
             }
+
             $query = '';
         }
     }
@@ -98,7 +101,7 @@ function install_db_connect(
             $_POST['dbname']
         );
         pwg_db_check_version();
-    } catch (Exception $e) {
-        $errors[] = l10n($e->getMessage());
+    } catch (Exception $exception) {
+        $errors[] = l10n($exception->getMessage());
     }
 }

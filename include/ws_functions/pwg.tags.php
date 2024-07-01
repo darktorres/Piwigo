@@ -92,6 +92,7 @@ function ws_tags_getImages(
         $tags['id'] = (int) $tag['id'];
         $tags_by_id[$tag['id']] = $tag;
     }
+
     unset($tags);
     $tag_ids = array_keys($tags_by_id);
 
@@ -104,6 +105,7 @@ function ws_tags_getImages(
     if (! empty($order_by)) {
         $order_by = 'ORDER BY ' . $order_by;
     }
+
     $image_ids = get_image_ids_for_tags(
         $tag_ids,
         $params['tag_mode_and'] ? 'AND' : 'OR',
@@ -154,9 +156,11 @@ SELECT *
                     $image[$k] = (int) $row[$k];
                 }
             }
+
             foreach (['file', 'name', 'comment', 'date_creation', 'date_available'] as $k) {
                 $image[$k] = $row[$k];
             }
+
             $image = array_merge($image, ws_std_get_urls($row));
 
             $image_tag_ids = ($params['tag_mode_and']) ? $tag_ids : $image_tag_map[$image['id']];
@@ -269,6 +273,7 @@ SELECT COUNT(*)
             'id' => $tag_ids,
         ];
     }
+
     return [
         'id' => [],
     ];
@@ -399,7 +404,7 @@ SELECT image_id
         ]);
     }
 
-    if (count($inserts) > 0) {
+    if ($inserts !== []) {
         mass_inserts(
             IMAGE_TAG_TABLE,
             array_keys($inserts[0]),

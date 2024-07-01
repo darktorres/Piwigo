@@ -43,6 +43,7 @@ SELECT user_id, cat_id
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
+
         $perms[$row['cat_id']]['users'][] = intval($row['user_id']);
     }
 
@@ -60,6 +61,7 @@ SELECT ug.user_id, ga.cat_id
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
+
         $perms[$row['cat_id']]['users_indirect'][] = intval($row['user_id']);
     }
 
@@ -75,6 +77,7 @@ SELECT group_id, cat_id
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
+
         $perms[$row['cat_id']]['groups'][] = intval($row['group_id']);
     }
 
@@ -86,6 +89,7 @@ SELECT group_id, cat_id
                 continue;
             }
         }
+
         if (isset($params['user_id'])) {
             if (
                 (empty($cat['users_indirect']) or count(
@@ -104,6 +108,7 @@ SELECT group_id, cat_id
             array_unique($cat['users_indirect'])
         ) : [];
     }
+
     unset($cat);
 
     return [
@@ -172,6 +177,7 @@ SELECT id
         if ($params['recursive']) {
             $_POST['apply_on_sub'] = true;
         }
+
         add_permission_on_category($params['cat_id'], $params['user_id']);
     }
 

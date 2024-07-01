@@ -56,14 +56,15 @@ class Smarty_Internal_Compile_Private_Function_Plugin extends Smarty_Internal_Co
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             if (is_int($_key)) {
-                $_paramsArray[] = "{$_key}=>{$_value}";
+                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
             } else {
-                $_paramsArray[] = "'{$_key}'=>{$_value}";
+                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
             }
         }
+
         $_params = 'array(' . implode(',', $_paramsArray) . ')';
         // compile code
-        $output = "{$function}({$_params},\$_smarty_tpl)";
+        $output = sprintf('%s(%s,$_smarty_tpl)', $function, $_params);
         if (! empty($parameter['modifierlist'])) {
             $output = $compiler->compileTag(
                 'private_modifier',
@@ -74,6 +75,7 @@ class Smarty_Internal_Compile_Private_Function_Plugin extends Smarty_Internal_Co
                 ]
             );
         }
+
         $output = "<?php echo {$output};?>\n";
         return $output;
     }

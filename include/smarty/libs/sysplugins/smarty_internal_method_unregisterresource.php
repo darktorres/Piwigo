@@ -35,6 +35,7 @@ class Smarty_Internal_Method_UnregisterResource
         if (isset($smarty->registered_resources[$type])) {
             unset($smarty->registered_resources[$type]);
         }
+
         return $obj;
     }
 }

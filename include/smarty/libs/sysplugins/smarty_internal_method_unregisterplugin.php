@@ -37,6 +37,7 @@ class Smarty_Internal_Method_UnregisterPlugin
         if (isset($smarty->registered_plugins[$type][$name])) {
             unset($smarty->registered_plugins[$type][$name]);
         }
+
         return $obj;
     }
 }

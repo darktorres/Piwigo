@@ -26,11 +26,13 @@ class Smarty_Internal_Runtime_UpdateScope
                 return;
             }
         }
+
         $mergedScope = $tagScope | $tpl->scope;
         if ($mergedScope) {
             if ($mergedScope & Smarty::SCOPE_GLOBAL && $varName) {
                 Smarty::$global_tpl_vars[$varName] = $tpl->tpl_vars[$varName];
             }
+
             // update scopes
             foreach ($this->_getAffectedScopes($tpl, $mergedScope) as $ptr) {
                 $this->_updateVariableInOtherScope($ptr->tpl_vars, $tpl, $varName);
@@ -61,12 +63,15 @@ class Smarty_Internal_Runtime_UpdateScope
                 // only parent was set, we are done
                 return $_stack;
             }
+
             $ptr = $ptr->parent;
         }
+
         while (isset($ptr) && $ptr->_isTplObj()) {
             $_stack[] = $ptr;
             $ptr = $ptr->parent;
         }
+
         if ($mergedScope & Smarty::SCOPE_SMARTY) {
             if (isset($tpl->smarty)) {
                 $_stack[] = $tpl->smarty;
@@ -77,9 +82,11 @@ class Smarty_Internal_Runtime_UpdateScope
                     $_stack[] = $ptr;
                     break;
                 }
+
                 $ptr = $ptr->parent;
             }
         }
+
         return $_stack;
     }
 

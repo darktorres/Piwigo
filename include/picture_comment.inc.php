@@ -69,7 +69,7 @@ if ($page['show_comments'] and isset($_POST['content'])) {
 
 if ($page['show_comments']) {
     if (! is_admin()) {
-        $validated_clause = '  AND validated = \'true\'';
+        $validated_clause = "  AND validated = 'true'";
     } else {
         $validated_clause = '';
     }
@@ -112,6 +112,7 @@ SELECT
         )) {
             pwg_set_session_var('comments_order', $_GET['comments_order']);
         }
+
         $comments_order = pwg_get_session_var('comments_order', $conf['comments_order']);
 
         $template->assign([
@@ -176,6 +177,7 @@ SELECT
                     ]
                 );
             }
+
             if (can_manage_comment('edit', $row['author_id'])) {
                 $tpl_comment['U_EDIT'] = add_url_params(
                     $url_self,
@@ -193,6 +195,7 @@ SELECT
                     $tpl_comment['U_CANCEL'] = $url_self;
                 }
             }
+
             if (is_admin()) {
                 $tpl_comment['EMAIL'] = $email;
 
@@ -207,6 +210,7 @@ SELECT
                     );
                 }
             }
+
             $template->append('comments', $tpl_comment);
         }
     }
@@ -215,6 +219,7 @@ SELECT
     if (isset($edit_comment)) {
         $show_add_comment_form = false;
     }
+
     if (is_a_guest() and ! $conf['comments_forall']) {
         $show_add_comment_form = false;
     }
@@ -241,8 +246,10 @@ SELECT
                 $tpl_var[strtoupper($k)] = isset($_POST[$k]) ? htmlspecialchars(stripslashes(@$_POST[$k])) : '';
             }
         }
+
         $template->assign('comment_add', $tpl_var);
     }
+
     $template->set_filenames([
         'comment_list' => 'comment_list.tpl',
     ]);

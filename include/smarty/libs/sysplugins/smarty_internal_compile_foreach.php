@@ -121,7 +121,9 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
         if ($item === false) {
             $item = $compiler->getVariableName($_attr['item']);
         }
-        $key = $name = null;
+
+        $key = null;
+        $name = null;
         $attributes = [
             'item' => $item,
         ];
@@ -130,30 +132,39 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
             if ($key === false) {
                 $key = $compiler->getVariableName($_attr['key']);
             }
+
             $attributes['key'] = $key;
         }
+
         if (isset($_attr['name'])) {
             $this->isNamed = true;
             $name = $attributes['name'] = $compiler->getId($_attr['name']);
         }
+
         foreach ($attributes as $a => $v) {
             if ($v === false) {
-                $compiler->trigger_template_error("'{$a}' attribute/variable has illegal value", null, true);
+                $compiler->trigger_template_error(
+                    sprintf("'%s' attribute/variable has illegal value", $a),
+                    null,
+                    true
+                );
             }
         }
+
         $fromName = $compiler->getVariableName($_attr['from']);
         if ($fromName) {
             foreach (['item', 'key'] as $a) {
                 if (isset($attributes[$a]) && $attributes[$a] === $fromName) {
                     $compiler->trigger_template_error(
-                        "'{$a}' and 'from' may not have same variable name '{$fromName}'",
+                        sprintf("'%s' and 'from' may not have same variable name '%s'", $a, $fromName),
                         null,
                         true
                     );
                 }
             }
         }
-        $itemVar = "\$_smarty_tpl->tpl_vars['{$item}']";
+
+        $itemVar = sprintf('$_smarty_tpl->tpl_vars[\'%s\']', $item);
         $local = '$__foreach_' . $attributes['item'] . '_' . $this->counter++ . '_';
         // search for used tag attributes
         $itemAttr = [];
@@ -162,57 +173,70 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
         if (! empty($this->matchResults['item'])) {
             $itemAttr = $this->matchResults['item'];
         }
+
         if (! empty($this->matchResults['named'])) {
             $namedAttr = $this->matchResults['named'];
         }
-        if (isset($_attr['properties']) && preg_match_all('/[\'](.*?)[\']/', $_attr['properties'], $match)) {
+
+        if (isset($_attr['properties']) && preg_match_all("/['](.*?)[']/", $_attr['properties'], $match)) {
             foreach ($match[1] as $prop) {
                 if (in_array($prop, $this->itemProperties)) {
                     $itemAttr[$prop] = true;
                 } else {
-                    $compiler->trigger_template_error("Invalid property '{$prop}'", null, true);
+                    $compiler->trigger_template_error(sprintf("Invalid property '%s'", $prop), null, true);
                 }
             }
+
             if ($this->isNamed) {
                 foreach ($match[1] as $prop) {
                     if (in_array($prop, $this->nameProperties)) {
                         $nameAttr[$prop] = true;
                     } else {
-                        $compiler->trigger_template_error("Invalid property '{$prop}'", null, true);
+                        $compiler->trigger_template_error(sprintf("Invalid property '%s'", $prop), null, true);
                     }
                 }
             }
         }
+
         if (isset($itemAttr['first'])) {
             $itemAttr['index'] = true;
         }
+
         if (isset($namedAttr['first'])) {
             $namedAttr['index'] = true;
         }
+
         if (isset($namedAttr['last'])) {
             $namedAttr['iteration'] = true;
             $namedAttr['total'] = true;
         }
+
         if (isset($itemAttr['last'])) {
             $itemAttr['iteration'] = true;
             $itemAttr['total'] = true;
         }
+
         if (isset($namedAttr['show'])) {
             $namedAttr['total'] = true;
         }
+
         if (isset($itemAttr['show'])) {
             $itemAttr['total'] = true;
         }
+
         $keyTerm = '';
         if (isset($attributes['key'])) {
-            $keyTerm = "\$_smarty_tpl->tpl_vars['{$key}']->value => ";
+            $keyTerm = sprintf('$_smarty_tpl->tpl_vars[\'%s\']->value => ', $key);
         }
+
         if (isset($itemAttr['key'])) {
-            $keyTerm = "{$itemVar}->key => ";
+            $keyTerm = $itemVar . '->key => ';
         }
+
         if ($this->isNamed) {
-            $foreachVar = "\$_smarty_tpl->tpl_vars['__smarty_foreach_{$attributes['name']}']";
+            $foreachVar = sprintf('$_smarty_tpl->tpl_vars[\'__smarty_foreach_%s\']', $attributes['name']);
         }
+
         $needTotal = isset($itemAttr['total']);
         // Register tag
         $this->openTag(
@@ -224,62 +248,86 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
         // generate output code
         $output = "<?php\n";
-        $output .= "\$_from = \$_smarty_tpl->smarty->ext->_foreach->init(\$_smarty_tpl, {$from}, " .
+        $output .= sprintf('$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, %s, ', $from) .
                    var_export($item, true);
         if ($name || $needTotal || $key) {
             $output .= ', ' . var_export($needTotal, true);
         }
+
         if ($name || $key) {
             $output .= ', ' . var_export($key, true);
         }
+
         if ($name) {
             $output .= ', ' . var_export($name, true) . ', ' . var_export($namedAttr, true);
         }
+
         $output .= ");\n";
         if (isset($itemAttr['show'])) {
             $output .= "{$itemVar}->show = ({$itemVar}->total > 0);\n";
         }
+
         if (isset($itemAttr['iteration'])) {
-            $output .= "{$itemVar}->iteration = 0;\n";
+            $output .= $itemVar . '->iteration = 0;
+';
         }
+
         if (isset($itemAttr['index'])) {
-            $output .= "{$itemVar}->index = -1;\n";
+            $output .= $itemVar . '->index = -1;
+';
         }
-        $output .= "{$itemVar}->do_else = true;\n";
+
+        $output .= $itemVar . '->do_else = true;
+';
         $output .= "if (\$_from !== null) foreach (\$_from as {$keyTerm}{$itemVar}->value) {\n";
-        $output .= "{$itemVar}->do_else = false;\n";
+        $output .= $itemVar . '->do_else = false;
+';
         if (isset($attributes['key']) && isset($itemAttr['key'])) {
             $output .= "\$_smarty_tpl->tpl_vars['{$key}']->value = {$itemVar}->key;\n";
         }
+
         if (isset($itemAttr['iteration'])) {
-            $output .= "{$itemVar}->iteration++;\n";
+            $output .= $itemVar . '->iteration++;
+';
         }
+
         if (isset($itemAttr['index'])) {
-            $output .= "{$itemVar}->index++;\n";
+            $output .= $itemVar . '->index++;
+';
         }
+
         if (isset($itemAttr['first'])) {
             $output .= "{$itemVar}->first = !{$itemVar}->index;\n";
         }
+
         if (isset($itemAttr['last'])) {
             $output .= "{$itemVar}->last = {$itemVar}->iteration === {$itemVar}->total;\n";
         }
+
         if (isset($foreachVar)) {
             if (isset($namedAttr['iteration'])) {
-                $output .= "{$foreachVar}->value['iteration']++;\n";
+                $output .= $foreachVar . '->value[\'iteration\']++;
+';
             }
+
             if (isset($namedAttr['index'])) {
-                $output .= "{$foreachVar}->value['index']++;\n";
+                $output .= $foreachVar . '->value[\'index\']++;
+';
             }
+
             if (isset($namedAttr['first'])) {
                 $output .= "{$foreachVar}->value['first'] = !{$foreachVar}->value['index'];\n";
             }
+
             if (isset($namedAttr['last'])) {
                 $output .= "{$foreachVar}->value['last'] = {$foreachVar}->value['iteration'] === {$foreachVar}->value['total'];\n";
             }
         }
+
         if (! empty($itemAttr)) {
             $output .= "{$local}saved = {$itemVar};\n";
         }
+
         $output .= '?>';
         return $output;
     }
@@ -294,7 +342,7 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
     public function compileRestore(
         $levels
     ) {
-        return "\$_smarty_tpl->smarty->ext->_foreach->restore(\$_smarty_tpl, {$levels});";
+        return sprintf('$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, %d);', $levels);
     }
 }
 
@@ -325,6 +373,7 @@ class Smarty_Internal_Compile_Foreachelse extends Smarty_Internal_CompileBase
         if ($restore === 2) {
             $output .= "{$itemVar} = {$local}saved;\n";
         }
+
         $output .= "}\nif ({$itemVar}->do_else) {\n?>";
         return $output;
     }
@@ -354,6 +403,7 @@ class Smarty_Internal_Compile_Foreachclose extends Smarty_Internal_CompileBase
         if ($compiler->nocache) {
             $compiler->tag_nocache = true;
         }
+
         list(
             $openTag, $compiler->nocache, $local, $itemVar, $restore
         ) = $this->closeTag($compiler, ['foreach', 'foreachelse']);
@@ -361,6 +411,7 @@ class Smarty_Internal_Compile_Foreachclose extends Smarty_Internal_CompileBase
         if ($restore === 2) {
             $output .= "{$itemVar} = {$local}saved;\n";
         }
+
         $output .= "}\n";
         /** @var Smarty_Internal_Compile_Foreach $foreachCompiler */
         $foreachCompiler = $compiler->getTagCompiler(

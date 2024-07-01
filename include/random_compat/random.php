@@ -121,6 +121,7 @@ if (PHP_VERSION_ID < 70000) {
                 // See random_bytes_dev_urandom.php
                 require_once $RandomCompatDIR . '/random_bytes_dev_urandom.php';
             }
+
             // Unset variables after use
             $RandomCompat_basedir = null;
         } else {
@@ -149,6 +150,7 @@ if (PHP_VERSION_ID < 70000) {
                 require_once $RandomCompatDIR . '/random_bytes_mcrypt.php';
             }
         }
+
         $RandomCompatUrandom = null;
 
         if (
@@ -174,6 +176,7 @@ if (PHP_VERSION_ID < 70000) {
                     // Don't try to use it.
                 }
             }
+
             $RandomCompat_disabled_classes = null;
             $RandomCompatCOMtest = null;
         }

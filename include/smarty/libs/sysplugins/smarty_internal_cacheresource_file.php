@@ -41,9 +41,11 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
                 $_template->cache_id
             ) . $_compile_dir_sep;
         }
+
         if (isset($_template->compile_id)) {
             $cached->filepath .= preg_replace('![^\w]+!', '_', $_template->compile_id) . $_compile_dir_sep;
         }
+
         // if use_sub_dirs, break file into directories
         if ($smarty->use_sub_dirs) {
             $cached->filepath .= $_filepath[0] . $_filepath[1] . DIRECTORY_SEPARATOR . $_filepath[2] .
@@ -51,16 +53,20 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
                                  DIRECTORY_SEPARATOR .
                                  $_filepath[4] . $_filepath[5] . DIRECTORY_SEPARATOR;
         }
+
         $cached->filepath .= $_filepath;
         $basename = $source->handler->getBasename($source);
         if (! empty($basename)) {
             $cached->filepath .= '.' . $basename;
         }
+
         if ($smarty->cache_locking) {
             $cached->lock_id = $cached->filepath . '.lock';
         }
+
         $cached->filepath .= '.php';
-        $cached->timestamp = $cached->exists = is_file($cached->filepath);
+        $cached->timestamp = is_file($cached->filepath);
+        $cached->exists = $cached->timestamp;
         if ($cached->exists) {
             $cached->timestamp = filemtime($cached->filepath);
         }
@@ -74,7 +80,8 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     public function populateTimestamp(
         Smarty_Template_Cached $cached
     ) {
-        $cached->timestamp = $cached->exists = is_file($cached->filepath);
+        $cached->timestamp = is_file($cached->filepath);
+        $cached->exists = $cached->timestamp;
         if ($cached->exists) {
             $cached->timestamp = filemtime($cached->filepath);
         }
@@ -99,6 +106,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
             eval('?>' . file_get_contents($_smarty_tpl->cached->filepath));
             return true;
         }
+
         return @include $_smarty_tpl->cached->filepath;
 
     }
@@ -128,13 +136,16 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
             } elseif (function_exists('apc_compile_file')) {
                 apc_compile_file($_template->cached->filepath);
             }
+
             $cached = $_template->cached;
-            $cached->timestamp = $cached->exists = is_file($cached->filepath);
+            $cached->timestamp = is_file($cached->filepath);
+            $cached->exists = $cached->timestamp;
             if ($cached->exists) {
                 $cached->timestamp = filemtime($cached->filepath);
                 return true;
             }
         }
+
         return false;
     }
 
@@ -151,6 +162,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
         if (is_file($_template->cached->filepath)) {
             return file_get_contents($_template->cached->filepath);
         }
+
         return false;
     }
 
@@ -205,6 +217,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
             $t = filemtime($cached->lock_id);
             return $t && (time() - $t < $smarty->locking_timeout);
         }
+
         return false;
 
     }

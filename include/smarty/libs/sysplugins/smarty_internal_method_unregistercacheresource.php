@@ -34,6 +34,7 @@ class Smarty_Internal_Method_UnregisterCacheResource
         if (isset($smarty->registered_cache_resources[$name])) {
             unset($smarty->registered_cache_resources[$name]);
         }
+
         return $obj;
     }
 }

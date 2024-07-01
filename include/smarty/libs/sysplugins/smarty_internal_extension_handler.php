@@ -72,9 +72,11 @@ class Smarty_Internal_Extension_Handler
         } else {
             $class = 'Smarty_Internal_Method_' . $this->upperCase($property_name);
         }
+
         if (! class_exists($class)) {
             return $this->{$property_name} = new Smarty_Internal_Undefined($class);
         }
+
         return $this->{$property_name} = new $class();
     }
 
@@ -136,6 +138,7 @@ class Smarty_Internal_Extension_Handler
                         }
                     }
                 }
+
                 if (! empty($match[2]) && ! isset($smarty->ext->{$name})) {
                     $class = 'Smarty_Internal_Method_' . $this->upperCase($name);
                     if (! class_exists($class)) {
@@ -168,6 +171,7 @@ class Smarty_Internal_Extension_Handler
                             $propertyType = $this->resolvedProperties[$match[0]][$objType];
                             $property = $this->resolvedProperties['property'][$basename];
                         }
+
                         if ($propertyType) {
                             $obj = $propertyType === 1 ? $data : $smarty;
                             if ($match[2] === 'get') {
@@ -180,11 +184,13 @@ class Smarty_Internal_Extension_Handler
                 }
             }
         }
+
         $callback = [$smarty->ext->{$name}, $name];
         array_unshift($args, $data);
         if (isset($callback) && $callback[0]->objMap | $data->_objType) {
             return call_user_func_array($callback, $args);
         }
+
         return call_user_func_array([new Smarty_Internal_Undefined(), $name], $args);
     }
 

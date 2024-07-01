@@ -129,7 +129,7 @@ $template->assign(
 $where_clauses = ['1=1'];
 
 if ($page['filter'] == 'pending') {
-    $where_clauses[] = 'validated=\'false\'';
+    $where_clauses[] = "validated='false'";
 }
 
 $query = '
@@ -167,6 +167,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     } else {
         $author_name = stripslashes($row['username']);
     }
+
     $template->append(
         'comments',
         [

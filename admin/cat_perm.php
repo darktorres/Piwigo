@@ -36,6 +36,7 @@ if (! empty($_POST)) {
         if (isset($_POST['apply_on_sub'])) {
             $cat_ids = array_merge($cat_ids, get_subcat_ids([$page['cat']]));
         }
+
         set_cat_status($cat_ids, $_POST['status']);
         $category['status'] = $_POST['status'];
     }
@@ -59,7 +60,7 @@ SELECT group_id
         // remove permissions to groups
         //
         $deny_groups = array_diff($groups_granted, $_POST['groups']);
-        if (count($deny_groups) > 0) {
+        if ($deny_groups !== []) {
             // if you forbid access to an album, all sub-albums become
             // automatically forbidden
             $query = '
@@ -127,7 +128,7 @@ SELECT user_id
         // remove permissions to users
         //
         $deny_users = array_diff($users_granted, $_POST['users']);
-        if (count($deny_users) > 0) {
+        if ($deny_users !== []) {
             // if you forbid access to an album, all sub-album become automatically
             // forbidden
             $query = '
@@ -232,6 +233,7 @@ SELECT user_id, group_id
         if (! isset($granted_groups[$row['group_id']])) {
             $granted_groups[$row['group_id']] = [];
         }
+
         $granted_groups[$row['group_id']][] = $row['user_id'];
     }
 

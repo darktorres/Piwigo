@@ -34,16 +34,20 @@ if (! function_exists(
     {
         $v = addslashes($v);
     }
+
     if (is_array($_GET)) {
         array_walk_recursive($_GET, 'sanitize_mysql_kv');
     }
+
     if (is_array($_POST)) {
         array_walk_recursive($_POST, 'sanitize_mysql_kv');
     }
+
     if (is_array($_COOKIE)) {
         array_walk_recursive($_COOKIE, 'sanitize_mysql_kv');
     }
 }
+
 if (! empty($_SERVER['PATH_INFO'])) {
     $_SERVER['PATH_INFO'] = addslashes($_SERVER['PATH_INFO']);
 }
@@ -86,6 +90,7 @@ if (! defined('PHPWG_INSTALLED')) {
     header('Location: install.php');
     exit;
 }
+
 include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 if (isset($conf['show_php_errors']) && ! empty($conf['show_php_errors'])) {
@@ -116,8 +121,8 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $e) {
-    my_error(l10n($e->getMessage()), true);
+} catch (Exception $exception) {
+    my_error(l10n($exception->getMessage()), true);
 }
 
 pwg_db_check_charset();
@@ -156,6 +161,7 @@ if (preg_match('/(, )?`rank` ASC/', $conf['order_by'])) {
     if ($order_by == 'ORDER BY ') {
         $order_by = 'ORDER BY id ASC';
     }
+
     conf_update_param('order_by', $order_by, true);
 }
 
@@ -163,6 +169,7 @@ if (preg_match('/(, )?`rank` ASC/', $conf['order_by'])) {
 if (isset($conf['order_by_custom'])) {
     $conf['order_by'] = $conf['order_by_custom'];
 }
+
 if (isset($conf['order_by_inside_category_custom'])) {
     $conf['order_by_inside_category'] = $conf['order_by_inside_category_custom'];
 }
@@ -180,6 +187,7 @@ if (in_array(substr($user['language'], 0, 2), ['fr', 'it', 'de', 'es', 'pl', 'ru
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
 }
+
 define('PHPWG_URL', 'https://' . PHPWG_DOMAIN);
 
 if (isset($conf['alternative_pem_url']) and $conf['alternative_pem_url'] != '') {
@@ -193,6 +201,7 @@ load_language('common.lang');
 if (is_admin() || (defined('IN_ADMIN') and IN_ADMIN)) {
     load_language('admin.lang');
 }
+
 trigger_notify('loading_lang');
 load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
     'no_fallback' => true,
@@ -225,6 +234,7 @@ if (defined('IN_ADMIN') and IN_ADMIN) {// Admin template
     if (script_basename() != 'ws' and mobile_theme()) {
         $theme = $conf['mobile_theme'];
     }
+
     $template = new Template(PHPWG_ROOT_PATH . 'themes', $theme);
 }
 
@@ -263,7 +273,7 @@ if ($conf['check_upgrade_feed']) {
     }
 }
 
-if (count($header_msgs) > 0) {
+if ($header_msgs !== []) {
     $template->assign('header_msgs', $header_msgs);
     $header_msgs = [];
 }
@@ -286,6 +296,7 @@ add_event_handler(
 if (! $conf['allow_html_descriptions']) {
     add_event_handler('render_category_description', 'nl2br');
 }
+
 add_event_handler('render_comment_content', 'render_comment_content');
 add_event_handler('render_comment_author', 'strip_tags');
 add_event_handler('render_tag_url', 'str2url');
@@ -298,4 +309,5 @@ if (! empty($conf['original_url_protection'])) {
     add_event_handler('get_element_url', 'get_element_url_protection_handler');
     add_event_handler('get_src_image_url', 'get_src_image_url_protection_handler');
 }
+
 trigger_notify('init');

@@ -36,13 +36,16 @@ class Smarty_Internal_Method_GetStreamVariable
             while (! feof($fp) && ($current_line = fgets($fp)) !== false) {
                 $_result .= $current_line;
             }
+
             fclose($fp);
             return $_result;
         }
+
         $smarty = isset($data->smarty) ? $data->smarty : $data;
         if ($smarty->error_unassigned) {
             throw new SmartyException('Undefined stream variable "' . $variable . '"');
         }
+
         return null;
 
     }

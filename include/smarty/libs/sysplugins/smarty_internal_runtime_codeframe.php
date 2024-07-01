@@ -40,6 +40,7 @@ class Smarty_Internal_Runtime_CodeFrame
             $properties['file_dependency'] = $_template->cached->file_dependency;
             $properties['cache_lifetime'] = $_template->cache_lifetime;
         }
+
         $output = sprintf(
             "<?php\n/* Smarty version %s, created on %s\n  from '%s' */\n\n",
             $properties['version'],
@@ -56,10 +57,12 @@ class Smarty_Internal_Runtime_CodeFrame
             $output .= var_export($compiler->tpl_function, true);
             $output .= ");\n";
         }
+
         if ($cache && isset($_template->smarty->ext->_tplFunction)) {
             $output .= '$_smarty_tpl->smarty->ext->_tplFunction->registerTplFunctions($_smarty_tpl, ' .
                        var_export($_template->smarty->ext->_tplFunction->getTplFunction($_template), true) . ");\n";
         }
+
         $output .= '?>';
         $output .= $content;
         $output .= "<?php }\n?>";
@@ -84,6 +87,7 @@ class Smarty_Internal_Runtime_CodeFrame
                 }
             }
         }
+
         if (preg_match('/\?>\s*$/', $output)) {
             $curr_split = preg_split(
                 '/\?>\s*$/',
@@ -94,6 +98,7 @@ class Smarty_Internal_Runtime_CodeFrame
                 $output .= $curr_output;
             }
         }
+
         return $output;
     }
 }

@@ -43,6 +43,7 @@ class Smarty_Internal_Method_GetConfigVars
             } else {
                 $var_array = array_merge($_ptr->config_vars, $var_array);
             }
+
             // not found, try at parent
             if ($search_parents) {
                 $_ptr = $_ptr->parent;
@@ -50,9 +51,11 @@ class Smarty_Internal_Method_GetConfigVars
                 $_ptr = null;
             }
         }
+
         if (isset($varname)) {
             return '';
         }
+
         return $var_array;
 
     }

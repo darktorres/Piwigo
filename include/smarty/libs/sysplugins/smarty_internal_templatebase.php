@@ -314,6 +314,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             if (! $this->_isTplObj()) {
                 throw new SmartyException($function . '():Missing \'$template\' parameter');
             }
+
             $template = $this;
 
         } elseif (is_object($template)) {
@@ -330,6 +331,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                 $template->caching = $this->caching;
             }
         }
+
         // make sure we have integer values
         $template->caching = (int) $template->caching;
         // fetch template content
@@ -348,16 +350,19 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                 $template->tplFunctions = $this->tplFunctions;
                 $template->inheritance = $this->inheritance;
             }
+
             /** @var Smarty_Internal_Template $parent */
             if (isset($parent->_objType) && ($parent->_objType === 2) && ! empty($parent->tplFunctions)) {
                 $template->tplFunctions = array_merge($parent->tplFunctions, $template->tplFunctions);
             }
+
             if ($function === 2) {
                 if ($template->caching) {
                     // return cache status of template
                     if (! isset($template->cached)) {
                         $template->loadCached();
                     }
+
                     $result = $template->cached->isCached($template);
                     Smarty_Internal_Template::$isCacheTplObj[$template->_getTemplateId()] = $template;
                 } else {
@@ -368,11 +373,13 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                     $savedTplVars = $template->tpl_vars;
                     $savedConfigVars = $template->config_vars;
                 }
+
                 ob_start();
                 $template->_mergeVars();
                 if (! empty(Smarty::$global_tpl_vars)) {
                     $template->tpl_vars = array_merge(Smarty::$global_tpl_vars, $template->tpl_vars);
                 }
+
                 $result = $template->render(false, $function);
                 $template->_cleanUp();
                 if ($saveVars) {
@@ -381,7 +388,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                 } else {
                     if (! $function && ! isset(Smarty_Internal_Template::$tplObjCache[$template->templateId])) {
                         $template->parent = null;
-                        $template->tpl_vars = $template->config_vars = [];
+                        $template->tpl_vars = [];
+                        $template->config_vars = [];
                         Smarty_Internal_Template::$tplObjCache[$template->templateId] = $template;
                     }
                 }
@@ -394,11 +402,13 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             if (isset($_smarty_old_error_level)) {
                 error_reporting($_smarty_old_error_level);
             }
+
             return $result;
-        } catch (Throwable $e) {
+        } catch (Throwable $throwable) {
             while (ob_get_level() > $level) {
                 ob_end_clean();
             }
+
             if (isset($errorHandler)) {
                 $errorHandler->deactivate();
             }
@@ -406,7 +416,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             if (isset($_smarty_old_error_level)) {
                 error_reporting($_smarty_old_error_level);
             }
-            throw $e;
+
+            throw $throwable;
         }
     }
 }

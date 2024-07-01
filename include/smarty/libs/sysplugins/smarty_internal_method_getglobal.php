@@ -33,13 +33,16 @@ class Smarty_Internal_Method_GetGlobal
             if (isset(Smarty::$global_tpl_vars[$varName])) {
                 return Smarty::$global_tpl_vars[$varName]->value;
             }
+
             return '';
 
         }
+
         $_result = [];
         foreach (Smarty::$global_tpl_vars as $key => $var) {
             $_result[$key] = $var->value;
         }
+
         return $_result;
 
     }

@@ -33,6 +33,7 @@ if (! defined(
 )) {
     define('SMARTY_DIR', __DIR__ . DIRECTORY_SEPARATOR);
 }
+
 /**
  * set SMARTY_SYSPLUGINS_DIR to absolute path to Smarty internal plugins.
  * Sets SMARTY_SYSPLUGINS_DIR only if user application has not already defined it.
@@ -42,9 +43,11 @@ if (! defined(
 )) {
     define('SMARTY_SYSPLUGINS_DIR', SMARTY_DIR . 'sysplugins' . DIRECTORY_SEPARATOR);
 }
+
 if (! defined('SMARTY_PLUGINS_DIR')) {
     define('SMARTY_PLUGINS_DIR', SMARTY_DIR . 'plugins' . DIRECTORY_SEPARATOR);
 }
+
 if (! defined('SMARTY_MBSTRING')) {
     define('SMARTY_MBSTRING', function_exists('mb_get_info'));
 }
@@ -674,10 +677,12 @@ class Smarty extends Smarty_Internal_TemplateBase
         if (is_callable('mb_internal_encoding')) {
             mb_internal_encoding(self::$_CHARSET);
         }
+
         $this->start_time = microtime(true);
         if (isset($_SERVER['SCRIPT_NAME'])) {
             self::$global_tpl_vars['SCRIPT_NAME'] = new Smarty_Variable($_SERVER['SCRIPT_NAME']);
         }
+
         // Check if we're running on windows
         self::$_IS_WINDOWS = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
         // let PCRE (preg_*) treat strings as ISO-8859-1 if we're not dealing with UTF-8
@@ -706,6 +711,7 @@ class Smarty extends Smarty_Internal_TemplateBase
         } elseif (in_array($name, $this->obsoleteProperties)) {
             return null;
         }
+
         trigger_error('Undefined property: ' . static::class . '::$' . $name, E_USER_NOTICE);
 
         return null;
@@ -798,6 +804,7 @@ class Smarty extends Smarty_Internal_TemplateBase
             $dir = &$this->template_dir;
             $this->_templateDirNormalized = false;
         }
+
         if (is_array($template_dir)) {
             foreach ($template_dir as $k => $v) {
                 if (is_int($k)) {
@@ -819,6 +826,7 @@ class Smarty extends Smarty_Internal_TemplateBase
                 $dir[] = $template_dir;
             }
         }
+
         return $this;
     }
 
@@ -839,12 +847,15 @@ class Smarty extends Smarty_Internal_TemplateBase
         } else {
             $dir = &$this->template_dir;
         }
+
         if ($isConfig ? ! $this->_configDirNormalized : ! $this->_templateDirNormalized) {
             $this->_normalizeTemplateConfig($isConfig);
         }
+
         if ($index !== null) {
             return isset($dir[$index]) ? $dir[$index] : null;
         }
+
         return $dir;
     }
 
@@ -867,6 +878,7 @@ class Smarty extends Smarty_Internal_TemplateBase
             $this->template_dir = [];
             $this->_processedTemplateDir = [];
         }
+
         $this->addTemplateDir($template_dir, null, $isConfig);
         return $this;
     }
@@ -923,6 +935,7 @@ class Smarty extends Smarty_Internal_TemplateBase
         if (empty($this->plugins_dir)) {
             $this->plugins_dir[] = SMARTY_PLUGINS_DIR;
         }
+
         $this->plugins_dir = array_merge($this->plugins_dir, (array) $plugins_dir);
         $this->_pluginsDirNormalized = false;
         return $this;
@@ -939,16 +952,20 @@ class Smarty extends Smarty_Internal_TemplateBase
             $this->plugins_dir[] = SMARTY_PLUGINS_DIR;
             $this->_pluginsDirNormalized = false;
         }
+
         if (! $this->_pluginsDirNormalized) {
             if (! is_array($this->plugins_dir)) {
                 $this->plugins_dir = (array) $this->plugins_dir;
             }
+
             foreach ($this->plugins_dir as $k => $v) {
                 $this->plugins_dir[$k] = $this->_realpath(rtrim($v ?? '', '/\\') . DIRECTORY_SEPARATOR, true);
             }
+
             $this->_cache['plugin_files'] = [];
             $this->_pluginsDirNormalized = true;
         }
+
         return $this->plugins_dir;
     }
 
@@ -978,6 +995,7 @@ class Smarty extends Smarty_Internal_TemplateBase
             $this->_normalizeDir('compile_dir', $this->compile_dir);
             $this->_compileDirNormalized = true;
         }
+
         return $this->compile_dir;
     }
 
@@ -1005,6 +1023,7 @@ class Smarty extends Smarty_Internal_TemplateBase
             $this->_normalizeDir('cache_dir', $this->cache_dir);
             $this->_cacheDirNormalized = true;
         }
+
         return $this->cache_dir;
     }
 
@@ -1045,26 +1064,31 @@ class Smarty extends Smarty_Internal_TemplateBase
             $parent = $cache_id;
             $cache_id = null;
         }
+
         if ($parent !== null && is_array($parent)) {
             $data = $parent;
             $parent = null;
         } else {
             $data = null;
         }
+
         if (! $this->_templateDirNormalized) {
             $this->_normalizeTemplateConfig(false);
         }
+
         $_templateId = $this->_getTemplateId($template, $cache_id, $compile_id);
         $tpl = null;
         if ($this->caching && isset(Smarty_Internal_Template::$isCacheTplObj[$_templateId])) {
             $tpl = $do_clone ? clone Smarty_Internal_Template::$isCacheTplObj[$_templateId] :
                 Smarty_Internal_Template::$isCacheTplObj[$_templateId];
             $tpl->inheritance = null;
-            $tpl->tpl_vars = $tpl->config_vars = [];
+            $tpl->tpl_vars = [];
+            $tpl->config_vars = [];
         } elseif (! $do_clone && isset(Smarty_Internal_Template::$tplObjCache[$_templateId])) {
             $tpl = clone Smarty_Internal_Template::$tplObjCache[$_templateId];
             $tpl->inheritance = null;
-            $tpl->tpl_vars = $tpl->config_vars = [];
+            $tpl->tpl_vars = [];
+            $tpl->config_vars = [];
         } else {
             /** @var Smarty_Internal_Template $tpl */
             $tpl = new $this->template_class(
@@ -1078,9 +1102,11 @@ class Smarty extends Smarty_Internal_TemplateBase
             );
             $tpl->templateId = $_templateId;
         }
+
         if ($do_clone) {
             $tpl->smarty = clone $tpl->smarty;
         }
+
         $tpl->parent = $parent ? $parent : $this;
         // fill data if present
         if (! empty($data) && is_array($data)) {
@@ -1089,6 +1115,7 @@ class Smarty extends Smarty_Internal_TemplateBase
                 $tpl->tpl_vars[$_key] = new Smarty_Variable($_val);
             }
         }
+
         if ($this->debugging || $this->debugging_ctrl === 'URL') {
             $tpl->smarty->_debug = new Smarty_Internal_Debug();
             // check URL debugging control
@@ -1096,6 +1123,7 @@ class Smarty extends Smarty_Internal_TemplateBase
                 $tpl->smarty->_debug->debugUrl($tpl->smarty);
             }
         }
+
         return $tpl;
     }
 
@@ -1133,7 +1161,11 @@ class Smarty extends Smarty_Internal_TemplateBase
         $caching = null,
         Smarty_Internal_Template $template = null
     ) {
-        $template_name = (strpos($template_name, ':') === false) ? "{$this->default_resource_type}:{$template_name}" :
+        $template_name = (strpos($template_name, ':') === false) ? sprintf(
+            '%s:%s',
+            $this->default_resource_type,
+            $template_name
+        ) :
             $template_name;
         $cache_id = $cache_id === null ? $this->cache_id : $cache_id;
         $compile_id = $compile_id === null ? $this->compile_id : $compile_id;
@@ -1141,13 +1173,21 @@ class Smarty extends Smarty_Internal_TemplateBase
         if ((isset($template) && strpos($template_name, ':.') !== false) || $this->allow_ambiguous_resources) {
             $_templateId =
                 Smarty_Resource::getUniqueTemplateName((isset($template) ? $template : $this), $template_name) .
-                "#{$cache_id}#{$compile_id}#{$caching}";
+                sprintf('#%s#%s#%d', $cache_id, $compile_id, $caching);
         } else {
-            $_templateId = $this->_joined_template_dir . "#{$template_name}#{$cache_id}#{$compile_id}#{$caching}";
+            $_templateId = $this->_joined_template_dir . sprintf(
+                '#%s#%s#%s#%d',
+                $template_name,
+                $cache_id,
+                $compile_id,
+                $caching
+            );
         }
+
         if (isset($_templateId[150])) {
             $_templateId = sha1($_templateId);
         }
+
         return $_templateId;
     }
 
@@ -1185,6 +1225,7 @@ class Smarty extends Smarty_Internal_TemplateBase
                 $path = getcwd() . DIRECTORY_SEPARATOR . $path;
             }
         }
+
         // normalize DIRECTORY_SEPARATOR
         $path = str_replace($nds[DIRECTORY_SEPARATOR], DIRECTORY_SEPARATOR, $path);
         $parts['root'] = str_replace($nds[DIRECTORY_SEPARATOR], DIRECTORY_SEPARATOR, $parts['root']);
@@ -1197,6 +1238,7 @@ class Smarty extends Smarty_Internal_TemplateBase
                 $count
             );
         } while ($count > 0);
+
         return $realpath !== false ? $parts['root'] . $path : str_ireplace(getcwd(), '.', $parts['root'] . $path);
     }
 
@@ -1438,15 +1480,18 @@ class Smarty extends Smarty_Internal_TemplateBase
             $processed = &$this->_processedTemplateDir;
             $dir = &$this->template_dir;
         }
+
         if (! is_array($dir)) {
             $dir = (array) $dir;
         }
+
         foreach ($dir as $k => $v) {
             if (! isset($processed[$k])) {
                 $dir[$k] = $v = $this->_realpath(rtrim($v ?? '', '/\\') . DIRECTORY_SEPARATOR, true);
                 $processed[$k] = true;
             }
         }
+
         $isConfig ? $this->_configDirNormalized = true : $this->_templateDirNormalized = true;
         $isConfig ? $this->_joined_config_dir = join('#', $this->config_dir) :
             $this->_joined_template_dir = join('#', $this->template_dir);

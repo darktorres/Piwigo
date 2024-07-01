@@ -36,12 +36,14 @@ function smarty_modifier_debug_print_var(
             if ($depth === $max) {
                 break;
             }
+
             foreach ($var as $curr_key => $curr_val) {
                 $results .= '<br>' . str_repeat('&nbsp;', $depth * 2) . '<b>' . strtr($curr_key, $_replace) .
                             '</b> =&gt; ' .
                             smarty_modifier_debug_print_var($curr_val, $max, $length, ++$depth, $objects);
                 $depth--;
             }
+
             break;
         case 'object':
             $object_vars = get_object_vars($var);
@@ -50,15 +52,18 @@ function smarty_modifier_debug_print_var(
                 $results .= ' called recursive';
                 break;
             }
+
             if ($depth === $max) {
                 break;
             }
+
             $objects[] = $var;
             foreach ($object_vars as $curr_key => $curr_val) {
                 $results .= '<br>' . str_repeat('&nbsp;', $depth * 2) . '<b> -&gt;' . strtr($curr_key, $_replace) .
                             '</b> = ' . smarty_modifier_debug_print_var($curr_val, $max, $length, ++$depth, $objects);
                 $depth--;
             }
+
             break;
         case 'boolean':
         case 'NULL':
@@ -72,6 +77,7 @@ function smarty_modifier_debug_print_var(
             } else {
                 $results = htmlspecialchars((string) $var);
             }
+
             $results = '<i>' . $results . '</i>';
             break;
         case 'integer':
@@ -89,6 +95,7 @@ function smarty_modifier_debug_print_var(
                     $results = substr($var, 0, $length - 3) . '...';
                 }
             }
+
             $results = htmlspecialchars('"' . $results . '"', ENT_QUOTES, Smarty::$_CHARSET);
             break;
         case 'unknown type':
@@ -103,7 +110,9 @@ function smarty_modifier_debug_print_var(
                     $results = substr($results, 0, $length - 3) . '...';
                 }
             }
+
             $results = htmlspecialchars($results, ENT_QUOTES, Smarty::$_CHARSET);
     }
+
     return $results;
 }

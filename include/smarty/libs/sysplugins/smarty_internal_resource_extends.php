@@ -39,19 +39,24 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
             /** @var \Smarty_Template_Source $_s */
             $_s = Smarty_Template_Source::load(null, $smarty, $component);
             if ($_s->type === 'php') {
-                throw new SmartyException("Resource type {$_s->type} cannot be used with the extends resource type");
+                throw new SmartyException(sprintf(
+                    'Resource type %s cannot be used with the extends resource type',
+                    $_s->type
+                ));
             }
+
             $sources[$_s->uid] = $_s;
             $uid .= $_s->filepath;
-            if ($_template) {
+            if ($_template !== null) {
                 $exists = $exists && $_s->exists;
             }
         }
+
         $source->components = $sources;
         $source->filepath = $_s->filepath;
         $source->uid = sha1($uid . $source->smarty->_joined_template_dir);
         $source->exists = $exists;
-        if ($_template) {
+        if ($_template !== null) {
             $source->timestamp = $_s->timestamp;
         }
     }
@@ -69,6 +74,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
         foreach ($source->components as $_s) {
             $source->exists = $source->exists && $_s->exists;
         }
+
         $source->timestamp = $source->exists ? $_s->getTimeStamp() : false;
     }
 
@@ -83,8 +89,9 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
         Smarty_Template_Source $source
     ) {
         if (! $source->exists) {
-            throw new SmartyException("Unable to load template '{$source->type}:{$source->name}'");
+            throw new SmartyException(sprintf("Unable to load template '%s:%s'", $source->type, $source->name));
         }
+
         $_components = array_reverse($source->components);
         $_content = '';
         /** @var \Smarty_Template_Source $_s */
@@ -92,6 +99,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
             // read content
             $_content .= $_s->getContent();
         }
+
         return $_content;
     }
 

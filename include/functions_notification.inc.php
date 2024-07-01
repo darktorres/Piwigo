@@ -59,12 +59,14 @@ function custom_notification_query(
   WHERE 1=1';
             if (! empty($start)) {
                 $query .= '
-    AND c.validation_date > \'' . $start . '\'';
+    AND c.validation_date > \'' . $start . "'";
             }
+
             if (! empty($end)) {
                 $query .= '
-    AND c.validation_date <= \'' . $end . '\'';
+    AND c.validation_date <= \'' . $end . "'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND');
             break;
 
@@ -75,12 +77,14 @@ function custom_notification_query(
   WHERE 1=1';
             if (! empty($start)) {
                 $query .= '
-    AND date > \'' . $start . '\'';
+    AND date > \'' . $start . "'";
             }
+
             if (! empty($end)) {
                 $query .= '
-    AND date <= \'' . $end . '\'';
+    AND date <= \'' . $end . "'";
             }
+
             $query .= '
     AND validated = \'false\'';
             break;
@@ -93,12 +97,14 @@ function custom_notification_query(
   WHERE 1=1';
             if (! empty($start)) {
                 $query .= '
-    AND date_available > \'' . $start . '\'';
+    AND date_available > \'' . $start . "'";
             }
+
             if (! empty($end)) {
                 $query .= '
-    AND date_available <= \'' . $end . '\'';
+    AND date_available <= \'' . $end . "'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND', 'id');
             break;
 
@@ -110,12 +116,14 @@ function custom_notification_query(
   WHERE 1=1';
             if (! empty($start)) {
                 $query .= '
-    AND date_available > \'' . $start . '\'';
+    AND date_available > \'' . $start . "'";
             }
+
             if (! empty($end)) {
                 $query .= '
-    AND date_available <= \'' . $end . '\'';
+    AND date_available <= \'' . $end . "'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND', 'id');
             break;
 
@@ -126,12 +134,14 @@ function custom_notification_query(
   WHERE 1=1';
             if (! empty($start)) {
                 $query .= '
-    AND registration_date > \'' . $start . '\'';
+    AND registration_date > \'' . $start . "'";
             }
+
             if (! empty($end)) {
                 $query .= '
-    AND registration_date <= \'' . $end . '\'';
+    AND registration_date <= \'' . $end . "'";
             }
+
             break;
 
         default:
@@ -158,6 +168,7 @@ function custom_notification_query(
                     $field_id = 'user_id';
                     break;
             }
+
             $query = 'SELECT COUNT(DISTINCT ' . $field_id . ') ' . $query . ';';
             list($count) = pwg_db_fetch_row(pwg_query($query));
             return $count;
@@ -182,6 +193,7 @@ function custom_notification_query(
                     $field_id = 'user_id';
                     break;
             }
+
             $query = 'SELECT DISTINCT ' . $field_id . ' ' . $query . ';';
             $infos = query2array($query);
             return $infos;
@@ -364,6 +376,7 @@ function add_news_line(
         if ($add_url and ! empty($url)) {
             $line = '<a href="' . $url . '">' . $line . '</a>';
         }
+
         $news[] = $line;
     }
 }
@@ -473,6 +486,7 @@ function get_recent_post_dates(
     if ($persistent_cache->get($cache_key, $cached)) {
         return $cached;
     }
+
     $where_sql = get_std_sql_where_restrict_filter('WHERE', 'i.id', true);
 
     $query = '
@@ -587,6 +601,7 @@ function get_html_description_recent_post_date(
           )
           . '"><img src="' . $tn_src . '"></a>';
     }
+
     $description .= '...<br>';
 
     $description .=
@@ -603,6 +618,7 @@ function get_html_description_recent_post_date(
               l10n_dec('%d new photo', '%d new photos', $cat['img_count']) . ')'
               . '</li>';
     }
+
     $description .= '</ul>';
 
     $description .= '</ul>';
@@ -636,6 +652,7 @@ if (! function_exists('strptime')) {
         if ($fmt != '%Y-%m-%d %H:%M:%S') {
             die('Invalid strptime format ' . $fmt);
         }
+
         list($y, $m, $d, $H, $M, $S) = preg_split('/[-: ]/', $date);
         $res = localtime(mktime($H, $M, $S, $m, $d, $y), true);
         return $res;

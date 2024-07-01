@@ -62,10 +62,16 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
                 ]
             );
         }
+
         if (isset($_attr['assign'])) {
             // assign output to variable
-            return "<?php \$_smarty_tpl->assign({$_attr['assign']},{$output});?>";
+            return sprintf(
+                '<?php $_smarty_tpl->assign(%s,%s);?>',
+                $_attr['assign'],
+                $output
+            );
         }
+
         // display value
         if (! $_attr['nofilter']) {
             // default modifier
@@ -84,8 +90,10 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
                             }
                         }
                     }
+
                     $compiler->default_modifier_list = $modifierlist;
                 }
+
                 $output = $compiler->compileTag(
                     'private_modifier',
                     [],
@@ -95,26 +103,34 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
                     ]
                 );
             }
+
             // autoescape html
             if ($compiler->template->smarty->escape_html) {
-                $output = "htmlspecialchars((string) {$output}, ENT_QUOTES, '" . addslashes(
+                $output = sprintf("htmlspecialchars((string) %s, ENT_QUOTES, '", $output) . addslashes(
                     Smarty::$_CHARSET
                 ) . "')";
             }
+
             // loop over registered filters
             if (! empty($compiler->template->smarty->registered_filters[Smarty::FILTER_VARIABLE])) {
                 foreach ($compiler->template->smarty->registered_filters[Smarty::FILTER_VARIABLE] as $key =>
                     $function) {
                     if (! is_array($function)) {
-                        $output = "{$function}({$output},\$_smarty_tpl)";
+                        $output = sprintf('%s(%s,$_smarty_tpl)', $function, $output);
                     } elseif (is_object($function[0])) {
                         $output =
-                            "\$_smarty_tpl->smarty->registered_filters[Smarty::FILTER_VARIABLE]['{$key}'][0]->{$function[1]}({$output},\$_smarty_tpl)";
+                            sprintf(
+                                '$_smarty_tpl->smarty->registered_filters[Smarty::FILTER_VARIABLE][\'%s\'][0]->%s(%s,$_smarty_tpl)',
+                                $key,
+                                $function[1],
+                                $output
+                            );
                     } else {
-                        $output = "{$function[0]}::{$function[1]}({$output},\$_smarty_tpl)";
+                        $output = sprintf('%s::%s(%s,$_smarty_tpl)', $function[0], $function[1], $output);
                     }
                 }
             }
+
             // auto loaded filters
             if (isset($compiler->smarty->autoload_filters[Smarty::FILTER_VARIABLE])) {
                 foreach ((array) $compiler->template->smarty->autoload_filters[Smarty::FILTER_VARIABLE] as $name) {
@@ -124,11 +140,12 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
                     } else {
                         // not found, throw exception
                         throw new SmartyException(
-                            "Unable to load variable filter '{$name}'"
+                            sprintf("Unable to load variable filter '%s'", $name)
                         );
                     }
                 }
             }
+
             foreach ($compiler->variable_filters as $filter) {
                 if (count($filter) === 1
                     && ($result = $this->compile_variable_filter($compiler, $filter[0], $output)) !== false
@@ -146,6 +163,7 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
                 }
             }
         }
+
         $output = "<?php echo {$output};?>\n";
 
         return $output;
@@ -165,8 +183,9 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
     ) {
         $function = $compiler->getPlugin($name, 'variablefilter');
         if ($function) {
-            return "{$function}({$output},\$_smarty_tpl)";
+            return sprintf('%s(%s,$_smarty_tpl)', $function, $output);
         }
+
         // not found
         return false;
 

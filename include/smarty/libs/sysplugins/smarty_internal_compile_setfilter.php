@@ -62,6 +62,7 @@ class Smarty_Internal_Compile_Setfilterclose extends Smarty_Internal_CompileBase
         } else {
             $compiler->variable_filters = [];
         }
+
         // this tag does not return compiled code
         $compiler->has_code = false;
         return true;

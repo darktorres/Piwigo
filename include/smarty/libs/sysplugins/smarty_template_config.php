@@ -74,13 +74,15 @@ class Smarty_Template_Config extends Smarty_Template_Source
             'extends' => true,
             'php' => true,
         ];
-        if ($_template) {
+        if ($_template !== null) {
             $smarty = $_template->smarty;
             $template_resource = $_template->template_resource;
         }
+
         if (empty($template_resource)) {
             throw new SmartyException('Source: Missing  name');
         }
+
         // parse resource_name, load resource handler
         list($name, $type) = Smarty_Resource::parseResourceName(
             $template_resource,
@@ -88,14 +90,16 @@ class Smarty_Template_Config extends Smarty_Template_Source
         );
         // make sure configs are not loaded via anything smarty can't handle
         if (isset($_incompatible_resources[$type])) {
-            throw new SmartyException("Unable to use resource '{$type}' for config");
+            throw new SmartyException(sprintf("Unable to use resource '%s' for config", $type));
         }
+
         $source = new self($smarty, $template_resource, $type, $name);
         $source->handler->populate($source, $_template);
         if (! $source->exists && isset($smarty->default_config_handler_func)) {
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
             $source->handler->populate($source, $_template);
         }
+
         return $source;
     }
 }

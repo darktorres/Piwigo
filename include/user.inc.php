@@ -67,4 +67,5 @@ $user = build_user(
 if ($conf['browser_language'] and (is_a_guest() or is_generic()) and $language = get_browser_language()) {
     $user['language'] = $language;
 }
+
 trigger_notify('user_init', $user);

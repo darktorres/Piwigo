@@ -132,7 +132,7 @@ SELECT
             }
         }
 
-        if (count($sessions_to_delete) > 0) {
+        if ($sessions_to_delete !== []) {
             $query = '
 DELETE
   FROM ' . SESSIONS_TABLE . '
@@ -140,6 +140,7 @@ DELETE
 ;';
             pwg_query($query);
         }
+
         $page['infos'][] = sprintf('%s : %s', l10n('Purge sessions'), l10n('action successfully performed.'));
         break;
 
@@ -208,6 +209,7 @@ DELETE
                 clear_derivative_cache($type_to_clear);
             }
         }
+
         $page['infos'][] = l10n('action successfully performed.');
         break;
 
@@ -252,6 +254,7 @@ DELETE
                 $page['infos'][] = l10n('You are running the latest version of Piwigo.');
             }
         }
+
         $page['infos'][] = l10n('action successfully performed.');
 
         // no break
@@ -290,6 +293,7 @@ $purge_urls[l10n('All')] = 'all';
 foreach (ImageStdParams::get_defined_type_map() as $params) {
     $purge_urls[l10n($params->type)] = $params->type;
 }
+
 $purge_urls[l10n(IMG_CUSTOM)] = IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
@@ -342,6 +346,7 @@ switch (pwg_image::get_library()) {
         if (preg_match('/ImageMagick \d+\.\d+\.\d+-?\d*/', $version['versionString'], $match)) {
             $library = $match[0];
         }
+
         $template->assign('GRAPHICS_LIBRARY', $library);
         break;
 
@@ -351,6 +356,7 @@ switch (pwg_image::get_library()) {
         if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match)) {
             $library .= ' ' . $match[1];
         }
+
         $template->assign('GRAPHICS_LIBRARY', $library);
         break;
 

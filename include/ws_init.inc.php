@@ -40,6 +40,7 @@ if ($requestFormat !== null) {
             $handler = new PwgRestRequestHandler();
             break;
     }
+
     $service->setHandler($requestFormat, $handler);
 }
 
@@ -63,6 +64,7 @@ if ($responseFormat !== null) {
             $encoder = new PwgXmlRpcEncoder();
             break;
     }
+
     $service->setEncoder($responseFormat, $encoder);
 }
 

@@ -56,8 +56,10 @@ class Smarty_Internal_Method_SetAutoloadFilters
             foreach ((array) $filters as $type => $value) {
                 $this->_checkFilterType($type);
             }
+
             $smarty->autoload_filters = (array) $filters;
         }
+
         return $obj;
     }
 
@@ -70,7 +72,7 @@ class Smarty_Internal_Method_SetAutoloadFilters
         $type
     ) {
         if (! isset($this->filterTypes[$type])) {
-            throw new SmartyException("Illegal filter type '{$type}'");
+            throw new SmartyException(sprintf("Illegal filter type '%s'", $type));
         }
     }
 }

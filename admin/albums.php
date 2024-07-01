@@ -54,6 +54,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     if (! in_array($_POST['order'], $sort_orders)) {
         die('Invalid sort order');
     }
+
     check_input_parameter('id', $_POST, false, '/^-?\d+$/');
 
     $query = '
@@ -161,6 +162,7 @@ foreach ($allAlbum as $album) {
     for ($i = 1; $i < count($parents); $i++) {
         $the_place = &$the_place['children'][strval($parents[$i])];
     }
+
     $the_place['cat'] = $album;
 }
 
@@ -180,6 +182,7 @@ function cmpCat($a, $b)
     if ($a['rank'] == $b['rank']) {
         return 0;
     }
+
     return ($a['rank'] < $b['rank']) ? -1 : 1;
 }
 
@@ -204,8 +207,10 @@ function assocToOrderedTree($assocT)
             $orderedCat['nb_subcats'] = count($cat['children']);
             $orderedCat['children'] = assocToOrderedTree($cat['children']);
         }
+
         array_push($orderedTree, $orderedCat);
     }
+
     usort($orderedTree, 'cmpCat');
     return $orderedTree;
 }
@@ -319,7 +324,7 @@ SELECT
             }
         }
 
-        if (count($to_compare) > 0) {
+        if ($to_compare !== []) {
             $ref_dates[$cat_id] = $minmax == 'max' ? max($to_compare) : min($to_compare);
         } else {
             $ref_dates[$cat_id] = null;

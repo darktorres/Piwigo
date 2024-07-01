@@ -82,6 +82,7 @@ function smarty_function_html_select_time(
                     );
                     $time = smarty_make_timestamp($_value);
                 }
+                
                 break;
             case 'prefix':
             case 'field_array':
@@ -129,11 +130,13 @@ function smarty_function_html_select_time(
                 if (! is_array($_value)) {
                     $extra_attrs .= ' ' . $_key . '="' . smarty_function_escape_special_chars($_value) . '"';
                 } else {
-                    trigger_error("html_select_date: extra attribute '{$_key}' cannot be an array", E_USER_NOTICE);
+                    trigger_error(sprintf('html_select_date: extra attribute \'%s\' cannot be an array', $_key), E_USER_NOTICE);
                 }
+                
                 break;
         }
     }
+    
     if (isset($params['time']) && is_array($params['time'])) {
         if (isset($params['time'][$prefix . 'Hour'])) {
             // $_REQUEST[$field_array] given
@@ -147,11 +150,13 @@ function smarty_function_html_select_time(
                     isset($params['time'][$prefix . $_elementName]) ? $params['time'][$prefix . $_elementName] :
                         date($_elementKey);
             }
+            
             $_meridian =
                 isset($params['time'][$prefix . 'Meridian']) ? (' ' . $params['time'][$prefix . 'Meridian']) :
                     '';
             $time = strtotime($_hour . ':' . $_minute . ':' . $_second . $_meridian);
-            list($_hour, $_minute, $_second) = $time = explode('-', date('H-i-s', $time));
+            list($_hour, $_minute, $_second) = explode('-', date('H-i-s', $time));
+            $time = list($_hour, $_minute, $_second);
         } elseif (isset($params['time'][$field_array][$prefix . 'Hour'])) {
             // $_REQUEST given
             foreach ([
@@ -163,23 +168,32 @@ function smarty_function_html_select_time(
                 ${$_variableName} = isset($params['time'][$field_array][$prefix . $_elementName]) ?
                     $params['time'][$field_array][$prefix . $_elementName] : date($_elementKey);
             }
+            
             $_meridian = isset($params['time'][$field_array][$prefix . 'Meridian']) ?
                 (' ' . $params['time'][$field_array][$prefix . 'Meridian']) : '';
             $time = strtotime($_hour . ':' . $_minute . ':' . $_second . $_meridian);
-            list($_hour, $_minute, $_second) = $time = explode('-', date('H-i-s', $time));
+            list($_hour, $_minute, $_second) = explode('-', date('H-i-s', $time));
+            $time = list($_hour, $_minute, $_second);
         } else {
             // no date found, use NOW
-            list($_year, $_month, $_day) = $time = explode('-', date('Y-m-d'));
+            list($_year, $_month, $_day) = explode('-', date('Y-m-d'));
+            $time = list($_year, $_month, $_day);
         }
     } elseif ($time === null) {
         if (array_key_exists('time', $params)) {
-            $_hour = $_minute = $_second = $time = null;
+            $_hour = null;
+            $_minute = null;
+            $_second = null;
+            $time = null;
         } else {
-            list($_hour, $_minute, $_second) = $time = explode('-', date('H-i-s'));
+            list($_hour, $_minute, $_second) = explode('-', date('H-i-s'));
+            $time = list($_hour, $_minute, $_second);
         }
     } else {
-        list($_hour, $_minute, $_second) = $time = explode('-', date('H-i-s', $time));
+        list($_hour, $_minute, $_second) = explode('-', date('H-i-s', $time));
+        $time = list($_hour, $_minute, $_second);
     }
+    
     // generate hour <select>
     if ($display_hours) {
         $_html_hours = '';
@@ -188,9 +202,11 @@ function smarty_function_html_select_time(
         if ($all_extra) {
             $_extra .= ' ' . $all_extra;
         }
+        
         if ($hour_extra) {
             $_extra .= ' ' . $hour_extra;
         }
+        
         $_html_hours = '<select name="' . $_name . '"';
         if ($hour_id !== null || $all_id !== null) {
             $_html_hours .= ' id="' .
@@ -199,14 +215,17 @@ function smarty_function_html_select_time(
                                     ($all_id ? ($all_id . $_name) : $_name)
                             ) . '"';
         }
+        
         if ($hour_size) {
             $_html_hours .= ' size="' . $hour_size . '"';
         }
+        
         $_html_hours .= $_extra . $extra_attrs . '>' . $option_separator;
         if (isset($hour_empty) || isset($all_empty)) {
             $_html_hours .= '<option value="">' . (isset($hour_empty) ? $hour_empty : $all_empty) . '</option>' .
                             $option_separator;
         }
+        
         $start = $use_24_hours ? 0 : 1;
         $end = $use_24_hours ? 23 : 12;
         for ($i = $start; $i <= $end; $i++) {
@@ -216,12 +235,15 @@ function smarty_function_html_select_time(
             if (! $use_24_hours) {
                 $_hour12 = $_hour == 0 ? 12 : ($_hour <= 12 ? $_hour : $_hour - 12);
             }
+            
             $selected = $_hour !== null ? ($use_24_hours ? $_hour == $_val : $_hour12 == $_val) : null;
             $_html_hours .= '<option value="' . $_value . '"' . ($selected ? ' selected="selected"' : '') . '>' .
                             $_text . '</option>' . $option_separator;
         }
+        
         $_html_hours .= '</select>';
     }
+    
     // generate minute <select>
     if ($display_minutes) {
         $_html_minutes = '';
@@ -230,9 +252,11 @@ function smarty_function_html_select_time(
         if ($all_extra) {
             $_extra .= ' ' . $all_extra;
         }
+        
         if ($minute_extra) {
             $_extra .= ' ' . $minute_extra;
         }
+        
         $_html_minutes = '<select name="' . $_name . '"';
         if ($minute_id !== null || $all_id !== null) {
             $_html_minutes .= ' id="' . smarty_function_escape_special_chars(
@@ -242,14 +266,17 @@ function smarty_function_html_select_time(
                             $_name)
             ) . '"';
         }
+        
         if ($minute_size) {
             $_html_minutes .= ' size="' . $minute_size . '"';
         }
+        
         $_html_minutes .= $_extra . $extra_attrs . '>' . $option_separator;
         if (isset($minute_empty) || isset($all_empty)) {
             $_html_minutes .= '<option value="">' . (isset($minute_empty) ? $minute_empty : $all_empty) . '</option>' .
                               $option_separator;
         }
+        
         $selected = $_minute !== null ? ($_minute - $_minute % $minute_interval) : null;
         for ($i = 0; $i <= 59; $i += $minute_interval) {
             $_val = sprintf('%02d', $i);
@@ -258,8 +285,10 @@ function smarty_function_html_select_time(
             $_html_minutes .= '<option value="' . $_value . '"' . ($selected === $i ? ' selected="selected"' : '') .
                               '>' . $_text . '</option>' . $option_separator;
         }
+        
         $_html_minutes .= '</select>';
     }
+    
     // generate second <select>
     if ($display_seconds) {
         $_html_seconds = '';
@@ -268,9 +297,11 @@ function smarty_function_html_select_time(
         if ($all_extra) {
             $_extra .= ' ' . $all_extra;
         }
+        
         if ($second_extra) {
             $_extra .= ' ' . $second_extra;
         }
+        
         $_html_seconds = '<select name="' . $_name . '"';
         if ($second_id !== null || $all_id !== null) {
             $_html_seconds .= ' id="' . smarty_function_escape_special_chars(
@@ -280,14 +311,17 @@ function smarty_function_html_select_time(
                             $_name)
             ) . '"';
         }
+        
         if ($second_size) {
             $_html_seconds .= ' size="' . $second_size . '"';
         }
+        
         $_html_seconds .= $_extra . $extra_attrs . '>' . $option_separator;
         if (isset($second_empty) || isset($all_empty)) {
             $_html_seconds .= '<option value="">' . (isset($second_empty) ? $second_empty : $all_empty) . '</option>' .
                               $option_separator;
         }
+        
         $selected = $_second !== null ? ($_second - $_second % $second_interval) : null;
         for ($i = 0; $i <= 59; $i += $second_interval) {
             $_val = sprintf('%02d', $i);
@@ -296,8 +330,10 @@ function smarty_function_html_select_time(
             $_html_seconds .= '<option value="' . $_value . '"' . ($selected === $i ? ' selected="selected"' : '') .
                               '>' . $_text . '</option>' . $option_separator;
         }
+        
         $_html_seconds .= '</select>';
     }
+    
     // generate meridian <select>
     if ($display_meridian && ! $use_24_hours) {
         $_html_meridian = '';
@@ -306,9 +342,11 @@ function smarty_function_html_select_time(
         if ($all_extra) {
             $_extra .= ' ' . $all_extra;
         }
+        
         if ($meridian_extra) {
             $_extra .= ' ' . $meridian_extra;
         }
+        
         $_html_meridian = '<select name="' . $_name . '"';
         if ($meridian_id !== null || $all_id !== null) {
             $_html_meridian .= ' id="' . smarty_function_escape_special_chars(
@@ -319,19 +357,23 @@ function smarty_function_html_select_time(
                             $_name)
             ) . '"';
         }
+        
         if ($meridian_size) {
             $_html_meridian .= ' size="' . $meridian_size . '"';
         }
+        
         $_html_meridian .= $_extra . $extra_attrs . '>' . $option_separator;
         if (isset($meridian_empty) || isset($all_empty)) {
             $_html_meridian .= '<option value="">' . (isset($meridian_empty) ? $meridian_empty : $all_empty) .
                                '</option>' . $option_separator;
         }
+        
         $_html_meridian .= '<option value="am"' . ($_hour > 0 && $_hour < 12 ? ' selected="selected"' : '') .
                            '>AM</option>' . $option_separator . '<option value="pm"' .
                            ($_hour < 12 ? '' : ' selected="selected"') . '>PM</option>' . $option_separator .
                            '</select>';
     }
+    
     $_html = '';
     foreach ([
         '_html_hours',
@@ -343,8 +385,10 @@ function smarty_function_html_select_time(
             if ($_html) {
                 $_html .= $field_separator;
             }
+            
             $_html .= ${$k};
         }
     }
+    
     return $_html;
 }

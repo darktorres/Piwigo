@@ -81,6 +81,7 @@ function random_bytes(
             )) {
                 stream_set_read_buffer($fp, RANDOM_COMPAT_READ_BUFFER);
             }
+
             if (function_exists('stream_set_chunk_size')) {
                 stream_set_chunk_size($fp, RANDOM_COMPAT_READ_BUFFER);
             }
@@ -89,7 +90,7 @@ function random_bytes(
 
     try {
         $bytes = RandomCompat_intval($bytes);
-    } catch (TypeError $ex) {
+    } catch (TypeError $typeError) {
         throw new TypeError(
             'random_bytes(): $bytes must be an integer'
         );
@@ -125,6 +126,7 @@ function random_bytes(
                 $buf = false;
                 break;
             }
+
             /**
              * Decrease the number of bytes returned from remaining
              */

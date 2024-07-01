@@ -36,6 +36,7 @@ class Smarty_Internal_Method_ClearConfig
         } else {
             $data->config_vars = [];
         }
+
         return $data;
     }
 }

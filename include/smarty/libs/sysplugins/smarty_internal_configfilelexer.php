@@ -169,6 +169,7 @@ class Smarty_Internal_Configfilelexer
         if (preg_match('/^\xEF\xBB\xBF/', $this->data, $match)) {
             $this->counter += strlen($match[0]);
         }
+
         $this->line = 1;
         $this->compiler = $compiler;
         $this->smarty = $compiler->smarty;
@@ -201,6 +202,7 @@ class Smarty_Internal_Configfilelexer
                 isset($this->state_name[$this->_yy_state]) ? $this->state_name[$this->_yy_state] : $this->_yy_state
             );
         }
+
         array_push($this->_yy_stack, $this->_yy_state);
         $this->_yy_state = $state;
         if ($this->yyTraceFILE) {
@@ -223,6 +225,7 @@ class Smarty_Internal_Configfilelexer
                 isset($this->state_name[$this->_yy_state]) ? $this->state_name[$this->_yy_state] : $this->_yy_state
             );
         }
+
         $this->_yy_state = array_pop($this->_yy_stack);
         if ($this->yyTraceFILE) {
             fprintf(
@@ -255,12 +258,15 @@ class Smarty_Internal_Configfilelexer
                     "/\G(#|;)|\G(\\[)|\G(\\])|\G(=)|\G([ \t\r]+)|\G(\n)|\G([0-9]*[a-zA-Z_]\\w*)|\G([\S\s])/isS"
                 );
         }
+
         if (! isset($this->dataLength)) {
             $this->dataLength = strlen($this->data);
         }
+
         if ($this->counter >= $this->dataLength) {
             return false; // end of input
         }
+
         do {
             if (preg_match($this->yy_global_pattern1, $this->data, $yymatches, 0, $this->counter)) {
                 if (! isset($yymatches[0][1])) {
@@ -268,6 +274,7 @@ class Smarty_Internal_Configfilelexer
                 } else {
                     $yymatches = array_filter($yymatches);
                 }
+
                 if (empty($yymatches)) {
                     throw new Exception('Error: lexing failed because a rule matched' .
                                         ' an empty string.  Input "' . substr(
@@ -276,6 +283,7 @@ class Smarty_Internal_Configfilelexer
                                             5
                                         ) . '... state START');
                 }
+
                 next($yymatches); // skip global match
                 $this->token = key($yymatches); // token number
                 $this->value = current($yymatches); // token value
@@ -295,6 +303,7 @@ class Smarty_Internal_Configfilelexer
                     if ($this->counter >= $this->dataLength) {
                         return false; // end of input
                     }
+
                     // skip this token
                     continue;
                 }
@@ -302,6 +311,7 @@ class Smarty_Internal_Configfilelexer
                 throw new Exception('Unexpected input at line' . $this->line .
                                     ': ' . $this->data[$this->counter]);
             }
+
             break;
         } while (true);
     }
@@ -357,12 +367,15 @@ class Smarty_Internal_Configfilelexer
                     "/\G([ \t\r]+)|\G(\\d+\\.\\d+(?=[ \t\r]*[\n#;]))|\G(\\d+(?=[ \t\r]*[\n#;]))|\G(\"\"\")|\G('[^'\\\\]*(?:\\\\.[^'\\\\]*)*'(?=[ \t\r]*[\n#;]))|\G(\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"(?=[ \t\r]*[\n#;]))|\G([a-zA-Z]+(?=[ \t\r]*[\n#;]))|\G([^\n]+?(?=[ \t\r]*\n))|\G(\n)/isS"
                 );
         }
+
         if (! isset($this->dataLength)) {
             $this->dataLength = strlen($this->data);
         }
+
         if ($this->counter >= $this->dataLength) {
             return false; // end of input
         }
+
         do {
             if (preg_match($this->yy_global_pattern2, $this->data, $yymatches, 0, $this->counter)) {
                 if (! isset($yymatches[0][1])) {
@@ -370,6 +383,7 @@ class Smarty_Internal_Configfilelexer
                 } else {
                     $yymatches = array_filter($yymatches);
                 }
+
                 if (empty($yymatches)) {
                     throw new Exception('Error: lexing failed because a rule matched' .
                                         ' an empty string.  Input "' . substr(
@@ -378,6 +392,7 @@ class Smarty_Internal_Configfilelexer
                                             5
                                         ) . '... state VALUE');
                 }
+
                 next($yymatches); // skip global match
                 $this->token = key($yymatches); // token number
                 $this->value = current($yymatches); // token value
@@ -397,6 +412,7 @@ class Smarty_Internal_Configfilelexer
                     if ($this->counter >= $this->dataLength) {
                         return false; // end of input
                     }
+
                     // skip this token
                     continue;
                 }
@@ -404,6 +420,7 @@ class Smarty_Internal_Configfilelexer
                 throw new Exception('Unexpected input at line' . $this->line .
                                     ': ' . $this->data[$this->counter]);
             }
+
             break;
         } while (true);
     }
@@ -451,6 +468,7 @@ class Smarty_Internal_Configfilelexer
             $this->yypushstate(self::NAKED_STRING_VALUE);
             return true; //reprocess in new state
         }
+
         $this->token = Smarty_Internal_Configfileparser::TPC_BOOL;
         $this->yypopstate();
 
@@ -474,12 +492,15 @@ class Smarty_Internal_Configfilelexer
         if (! isset($this->yy_global_pattern3)) {
             $this->yy_global_pattern3 = $this->replace("/\G([^\n]+?(?=[ \t\r]*\n))/isS");
         }
+
         if (! isset($this->dataLength)) {
             $this->dataLength = strlen($this->data);
         }
+
         if ($this->counter >= $this->dataLength) {
             return false; // end of input
         }
+
         do {
             if (preg_match($this->yy_global_pattern3, $this->data, $yymatches, 0, $this->counter)) {
                 if (! isset($yymatches[0][1])) {
@@ -487,6 +508,7 @@ class Smarty_Internal_Configfilelexer
                 } else {
                     $yymatches = array_filter($yymatches);
                 }
+
                 if (empty($yymatches)) {
                     throw new Exception('Error: lexing failed because a rule matched' .
                                         ' an empty string.  Input "' . substr(
@@ -495,6 +517,7 @@ class Smarty_Internal_Configfilelexer
                                             5
                                         ) . '... state NAKED_STRING_VALUE');
                 }
+
                 next($yymatches); // skip global match
                 $this->token = key($yymatches); // token number
                 $this->value = current($yymatches); // token value
@@ -514,6 +537,7 @@ class Smarty_Internal_Configfilelexer
                     if ($this->counter >= $this->dataLength) {
                         return false; // end of input
                     }
+
                     // skip this token
                     continue;
                 }
@@ -521,6 +545,7 @@ class Smarty_Internal_Configfilelexer
                 throw new Exception('Unexpected input at line' . $this->line .
                                     ': ' . $this->data[$this->counter]);
             }
+
             break;
         } while (true);
     }
@@ -536,12 +561,15 @@ class Smarty_Internal_Configfilelexer
         if (! isset($this->yy_global_pattern4)) {
             $this->yy_global_pattern4 = $this->replace("/\G([ \t\r]+)|\G([^\n]+?(?=[ \t\r]*\n))|\G(\n)/isS");
         }
+
         if (! isset($this->dataLength)) {
             $this->dataLength = strlen($this->data);
         }
+
         if ($this->counter >= $this->dataLength) {
             return false; // end of input
         }
+
         do {
             if (preg_match($this->yy_global_pattern4, $this->data, $yymatches, 0, $this->counter)) {
                 if (! isset($yymatches[0][1])) {
@@ -549,6 +577,7 @@ class Smarty_Internal_Configfilelexer
                 } else {
                     $yymatches = array_filter($yymatches);
                 }
+
                 if (empty($yymatches)) {
                     throw new Exception('Error: lexing failed because a rule matched' .
                                         ' an empty string.  Input "' . substr(
@@ -557,6 +586,7 @@ class Smarty_Internal_Configfilelexer
                                             5
                                         ) . '... state COMMENT');
                 }
+
                 next($yymatches); // skip global match
                 $this->token = key($yymatches); // token number
                 $this->value = current($yymatches); // token value
@@ -576,6 +606,7 @@ class Smarty_Internal_Configfilelexer
                     if ($this->counter >= $this->dataLength) {
                         return false; // end of input
                     }
+
                     // skip this token
                     continue;
                 }
@@ -583,6 +614,7 @@ class Smarty_Internal_Configfilelexer
                 throw new Exception('Unexpected input at line' . $this->line .
                                     ': ' . $this->data[$this->counter]);
             }
+
             break;
         } while (true);
     }
@@ -608,12 +640,15 @@ class Smarty_Internal_Configfilelexer
         if (! isset($this->yy_global_pattern5)) {
             $this->yy_global_pattern5 = $this->replace("/\G(\\.)|\G(.*?(?=[\.=[\]\r\n]))/isS");
         }
+
         if (! isset($this->dataLength)) {
             $this->dataLength = strlen($this->data);
         }
+
         if ($this->counter >= $this->dataLength) {
             return false; // end of input
         }
+
         do {
             if (preg_match($this->yy_global_pattern5, $this->data, $yymatches, 0, $this->counter)) {
                 if (! isset($yymatches[0][1])) {
@@ -621,6 +656,7 @@ class Smarty_Internal_Configfilelexer
                 } else {
                     $yymatches = array_filter($yymatches);
                 }
+
                 if (empty($yymatches)) {
                     throw new Exception('Error: lexing failed because a rule matched' .
                                         ' an empty string.  Input "' . substr(
@@ -629,6 +665,7 @@ class Smarty_Internal_Configfilelexer
                                             5
                                         ) . '... state SECTION');
                 }
+
                 next($yymatches); // skip global match
                 $this->token = key($yymatches); // token number
                 $this->value = current($yymatches); // token value
@@ -648,6 +685,7 @@ class Smarty_Internal_Configfilelexer
                     if ($this->counter >= $this->dataLength) {
                         return false; // end of input
                     }
+
                     // skip this token
                     continue;
                 }
@@ -655,6 +693,7 @@ class Smarty_Internal_Configfilelexer
                 throw new Exception('Unexpected input at line' . $this->line .
                                     ': ' . $this->data[$this->counter]);
             }
+
             break;
         } while (true);
     }
@@ -675,12 +714,15 @@ class Smarty_Internal_Configfilelexer
         if (! isset($this->yy_global_pattern6)) {
             $this->yy_global_pattern6 = $this->replace("/\G(\"\"\"(?=[ \t\r]*[\n#;]))|\G([\S\s])/isS");
         }
+
         if (! isset($this->dataLength)) {
             $this->dataLength = strlen($this->data);
         }
+
         if ($this->counter >= $this->dataLength) {
             return false; // end of input
         }
+
         do {
             if (preg_match($this->yy_global_pattern6, $this->data, $yymatches, 0, $this->counter)) {
                 if (! isset($yymatches[0][1])) {
@@ -688,6 +730,7 @@ class Smarty_Internal_Configfilelexer
                 } else {
                     $yymatches = array_filter($yymatches);
                 }
+
                 if (empty($yymatches)) {
                     throw new Exception('Error: lexing failed because a rule matched' .
                                         ' an empty string.  Input "' . substr(
@@ -696,6 +739,7 @@ class Smarty_Internal_Configfilelexer
                                             5
                                         ) . '... state TRIPPLE');
                 }
+
                 next($yymatches); // skip global match
                 $this->token = key($yymatches); // token number
                 $this->value = current($yymatches); // token value
@@ -715,6 +759,7 @@ class Smarty_Internal_Configfilelexer
                     if ($this->counter >= $this->dataLength) {
                         return false; // end of input
                     }
+
                     // skip this token
                     continue;
                 }
@@ -722,6 +767,7 @@ class Smarty_Internal_Configfilelexer
                 throw new Exception('Unexpected input at line' . $this->line .
                                     ': ' . $this->data[$this->counter]);
             }
+
             break;
         } while (true);
     }
@@ -742,6 +788,7 @@ class Smarty_Internal_Configfilelexer
         } else {
             $this->compiler->trigger_config_file_error('missing or misspelled literal closing tag');
         }
+
         $this->value = substr($this->data, $this->counter, $to - $this->counter);
         $this->token = Smarty_Internal_Configfileparser::TPC_TRIPPLE_TEXT;
     }

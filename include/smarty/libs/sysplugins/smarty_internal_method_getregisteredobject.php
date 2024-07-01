@@ -33,11 +33,13 @@ class Smarty_Internal_Method_GetRegisteredObject
     ) {
         $smarty = $obj->_getSmartyObj();
         if (! isset($smarty->registered_objects[$object_name])) {
-            throw new SmartyException("'{$object_name}' is not a registered object");
+            throw new SmartyException(sprintf("'%s' is not a registered object", $object_name));
         }
+
         if (! is_object($smarty->registered_objects[$object_name][0])) {
-            throw new SmartyException("registered '{$object_name}' is not an object");
+            throw new SmartyException(sprintf("registered '%s' is not an object", $object_name));
         }
+
         return $smarty->registered_objects[$object_name][0];
     }
 }

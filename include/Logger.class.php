@@ -282,6 +282,7 @@ class Logger
                 $args = $cat;
                 $cat = null;
             }
+
             $line = $this->formatMessage($severity, $message, $cat, $args);
             $this->write($line);
         }
@@ -422,10 +423,12 @@ class Logger
         if (! empty($context)) {
             $message .= "\n" . $this->indent($this->contextToString($context));
         }
+
         $line = '[' . $this->getTimestamp() . "]\t[" . self::levelToCode($level) . "]\t";
         if ($cat != null) {
             $line .= '[' . $cat . "]\t";
         }
+
         return $line . $message . "\n";
     }
 
@@ -468,7 +471,8 @@ class Logger
             );
             $export .= PHP_EOL;
         }
-        return str_replace(['\\\\', '\\\''], ['\\', '\''], rtrim($export));
+
+        return str_replace(['\\\\', '\\\''], ['\\', "'"], rtrim($export));
     }
 
     /**

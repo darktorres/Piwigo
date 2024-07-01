@@ -62,6 +62,7 @@ class Smarty_Internal_Method_CompileAllTemplates
         if (function_exists('set_time_limit')) {
             @set_time_limit($time_limit);
         }
+
         $_count = 0;
         $_error_count = 0;
         $sourceDir = $isConfig ? $smarty->getConfigDir() : $smarty->getTemplateDir();
@@ -78,12 +79,15 @@ class Smarty_Internal_Method_CompileAllTemplates
                 if (substr(basename($_fileinfo->getPathname()), 0, 1) === '.' || strpos($_file, '.svn') !== false) {
                     continue;
                 }
+
                 if (substr_compare($_file, $extension, -strlen($extension)) !== 0) {
                     continue;
                 }
+
                 if ($_fileinfo->getPath() !== substr($_dir, 0, -1)) {
                     $_file = substr($_fileinfo->getPath(), strlen($_dir)) . DIRECTORY_SEPARATOR . $_file;
                 }
+
                 echo "\n<br>", $_dir, '---', $_file;
                 flush();
                 $_start_time = microtime(true);
@@ -112,6 +116,7 @@ class Smarty_Internal_Method_CompileAllTemplates
                     echo "\n<br>        ------>Error: ", $e->getMessage(), "<br><br>\n";
                     $_error_count++;
                 }
+
                 // free memory
                 unset($_tpl);
                 $_smarty->_clearTemplateCache();
@@ -121,6 +126,7 @@ class Smarty_Internal_Method_CompileAllTemplates
                 }
             }
         }
+
         echo "\n<br>";
         return $_count;
     }

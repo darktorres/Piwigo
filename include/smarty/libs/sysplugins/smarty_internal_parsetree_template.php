@@ -89,6 +89,7 @@ class Smarty_Internal_ParseTree_Template extends Smarty_Internal_ParseTree
                     foreach ($chunk['subtrees'] as $subtree) {
                         $text .= $subtree->to_smarty_php($parser);
                     }
+
                     $code .= preg_replace(
                         '/((<%)|(%>)|(<\?php)|(<\?)|(\?>)|(<\/?script))/',
                         "<?php echo '\$1'; ?>\n",
@@ -99,6 +100,7 @@ class Smarty_Internal_ParseTree_Template extends Smarty_Internal_ParseTree
                     foreach ($chunk['subtrees'] as $subtree) {
                         $text .= $subtree->to_smarty_php($parser);
                     }
+
                     $code .= preg_replace(
                         '/((<%)|(%>)|(<\?php)|(<\?)|(\?>)|(<\/?script))/',
                         "<?php echo '\$1'; ?>\n",
@@ -109,16 +111,19 @@ class Smarty_Internal_ParseTree_Template extends Smarty_Internal_ParseTree
                     foreach ($chunk['subtrees'] as $subtree) {
                         $text = $parser->compiler->appendCode($text, $subtree->to_smarty_php($parser));
                     }
+
                     $code .= $text;
                     break;
                 default:
                     foreach ($chunk['subtrees'] as $subtree) {
                         $text = $subtree->to_smarty_php($parser);
                     }
+
                     $code .= $text;
 
             }
         }
+
         return $code;
     }
 
@@ -155,12 +160,14 @@ class Smarty_Internal_ParseTree_Template extends Smarty_Internal_ParseTree
                 $currentChunk = [$this->subtrees[$key]];
             }
         }
+
         if ($currentMode && $currentChunk) {
             $chunks[] = [
                 'mode' => $currentMode,
                 'subtrees' => $currentChunk,
             ];
         }
+
         return $chunks;
     }
 }

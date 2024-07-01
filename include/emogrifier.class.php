@@ -342,6 +342,7 @@ class Emogrifier
                     // otherwise create a new style
                     $style = trim($value['attributes']);
                 }
+
                 $node->setAttribute('style', $style);
             }
         }
@@ -381,6 +382,7 @@ class Emogrifier
         if ($this->preserveEncoding) {
             return mb_convert_encoding($xmlDocument->saveHTML(), self::ENCODING, 'HTML-ENTITIES');
         }
+
         return $xmlDocument->saveHTML();
 
     }
@@ -498,11 +500,13 @@ class Emogrifier
                 if (trim($selector == '')) {
                     break;
                 }
+
                 $number = 0;
                 $selector = preg_replace('/' . $s . '\\w+/', '', $selector, -1, $number);
                 $precedence += ($value * $number);
                 $value /= 10;
             }
+
             $this->caches[self::CACHE_KEY_SELECTOR][$selectorKey] = $precedence;
         }
 
@@ -579,6 +583,7 @@ class Emogrifier
 
             $this->caches[self::CACHE_KEY_SELECTOR][$xpathKey] = $cssSelector;
         }
+
         return $this->caches[self::CACHE_KEY_SELECTOR][$xpathKey];
     }
 
@@ -619,6 +624,7 @@ class Emogrifier
                     $match[1]
                 );
             }
+
             return sprintf(
                 '*[position() mod %u = %u]/self::%s',
                 $result[self::MULTIPLIER],
@@ -627,6 +633,7 @@ class Emogrifier
             );
 
         }
+
         return sprintf('*[%u]/self::%s', $result[self::INDEX], $match[1]);
 
     }
@@ -648,6 +655,7 @@ class Emogrifier
                     $result[self::INDEX]
                 );
             }
+
             return sprintf(
                 '%s[position() mod %u = %u]',
                 $match[1],
@@ -656,6 +664,7 @@ class Emogrifier
             );
 
         }
+
         return sprintf('%s[%u]', $match[1], $result[self::INDEX]);
 
     }
@@ -678,6 +687,7 @@ class Emogrifier
                 self::INDEX => $index,
             ];
         }
+
         if (isset($match[3])) {
             $multipleTerm = str_replace($match[3], '', $match[2]);
             $index = intval(str_replace(' ', '', $match[3]));
@@ -738,6 +748,7 @@ class Emogrifier
             if (! preg_match('/ *([a-z\-]+) *: *([^;]+) */', $declaration, $matches)) {
                 continue;
             }
+
             $propertyName = $matches[1];
             $propertyValue = $matches[2];
             $properties[$propertyName] = $propertyValue;

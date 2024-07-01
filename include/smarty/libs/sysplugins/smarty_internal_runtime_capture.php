@@ -65,6 +65,7 @@ class Smarty_Internal_Runtime_Capture
         if (! $this->isRegistered) {
             $this->register($_template);
         }
+
         $this->captureStack[] = [
             $buffer,
             $assign,
@@ -94,9 +95,11 @@ class Smarty_Internal_Runtime_Capture
             if (isset($assign)) {
                 $_template->assign($assign, ob_get_contents());
             }
+
             if (isset($append)) {
                 $_template->append($append, ob_get_contents());
             }
+
             $this->namedBuffer[$buffer] = ob_get_clean();
         } else {
             $this->error($_template);
@@ -109,7 +112,7 @@ class Smarty_Internal_Runtime_Capture
     public function error(
         Smarty_Internal_Template $_template
     ) {
-        throw new SmartyException("Not matching {capture}{/capture} in '{$_template->template_resource}'");
+        throw new SmartyException(sprintf("Not matching {capture}{/capture} in '%s'", $_template->template_resource));
     }
 
     /**
@@ -126,6 +129,7 @@ class Smarty_Internal_Runtime_Capture
         if (isset($name)) {
             return isset($this->namedBuffer[$name]) ? $this->namedBuffer[$name] : null;
         }
+
         return $this->namedBuffer;
 
     }

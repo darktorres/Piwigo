@@ -105,9 +105,11 @@ function secure_random_bytes(
         if (function_exists('posix_times')) {
             $entropy .= serialize(posix_times());
         }
+
         if (function_exists('zend_thread_id')) {
             $entropy .= zend_thread_id();
         }
+
         if ($handle) {
             $entropy .= @fread($handle, $bytes);
         } else {
@@ -118,6 +120,7 @@ function secure_random_bytes(
                 for ($j = 0; $j < 50; $j++) {
                     $var = sha1($var);
                 }
+
                 $c2 = microtime(true);
                 $entropy .= $c1 . $c2;
             }
@@ -137,11 +140,13 @@ function secure_random_bytes(
                 for ($j = 0; $j < $rounds; $j++) {
                     $var = sha1($var);
                 }
+
                 $c2 = microtime();
                 $entropy .= $c1 . $c2;
             }
 
         }
+
         // We assume sha1 is a deterministic extractor for the $entropy variable.
         $str .= sha1($entropy, true);
     } while ($len > strlen($str));
@@ -149,5 +154,6 @@ function secure_random_bytes(
     if ($handle) {
         @fclose($handle);
     }
+
     return substr($str, 0, $len);
 }

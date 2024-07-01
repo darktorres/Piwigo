@@ -74,8 +74,10 @@ final class SrcImage
                 } else {
                     $this->rel_path = 'themes/default/icon/mimetypes/unknown.png';
                 }
+
                 $size = getimagesize(PHPWG_ROOT_PATH . $this->rel_path);
             }
+
             $this->size = @[$size[0], $size[1]];
         }
 
@@ -132,6 +134,7 @@ final class SrcImage
         if (! ($this->flags & self::IS_MIMETYPE)) {
             $url = trigger_change('get_src_image_url', $url, $this);
         }
+
         return embellish_url($url);
     }
 
@@ -152,6 +155,7 @@ final class SrcImage
             if ($this->flags & self::DIM_NOT_GIVEN) {
                 fatal_error('SrcImage dimensions required but not provided');
             }
+
             // probably not metadata synced
             if (($size = getimagesize($this->get_path())) !== false) {
                 $this->size = [$size[0], $size[1]];
@@ -160,6 +164,7 @@ final class SrcImage
                 );
             }
         }
+
         return $this->size;
     }
 }
@@ -243,6 +248,7 @@ final class DerivativeImage
         if ($params == null) {
             return $src_image->get_url();
         }
+
         return embellish_url(
             trigger_change(
                 'get_derivative_url',
@@ -277,6 +283,7 @@ final class DerivativeImage
             $derivative = new self($params, $src_image);
             $ret[$type] = $derivative;
         }
+
         // disabled types, fallback to enabled types
         foreach (ImageStdParams::get_undefined_type_map() as $type => $type2) {
             $ret[$type] = $ret[$type2];
@@ -330,6 +337,7 @@ final class DerivativeImage
         if ($this->params == null) {
             return $this->src_image->get_url();
         }
+
         return embellish_url(
             trigger_change(
                 'get_derivative_url',
@@ -357,6 +365,7 @@ final class DerivativeImage
         if ($this->params == null) {
             return 'Original';
         }
+
         return $this->params->type;
     }
 
@@ -368,6 +377,7 @@ final class DerivativeImage
         if ($this->params == null) {
             return $this->src_image->get_size();
         }
+
         return $this->params->compute_final_size($this->src_image->get_size());
     }
 
@@ -430,6 +440,7 @@ final class DerivativeImage
                 }
             }
         }
+
         return $size;
     }
 
@@ -474,9 +485,11 @@ final class DerivativeImage
                 $src->get_size()
             ) && ! $src->rotation) {// no watermark, no rotation required -> we will use the source image
                 $params = null;
-                $rel_path = $rel_url = $src->rel_path;
+                $rel_path = $src->rel_path;
+                $rel_url = $src->rel_path;
                 return;
             }
+
             $defined_types = array_keys(ImageStdParams::get_defined_type_map());
             for ($i = 0; $i < count($defined_types); $i++) {
                 if ($defined_types[$i] == $params->type) {
@@ -490,6 +503,7 @@ final class DerivativeImage
                             return;
                         }
                     }
+
                     break;
                 }
             }
@@ -508,6 +522,7 @@ final class DerivativeImage
         } elseif (substr_compare($loc, '../', 0, 3) == 0) {
             $loc = substr($loc, 3);
         }
+
         $loc = substr_replace($loc, '-' . implode('_', $tokens), strrpos($loc, '.'), 0);
 
         $rel_path = PWG_DERIVATIVE_DIR . $loc;
@@ -529,9 +544,11 @@ final class DerivativeImage
             if ($conf['php_extension_in_urls']) {
                 $rel_url .= '.php';
             }
+
             if ($conf['question_mark_in_urls']) {
                 $rel_url .= '?';
             }
+
             $rel_url .= '/' . $loc;
         } else {
             $rel_url = $rel_path;
