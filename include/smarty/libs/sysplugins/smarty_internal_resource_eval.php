@@ -24,8 +24,10 @@ class Smarty_Internal_Resource_Eval extends Smarty_Resource_Recompiled
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template = null
     ) {
-        $source->uid = $source->filepath = sha1($source->name);
-        $source->timestamp = $source->exists = true;
+        $source->uid = sha1($source->name);
+        $source->filepath = $source->uid;
+        $source->timestamp = true;
+        $source->exists = true;
     }
 
     /**
@@ -91,6 +93,7 @@ class Smarty_Internal_Resource_Eval extends Smarty_Resource_Recompiled
                 return urldecode(substr($string, 10));
             }
         }
+
         return $string;
     }
 }

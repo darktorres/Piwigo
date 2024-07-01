@@ -36,6 +36,7 @@ class Smarty_Internal_Method_RegisterDefaultConfigHandler
         } else {
             throw new SmartyException('Default config handler not callable');
         }
+
         return $obj;
     }
 }

@@ -86,8 +86,10 @@ class Smarty_Internal_Runtime_GetIncludePath
                     $this->_include_dirs[] = $smarty->_realpath($_path . DIRECTORY_SEPARATOR, true);
                 }
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -122,6 +124,7 @@ class Smarty_Internal_Runtime_GetIncludePath
         ) {
             $this->isNewIncludePath($smarty);
         }
+
         // try PHP include_path
         foreach ($dirs as $dir) {
             $dir_n = isset($this->number[$dir]) ? $this->number[$dir] : $this->number[$dir] = $this->counter++;
@@ -129,13 +132,16 @@ class Smarty_Internal_Runtime_GetIncludePath
                 if ($this->isFile[$dir_n][$file]) {
                     return $this->isFile[$dir_n][$file];
                 }
+
                 continue;
 
             }
+
             if (isset($this->_user_dirs[$dir_n])) {
                 if ($this->_user_dirs[$dir_n] === false) {
                     continue;
                 }
+
                 $dir = $this->_user_dirs[$dir_n];
 
             } else {
@@ -146,9 +152,11 @@ class Smarty_Internal_Runtime_GetIncludePath
                         continue;
                     }
                 }
+
                 $dir = substr($dir, 2);
                 $this->_user_dirs[$dir_n] = $dir;
             }
+
             if ($this->_has_stream_include) {
                 $path = stream_resolve_include_path($dir . (isset($file) ? $file : ''));
                 if ($path) {
@@ -161,6 +169,7 @@ class Smarty_Internal_Runtime_GetIncludePath
                     if ($path === false) {
                         continue;
                     }
+
                     if (isset($file)) {
                         $_file = $this->isFile[$dir_n][$file] = (is_file($path . $file)) ? $path . $file : false;
                         if ($_file) {
@@ -173,6 +182,7 @@ class Smarty_Internal_Runtime_GetIncludePath
                 }
             }
         }
+
         return false;
     }
 }

@@ -34,6 +34,7 @@ class Smarty_Internal_Compile_While extends Smarty_Internal_CompileBase
         if (! array_key_exists('if condition', $parameter)) {
             $compiler->trigger_template_error('missing while condition', null, true);
         }
+
         // maybe nocache because of nocache variables
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
         if (is_array($parameter['if condition'])) {
@@ -46,15 +47,17 @@ class Smarty_Internal_Compile_While extends Smarty_Internal_CompileBase
                 } else {
                     $var = $parameter['if condition']['var'];
                 }
+
                 $compiler->setNocacheInVariable($var);
             }
+
             $prefixVar = $compiler->getNewPrefixVariable();
             $assignCompiler = new Smarty_Internal_Compile_Assign();
             $assignAttr = [];
             $assignAttr[]['value'] = $prefixVar;
             if (is_array($parameter['if condition']['var'])) {
                 $assignAttr[]['var'] = $parameter['if condition']['var']['var'];
-                $_output = "<?php while ({$prefixVar} = {$parameter['if condition']['value']}) {?>";
+                $_output = sprintf('<?php while (%s = %s) {?>', $prefixVar, $parameter['if condition']['value']);
                 $_output .= $assignCompiler->compile(
                     $assignAttr,
                     $compiler,
@@ -64,11 +67,13 @@ class Smarty_Internal_Compile_While extends Smarty_Internal_CompileBase
                 );
             } else {
                 $assignAttr[]['var'] = $parameter['if condition']['var'];
-                $_output = "<?php while ({$prefixVar} = {$parameter['if condition']['value']}) {?>";
+                $_output = sprintf('<?php while (%s = %s) {?>', $prefixVar, $parameter['if condition']['value']);
                 $_output .= $assignCompiler->compile($assignAttr, $compiler, []);
             }
+
             return $_output;
         }
+
         return "<?php\n while ({$parameter['if condition']}) {?>";
 
     }
@@ -98,6 +103,7 @@ class Smarty_Internal_Compile_Whileclose extends Smarty_Internal_CompileBase
         if ($compiler->nocache) {
             $compiler->tag_nocache = true;
         }
+
         $compiler->nocache = $this->closeTag($compiler, ['while']);
         return "<?php }?>\n";
     }

@@ -45,7 +45,7 @@ function generate_key(
 
     try {
         $bytes = random_bytes($size + 10);
-    } catch (Exception $ex) {
+    } catch (Exception $exception) {
         include_once(PHPWG_ROOT_PATH . 'include/srand.php');
         $bytes = secure_random_bytes($size + 10);
     }
@@ -104,6 +104,7 @@ function get_remote_addr_session_hash()
             explode('.', $_SERVER['REMOTE_ADDR'])
         );
     }
+
     return ''; //ipv6 not yet
 }
 
@@ -125,6 +126,7 @@ SELECT data
     if (($row = pwg_db_fetch_assoc($result))) {
         return $row['data'];
     }
+
     return '';
 }
 
@@ -142,7 +144,7 @@ function pwg_session_write(
     $query = '
 REPLACE INTO ' . SESSIONS_TABLE . '
   (id,data,expiration)
-  VALUES(\'' . get_remote_addr_session_hash() . $session_id . '\',\'' . pwg_db_real_escape_string($data) . '\',now())
+  VALUES(\'' . get_remote_addr_session_hash() . $session_id . "','" . pwg_db_real_escape_string($data) . '\',now())
 ;';
     pwg_query($query);
     return true;
@@ -199,6 +201,7 @@ function pwg_set_session_var(
     if (! isset($_SESSION)) {
         return false;
     }
+
     $_SESSION['pwg_' . $var] = $value;
     return true;
 }
@@ -217,6 +220,7 @@ function pwg_get_session_var(
     if (isset($_SESSION['pwg_' . $var])) {
         return $_SESSION['pwg_' . $var];
     }
+
     return $default;
 }
 
@@ -232,6 +236,7 @@ function pwg_unset_session_var(
     if (! isset($_SESSION)) {
         return false;
     }
+
     unset($_SESSION['pwg_' . $var]);
     return true;
 }

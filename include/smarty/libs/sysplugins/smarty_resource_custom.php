@@ -35,6 +35,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
                 $source->content = $content;
             }
         }
+
         $source->exists = ! ! $source->timestamp;
     }
 
@@ -52,7 +53,8 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
         if (isset($content)) {
             return $content;
         }
-        throw new SmartyException("Unable to read template {$source->type} '{$source->name}'");
+
+        throw new SmartyException(sprintf("Unable to read template %s '%s'", $source->type, $source->name));
     }
 
     /**

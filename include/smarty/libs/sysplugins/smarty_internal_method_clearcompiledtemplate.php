@@ -40,6 +40,7 @@ class Smarty_Internal_Method_ClearCompiledTemplate
         if ($_compile_dir === '/') { //We should never want to delete this!
             return 0;
         }
+
         $_compile_id = isset($compile_id) ? preg_replace('![^\w]+!', '_', $compile_id) : null;
         $_dir_sep = $smarty->use_sub_dirs ? DIRECTORY_SEPARATOR : '^';
         if (isset($resource_name)) {
@@ -54,29 +55,35 @@ class Smarty_Internal_Method_ClearCompiledTemplate
             } else {
                 return 0;
             }
+
             $_resource_part_2 = str_replace('.php', '.cache.php', $_resource_part_1);
             $_resource_part_2_length = strlen($_resource_part_2);
         }
+
         $_dir = $_compile_dir;
         if ($smarty->use_sub_dirs && isset($_compile_id)) {
             $_dir .= $_compile_id . $_dir_sep;
         }
+
         if (isset($_compile_id)) {
             $_compile_id_part = $_compile_dir . $_compile_id . $_dir_sep;
             $_compile_id_part_length = strlen($_compile_id_part);
         }
+
         $_count = 0;
         try {
             $_compileDirs = new RecursiveDirectoryIterator($_dir);
             // NOTE: UnexpectedValueException thrown for PHP >= 5.3
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             return 0;
         }
+
         $_compile = new RecursiveIteratorIterator($_compileDirs, RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($_compile as $_file) {
             if (substr(basename($_file->getPathname()), 0, 1) === '.') {
                 continue;
             }
+
             $_filepath = (string) $_file;
             if ($_file->isDir()) {
                 if (! $_compile->isDot()) {
@@ -88,6 +95,7 @@ class Smarty_Internal_Method_ClearCompiledTemplate
                 if (substr($_filepath, -4) !== '.php') {
                     continue;
                 }
+
                 $unlink = false;
                 if ((! isset($_compile_id) ||
                      (isset($_filepath[$_compile_id_part_length]) &&
@@ -114,6 +122,7 @@ class Smarty_Internal_Method_ClearCompiledTemplate
                         $unlink = true;
                     }
                 }
+
                 if ($unlink && is_file($_filepath) && @unlink($_filepath)) {
                     $_count++;
                     if (function_exists('opcache_invalidate')
@@ -126,6 +135,7 @@ class Smarty_Internal_Method_ClearCompiledTemplate
                 }
             }
         }
+
         return $_count;
     }
 }

@@ -34,7 +34,7 @@ class Smarty_Internal_Runtime_FilterHandler
         // loop over autoload filters of specified type
         if (! empty($template->smarty->autoload_filters[$type])) {
             foreach ((array) $template->smarty->autoload_filters[$type] as $name) {
-                $plugin_name = "Smarty_{$type}filter_{$name}";
+                $plugin_name = sprintf('Smarty_%sfilter_%s', $type, $name);
                 if (function_exists($plugin_name)) {
                     $callback = $plugin_name;
                 } elseif (class_exists($plugin_name, false) && is_callable([$plugin_name, 'execute'])) {
@@ -48,18 +48,24 @@ class Smarty_Internal_Runtime_FilterHandler
                         $callback = [$plugin_name, 'execute'];
                     } else {
                         throw new SmartyException(
-                            "Auto load {$type}-filter plugin method '{$plugin_name}::execute' not callable"
+                            sprintf(
+                                "Auto load %s-filter plugin method '%s::execute' not callable",
+                                $type,
+                                $plugin_name
+                            )
                         );
                     }
                 } else {
                     // nothing found, throw exception
                     throw new SmartyException(
-                        "Unable to auto load {$type}-filter plugin '{$plugin_name}'"
+                        sprintf("Unable to auto load %s-filter plugin '%s'", $type, $plugin_name)
                     );
                 }
+
                 $content = call_user_func($callback, $content, $template);
             }
         }
+
         // loop over registered filters of specified type
         if (! empty($template->smarty->registered_filters[$type])) {
             foreach ($template->smarty->registered_filters[$type] as $key => $name) {
@@ -70,6 +76,7 @@ class Smarty_Internal_Runtime_FilterHandler
                 );
             }
         }
+
         // return filtered output
         return $content;
     }

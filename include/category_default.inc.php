@@ -40,7 +40,7 @@ SELECT *
     unset($rank_of);
 }
 
-if (count($pictures) > 0) {
+if ($pictures !== []) {
     // define category slideshow url
     $row = reset($pictures);
     $page['cat_slideshow_url'] =
@@ -125,9 +125,11 @@ foreach ($pictures as $row) {
             if (! $user['show_nb_hits']) {
                 $name = '(' . $row['hit'] . ') ' . $name;
             }
+
             break;
 
     }
+
     $tpl_var['NAME'] = $name;
     $tpl_thumbnails_var[] = $tpl_var;
 }

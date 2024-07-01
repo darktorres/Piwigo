@@ -48,6 +48,7 @@ class PasswordHash
         if ($iteration_count_log2 < 4 || $iteration_count_log2 > 31) {
             $iteration_count_log2 = 8;
         }
+
         $this->iteration_count_log2 = $iteration_count_log2;
 
         $this->portable_hashes = $portable_hashes;
@@ -77,6 +78,7 @@ class PasswordHash
                 $output .=
                     pack('H*', md5($this->random_state));
             }
+
             $output = substr($output, 0, $count);
         }
 
@@ -93,17 +95,21 @@ class PasswordHash
             if ($i < $count) {
                 $value |= ord($input[$i]) << 8;
             }
+
             $output .= $this->itoa64[($value >> 6) & 0x3f];
             if ($i++ >= $count) {
                 break;
             }
+
             if ($i < $count) {
                 $value |= ord($input[$i]) << 16;
             }
+
             $output .= $this->itoa64[($value >> 12) & 0x3f];
             if ($i++ >= $count) {
                 break;
             }
+
             $output .= $this->itoa64[($value >> 18) & 0x3f];
         } while ($i < $count);
 
@@ -249,6 +255,7 @@ class PasswordHash
             if (strlen($random) < 3) {
                 $random = $this->get_random_bytes(3);
             }
+
             $hash =
                 crypt($password, $this->gensalt_extended($random));
             if (strlen($hash) == 20) {
@@ -259,6 +266,7 @@ class PasswordHash
         if (strlen($random) < 6) {
             $random = $this->get_random_bytes(6);
         }
+
         $hash =
             $this->crypt_private(
                 $password,

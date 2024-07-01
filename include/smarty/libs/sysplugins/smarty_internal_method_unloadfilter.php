@@ -30,7 +30,7 @@ class Smarty_Internal_Method_UnloadFilter extends Smarty_Internal_Method_LoadFil
         $smarty = $obj->_getSmartyObj();
         $this->_checkFilterType($type);
         if (isset($smarty->registered_filters[$type])) {
-            $_filter_name = "smarty_{$type}filter_{$name}";
+            $_filter_name = sprintf('smarty_%sfilter_%s', $type, $name);
             if (isset($smarty->registered_filters[$type][$_filter_name])) {
                 unset($smarty->registered_filters[$type][$_filter_name]);
                 if (empty($smarty->registered_filters[$type])) {
@@ -38,6 +38,7 @@ class Smarty_Internal_Method_UnloadFilter extends Smarty_Internal_Method_LoadFil
                 }
             }
         }
+
         return $obj;
     }
 }

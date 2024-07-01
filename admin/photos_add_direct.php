@@ -31,6 +31,7 @@ DELETE FROM ' . CADDIE_TABLE . '
             'element_id' => $image_id,
         ];
     }
+
     mass_inserts(
         CADDIE_TABLE,
         array_keys($inserts[0]),
@@ -122,7 +123,7 @@ SELECT *
 
         $have_formats_original = true;
     } else {
-        $page['errors'][] = l10n('The original picture selected dosen\'t exists.');
+        $page['errors'][] = l10n("The original picture selected dosen't exists.");
     }
 
 }

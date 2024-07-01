@@ -75,6 +75,7 @@ class Smarty_Internal_Runtime_Inheritance
             $tpl->inheritance->init($tpl, $initChild, $blockNames);
             return;
         }
+
         ++$this->tplIndex;
         $this->sources[$this->tplIndex] = $tpl->source;
         // start of child sub template(s)
@@ -84,10 +85,12 @@ class Smarty_Internal_Runtime_Inheritance
                 //grab any output of child templates
                 ob_start();
             }
+
             ++$this->inheritanceLevel;
             //           $tpl->startRenderCallbacks[ 'inheritance' ] = array($this, 'subTemplateStart');
             //           $tpl->endRenderCallbacks[ 'inheritance' ] = array($this, 'subTemplateEnd');
         }
+
         // if state was waiting for parent change state to parent
         if ($this->state === 2) {
             $this->state = 3;
@@ -113,6 +116,7 @@ class Smarty_Internal_Runtime_Inheritance
             ob_end_clean();
             $this->state = 2;
         }
+
         if (isset($template) && (($tpl->parent->_isTplObj() && $tpl->parent->source->type !== 'extends')
                                  || $tpl->smarty->extends_recursion)
         ) {
@@ -149,14 +153,17 @@ class Smarty_Internal_Runtime_Inheritance
         if (isset($this->childRoot[$name])) {
             $block->child = $this->childRoot[$name];
         }
+
         if ($this->state === 1) {
             $this->childRoot[$name] = $block;
             return;
         }
+
         // make sure we got child block of child template of current block
         while ($block->child && $block->child->child && $block->tplIndex <= $block->child->tplIndex) {
             $block->child = $block->child->child;
         }
+
         $this->process($tpl, $block);
     }
 
@@ -171,18 +178,22 @@ class Smarty_Internal_Runtime_Inheritance
         if ($block->hide && ! isset($block->child)) {
             return;
         }
+
         if (isset($block->child) && $block->child->hide && ! isset($block->child->child)) {
             $block->child = null;
         }
+
         $block->parent = $parent;
         if ($block->append && ! $block->prepend && isset($parent)) {
-            $this->callParent($tpl, $block, '\'{block append}\'');
+            $this->callParent($tpl, $block, "'{block append}'");
         }
+
         if ($block->callsChild || ! isset($block->child) || ($block->child->hide && ! isset($block->child->child))) {
             $this->callBlock($block, $tpl);
         } else {
             $this->process($tpl, $block->child, $block);
         }
+
         if ($block->prepend && isset($parent)) {
             $this->callParent($tpl, $block, '{block prepend}');
             if ($block->append) {
@@ -195,6 +206,7 @@ class Smarty_Internal_Runtime_Inheritance
                 }
             }
         }
+
         $block->parent = null;
     }
 
@@ -228,7 +240,12 @@ class Smarty_Internal_Runtime_Inheritance
             $this->callBlock($block->parent, $tpl);
         } else {
             throw new SmartyException(
-                "inheritance: illegal '{$tag}' used in child template '{$tpl->inheritance->sources[$block->tplIndex]->filepath}' block '{$block->name}'"
+                sprintf(
+                    "inheritance: illegal '%s' used in child template '%s' block '%s'",
+                    $tag,
+                    $tpl->inheritance->sources[$block->tplIndex]->filepath,
+                    $block->name
+                )
             );
         }
     }

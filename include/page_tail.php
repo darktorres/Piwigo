@@ -63,6 +63,7 @@ if ($conf['show_gt']) {
         $page['count_queries'] = 0;
         $page['queries_time'] = 0;
     }
+
     $time = get_elapsed_time($t2, get_moment());
 
     $debug_vars = array_merge(

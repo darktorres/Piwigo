@@ -29,9 +29,12 @@ function smarty_modifier_replace(
             if (! is_callable('smarty_mb_str_replace')) {
                 include_once SMARTY_PLUGINS_DIR . 'shared.mb_str_replace.php';
             }
+
             $is_loaded = true;
         }
+
         return smarty_mb_str_replace($search, $replace, $string);
     }
+
     return str_replace($search, $replace, $string);
 }

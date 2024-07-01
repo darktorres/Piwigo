@@ -256,7 +256,7 @@ foreach ($queries as $query) {
 }
 
 $replacements = [
-    ['&#039;', '\''],
+    ['&#039;', "'"],
     ['&quot;', '"'],
     ['&lt;',   '<'],
     ['&gt;',   '>'],

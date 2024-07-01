@@ -50,7 +50,8 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
         if ($source->exists) {
             return '';
         }
-        throw new SmartyException("Unable to read template {$source->type} '{$source->name}'");
+
+        throw new SmartyException(sprintf("Unable to read template %s '%s'", $source->type, $source->name));
     }
 
     /**
@@ -87,18 +88,21 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
         if (! $source->smarty->allow_php_templates) {
             throw new SmartyException('PHP templates are disabled');
         }
+
         if (! $source->exists) {
             throw new SmartyException(
-                "Unable to load template '{$source->type}:{$source->name}'" .
-                ($_template->_isSubTpl() ? " in '{$_template->parent->template_resource}'" : '')
+                sprintf("Unable to load template '%s:%s'", $source->type, $source->name) .
+                ($_template->_isSubTpl() ? sprintf(" in '%s'", $_template->parent->template_resource) : '')
             );
         }
+
         // prepare variables
         extract($_template->getTemplateVars());
         // include PHP template with short open tags enabled
         if (function_exists('ini_set')) {
             ini_set('short_open_tag', '1');
         }
+
         /**
          * @var Smarty_Internal_Template $_smarty_template
          * used in included file

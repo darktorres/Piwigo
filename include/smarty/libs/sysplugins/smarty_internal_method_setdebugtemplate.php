@@ -32,8 +32,9 @@ class Smarty_Internal_Method_SetDebugTemplate
     ) {
         $smarty = $obj->_getSmartyObj();
         if (! is_readable($tpl_name)) {
-            throw new SmartyException("Unknown file '{$tpl_name}'");
+            throw new SmartyException(sprintf("Unknown file '%s'", $tpl_name));
         }
+
         $smarty->debug_tpl = $tpl_name;
         return $obj;
     }

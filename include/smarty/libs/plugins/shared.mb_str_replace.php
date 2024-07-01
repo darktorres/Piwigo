@@ -24,6 +24,7 @@ if (! function_exists('smarty_mb_str_replace')) {
         if (! is_array($search) && is_array($replace)) {
             return false;
         }
+
         if (is_array($subject)) {
             // call mb_replace for each single string in $subject
             foreach ($subject as &$string) {
@@ -74,12 +75,13 @@ if (! function_exists('smarty_mb_str_replace')) {
                 // ...restore original regex encoding to avoid breaking the system.
                 mb_regex_encoding($mb_reg_charset);
             }
+
             if ($parts === false) {
                 // This exception is thrown if call to mb_split failed.
                 // Usually it happens, when $search or $replace are not valid for given mb_regex_encoding().
                 // There may be other cases for it to fail, please file an issue if you find a reproducible one.
                 throw new SmartyException(
-                    "Source string is not a valid {$current_charset} sequence (probably)"
+                    sprintf('Source string is not a valid %s sequence (probably)', $current_charset)
                 );
             }
 
@@ -90,6 +92,7 @@ if (! function_exists('smarty_mb_str_replace')) {
                 $subject = mb_convert_encoding($subject, Smarty::$_CHARSET, $current_charset);
             }
         }
+
         return $subject;
     }
 }

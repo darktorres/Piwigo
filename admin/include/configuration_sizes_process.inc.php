@@ -47,6 +47,7 @@ foreach ($pderivatives as $type => &$pderivative) {
         $pderivative['minh'] = $pderivative['minw'] = $pderivative['w'];
         $pderivative['crop'] = 100;
     }
+
     $pderivative['must_enable'] = ($type == IMG_SQUARE || $type == IMG_THUMB || $type == $conf['derivative_default_size']) ? true : false;
     $pderivative['enabled'] = isset($pderivative['enabled']) || $pderivative['must_enable'] ? true : false;
 
@@ -60,10 +61,11 @@ foreach ($pderivatives as $type => &$pderivative) {
         $pderivative['minh'] = null;
     }
 }
-unset($pderivative);
 
+unset($pderivative);
 // step 2 - check validity
-$prev_w = $prev_h = 0;
+$prev_w = 0;
+$prev_h = 0;
 foreach (ImageStdParams::get_all_types() as $type) {
     $pderivative = $pderivatives[$type];
     if (! $pderivative['enabled']) {
@@ -117,6 +119,7 @@ if (count($errors) == 0) {
     if ($disabled === false) {
         $disabled = [];
     }
+
     $changed_types = [];
 
     foreach (ImageStdParams::get_all_types() as $type) {
@@ -159,6 +162,7 @@ if (count($errors) == 0) {
                 } else {
                     $new_params->last_mod_time = $old_params->last_mod_time;
                 }
+
                 $enabled[$type] = $new_params;
             } else {// now enabled, before was disabled
                 $enabled[$type] = $new_params;
@@ -189,14 +193,15 @@ if (count($errors) == 0) {
 
     ImageStdParams::set_and_save($enabled_by);
     if (count($disabled) == 0) {
-        $query = 'DELETE FROM ' . CONFIG_TABLE . ' WHERE param = \'disabled_derivatives\'';
+        $query = 'DELETE FROM ' . CONFIG_TABLE . " WHERE param = 'disabled_derivatives'";
         pwg_query($query);
     } else {
         conf_update_param('disabled_derivatives', addslashes(serialize($disabled)));
     }
+
     $conf['disabled_derivatives'] = serialize($disabled);
 
-    if (count($changed_types)) {
+    if ($changed_types !== []) {
         clear_derivative_cache($changed_types);
     }
 

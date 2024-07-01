@@ -54,6 +54,7 @@ function get_local_dir($category_id)
     while ($row = pwg_db_fetch_assoc($result)) {
         $database_dirs[$row['id']] = $row['dir'];
     }
+
     foreach ($upper_array as $id) {
         $local_dir .= $database_dirs[$id] . '/';
     }
@@ -225,6 +226,7 @@ SELECT
     }
 
 }
+
 $info_photos = l10n('%d photos', $image_count);
 
 $template->assign(
@@ -362,6 +364,7 @@ if ($category['has_images'] or ! empty($category['representative_picture_id'])) 
          and ! empty($category['representative_picture_id']))) {
         $tpl_representant['ALLOW_DELETE'] = true;
     }
+
     $template->assign('representant', $tpl_representant);
 }
 

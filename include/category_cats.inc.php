@@ -98,11 +98,12 @@ SELECT representative_picture_id
         $categories[] = $row;
         $category_ids[] = $row['id'];
     }
+
     unset($image_id);
 }
 
 if ($conf['display_fromto']) {
-    if (count($category_ids) > 0) {
+    if ($category_ids !== []) {
         $query = '
 SELECT
     category_id,
@@ -128,7 +129,7 @@ if ($page['section'] == 'recent_cats') {
     usort($categories, 'global_rank_compare');
 }
 
-if (count($categories) > 0) {
+if ($categories !== []) {
     $infos_of_image = [];
     $new_image_ids = [];
 
@@ -168,11 +169,12 @@ SELECT *
                     $category['representative_picture_id'] = $image_id;
                 }
             }
+
             unset($category);
         }
     }
 
-    if (count($new_image_ids) > 0) {
+    if ($new_image_ids !== []) {
         $query = '
 SELECT *
   FROM ' . IMAGES_TABLE . '
@@ -187,10 +189,11 @@ SELECT *
     foreach ($infos_of_image as &$info) {
         $info['src_image'] = new SrcImage($info);
     }
+
     unset($info);
 }
 
-if (count($user_representative_updates_for)) {
+if ($user_representative_updates_for !== []) {
     $updates = [];
 
     foreach ($user_representative_updates_for as $cat_id => $image_id) {
@@ -212,7 +215,7 @@ if (count($user_representative_updates_for)) {
     );
 }
 
-if (count($categories) > 0) {
+if ($categories !== []) {
     // Update filtered data
     if (function_exists('update_cats_with_filtered_data')) {
         update_cats_with_filtered_data($categories);

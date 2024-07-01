@@ -76,6 +76,7 @@ WHERE ';
             $query .= '
   category_id  IN (' . $filter['visible_categories'] . ') and';
         }
+
         $query .= '
     date_available >= ' . pwg_db_get_recent_period_expression($filter['recent_period']);
 
@@ -98,6 +99,7 @@ WHERE ';
         $filter['visible_categories'] = pwg_get_session_var('filter_visible_categories', '');
         $filter['visible_images'] = pwg_get_session_var('filter_visible_images', '');
     }
+
     unset($filter_key);
     if (get_filter_page_value('add_notes')) {
         $header_notes[] = l10n_dec(
@@ -106,6 +108,7 @@ WHERE ';
             $filter['recent_period']
         );
     }
+
     include_once(PHPWG_ROOT_PATH . 'include/functions_filter.inc.php');
 } else {
     if (pwg_get_session_var('filter_enabled', false)) {

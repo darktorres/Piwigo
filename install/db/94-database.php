@@ -60,7 +60,7 @@ if ($save_conf) {
 
     file_put_contents(
         $backup_filepath,
-        '<?php $user_upload_conf = \'' . serialize($user_upload_conf) . '\'; ?>'
+        '<?php $user_upload_conf = \'' . serialize($user_upload_conf) . "'; ?>"
     );
 }
 

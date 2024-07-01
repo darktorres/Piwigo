@@ -33,6 +33,7 @@ function smarty_modifier_date_format(
     if ($format === null) {
         $format = Smarty::$_DATE_FORMAT;
     }
+
     /**
      * require_once the {@link shared.make_timestamp.php} plugin
      */
@@ -41,8 +42,10 @@ function smarty_modifier_date_format(
         if (! is_callable('smarty_make_timestamp')) {
             include_once SMARTY_PLUGINS_DIR . 'shared.make_timestamp.php';
         }
+
         $is_loaded = true;
     }
+
     if (! empty($string) && $string !== '0000-00-00' && $string !== '0000-00-00 00:00:00') {
         $timestamp = smarty_make_timestamp($string);
     } elseif (! empty($default_date)) {
@@ -50,6 +53,7 @@ function smarty_modifier_date_format(
     } else {
         return;
     }
+
     if ($formatter === 'strftime' || ($formatter === 'auto' && strpos($format, '%') !== false)) {
         if (Smarty::$_IS_WINDOWS) {
             $_win_from = [
@@ -72,17 +76,21 @@ function smarty_modifier_date_format(
             ];
             if (strpos($format, '%e') !== false) {
                 $_win_from[] = '%e';
-                $_win_to[] = sprintf('%\' 2d', date('j', $timestamp));
+                $_win_to[] = sprintf("%' 2d", date('j', $timestamp));
             }
+
             if (strpos($format, '%l') !== false) {
                 $_win_from[] = '%l';
-                $_win_to[] = sprintf('%\' 2d', date('h', $timestamp));
+                $_win_to[] = sprintf("%' 2d", date('h', $timestamp));
             }
+
             $format = str_replace($_win_from, $_win_to, $format);
         }
+
         // @ to suppress deprecation errors when running in PHP8.1 or higher.
         return @strftime($format, $timestamp);
     }
+
     return date($format, $timestamp);
 
 }

@@ -83,7 +83,7 @@ SELECT
             }
         }
 
-        if (count($local_clauses) > 0) {
+        if ($local_clauses !== []) {
             $clauses[] = implode(' OR ', $local_clauses);
         }
     }
@@ -232,6 +232,7 @@ SELECT
                     'history_id_to' => $row['max_id'],
                 ];
             }
+
             $need_update[$time_key]['nb_pages'] += $row['nb_pages'];
 
             if ($row['min_id'] < $need_update[$time_key]['history_id_from']) {
@@ -320,7 +321,7 @@ SELECT *
         ];
     }
 
-    if (count($updates) > 0) {
+    if ($updates !== []) {
         mass_updates(
             HISTORY_SUMMARY_TABLE,
             [
@@ -331,7 +332,7 @@ SELECT *
         );
     }
 
-    if (count($inserts) > 0) {
+    if ($inserts !== []) {
         mass_inserts(
             HISTORY_SUMMARY_TABLE,
             array_keys($inserts[0]),

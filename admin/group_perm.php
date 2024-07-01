@@ -146,10 +146,11 @@ $query_false = '
 SELECT id,name,uppercats,global_rank
   FROM ' . CATEGORIES_TABLE . '
   WHERE status = \'private\'';
-if (count($authorized_ids) > 0) {
+if ($authorized_ids !== []) {
     $query_false .= '
     AND id NOT IN (' . implode(',', $authorized_ids) . ')';
 }
+
 $query_false .= '
 ;';
 display_select_cat_wrapper($query_false, [], 'category_option_false');

@@ -39,9 +39,10 @@ class Smarty_Internal_Undefined
         $args
     ) {
         if (isset($this->class)) {
-            throw new SmartyException("undefined extension class '{$this->class}'");
+            throw new SmartyException(sprintf("undefined extension class '%s'", $this->class));
         }
-        throw new SmartyException(get_class($args[0]) . "->{$name}() undefined method");
+
+        throw new SmartyException(get_class($args[0]) . sprintf('->%s() undefined method', $name));
     }
 
     /**
@@ -62,6 +63,7 @@ class Smarty_Internal_Undefined
         } else {
             $tpl->mustCompile = true;
         }
+
         return false;
     }
 }

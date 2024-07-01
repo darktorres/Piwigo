@@ -37,6 +37,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
         if ($_dir === '/') { //We should never want to delete this!
             return 0;
         }
+
         $_dir_length = strlen($_dir);
         if (isset($_cache_id)) {
             $_cache_id_parts = explode('|', $_cache_id);
@@ -47,6 +48,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                 }
             }
         }
+
         if (isset($resource_name)) {
             $_save_stat = $smarty->caching;
             $smarty->caching = Smarty::CACHING_LIFETIME_CURRENT;
@@ -60,6 +62,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                 return 0;
             }
         }
+
         $_count = 0;
         $_time = time();
         if (file_exists($_dir)) {
@@ -69,6 +72,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                 if (substr(basename($_file->getPathname()), 0, 1) === '.') {
                     continue;
                 }
+
                 $_filepath = (string) $_file;
                 // directory ?
                 if ($_file->isDir()) {
@@ -81,6 +85,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                     if (substr($_filepath, -4) !== '.php') {
                         continue;
                     }
+
                     $_parts = explode($_dir_sep, str_replace('\\', '/', substr($_filepath, $_dir_length)));
                     $_parts_count = count($_parts);
                     // check name
@@ -89,12 +94,14 @@ class Smarty_Internal_Runtime_CacheResourceFile
                             continue;
                         }
                     }
+
                     // check compile id
                     if (isset($_compile_id) && (! isset($_parts[$_parts_count - 2 - $_compile_id_offset])
                                                 || $_parts[$_parts_count - 2 - $_compile_id_offset] !== $_compile_id)
                     ) {
                         continue;
                     }
+
                     // check cache id
                     if (isset($_cache_id)) {
                         // count of cache id parts
@@ -103,12 +110,14 @@ class Smarty_Internal_Runtime_CacheResourceFile
                         if ($_parts_count < $_cache_id_parts_count) {
                             continue;
                         }
+
                         for ($i = 0; $i < $_cache_id_parts_count; $i++) {
                             if ($_parts[$i] !== $_cache_id_parts[$i]) {
                                 continue 2;
                             }
                         }
                     }
+
                     if (is_file($_filepath)) {
                         // expired ?
                         if (isset($exp_time)) {
@@ -123,6 +132,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                                 }
                             }
                         }
+
                         $_count += @unlink($_filepath) ? 1 : 0;
                         if (function_exists('opcache_invalidate')
                             && (! function_exists('ini_get') || strlen(ini_get('opcache.restrict_api')) < 1)
@@ -135,6 +145,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
                 }
             }
         }
+
         return $_count;
     }
 }

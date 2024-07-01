@@ -357,6 +357,7 @@ DELETE
         if ($_POST['regenerateSuccess'] != '0') {
             $page['infos'][] = l10n('%s photos have been regenerated', $_POST['regenerateSuccess']);
         }
+
         if ($_POST['regenerateError'] != '0') {
             $page['warnings'][] = l10n('%s photos can not be regenerated', $_POST['regenerateError']);
         }
@@ -481,6 +482,7 @@ foreach ($conf['available_permission_levels'] as $level) {
         $level_options[$level] = l10n('Everybody');
     }
 }
+
 $template->assign(
     [
         'filter_level_options' => $level_options,
@@ -587,6 +589,7 @@ $del_deriv_map = [];
 foreach (ImageStdParams::get_defined_type_map() as $params) {
     $del_deriv_map[$params->type] = l10n($params->type);
 }
+
 $gen_deriv_map = $del_deriv_map;
 $del_deriv_map[IMG_CUSTOM] = l10n(IMG_CUSTOM);
 $template->assign(
@@ -702,6 +705,7 @@ SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
             )
         );
     }
+
     $template->assign('thumb_params', $thumb_params);
 }
 

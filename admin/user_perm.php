@@ -106,6 +106,7 @@ if (pwg_db_num_rows($result) > 0) {
         $cats[] = $row;
         $group_authorized[] = $row['cat_id'];
     }
+
     usort($cats, 'global_rank_compare');
 
     foreach ($cats as $category) {
@@ -122,10 +123,11 @@ SELECT id,name,uppercats,global_rank
   FROM ' . CATEGORIES_TABLE . ' INNER JOIN ' . USER_ACCESS_TABLE . ' ON cat_id = id
   WHERE status = \'private\'
     AND user_id = ' . $page['user'];
-if (count($group_authorized) > 0) {
+if ($group_authorized !== []) {
     $query_true .= '
     AND cat_id NOT IN (' . implode(',', $group_authorized) . ')';
 }
+
 $query_true .= '
 ;';
 display_select_cat_wrapper($query_true, [], 'category_option_true');
@@ -140,14 +142,16 @@ $query_false = '
 SELECT id,name,uppercats,global_rank
   FROM ' . CATEGORIES_TABLE . '
   WHERE status = \'private\'';
-if (count($authorized_ids) > 0) {
+if ($authorized_ids !== []) {
     $query_false .= '
     AND id NOT IN (' . implode(',', $authorized_ids) . ')';
 }
-if (count($group_authorized) > 0) {
+
+if ($group_authorized !== []) {
     $query_false .= '
     AND id NOT IN (' . implode(',', $group_authorized) . ')';
 }
+
 $query_false .= '
 ;';
 display_select_cat_wrapper($query_false, [], 'category_option_false');

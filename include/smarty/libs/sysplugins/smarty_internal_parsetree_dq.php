@@ -60,6 +60,7 @@ class Smarty_Internal_ParseTree_Dq extends Smarty_Internal_ParseTree
         } else {
             $this->subtrees[] = $subtree;
         }
+
         if ($subtree instanceof Smarty_Internal_ParseTree_Tag) {
             $parser->block_nesting_level = count($parser->compiler->_tag_stack);
         }
@@ -78,16 +79,19 @@ class Smarty_Internal_ParseTree_Dq extends Smarty_Internal_ParseTree
             if ($code !== '') {
                 $code .= '.';
             }
+
             if ($subtree instanceof Smarty_Internal_ParseTree_Tag) {
                 $more_php = $subtree->assign_to_var($parser);
             } else {
                 $more_php = $subtree->to_smarty_php($parser);
             }
+
             $code .= $more_php;
             if (! $subtree instanceof Smarty_Internal_ParseTree_DqContent) {
                 $parser->compiler->has_variable_string = true;
             }
         }
+
         return $code;
     }
 }

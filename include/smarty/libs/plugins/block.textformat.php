@@ -38,6 +38,7 @@ function smarty_block_textformat(
     if ($content === null) {
         return;
     }
+
     if (Smarty::$_MBSTRING) {
         $template->_checkPlugins(
             [
@@ -48,6 +49,7 @@ function smarty_block_textformat(
             ]
         );
     }
+
     $style = null;
     $indent = 0;
     $indent_first = 0;
@@ -73,18 +75,21 @@ function smarty_block_textformat(
                 ${$_key} = (bool) $_val;
                 break;
             default:
-                trigger_error("textformat: unknown attribute '{$_key}'");
+                trigger_error(sprintf("textformat: unknown attribute '%s'", $_key));
         }
     }
+
     if ($style === 'email') {
         $wrap = 72;
     }
+
     // split into paragraphs
     $_paragraphs = preg_split('![\r\n]{2}!', $content);
     foreach ($_paragraphs as &$_paragraph) {
         if (! $_paragraph) {
             continue;
         }
+
         // convert mult. spaces & special chars to single space
         $_paragraph =
             preg_replace(
@@ -102,17 +107,20 @@ function smarty_block_textformat(
         if ($indent_first > 0) {
             $_paragraph = str_repeat($indent_char, $indent_first) . $_paragraph;
         }
+
         // wordwrap sentences
         if (Smarty::$_MBSTRING) {
             $_paragraph = smarty_modifier_mb_wordwrap($_paragraph, $wrap - $indent, $wrap_char, $wrap_cut);
         } else {
             $_paragraph = wordwrap($_paragraph, $wrap - $indent, $wrap_char, $wrap_cut);
         }
+
         // indent lines
         if ($indent > 0) {
             $_paragraph = preg_replace('!^!m', str_repeat($indent_char, $indent), $_paragraph);
         }
     }
+
     $_output = implode($wrap_char . $wrap_char, $_paragraphs);
     if ($assign) {
         $template->assign($assign, $_output);

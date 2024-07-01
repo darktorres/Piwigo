@@ -33,16 +33,18 @@ SELECT id, file, level
         $query .= 'id = ' . $page['image_id'];
     } else {// url given by file name
         assert(! empty($page['image_file']));
-        $query .= 'file LIKE \'' .
+        $query .= "file LIKE '" .
           str_replace(['_', '%'], ['/_', '/%'], $page['image_file']) .
-          '.%\' ESCAPE \'/\' LIMIT 1';
+          ".%' ESCAPE '/' LIMIT 1";
     }
+
     if (! ($row = pwg_db_fetch_assoc(pwg_query($query)))) {// element does not exist
         page_not_found(
             'The requested image does not exist',
             duplicate_index_url()
         );
     }
+
     if ($row['level'] > $user['level']) {
         access_denied();
     }
@@ -58,6 +60,7 @@ SELECT id, file, level
                 duplicate_index_url()
             );
         }
+
         if ($page['section'] == 'categories' and ! isset($page['category'])) {// flat view - all items
             access_denied();
         } else {// try to see if we can access it differently
@@ -143,8 +146,10 @@ function default_picture_content(
         if (array_key_exists($_COOKIE['picture_deriv'], ImageStdParams::get_defined_type_map())) {
             pwg_set_session_var('picture_deriv', $_COOKIE['picture_deriv']);
         }
+
         setcookie('picture_deriv', false, 0, cookie_path());
     }
+
     $deriv_type = pwg_get_session_var('picture_deriv', $conf['derivative_default_size']);
     $selected_derivative = $element_info['derivatives'][$deriv_type];
 
@@ -155,13 +160,16 @@ function default_picture_content(
         if ($type == IMG_SQUARE || $type == IMG_THUMB) {
             continue;
         }
+
         if (! array_key_exists($type, ImageStdParams::get_defined_type_map())) {
             continue;
         }
+
         $url = $derivative->get_url();
         if (isset($added[$url])) {
             continue;
         }
+
         $added[$url] = 1;
         $show_original &= ! ($derivative->same_as_source());
 
@@ -356,11 +364,13 @@ UPDATE ' . CATEGORIES_TABLE . '
                     if ($perform_redirect) {
                         redirect($url_self);
                     }
+
                     unset($_POST['content']);
                 }
 
                 $edit_comment = $_GET['comment_to_edit'];
             }
+
             break;
 
         case 'delete_comment':
@@ -412,6 +422,7 @@ if (isset($_SERVER['HTTP_X_MOZ']) and $_SERVER['HTTP_X_MOZ'] == 'prefetch') {
     ) == $page['image_id']) {
         $inc_hit_count = false;
     }
+
     pwg_set_session_var('referer_image_id', $page['image_id']);
 }
 
@@ -455,6 +466,7 @@ if (isset($page['previous_item'])) {
     $ids[] = $page['previous_item'];
     $ids[] = $page['first_item'];
 }
+
 if (isset($page['next_item'])) {
     $ids[] = $page['next_item'];
     $ids[] = $page['last_item'];
@@ -519,6 +531,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     if ($i == 'previous' and $page['previous_item'] == $page['first_item']) {
         $picture['first'] = $picture[$i];
     }
+
     if ($i == 'next' and $page['next_item'] == $page['last_item']) {
         $picture['last'] = $picture[$i];
     }
@@ -560,6 +573,7 @@ if (isset($_GET['slideshow'])) {
 } else {
     $page['slideshow'] = false;
 }
+
 if ($page['slideshow'] and $conf['light_slideshow']) {
     $template->set_filenames([
         'slideshow' => 'slideshow.tpl',
@@ -629,6 +643,7 @@ foreach ([
         );
     }
 }
+
 if ($conf['picture_download_icon'] and ! empty($picture['current']['download_url'])) {
     $template->append('current', [
         'U_DOWNLOAD' => $picture['current']['download_url'],
@@ -729,6 +744,7 @@ if ($page['slideshow']) {
                   );
         }
     }
+
     $template->assign('slideshow', $tpl_slideshow);
 } elseif ($conf['picture_slideshow_icon']) {
     $template->assign(
@@ -934,6 +950,7 @@ if (count($related_categories) == 1 and
     foreach ($related_categories as $category) {// add all uppercats to $ids
         $ids = array_merge($ids, explode(',', $category['uppercats']));
     }
+
     $ids = array_unique($ids);
     $query = '
 SELECT id, name, permalink
@@ -945,6 +962,7 @@ SELECT id, name, permalink
         foreach (explode(',', $category['uppercats']) as $id) {
             $cats[] = $cat_map[$id];
         }
+
         $template->append('related_categories', get_cat_display_name($cats));
     }
 }
@@ -989,6 +1007,7 @@ include(PHPWG_ROOT_PATH . 'include/picture_rate.inc.php');
 if ($conf['activate_comments']) {
     include(PHPWG_ROOT_PATH . 'include/picture_comment.inc.php');
 }
+
 if ($metadata_showable and pwg_get_session_var('show_metadata') <> null) {
     include(PHPWG_ROOT_PATH . 'include/picture_metadata.inc.php');
 }
@@ -1002,6 +1021,7 @@ if ($conf['picture_menu'] and (! isset($themeconf['hide_menu_on']) or ! in_array
     if (! isset($page['start'])) {
         $page['start'] = 0;
     }
+
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 
@@ -1014,6 +1034,7 @@ if ($page['slideshow'] and $conf['light_slideshow']) {
     $template->parse_picture_buttons();
     $template->pparse('picture');
 }
+
 //------------------------------------------------------------ log informations
 pwg_log(
     $picture['current']['id'],

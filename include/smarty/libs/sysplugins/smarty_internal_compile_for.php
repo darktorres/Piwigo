@@ -42,6 +42,7 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
             $this->required_attributes = ['start', 'ifexp', 'var', 'step'];
             $this->optional_attributes = [];
         }
+
         $this->mapCache = [];
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
@@ -55,9 +56,11 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
                     $var = $_statement['var'];
                     $index = '';
                 }
+
                 $output .= "\$_smarty_tpl->tpl_vars[{$var}] = new Smarty_Variable(null, \$_smarty_tpl->isRenderingCache);\n";
                 $output .= "\$_smarty_tpl->tpl_vars[{$var}]->value{$index} = {$_statement['value']};\n";
             }
+
             if (is_array($_attr['var'])) {
                 $var = $_attr['var']['var'];
                 $index = $_attr['var']['smarty_internal_index'];
@@ -65,6 +68,7 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
                 $var = $_attr['var'];
                 $index = '';
             }
+
             $output .= "if ({$_attr['ifexp']}) {\nfor (\$_foo=true;{$_attr['ifexp']}; \$_smarty_tpl->tpl_vars[{$var}]->value{$index}$_attr[step]) {\n";
         } else {
             $_statement = $_attr['start'];
@@ -75,22 +79,38 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
                 $var = $_statement['var'];
                 $index = '';
             }
-            $output .= "\$_smarty_tpl->tpl_vars[{$var}] = new Smarty_Variable(null, \$_smarty_tpl->isRenderingCache);";
+
+            $output .= sprintf(
+                '$_smarty_tpl->tpl_vars[%s] = new Smarty_Variable(null, $_smarty_tpl->isRenderingCache);',
+                $var
+            );
             if (isset($_attr['step'])) {
-                $output .= "\$_smarty_tpl->tpl_vars[{$var}]->step = {$_attr['step']};";
+                $output .= sprintf('$_smarty_tpl->tpl_vars[%s]->step = %s;', $var, $_attr['step']);
             } else {
-                $output .= "\$_smarty_tpl->tpl_vars[{$var}]->step = 1;";
+                $output .= sprintf('$_smarty_tpl->tpl_vars[%s]->step = 1;', $var);
             }
+
             if (isset($_attr['max'])) {
                 $output .= "\$_smarty_tpl->tpl_vars[{$var}]->total = (int) min(ceil((\$_smarty_tpl->tpl_vars[{$var}]->step > 0 ? {$_attr['to']}+1 - ({$_statement['value']}) : {$_statement['value']}-({$_attr['to']})+1)/abs(\$_smarty_tpl->tpl_vars[{$var}]->step)),{$_attr['max']});\n";
             } else {
                 $output .= "\$_smarty_tpl->tpl_vars[{$var}]->total = (int) ceil((\$_smarty_tpl->tpl_vars[{$var}]->step > 0 ? {$_attr['to']}+1 - ({$_statement['value']}) : {$_statement['value']}-({$_attr['to']})+1)/abs(\$_smarty_tpl->tpl_vars[{$var}]->step));\n";
             }
+
             $output .= "if (\$_smarty_tpl->tpl_vars[{$var}]->total > 0) {\n";
             $output .= "for (\$_smarty_tpl->tpl_vars[{$var}]->value{$index} = {$_statement['value']}, \$_smarty_tpl->tpl_vars[{$var}]->iteration = 1;\$_smarty_tpl->tpl_vars[{$var}]->iteration <= \$_smarty_tpl->tpl_vars[{$var}]->total;\$_smarty_tpl->tpl_vars[{$var}]->value{$index} += \$_smarty_tpl->tpl_vars[{$var}]->step, \$_smarty_tpl->tpl_vars[{$var}]->iteration++) {\n";
-            $output .= "\$_smarty_tpl->tpl_vars[{$var}]->first = \$_smarty_tpl->tpl_vars[{$var}]->iteration === 1;";
-            $output .= "\$_smarty_tpl->tpl_vars[{$var}]->last = \$_smarty_tpl->tpl_vars[{$var}]->iteration === \$_smarty_tpl->tpl_vars[{$var}]->total;";
+            $output .= sprintf(
+                '$_smarty_tpl->tpl_vars[%s]->first = $_smarty_tpl->tpl_vars[%s]->iteration === 1;',
+                $var,
+                $var
+            );
+            $output .= sprintf(
+                '$_smarty_tpl->tpl_vars[%s]->last = $_smarty_tpl->tpl_vars[%s]->iteration === $_smarty_tpl->tpl_vars[%s]->total;',
+                $var,
+                $var,
+                $var
+            );
         }
+
         $output .= '?>';
         $this->openTag($compiler, 'for', ['for', $compiler->nocache]);
         // maybe nocache because of nocache variables
@@ -157,11 +177,13 @@ class Smarty_Internal_Compile_Forclose extends Smarty_Internal_CompileBase
         if ($compiler->nocache) {
             $compiler->tag_nocache = true;
         }
+
         list($openTag, $compiler->nocache) = $this->closeTag($compiler, ['for', 'forelse']);
         $output = "<?php }\n";
         if ($openTag !== 'forelse') {
             $output .= "}\n";
         }
+
         $output .= '?>';
         return $output;
     }

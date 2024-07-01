@@ -46,7 +46,7 @@ class Smarty_Data extends Smarty_Internal_Data
     {
         parent::__construct();
         self::$count++;
-        $this->dataObjectName = 'Data_object ' . (isset($name) ? "'{$name}'" : self::$count);
+        $this->dataObjectName = 'Data_object ' . (isset($name) ? sprintf("'%s'", $name) : self::$count);
         $this->smarty = $smarty;
         if (is_object($_parent)) {
             // when object set up back pointer

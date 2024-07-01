@@ -36,12 +36,14 @@ function smarty_make_timestamp(
         // it is a numeric string, we handle it as timestamp
         return (int) $string;
     }
+
     // strtotime should handle it
     $time = strtotime($string);
     if ($time === -1 || $time === false) {
         // strtotime() was not able to parse $string, use "now":
         return time();
     }
+
     return $time;
 
 }

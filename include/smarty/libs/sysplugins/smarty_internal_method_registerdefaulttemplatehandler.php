@@ -36,6 +36,7 @@ class Smarty_Internal_Method_RegisterDefaultTemplateHandler
         } else {
             throw new SmartyException('Default template handler not callable');
         }
+
         return $obj;
     }
 
@@ -50,7 +51,9 @@ class Smarty_Internal_Method_RegisterDefaultTemplateHandler
         } else {
             $default_handler = $source->smarty->default_template_handler_func;
         }
-        $_content = $_timestamp = null;
+
+        $_content = null;
+        $_timestamp = null;
         $_return = call_user_func_array(
             $default_handler,
             [$source->type, $source->name, &$_content, &$_timestamp, $source->smarty]
@@ -63,21 +66,24 @@ class Smarty_Internal_Method_RegisterDefaultTemplateHandler
                 throw new SmartyException(
                     'Default handler: Unable to load ' .
                     ($source->isConfig ? 'config' : 'template') .
-                    " default file '{$_return}' for '{$source->type}:{$source->name}'"
+                    sprintf(" default file '%s' for '%s:%s'", $_return, $source->type, $source->name)
                 );
             }
-            $source->name = $source->filepath = $_return;
+
+            $source->name = $_return;
+            $source->filepath = $_return;
             $source->uid = sha1($source->filepath);
         } elseif ($_return === true) {
             $source->content = $_content;
             $source->exists = true;
-            $source->uid = $source->name = sha1($_content);
+            $source->uid = sha1($_content);
+            $source->name = $source->uid;
             $source->handler = Smarty_Resource::load($source->smarty, 'eval');
         } else {
             $source->exists = false;
             throw new SmartyException(
                 'Default handler: No ' . ($source->isConfig ? 'config' : 'template') .
-                " default content for '{$source->type}:{$source->name}'"
+                sprintf(" default content for '%s:%s'", $source->type, $source->name)
             );
         }
     }

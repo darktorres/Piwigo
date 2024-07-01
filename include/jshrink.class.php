@@ -79,7 +79,7 @@ class Minifier
      * These characters are used to define strings.
      */
     protected $stringDelimiters = [
-        '\'' => true,
+        "'" => true,
         '"' => true,
         '`' => true,
     ];
@@ -141,7 +141,7 @@ class Minifier
             unset($jshrink);
 
             return $js;
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             if (isset($jshrink)) {
                 // Since the breakdownScript function probably wasn't finished
                 // we clean it out before discarding it.
@@ -151,7 +151,7 @@ class Minifier
 
             // without this call things get weird, with partially outputted js.
             ob_end_clean();
-            throw $e;
+            throw $exception;
         }
     }
 
@@ -240,6 +240,7 @@ class Minifier
                                 $this->saveString();
                                 break;
                             }
+
                             if (static::isAlphaNumeric($this->a)) {
                                 echo $this->a;
                                 $this->saveString();
@@ -255,7 +256,7 @@ class Minifier
                             // no break
                         default:
                             // check for some regex that breaks stuff
-                            if ($this->a === '/' && ($this->b === '\'' || $this->b === '"')) {
+                            if ($this->a === '/' && ($this->b === "'" || $this->b === '"')) {
                                 $this->saveRegex();
                                 continue 3;
                             }
@@ -285,7 +286,8 @@ class Minifier
         unset($this->input);
         $this->len = 0;
         $this->index = 0;
-        $this->a = $this->b = '';
+        $this->a = '';
+        $this->b = '';
         unset($this->c);
         unset($this->options);
     }
@@ -505,6 +507,7 @@ class Minifier
                     } else {
                         throw new \RuntimeException('Unclosed string at position: ' . $startpos);
                     }
+
                     break;
 
                     // Escaped characters get picked up here. If it's an escaped new line it's not really needed
@@ -556,6 +559,7 @@ class Minifier
 
             echo $this->a;
         }
+
         $this->b = $this->getReal();
     }
 
@@ -591,7 +595,7 @@ class Minifier
 
         $this->locks[$lock] = $matches[2];
 
-        $js = preg_replace('/([+-])\s+([+-])/S', "$1{$lock}$2", $js);
+        $js = preg_replace('/([+-])\s+([+-])/S', sprintf('$1%s$2', $lock), $js);
         /* -- */
 
         return $js;

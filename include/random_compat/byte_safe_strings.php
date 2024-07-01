@@ -73,6 +73,7 @@ if (! function_exists(
                     'RandomCompat_strlen() expects a string'
                 );
             }
+
             return strlen($binary_string);
         }
     }
@@ -130,6 +131,7 @@ if (! function_exists('RandomCompat_substr')) {
             if ($start === RandomCompat_strlen($binary_string) && $length === 0) {
                 return '';
             }
+
             if ($start > RandomCompat_strlen($binary_string)) {
                 return false;
             }

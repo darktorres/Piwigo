@@ -29,6 +29,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
         if ($_template->smarty->cache_locking) {
             $cached->lock_id = sha1('lock.' . $path);
         }
+
         $this->populateTimestamp($cached);
     }
 
@@ -45,6 +46,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
             $cached->exists = ! ! $cached->timestamp;
             return;
         }
+
         $timestamp = null;
         $this->fetch(
             $cached->filepath,
@@ -72,9 +74,10 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
         Smarty_Template_Cached $cached = null,
         $update = false
     ) {
-        if (! $cached) {
+        if ($cached === null) {
             $cached = $_smarty_tpl->cached;
         }
+
         $content = $cached->content ? $cached->content : null;
         $timestamp = $cached->timestamp ? $cached->timestamp : null;
         if ($content === null || ! $timestamp) {
@@ -87,11 +90,13 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
                 $timestamp
             );
         }
+
         if (isset($content)) {
             eval('?>' . $content);
             $cached->content = null;
             return true;
         }
+
         return false;
     }
 
@@ -140,9 +145,11 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
                 $timestamp
             );
         }
+
         if (isset($content)) {
             return $content;
         }
+
         return false;
     }
 
@@ -188,6 +195,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
                 return 0;
             }
         }
+
         return $this->delete($cache_name, $cache_id, $compile_id, $exp_time);
     }
 
@@ -209,6 +217,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
         if ($mtime === null) {
             $this->fetch($id, $name, $cached->cache_id, $cached->compile_id, $content, $mtime);
         }
+
         return $mtime && ($t = time()) - $mtime < $smarty->locking_timeout;
     }
 

@@ -61,6 +61,7 @@ function do_timeout_treatment(
             } else {
                 $time_refresh = 0;
             }
+
             $_POST[$post_keyname] = array_diff($_POST[$post_keyname], $check_key_treated);
 
             $must_repost = true;
@@ -93,6 +94,7 @@ function get_tab_status($mode)
             $result = ACCESS_WEBMASTER;
             break;
     }
+
     return $result;
 }
 
@@ -110,7 +112,7 @@ update
 set
   ' . $conf['user_fields']['email'] . ' = null
 where
-  trim(' . $conf['user_fields']['email'] . ') = \'\';';
+  trim(' . $conf['user_fields']['email'] . ") = '';";
     pwg_query($query);
 
     // null mail_address are not selected in the list
@@ -264,6 +266,7 @@ function do_action_send_mail_notification(
                         $page['infos'][] = $msg_break_timeout;
                         break;
                     }
+
                     if (($is_action_send) and check_sendmail_timeout()) {
                         // Stop fill list on 'send', if the quota is override
                         $page['errors'][] = $msg_break_timeout;
@@ -511,6 +514,7 @@ switch ($page['mode']) {
             $check_key_treated = subscribe_notification_by_mail(true, $_POST['cat_false']);
             do_timeout_treatment('cat_false', $check_key_treated);
         }
+
         break;
 
     case 'send':
@@ -621,6 +625,7 @@ switch ($page['mode']) {
                 }
             }
         }
+
         $template->assign(
             [
                 'category_option_true' => $opt_true,
@@ -668,6 +673,7 @@ switch ($page['mode']) {
                 }
             }
         }
+
         $template->assign($page['mode'], $tpl_var);
 
         if ($conf['auth_key_duration'] > 0) {

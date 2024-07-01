@@ -200,6 +200,7 @@ function log_user($option, $cookies)
     } else {
         echo "Login KO!\n";
     }
+
     return $result['result']['pwg_token'];
 }
 
@@ -267,6 +268,7 @@ function add_picture($option, $cookies, $pwg_token)
     } else {
         echo "Add a picture KO!\n";
     }
+
     /*$content = readfile($option['file']);
     $content_lenght = strlen($content);
     $nb_chunks = ceil($content_lenght / 500);

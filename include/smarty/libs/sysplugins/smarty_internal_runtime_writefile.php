@@ -38,14 +38,17 @@ class Smarty_Internal_Runtime_WriteFile
                 if (@mkdir($_dirpath, 0777, true)) {
                     break;
                 }
+
                 clearstatcache();
                 if (++$i === 3) {
                     error_reporting($_error_reporting);
-                    throw new SmartyException("unable to create directory {$_dirpath}");
+                    throw new SmartyException('unable to create directory ' . $_dirpath);
                 }
+
                 sleep(1);
             }
         }
+
         // write to tmp file, then move to overt file lock race condition
         $_tmp_file = $_dirpath . DIRECTORY_SEPARATOR . str_replace(
             [
@@ -57,8 +60,9 @@ class Smarty_Internal_Runtime_WriteFile
         );
         if (! file_put_contents($_tmp_file, $_contents)) {
             error_reporting($_error_reporting);
-            throw new SmartyException("unable to write file {$_tmp_file}");
+            throw new SmartyException('unable to write file ' . $_tmp_file);
         }
+
         /*
          * Windows' rename() fails if the destination exists,
          * Linux' rename() properly handles the overwrite.
@@ -71,6 +75,7 @@ class Smarty_Internal_Runtime_WriteFile
             if (is_file($_filepath)) {
                 @unlink($_filepath);
             }
+
             // rename tmp file
             $success = @rename($_tmp_file, $_filepath);
         } else {
@@ -81,14 +86,17 @@ class Smarty_Internal_Runtime_WriteFile
                 if (is_file($_filepath)) {
                     @unlink($_filepath);
                 }
+
                 // rename tmp file
                 $success = @rename($_tmp_file, $_filepath);
             }
         }
+
         if (! $success) {
             error_reporting($_error_reporting);
-            throw new SmartyException("unable to write file {$_filepath}");
+            throw new SmartyException('unable to write file ' . $_filepath);
         }
+
         // set file permissions
         @chmod($_filepath, 0666 & ~umask());
         error_reporting($_error_reporting);

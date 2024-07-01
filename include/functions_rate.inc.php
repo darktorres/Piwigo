@@ -37,6 +37,7 @@ function rate_picture(
     if (count($ip_components) > 3) {
         array_pop($ip_components);
     }
+
     $anonymous_id = implode('.', $ip_components);
 
     if ($user_anonymous) {
@@ -81,8 +82,9 @@ DELETE
     AND user_id = ' . $user['id'] . '
 ';
     if ($user_anonymous) {
-        $query .= ' AND anonymous_id = \'' . $anonymous_id . '\'';
+        $query .= " AND anonymous_id = '" . $anonymous_id . "'";
     }
+
     pwg_query($query);
     $query = '
 INSERT
@@ -91,7 +93,7 @@ INSERT
   VALUES
   ('
       . $user['id'] . ','
-      . '\'' . $anonymous_id . '\','
+      . "'" . $anonymous_id . "',"
       . $image_id . ','
       . $rate
       . ',NOW())
@@ -152,11 +154,13 @@ SELECT element_id,
                 'count' => $rate_summary['rcount'],
             ];
         }
+
         $updates[] = [
             'id' => $id,
             'rating_score' => $score,
         ];
     }
+
     mass_updates(
         IMAGES_TABLE,
         [

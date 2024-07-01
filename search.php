@@ -33,8 +33,8 @@ if (isset($_POST['submit'])) {
         check_input_parameter('fields', $_POST, true, '/^(name|comment|file)$/');
 
         $drop_char_match = [
-            '-', '^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_',
-            '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*'];
+            '-', '^', '$', ';', '#', '&', '(', ')', '<', '>', '`', "'", '"', '|', ',', '@', '_',
+            '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', "'", '!', '*'];
         $drop_char_replace = [
             ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', ' ', ' ', ' ', ' ', '', ' ',
             ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '', ' ', ' ', ' ', ' ', ' '];
@@ -70,7 +70,7 @@ if (isset($_POST['submit'])) {
         ];
     }
 
-    if (isset($_POST['authors']) and is_array($_POST['authors']) and count($_POST['authors']) > 0) {
+    if (isset($_POST['authors']) and is_array($_POST['authors']) and $_POST['authors'] !== []) {
         $authors = [];
 
         foreach ($_POST['authors'] as $author) {
@@ -140,6 +140,7 @@ INSERT INTO ' . SEARCH_TABLE . '
         $page['errors'][] = l10n('Empty query. No criteria has been entered.');
     }
 }
+
 //----------------------------------------------------------------- redirection
 if (isset($_POST['submit']) and count(
     $page['errors']
@@ -153,6 +154,7 @@ if (isset($_POST['submit']) and count(
         )
     );
 }
+
 //----------------------------------------------------- template initialization
 
 //

@@ -48,6 +48,7 @@ class Smarty_Internal_Method_AddAutoloadFilters extends Smarty_Internal_Method_S
                 }
             }
         }
+
         return $obj;
     }
 }

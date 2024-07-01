@@ -174,6 +174,7 @@ function remove_event_handler(
     if (! isset($pwg_event_handlers[$event][$priority])) {
         return false;
     }
+
     for ($i = 0; $i < count($pwg_event_handlers[$event][$priority]); $i++) {
         if ($pwg_event_handlers[$event][$priority][$i]['function'] == $func) {
             unset($pwg_event_handlers[$event][$priority][$i]);
@@ -186,9 +187,11 @@ function remove_event_handler(
                     unset($pwg_event_handlers[$event]);
                 }
             }
+
             return true;
         }
     }
+
     return false;
 }
 
@@ -224,6 +227,7 @@ function trigger_change(
     if (! isset($pwg_event_handlers[$event])) {
         return $data;
     }
+
     $args = func_get_args();
     array_shift($args);
 
@@ -280,6 +284,7 @@ function trigger_notify(
     if (! isset($pwg_event_handlers[$event])) {
         return;
     }
+
     $args = func_get_args();
     array_shift($args);
 
@@ -312,6 +317,7 @@ function set_plugin_data(
         $pwg_loaded_plugins[$plugin_id]['plugin_data'] = &$data;
         return true;
     }
+
     return false;
 }
 
@@ -330,6 +336,7 @@ function &get_plugin_data(
     if (isset($pwg_loaded_plugins[$plugin_id]['plugin_data'])) {
         return $pwg_loaded_plugins[$plugin_id]['plugin_data'];
     }
+
     return null;
 }
 
@@ -348,12 +355,14 @@ function get_db_plugins(
 SELECT * FROM ' . PLUGINS_TABLE;
     $clauses = [];
     if (! empty($state)) {
-        $clauses[] = 'state=\'' . $state . '\'';
+        $clauses[] = "state='" . $state . "'";
     }
+
     if (! empty($id)) {
         $clauses[] = 'id="' . $id . '"';
     }
-    if (count($clauses)) {
+
+    if ($clauses !== []) {
         $query .= '
   WHERE ' . implode(' AND ', $clauses);
     }
@@ -476,6 +485,7 @@ function load_plugins()
         foreach ($plugins as $plugin) {// include main from a function to avoid using same function context
             load_plugin($plugin);
         }
+
         trigger_notify('plugins_loaded');
     }
 }

@@ -26,11 +26,20 @@ class Smarty_Internal_Runtime_Make_Nocache
                 );
             if (preg_match('/(\w+)::__set_state/', $export, $match)) {
                 throw new SmartyException(
-                    "{make_nocache \${$var}} in template '{$tpl->source->name}': variable does contain object '{$match[1]}' not implementing method '__set_state'"
+                    sprintf(
+                        '{make_nocache $%s} in template \'%s\': variable does contain object \'%s\' not implementing method \'__set_state\'',
+                        $var,
+                        $tpl->source->name,
+                        $match[1]
+                    )
                 );
             }
-            echo "/*%%SmartyNocache:{$tpl->compiled->nocache_hash}%%*/<?php " .
-                 addcslashes("\$_smarty_tpl->smarty->ext->_make_nocache->store(\$_smarty_tpl, '{$var}', ", '\\') .
+
+            echo sprintf('/*%%%%SmartyNocache:%s%%%%*/<?php ', $tpl->compiled->nocache_hash) .
+                 addcslashes(
+                     sprintf('$_smarty_tpl->smarty->ext->_make_nocache->store($_smarty_tpl, \'%s\', ', $var),
+                     '\\'
+                 ) .
                  $export . ");?>\n/*/%%SmartyNocache:{$tpl->compiled->nocache_hash}%%*/";
         }
     }
@@ -53,6 +62,7 @@ class Smarty_Internal_Runtime_Make_Nocache
             foreach ($properties as $k => $v) {
                 $newVar->{$k} = $v;
             }
+
             $tpl->tpl_vars[$var] = $newVar;
         }
     }

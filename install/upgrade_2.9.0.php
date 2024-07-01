@@ -89,7 +89,7 @@ for ($upgrade_id = 153; $upgrade_id <= 156; $upgrade_id++) { // TODO change on e
 INSERT INTO `' . PREFIX_TABLE . 'upgrade`
   (id, applied, description)
   VALUES
-  (\'' . $upgrade_id . '\', NOW(), \'[migration from 2.9.0 to ' . PHPWG_VERSION . ', ' . get_elapsed_time(
+  (\'' . $upgrade_id . "', NOW(), '[migration from 2.9.0 to " . PHPWG_VERSION . ', ' . get_elapsed_time(
         $up_start,
         get_moment()
     ) . '] ' . $upgrade_description . '\')

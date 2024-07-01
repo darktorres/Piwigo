@@ -37,6 +37,7 @@ function initPHP5()
             }
         }
     }
+
     return false;
 }
 
@@ -157,6 +158,7 @@ if (isset($_GET['setphp5'])) {
         echo '
       <option label="' . $fs_language['name'] . '" value="' . $code . '" ' . ($code == $language ? 'selected="selected"' : '') . '>' . $fs_language['name'] . '</option>';
     }
+
     echo '
       </select>
     </td>

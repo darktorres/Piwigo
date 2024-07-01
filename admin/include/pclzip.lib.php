@@ -230,6 +230,7 @@ class PclZip
         // ----- Return
         return;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -429,6 +430,7 @@ class PclZip
         // ----- Return
         return $p_result_list;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -630,6 +632,7 @@ class PclZip
         // ----- Return
         return $p_result_list;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -695,6 +698,7 @@ class PclZip
         // ----- Return
         return $p_list;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -797,12 +801,15 @@ class PclZip
                 if (isset($v_options[PCLZIP_OPT_PATH])) {
                     $v_path = $v_options[PCLZIP_OPT_PATH];
                 }
+
                 if (isset($v_options[PCLZIP_OPT_REMOVE_PATH])) {
                     $v_remove_path = $v_options[PCLZIP_OPT_REMOVE_PATH];
                 }
+
                 if (isset($v_options[PCLZIP_OPT_REMOVE_ALL_PATH])) {
                     $v_remove_all_path = $v_options[PCLZIP_OPT_REMOVE_ALL_PATH];
                 }
+
                 if (isset($v_options[PCLZIP_OPT_ADD_PATH])) {
                     // ----- Check for '/' in last path char
                     if ((strlen($v_path) > 0) && (substr(
@@ -811,6 +818,7 @@ class PclZip
                     ) != '/')) {
                         $v_path .= '/';
                     }
+
                     $v_path .= $v_options[PCLZIP_OPT_ADD_PATH];
                 }
             }
@@ -861,6 +869,7 @@ class PclZip
         // ----- Return
         return $p_list;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -967,12 +976,15 @@ class PclZip
                 if (isset($v_options[PCLZIP_OPT_PATH])) {
                     $v_path = $v_options[PCLZIP_OPT_PATH];
                 }
+
                 if (isset($v_options[PCLZIP_OPT_REMOVE_PATH])) {
                     $v_remove_path = $v_options[PCLZIP_OPT_REMOVE_PATH];
                 }
+
                 if (isset($v_options[PCLZIP_OPT_REMOVE_ALL_PATH])) {
                     $v_remove_all_path = $v_options[PCLZIP_OPT_REMOVE_ALL_PATH];
                 }
+
                 if (isset($v_options[PCLZIP_OPT_ADD_PATH])) {
                     // ----- Check for '/' in last path char
                     if ((strlen($v_path) > 0) && (substr(
@@ -981,8 +993,10 @@ class PclZip
                     ) != '/')) {
                         $v_path .= '/';
                     }
+
                     $v_path .= $v_options[PCLZIP_OPT_ADD_PATH];
                 }
+
                 if (! isset($v_options[PCLZIP_OPT_EXTRACT_AS_STRING])) {
                     $v_options[PCLZIP_OPT_EXTRACT_AS_STRING] = false;
                 }
@@ -1031,6 +1045,7 @@ class PclZip
         if ($v_result != 1) {
             return 0;
         }
+
         $v_options[PCLZIP_OPT_BY_INDEX] = $v_options_trick[PCLZIP_OPT_BY_INDEX];
 
         // ----- Look for default option values
@@ -1050,6 +1065,7 @@ class PclZip
         // ----- Return
         return $p_list;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1127,6 +1143,7 @@ class PclZip
         // ----- Return
         return $v_list;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1144,6 +1161,7 @@ class PclZip
         // ----- Return
         return $p_list;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1190,7 +1208,7 @@ class PclZip
                 // ----- Error log
                 self::privErrorLog(
                     PCLZIP_ERR_READ_OPEN_FAIL,
-                    'Unable to open archive \'' . $this->zipname . '\' in binary read mode'
+                    "Unable to open archive '" . $this->zipname . "' in binary read mode"
                 );
 
                 // ----- Return
@@ -1219,6 +1237,7 @@ class PclZip
         // ----- Return
         return $v_prop;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1281,6 +1300,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1342,6 +1362,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1358,6 +1379,7 @@ class PclZip
         return $this->error_code;
 
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1405,6 +1427,7 @@ class PclZip
         return $v_value;
 
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1426,6 +1449,7 @@ class PclZip
         return $this->error_string . ' [code ' . $this->error_code . ']';
 
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1491,6 +1515,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1611,6 +1636,7 @@ class PclZip
                         );
                         return self::errorCode();
                     }
+
                     // ----- Check for incompatible options
                     if (isset($v_result_list[PCLZIP_OPT_TEMP_FILE_THRESHOLD])) {
                         self::privErrorLog(
@@ -1674,6 +1700,7 @@ class PclZip
                         // ----- Return
                         return self::errorCode();
                     }
+
                     $i++;
                     break;
 
@@ -1710,6 +1737,7 @@ class PclZip
                         // ----- Return
                         return self::errorCode();
                     }
+
                     $i++;
                     break;
 
@@ -1746,6 +1774,7 @@ class PclZip
                         // ----- Return
                         return self::errorCode();
                     }
+
                     $i++;
                     break;
 
@@ -1835,6 +1864,7 @@ class PclZip
                             // ----- Return
                             return self::errorCode();
                         }
+
                         $v_sort_value = $v_result_list[$p_options_list[$i]][$j]['start'];
                     }
 
@@ -1967,6 +1997,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -1988,6 +2019,7 @@ class PclZip
         // ----- Get 'memory_limit' configuration value
         $v_memory_limit = ini_get('memory_limit');
         $v_memory_limit = trim($v_memory_limit);
+
         $last = strtolower(substr($v_memory_limit, -1));
         $v_memory_limit = intval($v_memory_limit);
 
@@ -1995,10 +2027,12 @@ class PclZip
             //$v_memory_limit = $v_memory_limit*1024*1024*1024;
             $v_memory_limit = $v_memory_limit * 1073741824;
         }
+
         if ($last == 'm') {
             //$v_memory_limit = $v_memory_limit*1024*1024;
             $v_memory_limit = $v_memory_limit * 1048576;
         }
+
         if ($last == 'k') {
             $v_memory_limit = $v_memory_limit * 1024;
         }
@@ -2013,6 +2047,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2091,6 +2126,7 @@ class PclZip
                         );
                         return self::errorCode();
                     }
+
                     break;
 
                 case PCLZIP_ATT_FILE_NEW_FULL_NAME:
@@ -2113,6 +2149,7 @@ class PclZip
                         );
                         return self::errorCode();
                     }
+
                     break;
 
                     // ----- Look for options that takes a string
@@ -2184,6 +2221,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2315,6 +2353,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2352,6 +2391,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2379,6 +2419,7 @@ class PclZip
             // ----- Return
             return $v_result;
         }
+
         // ----- Magic quotes trick
         $this->privDisableMagicQuotes();
 
@@ -2412,7 +2453,7 @@ class PclZip
 
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open temporary file \'' . $v_zip_temp_name . '\' in binary write mode'
+                "Unable to open temporary file '" . $v_zip_temp_name . "' in binary write mode"
             );
 
             // ----- Return
@@ -2473,6 +2514,7 @@ class PclZip
                     // ----- Return
                     return $v_result;
                 }
+
                 $v_count++;
             }
 
@@ -2488,9 +2530,11 @@ class PclZip
         if (isset($p_options[PCLZIP_OPT_COMMENT])) {
             $v_comment = $p_options[PCLZIP_OPT_COMMENT];
         }
+
         if (isset($p_options[PCLZIP_OPT_ADD_COMMENT])) {
             $v_comment = $v_comment . $p_options[PCLZIP_OPT_ADD_COMMENT];
         }
+
         if (isset($p_options[PCLZIP_OPT_PREPEND_COMMENT])) {
             $v_comment = $p_options[PCLZIP_OPT_PREPEND_COMMENT] . $v_comment;
         }
@@ -2539,6 +2583,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2556,7 +2601,7 @@ class PclZip
             // ----- Error log
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Zip file \'' . $this->zipname . '\' already open'
+                "Zip file '" . $this->zipname . "' already open"
             );
 
             // ----- Return
@@ -2568,7 +2613,7 @@ class PclZip
             // ----- Error log
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open archive \'' . $this->zipname . '\' in ' . $p_mode . ' mode'
+                "Unable to open archive '" . $this->zipname . "' in " . $p_mode . ' mode'
             );
 
             // ----- Return
@@ -2578,6 +2623,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2592,11 +2638,13 @@ class PclZip
         if ($this->zip_fd != 0) {
             @fclose($this->zip_fd);
         }
+
         $this->zip_fd = 0;
 
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2638,6 +2686,7 @@ class PclZip
                     // ----- Return
                     return $v_result;
                 }
+
                 $v_count++;
             }
 
@@ -2674,6 +2723,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2747,6 +2797,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -2902,7 +2953,7 @@ class PclZip
                     if (($v_file = @fopen($p_filename, 'rb')) == 0) {
                         self::privErrorLog(
                             PCLZIP_ERR_READ_OPEN_FAIL,
-                            "Unable to open file '{$p_filename}' in binary read mode"
+                            sprintf("Unable to open file '%s' in binary read mode", $p_filename)
                         );
                         return self::errorCode();
                     }
@@ -3032,6 +3083,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3052,7 +3104,10 @@ class PclZip
 
         // ----- Open the source file
         if (($v_file = @fopen($p_filename, 'rb')) == 0) {
-            self::privErrorLog(PCLZIP_ERR_READ_OPEN_FAIL, "Unable to open file '{$p_filename}' in binary read mode");
+            self::privErrorLog(
+                PCLZIP_ERR_READ_OPEN_FAIL,
+                sprintf("Unable to open file '%s' in binary read mode", $p_filename)
+            );
             return self::errorCode();
         }
 
@@ -3064,7 +3119,7 @@ class PclZip
             fclose($v_file);
             self::privErrorLog(
                 PCLZIP_ERR_WRITE_OPEN_FAIL,
-                'Unable to open temporary file \'' . $v_gzip_temp_name . '\' in binary write mode'
+                "Unable to open temporary file '" . $v_gzip_temp_name . "' in binary write mode"
             );
             return self::errorCode();
         }
@@ -3087,7 +3142,7 @@ class PclZip
         if (filesize($v_gzip_temp_name) < 18) {
             self::privErrorLog(
                 PCLZIP_ERR_BAD_FORMAT,
-                'gzip temporary file \'' . $v_gzip_temp_name . '\' has invalid filesize - should be minimum 18 bytes'
+                "gzip temporary file '" . $v_gzip_temp_name . "' has invalid filesize - should be minimum 18 bytes"
             );
             return self::errorCode();
         }
@@ -3096,7 +3151,7 @@ class PclZip
         if (($v_file_compressed = @fopen($v_gzip_temp_name, 'rb')) == 0) {
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open temporary file \'' . $v_gzip_temp_name . '\' in binary read mode'
+                "Unable to open temporary file '" . $v_gzip_temp_name . "' in binary read mode"
             );
             return self::errorCode();
         }
@@ -3131,7 +3186,7 @@ class PclZip
         if (($v_file_compressed = @fopen($v_gzip_temp_name, 'rb')) == 0) {
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open temporary file \'' . $v_gzip_temp_name . '\' in binary read mode'
+                "Unable to open temporary file '" . $v_gzip_temp_name . "' in binary read mode"
             );
             return self::errorCode();
         }
@@ -3156,6 +3211,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3179,11 +3235,13 @@ class PclZip
         } else {
             $p_add_dir = '';
         }
+
         if (isset($p_options[PCLZIP_OPT_REMOVE_PATH])) {
             $p_remove_dir = $p_options[PCLZIP_OPT_REMOVE_PATH];
         } else {
             $p_remove_dir = '';
         }
+
         if (isset($p_options[PCLZIP_OPT_REMOVE_ALL_PATH])) {
             $p_remove_all_dir = $p_options[PCLZIP_OPT_REMOVE_ALL_PATH];
         } else {
@@ -3207,6 +3265,7 @@ class PclZip
                 if ($v_path_info['dirname'] != '') {
                     $v_dir = $v_path_info['dirname'] . '/';
                 }
+
                 $v_stored_filename = $v_dir . $p_filedescr['new_short_name'];
             } else {
                 // ----- Calculate the stored filename
@@ -3230,6 +3289,7 @@ class PclZip
                         && (substr($p_remove_dir, 0, 2) != './')) {
                         $p_remove_dir = './' . $p_remove_dir;
                     }
+
                     if ((substr($p_filename, 0, 2) != './')
                         && (substr($p_remove_dir, 0, 2) == './')) {
                         $p_remove_dir = substr($p_remove_dir, 2);
@@ -3272,6 +3332,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3316,6 +3377,7 @@ class PclZip
         if (strlen($p_header['stored_filename']) != 0) {
             fputs($this->zip_fd, $p_header['stored_filename'], strlen($p_header['stored_filename']));
         }
+
         if ($p_header['extra_len'] != 0) {
             fputs($this->zip_fd, $p_header['extra'], $p_header['extra_len']);
         }
@@ -3323,6 +3385,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3374,9 +3437,11 @@ class PclZip
         if (strlen($p_header['stored_filename']) != 0) {
             fputs($this->zip_fd, $p_header['stored_filename'], strlen($p_header['stored_filename']));
         }
+
         if ($p_header['extra_len'] != 0) {
             fputs($this->zip_fd, $p_header['extra'], $p_header['extra_len']);
         }
+
         if ($p_header['comment_len'] != 0) {
             fputs($this->zip_fd, $p_header['comment'], $p_header['comment_len']);
         }
@@ -3384,6 +3449,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3424,6 +3490,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3448,7 +3515,7 @@ class PclZip
             // ----- Error log
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open archive \'' . $this->zipname . '\' in binary read mode'
+                "Unable to open archive '" . $this->zipname . "' in binary read mode"
             );
 
             // ----- Return
@@ -3481,6 +3548,7 @@ class PclZip
                 $this->privSwapBackMagicQuotes();
                 return $v_result;
             }
+
             $v_header['index'] = $i;
 
             // ----- Get the only interesting attributes
@@ -3497,6 +3565,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3541,6 +3610,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -3594,6 +3664,7 @@ class PclZip
         ) != '/')) {
             $p_remove_path .= '/';
         }
+
         $p_remove_path_size = strlen($p_remove_path);
 
         // ----- Open the zip file
@@ -3718,6 +3789,7 @@ class PclZip
                     if (($i >= $p_options[PCLZIP_OPT_BY_INDEX][$j]['start']) && ($i <= $p_options[PCLZIP_OPT_BY_INDEX][$j]['end'])) {
                         $v_extract = true;
                     }
+
                     if ($i >= $p_options[PCLZIP_OPT_BY_INDEX][$j]['end']) {
                         $j_start = $j + 1;
                     }
@@ -3922,6 +3994,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4197,7 +4270,7 @@ class PclZip
                     if (($p_entry['flag'] & 1) == 1) {
                         self::privErrorLog(
                             PCLZIP_ERR_UNSUPPORTED_ENCRYPTION,
-                            'File \'' . $p_entry['filename'] . '\' is encrypted. Encrypted files are not supported.'
+                            "File '" . $p_entry['filename'] . "' is encrypted. Encrypted files are not supported."
                         );
                         return self::errorCode();
                     }
@@ -4296,6 +4369,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4316,7 +4390,7 @@ class PclZip
             fclose($v_file);
             self::privErrorLog(
                 PCLZIP_ERR_WRITE_OPEN_FAIL,
-                'Unable to open temporary file \'' . $v_gzip_temp_name . '\' in binary write mode'
+                "Unable to open temporary file '" . $v_gzip_temp_name . "' in binary write mode"
             );
             return self::errorCode();
         }
@@ -4362,7 +4436,7 @@ class PclZip
             $p_entry['status'] = 'read_error';
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open temporary file \'' . $v_gzip_temp_name . '\' in binary read mode'
+                "Unable to open temporary file '" . $v_gzip_temp_name . "' in binary read mode"
             );
             return self::errorCode();
         }
@@ -4376,6 +4450,7 @@ class PclZip
             @fwrite($v_dest_file, $v_buffer, $v_read_size);
             $v_size -= $v_read_size;
         }
+
         @fclose($v_dest_file);
         @gzclose($v_src_file);
 
@@ -4385,6 +4460,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4506,6 +4582,7 @@ class PclZip
 
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4630,6 +4707,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4741,6 +4819,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4858,6 +4937,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4878,14 +4958,19 @@ class PclZip
         // TBC
         if ($p_local_header['filename'] != $p_central_header['filename']) {
         }
+
         if ($p_local_header['version_extracted'] != $p_central_header['version_extracted']) {
         }
+
         if ($p_local_header['flag'] != $p_central_header['flag']) {
         }
+
         if ($p_local_header['compression'] != $p_central_header['compression']) {
         }
+
         if ($p_local_header['mtime'] != $p_central_header['mtime']) {
         }
+
         if ($p_local_header['filename_len'] != $p_central_header['filename_len']) {
         }
 
@@ -4899,6 +4984,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -4919,7 +5005,7 @@ class PclZip
             // ----- Error log
             self::privErrorLog(
                 PCLZIP_ERR_BAD_FORMAT,
-                'Unable to go to the end of the archive \'' . $this->zipname . '\''
+                "Unable to go to the end of the archive '" . $this->zipname . "'"
             );
 
             // ----- Return
@@ -4935,7 +5021,7 @@ class PclZip
                 // ----- Error log
                 self::privErrorLog(
                     PCLZIP_ERR_BAD_FORMAT,
-                    'Unable to seek back to the middle of the archive \'' . $this->zipname . '\''
+                    "Unable to seek back to the middle of the archive '" . $this->zipname . "'"
                 );
 
                 // ----- Return
@@ -4960,12 +5046,13 @@ class PclZip
             if ($v_maximum_size > $v_size) {
                 $v_maximum_size = $v_size;
             }
+
             @fseek($this->zip_fd, $v_size - $v_maximum_size);
             if (@ftell($this->zip_fd) != ($v_size - $v_maximum_size)) {
                 // ----- Error log
                 self::privErrorLog(
                     PCLZIP_ERR_BAD_FORMAT,
-                    'Unable to seek back to the middle of the archive \'' . $this->zipname . '\''
+                    "Unable to seek back to the middle of the archive '" . $this->zipname . "'"
                 );
 
                 // ----- Return
@@ -5071,6 +5158,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5206,6 +5294,7 @@ class PclZip
                     if (($i >= $p_options[PCLZIP_OPT_BY_INDEX][$j]['start']) && ($i <= $p_options[PCLZIP_OPT_BY_INDEX][$j]['end'])) {
                         $v_found = true;
                     }
+
                     if ($i >= $p_options[PCLZIP_OPT_BY_INDEX][$j]['end']) {
                         $j_start = $j + 1;
                     }
@@ -5280,6 +5369,7 @@ class PclZip
                 ) != 1) {
                     // TBC
                 }
+
                 unset($v_local_header);
 
                 // ----- Write the file header
@@ -5392,6 +5482,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5437,7 +5528,10 @@ class PclZip
         // ----- Create the directory
         if (! @mkdir($p_dir, 0777)) {
             // ----- Error log
-            self::privErrorLog(PCLZIP_ERR_DIR_CREATE_FAIL, "Unable to create directory '{$p_dir}'");
+            self::privErrorLog(
+                PCLZIP_ERR_DIR_CREATE_FAIL,
+                sprintf("Unable to create directory '%s'", $p_dir)
+            );
 
             // ----- Return
             return self::errorCode();
@@ -5446,6 +5540,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5526,7 +5621,7 @@ class PclZip
 
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open temporary file \'' . $v_zip_temp_name . '\' in binary write mode'
+                "Unable to open temporary file '" . $v_zip_temp_name . "' in binary write mode"
             );
 
             // ----- Return
@@ -5629,6 +5724,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5664,7 +5760,7 @@ class PclZip
 
             self::privErrorLog(
                 PCLZIP_ERR_READ_OPEN_FAIL,
-                'Unable to open archive file \'' . $p_archive_filename . '\' in binary write mode'
+                "Unable to open archive file '" . $p_archive_filename . "' in binary write mode"
             );
 
             // ----- Return
@@ -5692,6 +5788,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5710,6 +5807,7 @@ class PclZip
             $this->error_string = $p_error_string;
         }
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5726,6 +5824,7 @@ class PclZip
             $this->error_string = '';
         }
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5760,6 +5859,7 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------
@@ -5791,9 +5891,11 @@ class PclZip
         // ----- Return
         return $v_result;
     }
+
     // --------------------------------------------------------------------------------
 
 }
+
 // End of class
 // --------------------------------------------------------------------------------
 
@@ -5837,6 +5939,7 @@ function PclZipUtilPathReduction(
                 elseif ($i == (sizeof($v_list) - 1)) {
                     $v_result = $v_list[$i];
                 }
+
                 // ----- Double '/' inside the path
 
                 // ----- Ignore only the double '//' in path,
@@ -5864,6 +5967,7 @@ function PclZipUtilPathReduction(
     // ----- Return
     return $v_result;
 }
+
 // --------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------
@@ -5892,6 +5996,7 @@ function PclZipUtilPathInclusion(
         || ((strlen($p_dir) >= 2) && (substr($p_dir, 0, 2) == './'))) {
         $p_dir = PclZipUtilTranslateWinPath(getcwd(), false) . '/' . substr($p_dir, 1);
     }
+
     if (($p_path == '.')
         || ((strlen($p_path) >= 2) && (substr($p_path, 0, 2) == './'))) {
         $p_path = PclZipUtilTranslateWinPath(getcwd(), false) . '/' . substr($p_path, 1);
@@ -5913,6 +6018,7 @@ function PclZipUtilPathInclusion(
             $i++;
             continue;
         }
+
         if ($v_list_path[$j] == '') {
             $j++;
             continue;
@@ -5934,6 +6040,7 @@ function PclZipUtilPathInclusion(
         while (($j < $v_list_path_size) && ($v_list_path[$j] == '')) {
             $j++;
         }
+
         while (($i < $v_list_dir_size) && ($v_list_dir[$i] == '')) {
             $i++;
         }
@@ -5950,6 +6057,7 @@ function PclZipUtilPathInclusion(
     // ----- Return
     return $v_result;
 }
+
 // --------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------
@@ -6004,6 +6112,7 @@ function PclZipUtilCopyBlock(
     // ----- Return
     return $v_result;
 }
+
 // --------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------
@@ -6038,6 +6147,7 @@ function PclZipUtilRename(
     // ----- Return
     return $v_result;
 }
+
 // --------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------
@@ -6068,6 +6178,7 @@ function PclZipUtilOptionText(
 
     return $v_result;
 }
+
 // --------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------
@@ -6093,6 +6204,7 @@ function PclZipUtilTranslateWinPath(
         )) != false)) {
             $p_path = substr($p_path, $v_position + 1);
         }
+
         // ----- Change potential windows directory separator
         if ((strpos($p_path, '\\') > 0) || (substr(
             $p_path,
@@ -6102,6 +6214,8 @@ function PclZipUtilTranslateWinPath(
             $p_path = strtr($p_path, '\\', '/');
         }
     }
+
     return $p_path;
 }
+
 // --------------------------------------------------------------------------------

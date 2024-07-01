@@ -35,6 +35,7 @@ function smarty_modifiercompiler_escape(
         if (! $char_set) {
             $char_set = Smarty::$_CHARSET;
         }
+
         switch ($esc_type) {
             case 'html':
                 return 'htmlspecialchars((string)' . $params[0] . ', ENT_QUOTES, ' . var_export(
@@ -44,10 +45,11 @@ function smarty_modifiercompiler_escape(
                     var_export($double_encode, true) . ')';
             case 'htmlall':
                 if (Smarty::$_MBSTRING) {
-                    return 'htmlentities(mb_convert_encoding((string)' . $params[0] . ', \'UTF-8\', ' .
-                        var_export($char_set, true) . '), ENT_QUOTES, \'UTF-8\', ' .
+                    return 'htmlentities(mb_convert_encoding((string)' . $params[0] . ", 'UTF-8', " .
+                        var_export($char_set, true) . "), ENT_QUOTES, 'UTF-8', " .
                         var_export($double_encode, true) . ')';
                 }
+
                 // no MBString fallback
                 return 'htmlentities((string)' . $params[0] . ', ENT_QUOTES, ' . var_export(
                     $char_set,
@@ -70,9 +72,10 @@ function smarty_modifiercompiler_escape(
                        "\\n" => "\\\n", "</" => "<\/", "<!--" => "<\!--", "<s" => "<\s", "<S" => "<\S",
                        "`" => "\\\\`", "\${" => "\\\\\\$\\{"))';
         }
-    } catch (SmartyException $e) {
+    } catch (SmartyException $smartyException) {
         // pass through to regular plugin fallback
     }
+
     // could not optimize |escape call, so fallback to regular plugin
     if ($compiler->template->caching && ($compiler->tag_nocache | $compiler->nocache)) {
         $compiler->required_plugins['nocache']['escape']['modifier']['file'] =
@@ -85,5 +88,6 @@ function smarty_modifiercompiler_escape(
         $compiler->required_plugins['compiled']['escape']['modifier']['function'] =
             'smarty_modifier_escape';
     }
+
     return 'smarty_modifier_escape(' . join(', ', $params) . ')';
 }

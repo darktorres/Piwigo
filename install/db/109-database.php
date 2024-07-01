@@ -19,6 +19,7 @@ if ($conf['dblayer'] == 'mysql') {
 } else {
     $q = 'ALTER TABLE ' . IMAGES_TABLE . ' RENAME average_rate TO rating_score';
 }
+
 pwg_query($q);
 
 $q = 'UPDATE ' . CATEGORIES_TABLE . " SET image_order=REPLACE(image_order, 'average_rate', 'rating_score')";

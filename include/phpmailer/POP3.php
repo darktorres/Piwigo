@@ -202,12 +202,14 @@ class POP3
         } else {
             $this->port = (int) $port;
         }
+
         //If no timeout value provided, use default
         if ($timeout === false) {
             $this->tval = static::DEFAULT_TIMEOUT;
         } else {
             $this->tval = (int) $timeout;
         }
+
         $this->do_debug = $debug_level;
         $this->username = $username;
         $this->password = $password;
@@ -223,6 +225,7 @@ class POP3
                 return true;
             }
         }
+
         //We need to disconnect regardless of whether the login succeeded
         $this->disconnect();
 
@@ -276,7 +279,13 @@ class POP3
         if ($this->pop_conn === false) {
             //It would appear not...
             $this->setError(
-                "Failed to connect to server {$host} on port {$port}. errno: {$errno}; errstr: {$errstr}"
+                sprintf(
+                    'Failed to connect to server %s on port %s. errno: %d; errstr: %s',
+                    $host,
+                    $port,
+                    $errno,
+                    $errstr
+                )
             );
 
             return false;
@@ -314,19 +323,21 @@ class POP3
         if (! $this->connected) {
             $this->setError('Not connected to POP3 server');
         }
+
         if (empty($username)) {
             $username = $this->username;
         }
+
         if (empty($password)) {
             $password = $this->password;
         }
 
         //Send the Username
-        $this->sendString("USER {$username}" . static::LE);
+        $this->sendString('USER ' . $username . static::LE);
         $pop3_response = $this->getResponse();
         if ($this->checkResponse($pop3_response)) {
             //Send the Password
-            $this->sendString("PASS {$password}" . static::LE);
+            $this->sendString('PASS ' . $password . static::LE);
             $pop3_response = $this->getResponse();
             if ($this->checkResponse($pop3_response)) {
                 return true;
@@ -346,7 +357,7 @@ class POP3
         //So ignore errors here
         try {
             @fclose($this->pop_conn);
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             //Do nothing
         }
     }
@@ -412,7 +423,7 @@ class POP3
         $string
     ) {
         if (strpos($string, '+OK') !== 0) {
-            $this->setError("Server reported an error: {$string}");
+            $this->setError('Server reported an error: ' . $string);
 
             return false;
         }
@@ -435,6 +446,7 @@ class POP3
             foreach ($this->errors as $e) {
                 print_r($e);
             }
+
             echo '</pre>';
         }
     }
@@ -455,7 +467,7 @@ class POP3
     ) {
         $this->setError(
             'Connecting to the POP3 server raised a PHP warning:' .
-            "errno: {$errno} errstr: {$errstr}; errfile: {$errfile}; errline: {$errline}"
+            sprintf('errno: %d errstr: %s; errfile: %s; errline: %d', $errno, $errstr, $errfile, $errline)
         );
     }
 }

@@ -33,40 +33,48 @@ class Smarty_Internal_Compile_Private_Registered_Block extends Smarty_Internal_C
             $callback = $tag_info[0];
             if (is_array($callback)) {
                 if (is_object($callback[0])) {
-                    $callable = "array(\$_block_plugin{$this->nesting}, '{$callback[1]}')";
+                    $callable = sprintf('array($_block_plugin%d, \'%s\')', $this->nesting, $callback[1]);
                     $callback =
-                        ["\$_smarty_tpl->smarty->registered_plugins['block']['{$tag}'][0][0]", "->{$callback[1]}"];
+                        [
+                            sprintf('$_smarty_tpl->smarty->registered_plugins[\'block\'][\'%s\'][0][0]', $tag),
+                            '->' . $callback[1],
+                        ];
                 } else {
-                    $callable = "array(\$_block_plugin{$this->nesting}, '{$callback[1]}')";
+                    $callable = sprintf('array($_block_plugin%d, \'%s\')', $this->nesting, $callback[1]);
                     $callback =
-                        ["\$_smarty_tpl->smarty->registered_plugins['block']['{$tag}'][0][0]", "::{$callback[1]}"];
+                        [
+                            sprintf('$_smarty_tpl->smarty->registered_plugins[\'block\'][\'%s\'][0][0]', $tag),
+                            '::' . $callback[1],
+                        ];
                 }
             } else {
-                $callable = "\$_block_plugin{$this->nesting}";
-                $callback = ["\$_smarty_tpl->smarty->registered_plugins['block']['{$tag}'][0]", ''];
+                $callable = '$_block_plugin' . $this->nesting;
+                $callback = [sprintf('$_smarty_tpl->smarty->registered_plugins[\'block\'][\'%s\'][0]', $tag), ''];
             }
         } else {
             $tag_info = $compiler->default_handler_plugins[Smarty::PLUGIN_BLOCK][$tag];
             $callback = $tag_info[0];
             if (is_array($callback)) {
-                $callable = "array('{$callback[0]}', '{$callback[1]}')";
-                $callback = "{$callback[1]}::{$callback[1]}";
+                $callable = sprintf("array('%s', '%s')", $callback[0], $callback[1]);
+                $callback = sprintf('%s::%s', $callback[1], $callback[1]);
             } else {
                 $callable = null;
             }
         }
+
         $compiler->tag_nocache = ! $tag_info[1] | $compiler->tag_nocache;
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             if (is_int($_key)) {
-                $_paramsArray[] = "{$_key}=>{$_value}";
+                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
             } elseif ($compiler->template->caching && in_array($_key, $tag_info[2])) {
-                $_value = str_replace('\'', '^#^', $_value);
-                $_paramsArray[] = "'{$_key}'=>^#^.var_export({$_value},true).^#^";
+                $_value = str_replace("'", '^#^', $_value);
+                $_paramsArray[] = sprintf("'%s'=>^#^.var_export(%s,true).^#^", $_key, $_value);
             } else {
-                $_paramsArray[] = "'{$_key}'=>{$_value}";
+                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
             }
         }
+
         return [$callback, $_paramsArray, $callable];
     }
 }

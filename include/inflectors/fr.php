@@ -58,6 +58,7 @@ class Inflector_fr
             if (! empty($rc)) {
                 $res[] = $rc;
             }
+
             return $res;
         }
 

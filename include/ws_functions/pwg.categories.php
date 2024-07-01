@@ -30,14 +30,16 @@ function ws_categories_getImages(
     $where_clauses = [];
     foreach ($params['cat_id'] as $cat_id) {
         if ($params['recursive']) {
-            $where_clauses[] = 'uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $cat_id . '(,|$)\'';
+            $where_clauses[] = 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,)" . $cat_id . '(,|$)\'';
         } else {
             $where_clauses[] = 'id=' . $cat_id;
         }
     }
+
     if (! empty($where_clauses)) {
         $where_clauses = ['(' . implode("\n    OR ", $where_clauses) . ')'];
     }
+
     $where_clauses[] = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'id',
@@ -80,6 +82,7 @@ SELECT
         ) {
             $order_by = $cats[$params['cat_id'][0]]['image_order'];
         }
+
         $order_by = empty($order_by) ? $conf['order_by'] : 'ORDER BY ' . $order_by;
         $favorite_ids = get_user_favorites();
 
@@ -105,9 +108,11 @@ SELECT SQL_CALC_FOUND_ROWS i.*
                     $image[$k] = (int) $row[$k];
                 }
             }
+
             foreach (['file', 'name', 'comment', 'date_creation', 'date_available'] as $k) {
                 $image[$k] = $row[$k];
             }
+
             $image = array_merge($image, ws_std_get_urls($row));
 
             $images[] = $image;
@@ -116,7 +121,7 @@ SELECT SQL_CALC_FOUND_ROWS i.*
         list($total_images) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
 
         // let's take care of adding the related albums to each photo
-        if (count($image_ids) > 0) {
+        if ($image_ids !== []) {
             $category_ids = [];
 
             // find the complete list (given permissions) of albums linked to photos
@@ -136,7 +141,7 @@ SELECT
                 @$categories_of_image[$row['image_id']][] = $row['category_id'];
             }
 
-            if (count($category_ids) > 0) {
+            if ($category_ids !== []) {
                 // find details (for URL generation) about each album
                 $query = '
 SELECT
@@ -237,7 +242,7 @@ function ws_categories_getList(
             $where[] = 'id_uppercat IS NULL';
         }
     } elseif ($params['cat_id'] > 0) {
-        $where[] = 'uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' .
+        $where[] = 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,)" .
           (int) ($params['cat_id']) . '(,|$)\'';
     }
 
@@ -366,15 +371,17 @@ SELECT representative_picture_id
             $image_ids[] = $image_id;
             $categories[] = $row;
         }
+
         unset($image_id);
         // management of the album thumbnail -- stops here
 
         $cats[] = $row;
     }
+
     usort($cats, 'global_rank_compare');
 
     // management of the album thumbnail -- starts here
-    if (count($categories) > 0) {
+    if ($categories !== []) {
         $thumbnail_src_of = [];
         $new_image_ids = [];
 
@@ -406,6 +413,7 @@ SELECT id, path, representative_ext, level
                         if (isset($image_id) and ! in_array($image_id, $image_ids)) {
                             $new_image_ids[] = $image_id;
                         }
+
                         if ($conf['representative_cache_on_level']) {
                             $user_representative_updates_for[$category['id']] = $image_id;
                         }
@@ -413,11 +421,12 @@ SELECT id, path, representative_ext, level
                         $category['representative_picture_id'] = $image_id;
                     }
                 }
+
                 unset($category);
             }
         }
 
-        if (count($new_image_ids) > 0) {
+        if ($new_image_ids !== []) {
             $query = '
 SELECT id, path, representative_ext
   FROM ' . IMAGES_TABLE . '
@@ -463,9 +472,11 @@ SELECT id, path, representative_ext
                 $cat['tn_url'] = $thumbnail_src_of[$category['representative_picture_id']];
             }
         }
+
         // we don't want them in the output
         unset($cat['user_representative_picture_id'], $cat['count_images'], $cat['count_categories']);
     }
+
     unset($cat);
     // management of the album thumbnail -- stops here
 
@@ -500,6 +511,7 @@ function ws_categories_getAdminList(
     if (! isset($params['additional_output'])) {
         $params['additional_output'] = '';
     }
+
     $params['additional_output'] = array_map('trim', explode(',', $params['additional_output']));
 
     $query = '
@@ -676,7 +688,7 @@ SELECT id
             );
         }
     } else {
-        $params['category_id'] = implode($params['category_id']);
+        $params['category_id'] = implode('', $params['category_id']);
 
         $query = '
 SELECT id
@@ -695,6 +707,7 @@ SELECT id
                 $order_new[] = $params['category_id'];
                 $was_inserted = true;
             }
+
             $order_new[] = $category_id;
             ++$i;
         }
@@ -703,6 +716,7 @@ SELECT id
             $order_new[] = $params['category_id'];
         }
     }
+
     // include function to set the global rank
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     save_categories_order($order_new);
@@ -991,6 +1005,7 @@ function ws_categories_delete(
             PREG_SPLIT_NO_EMPTY
         );
     }
+
     $params['category_id'] = array_map('intval', $params['category_id']);
 
     $category_ids = [];
@@ -1047,6 +1062,7 @@ function ws_categories_move(
             PREG_SPLIT_NO_EMPTY
         );
     }
+
     $params['category_id'] = array_map('intval', $params['category_id']);
 
     $category_ids = [];

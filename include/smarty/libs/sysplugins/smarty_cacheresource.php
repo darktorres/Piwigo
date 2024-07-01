@@ -94,6 +94,7 @@ abstract class Smarty_CacheResource
             $unifunc($_template);
             return ob_get_clean();
         }
+
         return null;
     }
 
@@ -145,8 +146,10 @@ abstract class Smarty_CacheResource
                 // abort waiting for lock release
                 return false;
             }
+
             sleep(1);
         }
+
         return $hadLock;
     }
 
@@ -204,26 +207,31 @@ abstract class Smarty_CacheResource
         if (! isset($type)) {
             $type = $smarty->caching_type;
         }
+
         // try smarty's cache
         if (isset($smarty->_cache['cacheresource_handlers'][$type])) {
             return $smarty->_cache['cacheresource_handlers'][$type];
         }
+
         // try registered resource
         if (isset($smarty->registered_cache_resources[$type])) {
             // do not cache these instances as they may vary from instance to instance
             return $smarty->_cache['cacheresource_handlers'][$type] = $smarty->registered_cache_resources[$type];
         }
+
         // try sysplugins dir
         if (isset(self::$sysplugins[$type])) {
             $cache_resource_class = 'Smarty_Internal_CacheResource_' . smarty_ucfirst_ascii($type);
             return $smarty->_cache['cacheresource_handlers'][$type] = new $cache_resource_class();
         }
+
         // try plugins dir
         $cache_resource_class = 'Smarty_CacheResource_' . smarty_ucfirst_ascii($type);
         if ($smarty->loadPlugin($cache_resource_class)) {
             return $smarty->_cache['cacheresource_handlers'][$type] = new $cache_resource_class();
         }
+
         // give up
-        throw new SmartyException("Unable to load cache resource '{$type}'");
+        throw new SmartyException(sprintf("Unable to load cache resource '%s'", $type));
     }
 }

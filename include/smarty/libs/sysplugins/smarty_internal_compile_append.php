@@ -44,12 +44,14 @@ class Smarty_Internal_Compile_Append extends Smarty_Internal_Compile_Assign
         } else {
             $_params['smarty_internal_index'] = '[]';
         }
+
         $_new_attr = [];
         foreach ($_attr as $key => $value) {
             $_new_attr[] = [
                 $key => $value,
             ];
         }
+
         // call compile assign
         return parent::compile($_new_attr, $compiler, $_params);
     }

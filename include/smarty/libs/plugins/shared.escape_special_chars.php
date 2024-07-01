@@ -20,5 +20,6 @@ function smarty_function_escape_special_chars(
     if (! is_array($string)) {
         $string = htmlspecialchars((string) $string, ENT_COMPAT, Smarty::$_CHARSET, false);
     }
+
     return $string;
 }

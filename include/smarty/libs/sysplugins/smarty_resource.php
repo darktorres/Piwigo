@@ -68,32 +68,37 @@ abstract class Smarty_Resource
         if (isset($smarty->_cache['resource_handlers'][$type])) {
             return $smarty->_cache['resource_handlers'][$type];
         }
+
         // try registered resource
         if (isset($smarty->registered_resources[$type])) {
             return $smarty->_cache['resource_handlers'][$type] = $smarty->registered_resources[$type];
         }
+
         // try sysplugins dir
         if (isset(self::$sysplugins[$type])) {
             $_resource_class = 'Smarty_Internal_Resource_' . smarty_ucfirst_ascii($type);
             return $smarty->_cache['resource_handlers'][$type] = new $_resource_class();
         }
+
         // try plugins dir
         $_resource_class = 'Smarty_Resource_' . smarty_ucfirst_ascii($type);
         if ($smarty->loadPlugin($_resource_class)) {
             if (class_exists($_resource_class, false)) {
                 return $smarty->_cache['resource_handlers'][$type] = new $_resource_class();
             }
+
             $smarty->registerResource(
                 $type,
                 [
-                    "smarty_resource_{$type}_source", "smarty_resource_{$type}_timestamp",
-                    "smarty_resource_{$type}_secure", "smarty_resource_{$type}_trusted",
+                    sprintf('smarty_resource_%s_source', $type), sprintf('smarty_resource_%s_timestamp', $type),
+                    sprintf('smarty_resource_%s_secure', $type), sprintf('smarty_resource_%s_trusted', $type),
                 ]
             );
             // give it another try, now that the resource is registered properly
             return self::load($smarty, $type);
 
         }
+
         // try streams
         $_known_stream = stream_get_wrappers();
         if (in_array($type, $_known_stream)) {
@@ -101,11 +106,13 @@ abstract class Smarty_Resource
             if (is_object($smarty->security_policy)) {
                 $smarty->security_policy->isTrustedStream($type);
             }
+
             return $smarty->_cache['resource_handlers'][$type] = new Smarty_Internal_Resource_Stream();
         }
+
         // TODO: try default_(template|config)_handler
         // give up
-        throw new SmartyException("Unknown resource type '{$type}'");
+        throw new SmartyException(sprintf("Unknown resource type '%s'", $type));
     }
 
     /**
@@ -131,6 +138,7 @@ abstract class Smarty_Resource
             $type = $default_resource;
             $name = $resource_name;
         }
+
         return [$name, $type];
     }
 
@@ -158,6 +166,7 @@ abstract class Smarty_Resource
         ) {
             $name = $smarty->_realpath(dirname($obj->parent->source->filepath) . DIRECTORY_SEPARATOR . $name);
         }
+
         return $resource->buildUniqueResourceName($smarty, $name);
     }
 
@@ -231,11 +240,14 @@ abstract class Smarty_Resource
             if (! isset($smarty->_joined_config_dir)) {
                 $smarty->getTemplateDir(null, true);
             }
+
             return static::class . '#' . $smarty->_joined_config_dir . '#' . $resource_name;
         }
+
         if (! isset($smarty->_joined_template_dir)) {
             $smarty->getTemplateDir();
         }
+
         return static::class . '#' . $smarty->_joined_template_dir . '#' . $resource_name;
 
     }

@@ -107,7 +107,7 @@ if ($page['display_mode'] == 'letters') {
     }
 
     // flush last letter
-    if (count($letter['tags']) > 0) {
+    if ($letter['tags'] !== []) {
         unset($letter['CHANGE_COLUMN']);
         $letter['TITLE'] = $current_letter;
         $template->append(
@@ -148,6 +148,7 @@ if ($page['display_mode'] == 'letters') {
         );
     }
 }
+
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
 if (! isset($themeconf['hide_menu_on']) or ! in_array('theTagsPage', $themeconf['hide_menu_on'])) {

@@ -55,11 +55,13 @@ class Smarty_Internal_Method_Append
                         $data->tpl_vars[$tpl_var] = clone $tpl_var_inst;
                     }
                 }
+
                 if (! (is_array($data->tpl_vars[$tpl_var]->value)
                       || $data->tpl_vars[$tpl_var]->value instanceof ArrayAccess)
                 ) {
                     settype($data->tpl_vars[$tpl_var]->value, 'array');
                 }
+
                 if ($merge && is_array($value)) {
                     foreach ($value as $_mkey => $_mval) {
                         $data->tpl_vars[$tpl_var]->value[$_mkey] = $_mval;
@@ -68,10 +70,12 @@ class Smarty_Internal_Method_Append
                     $data->tpl_vars[$tpl_var]->value[] = $value;
                 }
             }
+
             if ($data->_isTplObj() && $data->scope) {
                 $data->ext->_updateScope->_updateScope($data, $tpl_var);
             }
         }
+
         return $data;
     }
 }

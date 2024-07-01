@@ -30,6 +30,7 @@ class Smarty_Internal_Compile_Ldelim extends Smarty_Internal_CompileBase
         if ($_attr['nocache'] === true) {
             $compiler->trigger_template_error('nocache option not allowed', null, true);
         }
+
         return $compiler->smarty->left_delimiter;
     }
 }

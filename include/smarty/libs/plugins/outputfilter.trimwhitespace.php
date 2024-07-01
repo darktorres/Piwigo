@@ -38,6 +38,7 @@ function smarty_outputfilter_trimwhitespace(
             $_store++;
         }
     }
+
     // Strip all HTML-Comments
     // yes, even the ones in <script> - see https://stackoverflow.com/a/808850/515124
     $source = preg_replace(
@@ -63,6 +64,7 @@ function smarty_outputfilter_trimwhitespace(
             $_store++;
         }
     }
+
     $expressions = [
         // replace multiple spaces between tags by a single space
         // can't remove them entirely, because that might break poorly implemented CSS display:inline-block elements
@@ -88,5 +90,6 @@ function smarty_outputfilter_trimwhitespace(
             $_store++;
         }
     }
+
     return $source;
 }

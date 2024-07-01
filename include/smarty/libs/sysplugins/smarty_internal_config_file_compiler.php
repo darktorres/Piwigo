@@ -107,8 +107,10 @@ class Smarty_Internal_Config_File_Compiler
             if (! isset($this->smarty->_debug)) {
                 $this->smarty->_debug = new Smarty_Internal_Debug();
             }
+
             $this->smarty->_debug->start_compile($this->template);
         }
+
         // init the lexer/parser to compile the config file
         /** @var Smarty_Internal_ConfigFileLexer $this->lex */
         $this->lex = new $this->lexer_class(
@@ -136,24 +138,30 @@ class Smarty_Internal_Config_File_Compiler
         } else {
             $mbEncoding = null;
         }
+
         if ($this->smarty->_parserdebug) {
             $this->parser->PrintTrace();
         }
+
         // get tokens from lexer and parse them
         while ($this->lex->yylex()) {
             if ($this->smarty->_parserdebug) {
                 echo "<br>Parsing  {$this->parser->yyTokenName[$this->lex->token]} Token {$this->lex->value} Line {$this->lex->line} \n";
             }
+
             $this->parser->doParse($this->lex->token, $this->lex->value);
         }
+
         // finish parsing process
         $this->parser->doParse(0, 0);
         if ($mbEncoding) {
             mb_internal_encoding($mbEncoding);
         }
+
         if ($this->smarty->debugging) {
             $this->smarty->_debug->end_compile($this->template);
         }
+
         // template header code
         $template_header = sprintf(
             "<?php /* Smarty version %s, created on %s\n         compiled from '%s' */ ?>\n",
@@ -182,9 +190,15 @@ class Smarty_Internal_Config_File_Compiler
         if (isset($args)) {
             // $line--;
         }
+
         $match = preg_split("/\n/", $this->lex->data);
         $error_text =
-            "Syntax error in config file '{$this->template->source->filepath}' on line {$line} '{$match[$line - 1]}' ";
+            sprintf(
+                "Syntax error in config file '%s' on line %s '%s' ",
+                $this->template->source->filepath,
+                $line,
+                $match[$line - 1]
+            );
         if (isset($args)) {
             // individual error message
             $error_text .= $args;
@@ -202,12 +216,14 @@ class Smarty_Internal_Config_File_Compiler
                     $expect[] = $this->parser->yyTokenName[$token];
                 }
             }
+
             // output parser error message
             $error_text .= ' - Unexpected "' . $this->lex->value . '", expected one of: ' . implode(
                 ' , ',
                 $expect
             );
         }
+
         throw new SmartyCompilerException($error_text);
     }
 }

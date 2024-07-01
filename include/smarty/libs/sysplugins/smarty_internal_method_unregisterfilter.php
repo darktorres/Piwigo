@@ -38,6 +38,7 @@ class Smarty_Internal_Method_UnregisterFilter extends Smarty_Internal_Method_Reg
                 }
             }
         }
+
         return $obj;
     }
 }

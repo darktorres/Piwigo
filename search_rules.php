@@ -123,6 +123,7 @@ SELECT id, uppercats, global_rank
             $categories[] = $row;
         }
     }
+
     usort($categories, 'global_rank_compare');
 
     foreach ($categories as $category) {

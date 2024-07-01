@@ -30,9 +30,11 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
         } else {
             $source->filepath = str_replace(':', '://', $source->resource);
         }
+
         $source->uid = false;
         $source->content = $this->getContent($source);
-        $source->timestamp = $source->exists = ! ! $source->content;
+        $source->timestamp = ! ! $source->content;
+        $source->exists = ! ! $source->content;
     }
 
     /**
@@ -55,9 +57,11 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
             while (! feof($fp) && ($current_line = fgets($fp)) !== false) {
                 $t .= $current_line;
             }
+
             fclose($fp);
             return $t;
         }
+
         return false;
 
     }

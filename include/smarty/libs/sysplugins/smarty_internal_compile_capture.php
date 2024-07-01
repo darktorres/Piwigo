@@ -50,7 +50,7 @@ class Smarty_Internal_Compile_Capture extends Smarty_Internal_CompileBase
         $parameter = null
     ) {
         return '$_smarty_tpl->smarty->ext->_capture->getBuffer($_smarty_tpl' .
-               (isset($parameter[1]) ? ", {$parameter[1]})" : ')');
+               (isset($parameter[1]) ? sprintf(', %s)', $parameter[1]) : ')');
     }
 
     /**
@@ -75,7 +75,12 @@ class Smarty_Internal_Compile_Capture extends Smarty_Internal_CompileBase
         $compiler->_cache['capture_stack'][] = [$compiler->nocache];
         // maybe nocache because of nocache variables
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
-        $_output = "<?php \$_smarty_tpl->smarty->ext->_capture->open(\$_smarty_tpl, {$buffer}, {$assign}, {$append});?>";
+        $_output = sprintf(
+            '<?php $_smarty_tpl->smarty->ext->_capture->open($_smarty_tpl, %s, %s, %s);?>',
+            $buffer,
+            $assign,
+            $append
+        );
         return $_output;
     }
 }
@@ -107,6 +112,7 @@ class Smarty_Internal_Compile_CaptureClose extends Smarty_Internal_CompileBase
         if ($compiler->nocache) {
             $compiler->tag_nocache = true;
         }
+
         list($compiler->nocache) = array_pop($compiler->_cache['capture_stack']);
         return '<?php $_smarty_tpl->smarty->ext->_capture->close($_smarty_tpl);?>';
     }

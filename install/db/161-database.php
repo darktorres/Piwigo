@@ -34,7 +34,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     }
 }
 
-if (count($to_delete_activities) > 0) {
+if ($to_delete_activities !== []) {
     $query = '
 DELETE 
   FROM ' . PREFIX_TABLE . 'activity 

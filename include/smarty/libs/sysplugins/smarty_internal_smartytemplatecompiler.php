@@ -142,6 +142,7 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
                 "<?php\n\$_smarty_tpl->compiled->nocache_hash = '{$this->nocache_hash}';\n?>\n"
             );
         }
+
         if (function_exists('mb_internal_encoding')
             && function_exists('ini_get')
             && ((int) ini_get('mbstring.func_overload')) & 2
@@ -151,38 +152,49 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         } else {
             $mbEncoding = null;
         }
+
         if ($this->smarty->_parserdebug) {
             $this->parser->PrintTrace();
             $this->parser->lex->PrintTrace();
         }
+
         // get tokens from lexer and parse them
         while ($this->parser->lex->yylex()) {
             if ($this->smarty->_parserdebug) {
-                echo "<pre>Line {$this->parser->lex->line} Parsing  {$this->parser->yyTokenName[$this->parser->lex->token]} Token " .
+                echo sprintf(
+                    '<pre>Line %s Parsing  %s Token ',
+                    $this->parser->lex->line,
+                    $this->parser->yyTokenName[$this->parser->lex->token]
+                ) .
                      htmlentities($this->parser->lex->value) . '</pre>';
             }
+
             $this->parser->doParse($this->parser->lex->token, $this->parser->lex->value);
         }
+
         // finish parsing process
         $this->parser->doParse(0, 0);
         if ($mbEncoding) {
             mb_internal_encoding($mbEncoding);
         }
+
         // check for unclosed tags
         if (count($this->_tag_stack) > 0) {
             // get stacked info
             list($openTag, $_data) = array_pop($this->_tag_stack);
             $this->trigger_template_error(
-                "unclosed {$this->smarty->left_delimiter}" . $openTag .
-                "{$this->smarty->right_delimiter} tag"
+                'unclosed ' . $this->smarty->left_delimiter . $openTag .
+                ($this->smarty->right_delimiter . ' tag')
             );
         }
+
         // call post compile callbacks
         foreach ($this->postCompileCallbacks as $cb) {
             $parameter = $cb;
             $parameter[0] = $this;
             call_user_func_array($cb[0], $parameter);
         }
+
         // return compiled code
         return $this->prefixCompiledCode . $this->parser->retvalue . $this->postfixCompiledCode;
     }

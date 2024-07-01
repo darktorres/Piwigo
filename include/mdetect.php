@@ -363,6 +363,7 @@ class uagent_info
                 $this->DetectIpod() == $this->true) {
                 return $this->false;
             }
+
             //Yay! It's an iPhone!
 
             return $this->true;
@@ -603,6 +604,7 @@ class uagent_info
             stripos($this->useragent, $this->enginePie) > -1) {
             return $this->true;
         }
+
         //Test for Windows Mobile PPC but not old Macintosh PowerPC.
         if (stripos(
             $this->useragent,
@@ -611,11 +613,13 @@ class uagent_info
             && ! (stripos($this->useragent, $this->deviceMacPpc) > 1)) {
             return $this->true;
         }
+
         //Test for certain Windwos Mobile-based HTC devices.
         if (stripos($this->useragent, $this->manuHtc) > -1 &&
             stripos($this->useragent, $this->deviceWindows) > -1) {
             return $this->true;
         }
+
         if ($this->DetectWapWml() == $this->true &&
             stripos($this->useragent, $this->deviceWindows) > -1) {
             return $this->true;
@@ -633,6 +637,7 @@ class uagent_info
            (stripos($this->httpaccept, $this->vndRIM) > -1)) {
             return $this->true;
         }
+
         if ($this->DetectBlackBerry10Phone() == $this->true) {
             return $this->true;
         }
@@ -705,6 +710,7 @@ class uagent_info
         if ($this->DetectBlackBerryWebKit() == $this->true) {
             return $this->false;
         }
+
         if ($this->DetectBlackBerry() == $this->true) {
             if (($this->DetectBlackBerryTouch() == $this->true) ||
               stripos($this->useragent, $this->deviceBBBold) > -1 ||
@@ -1078,6 +1084,7 @@ class uagent_info
         if (stripos($this->useragent, $this->maemo) > -1) {
             return $this->true;
         }
+
         //For Nokia N810, must be Linux + Tablet, or else it could be something else.
         if ((stripos(
             $this->useragent,
@@ -1287,6 +1294,7 @@ class uagent_info
         if ($this->DetectMobileQuick() == $this->true) {
             return $this->true;
         }
+
         if ($this->DetectGameConsole() == $this->true) {
             return $this->true;
         }
@@ -1408,6 +1416,7 @@ class uagent_info
             if ($this->DetectWebkit() == $this->true) { //Any WebKit
                 return $this->true;
             }
+
             if ($this->DetectS60OssBrowser() == $this->true) {
                 return $this->true;
             }
@@ -1421,6 +1430,7 @@ class uagent_info
             if ($this->DetectWindowsMobile() == $this->true) {
                 return $this->true;
             }
+
             if (stripos($this->useragent, $this->engineTelecaQ) > -1) {
                 return $this->true;
             }

@@ -111,6 +111,7 @@ function unformat_email(
         if (! isset($input['name'])) {
             $input['name'] = '';
         }
+
         return $input;
     }
 
@@ -156,6 +157,7 @@ function get_clean_recipients_list(
                         'name' => '',
                     ];
                 }
+
                 unset($item);
             } else { // hashmap of one recipient
                 $data = [unformat_email($data)];
@@ -197,6 +199,7 @@ function get_strict_email_list(
         if (strpos($email, '<') !== false) {
             $email = preg_replace('/.*<(.*)>.*/i', '$1', $email);
         }
+
         $result[] = trim($email);
     }
 
@@ -319,6 +322,7 @@ function switch_lang_back()
             $lang_info = $switch_lang['language'][$language]['lang_info'];
             $lang = $switch_lang['language'][$language]['lang'];
         }
+
         $user['language'] = $language;
     }
 }
@@ -350,6 +354,7 @@ function pwg_mail_notification_admins(
         if (is_array($subject)) {
             $subject = l10n_args($subject);
         }
+
         if (is_array($content)) {
             $content = l10n_args($content);
         }
@@ -496,7 +501,7 @@ SELECT DISTINCT language
     AND ' . $conf['user_fields']['email'] . ' <> ""';
     if (! empty($args['language_selected'])) {
         $query .= '
-    AND language = \'' . $args['language_selected'] . '\'';
+    AND language = \'' . $args['language_selected'] . "'";
     }
 
     $query .= '
@@ -629,6 +634,7 @@ function pwg_mail(
     } else {
         $from = unformat_email($args['from']);
     }
+
     $mail->setFrom($from['email'], $from['name']);
     $mail->addReplyTo($from['email'], $from['name']);
 
@@ -636,6 +642,7 @@ function pwg_mail(
     if (empty($args['subject'])) {
         $args['subject'] = 'Piwigo';
     }
+
     $args['subject'] = trim(preg_replace('#[\n\r]+#s', '', $args['subject']));
     $mail->Subject = $args['subject'];
 
@@ -654,6 +661,7 @@ function pwg_mail(
             'name' => '',
         ];
     }
+
     if (! empty($Bcc)) {
         foreach ($Bcc as $recipient) {
             $mail->addBCC($recipient['email'], $recipient['name']);
@@ -677,9 +685,11 @@ function pwg_mail(
             $args['mail_subtitle'] = $matches[2];
         }
     }
+
     if (! isset($args['mail_title'])) {
         $args['mail_title'] = $conf['gallery_title'];
     }
+
     if (! isset($args['mail_subtitle'])) {
         $args['mail_subtitle'] = $args['subject'];
     }
@@ -693,6 +703,7 @@ function pwg_mail(
     if ($conf_mail['mail_allow_html'] and @$args['email_format'] != 'text/plain') {
         $content_type_list[] = 'text/html';
     }
+
     $content_type_list[] = 'text/plain';
 
     $contents = [];
@@ -709,6 +720,7 @@ function pwg_mail(
                 $conf_mail[$cache_key]['theme'] = get_mail_template($content_type);
                 trigger_notify('before_parse_mail_template', $cache_key, $content_type);
             }
+
             $template = &$conf_mail[$cache_key]['theme'];
 
             $template->set_filename('mail_header', 'header.tpl');
@@ -781,11 +793,13 @@ function pwg_mail(
             if (isset($tpl['dirname'])) {
                 $template->set_template_dir($tpl['dirname'] . '/' . $content_type);
             }
+
             if ($template->smarty->templateExists($tpl['filename'] . '.tpl')) {
                 $template->set_filename($tpl['filename'], $tpl['filename'] . '.tpl');
                 if (! empty($tpl['assign'])) {
                     $template->assign($tpl['assign']);
                 }
+
                 $template->assign('CONTENT', $mail_content);
                 $contents[$content_type] .= $template->parse($tpl['filename'], true);
             } else {
@@ -851,6 +865,7 @@ function pwg_mail(
         if (! $ret and (! ini_get('display_errors') or is_admin())) {
             trigger_error('Mailer Error: ' . $mail->ErrorInfo, E_USER_WARNING);
         }
+
         if ($conf['debug_mail']) {
             pwg_send_mail_test($ret, $mail, $args);
         }
@@ -925,6 +940,7 @@ function pwg_send_mail_test(
         if (! $success) {
             fwrite($file, 'ERROR: ' . $mail->ErrorInfo . "\n\n");
         }
+
         fwrite($file, $mail->getSentMIMEMessage());
         fclose($file);
     }

@@ -56,6 +56,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             $this->offset++;
             $this->template_data[$this->index] = null;
         }
+
         $key = $this->get_key($template);
         $this->template_data[$this->index][$key]['start_template_time'] = microtime(true);
     }
@@ -89,10 +90,11 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             if (! isset($this->template_data[$this->index][$key])) {
                 if (isset($_is_stringy[$template->source->type])) {
                     $this->template_data[$this->index][$key]['name'] =
-                        '\'' . substr($template->source->name, 0, 25) . '...\'';
+                        "'" . substr($template->source->name, 0, 25) . "...'";
                 } else {
                     $this->template_data[$this->index][$key]['name'] = $template->source->filepath;
                 }
+
                 $this->template_data[$this->index][$key]['compile_time'] = 0;
                 $this->template_data[$this->index][$key]['render_time'] = 0;
                 $this->template_data[$this->index][$key]['cache_time'] = 0;
@@ -101,8 +103,10 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             if (isset($this->ignore_uid[$template->source->uid])) {
                 return;
             }
+
             $key = $this->get_key($template);
         }
+
         $this->template_data[$this->index][$key]['start_time'] = microtime(true);
     }
 
@@ -118,8 +122,10 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             if (isset($this->ignore_uid[$template->source->uid])) {
                 return;
             }
+
             $key = $this->get_key($template);
         }
+
         $this->template_data[$this->index][$key]['compile_time'] +=
             microtime(true) - $this->template_data[$this->index][$key]['start_time'];
     }
@@ -204,6 +210,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             $savedIndex = $this->index;
             $this->index = 9999;
         }
+
         $smarty = $obj->_getSmartyObj();
         // create fresh instance of smarty for displaying the debug console
         // to avoid problems if the application did overload the Smarty class
@@ -245,11 +252,13 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         if ($obj->_isTplObj()) {
             $_template->assign('template_name', $obj->source->type . ':' . $obj->source->name);
         }
+
         if ($obj->_objType === 1 || $full) {
             $_template->assign('template_data', $this->template_data[$this->index]);
         } else {
             $_template->assign('template_data', null);
         }
+
         $_template->assign('assigned_vars', $_assigned_vars);
         $_template->assign('config_vars', $_config_vars);
         $_template->assign('execution_time', microtime(true) - $smarty->start_time);
@@ -259,6 +268,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         if (isset($full)) {
             $this->index--;
         }
+
         if (! $full) {
             $this->index = $savedIndex;
         }
@@ -285,6 +295,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                 $config_vars[$key]['scope'] = 'Smarty object';
             }
         }
+
         $tpl_vars = [];
         foreach ($obj->tpl_vars as $key => $var) {
             foreach ($var as $varkey => $varvalue) {
@@ -302,6 +313,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                     }
                 }
             }
+
             if ($obj->_isTplObj()) {
                 $tpl_vars[$key]['scope'] = $obj->source->type . ':' . $obj->source->name;
             } elseif ($obj->_isDataObj()) {
@@ -310,6 +322,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                 $tpl_vars[$key]['scope'] = 'Smarty object';
             }
         }
+
         if (isset($obj->parent)) {
             $parent = $this->get_debug_vars($obj->parent);
             foreach ($parent->tpl_vars as $name => $pvar) {
@@ -317,12 +330,14 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                     $tpl_vars[$name]['scope'] = $pvar['scope'];
                 }
             }
+
             $tpl_vars = array_merge($parent->tpl_vars, $tpl_vars);
             foreach ($parent->config_vars as $name => $pvar) {
                 if (isset($config_vars[$name]) && $config_vars[$name]['value'] === $pvar['value']) {
                     $config_vars[$name]['scope'] = $pvar['scope'];
                 }
             }
+
             $config_vars = array_merge($parent->config_vars, $config_vars);
         } else {
             foreach (Smarty::$global_tpl_vars as $key => $var) {
@@ -342,10 +357,12 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                             }
                         }
                     }
+
                     $tpl_vars[$key]['scope'] = 'Global';
                 }
             }
         }
+
         return (object) [
             'tpl_vars' => $tpl_vars,
             'config_vars' => $config_vars,
@@ -361,6 +378,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         if ($template->source->uid === '') {
             $template->source->filepath;
         }
+
         $this->ignore_uid[$template->source->uid] = true;
     }
 
@@ -374,6 +392,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         } else {
             $_query_string = '';
         }
+
         if (strpos($_query_string, $smarty->smarty_debug_id) !== false) {
             if (strpos($_query_string, $smarty->smarty_debug_id . '=on') !== false) {
                 // enable debugging for this browser session
@@ -412,16 +431,19 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         if ($template->source->uid === '') {
             $template->source->filepath;
         }
+
         $key = $template->source->uid;
         if (isset($this->template_data[$this->index][$key])) {
             return $key;
         }
+
         if (isset($_is_stringy[$template->source->type])) {
             $this->template_data[$this->index][$key]['name'] =
-                '\'' . substr($template->source->name, 0, 25) . '...\'';
+                "'" . substr($template->source->name, 0, 25) . "...'";
         } else {
             $this->template_data[$this->index][$key]['name'] = $template->source->filepath;
         }
+
         $this->template_data[$this->index][$key]['compile_time'] = 0;
         $this->template_data[$this->index][$key]['render_time'] = 0;
         $this->template_data[$this->index][$key]['cache_time'] = 0;

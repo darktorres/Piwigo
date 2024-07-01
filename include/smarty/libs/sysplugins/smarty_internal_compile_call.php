@@ -62,6 +62,7 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
             // output will be stored in a smarty variable instead of being displayed
             $_assign = $_attr['assign'];
         }
+
         //$_name = trim($_attr['name'], "''");
         $_name = $_attr['name'];
         unset($_attr['name'], $_attr['assign'], $_attr['nocache']);
@@ -71,14 +72,16 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
         } else {
             $_nocache = 'false';
         }
+
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             if (is_int($_key)) {
-                $_paramsArray[] = "{$_key}=>{$_value}";
+                $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
             } else {
-                $_paramsArray[] = "'{$_key}'=>{$_value}";
+                $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
             }
         }
+
         $_params = 'array(' . implode(',', $_paramsArray) . ')';
         //$compiler->suppressNocacheProcessing = true;
         // was there an assign attribute
@@ -89,6 +92,7 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
             $_output =
                 "<?php \$_smarty_tpl->smarty->ext->_tplFunction->callTemplateFunction(\$_smarty_tpl, {$_name}, {$_params}, {$_nocache});?>\n";
         }
+
         return $_output;
     }
 }

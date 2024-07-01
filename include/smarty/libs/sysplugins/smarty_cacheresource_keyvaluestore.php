@@ -76,6 +76,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         ) {
             return;
         }
+
         $cached->content = $content;
         $cached->timestamp = (int) $timestamp;
         $cached->exists = ! ! $cached->timestamp;
@@ -95,9 +96,10 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         Smarty_Template_Cached $cached = null,
         $update = false
     ) {
-        if (! $cached) {
+        if ($cached === null) {
             $cached = $_smarty_tpl->cached;
         }
+
         $content = $cached->content ? $cached->content : null;
         $timestamp = $cached->timestamp ? $cached->timestamp : null;
         if ($content === null || ! $timestamp) {
@@ -114,10 +116,12 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
                 return false;
             }
         }
+
         if (isset($content)) {
             eval('?>' . $content);
             return true;
         }
+
         return false;
     }
 
@@ -165,9 +169,11 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
                 return false;
             }
         }
+
         if (isset($content)) {
             return $content;
         }
+
         return false;
     }
 
@@ -189,6 +195,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         if (! $this->purge()) {
             $this->invalidate(null);
         }
+
         return -1;
     }
 
@@ -293,6 +300,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
                 return $source->uid;
             }
         }
+
         return '';
     }
 
@@ -310,6 +318,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         if (! $string) {
             return '';
         }
+
         return preg_replace('#[^\w\|]+#S', '_', $string);
     }
 
@@ -346,6 +355,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
                 $content = null;
             }
         }
+
         return ! ! $content;
     }
 
@@ -421,6 +431,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
                 }
             }
         }
+
         $this->write([
             $key => $now,
         ]);
@@ -448,6 +459,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         if (false && ! $cid) {
             return 0;
         }
+
         // abort if there are no InvalidationKeys to check
         if (! ($_cid = $this->listInvalidationKeys(
             $cid,
@@ -458,10 +470,12 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         ))) {
             return 0;
         }
+
         // there are no InValidationKeys
         if (! ($values = $this->read($_cid))) {
             return 0;
         }
+
         // make sure we're dealing with floats
         $values = array_map('floatval', $values);
         return max($values);
@@ -488,20 +502,24 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         $resource_uid = null
     ) {
         $t = ['IVK#ALL'];
-        $_name = $_compile = '#';
+        $_name = '#';
+        $_compile = '#';
         if ($resource_name) {
             $_name .= $resource_uid . '#' . $this->sanitize($resource_name);
             $t[] = 'IVK#TEMPLATE' . $_name;
         }
+
         if ($compile_id) {
             $_compile .= $this->sanitize($compile_id);
             $t[] = 'IVK#COMPILE' . $_compile;
         }
+
         $_name .= '#';
         $cid = trim((string) $cache_id, '|');
         if (! $cid) {
             return $t;
         }
+
         $i = 0;
         while (true) {
             // determine next delimiter position
@@ -513,6 +531,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
                 $t[] = 'IVK#CID' . $_name . $_compile;
                 break;
             }
+
             $part = substr($cid, 0, $i);
             // add slice to list
             $t[] = 'IVK#CACHE#' . $part;
@@ -520,6 +539,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
             // skip past delimiter position
             $i++;
         }
+
         return $t;
     }
 

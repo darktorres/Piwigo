@@ -54,6 +54,7 @@ if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
     if ($is_remote) {
         fatal_error('remote sites not supported');
     }
+
     $url = preg_replace('/[\/]*$/', '', $_POST['galleries_url']);
     $url .= '/';
     if (! (strpos($url, '.') === 0)) {
@@ -70,6 +71,7 @@ SELECT COUNT(id) AS count
     if ($row['count'] > 0) {
         $page['errors'][] = l10n('This site already exists') . ' [' . $url . ']';
     }
+
     if (count($page['errors']) == 0) {
         if (! file_exists($url)) {
             $page['errors'][] = l10n('Directory does not exist') . ' [' . $url . ']';
@@ -96,6 +98,7 @@ if (isset($_GET['site']) and is_numeric(
 )) {
     $page['site'] = $_GET['site'];
 }
+
 if (isset($_GET['action']) and isset($page['site'])) {
     $query = '
 SELECT galleries_url

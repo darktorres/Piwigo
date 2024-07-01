@@ -261,12 +261,14 @@ class SMTP
 
             return false;
         }
+
         if (empty($port)) {
             $port = self::DEFAULT_PORT;
         }
+
         //Connect to the SMTP server
         $this->edebug(
-            "Connection: opening to {$host}:{$port}, timeout={$timeout}, options=" .
+            sprintf('Connection: opening to %s:%s, timeout=%d, options=', $host, $port, $timeout) .
             (count($options) > 0 ? var_export($options, true) : 'array()'),
             self::DEBUG_CONNECTION
         );
@@ -287,12 +289,14 @@ class SMTP
         if ($responseCode === 220) {
             return true;
         }
+
         //Anything other than a 220 response means something went wrong
         //RFC 5321 says the server will wait for us to send a QUIT in response to a 554 error
         //https://tools.ietf.org/html/rfc5321#section-3.1
         if ($responseCode === 554) {
             $this->quit();
         }
+
         //This will handle 421 responses which may not wait for a QUIT (e.g. if the server is being shut down)
         $this->edebug(
             'Connection: closing due to error',
@@ -403,28 +407,34 @@ class SMTP
                         break;
                     }
                 }
+
                 if (empty($authtype)) {
                     $this->setError('No supported authentication methods found');
 
                     return false;
                 }
+
                 $this->edebug('Auth method selected: ' . $authtype, self::DEBUG_LOWLEVEL);
             }
 
             if (! in_array($authtype, $this->server_caps['AUTH'], true)) {
-                $this->setError("The requested authentication method \"{$authtype}\" is not supported by the server");
+                $this->setError(
+                    sprintf('The requested authentication method "%s" is not supported by the server', $authtype)
+                );
 
                 return false;
             }
         } elseif (empty($authtype)) {
             $authtype = 'LOGIN';
         }
+
         switch ($authtype) {
             case 'PLAIN':
                 //Start authentication
                 if (! $this->sendCommand('AUTH', 'AUTH PLAIN', 334)) {
                     return false;
                 }
+
                 //Send encoded username and password
                 if (
                     //Format from https://tools.ietf.org/html/rfc4616#section-2
@@ -437,24 +447,29 @@ class SMTP
                 ) {
                     return false;
                 }
+
                 break;
             case 'LOGIN':
                 //Start authentication
                 if (! $this->sendCommand('AUTH', 'AUTH LOGIN', 334)) {
                     return false;
                 }
+
                 if (! $this->sendCommand('Username', base64_encode($username), 334)) {
                     return false;
                 }
+
                 if (! $this->sendCommand('Password', base64_encode($password), 235)) {
                     return false;
                 }
+
                 break;
             case 'CRAM-MD5':
                 //Start authentication
                 if (! $this->sendCommand('AUTH CRAM-MD5', 'AUTH CRAM-MD5', 334)) {
                     return false;
                 }
+
                 //Get the challenge
                 $challenge = base64_decode(substr($this->last_reply, 4));
 
@@ -468,15 +483,17 @@ class SMTP
                 if ($OAuth === null) {
                     return false;
                 }
+
                 $oauth = $OAuth->getOauth64();
 
                 //Start authentication
                 if (! $this->sendCommand('AUTH', 'AUTH XOAUTH2 ' . $oauth, 235)) {
                     return false;
                 }
+
                 break;
             default:
-                $this->setError("Authentication method \"{$authtype}\" is not supported");
+                $this->setError(sprintf('Authentication method "%s" is not supported', $authtype));
 
                 return false;
         }
@@ -581,6 +598,7 @@ class SMTP
             if ($in_headers && $line === '') {
                 $in_headers = false;
             }
+
             //Break this line up into several smaller lines if it's too long
             //Micro-optimisation: isset($str[$len]) is faster than (strlen($str) > $len),
             while (isset($line[self::MAX_LINE_LENGTH])) {
@@ -602,11 +620,13 @@ class SMTP
                     //Move along by the amount we dealt with
                     $line = substr($line, $pos + 1);
                 }
+
                 //If processing headers add a LWSP-char to the front of new line RFC822 section 3.1.1
                 if ($in_headers) {
                     $line = "\t" . $line;
                 }
             }
+
             $lines_out[] = $line;
 
             //Send the lines to the server
@@ -616,6 +636,7 @@ class SMTP
                 if (! empty($line_out) && $line_out[0] === '.') {
                     $line_out = '.' . $line_out;
                 }
+
                 $this->client_send($line_out . static::LE, 'DATA');
             }
         }
@@ -776,7 +797,7 @@ class SMTP
     public function sendAndMail(
         $from
     ) {
-        return $this->sendCommand('SAML', "SAML FROM:{$from}", 250);
+        return $this->sendCommand('SAML', 'SAML FROM:' . $from, 250);
     }
 
     /**
@@ -789,7 +810,7 @@ class SMTP
     public function verify(
         $name
     ) {
-        return $this->sendCommand('VRFY', "VRFY {$name}", [250, 251]);
+        return $this->sendCommand('VRFY', 'VRFY ' . $name, [250, 251]);
     }
 
     /**
@@ -842,6 +863,7 @@ class SMTP
         } else {
             $this->edebug('CLIENT -> SERVER: ' . $data, self::DEBUG_CLIENT);
         }
+
         set_error_handler([$this, 'errorHandler']);
         $result = fwrite($this->smtp_conn, $data);
         restore_error_handler();
@@ -899,9 +921,11 @@ class SMTP
             if ($name === 'HELO') {
                 return $this->server_caps['EHLO'];
             }
+
             if ($name === 'EHLO' || array_key_exists('EHLO', $this->server_caps)) {
                 return false;
             }
+
             $this->setError('HELO handshake was used; No information about server extensions available');
 
             return;
@@ -1033,12 +1057,14 @@ class SMTP
         if ($level > $this->do_debug) {
             return;
         }
+
         //Is this a PSR-3 logger?
         if ($this->Debugoutput instanceof \Psr\Log\LoggerInterface) {
             $this->Debugoutput->debug($str);
 
             return;
         }
+
         //Avoid clash with built-in function names
         if (is_callable($this->Debugoutput) && ! in_array(
             $this->Debugoutput,
@@ -1048,6 +1074,7 @@ class SMTP
 
             return;
         }
+
         switch ($this->Debugoutput) {
             case 'error_log':
                 //Don't output, just log
@@ -1146,7 +1173,7 @@ class SMTP
             );
             $this->edebug(
                 'SMTP ERROR: ' . $this->error['error']
-                . ": {$errstr} ({$errno})",
+                . sprintf(': %s (%s)', $errstr, $errno),
                 self::DEBUG_CLIENT
             );
 
@@ -1164,6 +1191,7 @@ class SMTP
             ) === false) {
                 @set_time_limit($timeout);
             }
+
             stream_set_timeout($connection, $timeout, 0);
         }
 
@@ -1200,6 +1228,7 @@ class SMTP
         if (strlen($key) > $bytelen) {
             $key = pack('H*', md5($key));
         }
+
         $key = str_pad($key, $bytelen, chr(0x00));
         $ipad = str_pad('', $bytelen, chr(0x36));
         $opad = str_pad('', $bytelen, chr(0x5c));
@@ -1253,6 +1282,7 @@ class SMTP
             if (empty($s)) {
                 continue;
             }
+
             $fields = explode(' ', $s);
             if (! empty($fields)) {
                 if (! $n) {
@@ -1268,11 +1298,13 @@ class SMTP
                             if (! is_array($fields)) {
                                 $fields = [];
                             }
+
                             break;
                         default:
                             $fields = true;
                     }
                 }
+
                 $this->server_caps[$name] = $fields;
             }
         }
@@ -1293,19 +1325,21 @@ class SMTP
         $expect
     ) {
         if (! $this->connected()) {
-            $this->setError("Called {$command} without being connected");
+            $this->setError(sprintf('Called %s without being connected', $command));
 
             return false;
         }
+
         //Reject line breaks in all commands
         if ((strpos($commandstring, "\n") !== false) || (strpos(
             $commandstring,
             "\r"
         ) !== false)) {
-            $this->setError("Command '{$command}' contained line breaks");
+            $this->setError(sprintf("Command '%s' contained line breaks", $command));
 
             return false;
         }
+
         $this->client_send($commandstring . static::LE, $command);
 
         $this->last_reply = $this->get_lines();
@@ -1316,7 +1350,7 @@ class SMTP
             $code_ex = (count($matches) > 2 ? $matches[2] : null);
             //Cut off error code from each response line
             $detail = preg_replace(
-                "/{$code}[ -]" .
+                sprintf('/%d[ -]', $code) .
                 ($code_ex ? str_replace('.', '\\.', $code_ex) . ' ' : '') . '/m',
                 '',
                 $this->last_reply
@@ -1332,7 +1366,7 @@ class SMTP
 
         if (! in_array($code, (array) $expect, true)) {
             $this->setError(
-                "{$command} command failed",
+                $command . ' command failed',
                 $detail,
                 $code,
                 $code_ex
@@ -1365,12 +1399,14 @@ class SMTP
         if (! is_resource($this->smtp_conn)) {
             return '';
         }
+
         $data = '';
         $endtime = 0;
         stream_set_timeout($this->smtp_conn, $this->Timeout);
         if ($this->Timelimit > 0) {
             $endtime = time() + $this->Timelimit;
         }
+
         $selR = [$this->smtp_conn];
         $selW = null;
         while (is_resource($this->smtp_conn) && ! feof($this->smtp_conn)) {
@@ -1429,6 +1465,7 @@ class SMTP
             if (! isset($str[3]) || $str[3] === ' ' || $str[3] === "\r" || $str[3] === "\n") {
                 break;
             }
+
             //Timed-out? Log and break
             $info = stream_get_meta_data($this->smtp_conn);
             if ($info['timed_out']) {
@@ -1438,6 +1475,7 @@ class SMTP
                 );
                 break;
             }
+
             //Now check if reads took too long
             if ($endtime && time() > $endtime) {
                 $this->edebug(
@@ -1495,7 +1533,7 @@ class SMTP
             (string) $errno
         );
         $this->edebug(
-            "{$notice} Error #{$errno}: {$errmsg} [{$errfile} line {$errline}]",
+            sprintf('%s Error #%d: %s [%s line %d]', $notice, $errno, $errmsg, $errfile, $errline),
             self::DEBUG_CONNECTION
         );
     }

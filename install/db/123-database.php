@@ -175,7 +175,7 @@ if ($dbconf['upload_form_websize_resize']) {
 
 ImageStdParams::set_and_save($types);
 
-pwg_query('DELETE FROM ' . CONFIG_TABLE . ' WHERE param = \'disabled_derivatives\'');
+pwg_query('DELETE FROM ' . CONFIG_TABLE . " WHERE param = 'disabled_derivatives'");
 clear_derivative_cache();
 
 echo "\n" . $upgrade_description . "\n";

@@ -49,6 +49,7 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
             $_assign = $_attr['assign'];
             unset($_attr['assign']);
         }
+
         // method or property ?
         if (is_callable([$compiler->smarty->registered_objects[$tag][0], $method])) {
             // convert attributes into parameter array string
@@ -56,21 +57,37 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
                 $_paramsArray = [];
                 foreach ($_attr as $_key => $_value) {
                     if (is_int($_key)) {
-                        $_paramsArray[] = "{$_key}=>{$_value}";
+                        $_paramsArray[] = sprintf('%d=>%s', $_key, $_value);
                     } else {
-                        $_paramsArray[] = "'{$_key}'=>{$_value}";
+                        $_paramsArray[] = sprintf("'%s'=>%s", $_key, $_value);
                     }
                 }
+
                 $_params = 'array(' . implode(',', $_paramsArray) . ')';
-                $output = "\$_smarty_tpl->smarty->registered_objects['{$tag}'][0]->{$method}({$_params},\$_smarty_tpl)";
+                $output = sprintf(
+                    '$_smarty_tpl->smarty->registered_objects[\'%s\'][0]->%s(%s,$_smarty_tpl)',
+                    $tag,
+                    $method,
+                    $_params
+                );
             } else {
                 $_params = implode(',', $_attr);
-                $output = "\$_smarty_tpl->smarty->registered_objects['{$tag}'][0]->{$method}({$_params})";
+                $output = sprintf(
+                    '$_smarty_tpl->smarty->registered_objects[\'%s\'][0]->%s(%s)',
+                    $tag,
+                    $method,
+                    $_params
+                );
             }
         } else {
             // object property
-            $output = "\$_smarty_tpl->smarty->registered_objects['{$tag}'][0]->{$method}";
+            $output = sprintf(
+                '$_smarty_tpl->smarty->registered_objects[\'%s\'][0]->%s',
+                $tag,
+                $method
+            );
         }
+
         if (! empty($parameter['modifierlist'])) {
             $output = $compiler->compileTag(
                 'private_modifier',
@@ -81,9 +98,11 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
                 ]
             );
         }
+
         if (empty($_assign)) {
             return "<?php echo {$output};?>\n";
         }
+
         return "<?php \$_smarty_tpl->assign({$_assign},{$output});?>\n";
 
     }

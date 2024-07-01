@@ -53,7 +53,7 @@ class check_integrity
         trigger_notify('list_check_integrity', $this);
 
         // Information
-        if (count($this->retrieve_list) > 0) {
+        if ($this->retrieve_list !== []) {
             $header_notes[] = l10n_dec(
                 '%d anomaly has been detected.',
                 '%d anomalies have been detected.',
@@ -77,6 +77,7 @@ class check_integrity
                     } else {
                         $args = [];
                     }
+
                     $this->retrieve_list[$i]['corrected'] = call_user_func_array($c13y['correction_fct'], $args);
 
                     if ($this->retrieve_list[$i]['corrected']) {
@@ -94,6 +95,7 @@ class check_integrity
                     $corrected_count
                 );
             }
+
             if ($not_corrected_count > 0) {
                 $page['errors'][] = l10n_dec(
                     '%d anomaly has not been corrected.',
@@ -126,8 +128,8 @@ class check_integrity
         $ignore_list_changed =
           (
               ($ignore_list_changed) or
-        (count(array_diff($this->ignore_list, $this->build_ignore_list)) > 0) or
-        (count(array_diff($this->build_ignore_list, $this->ignore_list)) > 0)
+        (array_diff($this->ignore_list, $this->build_ignore_list) !== []) or
+        (array_diff($this->build_ignore_list, $this->ignore_list) !== [])
           );
 
         if ($ignore_list_changed) {
@@ -254,9 +256,9 @@ class check_integrity
         $conf_c13y_ignore = [];
         $conf_c13y_ignore['version'] = PHPWG_VERSION;
         $conf_c13y_ignore['list'] = $conf_ignore_list;
-        $query = 'update ' . CONFIG_TABLE . ' set value =\'' . serialize(
+        $query = 'update ' . CONFIG_TABLE . " set value ='" . serialize(
             $conf_c13y_ignore
-        ) . '\'where param = \'c13y_ignore\';';
+        ) . "'where param = 'c13y_ignore';";
         pwg_query($query);
     }
 

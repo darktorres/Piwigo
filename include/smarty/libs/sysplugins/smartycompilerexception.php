@@ -48,6 +48,7 @@ class SmartyCompilerException extends SmartyException
         if ($filename) {
             $this->file = $filename;
         }
+
         if ($line) {
             $this->line = $line;
         }

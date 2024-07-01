@@ -50,15 +50,18 @@ class Smarty_Internal_Runtime_Foreach
                 settype($from, 'array');
             }
         }
+
         if (! isset($total)) {
             $total = empty($from) ? 0 : ($needTotal ? count($from) : 1);
         }
+
         if (isset($tpl->tpl_vars[$item])) {
             $saveVars['item'] = [
                 $item,
                 $tpl->tpl_vars[$item],
             ];
         }
+
         $tpl->tpl_vars[$item] = new Smarty_Variable(null, $tpl->isRenderingCache);
         if ($total === 0) {
             $from = null;
@@ -70,35 +73,44 @@ class Smarty_Internal_Runtime_Foreach
                         $tpl->tpl_vars[$key],
                     ];
                 }
+
                 $tpl->tpl_vars[$key] = new Smarty_Variable(null, $tpl->isRenderingCache);
             }
         }
+
         if ($needTotal) {
             $tpl->tpl_vars[$item]->total = $total;
         }
+
         if ($name) {
-            $namedVar = "__smarty_foreach_{$name}";
+            $namedVar = '__smarty_foreach_' . $name;
             if (isset($tpl->tpl_vars[$namedVar])) {
                 $saveVars['named'] = [
                     $namedVar,
                     $tpl->tpl_vars[$namedVar],
                 ];
             }
+
             $namedProp = [];
             if (isset($properties['total'])) {
                 $namedProp['total'] = $total;
             }
+
             if (isset($properties['iteration'])) {
                 $namedProp['iteration'] = 0;
             }
+
             if (isset($properties['index'])) {
                 $namedProp['index'] = -1;
             }
+
             if (isset($properties['show'])) {
                 $namedProp['show'] = ($total > 0);
             }
+
             $tpl->tpl_vars[$namedVar] = new Smarty_Variable($namedProp);
         }
+
         $this->stack[] = $saveVars;
         return $from;
     }
@@ -127,6 +139,7 @@ class Smarty_Internal_Runtime_Foreach
         } elseif ($value instanceof Traversable) {
             return iterator_count($value);
         }
+
         return count((array) $value);
     }
 
@@ -148,13 +161,16 @@ class Smarty_Internal_Runtime_Foreach
                     $item = &$saveVars['item'];
                     $tpl->tpl_vars[$item[0]]->value = $item[1]->value;
                 }
+
                 if (isset($saveVars['key'])) {
                     $tpl->tpl_vars[$saveVars['key'][0]] = $saveVars['key'][1];
                 }
+
                 if (isset($saveVars['named'])) {
                     $tpl->tpl_vars[$saveVars['named'][0]] = $saveVars['named'][1];
                 }
             }
+
             $levels--;
         }
     }

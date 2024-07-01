@@ -32,6 +32,7 @@ class Smarty_Internal_Method_AssignByRef
                 $data->ext->_updateScope->_updateScope($data, $tpl_var);
             }
         }
+
         return $data;
     }
 }

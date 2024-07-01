@@ -33,6 +33,7 @@ class Smarty_Internal_Runtime_CacheModify
                     ) {
                         $_SERVER['SMARTY_PHPUNIT_HEADERS'][] = '304 Not Modified';
                     }
+
                     break;
                 default:
                     if (/* ^phpunit */
@@ -42,6 +43,7 @@ class Smarty_Internal_Runtime_CacheModify
                     } else {
                         header($_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified');
                     }
+
                     break;
             }
         } else {
@@ -53,11 +55,13 @@ class Smarty_Internal_Runtime_CacheModify
                         $_SERVER['SMARTY_PHPUNIT_HEADERS'][] =
                             'Last-Modified: ' . gmdate('D, d M Y H:i:s', $cached->timestamp) . ' GMT';
                     }
+
                     break;
                 default:
                     header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $cached->timestamp) . ' GMT');
                     break;
             }
+
             echo $content;
         }
     }

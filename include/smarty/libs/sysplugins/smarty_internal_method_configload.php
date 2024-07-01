@@ -100,6 +100,7 @@ class Smarty_Internal_Method_ConfigLoad
                     return;
                 }
             }
+
             if ($tpl->parent->_isTplObj() && ($tagScope || $tpl->parent->scope)) {
                 $mergedScope = $tagScope | $tpl->scope;
                 if ($mergedScope) {
@@ -135,6 +136,7 @@ class Smarty_Internal_Method_ConfigLoad
                 $config_vars[$variable] = array_merge((array) $config_vars[$variable], (array) $value);
             }
         }
+
         // scan sections
         $sections = $tpl->source->config_sections;
         if (! empty($sections)) {
@@ -188,13 +190,16 @@ class Smarty_Internal_Method_ConfigLoad
                 // found it, return it
                 return $_ptr->config_vars[$varName];
             }
+
             // not found, try at parent
             $_ptr = $_ptr->parent;
         }
+
         if ($data->smarty->error_unassigned && $errorEnable) {
             // force a notice
             $x = ${$varName};
         }
+
         return null;
     }
 }

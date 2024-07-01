@@ -50,6 +50,7 @@ class Smarty_Internal_Method_Literals
         if (isset($literals)) {
             $this->set($obj->_getSmartyObj(), (array) $literals);
         }
+
         return $obj;
     }
 
@@ -73,6 +74,7 @@ class Smarty_Internal_Method_Literals
         if (! empty($literals)) {
             $this->set($smarty, (array) $literals);
         }
+
         return $obj;
     }
 
@@ -95,6 +97,7 @@ class Smarty_Internal_Method_Literals
                 '" may not be identical with left or right delimiter'
             );
         }
+
         $smarty->literals = array_merge((array) $smarty->literals, (array) $literals);
     }
 }

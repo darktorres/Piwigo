@@ -112,12 +112,13 @@ class plugins
                 if (empty($errors)) {
                     $query = '
 INSERT INTO ' . PLUGINS_TABLE . ' (id,version)
-  VALUES (\'' . $plugin_id . '\', \'' . $this->fs_plugins[$plugin_id]['version'] . '\')
+  VALUES (\'' . $plugin_id . "', '" . $this->fs_plugins[$plugin_id]['version'] . '\')
 ;';
                     pwg_query($query);
                 } else {
                     $activity_details['result'] = 'error';
                 }
+
                 break;
 
             case 'update':
@@ -171,6 +172,7 @@ UPDATE ' . PLUGINS_TABLE . '
                 } else {
                     $activity_details['result'] = 'error';
                 }
+
                 break;
 
             case 'deactivate':
@@ -232,6 +234,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
 
                     $this->perform_action('uninstall', $plugin_id);
                 }
+
                 if (! isset($this->fs_plugins[$plugin_id])) {
                     break;
                 }
@@ -261,6 +264,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 }
             }
         }
+
         closedir($dir);
     }
 
@@ -290,12 +294,15 @@ DELETE FROM ' . PLUGINS_TABLE . '
             if (preg_match('|Plugin Name:\\s*(.+)|', $plg_data, $val)) {
                 $plugin['name'] = trim($val[1]);
             }
+
             if (preg_match('|Version:\\s*([\\w.-]+)|', $plg_data, $val)) {
                 $plugin['version'] = trim($val[1]);
             }
+
             if (preg_match('|Plugin URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                 $plugin['uri'] = trim($val[1]);
             }
+
             if ($desc = load_language('description.txt', $path . '/', [
                 'return' => true,
             ])) {
@@ -303,12 +310,15 @@ DELETE FROM ' . PLUGINS_TABLE . '
             } elseif (preg_match('|Description:\\s*(.+)|', $plg_data, $val)) {
                 $plugin['description'] = trim($val[1]);
             }
+
             if (preg_match('|Author:\\s*(.+)|', $plg_data, $val)) {
                 $plugin['author'] = trim($val[1]);
             }
+
             if (preg_match('|Author URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                 $plugin['author uri'] = trim($val[1]);
             }
+
             if (preg_match('/Has Settings:\\s*([Tt]rue|[Ww]ebmaster)/', $plg_data, $val)) {
                 if (strtolower($val[1]) == 'webmaster') {
                     global $user;
@@ -320,6 +330,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                     $plugin['hasSettings'] = true;
                 }
             }
+
             if (! empty($plugin['uri']) and strpos($plugin['uri'], 'extension_view.php?eid=')) {
                 list(, $extension) = explode('extension_view.php?eid=', $plugin['uri']);
                 if (is_numeric($extension)) {
@@ -380,6 +391,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 if (get_branch_from_version($pem_versions[$i]['name']) == get_branch_from_version($version)) {
                     $versions_to_check[] = $pem_versions[$i]['id'];
                 }
+
                 $i++;
             }
 
@@ -395,6 +407,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                             $versions_to_check[] = $pem_versions[$i]['id'];
                             $has_found_previous_version = true;
                         }
+
                         $i++;
                     }
                 }
@@ -413,6 +426,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
             //   }
             // }
         }
+
         return $versions_to_check;
     }
 
@@ -457,16 +471,20 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 $get_data['extension_include'] = implode(',', $plugins_to_check);
             }
         }
+
         if (fetchRemote($url, $result, $get_data)) {
             $pem_plugins = @unserialize($result);
             if (! is_array($pem_plugins)) {
                 return false;
             }
+
             foreach ($pem_plugins as $plugin) {
                 $this->server_plugins[$plugin['extension_id']] = $plugin;
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -516,6 +534,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 if (! isset($server_plugins[$plugin['extension_id']])) {
                     $server_plugins[$plugin['extension_id']] = [];
                 }
+
                 $server_plugins[$plugin['extension_id']][] = $plugin['revision_name'];
             }
 
@@ -530,8 +549,10 @@ DELETE FROM ' . PLUGINS_TABLE . '
                     $_SESSION['incompatible_plugins'][$plugin_id] = $fs_plugin['version'];
                 }
             }
+
             return $_SESSION['incompatible_plugins'];
         }
+
         return false;
     }
 
@@ -603,6 +624,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                         } else {
                             $plugin_id = ($root == '.' ? 'extension_' . $dest : basename($root));
                         }
+
                         $extract_path = PHPWG_PLUGINS_PATH . $plugin_id;
                         $logger->debug(__FUNCTION__ . ', $extract_path = ' . $extract_path);
 
@@ -619,6 +641,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                                     break;
                                 }
                             }
+
                             if (file_exists($extract_path . '/obsolete.list')
                               and $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)
                               and ! empty($old_files)) {
@@ -686,6 +709,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 }
             }
         }
+
         return $merged_extensions;
     }
 
@@ -697,6 +721,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
         if ($a['revision_date'] < $b['revision_date']) {
             return 1;
         }
+
         return -1;
     }
 
@@ -711,6 +736,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
         if ($r == 0) {
             return $this->extension_name_compare($a, $b);
         }
+
         return $r;
     }
 
@@ -720,6 +746,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
         if ($r == 0) {
             return name_compare($a, $b);
         }
+
         return $r;
     }
 
@@ -728,6 +755,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
         if ($a['extension_nb_downloads'] < $b['extension_nb_downloads']) {
             return 1;
         }
+
         return -1;
     }
 
@@ -747,6 +775,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 $not_installed[$plugin_id] = $plugin;
             }
         }
+
         $this->fs_plugins = $active_plugins + $inactive_plugins + $not_installed;
     }
 

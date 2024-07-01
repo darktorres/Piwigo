@@ -28,14 +28,21 @@ class Smarty_Internal_Method_MustCompile
     ) {
         if (! $_template->source->exists) {
             if ($_template->_isSubTpl()) {
-                $parent_resource = " in '{$_template->parent->template_resource}'";
+                $parent_resource = sprintf(" in '%s'", $_template->parent->template_resource);
             } else {
                 $parent_resource = '';
             }
+
             throw new SmartyException(
-                "Unable to load template {$_template->source->type} '{$_template->source->name}'{$parent_resource}"
+                sprintf(
+                    "Unable to load template %s '%s'%s",
+                    $_template->source->type,
+                    $_template->source->name,
+                    $parent_resource
+                )
             );
         }
+
         if ($_template->mustCompile === null) {
             $_template->mustCompile = (! $_template->source->handler->uncompiled &&
                                        ($_template->smarty->force_compile || $_template->source->handler->recompiled ||
@@ -43,6 +50,7 @@ class Smarty_Internal_Method_MustCompile
                                                                           $_template->compiled->getTimeStamp() <
                                                                           $_template->source->getTimeStamp())));
         }
+
         return $_template->mustCompile;
     }
 }

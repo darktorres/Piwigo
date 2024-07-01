@@ -147,7 +147,7 @@ function check_password_reset_key(
 SELECT
   ' . $conf['user_fields']['id'] . ' AS id
   FROM ' . USERS_TABLE . '
-  WHERE ' . $conf['user_fields']['email'] . ' = \'' . pwg_db_real_escape_string($email) . '\'
+  WHERE ' . $conf['user_fields']['email'] . " = '" . pwg_db_real_escape_string($email) . '\'
 ;';
     $user_ids = query2array($query, null, 'id');
 

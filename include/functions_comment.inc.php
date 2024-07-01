@@ -55,6 +55,7 @@ function user_comment_check(
         $_POST['cr'][] = 'links';
         return $my_action;
     }
+
     return $action;
 }
 
@@ -95,8 +96,10 @@ function insert_user_comment(
                 $infos[] = l10n('Username is mandatory');
                 $comment_action = 'reject';
             }
+
             $comm['author'] = 'guest';
         }
+
         $comm['author_id'] = $conf['guest_id'];
         // if a guest try to use the name of an already existing user, he must be
         // rejected
@@ -135,6 +138,7 @@ SELECT COUNT(*) AS user_exists
             if (! preg_match('/^https?/i', $comm['website_url'])) {
                 $comm['website_url'] = 'http://' . $comm['website_url'];
             }
+
             if (! url_check_format($comm['website_url'])) {
                 $infos[] = l10n('Your website URL is invalid');
                 $comment_action = 'reject';
@@ -160,6 +164,7 @@ SELECT COUNT(*) AS user_exists
     if (count($ip_components) > 3) {
         array_pop($ip_components);
     }
+
     $anonymous_id = implode('.', $ip_components);
 
     if ($comment_action != 'reject' and $conf['anti-flood_time'] > 0 and ! is_admin()) { // anti-flood system
@@ -173,6 +178,7 @@ SELECT count(1) FROM ' . COMMENTS_TABLE . '
             $query .= '
       AND anonymous_id LIKE "' . $anonymous_id . '.%"';
         }
+
         $query .= '
 ;';
 
@@ -204,8 +210,8 @@ INSERT INTO ' . COMMENTS_TABLE . '
     \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
     ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . ',
     ' . $comm['image_id'] . ',
-    ' . (! empty($comm['website_url']) ? '\'' . $comm['website_url'] . '\'' : 'NULL') . ',
-    ' . (! empty($comm['email']) ? '\'' . $comm['email'] . '\'' : 'NULL') . '
+    ' . (! empty($comm['website_url']) ? "'" . $comm['website_url'] . "'" : 'NULL') . ',
+    ' . (! empty($comm['email']) ? "'" . $comm['email'] . "'" : 'NULL') . '
   )
 ';
         pwg_query($query);
@@ -254,7 +260,7 @@ function delete_user_comment(
 ) {
     $user_where_clause = '';
     if (! is_admin()) {
-        $user_where_clause = '   AND author_id = \'' . $GLOBALS['user']['id'] . '\'';
+        $user_where_clause = "   AND author_id = '" . $GLOBALS['user']['id'] . "'";
     }
 
     if (is_array($comment_id)) {
@@ -332,6 +338,7 @@ function update_user_comment(
         if (! preg_match('/^https?/i', $comment['website_url'])) {
             $comment['website_url'] = 'http://' . $comment['website_url'];
         }
+
         if (! url_check_format($comment['website_url'])) {
             $page['errors'][] = l10n('Your website URL is invalid');
             $comment_action = 'reject';
@@ -341,14 +348,14 @@ function update_user_comment(
     if ($comment_action != 'reject') {
         $user_where_clause = '';
         if (! is_admin()) {
-            $user_where_clause = '   AND author_id = \'' .
-    $GLOBALS['user']['id'] . '\'';
+            $user_where_clause = "   AND author_id = '" .
+    $GLOBALS['user']['id'] . "'";
         }
 
         $query = '
 UPDATE ' . COMMENTS_TABLE . '
   SET content = \'' . $comment['content'] . '\',
-      website_url = ' . (! empty($comment['website_url']) ? '\'' . $comment['website_url'] . '\'' : 'NULL') . ',
+      website_url = ' . (! empty($comment['website_url']) ? "'" . $comment['website_url'] . "'" : 'NULL') . ',
       validated = \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
       validation_date = ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . '
   WHERE id = ' . $comment['comment_id'] .

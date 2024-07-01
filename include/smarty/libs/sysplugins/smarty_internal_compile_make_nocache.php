@@ -59,6 +59,7 @@ class Smarty_Internal_Compile_Make_Nocache extends Smarty_Internal_CompileBase
             $compiler->suppressNocacheProcessing = true;
             return $output;
         }
+
         return true;
 
     }
