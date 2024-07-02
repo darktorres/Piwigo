@@ -224,7 +224,7 @@ function ws_tags_add(
     array $params,
     &$service
 ) {
-    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     $creation_output = create_tag($params['name']);
 
@@ -251,7 +251,7 @@ WHERE id = ' . $creation_output['id'] . ';';
 
 function ws_tags_delete(array $params, &$service)
 {
-    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
@@ -284,7 +284,7 @@ SELECT COUNT(*)
 
 function ws_tags_rename(array $params, &$service)
 {
-    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
@@ -343,7 +343,7 @@ SELECT name
 function ws_tags_duplicate(array $params, &$service)
 {
 
-    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
@@ -491,7 +491,7 @@ SELECT image_id
         ]);
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
     delete_tags($merge_tag);
 

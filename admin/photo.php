@@ -38,7 +38,7 @@ SELECT *
 // | Tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-require_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
 
 $page['tab'] = 'properties';
 

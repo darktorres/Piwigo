@@ -43,7 +43,7 @@ if ($conf['question_mark_in_urls'] == false && isset($_SERVER['PATH_INFO']) && !
         break;
     }
 
-    // the $_GET keys are not protected in include/common.inc.php, only the values
+    // the $_GET keys are not protected in inc/common.inc.php, only the values
     $rewritten = pwg_db_real_escape_string(
         $rewritten
     );
@@ -298,7 +298,7 @@ SELECT DISTINCT(image_id)
         'items' => $items,
     ]);
 } elseif ($page['section'] == 'search') {
-    require_once(PHPWG_ROOT_PATH . 'include/functions_search.inc.php');
+    require_once(PHPWG_ROOT_PATH . 'inc/functions_search.inc.php');
 
     $search_result = get_search_results($page['search'], @$page['super_order_by']);
     //save the details of the query search
@@ -488,7 +488,7 @@ SELECT DISTINCT(id)
 // +-----------------------------------------------------------------------+
 if (isset($page['chronology_field'])) {
     unset($page['is_homepage']);
-    require_once(PHPWG_ROOT_PATH . 'include/functions_calendar.inc.php');
+    require_once(PHPWG_ROOT_PATH . 'inc/functions_calendar.inc.php');
     initialize_calendar();
 }
 

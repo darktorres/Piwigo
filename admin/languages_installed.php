@@ -19,7 +19,7 @@ if (! is_webmaster()) {
     );
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+require_once(PHPWG_ROOT_PATH . 'admin/inc/languages.class.php');
 
 $template->set_filenames([
     'languages' => 'languages_installed.tpl',

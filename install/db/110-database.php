@@ -13,7 +13,7 @@ defined(
 
 $upgrade_description = 'Move "gallery_url" parameter from config table to local configuration file';
 
-require_once(PHPWG_ROOT_PATH . 'include/constants.php');
+require_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 
 if (! isset($page)) {
     $page = [];

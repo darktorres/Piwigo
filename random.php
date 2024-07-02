@@ -12,7 +12,7 @@
 // +-----------------------------------------------------------------------+
 
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
