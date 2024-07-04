@@ -18,7 +18,7 @@ function value_display_fromto(): string
     $file = PHPWG_ROOT_PATH . 'local/config/config.inc.php';
     if (file_exists($file)) {
         $conf = [];
-        include($file);
+        require($file);
         if (isset($conf['display_fromto']) && $conf['display_fromto']) {
             return 'true';
         }

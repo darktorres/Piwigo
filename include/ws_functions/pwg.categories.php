@@ -603,7 +603,7 @@ function ws_categories_add(
     array $params,
     &$service
 ) {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     global $conf;
 
@@ -716,7 +716,7 @@ SELECT id
     }
 
     // include function to set the global rank
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     save_categories_order($order_new);
 }
 
@@ -755,7 +755,7 @@ SELECT *
         }
 
         if ($params['status'] != $category['status']) {
-            include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+            require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
             set_cat_status([$params['category_id']], $params['status']);
         }
     }
@@ -771,7 +771,7 @@ SELECT *
     }
 
     if (! empty($params['visible']) && $params['visible'] != $category['visible']) {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+        require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
         set_cat_visible([$params['category_id']], $params['visible']);
     }
 
@@ -954,7 +954,7 @@ SELECT
         return new PwgError(401, 'not permitted');
     }
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     set_random_representant([$params['category_id']]);
 
@@ -1029,7 +1029,7 @@ SELECT id
         return;
     }
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     delete_categories($category_ids, $params['photo_deletion_mode']);
     update_global_rank();
     invalidate_user_cache();
@@ -1133,7 +1133,7 @@ SELECT id, name, dir
     $page['infos'] = [];
     $page['errors'] = [];
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     move_categories($category_ids, $params['parent']);
     invalidate_user_cache();
 

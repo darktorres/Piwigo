@@ -78,7 +78,7 @@ for ($upgrade_id = 135; $upgrade_id <= 139; $upgrade_id++) { // TODO change on e
     // include & execute upgrade script. Each upgrade script must contain
     // $upgrade_description variable which describe briefly what the upgrade
     // script does.
-    include(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
+    require(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
 
     // notify upgrade (TODO change on each release)
     $query = '
@@ -94,4 +94,4 @@ echo '</pre>';
 ob_end_clean();
 
 // now we upgrade from 2.6.0
-include_once(PHPWG_ROOT_PATH . 'install/upgrade_2.6.0.php');
+require_once(PHPWG_ROOT_PATH . 'install/upgrade_2.6.0.php');

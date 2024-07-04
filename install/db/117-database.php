@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'fill empty images name with filename';
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+require_once(PHPWG_ROOT_PATH . 'include/constants.php');
 
 // +-----------------------------------------------------------------------+
 // |                            Upgrade content                            |

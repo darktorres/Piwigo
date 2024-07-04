@@ -72,7 +72,7 @@ for ($upgrade_id = 61; $upgrade_id <= 79; $upgrade_id++) {
     // include & execute upgrade script. Each upgrade script must contain
     // $upgrade_description variable which describe briefly what the upgrade
     // script does.
-    include(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
+    require(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
 
     // notify upgrade
     $query = '
@@ -88,4 +88,4 @@ echo '</pre>';
 ob_end_clean();
 
 // now we upgrade from 2.0.0
-include_once(PHPWG_ROOT_PATH . 'install/upgrade_2.0.0.php');
+require_once(PHPWG_ROOT_PATH . 'install/upgrade_2.0.0.php');

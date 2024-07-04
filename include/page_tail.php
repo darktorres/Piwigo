@@ -42,8 +42,8 @@ if (! is_a_guest()) {
 //     }
 
 //     if ($check_for_updates) {
-//         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-//         include_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
+//         require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+//         require_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
 //         $updates = new updates();
 //         $updates->notify_piwigo_new_versions();
 //     }

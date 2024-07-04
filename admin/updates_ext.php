@@ -23,7 +23,7 @@ if (! is_webmaster()) {
     );
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
+require_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
 $autoupdate = new updates($page['page']);
 
 $show_reset = false;

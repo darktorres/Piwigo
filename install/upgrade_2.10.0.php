@@ -79,7 +79,7 @@ for ($upgrade_id = 157; $upgrade_id <= 159; $upgrade_id++) { // TODO change on e
     // $upgrade_description variable which describe briefly what the upgrade
     // script does.
     $up_start = get_moment();
-    include(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
+    require(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
 
     // notify upgrade (TODO change on each release)
     $query = '
@@ -98,4 +98,4 @@ echo '</pre>';
 ob_end_clean();
 
 // now we upgrade from 11.0.0
-include_once(PHPWG_ROOT_PATH . 'install/upgrade_11.0.0.php');
+require_once(PHPWG_ROOT_PATH . 'install/upgrade_11.0.0.php');

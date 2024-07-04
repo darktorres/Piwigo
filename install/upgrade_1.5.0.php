@@ -294,7 +294,7 @@ $params = [
 $conf_save = $conf;
 unset($conf);
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
 
 if (isset($conf['gallery_url'])) {
@@ -423,4 +423,4 @@ ALTER TABLE ' . PREFIX_TABLE . 'users
 }
 
 // now we upgrade from 1.6.0 to 1.6.2
-include_once(PHPWG_ROOT_PATH . 'install/upgrade_1.6.0.php');
+require_once(PHPWG_ROOT_PATH . 'install/upgrade_1.6.0.php');

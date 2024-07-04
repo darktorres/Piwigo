@@ -11,8 +11,8 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
+require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -28,7 +28,7 @@ if (isset($_GET['action'])) {
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 $my_base_url = get_root_url() . 'admin.php?page=';
 
 if (isset($_GET['tab'])) {
@@ -43,7 +43,7 @@ $tabsheet->set_id('maintenance');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
-include(PHPWG_ROOT_PATH . 'admin/maintenance_' . $page['tab'] . '.php');
+require(PHPWG_ROOT_PATH . 'admin/maintenance_' . $page['tab'] . '.php');
 
 $template->assign(
     [

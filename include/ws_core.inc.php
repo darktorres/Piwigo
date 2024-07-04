@@ -575,7 +575,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
 
         if (! $is_error) {
             if (! empty($method['include'])) {
-                include_once($method['include']);
+                require_once($method['include']);
             }
 
             $result = call_user_func_array($method['callback'], [$params, &$this]);

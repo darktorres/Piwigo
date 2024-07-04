@@ -217,7 +217,7 @@ function ws_getCacheSize(
         }
     }
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     // Multiples sizes size
     $path_msizes = $conf['data_location'] . 'i';
     $msizes = get_cache_size_derivatives($path_msizes);
@@ -327,7 +327,7 @@ DELETE FROM ' . RATE_TABLE . '
 
     $changes = pwg_db_changes();
     if ($changes) {
-        include_once(PHPWG_ROOT_PATH . 'include/functions_rate.inc.php');
+        require_once(PHPWG_ROOT_PATH . 'include/functions_rate.inc.php');
         update_rating_score();
     }
 
@@ -460,7 +460,7 @@ SELECT
         $query .= '
     AND action NOT IN (\'login\', \'logout\')';
     } elseif ($conf['activity_display_connections'] == 'admins_only') {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+        require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
         $query .= '
     AND NOT (action IN (\'login\', \'logout\') AND object_id NOT IN (' . implode(',', get_admins()) . '))';
     }
@@ -617,8 +617,8 @@ function ws_history_search(
     &$service
 ) {
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
 
     global $conf;
 

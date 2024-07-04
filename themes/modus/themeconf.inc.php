@@ -19,12 +19,12 @@ define('MODUS_STR_RECENT_CHILD', "\xe2\x9c\xbb"); //TEARDROP-SPOKED ASTERISK
 if (! empty($_GET['skin']) && ! preg_match('/[^a-zA-Z0-9_-]/', (string) $_GET['skin'])) {
     $conf['modus_theme']['skin'] = $_GET['skin'];
 } else {
-    include_once(__DIR__ . '/functions.inc.php');
+    require_once(__DIR__ . '/functions.inc.php');
     $conf['modus_theme'] = modus_get_default_config();
 }
 
 // we're mainly interested in an override of the colorscheme
-include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
+require(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
 
 $this->assign(
     [
@@ -71,7 +71,7 @@ if (get_device() == 'mobile') {
 $this->smarty->registerFilter('pre', 'modus_smarty_prefilter_wrap');
 function modus_smarty_prefilter_wrap($source)
 {
-    include_once(__DIR__ . '/functions.inc.php');
+    require_once(__DIR__ . '/functions.inc.php');
     return modus_smarty_prefilter($source);
 }
 
@@ -141,13 +141,13 @@ add_event_handler('combinable_preparse', 'modus_combinable_preparse');
 function modus_combinable_preparse($template)
 {
     global $conf, $template;
-    include_once(__DIR__ . '/functions.inc.php');
+    require_once(__DIR__ . '/functions.inc.php');
 
     if (! isset($template->smarty->registered_plugins['modifier']['cssGradient'])) {
         $template->smarty->registerPlugin('modifier', 'cssGradient', 'modus_css_gradient');
     }
 
-    include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
+    require(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
 
     $template->assign([
         'conf' => $conf,

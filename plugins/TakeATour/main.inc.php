@@ -91,9 +91,9 @@ function TAT_tour_setup()
     ); // absolute one due to public pages and $conf['question_mark_in_urls'] = false+$conf['php_extension_in_urls'] = false;
 
     // some tours may need admin functions (like 2_8_0 needs get_orphans)
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
-    include($tour_to_launch . '/config.inc.php');
+    require($tour_to_launch . '/config.inc.php');
     $template->set_filename('TAT_tour_tpl', $TOUR_PATH);
 
     trigger_notify('TAT_before_parse_tour');

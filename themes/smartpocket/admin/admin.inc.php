@@ -2,7 +2,7 @@
 
 // Need upgrade?
 global $conf;
-include(PHPWG_THEMES_PATH . 'smartpocket/admin/upgrade.inc.php');
+require(PHPWG_THEMES_PATH . 'smartpocket/admin/upgrade.inc.php');
 
 load_language('theme.lang', PHPWG_THEMES_PATH . 'smartpocket/');
 
