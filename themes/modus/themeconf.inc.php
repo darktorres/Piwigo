@@ -60,7 +60,7 @@ if (file_exists(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.css')) {
 
 if (! $conf['compiled_template_cache_language']) {
     load_language('theme.lang', __DIR__ . '/');
-    load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
+    load_language('lang', PHPWG_ROOT_PATH . 'local/', [
         'no_fallback' => true,
         'local' => true,
     ]);

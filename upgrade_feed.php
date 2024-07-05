@@ -29,9 +29,7 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
     require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
 
-defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
-
-require(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+require(PHPWG_ROOT_PATH . 'local/config/database.inc.php');
 require(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');

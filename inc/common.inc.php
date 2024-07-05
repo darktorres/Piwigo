@@ -82,10 +82,8 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
     require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
 
-defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
-
-if (file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php')) {
-    require(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php')) {
+    require(PHPWG_ROOT_PATH . 'local/config/database.inc.php');
 }
 
 if (! defined('PHPWG_INSTALLED')) {
@@ -191,7 +189,7 @@ if (is_admin() || (defined('IN_ADMIN') && IN_ADMIN)) {
 }
 
 trigger_notify('loading_lang');
-load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
+load_language('lang', PHPWG_ROOT_PATH . 'local/', [
     'no_fallback' => true,
     'local' => true,
 ]);

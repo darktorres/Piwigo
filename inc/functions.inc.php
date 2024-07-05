@@ -1141,7 +1141,7 @@ function redirect_html(
         $user = build_user($conf['guest_id'], true);
         load_language('common.lang');
         trigger_notify('loading_lang');
-        load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
+        load_language('lang', PHPWG_ROOT_PATH . 'local/', [
             'no_fallback' => true,
             'local' => true,
         ]);

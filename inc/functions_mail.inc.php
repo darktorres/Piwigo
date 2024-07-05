@@ -284,7 +284,7 @@ function switch_lang_to(
         trigger_notify('loading_lang');
         load_language(
             'lang',
-            PHPWG_ROOT_PATH . PWG_LOCAL_DIR,
+            PHPWG_ROOT_PATH . 'local/',
             [
                 'language' => $language,
                 'no_fallback' => true,

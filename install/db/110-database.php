@@ -35,7 +35,7 @@ if (! empty($gallery_url)) {
     // let's try to write it in the local configuration file
     $local_conf = PHPWG_ROOT_PATH . 'local/config/config.inc.php';
     if (isset($conf['local_dir_site'])) {
-        $local_conf = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php';
+        $local_conf = PHPWG_ROOT_PATH . 'local/config/config.inc.php';
     }
 
     $conf_line = '$conf[\'gallery_url\'] = \'' . $gallery_url . "';";

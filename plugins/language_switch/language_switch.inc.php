@@ -88,7 +88,7 @@ UPDATE ' . USER_INFOS_TABLE . '
 
         load_language(
             'lang',
-            PHPWG_ROOT_PATH . PWG_LOCAL_DIR,
+            PHPWG_ROOT_PATH . 'local/',
             [
                 'language' => $user['language'],
                 'no_fallback' => true,

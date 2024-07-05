@@ -376,9 +376,9 @@ switch ($page['section']) {
             }
 
             if (isset($conf['local_dir_site']) && file_exists(
-                PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php'
+                PHPWG_ROOT_PATH . 'local/config/config.inc.php'
             )) {
-                require(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
+                require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
             }
 
             return isset($conf['order_by']) || isset($conf['order_by_inside_category']);
@@ -602,7 +602,7 @@ switch ($page['section']) {
             $watermark_files[] = substr($file, strlen(PHPWG_ROOT_PATH));
         }
 
-        if (($glob = glob(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'watermarks/*.png')) !== false) {
+        if (($glob = glob(PHPWG_ROOT_PATH . 'local/watermarks/*.png')) !== false) {
             foreach ($glob as $file) {
                 $watermark_files[] = substr($file, strlen(PHPWG_ROOT_PATH));
             }

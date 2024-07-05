@@ -110,8 +110,6 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
     require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
 
-defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
-
 require(PHPWG_ROOT_PATH . '/inc/functions.inc.php');
 
 // download database config file if exists
@@ -155,7 +153,7 @@ if (isset($_POST['install'])) {
 $infos = [];
 $errors = [];
 
-$config_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
+$config_file = PHPWG_ROOT_PATH . 'local/config/database.inc.php';
 if (@file_exists($config_file)) {
     require($config_file);
     // Is Piwigo already installed ?

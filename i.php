@@ -33,11 +33,10 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
     require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 }
 
-defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
-if (file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php')) {
-    require(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php')) {
+    require(PHPWG_ROOT_PATH . 'local/config/database.inc.php');
 }
 
 $logger = new \Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
