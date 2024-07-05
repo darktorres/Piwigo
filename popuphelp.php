@@ -20,7 +20,7 @@ use function Piwigo\inc\trigger_change;
 
 define('PHPWG_ROOT_PATH', './');
 define('PWG_HELP', true);
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -34,7 +34,7 @@ $page['meta_robots'] = [
     'noindex' => 1,
     'nofollow' => 1,
 ];
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 
 if (
     isset($_GET['page']) && preg_match('/^[a-z_]*$/', (string) $_GET['page'])
@@ -71,4 +71,4 @@ $template->assign(
 
 $template->pparse('popuphelp');
 
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

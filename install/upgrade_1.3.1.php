@@ -578,4 +578,4 @@ $page['infos'] = array_merge(
 );
 
 // now we upgrade from 1.4.0
-require_once(PHPWG_ROOT_PATH . 'install/upgrade_1.4.0.php');
+require_once(__DIR__ . '/../install/upgrade_1.4.0.php');

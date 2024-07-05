@@ -31,4 +31,4 @@ foreach ($queries as $query) {
 }
 
 // now we upgrade from 1.6.2
-require_once(PHPWG_ROOT_PATH . 'install/upgrade_1.6.2.php');
+require_once(__DIR__ . '/../install/upgrade_1.6.2.php');

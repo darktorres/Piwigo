@@ -31,7 +31,7 @@ use function Piwigo\inc\url_is_remote;
 
 define('PHPWG_ROOT_PATH', './');
 session_cache_limiter('public');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
 
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
@@ -127,7 +127,7 @@ if (! $is_admin_download && pwg_db_num_rows(pwg_query($query)) < 1) {
     do_error(401, 'Access denied');
 }
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions_picture.inc.php');
+require_once(__DIR__ . '/inc/functions_picture.inc.php');
 $file = '';
 switch ($_GET['part']) {
     case 'e':

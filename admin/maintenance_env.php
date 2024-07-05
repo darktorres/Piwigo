@@ -45,7 +45,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -96,7 +96,7 @@ switch ($action) {
 
         images_integrity();
         update_path();
-        require_once(PHPWG_ROOT_PATH . 'inc/functions_rate.inc.php');
+        require_once(__DIR__ . '/../inc/functions_rate.inc.php');
         update_rating_score();
         invalidate_user_cache();
         break;

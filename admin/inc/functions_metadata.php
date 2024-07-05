@@ -17,7 +17,7 @@ use function Piwigo\inc\original_to_representative;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions_metadata.inc.php');
+require_once(__DIR__ . '/../../inc/functions_metadata.inc.php');
 
 /**
  * Returns IPTC metadata to sync from a file, depending on IPTC mapping.

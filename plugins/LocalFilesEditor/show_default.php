@@ -29,7 +29,7 @@ use function Piwigo\inc\load_language;
 
 define('PHPWG_ROOT_PATH', '../../');
 define('IN_ADMIN', true);
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/../../inc/common.inc.php');
 require_once(LOCALEDIT_PATH . 'inc/functions.inc.php');
 load_language('plugin.lang', LOCALEDIT_PATH);
 check_status(ACCESS_WEBMASTER);
@@ -61,9 +61,9 @@ if (isset($_GET['file'])) {
 
     $page['body_id'] = 'thePopuphelpPage';
 
-    require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+    require(__DIR__ . '/../../inc/page_header.php');
 
     $template->pparse('show_default');
 
-    require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+    require(__DIR__ . '/../../inc/page_tail.php');
 }

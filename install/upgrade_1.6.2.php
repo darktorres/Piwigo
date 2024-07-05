@@ -322,4 +322,4 @@ WHERE
 pwg_query($query);
 
 // now we upgrade from 1.7.0
-require_once(PHPWG_ROOT_PATH . 'install/upgrade_1.7.0.php');
+require_once(__DIR__ . '/../install/upgrade_1.7.0.php');

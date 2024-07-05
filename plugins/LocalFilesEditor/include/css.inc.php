@@ -8,7 +8,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
+require_once(__DIR__ . '/../../../admin/inc/themes.class.php');
 $themes = new Themes();
 
 if (isset($_POST['edit'])) {

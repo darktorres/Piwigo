@@ -145,7 +145,7 @@ function ws_permissions_add(
         return new Error(403, 'Invalid security token');
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     if (! empty($params['group_id'])) {
         $cat_ids = get_uppercat_ids($params['cat_id']);
@@ -210,7 +210,7 @@ function ws_permissions_remove(
         return new Error(403, 'Invalid security token');
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     $cat_ids = get_subcat_ids($params['cat_id']);
 

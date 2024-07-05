@@ -17,14 +17,14 @@ use function Piwigo\inc\page_forbidden;
 define('PHPWG_ROOT_PATH', './');
 define('IN_WS', true);
 
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
 check_status(ACCESS_FREE);
 
 if (! $conf['allow_web_services']) {
     page_forbidden('Web services are disabled');
 }
 
-require_once(PHPWG_ROOT_PATH . 'inc/ws_init.inc.php');
+require_once(__DIR__ . '/inc/ws_init.inc.php');
 
 $service->run();
 
@@ -36,7 +36,7 @@ function ws_addDefaultMethods($arr): void
     global $conf, $user;
     $service = &$arr[0];
 
-    require_once(PHPWG_ROOT_PATH . 'inc/ws_functions.inc.php');
+    require_once(__DIR__ . '/inc/ws_functions.inc.php');
     $ws_functions_root = PHPWG_ROOT_PATH . 'inc/ws_functions/';
 
     $f_params = [

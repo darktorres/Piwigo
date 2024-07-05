@@ -30,8 +30,8 @@ use function Piwigo\inc\set_make_full_url;
 // +-----------------------------------------------------------------------+
 
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_notification.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
+require_once(__DIR__ . '/inc/functions_notification.inc.php');
 
 // +-----------------------------------------------------------------------+
 // |                               functions                               |

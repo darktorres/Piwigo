@@ -27,8 +27,8 @@ $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
 if ($page['tab'] == 'update') {
-    require(PHPWG_ROOT_PATH . 'admin/updates_ext.php');
+    require(__DIR__ . '/../admin/updates_ext.php');
     $template->assign('ADMIN_PAGE_TITLE', l10n('Themes'));
 } else {
-    require(PHPWG_ROOT_PATH . 'admin/themes_' . $page['tab'] . '.php');
+    require(__DIR__ . '/../admin/themes_' . $page['tab'] . '.php');
 }

@@ -20,7 +20,7 @@ use function Piwigo\inc\redirect;
 // +-----------------------------------------------------------------------+
 
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |

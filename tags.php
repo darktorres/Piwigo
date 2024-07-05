@@ -24,7 +24,7 @@ use function Piwigo\inc\trigger_notify;
 // +-----------------------------------------------------------------------+
 
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
 
 check_status(ACCESS_GUEST);
 
@@ -161,11 +161,11 @@ if ($page['display_mode'] == 'letters') {
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
 if (! isset($themeconf['hide_menu_on']) || ! in_array('theTagsPage', $themeconf['hide_menu_on'])) {
-    require(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
+    require(__DIR__ . '/inc/menubar.inc.php');
 }
 
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 trigger_notify('loc_end_tags');
 flush_page_messages();
 $template->pparse('tags');
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

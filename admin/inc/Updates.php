@@ -57,7 +57,7 @@ class Updates
         $this->default_plugins = ['AdminTools', 'TakeATour', 'language_switch', 'LocalFilesEditor'];
 
         foreach ($this->types as $type) {
-            require_once(PHPWG_ROOT_PATH . 'admin/inc/' . $type . '.php');
+            require_once(__DIR__ . '/../../admin/inc/' . $type . '.php');
             $tmp = '\\Piwigo\\Admin\\Inc\\' . $type;
             $this->{$type} = new $tmp();
         }
@@ -195,7 +195,7 @@ class Updates
 
         if ($notify) {
             // send email
-            require_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
+            require_once(__DIR__ . '/../../inc/functions_mail.inc.php');
 
             switch_lang_to(get_default_language());
 

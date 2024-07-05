@@ -41,7 +41,7 @@ if (! defined(
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
 check_status(ACCESS_ADMINISTRATOR);
 
 $tpl_extension = $conf['extents_for_templates'] ?? [];

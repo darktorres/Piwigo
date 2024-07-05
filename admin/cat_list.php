@@ -31,7 +31,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -147,7 +147,7 @@ $navigation .= '</a>';
 // +-----------------------------------------------------------------------+
 
 $page['tab'] = 'list';
-require(PHPWG_ROOT_PATH . 'admin/inc/albums_tab.inc.php');
+require(__DIR__ . '/../admin/inc/albums_tab.inc.php');
 
 // +-----------------------------------------------------------------------+
 // |                    virtual categories management                      |

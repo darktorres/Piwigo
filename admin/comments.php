@@ -29,7 +29,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
 
 $page['start'] = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['start'] : 0;
 
@@ -47,7 +47,7 @@ if ($_POST !== []) {
     if (empty($_POST['comments'])) {
         $page['errors'][] = l10n('Select at least one comment');
     } else {
-        require_once(PHPWG_ROOT_PATH . 'inc/functions_comment.inc.php');
+        require_once(__DIR__ . '/../inc/functions_comment.inc.php');
         check_input_parameter('comments', $_POST, true, PATTERN_ID);
 
         if (isset($_POST['validate'])) {

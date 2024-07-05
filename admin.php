@@ -36,9 +36,9 @@ use function Piwigo\inc\userprefs_update_param;
 define('PHPWG_ROOT_PATH', './');
 define('IN_ADMIN', true);
 
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-require_once(PHPWG_ROOT_PATH . 'admin/inc/add_core_tabs.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
+require_once(__DIR__ . '/admin/inc/functions.php');
+require_once(__DIR__ . '/admin/inc/add_core_tabs.inc.php');
 
 trigger_notify('loc_begin_admin');
 
@@ -353,7 +353,7 @@ if (
 // +-----------------------------------------------------------------------+
 
 trigger_notify('loc_begin_admin_page');
-require(PHPWG_ROOT_PATH . 'admin/' . $page['page'] . '.php');
+require(__DIR__ . '/admin/' . $page['page'] . '.php');
 
 $template->assign('ACTIVE_MENU', get_active_menu($page['page']));
 
@@ -364,7 +364,7 @@ $template->assign('ACTIVE_MENU', get_active_menu($page['page']));
 // Add the Piwigo Official menu
 $template->assign('pwgmenu', pwg_URL());
 
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 
 trigger_notify('loc_end_admin');
 
@@ -372,4 +372,4 @@ flush_page_messages();
 
 $template->pparse('admin');
 
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

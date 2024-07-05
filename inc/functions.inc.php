@@ -26,13 +26,13 @@ use function Piwigo\inc\dbLayer\single_update;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions_user.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_cookie.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_session.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_category.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_html.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_tag.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_url.inc.php');
+require_once(__DIR__ . '/../inc/functions_user.inc.php');
+require_once(__DIR__ . '/../inc/functions_cookie.inc.php');
+require_once(__DIR__ . '/../inc/functions_session.inc.php');
+require_once(__DIR__ . '/../inc/functions_category.inc.php');
+require_once(__DIR__ . '/../inc/functions_html.inc.php');
+require_once(__DIR__ . '/../inc/functions_tag.inc.php');
+require_once(__DIR__ . '/../inc/functions_url.inc.php');
 
 /**
  * returns the current microsecond since Unix epoch
@@ -654,12 +654,12 @@ INSERT INTO ' . HISTORY_TABLE . '
 
     $history_id = pwg_db_insert_id();
     if ($history_id % 1000 == 0) {
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_history.inc.php');
+        require_once(__DIR__ . '/../admin/inc/functions_history.inc.php');
         history_summarize(50000);
     }
 
     if ($conf['history_autopurge_every'] > 0 && $history_id % $conf['history_autopurge_every'] == 0) {
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_history.inc.php');
+        require_once(__DIR__ . '/../admin/inc/functions_history.inc.php');
         history_autopurge();
     }
 
@@ -1162,7 +1162,7 @@ function redirect_html(
         'redirect' => 'redirect.tpl',
     ]);
 
-    require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+    require(__DIR__ . '/../inc/page_header.php');
 
     $template->set_filenames([
         'redirect' => 'redirect.tpl',
@@ -1171,7 +1171,7 @@ function redirect_html(
 
     $template->parse('redirect');
 
-    require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+    require(__DIR__ . '/../inc/page_tail.php');
 
     exit();
 }
@@ -2458,7 +2458,7 @@ SELECT
         $age = strtotime((string) $voyager['dbnow']) - strtotime((string) $voyager['date_available']);
 
         if ($age > $conf['lounge_max_duration']) {
-            require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+            require_once(__DIR__ . '/../admin/inc/functions.php');
             empty_lounge();
         }
     }

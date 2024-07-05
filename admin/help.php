@@ -15,7 +15,7 @@ use function Piwigo\inc\trigger_notify;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |

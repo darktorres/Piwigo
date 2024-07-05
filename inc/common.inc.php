@@ -77,13 +77,13 @@ $header_msgs = [];
 $header_notes = [];
 $filter = [];
 
-require(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
+require(__DIR__ . '/../inc/config_default.inc.php');
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require(__DIR__ . '/../local/config/config.inc.php');
 }
 
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php')) {
-    require(PHPWG_ROOT_PATH . 'local/config/database.inc.php');
+    require(__DIR__ . '/../local/config/database.inc.php');
 }
 
 if (! defined('PHPWG_INSTALLED')) {
@@ -91,7 +91,7 @@ if (! defined('PHPWG_INSTALLED')) {
     exit;
 }
 
-require(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+require(__DIR__ . '/../inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 if (isset($conf['show_php_errors']) && ! empty($conf['show_php_errors'])) {
     @ini_set('error_reporting', $conf['show_php_errors']);
@@ -105,8 +105,8 @@ if ($conf['session_gc_probability'] > 0) {
     @ini_set('session.gc_probability', min((int) $conf['session_gc_probability'], 100));
 }
 
-require(PHPWG_ROOT_PATH . 'inc/constants.php');
-require(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+require(__DIR__ . '/../inc/constants.php');
+require(__DIR__ . '/../inc/functions.inc.php');
 
 $persistent_cache = new PersistentFileCache();
 
@@ -162,7 +162,7 @@ if (isset($conf['order_by_inside_category_custom'])) {
 
 check_lounge();
 
-require(PHPWG_ROOT_PATH . 'inc/user.inc.php');
+require(__DIR__ . '/../inc/user.inc.php');
 
 if (in_array(substr($user['language'], 0, 2), ['fr', 'it', 'de', 'es', 'pl', 'ru', 'nl', 'tr', 'da'])) {
     define('PHPWG_DOMAIN', substr($user['language'], 0, 2) . '.piwigo.org');
@@ -225,7 +225,7 @@ if (defined('IN_ADMIN') && IN_ADMIN) {// Admin template
 }
 
 if (! isset($conf['no_photo_yet'])) {
-    require(PHPWG_ROOT_PATH . 'inc/no_photo_yet.inc.php');
+    require(__DIR__ . '/../inc/no_photo_yet.inc.php');
 }
 
 if (isset($user['internal_status']['guest_must_be_guest']) && $user['internal_status']['guest_must_be_guest'] === true) {
@@ -248,7 +248,7 @@ if ($conf['gallery_locked']) {
 }
 
 if ($conf['check_upgrade_feed']) {
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upgrade.php');
+    require_once(__DIR__ . '/../admin/inc/functions_upgrade.php');
     if (check_upgrade_feed()) {
         $header_msgs[] = 'Some database upgrades are missing, <a href="' . get_absolute_root_url(
             false
@@ -262,7 +262,7 @@ if ($header_msgs !== []) {
 }
 
 if (! empty($conf['filter_pages']) && get_filter_page_value('used')) {
-    require(PHPWG_ROOT_PATH . 'inc/filter.inc.php');
+    require(__DIR__ . '/../inc/filter.inc.php');
 } else {
     $filter['enabled'] = false;
 }

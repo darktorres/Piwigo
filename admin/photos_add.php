@@ -18,8 +18,8 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions_upload.inc.php');
 
 define(
     'PHOTOS_ADD_BASE_URL',
@@ -71,4 +71,4 @@ $template->set_filenames(
 // |                             Load the tab                              |
 // +-----------------------------------------------------------------------+
 
-require(PHPWG_ROOT_PATH . 'admin/photos_add_' . $page['tab'] . '.php');
+require(__DIR__ . '/../admin/photos_add_' . $page['tab'] . '.php');

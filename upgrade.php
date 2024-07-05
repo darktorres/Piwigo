@@ -36,9 +36,9 @@ use function Piwigo\inc\url_is_remote;
 define('PHPWG_ROOT_PATH', './');
 
 // load config file
-require(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
+require(__DIR__ . '/inc/config_default.inc.php');
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require(__DIR__ . '/local/config/config.inc.php');
 }
 
 $config_file = PHPWG_ROOT_PATH . 'local/config/database.inc.php';
@@ -56,12 +56,12 @@ require($config_file);
 
 // $conf is not used for users tables - define cannot be re-defined
 define('USERS_TABLE', $prefixeTable . 'users');
-require_once(PHPWG_ROOT_PATH . 'inc/constants.php');
+require_once(__DIR__ . '/inc/constants.php');
 define('PREFIX_TABLE', $prefixeTable);
 define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/inc/functions.inc.php');
+require_once(__DIR__ . '/admin/inc/functions.php');
 
 // +-----------------------------------------------------------------------+
 // |                              functions                                |
@@ -210,8 +210,8 @@ load_language('upgrade.lang', '', [
 // +-----------------------------------------------------------------------+
 // |                          database connection                          |
 // +-----------------------------------------------------------------------+
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upgrade.php');
-require(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+require_once(__DIR__ . '/admin/inc/functions_upgrade.php');
+require(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 upgrade_db_connect();
 

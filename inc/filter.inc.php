@@ -112,7 +112,7 @@ WHERE ';
         );
     }
 
-    require_once(PHPWG_ROOT_PATH . 'inc/functions_filter.inc.php');
+    require_once(__DIR__ . '/../inc/functions_filter.inc.php');
 } elseif (pwg_get_session_var('filter_enabled', false)) {
     pwg_unset_session_var('filter_enabled');
     pwg_unset_session_var('filter_check_key');

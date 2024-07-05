@@ -36,7 +36,7 @@ check_input_parameter('group', $_GET, false, PATTERN_ID);
 // +-----------------------------------------------------------------------+
 
 $page['tab'] = 'user_list';
-require(PHPWG_ROOT_PATH . 'admin/inc/user_tabs.inc.php');
+require(__DIR__ . '/../admin/inc/user_tabs.inc.php');
 
 // +-----------------------------------------------------------------------+
 // |                              groups list                              |

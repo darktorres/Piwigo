@@ -67,9 +67,9 @@ use function Piwigo\inc\validate_user_comment;
 // +-----------------------------------------------------------------------+
 
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
-require(PHPWG_ROOT_PATH . 'inc/section_init.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_picture.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
+require(__DIR__ . '/inc/section_init.inc.php');
+require_once(__DIR__ . '/inc/functions_picture.inc.php');
 
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
@@ -363,7 +363,7 @@ UPDATE ' . CATEGORIES_TABLE . '
                     'image_id' => $page['image_id'],
                 ]);
 
-                require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+                require_once(__DIR__ . '/admin/inc/functions.php');
                 invalidate_user_cache();
             }
 
@@ -379,14 +379,14 @@ UPDATE ' . CATEGORIES_TABLE . '
 
         case 'rate':
 
-            require_once(PHPWG_ROOT_PATH . 'inc/functions_rate.inc.php');
+            require_once(__DIR__ . '/inc/functions_rate.inc.php');
             rate_picture($page['image_id'], $_POST['rate']);
             redirect($url_self);
 
             // no break
         case 'edit_comment':
 
-            require_once(PHPWG_ROOT_PATH . 'inc/functions_comment.inc.php');
+            require_once(__DIR__ . '/inc/functions_comment.inc.php');
             check_input_parameter('comment_to_edit', $_GET, false, PATTERN_ID);
             $author_id = get_comment_author_id($_GET['comment_to_edit']);
 
@@ -439,7 +439,7 @@ UPDATE ' . CATEGORIES_TABLE . '
 
             check_pwg_token();
 
-            require_once(PHPWG_ROOT_PATH . 'inc/functions_comment.inc.php');
+            require_once(__DIR__ . '/inc/functions_comment.inc.php');
 
             check_input_parameter('comment_to_delete', $_GET, false, PATTERN_ID);
 
@@ -456,7 +456,7 @@ UPDATE ' . CATEGORIES_TABLE . '
 
             check_pwg_token();
 
-            require_once(PHPWG_ROOT_PATH . 'inc/functions_comment.inc.php');
+            require_once(__DIR__ . '/inc/functions_comment.inc.php');
 
             check_input_parameter('comment_to_validate', $_GET, false, PATTERN_ID);
 
@@ -1063,13 +1063,13 @@ $template->assign(
 // |                               sub pages                               |
 // +-----------------------------------------------------------------------+
 
-require(PHPWG_ROOT_PATH . 'inc/picture_rate.inc.php');
+require(__DIR__ . '/inc/picture_rate.inc.php');
 if ($conf['activate_comments']) {
-    require(PHPWG_ROOT_PATH . 'inc/picture_comment.inc.php');
+    require(__DIR__ . '/inc/picture_comment.inc.php');
 }
 
 if ($metadata_showable && pwg_get_session_var('show_metadata') != null) {
-    require(PHPWG_ROOT_PATH . 'inc/picture_metadata.inc.php');
+    require(__DIR__ . '/inc/picture_metadata.inc.php');
 }
 
 // include menubar
@@ -1082,10 +1082,10 @@ if ($conf['picture_menu'] && (! isset($themeconf['hide_menu_on']) || ! in_array(
         $page['start'] = 0;
     }
 
-    require(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
+    require(__DIR__ . '/inc/menubar.inc.php');
 }
 
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 trigger_notify('loc_end_picture');
 flush_page_messages();
 if ($page['slideshow'] && $conf['light_slideshow']) {
@@ -1100,4 +1100,4 @@ pwg_log(
     $picture['current']['id'],
     'picture'
 );
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

@@ -181,7 +181,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $datas[] = $row;
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
 mass_inserts(
     USER_INFOS_TABLE,
     [
@@ -263,4 +263,4 @@ and edit $conf[\'prefix_thumbnail\'] = ' . $prefix_thumbnail;
 }
 
 // now we upgrade from 1.5.0 to 1.6.0
-require_once(PHPWG_ROOT_PATH . 'install/upgrade_1.5.0.php');
+require_once(__DIR__ . '/../install/upgrade_1.5.0.php');

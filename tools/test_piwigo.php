@@ -129,7 +129,7 @@ function install_piwigo(array $option): void
 
     sleep(2);
 
-    require_once(PHPWG_ROOT_PATH . '/local/config/database.inc.php');
+    require_once(__DIR__ . '/../local/config/database.inc.php');
 
     if (PHPWG_INSTALLED) {
         echo "Installation OK!\n";

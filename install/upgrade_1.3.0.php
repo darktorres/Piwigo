@@ -101,4 +101,4 @@ mass_updates(
 );
 
 // now we upgrade from 1.3.1 to 1.6.0
-require_once(PHPWG_ROOT_PATH . 'install/upgrade_1.3.1.php');
+require_once(__DIR__ . '/../install/upgrade_1.3.1.php');

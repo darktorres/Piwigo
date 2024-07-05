@@ -68,11 +68,11 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_notification_by_mail.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_notification.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions_notification_by_mail.inc.php');
+require_once(__DIR__ . '/../inc/common.inc.php');
+require_once(__DIR__ . '/../inc/functions_notification.inc.php');
+require_once(__DIR__ . '/../inc/functions_mail.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |

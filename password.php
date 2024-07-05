@@ -45,8 +45,8 @@ use function Piwigo\inc\unset_make_full_url;
 // +-----------------------------------------------------------------------+
 
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
+require_once(__DIR__ . '/inc/functions_mail.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -357,15 +357,15 @@ $template->assign(
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
 if (! isset($themeconf['hide_menu_on']) || ! in_array('thePasswordPage', $themeconf['hide_menu_on'])) {
-    require(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
+    require(__DIR__ . '/inc/menubar.inc.php');
 }
 
 // +-----------------------------------------------------------------------+
 // |                           html code display                           |
 // +-----------------------------------------------------------------------+
 
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 trigger_notify('loc_end_password');
 flush_page_messages();
 $template->pparse('password');
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

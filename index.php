@@ -34,8 +34,8 @@ use function Piwigo\inc\trigger_notify;
 
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
-require(PHPWG_ROOT_PATH . 'inc/section_init.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
+require(__DIR__ . '/inc/section_init.inc.php');
 
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
@@ -121,7 +121,7 @@ $template->assign('TITLE', $template_title);
 $template->assign('NB_ITEMS', $nb_items);
 
 //-------------------------------------------------------------- menubar
-require(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
+require(__DIR__ . '/inc/menubar.inc.php');
 
 $template->set_filename('index', 'index.tpl');
 
@@ -298,11 +298,11 @@ if (empty($page['is_external'])) {
     //------------------------------------------------------ main part : thumbnails
     if ($page['start'] == 0 && ! isset($page['flat']) && ! isset($page['chronology_field']) && ($page['section'] == 'recent_cats' || $page['section'] == 'categories') && (! isset($page['category']['count_categories']) || $page['category']['count_categories'] > 0)
     ) {
-        require(PHPWG_ROOT_PATH . 'inc/category_cats.inc.php');
+        require(__DIR__ . '/inc/category_cats.inc.php');
     }
 
     if (! empty($page['items'])) {
-        require(PHPWG_ROOT_PATH . 'inc/category_default.inc.php');
+        require(__DIR__ . '/inc/category_default.inc.php');
 
         if ($conf['index_sizes_icon']) {
             $url = add_url_params(
@@ -343,7 +343,7 @@ if (empty($page['is_external'])) {
 }
 
 //------------------------------------------------------------ end
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 trigger_notify('loc_end_index');
 flush_page_messages();
 $template->parse_index_buttons();
@@ -351,4 +351,4 @@ $template->pparse('index');
 
 //------------------------------------------------------------ log informations
 pwg_log();
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

@@ -94,4 +94,4 @@ echo '</pre>';
 ob_end_clean();
 
 // now we upgrade from 2.4.0
-require_once(PHPWG_ROOT_PATH . 'install/upgrade_2.4.0.php');
+require_once(__DIR__ . '/../install/upgrade_2.4.0.php');

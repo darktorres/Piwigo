@@ -118,7 +118,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     $cal_style = $page['chronology_style'];
     $classname = $styles[$cal_style]['classname'];
 
-    require(PHPWG_ROOT_PATH . 'inc/' . $styles[$cal_style]['include']);
+    require(__DIR__ . '/../inc/' . $styles[$cal_style]['include']);
     $tmp = '\\Piwigo\\inc\\' . $classname;
     $calendar = new $tmp();
 

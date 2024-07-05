@@ -94,7 +94,7 @@ switch ($action) {
 
         images_integrity();
         update_path();
-        require_once(PHPWG_ROOT_PATH . 'inc/functions_rate.inc.php');
+        require_once(__DIR__ . '/../inc/functions_rate.inc.php');
         update_rating_score();
         invalidate_user_cache();
         $page['infos'][] = sprintf(

@@ -28,22 +28,22 @@ use function Piwigo\inc\mkgetdir;
 define('PHPWG_ROOT_PATH', './');
 
 // fast bootstrap - no db connection
-require(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
+require(__DIR__ . '/inc/config_default.inc.php');
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require(__DIR__ . '/local/config/config.inc.php');
 }
 
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php')) {
-    require(PHPWG_ROOT_PATH . 'local/config/database.inc.php');
+    require(__DIR__ . '/local/config/database.inc.php');
 }
 
 $logger = new \Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
 ]);
 
-require(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+require(__DIR__ . '/inc/functions.inc.php');
 
 // end fast bootstrap
 
@@ -321,8 +321,8 @@ function send_derivative($expires): void
     global $page;
 
     if (isset($_GET['ajaxload']) && $_GET['ajaxload'] == 'true') {
-        require_once(PHPWG_ROOT_PATH . 'inc/functions_cookie.inc.php');
-        require_once(PHPWG_ROOT_PATH . 'inc/functions_url.inc.php');
+        require_once(__DIR__ . '/inc/functions_cookie.inc.php');
+        require_once(__DIR__ . '/inc/functions_url.inc.php');
 
         echo json_encode([
             'url' => embellish_url(get_absolute_root_url() . $page['derivative_path']),
@@ -364,9 +364,9 @@ foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $
     $timing[$k] = '';
 }
 
-require_once(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/SizingParams.php');
-require_once(PHPWG_ROOT_PATH . 'inc/ImageStdParams.php');
+require_once(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+require_once(__DIR__ . '/inc/SizingParams.php');
+require_once(__DIR__ . '/inc/ImageStdParams.php');
 
 try {
     pwg_db_connect(

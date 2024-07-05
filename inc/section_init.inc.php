@@ -304,7 +304,7 @@ SELECT DISTINCT(image_id)
         'items' => $items,
     ]);
 } elseif ($page['section'] == 'search') {
-    require_once(PHPWG_ROOT_PATH . 'inc/functions_search.inc.php');
+    require_once(__DIR__ . '/../inc/functions_search.inc.php');
 
     $search_result = get_search_results($page['search'], @$page['super_order_by']);
     //save the details of the query search
@@ -494,7 +494,7 @@ SELECT DISTINCT(id)
 // +-----------------------------------------------------------------------+
 if (isset($page['chronology_field'])) {
     unset($page['is_homepage']);
-    require_once(PHPWG_ROOT_PATH . 'inc/functions_calendar.inc.php');
+    require_once(__DIR__ . '/../inc/functions_calendar.inc.php');
     initialize_calendar();
 }
 

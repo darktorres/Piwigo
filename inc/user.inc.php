@@ -53,7 +53,7 @@ if ((defined(
     $_POST['password'],
     false
 )) {
-    require_once(PHPWG_ROOT_PATH . 'inc/ws_init.inc.php');
+    require_once(__DIR__ . '/../inc/ws_init.inc.php');
     $service->sendResponse(new Error(999, 'Invalid username/password'));
     exit();
 }

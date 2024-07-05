@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'add "website_url" field in comments table';
 
-require_once(PHPWG_ROOT_PATH . 'inc/constants.php');
+require_once(__DIR__ . '/../../inc/constants.php');
 
 $query = 'ALTER TABLE `' . COMMENTS_TABLE . '` ADD `website_url` varchar(255) DEFAULT NULL;';
 pwg_query($query);

@@ -46,7 +46,7 @@ if (! is_a_guest()) {
 //     }
 
 //     if ($check_for_updates) {
-//         require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+//         require_once(__DIR__ . '/../admin/inc/functions.php');
 //         $updates = new Updates();
 //         $updates->notify_piwigo_new_versions();
 //     }

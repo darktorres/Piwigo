@@ -37,9 +37,9 @@ function inc_exc_str(
 // +-----------------------------------------------------------------------+
 
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
 check_status(ACCESS_FREE);
-require_once(PHPWG_ROOT_PATH . 'inc/functions_search.inc.php');
+require_once(__DIR__ . '/inc/functions_search.inc.php');
 
 $page['body_id'] = 'thePopuphelpPage';
 $title = l10n('Piwigo Help');
@@ -48,7 +48,7 @@ $page['meta_robots'] = [
     'noindex' => 1,
     'nofollow' => 1,
 ];
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 
 $template->set_filenames([
     'search_rules' => 'search_rules.tpl',
@@ -217,4 +217,4 @@ foreach (['date_available', 'date_creation'] as $datefield) {
 // +-----------------------------------------------------------------------+
 
 $template->pparse('search_rules');
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

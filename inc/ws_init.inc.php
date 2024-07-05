@@ -22,7 +22,7 @@ defined(
     E_USER_ERROR
 );
 
-require_once(PHPWG_ROOT_PATH . 'inc/ws_core.inc.php');
+require_once(__DIR__ . '/../inc/ws_core.inc.php');
 
 add_event_handler('ws_add_methods', '\Piwigo\ws_addDefaultMethods');
 add_event_handler('ws_invoke_allowed', '\Piwigo\inc\ws_isInvokeAllowed');

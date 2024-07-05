@@ -47,7 +47,7 @@ use function Piwigo\inc\url_is_remote;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_metadata.php');
+require_once(__DIR__ . '/../../admin/inc/functions_metadata.php');
 
 /**
  * Deletes a site and call delete_categories for each primary category of the site

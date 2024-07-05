@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'rename language sl_SL into sl_SI';
 
-require_once(PHPWG_ROOT_PATH . 'inc/constants.php');
+require_once(__DIR__ . '/../../inc/constants.php');
 
 $query = '
 UPDATE ' . USER_INFOS_TABLE . '

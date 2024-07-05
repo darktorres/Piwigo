@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Reset derivative configuration to include XXS and XS sizes.';
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../../admin/inc/functions.php');
 
 clear_derivative_cache();
 

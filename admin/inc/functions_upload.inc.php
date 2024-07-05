@@ -36,7 +36,7 @@ use function Piwigo\inc\unset_make_full_url;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../../admin/inc/functions.php');
 
 // add default event handler for image and thumbnail resize
 add_event_handler(

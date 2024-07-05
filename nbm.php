@@ -19,12 +19,12 @@ use function Piwigo\inc\trigger_notify;
 
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
-require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+require_once(__DIR__ . '/inc/common.inc.php');
 check_status(ACCESS_FREE);
-require_once(PHPWG_ROOT_PATH . 'inc/functions_notification.inc.php');
-require_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_notification_by_mail.inc.php');
+require_once(__DIR__ . '/inc/functions_notification.inc.php');
+require_once(__DIR__ . '/inc/functions_mail.inc.php');
+require_once(__DIR__ . '/admin/inc/functions.php');
+require_once(__DIR__ . '/admin/inc/functions_notification_by_mail.inc.php');
 // Translations are in admin file too
 load_language('admin.lang');
 // Need to update a second time
@@ -61,13 +61,13 @@ $template->set_filenames([
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
 if (! isset($themeconf['hide_menu_on']) || ! in_array('theNBMPage', $themeconf['hide_menu_on'])) {
-    require(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
+    require(__DIR__ . '/inc/menubar.inc.php');
 }
 
 // +-----------------------------------------------------------------------+
 // | html code display                                                     |
 // +-----------------------------------------------------------------------+
-require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+require(__DIR__ . '/inc/page_header.php');
 flush_page_messages();
 $template->parse('nbm');
-require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+require(__DIR__ . '/inc/page_tail.php');

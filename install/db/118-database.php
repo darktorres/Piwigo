@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Automatically activate mobile theme.';
 
-require_once(PHPWG_ROOT_PATH . 'inc/constants.php');
+require_once(__DIR__ . '/../../inc/constants.php');
 $themes = new Themes();
 $themes->perform_action('activate', 'smartpocket');
 

@@ -38,7 +38,7 @@ if (! defined(
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php');
+require_once(__DIR__ . '/../../../admin/inc/tabsheet.class.php');
 require_once(LOCALEDIT_PATH . 'inc/functions.inc.php');
 load_language('plugin.lang', LOCALEDIT_PATH);
 $my_base_url = get_root_url() . 'admin.php?page=plugin-' . basename(__DIR__);

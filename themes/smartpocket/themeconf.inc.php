@@ -182,7 +182,7 @@ if (! function_exists('add_menu_on_public_pages')) {
             $template->set_filenames([
                 'add_menu_on_public_pages' => __DIR__ . '/template/add_menu_on_public_pages.tpl',
             ]);
-            require_once(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
+            require_once(__DIR__ . '/../../inc/menubar.inc.php');
             $template->parse('add_menu_on_public_pages');
         }
 

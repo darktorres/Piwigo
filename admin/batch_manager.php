@@ -41,7 +41,7 @@ if (! defined(
     die('Hacking attempt!');
 }
 
-require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require_once(__DIR__ . '/../admin/inc/functions.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -570,7 +570,7 @@ SELECT id
 
 if (isset($_SESSION['bulk_manager_filter']['search']) &&
     strlen((string) $_SESSION['bulk_manager_filter']['search']['q'])) {
-    require_once(PHPWG_ROOT_PATH . 'inc/functions_search.inc.php');
+    require_once(__DIR__ . '/../inc/functions_search.inc.php');
     $res = get_quick_search_results_no_cache($_SESSION['bulk_manager_filter']['search']['q'], [
         'permissions' => false,
     ]);
@@ -760,4 +760,4 @@ $template->assign('filesize', $filesize);
 // |                         open specific mode                            |
 // +-----------------------------------------------------------------------+
 
-require(PHPWG_ROOT_PATH . 'admin/batch_manager_' . $page['tab'] . '.php');
+require(__DIR__ . '/../admin/batch_manager_' . $page['tab'] . '.php');

@@ -320,7 +320,7 @@ FROM ' . USERS_TABLE . ' AS u
         $out['users'] = query2array($query);
 
         // get themes
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/themes.class.php');
+        require_once(__DIR__ . '/../../../admin/inc/themes.class.php');
         $themes = new Themes();
         foreach (array_keys($themes->db_themes_by_id) as $theme) {
             if (! empty($theme)) {

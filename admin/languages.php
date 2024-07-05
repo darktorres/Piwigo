@@ -33,8 +33,8 @@ $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
 if ($page['tab'] == 'update') {
-    require(PHPWG_ROOT_PATH . 'admin/updates_ext.php');
+    require(__DIR__ . '/../admin/updates_ext.php');
     $template->assign('ADMIN_PAGE_TITLE', l10n('Languages'));
 } else {
-    require(PHPWG_ROOT_PATH . 'admin/languages_' . $page['tab'] . '.php');
+    require(__DIR__ . '/../admin/languages_' . $page['tab'] . '.php');
 }

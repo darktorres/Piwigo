@@ -164,8 +164,8 @@ function ws_extensions_update(
         return new Error(403, 'invalid extension type');
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/' . $params['type'] . '.class.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/' . $params['type'] . '.class.php');
 
     $type = $params['type'];
     $extension_id = $params['id'];
@@ -250,7 +250,7 @@ function ws_extensions_ignoreupdate(
     global $conf;
 
     define('IN_ADMIN', true);
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     if (! is_webmaster()) {
         return new Error(401, 'Access denied');
@@ -308,7 +308,7 @@ function ws_extensions_checkupdates(
 ): array {
     global $conf;
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     $update = new Updates();
     $result = [];

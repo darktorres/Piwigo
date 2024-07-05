@@ -210,7 +210,7 @@ SELECT category_id, MAX(`rank`) AS max_rank
         $inserts
     );
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
     update_category($new_cat_ids);
 }
 
@@ -355,7 +355,7 @@ SELECT DISTINCT image_id
         'image_id' => $params['image_id'],
     ];
 
-    require_once(PHPWG_ROOT_PATH . 'inc/functions_comment.inc.php');
+    require_once(__DIR__ . '/../../inc/functions_comment.inc.php');
 
     $comment_action = insert_user_comment($comm, $params['key'], $infos);
 
@@ -631,7 +631,7 @@ SELECT DISTINCT id
         return new Error(404, 'Invalid image_id or access denied');
     }
 
-    require_once(PHPWG_ROOT_PATH . 'inc/functions_rate.inc.php');
+    require_once(__DIR__ . '/../../inc/functions_rate.inc.php');
     $res = rate_picture($params['image_id'], (int) $params['rate']);
 
     if ($res == false) {
@@ -655,7 +655,7 @@ function ws_images_search(
     array $params,
     $service
 ) {
-    require_once(PHPWG_ROOT_PATH . 'inc/functions_search.inc.php');
+    require_once(__DIR__ . '/../../inc/functions_search.inc.php');
 
     $images = [];
     $where_clauses = ws_std_image_sql_filter($params, 'i.');
@@ -758,7 +758,7 @@ UPDATE ' . IMAGES_TABLE . '
 
     $affected_rows = pwg_db_changes();
     if ($affected_rows) {
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+        require_once(__DIR__ . '/../../admin/inc/functions.php');
         invalidate_user_cache();
     }
 
@@ -778,7 +778,7 @@ function ws_images_setRank(
     $service
 ) {
     if (count($params['image_id']) > 1) {
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+        require_once(__DIR__ . '/../../admin/inc/functions.php');
 
         save_images_order(
             $params['category_id'],
@@ -982,7 +982,7 @@ SELECT
     merge_chunks($file_path, $image['md5sum'], $original_type);
     chmod($file_path, 0644);
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+    require_once(__DIR__ . '/../../admin/inc/functions_upload.inc.php');
 
     // if we receive the "file", we only update the original if the "file" is
     // bigger than current original
@@ -1094,7 +1094,7 @@ SELECT COUNT(*)
     merge_chunks($file_path, $params['original_sum'], $original_type);
     chmod($file_path, 0644);
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+    require_once(__DIR__ . '/../../admin/inc/functions_upload.inc.php');
 
     $image_id = add_uploaded_file(
         $file_path,
@@ -1221,7 +1221,7 @@ SELECT COUNT(*)
         }
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+    require_once(__DIR__ . '/../../admin/inc/functions_upload.inc.php');
 
     $image_id = add_uploaded_file(
         $_FILES['image']['tmp_name'],
@@ -1255,7 +1255,7 @@ SELECT COUNT(*)
     );
 
     if (isset($params['tags']) && ! empty($params['tags'])) {
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+        require_once(__DIR__ . '/../../admin/inc/functions.php');
 
         $tag_ids = [];
         if (is_array($params['tags'])) {
@@ -1291,7 +1291,7 @@ SELECT id, name, permalink
 
     // update metadata from the uploaded file (exif/iptc), even if the sync
     // was already performed by add_uploaded_file().
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_metadata.php');
+    require_once(__DIR__ . '/../../admin/inc/functions_metadata.php');
     sync_metadata([$image_id]);
 
     return [
@@ -1422,7 +1422,7 @@ function ws_images_upload(
         // Strip the temp .part suffix off
         rename($filePath . '.part', $filePath);
 
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+        require_once(__DIR__ . '/../../admin/inc/functions_upload.inc.php');
 
         if (isset($params['format_of'])) {
             $query = '
@@ -1687,7 +1687,7 @@ SELECT COUNT(*)
 
     $logger->debug(__FUNCTION__ . ' ' . $output_filepath . ' MD5 checksum OK');
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+    require_once(__DIR__ . '/../../admin/inc/functions_upload.inc.php');
 
     $image_id = add_uploaded_file(
         $output_filepath,
@@ -1958,7 +1958,7 @@ function ws_images_formats_delete(
         }
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     $image_ids = [];
     $formats_of = [];
@@ -2108,7 +2108,7 @@ function ws_images_setInfo(
 ): \PwgError {
     global $conf;
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     $query = '
 SELECT *
@@ -2265,7 +2265,7 @@ function ws_images_delete(
         }
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
     $ret = delete_elements($image_ids, true);
     invalidate_user_cache();
 
@@ -2281,7 +2281,7 @@ function ws_images_checkUpload(
     $params,
     $service
 ) {
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php');
+    require_once(__DIR__ . '/../../admin/inc/functions_upload.inc.php');
 
     $ret['message'] = ready_for_upload_message();
     $ret['ready_for_upload'] = true;
@@ -2302,7 +2302,7 @@ function ws_images_emptyLounge(
     $params,
     $service
 ) {
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     return [
         'rows' => empty_lounge(),
@@ -2319,7 +2319,7 @@ function ws_images_uploadCompleted(
     $params,
     $service
 ) {
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
         return new Error(403, 'Invalid security token');
@@ -2389,7 +2389,7 @@ function ws_images_setMd5sum(
         return new Error(403, 'Invalid security token');
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     $md5sum_ids_to_add = array_slice(get_photos_no_md5sum(), 0, $params['block_size']);
     $added_count = add_md5sum($md5sum_ids_to_add);
@@ -2425,8 +2425,8 @@ SELECT id
         return new Error(403, 'No image found');
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions_metadata.php');
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions_metadata.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
     sync_metadata($params['image_id']);
 
     return [
@@ -2448,7 +2448,7 @@ function ws_images_deleteOrphans(
         return new Error(403, 'Invalid security token');
     }
 
-    require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    require_once(__DIR__ . '/../../admin/inc/functions.php');
 
     $orphan_ids_to_delete = array_slice(get_orphans(), 0, $params['block_size']);
     $deleted_count = delete_elements($orphan_ids_to_delete, true);

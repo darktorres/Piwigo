@@ -105,12 +105,12 @@ define(
 
 $prefixeTable = isset($_POST['install']) ? $_POST['prefix'] : DEFAULT_PREFIX_TABLE;
 
-require(PHPWG_ROOT_PATH . 'inc/config_default.inc.php');
+require(__DIR__ . '/inc/config_default.inc.php');
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    require(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require(__DIR__ . '/local/config/config.inc.php');
 }
 
-require(PHPWG_ROOT_PATH . '/inc/functions.inc.php');
+require(__DIR__ . '//inc/functions.inc.php');
 
 // download database config file if exists
 check_input_parameter('dl', $_GET, false, '/^[a-f0-9]{32}$/');
@@ -162,8 +162,8 @@ if (@file_exists($config_file)) {
     }
 }
 
-require(PHPWG_ROOT_PATH . 'inc/constants.php');
-require(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+require(__DIR__ . '/inc/constants.php');
+require(__DIR__ . '/admin/inc/functions.php');
 
 $languages = new Languages('utf-8');
 
@@ -248,9 +248,9 @@ if (! isset($step)) {
 }
 
 //---------------------------------------------------------------- form analyze
-require(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $dblayer . '.inc.php');
-require(PHPWG_ROOT_PATH . 'admin/inc/functions_install.inc.php');
-require(PHPWG_ROOT_PATH . 'admin/inc/functions_upgrade.php');
+require(__DIR__ . '/inc/dblayer/functions_' . $dblayer . '.inc.php');
+require(__DIR__ . '/admin/inc/functions_install.inc.php');
+require(__DIR__ . '/admin/inc/functions_upgrade.php');
 
 if (isset($_POST['install'])) {
     $webmaster = trim(preg_replace('/\s{2,}/', ' ', $admin_name));
@@ -494,7 +494,7 @@ if ($step == 1) {
 
         // email notification
         if (isset($_POST['send_credentials_by_mail'])) {
-            require_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
+            require_once(__DIR__ . '/inc/functions_mail.inc.php');
 
             $keyargs_content = [
                 get_l10n_args('Hello %s,', $admin_name),

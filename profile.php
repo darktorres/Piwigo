@@ -46,7 +46,7 @@ if (! defined(
     'PHPWG_ROOT_PATH'
 )) {//direct script access
     define('PHPWG_ROOT_PATH', './');
-    require_once(PHPWG_ROOT_PATH . 'inc/common.inc.php');
+    require_once(__DIR__ . '/inc/common.inc.php');
 
     // +-----------------------------------------------------------------------+
     // | Check Access and exit when user status is not ok                      |
@@ -96,14 +96,14 @@ SELECT ' . implode(',', $fields) . '
     // include menubar
     $themeconf = $template->get_template_vars('themeconf');
     if (! isset($themeconf['hide_menu_on']) || ! in_array('theProfilePage', $themeconf['hide_menu_on'])) {
-        require(PHPWG_ROOT_PATH . 'inc/menubar.inc.php');
+        require(__DIR__ . '/inc/menubar.inc.php');
     }
 
-    require(PHPWG_ROOT_PATH . 'inc/page_header.php');
+    require(__DIR__ . '/inc/page_header.php');
     trigger_notify('loc_end_profile');
     flush_page_messages();
     $template->pparse('profile');
-    require(PHPWG_ROOT_PATH . 'inc/page_tail.php');
+    require(__DIR__ . '/inc/page_tail.php');
 }
 
 //------------------------------------------------------ update & customization
@@ -194,7 +194,7 @@ function save_profile_from_post(
 
     if (count($errors) == 0) {
         // mass_updates function
-        require_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+        require_once(__DIR__ . '/admin/inc/functions.php');
 
         $activity_details_tables = [];
 
@@ -226,7 +226,7 @@ function save_profile_from_post(
 
                     // send email to the user
                     if ($_POST['username'] != $userdata['username']) {
-                        require_once(PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php');
+                        require_once(__DIR__ . '/inc/functions_mail.inc.php');
                         switch_lang_to($userdata['language']);
 
                         $keyargs_content = [
