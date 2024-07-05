@@ -17,6 +17,9 @@ namespace Piwigo\inc;
 class NamedArray
 {
     /*private*/
+    /**
+     * @var mixed[]
+     */
     public $_xmlAttributes;
 
     /**

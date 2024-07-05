@@ -2,13 +2,10 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\history_summarize;
 use function Piwigo\admin\inc\history_tabsheet;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 
@@ -89,10 +86,10 @@ SELECT
 ;';
     }
 
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $output = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $output[] = $row;
     }
 
@@ -121,19 +118,19 @@ ORDER BY
         $limit = ($last - 1) * 12 + $date->format('n') - 1;
         $query .=
 ' LIMIT ' . $limit;
-        $result = query2array($query . ';');
+        $result = Mysqli::query2array($query . ';');
         $lastDate = $date->sub(new \DateInterval('P' . ($last - 1) . 'Y' . ($date->format('n') - 1) . 'M'));
         return set_missing_values('month', $result, $lastDate, new \DateTime());
     }
 
-    if (count(query2array($query . ';')) > 1) {
-        return set_missing_values('month', query2array($query . ';'));
+    if (count(Mysqli::query2array($query . ';')) > 1) {
+        return set_missing_values('month', Mysqli::query2array($query . ';'));
     }
 
     $last_year_date = new \DateTime();
     return set_missing_values(
         'month',
-        query2array($query . ';'),
+        Mysqli::query2array($query . ';'),
         $last_year_date->sub(new \DateInterval('P1Y')),
         new \DateTime()
     );
@@ -171,7 +168,7 @@ ORDER BY
   month DESC
 ;';
 
-    foreach (query2array($query) as $value) {
+    foreach (Mysqli::query2array($query) as $value) {
         $date = get_date_object($value);
         @$months[$date->format('Y/m/1')][] = $value;
     }
@@ -214,7 +211,7 @@ ORDER BY
   month DESC
 ;';
 
-    [$result['avg']] = pwg_db_fetch_row(pwg_query($query));
+    [$result['avg']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     return $result;
 }
@@ -223,7 +220,9 @@ ORDER BY
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // | Refresh summary from details                                          |

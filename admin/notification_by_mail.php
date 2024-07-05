@@ -3,6 +3,9 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\assign_vars_nbm_mail_content;
 use function Piwigo\admin\inc\begin_users_env_nbm;
 use function Piwigo\admin\inc\check_sendmail_timeout;
@@ -18,20 +21,10 @@ use function Piwigo\admin\inc\set_user_on_env_nbm;
 use function Piwigo\admin\inc\subscribe_notification_by_mail;
 use function Piwigo\admin\inc\unset_user_on_env_nbm;
 use function Piwigo\admin\inc\unsubscribe_notification_by_mail;
-use function Piwigo\inc\add_event_handler;
 use function Piwigo\inc\add_url_params;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\create_user_auth_key;
-use function Piwigo\inc\dbLayer\get_boolean;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_gallery_home_url;
 use function Piwigo\inc\get_html_description_recent_post_date;
 use function Piwigo\inc\get_moment;
@@ -40,7 +33,6 @@ use function Piwigo\inc\get_query_string_diff;
 use function Piwigo\inc\get_recent_post_dates_array;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\get_title_recent_post_date;
-use function Piwigo\inc\is_autorize_status;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\l10n_dec;
 use function Piwigo\inc\news;
@@ -49,8 +41,6 @@ use function Piwigo\inc\pwg_mail;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\set_make_full_url;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\trigger_notify;
 use function Piwigo\inc\unset_make_full_url;
 
 // +-----------------------------------------------------------------------+
@@ -77,7 +67,9 @@ require_once(__DIR__ . '/../inc/functions_mail.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('mode', $_GET, false, '/^(param|subscribe|send)$/');
 
@@ -150,7 +142,7 @@ set
   ' . $conf['user_fields']['email'] . ' = null
 where
   trim(' . $conf['user_fields']['email'] . ") = '';";
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     // null mail_address are not selected in the list
     $query = '
@@ -166,13 +158,13 @@ where
 order by
   user_id;';
 
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    if (pwg_db_num_rows($result) > 0) {
+    if (Mysqli::pwg_db_num_rows($result) > 0) {
         $inserts = [];
         $check_key_list = [];
 
-        while ($nbm_user = pwg_db_fetch_assoc($result)) {
+        while ($nbm_user = Mysqli::pwg_db_fetch_assoc($result)) {
             // Calculate key
             $nbm_user['check_key'] = find_available_check_key();
 
@@ -194,7 +186,7 @@ order by
         }
 
         // Insert new nbm_users
-        mass_inserts(
+        Mysqli::mass_inserts(
             USER_MAIL_NOTIFICATION_TABLE,
             ['user_id', 'check_key', 'enabled'],
             $inserts
@@ -214,7 +206,7 @@ order by
                     ',',
                     $quoted_check_key_list
                 ) . ');';
-                $result = pwg_query($query);
+                $result = Mysqli::pwg_query($query);
 
                 redirect(
                     $base_url . get_query_string_diff([], false),
@@ -263,7 +255,7 @@ function do_action_send_mail_notification(
     $return_list = [];
 
     if (in_array($action, ['list_to_send', 'send'])) {
-        [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        [$dbnow] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT NOW();'));
 
         $is_action_send = ($action == 'send');
 
@@ -285,7 +277,10 @@ function do_action_send_mail_notification(
                 }
 
                 $customize_mail_content =
-                  trigger_change('nbm_render_global_customize_mail_content', $customize_mail_content);
+                  FunctionsPlugins::trigger_change(
+                      'nbm_render_global_customize_mail_content',
+                      $customize_mail_content
+                  );
                 // Prepare message after change language
                 if ($is_action_send) {
                     $msg_break_timeout = l10n('Time to send mail is limited. Others mails are skipped.');
@@ -316,7 +311,7 @@ function do_action_send_mail_notification(
                     if ($is_action_send) {
                         $auth = null;
                         $add_url_params = [];
-                        $auth_key = create_user_auth_key($nbm_user['user_id'], $nbm_user['status']);
+                        $auth_key = FunctionsUser::create_user_auth_key($nbm_user['user_id'], $nbm_user['status']);
                         if ($auth_key !== false) {
                             $auth = $auth_key['auth_key'];
                             $add_url_params['auth'] = $auth;
@@ -360,7 +355,7 @@ function do_action_send_mail_notification(
                             }
 
                             $nbm_user_customize_mail_content =
-                              trigger_change(
+                              FunctionsPlugins::trigger_change(
                                   'nbm_render_user_customize_mail_content',
                                   $customize_mail_content,
                                   $nbm_user
@@ -435,7 +430,7 @@ function do_action_send_mail_notification(
                 // Restore nbm environment
                 end_users_env_nbm();
                 if ($is_action_send) {
-                    mass_updates(
+                    Mysqli::mass_updates(
                         USER_MAIL_NOTIFICATION_TABLE,
                         [
                             'primary' => ['user_id'],
@@ -469,18 +464,18 @@ $page['mode'] = $_GET['mode'] ?? 'send';
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(
+FunctionsUser::check_status(
     get_tab_status($page['mode'])
 );
 
 // +-----------------------------------------------------------------------+
 // | Add event handler                                                     |
 // +-----------------------------------------------------------------------+
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'nbm_render_global_customize_mail_content',
     '\Piwigo\admin\render_global_customize_mail_content'
 );
-trigger_notify('nbm_event_handler_added');
+FunctionsPlugins::trigger_notify('nbm_event_handler_added');
 
 // +-----------------------------------------------------------------------+
 // | Insert new users with mails                                           |
@@ -512,10 +507,10 @@ switch ($page['mode']) {
 
             $updated_param_count = 0;
             // Update param
-            $result = pwg_query(
+            $result = Mysqli::pwg_query(
                 'select param, value from ' . CONFIG_TABLE . ' where param like \'nbm\\_%\''
             );
-            while ($nbm_user = pwg_db_fetch_assoc($result)) {
+            while ($nbm_user = Mysqli::pwg_db_fetch_assoc($result)) {
                 if (isset($_POST[$nbm_user['param']])) {
                     conf_update_param($nbm_user['param'], $_POST[$nbm_user['param']], true);
                     $updated_param_count++;
@@ -573,7 +568,7 @@ $template->assign(
     ]
 );
 
-if (is_autorize_status(ACCESS_WEBMASTER)) {
+if (FunctionsUser::is_autorize_status(ACCESS_WEBMASTER)) {
     // TabSheet
     $tabsheet = new Tabsheet();
     $tabsheet->set_id('nbm');
@@ -628,7 +623,7 @@ switch ($page['mode']) {
         $opt_false = [];
         $opt_false_selected = [];
         foreach ($data_users as $nbm_user) {
-            if (get_boolean($nbm_user['enabled'])) {
+            if (Mysqli::get_boolean($nbm_user['enabled'])) {
                 $opt_true[$nbm_user['check_key']] = stripslashes(
                     (string) $nbm_user['username']
                 ) . '[' . $nbm_user['mail_address'] . ']';

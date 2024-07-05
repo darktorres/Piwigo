@@ -3,6 +3,9 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\add_permission_on_category;
 use function Piwigo\admin\inc\clear_derivative_cache_rec;
 use function Piwigo\admin\inc\delete_categories;
@@ -16,17 +19,6 @@ use function Piwigo\admin\inc\update_category;
 use function Piwigo\admin\inc\update_global_rank;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_nextval;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\display_select_cat_wrapper;
 use function Piwigo\inc\fatal_error;
 use function Piwigo\inc\fill_caddie;
 use function Piwigo\inc\get_elapsed_time;
@@ -59,7 +51,7 @@ if (! $conf['enable_synchronization']) {
     die('synchronization is disabled');
 }
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(ACCESS_ADMINISTRATOR);
 
 if (! is_numeric($_GET['site'])) {
     die('site param missing or invalid');
@@ -71,14 +63,14 @@ $query = '
 SELECT galleries_url
   FROM ' . SITES_TABLE . '
   WHERE id = ' . $site_id;
-[$site_url] = pwg_db_fetch_row(pwg_query($query));
+[$site_url] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 if (! isset($site_url)) {
     die('site ' . $site_id . ' does not exist');
 }
 
 $site_is_remote = url_is_remote($site_url);
 
-[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT NOW();'));
 define('CURRENT_DATE', $dbnow);
 
 $error_labels = [
@@ -172,7 +164,7 @@ SELECT id, uppercats, global_rank, status, visible
         }
     }
 
-    $db_categories = query2array($query, 'id');
+    $db_categories = Mysqli::query2array($query, 'id');
 
     // get categort full directories in an array for comparison with file
     // system directory tree
@@ -197,8 +189,8 @@ SELECT id, uppercats, global_rank, status, visible
     $query = '
 SELECT id
   FROM ' . CATEGORIES_TABLE;
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $next_rank[$row['id']] = 1;
     }
 
@@ -207,8 +199,8 @@ SELECT id
 SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
   FROM ' . CATEGORIES_TABLE . '
   GROUP BY id_uppercat';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         // for the id_uppercat NULL, we write 'NULL' and not the empty string
         if (! isset($row['id_uppercat']) || $row['id_uppercat'] == '') {
             $row['id_uppercat'] = 'NULL';
@@ -218,7 +210,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
     }
 
     // next category id available
-    $next_id = pwg_db_nextval('id', CATEGORIES_TABLE);
+    $next_id = Mysqli::pwg_db_nextval('id', CATEGORIES_TABLE);
 
     // retrieve sub-directories fulldirs from the site reader
     $fs_fulldirs = $site_reader->get_full_directories(
@@ -252,9 +244,9 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
             'name' => str_replace('_', ' ', $dir),
             'site_id' => $site_id,
             'commentable' =>
-              boolean_to_string($conf['newcat_default_commentable']),
+              Mysqli::boolean_to_string($conf['newcat_default_commentable']),
             'status' => $conf['newcat_default_status'],
-            'visible' => boolean_to_string($conf['newcat_default_visible']),
+            'visible' => Mysqli::boolean_to_string($conf['newcat_default_visible']),
         ];
 
         if (isset($db_fulldirs[dirname((string) $fulldir)])) {
@@ -305,7 +297,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
                 'id', 'dir', 'name', 'site_id', 'id_uppercat', 'uppercats', 'commentable',
                 'visible', 'status', 'rank', 'global_rank',
             ];
-            mass_inserts(CATEGORIES_TABLE, $dbfields, $inserts);
+            Mysqli::mass_inserts(CATEGORIES_TABLE, $dbfields, $inserts);
 
             // add default permissions to categories
             $category_ids = [];
@@ -328,10 +320,10 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
           FROM ' . GROUP_ACCESS_TABLE . '
           WHERE cat_id IN (' . $category_up . ')
         ;';
-                $result = pwg_query($query);
+                $result = Mysqli::pwg_query($query);
                 if (! empty($result)) {
                     $granted_grps = [];
-                    while ($row = pwg_db_fetch_assoc($result)) {
+                    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
                         if (! isset($granted_grps[$row['cat_id']])) {
                             $granted_grps[$row['cat_id']] = [];
                         }
@@ -348,10 +340,10 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
           FROM ' . USER_ACCESS_TABLE . '
           WHERE cat_id IN (' . $category_up . ')
         ;';
-                $result = pwg_query($query);
+                $result = Mysqli::pwg_query($query);
                 if (! empty($result)) {
                     $granted_users = [];
-                    while ($row = pwg_db_fetch_assoc($result)) {
+                    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
                         if (! isset($granted_users[$row['cat_id']])) {
                             $granted_users[$row['cat_id']] = [];
                         }
@@ -392,9 +384,9 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
                     }
                 }
 
-                mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $insert_granted_grps);
+                Mysqli::mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $insert_granted_grps);
                 $insert_granted_users = array_unique($insert_granted_users, SORT_REGULAR);
-                mass_inserts(USER_ACCESS_TABLE, ['user_id', 'cat_id'], $insert_granted_users);
+                Mysqli::mass_inserts(USER_ACCESS_TABLE, ['user_id', 'cat_id'], $insert_granted_users);
             } else {
                 add_permission_on_category($category_ids, get_admins());
             }
@@ -468,11 +460,11 @@ SELECT id, path
               160,
               "\n"
           ) . ')';
-        $db_elements = query2array($query, 'id', 'path');
+        $db_elements = Mysqli::query2array($query, 'id', 'path');
     }
 
     // next element id available
-    $next_element_id = pwg_db_nextval('id', IMAGES_TABLE);
+    $next_element_id = Mysqli::pwg_db_nextval('id', IMAGES_TABLE);
 
     $start = get_moment();
 
@@ -493,10 +485,10 @@ SELECT id, path
 
         $insert = [
             'id' => $next_element_id++,
-            'file' => pwg_db_real_escape_string($filename),
-            'name' => pwg_db_real_escape_string(get_name_from_file($filename)),
+            'file' => Mysqli::pwg_db_real_escape_string($filename),
+            'name' => Mysqli::pwg_db_real_escape_string(get_name_from_file($filename)),
             'date_available' => CURRENT_DATE,
-            'path' => pwg_db_real_escape_string($path),
+            'path' => Mysqli::pwg_db_real_escape_string($path),
             'representative_ext' => $fs[$path]['representative_ext'],
             'storage_category_id' => $db_fulldirs[$dirname],
             'added_by' => $user['id'],
@@ -557,8 +549,8 @@ SELECT *
   FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE image_id IN (' . implode(',', $existing_ids) . ')
 ;';
-            $result = pwg_query($query);
-            while ($row = pwg_db_fetch_assoc($result)) {
+            $result = Mysqli::pwg_query($query);
+            while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
                 if (! isset($db_formats[$row['image_id']])) {
                     $db_formats[$row['image_id']] = [];
                 }
@@ -610,14 +602,14 @@ SELECT *
     if (! $simulate) {
         // inserts all new elements
         if ($inserts !== []) {
-            mass_inserts(
+            Mysqli::mass_inserts(
                 IMAGES_TABLE,
                 array_keys($inserts[0]),
                 $inserts
             );
 
             // inserts all links between new elements and their storage category
-            mass_inserts(
+            Mysqli::mass_inserts(
                 IMAGE_CATEGORY_TABLE,
                 array_keys($insert_links[0]),
                 $insert_links
@@ -635,7 +627,7 @@ SELECT *
 
         // inserts all formats
         if ($insert_formats !== []) {
-            mass_inserts(
+            Mysqli::mass_inserts(
                 IMAGE_FORMAT_TABLE,
                 array_keys($insert_formats[0]),
                 $insert_formats
@@ -648,7 +640,7 @@ DELETE
   FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE format_id IN (' . implode(',', $formats_to_delete) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
     }
 
@@ -730,7 +722,7 @@ if (isset($_POST['submit']) && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'f
 
         $counts['upd_elements'] = count($datas);
         if (! $simulate && $datas !== []) {
-            mass_updates(
+            Mysqli::mass_updates(
                 IMAGES_TABLE,
                 // fields
                 [
@@ -826,7 +818,7 @@ if (isset($_POST['submit']) && isset($_POST['sync_meta']) && ! $general_failure)
 
     if (! $simulate) {
         if ($datas !== []) {
-            mass_updates(
+            Mysqli::mass_updates(
                 IMAGES_TABLE,
                 // fields
                 [
@@ -940,7 +932,7 @@ $query = '
 SELECT id,name,uppercats,global_rank
   FROM ' . CATEGORIES_TABLE . '
   WHERE site_id = ' . $site_id;
-display_select_cat_wrapper(
+FunctionsCategory::display_select_cat_wrapper(
     $query,
     $cat_selected,
     'category_options',

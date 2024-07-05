@@ -2,15 +2,11 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\add_url_params;
-use function Piwigo\inc\build_user;
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\format_email;
-use function Piwigo\inc\generate_key;
 use function Piwigo\inc\get_gallery_home_url;
 use function Piwigo\inc\get_mail_sender_name;
 use function Piwigo\inc\get_mail_template;
@@ -60,7 +56,7 @@ if (
 function find_available_check_key()
 {
     while (true) {
-        $key = generate_key(16);
+        $key = FunctionsSession::generate_key(16);
         $query = '
 select
   count(*)
@@ -69,7 +65,7 @@ from
 where
   check_key = \'' . $key . "';";
 
-        [$count] = pwg_db_fetch_row(pwg_query($query));
+        [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($count == 0) {
             return $key;
         }
@@ -154,7 +150,7 @@ where 1=1';
 
         if (isset($enabled_filter_value) && $enabled_filter_value != '') {
             $query .= ' and
-        N.enabled = \'' . boolean_to_string($enabled_filter_value) . "'";
+        N.enabled = \'' . Mysqli::boolean_to_string($enabled_filter_value) . "'";
         }
 
         $query .= '
@@ -170,9 +166,9 @@ order by';
 
         $query .= ';';
 
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
         if (! empty($result)) {
-            while ($nbm_user = pwg_db_fetch_assoc($result)) {
+            while ($nbm_user = Mysqli::pwg_db_fetch_assoc($result)) {
                 $data_users[] = $nbm_user;
             }
         }
@@ -258,7 +254,7 @@ function set_user_on_env_nbm(
 ): void {
     global $user, $lang, $lang_info, $env_nbm;
 
-    $user = build_user($nbm_user['user_id'], true);
+    $user = FunctionsUser::build_user($nbm_user['user_id'], true);
 
     switch_lang_to($user['language']);
 
@@ -407,7 +403,7 @@ function do_subscribe_unsubscribe_notification_by_mail(
 
     if (count($check_key_list) != 0) {
         $updates = [];
-        $enabled_value = boolean_to_string($is_subscribe);
+        $enabled_value = Mysqli::boolean_to_string($is_subscribe);
         $data_users = get_user_notifications('subscribe', $check_key_list, ! $is_subscribe);
 
         // Prepare message after change language
@@ -505,7 +501,7 @@ function do_subscribe_unsubscribe_notification_by_mail(
 
         display_counter_info();
 
-        mass_updates(
+        Mysqli::mass_updates(
             USER_MAIL_NOTIFICATION_TABLE,
             [
                 'primary' => ['check_key'],

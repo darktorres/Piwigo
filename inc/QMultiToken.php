@@ -282,7 +282,7 @@ class QMultiToken implements \Stringable
         }
     }
 
-    private function push(&$token, &$modifier, &$scope)
+    private function push(&$token, &$modifier, &$scope): void
     {
         if (strlen((string) $token) || (isset($scope) && $scope->nullable)) {
             if (isset($scope)) {
@@ -303,7 +303,7 @@ class QMultiToken implements \Stringable
      */
     private function apply_scope(
         QSearchScope $scope
-    ) {
+    ): void {
         $counter = count($this->tokens);
         for ($i = 0; $i < $counter; $i++) {
             if ($this->tokens[$i]->is_single) {
@@ -316,7 +316,7 @@ class QMultiToken implements \Stringable
         }
     }
 
-    private function priority($modifier)
+    private function priority($modifier): int
     {
         return ($modifier & QST_OR) !== 0 ? 0 : 1;
     }

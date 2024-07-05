@@ -1,6 +1,6 @@
 <?php
 
-use function Piwigo\inc\pwg_set_session_var;
+use Piwigo\inc\FunctionsSession;
 
 /*
 Theme Name: Bootstrap Darkroom
@@ -27,7 +27,7 @@ $themeconf = [
 //$conf['template_combine_files'] = false;
 
 // always show metadata initially
-pwg_set_session_var('show_metadata', true);
+FunctionsSession::pwg_set_session_var('show_metadata', true);
 
 // register video files
 $video_ext = ['mp4', 'm4v'];

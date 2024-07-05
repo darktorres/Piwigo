@@ -2,9 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_cast_to_text;
-use function Piwigo\inc\dbLayer\pwg_db_concat_ws;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -251,7 +249,7 @@ $this->inner_sql .
 $this->get_date_where($level) . '
   GROUP BY period;';
 
-        $level_items = query2array($query, 'period', 'nb_images');
+        $level_items = Mysqli::query2array($query, 'period', 'nb_images');
 
         if ((count($level_items) == 1 && count($page['chronology_date']) < count(
             $this->calendar_levels
@@ -303,17 +301,17 @@ $this->get_date_where($level) . '
             if ($page['chronology_date'][$i] === 'any') {
                 $sub_queries[] = "'any'";
             } else {
-                $sub_queries[] = pwg_db_cast_to_text($this->calendar_levels[$i]['sql']);
+                $sub_queries[] = Mysqli::pwg_db_cast_to_text($this->calendar_levels[$i]['sql']);
             }
         }
 
-        $query = 'SELECT ' . pwg_db_concat_ws($sub_queries, '-') . ' AS period';
+        $query = 'SELECT ' . Mysqli::pwg_db_concat_ws($sub_queries, '-') . ' AS period';
         $query .= $this->inner_sql . '
 AND ' . $this->date_field . ' IS NOT NULL
 GROUP BY period';
 
         $current = implode('-', $page['chronology_date']);
-        $upper_items = query2array($query, null, 'period');
+        $upper_items = Mysqli::query2array($query, null, 'period');
 
         usort($upper_items, version_compare(...));
         $upper_items_rank = array_flip($upper_items);

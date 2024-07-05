@@ -26,7 +26,7 @@ if (in_array($conf['dblayer'], ['pgsql', 'sqlite', 'pdo-sqlite'])) {
 
 $query .= ';';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

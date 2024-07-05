@@ -3,18 +3,16 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\delete_orphan_tags;
 use function Piwigo\admin\inc\get_orphan_tags;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_change;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -28,7 +26,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 require_once(__DIR__ . '/../admin/inc/functions.php');
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(ACCESS_ADMINISTRATOR);
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
@@ -79,7 +77,7 @@ $orphan_tags = get_orphan_tags();
 $orphan_tag_names_array = '[]';
 $orphan_tag_names = [];
 foreach ($orphan_tags as $tag) {
-    $orphan_tag_names[] = trigger_change('render_tag_name', $tag['name'], $tag);
+    $orphan_tag_names[] = FunctionsPlugins::trigger_change('render_tag_name', $tag['name'], $tag);
 }
 
 if ($orphan_tag_names !== []) {
@@ -129,24 +127,24 @@ $query = '
 SELECT tag_id, COUNT(image_id) AS counter
   FROM ' . IMAGE_TAG_TABLE . '
   GROUP BY tag_id';
-$tag_counters = query2array($query, 'tag_id', 'counter');
+$tag_counters = Mysqli::query2array($query, 'tag_id', 'counter');
 
 // all tags
 $query = '
 SELECT name, id, url_name
   FROM ' . TAGS_TABLE . '
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 $all_tags = [];
-while ($tag = pwg_db_fetch_assoc($result)) {
+while ($tag = Mysqli::pwg_db_fetch_assoc($result)) {
     $raw_name = $tag['name'];
-    $tag['name'] = trigger_change('render_tag_name', $raw_name, $tag);
+    $tag['name'] = FunctionsPlugins::trigger_change('render_tag_name', $raw_name, $tag);
     $counter = intval(@$tag_counters[$tag['id']]);
     if ($counter > 0) {
         $tag['counter'] = intval(@$tag_counters[$tag['id']]);
     }
 
-    $alt_names = trigger_change('get_tag_alt_names', [], $raw_name);
+    $alt_names = FunctionsPlugins::trigger_change('get_tag_alt_names', [], $raw_name);
     $alt_names = array_diff(array_unique($alt_names), [$tag['name']]);
     if ($alt_names !== []) {
         $tag['alt_names'] = implode(', ', $alt_names);

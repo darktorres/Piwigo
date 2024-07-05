@@ -83,9 +83,9 @@ function editarea_quote(
  * @param string
  $file
  */
-function get_bak_file($file)
+function get_bak_file(string $file)
 {
-    if (get_extension($file) == 'php') {
+    if (get_extension($file) === 'php') {
         return substr_replace($file, '.bak', strrpos((string) $file, '.'), 0);
     }
 
@@ -96,11 +96,12 @@ function get_bak_file($file)
 /**
  * returns dirs and subdirs
  * retun array
- * @param string
- $path
+ * @param string$path
+ * @return mixed[]
  */
-function get_rec_dirs($path = '')
-{
+function get_rec_dirs(
+    string $path = ''
+): array {
     $options = [];
     if (is_dir($path)) {
         $fh = opendir($path);

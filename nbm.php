@@ -2,13 +2,13 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\subscribe_notification_by_mail;
 use function Piwigo\admin\inc\unsubscribe_notification_by_mail;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -20,7 +20,7 @@ use function Piwigo\inc\trigger_notify;
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
 require_once(__DIR__ . '/inc/common.inc.php');
-check_status(ACCESS_FREE);
+FunctionsUser::check_status(ACCESS_FREE);
 require_once(__DIR__ . '/inc/functions_notification.inc.php');
 require_once(__DIR__ . '/inc/functions_mail.inc.php');
 require_once(__DIR__ . '/admin/inc/functions.php');
@@ -28,7 +28,7 @@ require_once(__DIR__ . '/admin/inc/functions_notification_by_mail.inc.php');
 // Translations are in admin file too
 load_language('admin.lang');
 // Need to update a second time
-trigger_notify('loading_lang');
+FunctionsPlugins::trigger_notify('loading_lang');
 load_language('lang', PHPWG_ROOT_PATH . 'local/', [
     'no_fallback' => true,
     'local' => true,

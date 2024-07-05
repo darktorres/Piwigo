@@ -2,9 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -25,8 +23,8 @@ function get_std_sql_where_restrict_filter(
     $prefix_condition,
     $img_field = 'ic.image_id',
     $force_one_condition = false
-): string {
-    return get_sql_condition_FandF(
+) {
+    return FunctionsUser::get_sql_condition_FandF(
         [
             'forbidden_categories' => 'ic.category_id',
             'visible_categories' => 'ic.category_id',
@@ -175,7 +173,7 @@ function custom_notification_query(
             }
 
             $query = 'SELECT COUNT(DISTINCT ' . $field_id . ') ' . $query . ';';
-            [$count] = pwg_db_fetch_row(pwg_query($query));
+            [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
             return $count;
 
         case 'info':
@@ -199,7 +197,7 @@ function custom_notification_query(
             }
 
             $query = 'SELECT DISTINCT ' . $field_id . ' ' . $query . ';';
-            return query2array($query);
+            return Mysqli::query2array($query);
 
         default:
             return null; // stop and return nothing
@@ -351,10 +349,10 @@ function news_exists(
     return nb_new_comments($start, $end) > 0 || nb_new_elements($start, $end) > 0 || nb_updated_categories(
         $start,
         $end
-    ) > 0 || is_admin() && nb_unvalidated_comments(
+    ) > 0 || FunctionsUser::is_admin() && nb_unvalidated_comments(
         $start,
         $end
-    ) > 0 || is_admin() && nb_new_users(
+    ) > 0 || FunctionsUser::is_admin() && nb_new_users(
         $start,
         $end
     ) > 0;
@@ -448,7 +446,7 @@ function news(
         $add_url
     );
 
-    if (is_admin()) {
+    if (FunctionsUser::is_admin()) {
         add_news_line(
             $news,
             nb_unvalidated_comments($start, $end),
@@ -506,7 +504,7 @@ SELECT
   ORDER BY date_available DESC
   LIMIT ' . $max_dates . '
 ;';
-    $dates = query2array($query);
+    $dates = Mysqli::query2array($query);
     $counter = count($dates);
 
     for ($i = 0; $i < $counter; $i++) {
@@ -520,7 +518,7 @@ SELECT DISTINCT i.*
   ORDER BY ' . DB_RANDOM_FUNCTION . '()
   LIMIT ' . $max_elements . '
 ;';
-            $dates[$i]['elements'] = query2array($query);
+            $dates[$i]['elements'] = Mysqli::query2array($query);
         }
 
         if ($max_cats > 0) {// get some categories ...
@@ -537,7 +535,7 @@ SELECT
   ORDER BY img_count DESC
   LIMIT ' . $max_cats . '
 ;';
-            $dates[$i]['categories'] = query2array($query);
+            $dates[$i]['categories'] = Mysqli::query2array($query);
         }
     }
 

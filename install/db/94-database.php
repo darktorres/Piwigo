@@ -26,9 +26,9 @@ $query = '
 SELECT *
   FROM ' . PREFIX_TABLE . 'waiting
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 $user_upload_conf['waiting_rows'] = [];
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $user_upload_conf['waiting_rows'][] = $row;
 }
 
@@ -38,9 +38,9 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE uploadable = \'true\'
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 $user_upload_conf['uploadable_categories'] = [];
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $user_upload_conf['uploadable_categories'][] = $row['id'];
 }
 
@@ -69,17 +69,17 @@ if ($save_conf) {
 //
 
 // categories.uploadable
-pwg_query('ALTER TABLE ' . CATEGORIES_TABLE . ' DROP COLUMN uploadable;');
+Mysqli::pwg_query('ALTER TABLE ' . CATEGORIES_TABLE . ' DROP COLUMN uploadable;');
 
 // waiting
-pwg_query('DROP TABLE ' . PREFIX_TABLE . 'waiting;');
+Mysqli::pwg_query('DROP TABLE ' . PREFIX_TABLE . 'waiting;');
 
 // config parameter settings : upload_user_access, upload_link_everytime
 $query = '
 DELETE FROM ' . PREFIX_TABLE . 'config
   WHERE param IN (\'upload_user_access\', \'upload_link_everytime\', \'email_admin_on_picture_uploaded\')
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

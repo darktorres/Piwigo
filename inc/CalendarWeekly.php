@@ -2,10 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_get_dayofweek;
-use function Piwigo\inc\dbLayer\pwg_db_get_week;
-use function Piwigo\inc\dbLayer\pwg_db_get_weekday;
-use function Piwigo\inc\dbLayer\pwg_db_get_year;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -36,23 +33,23 @@ class CalendarWeekly extends CalendarBase
 
         $this->calendar_levels = [
             [
-                'sql' => pwg_db_get_year($this->date_field),
+                'sql' => Mysqli::pwg_db_get_year($this->date_field),
                 'labels' => null,
             ],
             [
-                'sql' => pwg_db_get_week($this->date_field) . '+1',
+                'sql' => Mysqli::pwg_db_get_week($this->date_field) . '+1',
                 'labels' => $week_no_labels,
             ],
             [
-                'sql' => pwg_db_get_dayofweek($this->date_field) . '-1',
+                'sql' => Mysqli::pwg_db_get_dayofweek($this->date_field) . '-1',
                 'labels' => $lang['day'],
             ],
         ];
         //Comment next lines for week starting on Sunday or if MySQL version<4.0.17
         //WEEK(date,5) = "0-53 - Week 1=the first week with a Monday in this year"
         if ($conf['week_starts_on'] == 'monday') {
-            $this->calendar_levels[CWEEK]['sql'] = pwg_db_get_week($this->date_field, 5) . '+1';
-            $this->calendar_levels[CDAY]['sql'] = pwg_db_get_weekday($this->date_field);
+            $this->calendar_levels[CWEEK]['sql'] = Mysqli::pwg_db_get_week($this->date_field, 5) . '+1';
+            $this->calendar_levels[CDAY]['sql'] = Mysqli::pwg_db_get_weekday($this->date_field);
             $this->calendar_levels[CDAY]['labels'][] = array_shift($this->calendar_levels[CDAY]['labels']);
         }
     }

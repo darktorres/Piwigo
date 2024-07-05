@@ -21,7 +21,7 @@ function initialize_menu(): void
     $menu = new BlockManager('menubar');
 
     // if guest_access is disabled, we only display the menus if the user is identified
-    if ($conf['guest_access'] || ! is_a_guest()) {
+    if ($conf['guest_access'] || ! FunctionsUser::is_a_guest()) {
         $menu->load_registered_blocks();
     }
 
@@ -96,7 +96,7 @@ function initialize_menu(): void
     if ($block != null) {
         $block->data = [
             'NB_PICTURE' => $user['nb_total_images'],
-            'MENU_CATEGORIES' => get_categories_menu(),
+            'MENU_CATEGORIES' => FunctionsCategory::get_categories_menu(),
             'U_CATEGORIES' => make_index_url([
                 'section' => 'categories',
             ]),
@@ -125,7 +125,7 @@ function initialize_menu(): void
         }
 
         $block->data = [
-            'MENU_CATEGORIES' => get_related_categories_menu($page['items'], $exclude_cat_ids),
+            'MENU_CATEGORIES' => FunctionsCategory::get_related_categories_menu($page['items'], $exclude_cat_ids),
         ];
 
         if (! empty($block->data['MENU_CATEGORIES'])) {
@@ -213,7 +213,7 @@ function initialize_menu(): void
     if (($block = $menu->get_block(
         'mbSpecials'
     )) != null) {
-        if (! is_a_guest()) {// favorites
+        if (! FunctionsUser::is_a_guest()) {// favorites
             $block->data['favorites'] =
               [
                   'URL' => make_index_url([
@@ -345,7 +345,7 @@ function initialize_menu(): void
     }
 
     //--------------------------------------------------------------- identification
-    if (is_a_guest()) {
+    if (FunctionsUser::is_a_guest()) {
         $template->assign(
             [
                 'U_LOGIN' => get_root_url() . 'identification.php',
@@ -358,7 +358,7 @@ function initialize_menu(): void
         }
     } else {
         $template->assign('USERNAME', stripslashes((string) $user['username']));
-        if (is_autorize_status(ACCESS_CLASSIC)) {
+        if (FunctionsUser::is_autorize_status(ACCESS_CLASSIC)) {
             $template->assign('U_PROFILE', get_root_url() . 'profile.php');
         }
 
@@ -368,7 +368,7 @@ function initialize_menu(): void
             $template->assign('U_LOGOUT', get_root_url() . '?act=logout');
         }
 
-        if (is_admin()) {
+        if (FunctionsUser::is_admin()) {
             $template->assign('U_ADMIN', get_root_url() . 'admin.php');
         }
     }

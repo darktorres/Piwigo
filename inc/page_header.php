@@ -16,7 +16,7 @@ $template->set_filenames([
     'header' => 'header.tpl',
 ]);
 
-trigger_notify('loc_begin_page_header');
+FunctionsPlugins::trigger_notify('loc_begin_page_header');
 
 $show_mobile_app_banner = conf_get_param('show_mobile_app_banner_in_gallery', false);
 if (defined('IN_ADMIN') && IN_ADMIN) {
@@ -29,7 +29,7 @@ $template->assign(
           $page['gallery_title'] ?? $conf['gallery_title'],
 
         'PAGE_BANNER' =>
-          trigger_change(
+          FunctionsPlugins::trigger_change(
               'render_page_banner',
               str_replace(
                   '%gallery_title%',
@@ -92,9 +92,9 @@ if (isset($refresh) && intval($refresh) >= 0 && isset($url_link)) {
     );
 }
 
-trigger_notify('loc_end_page_header');
+FunctionsPlugins::trigger_notify('loc_end_page_header');
 
 header('Content-Type: text/html; charset=utf-8');
 $template->parse('header');
 
-trigger_notify('loc_after_page_header');
+FunctionsPlugins::trigger_notify('loc_after_page_header');

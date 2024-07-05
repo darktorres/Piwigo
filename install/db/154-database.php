@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'add activity table';
 
-pwg_query('
+Mysqli::pwg_query('
 CREATE TABLE `' . PREFIX_TABLE . 'activity` (
   `activity_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `object` varchar(255) NOT NULL,

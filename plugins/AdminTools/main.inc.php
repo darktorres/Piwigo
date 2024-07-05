@@ -1,6 +1,6 @@
 <?php
 
-use function Piwigo\inc\add_event_handler;
+use Piwigo\inc\FunctionsPlugins;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\load_language;
 
@@ -28,25 +28,25 @@ require_once(ADMINTOOLS_PATH . 'inc/MultiView.class.php');
 global $MultiView;
 $MultiView = new MultiView();
 
-add_event_handler('init', 'admintools_init');
+FunctionsPlugins::add_event_handler('init', 'admintools_init');
 
-add_event_handler('user_init', $MultiView->user_init(...));
-add_event_handler('init', $MultiView->init(...));
+FunctionsPlugins::add_event_handler('user_init', $MultiView->user_init(...));
+FunctionsPlugins::add_event_handler('init', $MultiView->init(...));
 
-add_event_handler('ws_add_methods', ['MultiView', 'register_ws']);
-add_event_handler('delete_user', ['MultiView', 'invalidate_cache']);
-add_event_handler('register_user', ['MultiView', 'invalidate_cache']);
+FunctionsPlugins::add_event_handler('ws_add_methods', ['MultiView', 'register_ws']);
+FunctionsPlugins::add_event_handler('delete_user', ['MultiView', 'invalidate_cache']);
+FunctionsPlugins::add_event_handler('FunctionsUser::register_user', ['MultiView', 'invalidate_cache']);
 
 if (! defined('IN_ADMIN')) {
-    add_event_handler('loc_after_page_header', 'admintools_add_public_controller');
-    add_event_handler('loc_begin_picture', 'admintools_save_picture');
-    add_event_handler('loc_begin_index', 'admintools_save_category');
+    FunctionsPlugins::add_event_handler('loc_after_page_header', 'admintools_add_public_controller');
+    FunctionsPlugins::add_event_handler('loc_begin_picture', 'admintools_save_picture');
+    FunctionsPlugins::add_event_handler('loc_begin_index', 'admintools_save_category');
 } else {
-    add_event_handler('loc_begin_page_header', 'admintools_add_admin_controller_setprefilter');
-    add_event_handler('loc_after_page_header', 'admintools_add_admin_controller');
+    FunctionsPlugins::add_event_handler('loc_begin_page_header', 'admintools_add_admin_controller_setprefilter');
+    FunctionsPlugins::add_event_handler('loc_after_page_header', 'admintools_add_admin_controller');
 }
 
-function admintools_init()
+function admintools_init(): void
 {
     global $conf;
 

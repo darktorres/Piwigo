@@ -18,7 +18,7 @@ class TemplateAdapter
     /**
      * @deprecated use "translate" modifier
      */
-    public function l10n($text)
+    public function l10n(?string $text)
     {
         return l10n($text);
     }
@@ -26,7 +26,7 @@ class TemplateAdapter
     /**
      * @deprecated use "translate_dec" modifier
      */
-    public function l10n_dec($s, $p, $v)
+    public function l10n_dec($s, $p, $v): string
     {
         return l10n_dec($s, $p, $v);
     }
@@ -34,7 +34,7 @@ class TemplateAdapter
     /**
      * @deprecated use "translate" or "sprintf" modifier
      */
-    public function sprintf(...$args)
+    public function sprintf(...$args): string
     {
         return sprintf(...$args);
     }
@@ -42,12 +42,11 @@ class TemplateAdapter
     /**
      * @param string $type
      * @param SrcImage $img
-     * @return DerivativeImage
      */
     public function derivative(
         $type,
         $img
-    ) {
+    ): \Piwigo\inc\DerivativeImage {
         return new DerivativeImage($type, $img);
     }
 

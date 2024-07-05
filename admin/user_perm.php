@@ -2,18 +2,15 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\add_permission_on_category;
 use function Piwigo\admin\inc\get_username;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\display_select_cat_wrapper;
 use function Piwigo\inc\get_cat_display_name_cache;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -32,7 +29,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if ($_POST !== []) {
     check_pwg_token();
@@ -61,13 +60,13 @@ if (isset($_POST['falsify']) && isset($_POST['cat_true']) && count(
 ) > 0) {
     // if you forbid access to a category, all sub-categories become
     // automatically forbidden
-    $subcats = get_subcat_ids($_POST['cat_true']);
+    $subcats = FunctionsCategory::get_subcat_ids($_POST['cat_true']);
     $query = '
 DELETE FROM ' . USER_ACCESS_TABLE . '
   WHERE user_id = ' . $page['user'] . '
     AND cat_id IN (' . implode(',', $subcats) . ')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 } elseif (isset($_POST['trueify']) && isset($_POST['cat_false']) && count($_POST['cat_false']) > 0) {
     add_permission_on_category($_POST['cat_false'], $page['user']);
 }
@@ -112,16 +111,16 @@ SELECT DISTINCT cat_id, c.uppercats, c.global_rank
       ON c.id = ga.cat_id
   WHERE ug.user_id = ' . $page['user'] . '
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-if (pwg_db_num_rows($result) > 0) {
+if (Mysqli::pwg_db_num_rows($result) > 0) {
     $cats = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $cats[] = $row;
         $group_authorized[] = $row['cat_id'];
     }
 
-    usort($cats, \Piwigo\inc\global_rank_compare(...));
+    usort($cats, FunctionsCategory::global_rank_compare(...));
 
     foreach ($cats as $category) {
         $template->append(
@@ -144,11 +143,11 @@ if ($group_authorized !== []) {
 
 $query_true .= '
 ;';
-display_select_cat_wrapper($query_true, [], 'category_option_true');
+FunctionsCategory::display_select_cat_wrapper($query_true, [], 'category_option_true');
 
-$result = pwg_query($query_true);
+$result = Mysqli::pwg_query($query_true);
 $authorized_ids = [];
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $authorized_ids[] = $row['id'];
 }
 
@@ -168,7 +167,7 @@ if ($group_authorized !== []) {
 
 $query_false .= '
 ;';
-display_select_cat_wrapper($query_false, [], 'category_option_false');
+FunctionsCategory::display_select_cat_wrapper($query_false, [], 'category_option_false');
 
 $template->assign('PWG_TOKEN', get_pwg_token());
 

@@ -2,20 +2,16 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\display_select_cat_wrapper;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\get_available_tags;
-use function Piwigo\inc\get_sql_condition_FandF;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -31,16 +27,16 @@ require_once(__DIR__ . '/inc/common.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
-trigger_notify('loc_begin_search');
+FunctionsPlugins::trigger_notify('loc_begin_search');
 
 //------------------------------------------------------------------ form check
 $search = [];
 if (isset($_POST['submit'])) {
     foreach ($_POST as $post_key => $post_value) {
         if (! is_array($post_value)) {
-            $_POST[$post_key] = pwg_db_real_escape_string($post_value);
+            $_POST[$post_key] = Mysqli::pwg_db_real_escape_string($post_value);
         }
     }
 
@@ -147,11 +143,11 @@ if (isset($_POST['submit'])) {
 INSERT INTO ' . SEARCH_TABLE . '
   (rules, last_seen)
   VALUES
-  (\'' . pwg_db_real_escape_string(serialize($search)) . '\', NOW())
+  (\'' . Mysqli::pwg_db_real_escape_string(serialize($search)) . '\', NOW())
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
-        $search_id = pwg_db_insert_id();
+        $search_id = Mysqli::pwg_db_insert_id();
     } else {
         $page['errors'][] = l10n('Empty query. No criteria has been entered.');
     }
@@ -215,7 +211,7 @@ SELECT
     id
   FROM ' . IMAGES_TABLE . ' AS i
     JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON ic.image_id = i.id
-  ' . get_sql_condition_FandF(
+  ' . FunctionsUser::get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',
         'visible_categories' => 'category_id',
@@ -228,8 +224,8 @@ SELECT
   ORDER BY author
 ;';
 $author_counts = [];
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if (! isset($author_counts[$row['author']])) {
         $author_counts[$row['author']] = 0;
     }
@@ -250,7 +246,7 @@ $template->assign('AUTHORS', $authors);
 $query = '
 SELECT id,name,global_rank,uppercats
   FROM ' . CATEGORIES_TABLE . '
-' . get_sql_condition_FandF(
+' . FunctionsUser::get_sql_condition_FandF(
     [
         'forbidden_categories' => 'id',
         'visible_categories' => 'id',
@@ -258,7 +254,7 @@ SELECT id,name,global_rank,uppercats
     'WHERE'
 ) . '
 ;';
-display_select_cat_wrapper($query, [], 'category_options', true);
+FunctionsCategory::display_select_cat_wrapper($query, [], 'category_options', true);
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
@@ -268,7 +264,7 @@ if (! isset($themeconf['hide_menu_on']) || ! in_array('theSearchPage', $themecon
 
 //------------------------------------------------------------ html code display
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_search');
+FunctionsPlugins::trigger_notify('loc_end_search');
 flush_page_messages();
 $template->pparse('search');
 require(__DIR__ . '/inc/page_tail.php');

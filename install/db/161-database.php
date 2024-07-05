@@ -25,8 +25,8 @@ SELECT
   ORDER BY activity_id ASC
 ;';
 
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if (isset($tag_ids_added[$row['object_id']])) {
         $to_delete_activities[] = $row['activity_id'];
     } else {
@@ -40,7 +40,7 @@ DELETE
   FROM ' . PREFIX_TABLE . 'activity 
   WHERE activity_id IN (' . implode(',', $to_delete_activities) . ')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 echo "\n" . $upgrade_description . "\n";

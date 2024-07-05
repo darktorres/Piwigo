@@ -2,9 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dbLayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -50,7 +48,7 @@ if ($conf['question_mark_in_urls'] == false && isset($_SERVER['PATH_INFO']) && !
     }
 
     // the $_GET keys are not protected in inc/common.inc.php, only the values
-    $rewritten = pwg_db_real_escape_string(
+    $rewritten = Mysqli::pwg_db_real_escape_string(
         $rewritten
     );
     $page['root_path'] = PHPWG_ROOT_PATH;
@@ -74,7 +72,7 @@ $next_token = 0;
 // |                             picture page                              |
 // +-----------------------------------------------------------------------+
 // the first token must be the identifier for the picture
-if (script_basename() == 'picture') {
+if (script_basename() === 'picture') {
     $token = $tokens[$next_token];
     $next_token++;
     if (is_numeric($token)) {
@@ -138,7 +136,7 @@ if (! isset($page['section'])) {
 $page = array_merge($page, parse_well_known_params_url($tokens, $next_token));
 
 //access a picture only by id, file or id-file without given section
-if (script_basename() == 'picture' && $page['section'] == 'categories' && ! isset($page['category']) && ! isset($page['chronology_field'])) {
+if (script_basename() === 'picture' && $page['section'] == 'categories' && ! isset($page['category']) && ! isset($page['chronology_field'])) {
     $page['flat'] = true;
 }
 
@@ -153,10 +151,10 @@ if ($page['section'] == 'categories' && ! isset($page['flat'])) {
     $conf['order_by'] = $conf['order_by_inside_category'];
 }
 
-if (pwg_get_session_var('image_order', 0) > 0) {
-    $image_order_id = pwg_get_session_var('image_order');
+if (FunctionsSession::pwg_get_session_var('image_order', 0) > 0) {
+    $image_order_id = FunctionsSession::pwg_get_session_var('image_order');
 
-    $orders = get_category_preferred_image_orders();
+    $orders = FunctionsCategory::get_category_preferred_image_orders();
 
     // the current session stored image_order might be not compatible with
     // current image set, for example if the current image_order is the rank
@@ -171,12 +169,12 @@ if (pwg_get_session_var('image_order', 0) > 0) {
         );
         $page['super_order_by'] = true;
     } else {
-        pwg_unset_session_var('image_order');
+        FunctionsSession::pwg_unset_session_var('image_order');
         $page['super_order_by'] = false;
     }
 }
 
-$forbidden = get_sql_condition_FandF(
+$forbidden = FunctionsUser::get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',
         'visible_categories' => 'category_id',
@@ -195,7 +193,7 @@ if ($page['section'] == 'categories') {
         $page = array_merge(
             $page,
             [
-                'comment' => trigger_change(
+                'comment' => FunctionsPlugins::trigger_change(
                     'render_category_description',
                     $page['category']['comment'],
                     'main_page_category_description'
@@ -214,7 +212,7 @@ if ($page['section'] == 'categories') {
             $cat_ids[] = $category['id'];
         }
 
-        $page['items'] = get_image_ids_for_categories($cat_ids);
+        $page['items'] = FunctionsCategory::get_image_ids_for_categories($cat_ids);
     } elseif (
         $page['startcat'] == 0 && ! isset($page['chronology_field']) && (isset($page['category']) || isset($page['flat']))
     ) {
@@ -231,7 +229,7 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE
     uppercats LIKE \'' . $page['category']['uppercats'] . ",%' "
-    . get_sql_condition_FandF(
+    . FunctionsUser::get_sql_condition_FandF(
         [
             'forbidden_categories' => 'id',
             'visible_categories' => 'id',
@@ -239,11 +237,11 @@ SELECT id
         "\n  AND"
     );
 
-                $subcat_ids = query2array($query, null, 'id');
+                $subcat_ids = Mysqli::query2array($query, null, 'id');
                 $subcat_ids[] = $page['category']['id'];
                 $where_sql = 'category_id IN (' . implode(',', $subcat_ids) . ')';
                 // remove categories from forbidden because just checked above
-                $forbidden = get_sql_condition_FandF(
+                $forbidden = FunctionsUser::get_sql_condition_FandF(
                     [
                         'visible_images' => 'id',
                     ],
@@ -274,7 +272,7 @@ SELECT DISTINCT(image_id)
   ' . $conf['order_by'] . '
 ;';
 
-            $page['items'] = query2array($query, null, 'image_id');
+            $page['items'] = Mysqli::query2array($query, null, 'image_id');
 
             if (isset($cache_key)) {
                 $persistent_cache->set($cache_key, $page['items']);
@@ -323,7 +321,7 @@ SELECT DISTINCT(image_id)
         ]
     );
 } elseif ($page['section'] == 'favorites') {
-    check_user_favorites();
+    FunctionsUser::check_user_favorites();
 
     $page = array_merge(
         $page,
@@ -340,7 +338,7 @@ SELECT DISTINCT(image_id)
 DELETE FROM ' . FAVORITES_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         redirect(make_index_url([
             'section' => 'favorites',
         ]));
@@ -350,7 +348,7 @@ SELECT image_id
   FROM ' . FAVORITES_TABLE . '
     INNER JOIN ' . IMAGES_TABLE . ' ON image_id = id
   WHERE user_id = ' . $user['id'] . '
-' . get_sql_condition_FandF(
+' . FunctionsUser::get_sql_condition_FandF(
             [
                 'visible_images' => 'id',
             ],
@@ -361,7 +359,7 @@ SELECT image_id
         $page = array_merge(
             $page,
             [
-                'items' => query2array($query, null, 'image_id'),
+                'items' => Mysqli::query2array($query, null, 'image_id'),
             ]
         );
 
@@ -395,7 +393,7 @@ SELECT DISTINCT(id)
   FROM ' . IMAGES_TABLE . '
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON id = ic.image_id
   WHERE '
-  . get_recent_photos_sql('date_available') . '
+  . FunctionsUser::get_recent_photos_sql('date_available') . '
   ' . $forbidden
   . $conf['order_by'] . '
 ;';
@@ -407,7 +405,7 @@ SELECT DISTINCT(id)
                 'start' => 0,
             ]) . '">'
                         . l10n('Recent photos') . '</a>',
-            'items' => query2array($query, null, 'id'),
+            'items' => Mysqli::query2array($query, null, 'id'),
         ]
     );
 } elseif ($page['section'] == 'recent_cats') {
@@ -441,7 +439,7 @@ SELECT DISTINCT(id)
                 'start' => 0,
             ]) . '">'
                         . $conf['top_number'] . ' ' . l10n('Most visited') . '</a>',
-            'items' => query2array($query, null, 'id'),
+            'items' => Mysqli::query2array($query, null, 'id'),
         ]
     );
 } elseif ($page['section'] == 'best_rated') {
@@ -464,7 +462,7 @@ SELECT DISTINCT(id)
                 'start' => 0,
             ]) . '">'
                         . $conf['top_number'] . ' ' . l10n('Best rated') . '</a>',
-            'items' => query2array($query, null, 'id'),
+            'items' => Mysqli::query2array($query, null, 'id'),
         ]
     );
 } elseif ($page['section'] == 'list') {
@@ -484,7 +482,7 @@ SELECT DISTINCT(id)
                 'start' => 0,
             ]) . '">'
                         . l10n('Random photos') . '</a>',
-            'items' => query2array($query, null, 'id'),
+            'items' => Mysqli::query2array($query, null, 'id'),
         ]
     );
 }
@@ -546,8 +544,8 @@ if ($page['section'] == 'categories' && isset($page['category']) && ! isset($pag
     }
 
     if ($need_redirect) {
-        check_restrictions($page['category']['id']);
-        $redirect_url = script_basename() == 'picture' ? duplicate_picture_url() : duplicate_index_url();
+        FunctionsCategory::check_restrictions($page['category']['id']);
+        $redirect_url = script_basename() === 'picture' ? duplicate_picture_url() : duplicate_index_url();
 
         if (! headers_sent()) { // this is a permanent redirection
             set_status_header(301);
@@ -590,4 +588,4 @@ if (isset($page['image_id'])) {
     $page['body_data']['image_id'] = $page['image_id'];
 }
 
-trigger_notify('loc_end_section_init');
+FunctionsPlugins::trigger_notify('loc_end_section_init');

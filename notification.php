@@ -2,14 +2,12 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\flush_page_messages;
-use function Piwigo\inc\generate_key;
-use function Piwigo\inc\is_a_guest;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -33,13 +31,13 @@ require_once(__DIR__ . '/inc/common.inc.php');
 function find_available_feed_id()
 {
     while (true) {
-        $key = generate_key(50);
+        $key = FunctionsSession::generate_key(50);
         $query = '
 SELECT COUNT(*)
   FROM ' . USER_FEED_TABLE . '
   WHERE id = \'' . $key . '\'
 ;';
-        [$count] = pwg_db_fetch_row(pwg_query($query));
+        [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($count == 0) {
             return $key;
         }
@@ -49,9 +47,9 @@ SELECT COUNT(*)
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
-trigger_notify('loc_begin_notification');
+FunctionsPlugins::trigger_notify('loc_begin_notification');
 
 // +-----------------------------------------------------------------------+
 // |                          new feed creation                            |
@@ -65,10 +63,10 @@ INSERT INTO ' . USER_FEED_TABLE . '
   VALUES
   (\'' . $page['feed'] . "', " . $user['id'] . ', NULL)
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $feed_url = PHPWG_ROOT_PATH . 'feed.php';
-if (is_a_guest()) {
+if (FunctionsUser::is_a_guest()) {
     $feed_image_only_url = $feed_url;
     $feed_url .= '?feed=' . $page['feed'];
 } else {
@@ -108,7 +106,7 @@ if (! isset($themeconf['hide_menu_on']) || ! in_array('theNotificationPage', $th
 // |                           html code display                           |
 // +-----------------------------------------------------------------------+
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_notification');
+FunctionsPlugins::trigger_notify('loc_end_notification');
 flush_page_messages();
 $template->pparse('notification');
 require(__DIR__ . '/inc/page_tail.php');

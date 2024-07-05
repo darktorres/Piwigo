@@ -20,17 +20,17 @@ require_once(__DIR__ . '/../../inc/constants.php');
 // +-----------------------------------------------------------------------+
 
 $query = 'SELECT id, file FROM ' . IMAGES_TABLE . ' WHERE name IS NULL;';
-$images = pwg_query($query);
+$images = Mysqli::pwg_query($query);
 
 $updates = [];
-while ($row = pwg_db_fetch_assoc($images)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($images)) {
     $updates[] = [
         'id' => $row['id'],
         'name' => get_name_from_file($row['file']),
     ];
 }
 
-mass_updates(
+Mysqli::mass_updates(
     IMAGES_TABLE,
     [
         'primary' => ['id'],

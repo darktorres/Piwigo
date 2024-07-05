@@ -35,23 +35,20 @@ final class SizingParams
      *
      * @param int $w
      * @param int $h
-     * @return SizingParams
      */
     public static function classic(
         $w,
         $h
-    ) {
+    ): self {
         return new self([$w, $h]);
     }
 
     /**
      * Returns a square SizingParams object.
-     *
-     * @return SizingParams
      */
     public static function square(
         $w
-    ) {
+    ): self {
         return new self([$w, $w], 1, [$w, $w]);
     }
 
@@ -62,7 +59,7 @@ final class SizingParams
      */
     public function add_url_tokens(
         &$tokens
-    ) {
+    ): void {
         if ($this->max_crop == 0) {
             $tokens[] = 's' . size_to_url($this->ideal_size);
         } elseif ($this->max_crop == 1 && size_equals($this->ideal_size, $this->min_size)) {
@@ -83,11 +80,11 @@ final class SizingParams
      * @param int[] $scale_size - two element array containing width and height of the scaled image
      */
     public function compute(
-        $in_size,
+        array $in_size,
         $coi,
         &$crop_rect,
-        &$scale_size
-    ) {
+        array &$scale_size
+    ): void {
         $destCrop = new ImageRect($in_size);
 
         if ($this->max_crop > 0) {

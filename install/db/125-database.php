@@ -32,7 +32,7 @@ $conf = $conf_orig;
 $banner_orig = $dbconf['page_banner'];
 $banner_new = replace_hotlinks($dbconf['page_banner']);
 if ($banner_orig != $banner_new) {
-    conf_update_param('page_banner', pwg_db_real_escape_string($banner_new));
+    conf_update_param('page_banner', Mysqli::pwg_db_real_escape_string($banner_new));
 }
 
 //
@@ -42,9 +42,9 @@ $is_plugin_installed = false;
 $plugin_table = $prefixeTable . 'additionalpages';
 
 $query = "SHOW TABLES LIKE '" . $plugin_table . "';";
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-while ($row = pwg_db_fetch_row($result)) {
+while ($row = Mysqli::pwg_db_fetch_row($result)) {
     if ($plugin_table == $row[0]) {
         $is_plugin_installed = true;
     }
@@ -57,15 +57,15 @@ SELECT
     content
   FROM ' . $plugin_table . '
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $content_orig = $row['content'];
         $content_new = replace_hotlinks($content_orig);
         if ($content_orig != $content_new) {
-            single_update(
+            Mysqli::single_update(
                 $plugin_table,
                 [
-                    'content' => pwg_db_real_escape_string($content_new),
+                    'content' => Mysqli::pwg_db_real_escape_string($content_new),
                 ],
                 [
                     'id' => $row['id'],
@@ -84,9 +84,9 @@ $is_plugin_installed = false;
 $plugin_table = $prefixeTable . 'stuffs';
 
 $query = "SHOW TABLES LIKE '" . $plugin_table . "';";
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-while ($row = pwg_db_fetch_row($result)) {
+while ($row = Mysqli::pwg_db_fetch_row($result)) {
     if ($plugin_table == $row[0]) {
         $is_plugin_installed = true;
     }
@@ -100,15 +100,15 @@ SELECT
   FROM ' . $plugin_table . '
   WHERE path LIKE \'%plugins/PWG_Stuffs/modules/Personal%\'
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $content_orig = $row['datas'];
         $content_new = serialize(replace_hotlinks(unserialize($content_orig)));
         if ($content_orig != $content_new) {
-            single_update(
+            Mysqli::single_update(
                 $plugin_table,
                 [
-                    'datas' => pwg_db_real_escape_string($content_new),
+                    'datas' => Mysqli::pwg_db_real_escape_string($content_new),
                 ],
                 [
                     'id' => $row['id'],

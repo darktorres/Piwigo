@@ -2,19 +2,16 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\FunctionsCookie;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\cookie_path;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\get_absolute_root_url;
 use function Piwigo\inc\get_gallery_home_url;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_a_guest;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\search_case_username;
-use function Piwigo\inc\trigger_notify;
-use function Piwigo\inc\try_log_user;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -30,15 +27,15 @@ require_once(__DIR__ . '/inc/common.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_FREE);
+FunctionsUser::check_status(ACCESS_FREE);
 
 // but if the user is already identified, we redirect to gallery home
 // instead of displaying the log in form
-if (! is_a_guest()) {
+if (! FunctionsUser::is_a_guest()) {
     redirect(get_gallery_home_url());
 }
 
-trigger_notify('loc_begin_identification');
+FunctionsPlugins::trigger_notify('loc_begin_identification');
 
 //-------------------------------------------------------------- identification
 
@@ -48,7 +45,7 @@ if (isset($_POST['redirect'])) {
     $_POST['redirect_decoded'] = urldecode((string) $_POST['redirect']);
 }
 
-check_input_parameter('redirect_decoded', $_POST, false, '{^' . preg_quote(cookie_path()) . '}');
+check_input_parameter('redirect_decoded', $_POST, false, '{^' . preg_quote(FunctionsCookie::cookie_path()) . '}');
 
 $redirect_to = '';
 if (! empty($_GET['redirect'])) {
@@ -65,7 +62,7 @@ if (isset($_POST['login'])) {
         );
     } else {
         if ($conf['insensitive_case_logon'] == true) {
-            $_POST['username'] = search_case_username($_POST['username']);
+            $_POST['username'] = FunctionsUser::search_case_username($_POST['username']);
         }
 
         $redirect_to = isset($_POST['redirect']) ? urldecode((string) $_POST['redirect']) : '';
@@ -73,7 +70,7 @@ if (isset($_POST['login'])) {
             $_POST['remember_me'] == 1;
         }
 
-        if (try_log_user($_POST['username'], $_POST['password'], $remember_me)) {
+        if (FunctionsUser::try_log_user($_POST['username'], $_POST['password'], $remember_me)) {
             // security (level 2): force redirect within Piwigo. We redirect to
             // absolute root url, including http(s)://, without the cookie path,
             // concatenated with $_POST['redirect'] param.
@@ -89,7 +86,11 @@ if (isset($_POST['login'])) {
             redirect(
                 $redirect_to === '' || $redirect_to === '0'
                 ? get_gallery_home_url()
-                : substr((string) $root_url, 0, strlen((string) $root_url) - strlen(cookie_path())) . $redirect_to
+                : substr(
+                    (string) $root_url,
+                    0,
+                    strlen((string) $root_url) - strlen(FunctionsCookie::cookie_path())
+                ) . $redirect_to
             );
         } else {
             $page['errors'][] = l10n('Invalid username or password!');
@@ -136,7 +137,7 @@ if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) || ! in_ar
 
 //----------------------------------------------------------- html code display
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_identification');
+FunctionsPlugins::trigger_notify('loc_end_identification');
 flush_page_messages();
 $template->pparse('identification');
 require(__DIR__ . '/inc/page_tail.php');

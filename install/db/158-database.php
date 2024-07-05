@@ -25,7 +25,7 @@ $queries = [
 ];
 
 foreach ($queries as $query) {
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 echo "\n" . $upgrade_description . "\n";

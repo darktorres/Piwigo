@@ -3,15 +3,13 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Plugins;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\pwg_get_session_var;
-use function Piwigo\inc\pwg_set_session_var;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\userprefs_get_param;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -31,9 +29,9 @@ $template->set_filenames([
 // should we display details on plugins?
 if (isset($_GET['show_details'])) {
     $show_details = $_GET['show_details'] == 1;
-    pwg_set_session_var('plugins_show_details', $show_details);
-} elseif (pwg_get_session_var('plugins_show_details') != null) {
-    $show_details = pwg_get_session_var('plugins_show_details');
+    FunctionsSession::pwg_set_session_var('plugins_show_details', $show_details);
+} elseif (FunctionsSession::pwg_get_session_var('plugins_show_details') != null) {
+    $show_details = FunctionsSession::pwg_get_session_var('plugins_show_details');
 } else {
     $show_details = false;
 }
@@ -62,7 +60,7 @@ if (isset($_GET['incompatible_plugins'])) {
 
 //--------------------------------------------------------Get the menu with the depreciated version
 
-$plugin_menu_links_deprec = trigger_change(
+$plugin_menu_links_deprec = FunctionsPlugins::trigger_change(
     'get_admin_plugin_menu_links',
     []
 );
@@ -130,7 +128,7 @@ foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
     if (isset($fs_plugin['extension']) && isset($merged_extensions[$fs_plugin['extension']])) {
         // Deactivate manually plugin from database
         $query = 'UPDATE ' . PLUGINS_TABLE . " SET state='inactive' WHERE id='" . $plugin_id . "'";
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         $tpl_plugin['STATE'] = 'merged';
         $tpl_plugin['DESC'] = l10n('THIS PLUGIN IS NOW PART OF PIWIGO CORE! DELETE IT NOW.');
@@ -198,9 +196,9 @@ $template->assign(
         'base_url' => $base_url,
         'show_details' => $show_details,
         'max_inactive_before_hide' => isset($_GET['show_inactive']) ? 999 : 8,
-        'isWebmaster' => (is_webmaster()) ? 1 : 0,
+        'isWebmaster' => (FunctionsUser::is_webmaster()) ? 1 : 0,
         'ADMIN_PAGE_TITLE' => l10n('Plugins'),
-        'view_selector' => userprefs_get_param('plugin-manager-view', 'classic'),
+        'view_selector' => FunctionsUser::userprefs_get_param('plugin-manager-view', 'classic'),
         'CONF_ENABLE_EXTENSIONS_INSTALL' => $conf['enable_extensions_install'],
     ]
 );

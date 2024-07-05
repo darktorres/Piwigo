@@ -2,8 +2,12 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
 use Piwigo\inc\Error;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\NamedArray;
 use Piwigo\inc\NamedStruct;
@@ -17,27 +21,13 @@ use function Piwigo\admin\inc\set_cat_status;
 use function Piwigo\admin\inc\set_cat_visible;
 use function Piwigo\admin\inc\set_random_representant;
 use function Piwigo\admin\inc\update_global_rank;
-use function Piwigo\inc\calculate_permissions;
 use function Piwigo\inc\categories_flatlist_to_tree;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_update;
 use function Piwigo\inc\get_cat_display_name_cache;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\get_random_image_in_category;
-use function Piwigo\inc\get_sql_condition_FandF;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\get_user_favorites;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\make_picture_url;
 use function Piwigo\inc\pwg_activity;
-use function Piwigo\inc\trigger_change;
 use function Piwigo\inc\ws_std_get_category_xml_attributes;
 use function Piwigo\inc\ws_std_get_image_xml_attributes;
 use function Piwigo\inc\ws_std_get_urls;
@@ -84,7 +74,7 @@ function ws_categories_getImages(
         $where_clauses = ['(' . implode("\n    OR ", $where_clauses) . ')'];
     }
 
-    $where_clauses[] = get_sql_condition_FandF(
+    $where_clauses[] = FunctionsUser::get_sql_condition_FandF(
         [
             'forbidden_categories' => 'id',
         ],
@@ -99,10 +89,10 @@ SELECT
   FROM ' . CATEGORIES_TABLE . '
   WHERE ' . implode("\n    AND ", $where_clauses) . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $cats = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $row['id'] = (int) $row['id'];
         $cats[$row['id']] = $row;
     }
@@ -111,7 +101,7 @@ SELECT
     if ($cats !== []) {
         $where_clauses = ws_std_image_sql_filter($params, 'i.');
         $where_clauses[] = 'category_id IN (' . implode(',', array_keys($cats)) . ')';
-        $where_clauses[] = get_sql_condition_FandF(
+        $where_clauses[] = FunctionsUser::get_sql_condition_FandF(
             [
                 'visible_images' => 'i.id',
             ],
@@ -140,9 +130,9 @@ SELECT SQL_CALC_FOUND_ROWS i.*
   LIMIT ' . $params['per_page'] . '
   OFFSET ' . ($params['per_page'] * $params['page']) . '
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $image_ids[] = $row['id'];
 
             $image = [];
@@ -162,7 +152,7 @@ SELECT SQL_CALC_FOUND_ROWS i.*
             $images[] = $image;
         }
 
-        [$total_images] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+        [$total_images] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT FOUND_ROWS()'));
 
         // let's take care of adding the related albums to each photo
         if ($image_ids !== []) {
@@ -175,12 +165,12 @@ SELECT
     category_id
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE image_id IN (' . implode(',', $image_ids) . ')
-    AND ' . get_sql_condition_FandF([
+    AND ' . FunctionsUser::get_sql_condition_FandF([
                 'forbidden_categories' => 'category_id',
             ], null, true) . '
 ;';
-            $result = pwg_query($query);
-            while ($row = pwg_db_fetch_assoc($result)) {
+            $result = Mysqli::pwg_query($query);
+            while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
                 $category_ids[] = $row['category_id'];
                 @$categories_of_image[$row['image_id']][] = $row['category_id'];
             }
@@ -195,7 +185,7 @@ SELECT
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
-                $details_for_category = query2array($query, 'id');
+                $details_for_category = Mysqli::query2array($query, 'id');
             }
 
             foreach ($images as $idx => $image) {
@@ -295,13 +285,13 @@ function ws_categories_getList(
         $where[] = 'visible = "true"';
 
         $join_user = $conf['guest_id'];
-    } elseif (is_admin()) {
+    } elseif (FunctionsUser::is_admin()) {
         // in this very specific case, we don't want to hide empty
-        // categories. Function calculate_permissions will only return
+        // categories. Function FunctionsUser::calculate_permissions will only return
         // categories that are either locked or private and not permitted
         //
-        // calculate_permissions does not consider empty categories as forbidden
-        $forbidden_categories = calculate_permissions(
+        // FunctionsUser::calculate_permissions does not consider empty categories as forbidden
+        $forbidden_categories = FunctionsUser::calculate_permissions(
             $user['id'],
             $user['status']
         );
@@ -321,7 +311,7 @@ SELECT
     ON id=cat_id AND user_id=' . $join_user . '
   WHERE ' . implode("\n    AND ", $where) . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     // management of the album thumbnail -- starts here
     $image_ids = [];
@@ -330,7 +320,7 @@ SELECT
     // management of the album thumbnail -- stops here
 
     $cats = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $row['url'] = make_index_url(
             [
                 'category' => $row,
@@ -344,7 +334,7 @@ SELECT
             $row['name'] = strip_tags(get_cat_display_name_cache($row['uppercats'], null));
         } else {
             $row['name'] = strip_tags(
-                (string) trigger_change(
+                (string) FunctionsPlugins::trigger_change(
                     'render_category_name',
                     $row['name'],
                     'ws_categories_getList'
@@ -353,7 +343,7 @@ SELECT
         }
 
         $row['comment'] = strip_tags(
-            (string) trigger_change(
+            (string) FunctionsPlugins::trigger_change(
                 'render_category_description',
                 $row['comment'],
                 'ws_categories_getList'
@@ -377,7 +367,7 @@ SELECT
             $image_id = $row['representative_picture_id'];
         } elseif ($conf['allow_random_representative']) {
             // searching a random representant among elements in sub-categories
-            $image_id = get_random_image_in_category(
+            $image_id = FunctionsCategory::get_random_image_in_category(
                 $row
             );
         } elseif ($row['count_categories'] > 0 && $row['count_images'] > 0) {
@@ -389,7 +379,7 @@ SELECT representative_picture_id
     ON id=cat_id AND user_id=' . $user['id'] . '
   WHERE uppercats LIKE \'' . $row['uppercats'] . ',%\'
     AND representative_picture_id IS NOT NULL
-        ' . get_sql_condition_FandF(
+        ' . FunctionsUser::get_sql_condition_FandF(
                 [
                     'visible_categories' => 'id',
                 ],
@@ -398,9 +388,9 @@ SELECT representative_picture_id
   ORDER BY ' . DB_RANDOM_FUNCTION . '()
   LIMIT 1
 ;';
-            $subresult = pwg_query($query);
-            if (pwg_db_num_rows($subresult) > 0) {
-                [$image_id] = pwg_db_fetch_row($subresult);
+            $subresult = Mysqli::pwg_query($query);
+            if (Mysqli::pwg_db_num_rows($subresult) > 0) {
+                [$image_id] = Mysqli::pwg_db_fetch_row($subresult);
             }
         }
 
@@ -420,7 +410,7 @@ SELECT representative_picture_id
         $cats[] = $row;
     }
 
-    usort($cats, \Piwigo\inc\global_rank_compare(...));
+    usort($cats, FunctionsCategory::global_rank_compare(...));
 
     // management of the album thumbnail -- starts here
     if ($categories !== []) {
@@ -432,9 +422,9 @@ SELECT id, path, representative_ext, level
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $image_ids) . ')
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             if ($row['level'] <= $user['level']) {
                 $thumbnail_src_of[$row['id']] = DerivativeImage::url($params['thumbnail_size'], $row);
             } else {
@@ -448,7 +438,7 @@ SELECT id, path, representative_ext, level
                 foreach ($categories as &$category) {
                     if ($row['id'] == $category['representative_picture_id']) {
                         // searching a random representant among elements in sub-categories
-                        $image_id = get_random_image_in_category(
+                        $image_id = FunctionsCategory::get_random_image_in_category(
                             $category
                         );
 
@@ -474,9 +464,9 @@ SELECT id, path, representative_ext
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $new_image_ids) . ')
 ;';
-            $result = pwg_query($query);
+            $result = Mysqli::pwg_query($query);
 
-            while ($row = pwg_db_fetch_assoc($result)) {
+            while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
                 $thumbnail_src_of[$row['id']] = DerivativeImage::url($params['thumbnail_size'], $row);
             }
         }
@@ -498,7 +488,7 @@ SELECT id, path, representative_ext
             ];
         }
 
-        mass_updates(
+        Mysqli::mass_updates(
             USER_CACHE_CATEGORIES_TABLE,
             [
                 'primary' => ['user_id', 'cat_id'],
@@ -561,9 +551,9 @@ SELECT category_id, COUNT(*) AS counter
   FROM ' . IMAGE_CATEGORY_TABLE . '
   GROUP BY category_id
 ;';
-    $nb_images_of = query2array($query, 'category_id', 'counter');
+    $nb_images_of = Mysqli::query2array($query, 'category_id', 'counter');
 
-    // pwg_db_real_escape_string
+    // Mysqli::pwg_db_real_escape_string
 
     $query = '
 SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, status
@@ -571,18 +561,18 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
 
     if (isset($params['search']) && $params['search'] != '') {
         $query .= '
-  WHERE name LIKE \'%' . pwg_db_real_escape_string($params['search']) . '%\'
+  WHERE name LIKE \'%' . Mysqli::pwg_db_real_escape_string($params['search']) . '%\'
   LIMIT ' . $conf['linked_album_search_limit'];
     }
 
     $query .= '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    [$counter] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+    [$counter] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT FOUND_ROWS()'));
 
     $cats = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $id = $row['id'];
         $row['nb_images'] = $nb_images_of[$id] ?? 0;
 
@@ -592,7 +582,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
         );
 
         $row['name'] = strip_tags(
-            (string) trigger_change(
+            (string) FunctionsPlugins::trigger_change(
                 'render_category_name',
                 $row['name'],
                 'ws_categories_getAdminList'
@@ -601,7 +591,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
         $row['fullname'] = strip_tags($cat_display_name);
         isset($row['comment']) ? false : $row['comment'] = '';
         $row['comment'] = strip_tags(
-            (string) trigger_change(
+            (string) FunctionsPlugins::trigger_change(
                 'render_category_description',
                 $row['comment'],
                 'ws_categories_getAdminList'
@@ -620,7 +610,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
         $limit_reached = true;
     }
 
-    usort($cats, \Piwigo\inc\global_rank_compare(...));
+    usort($cats, FunctionsCategory::global_rank_compare(...));
     return [
         'categories' => new NamedArray(
             $cats,
@@ -700,7 +690,7 @@ SELECT id, id_uppercat, `rank`
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $params['category_id']) . ')
 ;';
-    $categories = query2array($query);
+    $categories = Mysqli::query2array($query);
 
     if (count($categories) == 0) {
         return new Error(404, 'category_id not found');
@@ -721,7 +711,7 @@ SELECT id
   ORDER BY `id` ASC
 ;';
 
-        $cat_asc = query2array($query, null, 'id');
+        $cat_asc = Mysqli::query2array($query, null, 'id');
 
         if (strcmp(implode(',', $cat_asc), implode(',', $order_new_by_id)) !== 0) {
             return new Error(
@@ -740,7 +730,7 @@ SELECT id
   ORDER BY `rank` ASC
 ;';
 
-        $order_old = query2array($query, null, 'id');
+        $order_old = Mysqli::query2array($query, null, 'id');
         $order_new = [];
         $was_inserted = false;
         $i = 1;
@@ -786,7 +776,7 @@ SELECT *
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $params['category_id'] . '
 ;';
-    $categories = query2array($query);
+    $categories = Mysqli::query2array($query);
     if (count($categories) == 0) {
         return new Error(404, 'category_id not found');
     }
@@ -833,19 +823,19 @@ SELECT *
     }
 
     if (isset($params['commentable']) && isset($params['apply_commentable_to_subalbums']) && $params['apply_commentable_to_subalbums']) {
-        $subcats = get_subcat_ids([$params['category_id']]);
-        if ($subcats !== []) {
+        $subcats = FunctionsCategory::get_subcat_ids([$params['category_id']]);
+        if (count($subcats) > 0) {
             $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET commentable = \'' . $params['commentable'] . '\'
   WHERE id IN (' . implode(',', $subcats) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
     }
 
     if ($perform_update) {
-        single_update(
+        Mysqli::single_update(
             CATEGORIES_TABLE,
             $update,
             [
@@ -876,7 +866,7 @@ SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $params['category_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(404, 'category_id not found');
     }
@@ -887,7 +877,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(404, 'image_id not found');
     }
@@ -898,14 +888,14 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = ' . $params['image_id'] . '
   WHERE id = ' . $params['category_id'] . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     $query = '
 UPDATE ' . USER_CACHE_CATEGORIES_TABLE . '
   SET user_representative_picture_id = NULL
   WHERE cat_id = ' . $params['category_id'] . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     pwg_activity('album', $params['category_id'], 'edit', [
         'image_id' => $params['image_id'],
@@ -933,8 +923,8 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $params['category_id'] . '
 ;';
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result) == 0) {
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         return new Error(404, 'category_id not found');
     }
 
@@ -943,7 +933,7 @@ SELECT COUNT(*)
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id = ' . $params['category_id'] . '
 ;';
-    [$nb_images] = pwg_db_fetch_row(pwg_query($query));
+    [$nb_images] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     if (! $conf['allow_random_representative'] && $nb_images != 0) {
         return new Error(401, 'not permitted');
@@ -954,7 +944,7 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = NULL
   WHERE id = ' . $params['category_id'] . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     pwg_activity('album', $params['category_id'], 'edit');
 }
@@ -979,8 +969,8 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $params['category_id'] . '
 ;';
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result) == 0) {
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         return new Error(404, 'category_id not found');
     }
 
@@ -991,8 +981,8 @@ SELECT
   WHERE category_id = ' . $params['category_id'] . '
   LIMIT 1
 ;';
-    $result = pwg_query($query);
-    $has_images = pwg_db_num_rows($result) > 0;
+    $result = Mysqli::pwg_query($query);
+    $has_images = Mysqli::pwg_db_num_rows($result) > 0;
 
     if (! $has_images) {
         return new Error(401, 'not permitted');
@@ -1010,7 +1000,7 @@ SELECT *
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $params['category_id'] . '
 ;';
-    $category = pwg_db_fetch_assoc(pwg_query($query));
+    $category = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
     return get_category_representant_properties($category['representative_picture_id'], IMG_SMALL);
 }
@@ -1067,7 +1057,7 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
-    $category_ids = query2array($query, null, 'id');
+    $category_ids = Mysqli::query2array($query, null, 'id');
 
     if (count($category_ids) == 0) {
         return;
@@ -1127,14 +1117,14 @@ SELECT id, name, dir
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $categories_in_db[$row['id']] = $row;
 
         // we break on error at first physical category detected
         if (! empty($row['dir'])) {
             $row['name'] = strip_tags(
-                (string) trigger_change(
+                (string) FunctionsPlugins::trigger_change(
                     'render_category_name',
                     $row['name'],
                     'ws_categories_move'
@@ -1168,7 +1158,7 @@ SELECT id, name, dir
     // move_categories function, not here
     // 0 as parent means "move categories at gallery root"
     if ($params['parent'] != 0) {
-        $subcat_ids = get_subcat_ids([$params['parent']]);
+        $subcat_ids = FunctionsCategory::get_subcat_ids([$params['parent']]);
         if (count($subcat_ids) == 0) {
             return new Error(403, 'Unknown parent category id');
         }
@@ -1190,8 +1180,8 @@ SELECT id, name, dir
     FROM ' . CATEGORIES_TABLE . '
     WHERE id IN (' . implode(',', $category_ids) . ')
   ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $cat_display_name = get_cat_display_name_cache(
             $row['uppercats'],
             'admin.php?page=album-'
@@ -1224,11 +1214,11 @@ SELECT DISTINCT
   WHERE 
     category_id = ' . $category_id . '
   LIMIT 1';
-    $result = pwg_query($query);
-    $category['has_images'] = pwg_db_num_rows($result) > 0;
+    $result = Mysqli::pwg_query($query);
+    $category['has_images'] = Mysqli::pwg_db_num_rows($result) > 0;
 
     // number of sub-categories
-    $subcat_ids = get_subcat_ids([$category_id]);
+    $subcat_ids = FunctionsCategory::get_subcat_ids([$category_id]);
 
     $category['nb_subcats'] = count($subcat_ids) - 1;
 
@@ -1241,7 +1231,7 @@ SELECT DISTINCT
   WHERE 
     category_id IN (' . implode(',', $subcat_ids) . ')
   ;';
-    $image_ids_recursive = query2array($query, null, 'image_id');
+    $image_ids_recursive = Mysqli::query2array($query, null, 'image_id');
 
     $category['nb_images_recursive'] = count($image_ids_recursive);
 
@@ -1267,7 +1257,7 @@ SELECT DISTINCT
       (' . implode(',', $image_ids_recursive) . ')
   ;';
 
-            $image_ids_associated_outside = query2array($query, null, 'image_id');
+            $image_ids_associated_outside = Mysqli::query2array($query, null, 'image_id');
             $category['nb_images_associated_outside'] = count($image_ids_associated_outside);
 
             $image_ids_becoming_orphan = array_diff($image_ids_recursive, $image_ids_associated_outside);
@@ -1287,7 +1277,7 @@ SELECT DISTINCT
     NOT IN 
       (' . implode(',', $subcat_ids) . ')
   ;';
-            $image_ids_associated_outside = query2array($query, null, 'image_id');
+            $image_ids_associated_outside = Mysqli::query2array($query, null, 'image_id');
             $image_ids_not_orphan = [];
 
             foreach ($image_ids_associated_outside as $image_id) {

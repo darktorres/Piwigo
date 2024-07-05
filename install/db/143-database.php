@@ -14,11 +14,13 @@ if (! defined('PHPWG_ROOT_PATH')) {
 $upgrade_description = 'enlarge your user_id (16 millions possible users)';
 
 // we use PREFIX_TABLE, in case Piwigo uses an external user table
-pwg_query(
+Mysqli::pwg_query(
     'ALTER TABLE ' . PREFIX_TABLE . 'users CHANGE id id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT;'
 );
-pwg_query('ALTER TABLE ' . IMAGES_TABLE . " CHANGE added_by added_by MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';");
-pwg_query('ALTER TABLE ' . COMMENTS_TABLE . ' CHANGE author_id author_id MEDIUMINT UNSIGNED DEFAULT NULL;');
+Mysqli::pwg_query(
+    'ALTER TABLE ' . IMAGES_TABLE . " CHANGE added_by added_by MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';"
+);
+Mysqli::pwg_query('ALTER TABLE ' . COMMENTS_TABLE . ' CHANGE author_id author_id MEDIUMINT UNSIGNED DEFAULT NULL;');
 
 $tables = [
     USER_ACCESS_TABLE,
@@ -35,7 +37,7 @@ $tables = [
 ];
 
 foreach ($tables as $table) {
-    pwg_query('
+    Mysqli::pwg_query('
 ALTER TABLE ' . $table . '
   CHANGE user_id user_id MEDIUMINT UNSIGNED NOT NULL DEFAULT \'0\'
 ;');

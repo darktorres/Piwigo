@@ -2,23 +2,22 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\create_virtual_category;
 use function Piwigo\admin\inc\delete_categories;
 use function Piwigo\admin\inc\invalidate_user_cache;
 use function Piwigo\admin\inc\update_global_rank;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_cat_display_name_from_id;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -36,9 +35,11 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
-trigger_notify('loc_begin_cat_list');
+FunctionsPlugins::trigger_notify('loc_begin_cat_list');
 
 if ($_POST !== [] || isset($_GET['delete'])) {
     check_pwg_token();
@@ -66,7 +67,7 @@ function get_categories_ref_date(
 ): array {
     // we need to work on the whole tree under each category, even if we don't
     // want to sort sub categories
-    $category_ids = get_subcat_ids($ids);
+    $category_ids = FunctionsCategory::get_subcat_ids($ids);
 
     // search for the reference date of each album
     $query = '
@@ -78,7 +79,7 @@ SELECT
   WHERE category_id IN (' . implode(',', $category_ids) . ')
   GROUP BY category_id
 ;';
-    $ref_dates = query2array($query, 'category_id', 'ref_date');
+    $ref_dates = Mysqli::query2array($query, 'category_id', 'ref_date');
 
     // the iterate on all albums (having a ref_date or not) to find the
     // reference_date, with a search on sub-albums
@@ -89,7 +90,7 @@ SELECT
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
-    $uppercats_of = query2array($query, 'id', 'uppercats');
+    $uppercats_of = Mysqli::query2array($query, 'id', 'uppercats');
 
     foreach (array_keys($uppercats_of) as $cat_id) {
         // find the subcats
@@ -247,7 +248,7 @@ if (! isset($_GET['parent_id'])) {
 $query .= '
   ORDER BY `rank` ASC
 ;';
-$categories = query2array($query, 'id');
+$categories = Mysqli::query2array($query, 'id');
 
 // get the categories containing images directly
 $categories_with_images = [];
@@ -261,7 +262,7 @@ SELECT
 ;';
     // WHERE category_id IN ('.implode(',', array_keys($categories)).')
 
-    $nb_photos_in = query2array(
+    $nb_photos_in = Mysqli::query2array(
         $query,
         'category_id',
         'nb_photos'
@@ -273,7 +274,7 @@ SELECT
     uppercats
   FROM ' . CATEGORIES_TABLE . '
 ;';
-    $all_categories = query2array($query, 'id', 'uppercats');
+    $all_categories = Mysqli::query2array($query, 'id', 'uppercats');
     $subcats_of = [];
 
     foreach ($all_categories as $id => $uppercats) {
@@ -316,7 +317,7 @@ foreach ($categories as $category) {
     $tpl_cat =
       [
           'NAME' =>
-            trigger_change(
+            FunctionsPlugins::trigger_change(
                 'render_category_name',
                 $category['name'],
                 'admin_cat_list'
@@ -351,7 +352,7 @@ foreach ($categories as $category) {
     $template->append('categories', $tpl_cat);
 }
 
-trigger_notify('loc_end_cat_list');
+FunctionsPlugins::trigger_notify('loc_end_cat_list');
 
 // +-----------------------------------------------------------------------+
 // |                          sending html code                            |

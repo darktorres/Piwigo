@@ -1,6 +1,6 @@
 <?php
 
-use function Piwigo\inc\add_event_handler;
+use Piwigo\inc\FunctionsPlugins;
 
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
@@ -43,5 +43,5 @@ define('LANGUAGE_SWITCH_PATH', PHPWG_PLUGINS_PATH . basename(__DIR__) . '/');
 
 require_once(LANGUAGE_SWITCH_PATH . 'language_switch.inc.php');
 
-add_event_handler('loading_lang', 'language_controler_switch', 5);
-add_event_handler('loc_end_index', 'language_controler_flags', 95);
+FunctionsPlugins::add_event_handler('loading_lang', 'language_controler_switch', 5);
+FunctionsPlugins::add_event_handler('loc_end_index', 'language_controler_flags', 95);

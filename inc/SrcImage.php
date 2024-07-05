@@ -2,7 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -42,18 +42,15 @@ final class SrcImage
     /**
      * @var int[]
      */
-    private $size = null;
+    private ?array $size = null;
 
-    /**
-     * @var int
-     */
-    private $flags = 0;
+    private int $flags = 0;
 
     /**
      * @param array $infos assoc array of data from images table
      */
     public function __construct(
-        $infos
+        array $infos
     ) {
         global $conf;
 
@@ -67,7 +64,7 @@ final class SrcImage
         } elseif (! empty($infos['representative_ext'])) {
             $this->rel_path = original_to_representative($infos['path'], $infos['representative_ext']);
         } else {
-            $this->rel_path = trigger_change(
+            $this->rel_path = FunctionsPlugins::trigger_change(
                 'get_mimetype_location',
                 get_themeconf('mime_icon_dir') . $ext . '.png',
                 $ext
@@ -111,7 +108,7 @@ final class SrcImage
     /**
      * @return bool
      */
-    public function is_original()
+    public function is_original(): int
     {
         return $this->flags & self::IS_ORIGINAL;
     }
@@ -119,15 +116,12 @@ final class SrcImage
     /**
      * @return bool
      */
-    public function is_mimetype()
+    public function is_mimetype(): int
     {
         return $this->flags & self::IS_MIMETYPE;
     }
 
-    /**
-     * @return string
-     */
-    public function get_path()
+    public function get_path(): string
     {
         $segments = explode('/', $this->rel_path);
         $decodedSegments = array_map(rawurldecode(...), $segments);
@@ -141,16 +135,13 @@ final class SrcImage
     {
         $url = get_root_url() . $this->rel_path;
         if (($this->flags & self::IS_MIMETYPE) === 0) {
-            $url = trigger_change('get_src_image_url', $url, $this);
+            $url = FunctionsPlugins::trigger_change('get_src_image_url', $url, $this);
         }
 
         return embellish_url($url);
     }
 
-    /**
-     * @return bool
-     */
-    public function has_size()
+    public function has_size(): bool
     {
         return $this->size != null;
     }
@@ -158,7 +149,7 @@ final class SrcImage
     /**
      * @return int[]|null 0=width, 1=height or null if fail to compute size
      */
-    public function get_size()
+    public function get_size(): ?array
     {
         if ($this->size == null) {
             if (($this->flags & self::DIM_NOT_GIVEN) !== 0) {
@@ -168,7 +159,7 @@ final class SrcImage
             // probably not metadata synced
             if (($size = getimagesize($this->get_path())) !== false) {
                 $this->size = [$size[0], $size[1]];
-                pwg_query(
+                Mysqli::pwg_query(
                     'UPDATE ' . IMAGES_TABLE . ' SET width=' . $size[0] . ', height=' . $size[1] . ' WHERE id=' . $this->id
                 );
             }

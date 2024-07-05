@@ -2,20 +2,17 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\save_categories_order;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\remove_accents;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_change;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -35,12 +32,14 @@ SELECT
     COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-[$albums_counter] = pwg_db_fetch_row(pwg_query($query));
+[$albums_counter] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
@@ -80,10 +79,10 @@ SELECT id
   WHERE id_uppercat ' .
       (($_POST['id'] === '-1') ? 'IS NULL' : '= ' . $_POST['id']) . '
 ;';
-    $category_ids = query2array($query, null, 'id');
+    $category_ids = Mysqli::query2array($query, null, 'id');
 
     if (isset($_POST['recursiveAutoOrder'])) {
-        $category_ids = get_subcat_ids($category_ids);
+        $category_ids = FunctionsCategory::get_subcat_ids($category_ids);
     }
 
     $categories = [];
@@ -107,9 +106,9 @@ SELECT id, name, id_uppercat
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
-        $row['name'] = trigger_change('render_category_name', $row['name'], 'admin_cat_list');
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
+        $row['name'] = FunctionsPlugins::trigger_change('render_category_name', $row['name'], 'admin_cat_list');
 
         $sort[] = $order_by_date ? $ref_dates[$row['id']] : remove_accents($row['name']);
 
@@ -161,13 +160,13 @@ SELECT id,name,`rank`,status, uppercats, lastmodified
   FROM ' . CATEGORIES_TABLE . '
 ;';
 
-$allAlbum = query2array($query);
+$allAlbum = Mysqli::query2array($query);
 
 //Make an id tree
 $associatedTree = [];
 
 foreach ($allAlbum as $album) {
-    $album['name'] = trigger_change('render_category_name', $album['name'], 'admin_cat_list');
+    $album['name'] = FunctionsPlugins::trigger_change('render_category_name', $album['name'], 'admin_cat_list');
     $album['lastmodified'] = time_since($album['lastmodified'], 'year');
 
     $parents = explode(',', (string) $album['uppercats']);
@@ -238,7 +237,7 @@ SELECT
   GROUP BY category_id
 ;';
 
-$nb_photos_in = query2array($query, 'category_id', 'nb_photos');
+$nb_photos_in = Mysqli::query2array($query, 'category_id', 'nb_photos');
 
 $query = '
 SELECT
@@ -246,7 +245,7 @@ SELECT
     uppercats
   FROM ' . CATEGORIES_TABLE . '
 ;';
-$all_categories = query2array($query, 'id', 'uppercats');
+$all_categories = Mysqli::query2array($query, 'id', 'uppercats');
 
 $subcats_of = [];
 
@@ -300,7 +299,7 @@ function get_categories_ref_date(
 ): array {
     // we need to work on the whole tree under each category, even if we don't
     // want to sort sub categories
-    $category_ids = get_subcat_ids($ids);
+    $category_ids = FunctionsCategory::get_subcat_ids($ids);
 
     // search for the reference date of each album
     $query = '
@@ -312,7 +311,7 @@ SELECT
   WHERE category_id IN (' . implode(',', $category_ids) . ')
   GROUP BY category_id
 ;';
-    $ref_dates = query2array($query, 'category_id', 'ref_date');
+    $ref_dates = Mysqli::query2array($query, 'category_id', 'ref_date');
 
     // the iterate on all albums (having a ref_date or not) to find the
     // reference_date, with a search on sub-albums
@@ -323,7 +322,7 @@ SELECT
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
-    $uppercats_of = query2array($query, 'id', 'uppercats');
+    $uppercats_of = Mysqli::query2array($query, 'id', 'uppercats');
 
     foreach (array_keys($uppercats_of) as $cat_id) {
         // find the subcats

@@ -8,10 +8,10 @@ defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class GDThumb_maintain extends PluginMaintain
 {
-    private $installed = false;
+    private bool $installed = false;
 
     #[\Override]
-    public function install($plugin_version, &$errors = [])
+    public function install($plugin_version, &$errors = []): void
     {
         require(__DIR__ . '/config_default.inc.php');
         global $conf;
@@ -23,13 +23,13 @@ class GDThumb_maintain extends PluginMaintain
     }
 
     #[\Override]
-    public function update($old_version, $new_version, &$errors = [])
+    public function update($old_version, $new_version, &$errors = []): void
     {
         $this->install($new_version, $errors);
     }
 
     #[\Override]
-    public function activate($plugin_version, &$errors = [])
+    public function activate($plugin_version, &$errors = []): void
     {
         if (! $this->installed) {
             $this->install($plugin_version, $errors);
@@ -38,20 +38,20 @@ class GDThumb_maintain extends PluginMaintain
     }
 
     #[\Override]
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->cleanUp();
         conf_delete_param('gdThumb');
     }
 
-    private function cleanUp()
+    private function cleanUp(): void
     {
         if (is_dir(PHPWG_ROOT_PATH . 'local/GDThumb')) {
             $this->gtdeltree(PHPWG_ROOT_PATH . 'local/GDThumb');
         }
     }
 
-    private function gtdeltree($path)
+    private function gtdeltree(string $path): ?bool
     {
         if (is_dir($path)) {
             $fh = opendir($path);

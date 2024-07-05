@@ -14,7 +14,7 @@ $template->set_filenames([
     'tail' => 'footer.tpl',
 ]);
 
-trigger_notify('loc_begin_page_tail');
+FunctionsPlugins::trigger_notify('loc_begin_page_tail');
 
 $template->assign(
     [
@@ -25,7 +25,7 @@ $template->assign(
 
 //--------------------------------------------------------------------- contact
 
-if (! is_a_guest()) {
+if (! FunctionsUser::is_a_guest()) {
     $template->assign(
         'CONTACT_MAIL',
         get_webmaster_mail_address()
@@ -94,7 +94,7 @@ if (! empty($conf['mobile_theme']) && (get_device() != 'desktop' || mobile_theme
     );
 }
 
-trigger_notify('loc_end_page_tail');
+FunctionsPlugins::trigger_notify('loc_end_page_tail');
 //
 // Generate the page
 //

@@ -2,8 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -25,14 +24,14 @@ if (! get_filter_page_value('cancel')) {
         $filter['enabled'] =
           preg_match('/^start-recent-(\d+)$/', (string) $_GET['filter'], $filter['matches']) === 1;
     } else {
-        $filter['enabled'] = pwg_get_session_var('filter_enabled', false);
+        $filter['enabled'] = FunctionsSession::pwg_get_session_var('filter_enabled', false);
     }
 } else {
     $filter['enabled'] = false;
 }
 
 if ($filter['enabled']) {
-    $filter_key = pwg_get_session_var('filter_check_key', [
+    $filter_key = FunctionsSession::pwg_get_session_var('filter_check_key', [
         'user' => 0,
         'recent_period' => -1,
         'time' => 0,
@@ -46,7 +45,7 @@ if ($filter['enabled']) {
 
     if (
         // New filter
-        ! pwg_get_session_var(
+        ! FunctionsSession::pwg_get_session_var(
             'filter_enabled',
             false
         ) || $filter_key['time'] <= $user['cache_update_time'] || $filter_key['user'] != $user['id'] || $filter_key['recent_period'] != $filter['recent_period'] || $filter_key['date'] != date(
@@ -61,7 +60,7 @@ if ($filter['enabled']) {
             'date' => date('Ymd'),
         ];
 
-        $filter['categories'] = get_computed_categories($user, (int) $filter['recent_period']);
+        $filter['categories'] = FunctionsCategory::get_computed_categories($user, (int) $filter['recent_period']);
 
         $filter['visible_categories'] = implode(',', array_keys($filter['categories']));
         if (empty($filter['visible_categories'])) {
@@ -81,9 +80,9 @@ WHERE ';
         }
 
         $query .= '
-    date_available >= ' . pwg_db_get_recent_period_expression($filter['recent_period']);
+    date_available >= ' . Mysqli::pwg_db_get_recent_period_expression($filter['recent_period']);
 
-        $filter['visible_images'] = implode(',', query2array($query, null, 'image_id'));
+        $filter['visible_images'] = implode(',', Mysqli::query2array($query, null, 'image_id'));
 
         if (empty($filter['visible_images'])) {
             // Must be not empty
@@ -91,16 +90,18 @@ WHERE ';
         }
 
         // Save filter data on session
-        pwg_set_session_var('filter_enabled', $filter['enabled']);
-        pwg_set_session_var('filter_check_key', $filter_key);
-        pwg_set_session_var('filter_categories', serialize($filter['categories']));
-        pwg_set_session_var('filter_visible_categories', $filter['visible_categories']);
-        pwg_set_session_var('filter_visible_images', $filter['visible_images']);
+        FunctionsSession::pwg_set_session_var('filter_enabled', $filter['enabled']);
+        FunctionsSession::pwg_set_session_var('filter_check_key', $filter_key);
+        FunctionsSession::pwg_set_session_var('filter_categories', serialize($filter['categories']));
+        FunctionsSession::pwg_set_session_var('filter_visible_categories', $filter['visible_categories']);
+        FunctionsSession::pwg_set_session_var('filter_visible_images', $filter['visible_images']);
     } else {
         // Read only data
-        $filter['categories'] = unserialize(pwg_get_session_var('filter_categories', serialize([])));
-        $filter['visible_categories'] = pwg_get_session_var('filter_visible_categories', '');
-        $filter['visible_images'] = pwg_get_session_var('filter_visible_images', '');
+        $filter['categories'] = unserialize(
+            FunctionsSession::pwg_get_session_var('filter_categories', serialize([]))
+        );
+        $filter['visible_categories'] = FunctionsSession::pwg_get_session_var('filter_visible_categories', '');
+        $filter['visible_images'] = FunctionsSession::pwg_get_session_var('filter_visible_images', '');
     }
 
     unset($filter_key);
@@ -113,10 +114,10 @@ WHERE ';
     }
 
     require_once(__DIR__ . '/../inc/functions_filter.inc.php');
-} elseif (pwg_get_session_var('filter_enabled', false)) {
-    pwg_unset_session_var('filter_enabled');
-    pwg_unset_session_var('filter_check_key');
-    pwg_unset_session_var('filter_categories');
-    pwg_unset_session_var('filter_visible_categories');
-    pwg_unset_session_var('filter_visible_images');
+} elseif (FunctionsSession::pwg_get_session_var('filter_enabled', false)) {
+    FunctionsSession::pwg_unset_session_var('filter_enabled');
+    FunctionsSession::pwg_unset_session_var('filter_check_key');
+    FunctionsSession::pwg_unset_session_var('filter_categories');
+    FunctionsSession::pwg_unset_session_var('filter_visible_categories');
+    FunctionsSession::pwg_unset_session_var('filter_visible_images');
 }

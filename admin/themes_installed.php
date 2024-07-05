@@ -3,12 +3,11 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Themes;
-use function Piwigo\inc\get_default_theme;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -21,7 +20,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     $page['warnings'][] = str_replace(
         '%s',
         l10n('user_status_webmaster'),
@@ -55,7 +54,7 @@ if (isset($_GET['action']) && isset($_GET['theme'])) {
 
 $themes->sort_fs_themes();
 
-$default_theme = get_default_theme();
+$default_theme = FunctionsUser::get_default_theme();
 
 $db_themes = $themes->get_db_themes();
 $db_theme_ids = [];
@@ -175,9 +174,9 @@ $template->assign(
     ]
 );
 
-trigger_notify('loc_end_themes_installed');
+FunctionsPlugins::trigger_notify('loc_end_themes_installed');
 
-$template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
+$template->assign('isWebmaster', (FunctionsUser::is_webmaster()) ? 1 : 0);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Themes'));
 $template->assign('CONF_ENABLE_EXTENSIONS_INSTALL', $conf['enable_extensions_install']);
 

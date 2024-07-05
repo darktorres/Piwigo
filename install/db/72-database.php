@@ -22,7 +22,7 @@ require_once(__DIR__ . '/../../inc/constants.php');
 $query = '
 INSERT INTO ' . CONFIG_TABLE . " (param,value,comment) VALUES ('extents_for_templates','a:0:{}','Actived template-extension(s)');
 ";
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

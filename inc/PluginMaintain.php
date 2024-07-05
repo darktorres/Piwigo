@@ -68,9 +68,9 @@ class PluginMaintain
     /**
      * @removed 2.7
      */
-    public function autoUpdate()
+    public function autoUpdate(): void
     {
-        if (is_admin() && ! defined('IN_WS')) {
+        if (FunctionsUser::is_admin() && ! defined('IN_WS')) {
             trigger_error('Function PluginMaintain::autoUpdate deprecated', E_USER_WARNING);
         }
     }

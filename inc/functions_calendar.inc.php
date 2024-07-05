@@ -2,7 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -33,7 +33,7 @@ INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id';
 
         if (isset($page['category'])) {
             $sub_ids = array_diff(
-                get_subcat_ids([$page['category']['id']]),
+                FunctionsCategory::get_subcat_ids([$page['category']['id']]),
                 explode(',', (string) $user['forbidden_categories'])
             );
 
@@ -44,7 +44,7 @@ INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id';
             $inner_sql .= '
 WHERE category_id IN (' . implode(',', $sub_ids) . ')';
             $inner_sql .= '
-    ' . get_sql_condition_FandF(
+    ' . FunctionsUser::get_sql_condition_FandF(
                 [
                     'visible_images' => 'id',
                 ],
@@ -53,7 +53,7 @@ WHERE category_id IN (' . implode(',', $sub_ids) . ')';
             );
         } else {
             $inner_sql .= '
-    ' . get_sql_condition_FandF(
+    ' . FunctionsUser::get_sql_condition_FandF(
                 [
                     'forbidden_categories' => 'category_id',
                     'visible_categories' => 'category_id',
@@ -260,7 +260,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
               . $calendar->inner_sql . '
   ' . $calendar->get_date_where() . '
   ' . $order_by;
-            $page['items'] = query2array($query, null, 'id');
+            $page['items'] = Mysqli::query2array($query, null, 'id');
             if (isset($cache_key)) {
                 $persistent_cache->set($cache_key, $page['items']);
             }

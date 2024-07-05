@@ -2,8 +2,7 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\inc\get_root_url;
 
 // +-----------------------------------------------------------------------+
@@ -25,7 +24,7 @@ SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
 
-[$nb_cats] = pwg_db_fetch_row(pwg_query($query));
+[$nb_cats] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 $template->assign(
     [
         'nb_cats' => $nb_cats,

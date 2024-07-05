@@ -2,10 +2,7 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\inc\get_exif_data;
 use function Piwigo\inc\get_iptc_data;
 use function Piwigo\inc\original_to_representative;
@@ -261,8 +258,8 @@ SELECT id, path, representative_ext
 )
 ;';
 
-    $result = pwg_query($query);
-    while ($data = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($data = Mysqli::pwg_db_fetch_assoc($result)) {
         $data = get_sync_metadata($data);
         if ($data === false) {
             continue;
@@ -296,7 +293,7 @@ SELECT id, path, representative_ext
             ['tags', 'keywords']
         );
 
-        mass_updates(
+        Mysqli::mass_updates(
             IMAGES_TABLE,
             [
                 'primary' => ['id'],
@@ -347,8 +344,8 @@ SELECT id
 
     $query .= '
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $cat_ids[] = $row['id'];
     }
 
@@ -368,7 +365,7 @@ SELECT id, path, representative_ext
 
     $query .= '
 ;';
-    return query2array($query, 'id');
+    return Mysqli::query2array($query, 'id');
 }
 
 /**

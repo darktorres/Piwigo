@@ -17,7 +17,7 @@ $query = '
 INSERT INTO ' . PREFIX_TABLE . 'config (param,value,comment)
   VALUES (\'picture_menu\',\'false\', \'' . $upgrade_description . '\')
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

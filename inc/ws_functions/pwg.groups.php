@@ -2,20 +2,12 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\Error;
 use Piwigo\inc\NamedArray;
 use Piwigo\inc\NamedStruct;
 use function Piwigo\admin\inc\delete_groups;
 use function Piwigo\admin\inc\invalidate_user_cache;
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_insert;
-use function Piwigo\inc\dbLayer\single_update;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\pwg_activity;
 
@@ -44,7 +36,7 @@ function ws_groups_getList(
     $where_clauses = ['1=1'];
 
     if (! empty($params['name'])) {
-        $where_clauses[] = "LOWER(name) LIKE '" . pwg_db_real_escape_string($params['name']) . "'";
+        $where_clauses[] = "LOWER(name) LIKE '" . Mysqli::pwg_db_real_escape_string($params['name']) . "'";
     }
 
     if (! empty($params['group_id'])) {
@@ -64,7 +56,7 @@ SELECT
   OFFSET ' . ($params['per_page'] * $params['page']) . '
 ;';
 
-    $groups = query2array($query);
+    $groups = Mysqli::query2array($query);
 
     return [
         'paging' => new NamedStruct([
@@ -87,7 +79,7 @@ function ws_groups_add(
     array $params,
     &$service
 ) {
-    $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes((string) $params['name'])));
+    $params['name'] = Mysqli::pwg_db_real_escape_string(strip_tags(stripslashes((string) $params['name'])));
 
     // is the name not already used ?
     $query = '
@@ -95,7 +87,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE name = \'' . $params['name'] . '\'
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count != 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
     }
@@ -105,14 +97,14 @@ SELECT COUNT(*)
     }
 
     // creating the group
-    single_insert(
+    Mysqli::single_insert(
         GROUPS_TABLE,
         [
             'name' => $params['name'],
-            'is_default' => boolean_to_string($params['is_default']),
+            'is_default' => Mysqli::boolean_to_string($params['is_default']),
         ]
     );
-    $inserted_id = pwg_db_insert_id();
+    $inserted_id = Mysqli::pwg_db_insert_id();
 
     pwg_activity('group', $inserted_id, 'add');
 
@@ -172,13 +164,13 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
     if (! empty($params['name'])) {
-        $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes((string) $params['name'])));
+        $params['name'] = Mysqli::pwg_db_real_escape_string(strip_tags(stripslashes((string) $params['name'])));
 
         // is the name not already used ?
         $query = '
@@ -187,7 +179,7 @@ SELECT COUNT(*)
   WHERE name = \'' . $params['name'] . '\'
   AND id != ' . $params['group_id'] . '
 ;';
-        [$count] = pwg_db_fetch_row(pwg_query($query));
+        [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($count != 0) {
             return new Error(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
         }
@@ -196,10 +188,10 @@ SELECT COUNT(*)
     }
 
     if (! empty($params['is_default']) || @$params['is_default'] === false) {
-        $updates['is_default'] = boolean_to_string($params['is_default']);
+        $updates['is_default'] = Mysqli::boolean_to_string($params['is_default']);
     }
 
-    single_update(
+    Mysqli::single_update(
         GROUPS_TABLE,
         $updates,
         [
@@ -235,7 +227,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
@@ -248,7 +240,7 @@ SELECT COUNT(*)
         ];
     }
 
-    mass_inserts(
+    Mysqli::mass_inserts(
         USER_GROUP_TABLE,
         ['group_id', 'user_id'],
         $inserts
@@ -295,7 +287,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id in (' . implode(',', $all_groups) . ')
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count != count($all_groups)) {
         return new Error(WS_ERR_INVALID_PARAM, 'All groups does not exist.');
     }
@@ -310,7 +302,7 @@ SELECT DISTINCT(user_id)
   WHERE 
     group_id IN (' . implode(',', $merge_group) . ')
 ;';
-    $user_in_merge_groups = query2array($query, null, 'user_id');
+    $user_in_merge_groups = Mysqli::query2array($query, null, 'user_id');
 
     $query = '
 SELECT user_id 
@@ -318,7 +310,7 @@ SELECT user_id
   WHERE group_id = ' . $params['destination_group_id'] . '
 ;';
 
-    $user_in_dest = query2array($query, null, 'user_id');
+    $user_in_dest = Mysqli::query2array($query, null, 'user_id');
 
     $user_to_add = array_diff($user_in_merge_groups, $user_in_dest);
 
@@ -330,7 +322,7 @@ SELECT user_id
         ];
     }
 
-    mass_inserts(
+    Mysqli::mass_inserts(
         USER_GROUP_TABLE,
         ['group_id', 'user_id'],
         $inserts,
@@ -380,9 +372,9 @@ function ws_groups_duplicate(
     $query = '
 SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
-  WHERE name = \'' . pwg_db_real_escape_string($params['copy_name']) . '\'
+  WHERE name = \'' . Mysqli::pwg_db_real_escape_string($params['copy_name']) . '\'
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count != 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
     }
@@ -392,7 +384,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
@@ -403,17 +395,17 @@ SELECT is_default
   WHERE id = ' . $params['group_id'] . '
 ;';
 
-    [$is_default] = pwg_db_fetch_row(pwg_query($query));
+    [$is_default] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     // creating the group
-    single_insert(
+    Mysqli::single_insert(
         GROUPS_TABLE,
         [
             'name' => $params['copy_name'],
-            'is_default' => boolean_to_string($is_default),
+            'is_default' => Mysqli::boolean_to_string($is_default),
         ]
     );
-    $inserted_id = pwg_db_insert_id();
+    $inserted_id = Mysqli::pwg_db_insert_id();
 
     pwg_activity('group', $inserted_id, 'add');
 
@@ -423,7 +415,7 @@ SELECT is_default
     WHERE group_id = ' . $params['group_id'] . '
   ;';
 
-    $users = query2array($query, null, 'user_id');
+    $users = Mysqli::query2array($query, null, 'user_id');
 
     $inserts = [];
     foreach ($users as $user) {
@@ -433,7 +425,7 @@ SELECT is_default
         ];
     }
 
-    mass_inserts(
+    Mysqli::mass_inserts(
         USER_GROUP_TABLE,
         ['group_id', 'user_id'],
         $inserts,
@@ -477,7 +469,7 @@ SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $params['group_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
@@ -488,7 +480,7 @@ DELETE FROM ' . USER_GROUP_TABLE . '
     group_id = ' . $params['group_id'] . '
     AND user_id IN(' . implode(',', $params['user_id']) . ')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     require_once(__DIR__ . '/../../admin/inc/functions.php');
     invalidate_user_cache();

@@ -2,9 +2,8 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\is_a_guest;
 use function Piwigo\inc\page_forbidden;
 
 // +-----------------------------------------------------------------------+
@@ -18,7 +17,7 @@ define('PHPWG_ROOT_PATH', './');
 define('IN_WS', true);
 
 require_once(__DIR__ . '/inc/common.inc.php');
-check_status(ACCESS_FREE);
+FunctionsUser::check_status(ACCESS_FREE);
 
 if (! $conf['allow_web_services']) {
     page_forbidden('Web services are disabled');
@@ -264,7 +263,7 @@ function ws_addDefaultMethods($arr): void
                 'type' => WS_TYPE_ID,
             ],
             'author' => [
-                'default' => is_a_guest() ? 'guest' : $user['username'],
+                'default' => FunctionsUser::is_a_guest() ? 'guest' : $user['username'],
             ],
             'content' => [],
             'key' => [],

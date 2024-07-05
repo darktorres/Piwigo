@@ -5,15 +5,14 @@ namespace Piwigo\admin;
 use Piwigo\admin\inc\CheckIntegrity;
 use Piwigo\admin\inc\CompatibilityInternal;
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dbLayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\fs_quick_check;
 use function Piwigo\admin\inc\get_newsletter_subscribe_base_url;
 use function Piwigo\admin\inc\get_orphans;
 use function Piwigo\admin\inc\get_piwigo_news;
 use function Piwigo\admin\inc\number_format_human_readable;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_elapsed_time;
 use function Piwigo\inc\get_moment;
@@ -21,9 +20,6 @@ use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_notify;
-use function Piwigo\inc\userprefs_get_param;
-use function Piwigo\inc\userprefs_update_param;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -42,14 +38,16 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
 if (isset($_GET['action']) && $_GET['action'] == 'hide_newsletter_subscription') {
-    userprefs_update_param('show_newsletter_subscription', 'false');
+    FunctionsUser::userprefs_update_param('show_newsletter_subscription', 'false');
     exit();
 }
 
@@ -100,7 +98,10 @@ $template->set_filenames([
     'intro' => 'intro.tpl',
 ]);
 
-if ($conf['show_newsletter_subscription'] && userprefs_get_param('show_newsletter_subscription', true)) {
+if ($conf['show_newsletter_subscription'] && FunctionsUser::userprefs_get_param(
+    'show_newsletter_subscription',
+    true
+)) {
     $template->assign(
         [
             'EMAIL' => $user['email'],
@@ -113,43 +114,43 @@ $query = '
 SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
 ;';
-[$nb_photos] = pwg_db_fetch_row(pwg_query($query));
+[$nb_photos] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-[$nb_categories] = pwg_db_fetch_row(pwg_query($query));
+[$nb_categories] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . TAGS_TABLE . '
 ;';
-[$nb_tags] = pwg_db_fetch_row(pwg_query($query));
+[$nb_tags] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . IMAGE_TAG_TABLE . '
 ;';
-[$nb_image_tag] = pwg_db_fetch_row(pwg_query($query));
+[$nb_image_tag] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . USERS_TABLE . '
 ;';
-[$nb_users] = pwg_db_fetch_row(pwg_query($query));
+[$nb_users] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . GROUPS_TABLE . '
 ;';
-[$nb_groups] = pwg_db_fetch_row(pwg_query($query));
+[$nb_groups] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT COUNT(*)
   FROM ' . RATE_TABLE . '
 ;';
-[$nb_rates] = pwg_db_fetch_row(pwg_query($query));
+[$nb_rates] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT
@@ -157,21 +158,21 @@ SELECT
   FROM ' . HISTORY_SUMMARY_TABLE . '
   WHERE month IS NULL
 ;';
-[$nb_views] = pwg_db_fetch_row(pwg_query($query));
+[$nb_views] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT
     SUM(filesize)
   FROM ' . IMAGES_TABLE . '
 ;';
-[$disk_usage] = pwg_db_fetch_row(pwg_query($query));
+[$disk_usage] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT
     SUM(filesize)
   FROM ' . IMAGE_FORMAT_TABLE . '
 ;';
-[$formats_disk_usage] = pwg_db_fetch_row(pwg_query($query));
+[$formats_disk_usage] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $disk_usage += $formats_disk_usage;
 
@@ -203,7 +204,7 @@ if ($conf['activate_comments']) {
 SELECT COUNT(*)
   FROM ' . COMMENTS_TABLE . '
 ;';
-    [$nb_comments] = pwg_db_fetch_row(pwg_query($query));
+    [$nb_comments] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     $template->assign('NB_COMMENTS', $nb_comments);
 } else {
     $template->assign('NB_COMMENTS', 0);
@@ -223,7 +224,7 @@ if ($conf['show_piwigo_latest_news']) {
     }
 }
 
-trigger_notify('loc_end_intro');
+FunctionsPlugins::trigger_notify('loc_end_intro');
 
 // +-----------------------------------------------------------------------+
 // |                           get activity data                           |
@@ -269,7 +270,7 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
     WHERE occured_on >= \'' . $date_string . '\'
     GROUP BY activity_day, object, action
   ;';
-    $activity_actions = query2array($query);
+    $activity_actions = Mysqli::query2array($query);
 
     foreach ($activity_actions as $action) {
         // set the time to 12:00 (midday) so that it doesn't goes to previous/next day due to timezone offset
@@ -415,7 +416,7 @@ SELECT
   GROUP BY ext
 ;';
 
-$file_extensions = query2array($query, 'ext');
+$file_extensions = Mysqli::query2array($query, 'ext');
 
 foreach ($file_extensions as $ext => $ext_details) {
     $type = null;
@@ -449,7 +450,7 @@ SELECT SUM(filesize)
   FROM ' . IMAGE_FORMAT_TABLE . '
 ;';
 
-$result = query2array($query);
+$result = Mysqli::query2array($query);
 
 if (isset($result[0]['SUM(filesize)'])) {
     $data_storage['Formats'] = $result[0]['SUM(filesize)'];

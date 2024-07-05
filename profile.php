@@ -2,23 +2,16 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\deactivate_password_reset_key;
-use function Piwigo\inc\deactivate_user_auth_keys;
 use function Piwigo\inc\flush_page_messages;
-use function Piwigo\inc\get_default_language;
-use function Piwigo\inc\get_default_theme;
 use function Piwigo\inc\get_l10n_args;
 use function Piwigo\inc\get_languages;
 use function Piwigo\inc\get_pwg_themes;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_userid;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\l10n_args;
 use function Piwigo\inc\make_index_url;
@@ -27,8 +20,6 @@ use function Piwigo\inc\pwg_mail;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\switch_lang_back;
 use function Piwigo\inc\switch_lang_to;
-use function Piwigo\inc\trigger_notify;
-use function Piwigo\inc\validate_mail_address;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -51,7 +42,9 @@ if (! defined(
     // +-----------------------------------------------------------------------+
     // | Check Access and exit when user status is not ok                      |
     // +-----------------------------------------------------------------------+
-    check_status(ACCESS_CLASSIC);
+    FunctionsUser::check_status(
+        ACCESS_CLASSIC
+    );
 
     if ($_POST !== []) {
         check_pwg_token();
@@ -59,7 +52,7 @@ if (! defined(
 
     $userdata = $user;
 
-    trigger_notify('loc_begin_profile');
+    FunctionsPlugins::trigger_notify('loc_begin_profile');
 
     // Reset to default (Guest) custom settings
     if (isset($_POST['reset_to_default'])) {
@@ -74,8 +67,8 @@ SELECT ' . implode(',', $fields) . '
   FROM ' . USER_INFOS_TABLE . '
   WHERE user_id = ' . $conf['default_user_id'] . '
 ;';
-        $result = pwg_query($query);
-        $default_user = pwg_db_fetch_assoc($result);
+        $result = Mysqli::pwg_query($query);
+        $default_user = Mysqli::pwg_db_fetch_assoc($result);
         $userdata = array_merge($userdata, $default_user);
     }
 
@@ -100,7 +93,7 @@ SELECT ' . implode(',', $fields) . '
     }
 
     require(__DIR__ . '/inc/page_header.php');
-    trigger_notify('loc_end_profile');
+    FunctionsPlugins::trigger_notify('loc_end_profile');
     flush_page_messages();
     $template->pparse('profile');
     require(__DIR__ . '/inc/page_tail.php');
@@ -129,8 +122,8 @@ function save_profile_from_post(
             $_POST['theme'],
             $_POST['language']
         );
-        $_POST['theme'] = get_default_theme();
-        $_POST['language'] = get_default_language();
+        $_POST['theme'] = FunctionsUser::get_default_theme();
+        $_POST['language'] = FunctionsUser::get_default_language();
     }
 
     if (! defined('IN_ADMIN')) {
@@ -162,8 +155,8 @@ function save_profile_from_post(
 
     if (isset($_POST['mail_address'])) {
         // if $_POST and $userdata have are same email
-        // validate_mail_address allows, however, to check email
-        $mail_error = validate_mail_address(
+        // FunctionsUser::validate_mail_address allows, however, to check email
+        $mail_error = FunctionsUser::validate_mail_address(
             $userdata['id'],
             $_POST['mail_address']
         );
@@ -184,7 +177,7 @@ function save_profile_from_post(
     FROM ' . USERS_TABLE . '
     WHERE ' . $conf['user_fields']['id'] . " = '" . $userdata['id'] . '\'
   ;';
-            [$current_password] = pwg_db_fetch_row(pwg_query($query));
+            [$current_password] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
             if (! $conf['password_verify']($_POST['password'], $current_password)) {
                 $errors[] = l10n('Current password is wrong');
@@ -193,7 +186,7 @@ function save_profile_from_post(
     }
 
     if (count($errors) == 0) {
-        // mass_updates function
+        // Mysqli::mass_updates function
         require_once(__DIR__ . '/admin/inc/functions.php');
 
         $activity_details_tables = [];
@@ -212,12 +205,12 @@ function save_profile_from_post(
                 // password is hashed with function $conf['password_hash']
                 $data[$conf['user_fields']['password']] = $conf['password_hash']($_POST['use_new_pwd']);
 
-                deactivate_user_auth_keys($userdata['id']);
+                FunctionsUser::deactivate_user_auth_keys($userdata['id']);
             }
 
             // username is updated only if allowed
             if (! empty($_POST['username'])) {
-                if ($_POST['username'] != $userdata['username'] && get_userid($_POST['username'])) {
+                if ($_POST['username'] != $userdata['username'] && FunctionsUser::get_userid($_POST['username'])) {
                     $page['errors'][] = l10n('this login is already used');
                     unset($_POST['redirect']);
                 } else {
@@ -248,7 +241,7 @@ function save_profile_from_post(
                 }
             }
 
-            mass_updates(
+            Mysqli::mass_updates(
                 USERS_TABLE,
                 [
                     'primary' => [$conf['user_fields']['id']],
@@ -258,7 +251,7 @@ function save_profile_from_post(
             );
 
             if ($_POST['mail_address'] != $userdata['email']) {
-                deactivate_password_reset_key($userdata['id']);
+                FunctionsUser::deactivate_password_reset_key($userdata['id']);
             }
 
             $activity_details_tables[] = 'users';
@@ -284,7 +277,7 @@ function save_profile_from_post(
                 }
             }
 
-            mass_updates(
+            Mysqli::mass_updates(
                 USER_INFOS_TABLE,
                 [
                     'primary' => ['user_id'],
@@ -296,7 +289,7 @@ function save_profile_from_post(
             $activity_details_tables[] = 'user_infos';
         }
 
-        trigger_notify('save_profile_from_post', $userdata['id']);
+        FunctionsPlugins::trigger_notify('save_profile_from_post', $userdata['id']);
         pwg_activity('user', $userdata['id'], 'edit', [
             'function' => __FUNCTION__,
             'tables' => implode(',', $activity_details_tables),
@@ -367,7 +360,10 @@ function load_profile_in_template(
     $template->assign('IN_ADMIN', defined('IN_ADMIN'));
 
     // allow plugins to add their own form data to content
-    trigger_notify('load_profile_in_template', $userdata);
+    FunctionsPlugins::trigger_notify(
+        'load_profile_in_template',
+        $userdata
+    );
 
     $template->assign('PWG_TOKEN', get_pwg_token());
 }

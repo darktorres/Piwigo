@@ -20,8 +20,8 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE user_id = ' . $conf['default_user_id'] . '
 ;';
-$result = pwg_query($query);
-[$theme, $language] = pwg_db_fetch_row($result);
+$result = Mysqli::pwg_query($query);
+[$theme, $language] = Mysqli::pwg_db_fetch_row($result);
 
 $data = [
     'user_id' => $conf['default_user_id'],
@@ -29,7 +29,7 @@ $data = [
     'language' => empty($language) ? 'en_UK' : $language,
 ];
 
-mass_updates(
+Mysqli::mass_updates(
     USER_INFOS_TABLE,
     [
         'primary' => ['user_id'],

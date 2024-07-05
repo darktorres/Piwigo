@@ -4,18 +4,14 @@ namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Image;
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use function Piwigo\admin\inc\clear_derivative_cache;
-use function Piwigo\inc\build_user;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_conf_from_db;
 use function Piwigo\inc\pwg_activity;
@@ -34,7 +30,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     $page['warnings'][] = str_replace(
         '%s',
         l10n('user_status_webmaster'),
@@ -48,7 +44,9 @@ require_once(__DIR__ . '/../admin/inc/functions_upload.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 //-------------------------------------------------------- sections definitions
 
@@ -296,10 +294,12 @@ if (isset($_POST['submit'])) {
     // updating configuration if no error found
     if (! in_array($page['section'], ['sizes', 'watermark']) && count(
         $page['errors']
-    ) == 0 && is_webmaster()) {
+    ) == 0 && FunctionsUser::is_webmaster()) {
         //echo '<pre>'; print_r($_POST); echo '</pre>';
-        $result = pwg_query('SELECT param FROM ' . CONFIG_TABLE);
-        while ($row = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query(
+            'SELECT param FROM ' . CONFIG_TABLE
+        );
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             if (isset($_POST[$row['param']])) {
                 $value = $_POST[$row['param']];
 
@@ -312,7 +312,7 @@ UPDATE ' . CONFIG_TABLE . '
 SET value = \'' . str_replace("\'", "''", $value) . '\'
 WHERE param = \'' . $row['param'] . '\'
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
             }
         }
 
@@ -329,7 +329,7 @@ WHERE param = \'' . $row['param'] . '\'
 // restore default derivatives settings
 if ($page['section'] == 'sizes' && isset($_GET['action']) && $_GET['action'] == 'restore_settings') {
     ImageStdParams::set_and_save(ImageStdParams::get_default_sizes());
-    pwg_query('DELETE FROM ' . CONFIG_TABLE . " WHERE param = 'disabled_derivatives'");
+    Mysqli::pwg_query('DELETE FROM ' . CONFIG_TABLE . " WHERE param = 'disabled_derivatives'");
     clear_derivative_cache();
 
     $page['infos'][] = l10n('Your configuration settings are saved');
@@ -434,7 +434,7 @@ switch ($page['section']) {
         name
       FROM ' . GROUPS_TABLE . '
     ;';
-        $groups = query2array($query, 'id', 'name');
+        $groups = Mysqli::query2array($query, 'id', 'name');
         natcasesort($groups);
 
         $template->assign(
@@ -480,13 +480,13 @@ switch ($page['section']) {
 
     case 'default':
 
-        $edit_user = build_user($conf['guest_id'], false);
+        $edit_user = FunctionsUser::build_user($conf['guest_id'], false);
         require_once(__DIR__ . '/../profile.php');
 
         $errors = [];
         if (save_profile_from_post($edit_user, $errors)) {
             // Reload user
-            $edit_user = build_user($conf['guest_id'], false);
+            $edit_user = FunctionsUser::build_user($conf['guest_id'], false);
             $page['infos'][] = l10n('Information data registered in database');
         }
 
@@ -666,7 +666,7 @@ switch ($page['section']) {
 
 }
 
-$template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
+$template->assign('isWebmaster', (FunctionsUser::is_webmaster()) ? 1 : 0);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Configuration'));
 
 //----------------------------------------------------------- sending html code

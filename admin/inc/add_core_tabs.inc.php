@@ -2,7 +2,7 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\add_event_handler;
+use Piwigo\inc\FunctionsPlugins;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 
@@ -13,7 +13,7 @@ use function Piwigo\inc\l10n;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'tabsheet_before_select',
     '\Piwigo\admin\inc\add_core_tabs',
     0

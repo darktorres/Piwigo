@@ -1,7 +1,7 @@
 <?php
 
 use Piwigo\admin\inc\Themes;
-use function Piwigo\inc\get_default_theme;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\l10n;
 
 if (! defined('PHPWG_ROOT_PATH')) {
@@ -26,7 +26,7 @@ if (isset($_POST['theme']) && $_POST['theme'] == '~common~') {
     }
 
     if (! isset($page['theme']) || ! in_array($page['theme'], array_keys($themes->fs_themes))) {
-        $page['theme'] = get_default_theme();
+        $page['theme'] = FunctionsUser::get_default_theme();
     }
 
     $edited_file = PHPWG_ROOT_PATH . 'local/css/' . $page['theme'] . '-rules.css';
@@ -53,7 +53,7 @@ if ($page['theme'] == $value) {
 // [Administration > Configuration > Themes]
 
 $themes->sort_fs_themes();
-$default_theme = get_default_theme();
+$default_theme = FunctionsUser::get_default_theme();
 $db_themes = $themes->get_db_themes();
 
 $db_theme_ids = [];

@@ -3,7 +3,7 @@
 namespace Piwigo\inc;
 
 use PHPMailer\PHPMailer\PHPMailer;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -281,7 +281,7 @@ function switch_lang_to(
             }
         }
 
-        trigger_notify('loading_lang');
+        FunctionsPlugins::trigger_notify('loading_lang');
         load_language(
             'lang',
             PHPWG_ROOT_PATH . 'local/',
@@ -345,7 +345,7 @@ function pwg_mail_notification_admins(
     global $conf, $user;
 
     if (is_array($subject) || is_array($content)) {
-        switch_lang_to(get_default_language());
+        switch_lang_to(FunctionsUser::get_default_language());
 
         if (is_array($subject)) {
             $subject = l10n_args($subject);
@@ -447,13 +447,13 @@ SELECT
     $query .= '
   ORDER BY name
 ;';
-    $admins = query2array($query);
+    $admins = Mysqli::query2array($query);
 
     if ($admins === []) {
         return $return;
     }
 
-    switch_lang_to(get_default_language());
+    switch_lang_to(FunctionsUser::get_default_language());
 
     $return = pwg_mail($admins, $args, $tpl);
 
@@ -502,7 +502,7 @@ SELECT DISTINCT language
 
     $query .= '
 ;';
-    $languages = query2array($query, null, 'language');
+    $languages = Mysqli::query2array($query, null, 'language');
 
     if ($languages === []) {
         return $return;
@@ -525,7 +525,7 @@ SELECT
     AND ' . $conf['user_fields']['email'] . ' <> ""
     AND language = \'' . $language . '\'
 ;';
-        $users = query2array($query);
+        $users = Mysqli::query2array($query);
 
         if ($users === []) {
             continue;
@@ -534,7 +534,7 @@ SELECT
         switch_lang_to($language);
 
         foreach ($users as $u) {
-            $authkey = create_user_auth_key($u['user_id'], $u['status']);
+            $authkey = FunctionsUser::create_user_auth_key($u['user_id'], $u['status']);
 
             $user_tpl = $tpl;
 
@@ -712,7 +712,7 @@ function pwg_mail(
             // instanciate a new Template
             if (! isset($conf_mail[$cache_key]['theme'])) {
                 $conf_mail[$cache_key]['theme'] = get_mail_template($content_type);
-                trigger_notify('before_parse_mail_template', $cache_key, $content_type);
+                FunctionsPlugins::trigger_notify('before_parse_mail_template', $cache_key, $content_type);
             }
 
             $template = &$conf_mail[$cache_key]['theme'];
@@ -852,11 +852,11 @@ function pwg_mail(
     }
 
     $ret = true;
-    $pre_result = trigger_change('before_send_mail', true, $to, $args, $mail);
+    $pre_result = FunctionsPlugins::trigger_change('before_send_mail', true, $to, $args, $mail);
 
     if ($pre_result) {
         $ret = $mail->send();
-        if (! $ret && (! ini_get('display_errors') || is_admin())) {
+        if (! $ret && (! ini_get('display_errors') || FunctionsUser::is_admin())) {
             trigger_error('Mailer Error: ' . $mail->ErrorInfo, E_USER_WARNING);
         }
 
@@ -873,7 +873,7 @@ function pwg_mail(
  */
 function pwg_send_mail($result, $to, $subject, $content, $headers)
 {
-    if (is_admin()) {
+    if (FunctionsUser::is_admin()) {
         trigger_error('pwg_send_mail function is deprecated', E_USER_NOTICE);
     }
 
@@ -938,4 +938,4 @@ function pwg_send_mail_test(
     }
 }
 
-trigger_notify('functions_mail_included');
+FunctionsPlugins::trigger_notify('functions_mail_included');

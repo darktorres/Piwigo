@@ -18,17 +18,17 @@ ALTER TABLE ' . USER_INFOS_TABLE . '
   CHANGE COLUMN template theme varchar(255) NOT NULL default \'Sylvia\'
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 SELECT user_id, theme
   FROM ' . USER_INFOS_TABLE . '
 ;';
 
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
 $users = [];
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     [$user_template, $user_theme] = explode('/', (string) $row['theme']);
 
     switch ($user_template) {
@@ -61,7 +61,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     ];
 }
 
-mass_updates(
+Mysqli::mass_updates(
     USER_INFOS_TABLE,
     [
         'primary' => ['user_id'],

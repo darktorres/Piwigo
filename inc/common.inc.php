@@ -2,9 +2,8 @@
 
 namespace Piwigo\inc;
 
+use Piwigo\inc\dbLayer\Mysqli;
 use function Piwigo\admin\inc\check_upgrade_feed;
-use function Piwigo\inc\dbLayer\my_error;
-use function Piwigo\inc\dbLayer\pwg_db_connect;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -33,25 +32,21 @@ $t2 = microtime(true);
 // but function get_magic_quotes_gpc was always replying false.
 // Since php 8 the function get_magic_quotes_gpc is also removed
 // but we stil want to sanitize user input variables.
-if (! function_exists(
-    'get_magic_quotes_gpc'
-) || ! @get_magic_quotes_gpc()) {
-    function sanitize_mysql_kv(&$v, $k): void
-    {
-        $v = addslashes((string) $v);
-    }
+function sanitize_mysql_kv(&$v, $k): void
+{
+    $v = addslashes((string) $v);
+}
 
-    if (is_array($_GET)) {
-        array_walk_recursive($_GET, \Piwigo\inc\sanitize_mysql_kv(...));
-    }
+if (is_array($_GET)) {
+    array_walk_recursive($_GET, \Piwigo\inc\sanitize_mysql_kv(...));
+}
 
-    if (is_array($_POST)) {
-        array_walk_recursive($_POST, \Piwigo\inc\sanitize_mysql_kv(...));
-    }
+if (is_array($_POST)) {
+    array_walk_recursive($_POST, \Piwigo\inc\sanitize_mysql_kv(...));
+}
 
-    if (is_array($_COOKIE)) {
-        array_walk_recursive($_COOKIE, \Piwigo\inc\sanitize_mysql_kv(...));
-    }
+if (is_array($_COOKIE)) {
+    array_walk_recursive($_COOKIE, \Piwigo\inc\sanitize_mysql_kv(...));
 }
 
 if (! empty($_SERVER['PATH_INFO'])) {
@@ -91,7 +86,7 @@ if (! defined('PHPWG_INSTALLED')) {
     exit;
 }
 
-require(__DIR__ . '/../inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+// require(__DIR__ . '/../inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 if (isset($conf['show_php_errors']) && ! empty($conf['show_php_errors'])) {
     @ini_set('error_reporting', $conf['show_php_errors']);
@@ -112,14 +107,14 @@ $persistent_cache = new PersistentFileCache();
 
 // Database connection
 try {
-    pwg_db_connect(
+    Mysqli::pwg_db_connect(
         $conf['db_host'],
         $conf['db_user'],
         $conf['db_password'],
         $conf['db_base']
     );
 } catch (\Exception $exception) {
-    my_error(l10n($exception->getMessage()), true);
+    Mysqli::my_error(l10n($exception->getMessage()), true);
 }
 
 load_conf_from_db();
@@ -137,7 +132,7 @@ if (! $conf['check_upgrade_feed'] && (! isset($conf['piwigo_db_version']) || $co
 ImageStdParams::load_from_db();
 
 session_start();
-load_plugins();
+FunctionsPlugins::load_plugins();
 
 // 2022-02-25 due to escape on "rank" (becoming a mysql keyword in version 8), the $conf['order_by'] might
 // use a "rank", even if admin/configuration.php should have removed it. We must remove it.
@@ -184,11 +179,11 @@ if (isset($conf['alternative_pem_url']) && $conf['alternative_pem_url'] != '') {
 
 // language files
 load_language('common.lang');
-if (is_admin() || (defined('IN_ADMIN') && IN_ADMIN)) {
+if (FunctionsUser::is_admin() || (defined('IN_ADMIN') && IN_ADMIN)) {
     load_language('admin.lang');
 }
 
-trigger_notify('loading_lang');
+FunctionsPlugins::trigger_notify('loading_lang');
 load_language('lang', PHPWG_ROOT_PATH . 'local/', [
     'no_fallback' => true,
     'local' => true,
@@ -196,7 +191,7 @@ load_language('lang', PHPWG_ROOT_PATH . 'local/', [
 
 // only now we can set the localized username of the guest user (and not in
 // inc/user.inc.php)
-if (is_a_guest()) {
+if (FunctionsUser::is_a_guest()) {
     $user['username'] = l10n('guest');
 }
 
@@ -211,7 +206,7 @@ if (isset($page['auth_key_invalid']) && $page['auth_key_invalid']) {
 
 // template instance
 if (defined('IN_ADMIN') && IN_ADMIN) {// Admin template
-    $template = new Template(PHPWG_ROOT_PATH . 'admin/themes', userprefs_get_param(
+    $template = new Template(PHPWG_ROOT_PATH . 'admin/themes', FunctionsUser::userprefs_get_param(
         'admin_theme',
         'roma'
     ));
@@ -235,7 +230,7 @@ if (isset($user['internal_status']['guest_must_be_guest']) && $user['internal_st
 if ($conf['gallery_locked']) {
     $header_msgs[] = l10n('The gallery is locked for maintenance. Please, come back later.');
 
-    if (script_basename() !== 'identification' && ! is_admin()) {
+    if (script_basename() !== 'identification' && ! FunctionsUser::is_admin()) {
         set_status_header(503, 'Service Unavailable');
         @header('Retry-After: 900');
         header('Content-Type: text/html; charset=utf-8');
@@ -272,25 +267,25 @@ if (isset($conf['header_notes'])) {
 }
 
 // default event handlers
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'render_category_literal_description',
     '\Piwigo\inc\render_category_literal_description'
 );
 if (! $conf['allow_html_descriptions']) {
-    add_event_handler('render_category_description', 'nl2br');
+    FunctionsPlugins::add_event_handler('render_category_description', 'nl2br');
 }
 
-add_event_handler('render_comment_content', '\Piwigo\inc\render_comment_content');
-add_event_handler('render_comment_author', 'strip_tags');
-add_event_handler('render_tag_url', '\Piwigo\inc\str2url');
-add_event_handler(
+FunctionsPlugins::add_event_handler('render_comment_content', '\Piwigo\inc\render_comment_content');
+FunctionsPlugins::add_event_handler('render_comment_author', 'strip_tags');
+FunctionsPlugins::add_event_handler('render_tag_url', '\Piwigo\inc\str2url');
+FunctionsPlugins::add_event_handler(
     'blockmanager_register_blocks',
     '\Piwigo\inc\register_default_menubar_blocks',
     EVENT_HANDLER_PRIORITY_NEUTRAL - 1
 );
 if (! empty($conf['original_url_protection'])) {
-    add_event_handler('get_element_url', '\Piwigo\inc\get_element_url_protection_handler');
-    add_event_handler('get_src_image_url', '\Piwigo\inc\get_src_image_url_protection_handler');
+    FunctionsPlugins::add_event_handler('get_element_url', '\Piwigo\inc\get_element_url_protection_handler');
+    FunctionsPlugins::add_event_handler('get_src_image_url', '\Piwigo\inc\get_src_image_url_protection_handler');
 }
 
-trigger_notify('init');
+FunctionsPlugins::trigger_notify('init');

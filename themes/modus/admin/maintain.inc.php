@@ -1,9 +1,9 @@
 <?php
 
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\pwg_query;
 
-function theme_activate($id, $version, &$errors)
+function theme_activate($id, $version, &$errors): void
 {
     global $conf;
 
@@ -21,8 +21,8 @@ function theme_activate($id, $version, &$errors)
     conf_update_param('modus_theme', addslashes(serialize($my_conf)));
 }
 
-function theme_delete()
+function theme_delete(): void
 {
     $query = 'DELETE FROM ' . CONFIG_TABLE . ' WHERE param="modus_theme"';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }

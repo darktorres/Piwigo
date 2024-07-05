@@ -14,10 +14,7 @@ namespace Piwigo\inc;
  */
 final class FileCombiner
 {
-    /**
-     * @var bool
-     */
-    private $is_css;
+    private readonly bool $is_css;
 
     /**
      * @param string $type 'js' or 'css'
@@ -33,11 +30,11 @@ final class FileCombiner
     /**
      * Deletes all combined files from cache directory.
      */
-    public static function clear_combined_files()
+    public static function clear_combined_files(): void
     {
         $dir = opendir(PHPWG_ROOT_PATH . PWG_COMBINED_DIR);
         while ($file = readdir($dir)) {
-            if (get_extension($file) == 'js' || get_extension($file) == 'css') {
+            if (get_extension($file) === 'js' || get_extension($file) === 'css') {
                 unlink(PHPWG_ROOT_PATH . PWG_COMBINED_DIR . $file);
             }
         }
@@ -48,7 +45,7 @@ final class FileCombiner
     /**
      * @param Combinable|Combinable[] $combinable
      */
-    public function add($combinable)
+    public function add($combinable): void
     {
         if (is_array($combinable)) {
             $this->combinables = array_merge($this->combinables, $combinable);
@@ -64,7 +61,7 @@ final class FileCombiner
     {
         global $conf;
         $force = false;
-        if (is_admin() && ($this->is_css || ! $conf['template_compile_check'])) {
+        if (FunctionsUser::is_admin() && ($this->is_css || ! $conf['template_compile_check'])) {
             $force = (isset($_SERVER['HTTP_CACHE_CONTROL']) && str_contains(
                 (string) $_SERVER['HTTP_CACHE_CONTROL'],
                 'max-age=0'
@@ -105,16 +102,14 @@ final class FileCombiner
      * Process a set of pending files.
      *
      * @param array $result
-     * @param array $pending
      * @param string[] $key
-     * @param bool $force
      */
     private function flush_pending(
         &$result,
-        &$pending,
-        $key,
-        $force
-    ) {
+        array &$pending,
+        array $key,
+        bool $force
+    ): void {
         if (count($pending) > 1) {
             $key = implode('>', $key);
             $file = PWG_COMBINED_DIR . base_convert(hash('crc32b', $key), 16, 36) . '.' . $this->type;
@@ -148,8 +143,6 @@ final class FileCombiner
      * Process one combinable file.
      *
      * @param Combinable $combinable
-     * @param bool $return_content
-     * @param bool $force
      * @param string $header CSS directives that must appear first in
      *                       the minified file (only used when
      *                       $return_content===true)
@@ -157,9 +150,9 @@ final class FileCombiner
      */
     private function process_combinable(
         $combinable,
-        $return_content,
-        $force,
-        &$header
+        bool $return_content,
+        bool $force,
+        string &$header
     ) {
         global $conf;
         if ($combinable->is_template) {
@@ -184,7 +177,7 @@ final class FileCombiner
             global $template;
             $handle = $this->type . '.' . $combinable->id;
             $template->set_filename($handle, realpath(PHPWG_ROOT_PATH . $combinable->path));
-            trigger_notify(
+            FunctionsPlugins::trigger_notify(
                 'combinable_preparse',
                 $template,
                 $combinable,
@@ -227,12 +220,11 @@ final class FileCombiner
      *
      * @param string $js file content
      * @param string $file
-     * @return string
      */
     private function process_js(
         $js,
         $file
-    ) {
+    ): string {
         if (! str_contains($file, '.min') && ! str_contains($file, '.packed')) {
             try {
                 $js = \JShrink\Minifier::minify($js);
@@ -255,7 +247,7 @@ final class FileCombiner
     private function process_css(
         $css,
         $file,
-        &$header
+        string &$header
     ) {
         $css = self::process_css_rec($css, dirname($file), $header);
         if (! str_contains($file, '.min') && PHP_VERSION_ID >= 50200) {
@@ -263,22 +255,21 @@ final class FileCombiner
             $css = $cssMin->run($css);
         }
 
-        return trigger_change('combined_css_postfilter', $css);
+        return FunctionsPlugins::trigger_change('combined_css_postfilter', $css);
     }
 
     /**
      * Resolves relative links in CSS file.
      *
      * @param string $css file content
-     * @param string $dir
      * @param string $header CSS directives that must appear first in
      *                       the minified file.
      * @return string
      */
     private static function process_css_rec(
         $css,
-        $dir,
-        &$header
+        string $dir,
+        string &$header
     ) {
         static $PATTERN_URL = "#url\(\s*['|\"]{0,1}(.*?)['|\"]{0,1}\s*\)#";
         static $PATTERN_IMPORT = "#@import\s*['|\"]{0,1}(.*?)['|\"]{0,1};#";

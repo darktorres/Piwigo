@@ -18,7 +18,7 @@ $upgrade_description = 'Add image_category.rank column';
 // +-----------------------------------------------------------------------+
 
 $query = 'ALTER TABLE ' . IMAGE_CATEGORY_TABLE . ' add column `rank` mediumint(8) unsigned default NULL';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $upgrade_description = $query;
 

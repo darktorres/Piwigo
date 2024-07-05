@@ -3,18 +3,15 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_admin_client_cache_keys;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\create_navigation_bar;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_query_string_diff;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -33,7 +30,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('display', $_GET, false, PATTERN_ID);
 
@@ -70,7 +69,7 @@ if (isset($_GET['users'])) {
 
 $page['cat_filter'] = '';
 if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
-    $cat_ids = get_subcat_ids([$_GET['cat']]);
+    $cat_ids = FunctionsCategory::get_subcat_ids([$_GET['cat']]);
 
     if ($cat_ids !== []) {
         $page['cat_filter'] = ' AND ic.category_id IN (' . implode(',', $cat_ids) . ')';
@@ -82,8 +81,8 @@ $query = '
 SELECT ' . $conf['user_fields']['username'] . ' as username, ' . $conf['user_fields']['id'] . ' as id
   FROM ' . USERS_TABLE . '
 ;';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $users[$row['id']] = stripslashes((string) $row['username']);
 }
 
@@ -100,14 +99,14 @@ if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filt
 
 $query .= '
 WHERE 1=1' . $page['user_filter'];
-[$nb_images] = pwg_db_fetch_row(pwg_query($query));
+[$nb_images] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $query = '
 SELECT
     COUNT(*)
   FROM ' . RATE_TABLE .
 ';';
-[$nb_elements] = pwg_db_fetch_row(pwg_query($query));
+[$nb_elements] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 // +-----------------------------------------------------------------------+
 // |                             template init                             |
@@ -196,8 +195,8 @@ $query .= '
 ;';
 
 $images = [];
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $images[] = $row;
 }
 
@@ -211,8 +210,8 @@ foreach ($images as $image) {
 FROM ' . RATE_TABLE . ' AS r
 WHERE r.element_id=' . $image['id'] . '
 ORDER BY date DESC;';
-    $result = pwg_query($query);
-    $nb_rates = pwg_db_num_rows($result);
+    $result = Mysqli::pwg_query($query);
+    $nb_rates = Mysqli::pwg_db_num_rows($result);
 
     $tpl_image =
       [
@@ -228,7 +227,7 @@ ORDER BY date DESC;';
           'rates' => [],
       ];
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $user_rate = $users[$row['user_id']] ?? '? ' . $row['user_id'];
 
         if (strlen((string) $row['anonymous_id']) > 0) {

@@ -27,7 +27,7 @@ ALTER TABLE ' . PREFIX_TABLE . 'users
 ];
 
 foreach ($queries as $query) {
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 // now we upgrade from 1.6.2

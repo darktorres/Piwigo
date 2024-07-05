@@ -3,19 +3,18 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\create_navigation_bar;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\delete_user_comment;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_query_string_diff;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\l10n_dec;
-use function Piwigo\inc\trigger_change;
 use function Piwigo\inc\validate_user_comment;
 
 // +-----------------------------------------------------------------------+
@@ -37,7 +36,9 @@ $page['start'] = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['st
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // |                                actions                                |
@@ -111,8 +112,8 @@ SELECT
   FROM ' . COMMENTS_TABLE . '
   GROUP BY validated
 ;';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $nb_total += $row['counter'];
 
     if ($row['validated'] == 'false') {
@@ -161,8 +162,8 @@ SELECT
   ORDER BY c.date DESC
   LIMIT ' . $page['start'] . ', ' . $conf['comments_page_nb_comments'] . '
 ;';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $thumb = DerivativeImage::thumb_url(
         [
             'id' => $row['image_id'],
@@ -178,9 +179,9 @@ while ($row = pwg_db_fetch_assoc($result)) {
             'U_PICTURE' => get_root_url() . 'admin.php?page=photo-' . $row['image_id'],
             'ID' => $row['id'],
             'TN_SRC' => $thumb,
-            'AUTHOR' => trigger_change('render_comment_author', $author_name),
+            'AUTHOR' => FunctionsPlugins::trigger_change('render_comment_author', $author_name),
             'DATE' => format_date($row['date'], ['day_name', 'day', 'month', 'year', 'time']),
-            'CONTENT' => trigger_change('render_comment_content', $row['content']),
+            'CONTENT' => FunctionsPlugins::trigger_change('render_comment_content', $row['content']),
             'IS_PENDING' => ($row['validated'] == 'false'),
             'IP' => $row['anonymous_id'],
         ]

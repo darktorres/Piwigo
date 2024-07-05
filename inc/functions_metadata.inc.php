@@ -82,7 +82,10 @@ function clean_iptc_value($value)
     if (preg_match('/[\x80-\xff]/', $value)) {
         // apparently mac uses some MacRoman crap encoding. I don't know
         // how to detect it so a plugin should do the trick.
-        $value = trigger_change('clean_iptc_value', $value);
+        $value = FunctionsPlugins::trigger_change(
+            'clean_iptc_value',
+            $value
+        );
         if (($qual = qualify_utf8($value)) != 0) {// has non ascii chars
             if ($qual > 0) {
                 $input_encoding = 'utf-8';
@@ -124,13 +127,13 @@ function get_exif_data(
     }
 
     // Read EXIF data
-    if (($exif = @exif_read_data($filename)) || ($exif2 = trigger_change(
+    if (($exif = @exif_read_data($filename)) || ($exif2 = FunctionsPlugins::trigger_change(
         'format_exif_data',
         $exif = null,
         $filename,
         $map
     ))) {
-        $exif = empty($exif2) ? trigger_change('format_exif_data', $exif, $filename, $map) : $exif2;
+        $exif = empty($exif2) ? FunctionsPlugins::trigger_change('format_exif_data', $exif, $filename, $map) : $exif2;
         // configured fields
         foreach ($map as $key => $field) {
             if (! str_contains((string) $field, ';')) {

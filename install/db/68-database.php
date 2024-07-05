@@ -22,14 +22,14 @@ require_once(__DIR__ . '/../../inc/constants.php');
 $query = '
 ALTER TABLE ' . SESSIONS_TABLE . '
   MODIFY COLUMN data MEDIUMTEXT NOT NULL';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 ALTER TABLE ' . USER_CACHE_TABLE . '
   MODIFY COLUMN forbidden_categories MEDIUMTEXT,
   MODIFY COLUMN image_access_list MEDIUMTEXT
   ';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

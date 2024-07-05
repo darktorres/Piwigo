@@ -1,6 +1,6 @@
 <?php
 
-use function Piwigo\inc\dblayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
@@ -24,10 +24,10 @@ use function Piwigo\inc\dblayer\pwg_query;
 // | USA.                                                                  |
 // +-----------------------------------------------------------------------+
 
-function plugin_uninstall()
+function plugin_uninstall(): void
 {
     global $prefixeTable;
 
     $query = 'DELETE FROM ' . CONFIG_TABLE . " WHERE param='LocalFilesEditor' LIMIT 1;";
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }

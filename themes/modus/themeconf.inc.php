@@ -1,17 +1,16 @@
 <?php
 
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsCookie;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
 use Piwigo\inc\ImageRect;
 use Piwigo\inc\ImageStdParams;
-use function Piwigo\inc\add_event_handler;
-use function Piwigo\inc\cookie_path;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_device;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
-use function Piwigo\inc\pwg_get_session_var;
-use function Piwigo\inc\pwg_set_session_var;
 use function Piwigo\inc\time_since;
 
 /*
@@ -69,9 +68,9 @@ if (! $conf['compiled_template_cache_language']) {
 if (isset($_COOKIE['caps'])) {
     setcookie('caps', false, [
         'expires' => 0,
-        'path' => cookie_path(),
+        'path' => FunctionsCookie::cookie_path(),
     ]);
-    pwg_set_session_var('caps', explode('x', (string) $_COOKIE['caps']));
+    FunctionsSession::pwg_set_session_var('caps', explode('x', (string) $_COOKIE['caps']));
     /*file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'tmp/modus.log', implode("\t", array(
         date("Y-m-d H:i:s"), $_COOKIE['caps'], $_SERVER['HTTP_USER_AGENT']
         ))."\n", FILE_APPEND);*/
@@ -84,7 +83,7 @@ if (get_device() == 'mobile') {
 }
 
 $this->smarty->registerFilter('pre', 'modus_smarty_prefilter_wrap');
-function modus_smarty_prefilter_wrap($source)
+function modus_smarty_prefilter_wrap($source): string|array|null
 {
     require_once(__DIR__ . '/functions.inc.php');
     return modus_smarty_prefilter($source);
@@ -92,10 +91,15 @@ function modus_smarty_prefilter_wrap($source)
 
 if (! defined('IN_ADMIN') && defined('RVCDN')) {
     $this->smarty->registerFilter('pre', 'rv_cdn_prefilter');
-    add_event_handler('combined_script', 'rv_cdn_combined_script', EVENT_HANDLER_PRIORITY_NEUTRAL, 2);
+    FunctionsPlugins::add_event_handler(
+        'combined_script',
+        'rv_cdn_combined_script',
+        EVENT_HANDLER_PRIORITY_NEUTRAL,
+        2
+    );
 }
 
-function rv_cdn_prefilter($source, &$smarty)
+function rv_cdn_prefilter($source, &$smarty): array|string
 {
     $source = str_replace(
         'src="{$ROOT_URL}{$themeconf.icon_dir}/',
@@ -107,15 +111,19 @@ function rv_cdn_prefilter($source, &$smarty)
 
 // Add prefilter to remove fontello loaded by piwigo 14 search,
 // this avoids conflicts of loading 2 fontellos
-add_event_handler('loc_begin_index', 'modus_loc_begin_index', 60);
-function modus_loc_begin_index()
+FunctionsPlugins::add_event_handler(
+    'loc_begin_index',
+    'modus_loc_begin_index',
+    60
+);
+function modus_loc_begin_index(): void
 {
     global $template;
     $template->set_prefilter('index', 'modus_index_prefilter_1');
     $template->set_prefilter('index', 'modus_index_prefilter_2');
 }
 
-function modus_index_prefilter_1($content)
+function modus_index_prefilter_1($content): array|string
 {
     $search = '{combine_css path="themes/default/vendor/fontello/css/fontello.css" order=-10}';
     $replacement = '';
@@ -124,7 +132,7 @@ function modus_index_prefilter_1($content)
 
 // Add pwg-icon class to search in this set icon
 
-function modus_index_prefilter_2($content)
+function modus_index_prefilter_2($content): array|string
 {
     $search = '<span class="pwg-icon-search-folder"></span>';
     $replacement = '<span class="pwg-icon pwg-icon-search-folder"></span>';
@@ -141,10 +149,10 @@ function rv_cdn_combined_script($url, $script)
 }
 
 if (defined('RVPT_JQUERY_SRC')) {
-    add_event_handler('loc_begin_page_header', 'modus_loc_begin_page_header');
+    FunctionsPlugins::add_event_handler('loc_begin_page_header', 'modus_loc_begin_page_header');
 }
 
-function modus_loc_begin_page_header()
+function modus_loc_begin_page_header(): void
 {
     $all = $GLOBALS['template']->scriptLoader->get_all();
     if (($jq = @$all['jquery'])) {
@@ -152,8 +160,8 @@ function modus_loc_begin_page_header()
     }
 }
 
-add_event_handler('combinable_preparse', 'modus_combinable_preparse');
-function modus_combinable_preparse($template)
+FunctionsPlugins::add_event_handler('combinable_preparse', 'modus_combinable_preparse');
+function modus_combinable_preparse($template): void
 {
     global $conf, $template;
     require_once(__DIR__ . '/functions.inc.php');
@@ -174,7 +182,7 @@ function modus_combinable_preparse($template)
 }
 
 $this->smarty->registerPlugin('function', 'cssResolution', 'modus_css_resolution');
-function modus_css_resolution($params)
+function modus_css_resolution($params): string
 {
     $base = ($params['base'] ?? null);
     $min = ($params['min'] ?? null);
@@ -208,7 +216,7 @@ function modus_css_resolution($params)
 }
 
 $this->smarty->registerPlugin('function', 'modus_thumbs', 'modus_thumbs');
-function modus_thumbs($x, $smarty)
+function modus_thumbs($x, $smarty): void
 {
     global $template, $page, $conf;
 
@@ -291,20 +299,20 @@ function modus_thumbs($x, $smarty)
     );
 }
 
-add_event_handler('loc_end_index', 'modus_on_end_index');
-function modus_on_end_index()
+FunctionsPlugins::add_event_handler('loc_end_index', 'modus_on_end_index');
+function modus_on_end_index(): void
 {
     global $template;
-    if (! pwg_get_session_var('caps')) {
+    if (! FunctionsSession::pwg_get_session_var('caps')) {
         $template->block_footer_script(
             [],
-            'try{document.cookie="caps="+(window.devicePixelRatio?window.devicePixelRatio:1)+"x"+document.documentElement.clientWidth+"x"+document.documentElement.clientHeight+";path=' . cookie_path() . '"}catch(er){document.cookie="caps=1x1x1x"+err.message;}'
+            'try{document.cookie="caps="+(window.devicePixelRatio?window.devicePixelRatio:1)+"x"+document.documentElement.clientWidth+"x"+document.documentElement.clientHeight+";path=' . FunctionsCookie::cookie_path() . '"}catch(er){document.cookie="caps=1x1x1x"+err.message;}'
         );
     }
 
 }
 
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'get_index_derivative_params',
     'modus_get_index_photo_derivative_params',
     EVENT_HANDLER_PRIORITY_NEUTRAL + 1
@@ -312,9 +320,9 @@ add_event_handler(
 function modus_get_index_photo_derivative_params($default)
 {
     global $conf;
-    if (isset($conf['modus_theme']) && pwg_get_session_var('index_deriv') === null) {
+    if (isset($conf['modus_theme']) && FunctionsSession::pwg_get_session_var('index_deriv') === null) {
         $type = $conf['modus_theme']['index_photo_deriv'];
-        if (($caps = pwg_get_session_var(
+        if (($caps = FunctionsSession::pwg_get_session_var(
             'caps'
         )) && (($caps[0] >= 2 && $caps[1] >= 768) /*Ipad3 always has clientWidth 768 independently of orientation*/
             || $caps[0] >= 3)) {
@@ -330,7 +338,7 @@ function modus_get_index_photo_derivative_params($default)
     return $default;
 }
 
-add_event_handler('loc_end_index_category_thumbnails', 'modus_index_category_thumbnails');
+FunctionsPlugins::add_event_handler('loc_end_index_category_thumbnails', 'modus_index_category_thumbnails');
 function modus_index_category_thumbnails($items)
 {
     global $page, $template, $conf;
@@ -398,8 +406,8 @@ function modus_index_category_thumbnails($items)
     return $items;
 }
 
-add_event_handler('loc_begin_picture', 'modus_loc_begin_picture');
-function modus_loc_begin_picture()
+FunctionsPlugins::add_event_handler('loc_begin_picture', 'modus_loc_begin_picture');
+function modus_loc_begin_picture(): void
 {
     global $conf, $template;
     if (isset($_GET['slideshow'])) {
@@ -417,8 +425,13 @@ function modus_loc_begin_picture()
     );
 }
 
-add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL - 1, 2);
-function modus_picture_content($content, $element_info)
+FunctionsPlugins::add_event_handler(
+    'render_element_content',
+    'modus_picture_content',
+    EVENT_HANDLER_PRIORITY_NEUTRAL - 1,
+    2
+);
+function modus_picture_content($content, array $element_info)
 {
     global $conf, $picture, $template;
 
@@ -451,14 +464,14 @@ function modus_picture_content($content, $element_info)
     if (isset($_COOKIE['picture_deriv'])) { // ignore persistence
         setcookie('picture_deriv', false, [
             'expires' => 0,
-            'path' => cookie_path(),
+            'path' => FunctionsCookie::cookie_path(),
         ]);
     }
 
     $selected_derivative = null;
     if (isset($_COOKIE['phavsz'])) {
         $available_size = explode('x', (string) $_COOKIE['phavsz']);
-    } elseif (($caps = pwg_get_session_var('caps')) && $caps[0] > 1) {
+    } elseif (($caps = FunctionsSession::pwg_get_session_var('caps')) && $caps[0] > 1) {
         $available_size = [$caps[0] * $caps[1], $caps[0] * ($caps[2] - 100), $caps[0]];
     }
 
@@ -533,7 +546,7 @@ function modus_picture_content($content, $element_info)
     $as_pending = false;
     if (! $selected_derivative) {
         $as_pending = true;
-        $selected_derivative = $element_info['derivatives'][pwg_get_session_var(
+        $selected_derivative = $element_info['derivatives'][FunctionsSession::pwg_get_session_var(
             'picture_deriv',
             $conf['derivative_default_size']
         )];
@@ -557,7 +570,7 @@ function modus_picture_content($content, $element_info)
     $template->assign(
         [
             'ALT_IMG' => $element_info['file'],
-            'COOKIE_PATH' => cookie_path(),
+            'COOKIE_PATH' => FunctionsCookie::cookie_path(),
             'RVAS_PENDING' => $as_pending,
         ]
     );

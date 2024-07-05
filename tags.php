@@ -2,15 +2,15 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\add_level_to_tags;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\get_available_tags;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\pwg_transliterate;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -26,9 +26,9 @@ use function Piwigo\inc\trigger_notify;
 define('PHPWG_ROOT_PATH', './');
 require_once(__DIR__ . '/inc/common.inc.php');
 
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
-trigger_notify('loc_begin_tags');
+FunctionsPlugins::trigger_notify('loc_begin_tags');
 
 // +-----------------------------------------------------------------------+
 // |                       page header and options                         |
@@ -165,7 +165,7 @@ if (! isset($themeconf['hide_menu_on']) || ! in_array('theTagsPage', $themeconf[
 }
 
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_tags');
+FunctionsPlugins::trigger_notify('loc_end_tags');
 flush_page_messages();
 $template->pparse('tags');
 require(__DIR__ . '/inc/page_tail.php');

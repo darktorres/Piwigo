@@ -20,11 +20,11 @@ if ($conf['dblayer'] == 'mysql') {
     $q = 'ALTER TABLE ' . IMAGES_TABLE . ' RENAME average_rate TO rating_score';
 }
 
-pwg_query($q);
+Mysqli::pwg_query($q);
 
 $q = 'UPDATE ' . CATEGORIES_TABLE . " SET image_order=REPLACE(image_order, 'average_rate', 'rating_score')";
-pwg_query($q);
+Mysqli::pwg_query($q);
 
 $q = 'UPDATE ' . CONFIG_TABLE . " SET value=REPLACE(value, 'average_rate', 'rating_score')
 WHERE param IN ('picture_informations', 'order_by', 'order_by_inside_category')";
-pwg_query($q);
+Mysqli::pwg_query($q);

@@ -100,7 +100,7 @@ class Config
 
     public const KEY_CUSTOM_CSS = 'custom_css';
 
-    private $defaults = [
+    private array $defaults = [
         self::KEY_FLUID_WIDTH => false,
         self::KEY_FLUID_WIDTH_COL_XXL => true,
         self::KEY_BOOTSTRAP_THEME => 'material-darkroom',
@@ -143,7 +143,7 @@ class Config
         self::KEY_CUSTOM_CSS => null,
     ];
 
-    private $types = [
+    private array $types = [
         self::KEY_FLUID_WIDTH => self::TYPE_BOOL,
         self::KEY_FLUID_WIDTH_COL_XXL => self::TYPE_BOOL,
         self::KEY_BOOTSTRAP_THEME => self::TYPE_STRING,
@@ -188,7 +188,7 @@ class Config
 
     private $config = [];
 
-    private $files = [];
+    private array $files = [];
 
     public function __construct()
     {
@@ -259,30 +259,30 @@ class Config
         return null;
     }
 
-    public function fromPost(array $post)
+    public function fromPost(array $post): void
     {
         foreach (array_keys($this->defaults) as $key) {
             $this->__set($key, isset($post[$key]) ? stripslashes((string) $post[$key]) : null);
         }
     }
 
-    public function save()
+    public function save(): void
     {
         conf_update_param(self::CONF_PARAM, json_encode($this->config));
     }
 
-    private function initFiles()
+    private function initFiles(): void
     {
         $this->files[self::KEY_CUSTOM_CSS] = PHPWG_ROOT_PATH . 'local/bootstrap_darkroom/custom.css';
     }
 
-    private function createDefaultConfig()
+    private function createDefaultConfig(): void
     {
         $this->config = $this->defaults;
         $this->config[self::KEY_VERSION] = self::CONF_VERSION;
     }
 
-    private function populateConfig(array $config)
+    private function populateConfig(array $config): void
     {
         foreach (array_keys($this->defaults) as $key) {
             if (isset($config[$key])) {
@@ -291,7 +291,7 @@ class Config
         }
     }
 
-    private function saveFile($key, $content)
+    private function saveFile(int|string $key, $content): void
     {
         $file = $this->files[$key];
         $dir = dirname((string) $file);
@@ -306,7 +306,7 @@ class Config
         }
     }
 
-    private function loadFile($key)
+    private function loadFile(int|string $key): string|false|null
     {
         $file = $this->files[$key];
         if (file_exists($file)) {

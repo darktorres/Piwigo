@@ -252,7 +252,7 @@ UPDATE ' . PREFIX_TABLE . "user_cache
 ];
 
 foreach ($queries as $query) {
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 $replacements = [
@@ -272,7 +272,7 @@ UPDATE ' . PREFIX_TABLE . 'comments
   addslashes($replacement[1]) .
   '")
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 load_conf_from_db();
@@ -291,16 +291,16 @@ SET
   (empty($conf['default_maxheight']) ? 'NULL' : $conf['default_maxheight']) .
   ',
   recent_period = ' . $conf['recent_period'] . ",
-  expand = '" . boolean_to_string($conf['auto_expand']) . "',
-  show_nb_comments = '" . boolean_to_string($conf['show_nb_comments']) . "',
-  show_nb_hits = '" . boolean_to_string($conf['show_nb_hits']) . "',
-  enabled_high = '" . boolean_to_string(
+  expand = '" . Mysqli::boolean_to_string($conf['auto_expand']) . "',
+  show_nb_comments = '" . Mysqli::boolean_to_string($conf['show_nb_comments']) . "',
+  show_nb_hits = '" . Mysqli::boolean_to_string($conf['show_nb_hits']) . "',
+  enabled_high = '" . Mysqli::boolean_to_string(
       ($conf['newuser_default_enabled_high'] ?? true)
   ) .
   "'
 WHERE
   user_id = " . $conf['default_user_id'] . ';';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 DELETE FROM ' . CONFIG_TABLE . "
@@ -319,7 +319,7 @@ WHERE
   'show_nb_hits'
 )
 ;";
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 // now we upgrade from 1.7.0
 require_once(__DIR__ . '/../install/upgrade_1.7.0.php');

@@ -2,45 +2,24 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\Error;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\NamedArray;
 use Piwigo\inc\NamedStruct;
 use function Piwigo\admin\inc\delete_user;
 use function Piwigo\admin\inc\get_username;
 use function Piwigo\admin\inc\invalidate_user_cache;
-use function Piwigo\inc\check_user_favorites;
-use function Piwigo\inc\create_user_auth_key;
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\get_boolean;
-use function Piwigo\inc\dbLayer\get_enums;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_insert;
-use function Piwigo\inc\dbLayer\single_update;
-use function Piwigo\inc\deactivate_password_reset_key;
-use function Piwigo\inc\deactivate_user_auth_keys;
-use function Piwigo\inc\delete_user_sessions;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_languages;
 use function Piwigo\inc\get_pwg_themes;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\get_sql_condition_FandF;
-use function Piwigo\inc\get_user_last_visit_from_history;
-use function Piwigo\inc\get_userid;
-use function Piwigo\inc\is_a_guest;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\l10n_dec;
 use function Piwigo\inc\pwg_activity;
-use function Piwigo\inc\register_user;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\userprefs_update_param;
-use function Piwigo\inc\validate_mail_address;
 use function Piwigo\inc\ws_std_get_image_xml_attributes;
 use function Piwigo\inc\ws_std_get_urls;
 use function Piwigo\inc\ws_std_image_sql_order;
@@ -88,7 +67,7 @@ function ws_users_getList(
     }
 
     if (! empty($params['username'])) {
-        $where_clauses[] = 'u.' . $conf['user_fields']['username'] . " LIKE '" . pwg_db_real_escape_string(
+        $where_clauses[] = 'u.' . $conf['user_fields']['username'] . " LIKE '" . Mysqli::pwg_db_real_escape_string(
             $params['username']
         ) . "'";
     }
@@ -96,15 +75,15 @@ function ws_users_getList(
     $filtered_groups = [];
     if (! empty($params['filter'])) {
         $filter_query = 'SELECT id FROM ' . GROUPS_TABLE . " WHERE name LIKE '%" . $params['filter'] . "%';";
-        $filtered_groups_res = pwg_query($filter_query);
-        while ($row = pwg_db_fetch_assoc($filtered_groups_res)) {
+        $filtered_groups_res = Mysqli::pwg_query($filter_query);
+        while ($row = Mysqli::pwg_db_fetch_assoc($filtered_groups_res)) {
             $filtered_groups[] = $row['id'];
         }
 
         $filter_where_clause = '(u.' . $conf['user_fields']['username'] . " LIKE '%" .
-        pwg_db_real_escape_string($params['filter']) . "%' OR "
+        Mysqli::pwg_db_real_escape_string($params['filter']) . "%' OR "
         . 'u.' . $conf['user_fields']['email'] . " LIKE '%" .
-        pwg_db_real_escape_string($params['filter']) . "%'";
+        Mysqli::pwg_db_real_escape_string($params['filter']) . "%'";
 
         if ($filtered_groups !== []) {
             $filter_where_clause .= 'OR ug.group_id IN (' . implode(',', $filtered_groups) . ')';
@@ -132,7 +111,7 @@ function ws_users_getList(
     }
 
     if (! empty($params['status'])) {
-        $params['status'] = array_intersect($params['status'], get_enums(USER_INFOS_TABLE, 'status'));
+        $params['status'] = array_intersect($params['status'], Mysqli::get_enums(USER_INFOS_TABLE, 'status'));
         if ($params['status'] !== []) {
             $where_clauses[] = 'ui.status IN("' . implode('","', $params['status']) . '")';
         }
@@ -265,15 +244,15 @@ SELECT DISTINCT ';
     }
 
     $users = [];
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     /* GET THE RESULT OF SQL_CALC_FOUND_ROWS if display total_count is requested*/
     if (isset($params['display']['total_count'])) {
-        $total_count_query_result = pwg_query('SELECT FOUND_ROWS();');
-        [$total_count] = pwg_db_fetch_row($total_count_query_result);
+        $total_count_query_result = Mysqli::pwg_query('SELECT FOUND_ROWS();');
+        [$total_count] = Mysqli::pwg_db_fetch_row($total_count_query_result);
     }
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $row['id'] = intval($row['id']);
         if (isset($params['display']['groups'])) {
             $row['groups'] = []; // will be filled later
@@ -290,8 +269,8 @@ SELECT DISTINCT ';
   FROM ' . USER_GROUP_TABLE . '
   WHERE user_id IN (' . implode(',', array_keys($users)) . ')
 ;';
-            $result = pwg_query($query);
-            while ($row = pwg_db_fetch_assoc($result)) {
+            $result = Mysqli::pwg_query($query);
+            while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
                 $users[$row['user_id']]['groups'][] = intval($row['group_id']);
             }
         }
@@ -316,8 +295,8 @@ SELECT DISTINCT ';
                 $last_visit = $cur_user['last_visit'];
                 $users[$cur_user['id']]['last_visit'] = $last_visit;
 
-                if (! get_boolean($cur_user['last_visit_from_history']) && empty($last_visit)) {
-                    $last_visit = get_user_last_visit_from_history($cur_user['id'], true);
+                if (! Mysqli::get_boolean($cur_user['last_visit_from_history']) && empty($last_visit)) {
+                    $last_visit = FunctionsUser::get_user_last_visit_from_history($cur_user['id'], true);
                     $users[$cur_user['id']]['last_visit'] = $last_visit;
                 }
 
@@ -355,9 +334,9 @@ SELECT DISTINCT ';
             $last_visit = $cur_user['last_visit'];
             $users[ $cur_user['id'] ]['last_visit'] = $last_visit;
 
-            if (!get_boolean($cur_user['last_visit_from_history']) and empty($last_visit))
+            if (!Mysqli::get_boolean($cur_user['last_visit_from_history']) and empty($last_visit))
             {
-              $last_visit = get_user_last_visit_from_history($cur_user['id'], true);
+              $last_visit = FunctionsUser::get_user_last_visit_from_history($cur_user['id'], true);
               $users[ $cur_user['id'] ]['last_visit'] = $last_visit;
             }
 
@@ -373,7 +352,7 @@ SELECT DISTINCT ';
           }*/
     }
 
-    $users = trigger_change('ws_users_getList', $users);
+    $users = FunctionsPlugins::trigger_change('ws_users_getList', $users);
     if ($params['per_page'] == 0 && empty($params['display'])) {
         $method_result = $users_id_arr;
     } else {
@@ -422,7 +401,7 @@ function ws_users_add(
         return new Error(WS_ERR_INVALID_PARAM, l10n('The passwords do not match'));
     }
 
-    $user_id = register_user(
+    $user_id = FunctionsUser::register_user(
         $params['username'],
         $params['password'],
         $params['email'],
@@ -455,7 +434,7 @@ function ws_users_getAuthKey(
         return new Error(403, 'Invalid security token');
     }
 
-    $authkey = create_user_auth_key($params['user_id']);
+    $authkey = FunctionsUser::create_user_auth_key($params['user_id']);
 
     if ($authkey === false) {
         return new Error(WS_ERR_INVALID_PARAM, 'invalid user_id');
@@ -498,7 +477,7 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-        $protected_users = array_merge($protected_users, query2array($query, null, 'user_id'));
+        $protected_users = array_merge($protected_users, Mysqli::query2array($query, null, 'user_id'));
     }
 
     // protect some users
@@ -562,7 +541,7 @@ function ws_users_setInfo(
         }
 
         if (! empty($params['username'])) {
-            $user_id = get_userid($params['username']);
+            $user_id = FunctionsUser::get_userid($params['username']);
             if ($user_id && $user_id != $params['user_id'][0]) {
                 return new Error(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
             }
@@ -575,7 +554,7 @@ function ws_users_setInfo(
         }
 
         if (! empty($params['email'])) {
-            if (($error = validate_mail_address($params['user_id'][0], $params['email'])) != '') {
+            if (($error = FunctionsUser::validate_mail_address($params['user_id'][0], $params['email'])) != '') {
                 return new Error(WS_ERR_INVALID_PARAM, $error);
             }
 
@@ -583,7 +562,7 @@ function ws_users_setInfo(
         }
 
         if (! empty($params['password'])) {
-            if (! is_webmaster()) {
+            if (! FunctionsUser::is_webmaster()) {
                 $password_protected_users = [$conf['guest_id']];
 
                 $query = '
@@ -592,7 +571,7 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-                $admin_ids = query2array($query, null, 'user_id');
+                $admin_ids = Mysqli::query2array($query, null, 'user_id');
 
                 // we add all admin+webmaster users BUT the user herself
                 $password_protected_users = array_merge(
@@ -610,7 +589,7 @@ SELECT
     }
 
     if (! empty($params['status'])) {
-        if (in_array($params['status'], ['webmaster', 'admin']) && ! is_webmaster()) {
+        if (in_array($params['status'], ['webmaster', 'admin']) && ! FunctionsUser::is_webmaster()) {
             return new Error(403, 'Only webmasters can grant "webmaster/admin" status');
         }
 
@@ -632,7 +611,7 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-            $protected_users = array_merge($protected_users, query2array($query, null, 'user_id'));
+            $protected_users = array_merge($protected_users, Mysqli::query2array($query, null, 'user_id'));
         }
 
         // status update query is separated from the rest as not applying to the same
@@ -678,23 +657,23 @@ SELECT
     }
 
     if (! empty($params['expand']) || @$params['expand'] === false) {
-        $updates_infos['expand'] = boolean_to_string($params['expand']);
+        $updates_infos['expand'] = Mysqli::boolean_to_string($params['expand']);
     }
 
     if (! empty($params['show_nb_comments']) || @$params['show_nb_comments'] === false) {
-        $updates_infos['show_nb_comments'] = boolean_to_string($params['show_nb_comments']);
+        $updates_infos['show_nb_comments'] = Mysqli::boolean_to_string($params['show_nb_comments']);
     }
 
     if (! empty($params['show_nb_hits']) || @$params['show_nb_hits'] === false) {
-        $updates_infos['show_nb_hits'] = boolean_to_string($params['show_nb_hits']);
+        $updates_infos['show_nb_hits'] = Mysqli::boolean_to_string($params['show_nb_hits']);
     }
 
     if (! empty($params['enabled_high']) || @$params['enabled_high'] === false) {
-        $updates_infos['enabled_high'] = boolean_to_string($params['enabled_high']);
+        $updates_infos['enabled_high'] = Mysqli::boolean_to_string($params['enabled_high']);
     }
 
     // perform updates
-    single_update(
+    Mysqli::single_update(
         USERS_TABLE,
         $updates,
         [
@@ -703,11 +682,11 @@ SELECT
     );
 
     if (isset($updates[$conf['user_fields']['password']])) {
-        deactivate_user_auth_keys($params['user_id'][0]);
+        FunctionsUser::deactivate_user_auth_keys($params['user_id'][0]);
     }
 
     if (isset($updates[$conf['user_fields']['email']])) {
-        deactivate_password_reset_key($params['user_id'][0]);
+        FunctionsUser::deactivate_password_reset_key($params['user_id'][0]);
     }
 
     if (isset($update_status) && count($params['user_id_for_status']) > 0) {
@@ -716,13 +695,13 @@ UPDATE ' . USER_INFOS_TABLE . ' SET
     status = "' . $update_status . '"
   WHERE user_id IN(' . implode(',', $params['user_id_for_status']) . ')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         // we delete sessions, ie disconnect, for users if status becomes "guest".
         // It's like deactivating the user.
         if ($update_status == 'guest') {
             foreach ($params['user_id_for_status'] as $user_id_for_status) {
-                delete_user_sessions($user_id_for_status);
+                FunctionsSession::delete_user_sessions($user_id_for_status);
             }
         }
     }
@@ -745,7 +724,7 @@ UPDATE ' . USER_INFOS_TABLE . ' SET ';
         $query .= '
   WHERE user_id IN(' . implode(',', $params['user_id']) . ')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     // manage association to groups
@@ -755,7 +734,7 @@ DELETE
   FROM ' . USER_GROUP_TABLE . '
   WHERE user_id IN (' . implode(',', $params['user_id']) . ')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         // we remove all provided groups that do not really exist
         $query = '
@@ -764,7 +743,7 @@ SELECT
   FROM ' . GROUPS_TABLE . '
   WHERE id IN (' . implode(',', $params['group_id']) . ')
 ;';
-        $group_ids = query2array($query, null, 'id');
+        $group_ids = Mysqli::query2array($query, null, 'id');
 
         // if only -1 (a group id that can't exist) is in the list, then no
         // group is associated
@@ -781,7 +760,7 @@ SELECT
                 }
             }
 
-            mass_inserts(USER_GROUP_TABLE, array_keys($inserts[0]), $inserts);
+            Mysqli::mass_inserts(USER_GROUP_TABLE, array_keys($inserts[0]), $inserts);
         }
     }
 
@@ -818,7 +797,7 @@ function ws_users_preferences_set(
         $value = json_decode($value, true);
     }
 
-    userprefs_update_param($params['param'], $value);
+    FunctionsUser::userprefs_update_param($params['param'], $value);
 
     return $user['preferences'];
 }
@@ -835,7 +814,7 @@ function ws_users_favorites_add(
 ) {
     global $user;
 
-    if (is_a_guest()) {
+    if (FunctionsUser::is_a_guest()) {
         return new Error(403, 'User must be logged in.');
     }
 
@@ -845,12 +824,12 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(404, 'image_id not found');
     }
 
-    single_insert(
+    Mysqli::single_insert(
         FAVORITES_TABLE,
         [
             'image_id' => $params['image_id'],
@@ -873,7 +852,7 @@ function ws_users_favorites_remove(
 ) {
     global $user;
 
-    if (is_a_guest()) {
+    if (FunctionsUser::is_a_guest()) {
         return new Error(403, 'User must be logged in.');
     }
 
@@ -883,7 +862,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(404, 'image_id not found');
     }
@@ -895,7 +874,7 @@ DELETE
     AND image_id = ' . $params['image_id'] . '
 ;';
 
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     return true;
 }
@@ -914,11 +893,11 @@ function ws_users_favorites_getList(
 ) {
     global $conf, $user;
 
-    if (is_a_guest()) {
+    if (FunctionsUser::is_a_guest()) {
         return false;
     }
 
-    check_user_favorites();
+    FunctionsUser::check_user_favorites();
 
     $order_by = ws_std_image_sql_order($params, 'i.');
     $order_by = $order_by === '' || $order_by === '0' ? $conf['order_by'] : 'ORDER BY ' . $order_by;
@@ -929,7 +908,7 @@ SELECT
   FROM ' . FAVORITES_TABLE . '
     INNER JOIN ' . IMAGES_TABLE . ' i ON image_id = i.id
   WHERE user_id = ' . $user['id'] . '
-' . get_sql_condition_FandF(
+' . FunctionsUser::get_sql_condition_FandF(
         [
             'visible_images' => 'id',
         ],
@@ -938,8 +917,8 @@ SELECT
     ' . $order_by . '
 ;';
     $images = [];
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $image = [];
 
         foreach (['id', 'width', 'height', 'hit'] as $k) {

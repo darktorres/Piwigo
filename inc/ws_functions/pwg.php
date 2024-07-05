@@ -2,8 +2,12 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
 use Piwigo\inc\Error;
+use Piwigo\inc\FunctionsCookie;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\NamedArray;
 use Piwigo\inc\SrcImage;
@@ -11,30 +15,14 @@ use function Piwigo\admin\inc\get_admins;
 use function Piwigo\admin\inc\get_cache_size_derivatives;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\get_enums;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_changes;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\derivative_to_url;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_cat_display_name_cache;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\is_a_guest;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\l10n_dec;
-use function Piwigo\inc\logout_user;
 use function Piwigo\inc\make_picture_url;
 use function Piwigo\inc\pwg_log;
-use function Piwigo\inc\pwg_set_cookie_var;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\try_log_user;
 use function Piwigo\inc\update_rating_score;
 use function Piwigo\inc\ws_std_image_sql_filter;
 
@@ -71,7 +59,7 @@ function ws_getMissingDerivatives(
 
     $max_urls = $params['max_urls'];
     $query = 'SELECT MAX(id)+1, COUNT(*) FROM ' . IMAGES_TABLE . ';';
-    [$max_id, $image_count] = pwg_db_fetch_row(pwg_query($query));
+    [$max_id, $image_count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     if ($image_count == 0) {
         return [];
@@ -105,10 +93,10 @@ SELECT id, path, representative_ext, width, height, rotation
 
     $urls = [];
     do {
-        $result = pwg_query(str_replace('start_id', $start_id, $query_model));
-        $is_last = pwg_db_num_rows($result) < $qlimit;
+        $result = Mysqli::pwg_query(str_replace('start_id', $start_id, $query_model));
+        $is_last = Mysqli::pwg_db_num_rows($result) < $qlimit;
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $start_id = $row['id'];
             $src_image = new SrcImage($row);
             if ($src_image->is_mimetype() !== 0) {
@@ -169,45 +157,45 @@ function ws_getInfos(
     $infos['version'] = PHPWG_VERSION;
 
     $query = 'SELECT COUNT(*) FROM ' . IMAGES_TABLE . ';';
-    [$infos['nb_elements']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_elements']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ';';
-    [$infos['nb_categories']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_categories']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ' WHERE dir IS NULL;';
-    [$infos['nb_virtual']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_virtual']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ' WHERE dir IS NOT NULL;';
-    [$infos['nb_physical']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_physical']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . IMAGE_CATEGORY_TABLE . ';';
-    [$infos['nb_image_category']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_image_category']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . TAGS_TABLE . ';';
-    [$infos['nb_tags']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_tags']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . IMAGE_TAG_TABLE . ';';
-    [$infos['nb_image_tag']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_image_tag']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . USERS_TABLE . ';';
-    [$infos['nb_users']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_users']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . GROUPS_TABLE . ';';
-    [$infos['nb_groups']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_groups']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . ';';
-    [$infos['nb_comments']] = pwg_db_fetch_row(pwg_query($query));
+    [$infos['nb_comments']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     // first element
     if ($infos['nb_elements'] > 0) {
         $query = 'SELECT MIN(date_available) FROM ' . IMAGES_TABLE . ';';
-        [$infos['first_date']] = pwg_db_fetch_row(pwg_query($query));
+        [$infos['first_date']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     }
 
     // unvalidated comments
     if ($infos['nb_comments'] > 0) {
         $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . " WHERE validated='false';";
-        [$infos['nb_unvalidated_comments']] = pwg_db_fetch_row(pwg_query($query));
+        [$infos['nb_unvalidated_comments']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     }
 
     // Cache size
@@ -323,7 +311,7 @@ SELECT id
   WHERE id IN (' . implode(',', $params['image_id']) . ')
     AND element_id IS NULL
 ;';
-    $result = query2array($query, null, 'id');
+    $result = Mysqli::query2array($query, null, 'id');
 
     $datas = [];
     foreach ($result as $id) {
@@ -334,7 +322,7 @@ SELECT id
     }
 
     if ($datas !== []) {
-        mass_inserts(CADDIE_TABLE, ['element_id', 'user_id'], $datas);
+        Mysqli::mass_inserts(CADDIE_TABLE, ['element_id', 'user_id'], $datas);
     }
 
     return count($datas);
@@ -363,7 +351,7 @@ DELETE FROM ' . RATE_TABLE . '
         $query .= ' AND element_id=' . $params['image_id'];
     }
 
-    $changes = pwg_db_changes();
+    $changes = Mysqli::pwg_db_changes();
     if ($changes) {
         require_once(__DIR__ . '/../../inc/functions_rate.inc.php');
         update_rating_score();
@@ -383,7 +371,7 @@ function ws_session_login(
     array $params,
     &$service
 ) {
-    if (try_log_user($params['username'], $params['password'], false)) {
+    if (FunctionsUser::try_log_user($params['username'], $params['password'], false)) {
         return true;
     }
 
@@ -399,8 +387,8 @@ function ws_session_logout(
     $params,
     &$service
 ): bool {
-    if (! is_a_guest()) {
-        logout_user();
+    if (! FunctionsUser::is_a_guest()) {
+        FunctionsUser::logout_user();
     }
 
     return true;
@@ -417,7 +405,7 @@ function ws_session_getStatus(
 ) {
     global $user, $conf;
 
-    $res['username'] = is_a_guest() ? 'guest' : stripslashes((string) $user['username']);
+    $res['username'] = FunctionsUser::is_a_guest() ? 'guest' : stripslashes((string) $user['username']);
     foreach (['status', 'theme', 'language'] as $k) {
         $res[$k] = $user[$k];
     }
@@ -425,7 +413,7 @@ function ws_session_getStatus(
     $res['pwg_token'] = get_pwg_token();
     $res['charset'] = 'utf-8';
 
-    [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+    [$dbnow] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT NOW();'));
     $res['current_datetime'] = $dbnow;
     $res['version'] = PHPWG_VERSION;
 
@@ -438,7 +426,7 @@ function ws_session_getStatus(
         $res['available_sizes'] = array_keys(ImageStdParams::get_defined_type_map());
     }
 
-    if (is_admin()) {
+    if (FunctionsUser::is_admin()) {
         $res['upload_file_types'] = implode(
             ',',
             array_unique(
@@ -509,8 +497,8 @@ SELECT
 ;';
 
     $line_id = 0;
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $row['details'] = str_replace('`groups`', 'groups', $row['details']);
         $row['details'] = str_replace('`rank`', 'rank', $row['details']);
         $details = @unserialize($row['details']);
@@ -570,7 +558,7 @@ SELECT
   FROM ' . USERS_TABLE . '
   WHERE `' . $conf['user_fields']['id'] . '` IN (' . implode(',', array_keys($user_ids)) . ')
 ;';
-        $username_of = query2array($query, 'user_id', 'username');
+        $username_of = Mysqli::query2array($query, 'user_id', 'username');
     }
 
     foreach ($output_lines as $idx => $output_line) {
@@ -608,7 +596,7 @@ SELECT
   ;';
     }
 
-    $result = (pwg_db_fetch_row(pwg_query($query))[0]) / $page_size;
+    $result = (Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query))[0]) / $page_size;
 
     return [
         'result_lines' => $output_lines,
@@ -628,7 +616,7 @@ function ws_history_log(
 ): void {
     global $logger, $page;
 
-    if (! empty($params['section']) && in_array($params['section'], get_enums(HISTORY_TABLE, 'section'))) {
+    if (! empty($params['section']) && in_array($params['section'], Mysqli::get_enums(HISTORY_TABLE, 'section'))) {
         $page['section'] = $params['section'];
     }
 
@@ -662,7 +650,7 @@ function ws_history_search(
 
     $page['start'] = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['start'] : 0;
 
-    $types = array_merge(['none'], get_enums(HISTORY_TABLE, 'image_type'));
+    $types = array_merge(['none'], Mysqli::get_enums(HISTORY_TABLE, 'image_type'));
 
     $display_thumbnails = [
         'no_display_thumbnail' => l10n('No display'),
@@ -710,7 +698,7 @@ function ws_history_search(
         $search['fields']['filename'] = str_replace(
             '*',
             '%',
-            pwg_db_real_escape_string($param['filename'])
+            Mysqli::pwg_db_real_escape_string($param['filename'])
         );
     }
 
@@ -719,7 +707,7 @@ function ws_history_search(
         $search['fields']['ip'] = str_replace(
             '*',
             '%',
-            pwg_db_real_escape_string($param['ip'])
+            Mysqli::pwg_db_real_escape_string($param['ip'])
         );
     }
 
@@ -739,7 +727,7 @@ function ws_history_search(
         $cookie_val = null;
     }
 
-    pwg_set_cookie_var('display_thumbnail', $cookie_val, strtotime('+1 month'));
+    FunctionsCookie::pwg_set_cookie_var('display_thumbnail', $cookie_val, strtotime('+1 month'));
 
     // TODO manage inconsistency of having $_POST['image_id'] and
     // $_POST['filename'] simultaneously
@@ -752,12 +740,12 @@ function ws_history_search(
   INSERT INTO ' . SEARCH_TABLE . '
   (rules)
   VALUES
-  (\'' . pwg_db_real_escape_string(serialize($search)) . '\')
+  (\'' . Mysqli::pwg_db_real_escape_string(serialize($search)) . '\')
   ;';
 
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
-        $search_id = pwg_db_insert_id();
+        $search_id = Mysqli::pwg_db_insert_id();
 
         // Remove redirect for ajax //
         // redirect(
@@ -773,12 +761,12 @@ SELECT rules
   FROM ' . SEARCH_TABLE . '
   WHERE id = ' . $search_id . '
 ;';
-    [$serialized_rules] = pwg_db_fetch_row(pwg_query($query));
+    [$serialized_rules] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $page['search'] = unserialize($serialized_rules);
 
     /*TODO - no need to get a huge number of rows from db (should take only what needed for display + SQL_CALC_FOUND_ROWS*/
-    $data = trigger_change(
+    $data = FunctionsPlugins::trigger_change(
         'get_history',
         [],
         $page['search'],
@@ -822,10 +810,10 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id
   FROM ' . USERS_TABLE . '
   WHERE id IN (' . implode(',', array_keys($user_ids)) . ')
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
         $username_of = [];
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $username_of[$row['id']] = stripslashes((string) $row['username']);
         }
     }
@@ -836,7 +824,7 @@ SELECT id, uppercats
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', array_values($category_ids)) . ')
 ;';
-        $uppercats_of = query2array($query, 'id', 'uppercats');
+        $uppercats_of = Mysqli::query2array($query, 'id', 'uppercats');
 
         $full_cat_path = [];
         $name_of_category = [];
@@ -867,7 +855,7 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', array_keys($image_ids)) . ')
 ;';
-        $image_infos = query2array($query, 'id');
+        $image_infos = Mysqli::query2array($query, 'id');
     }
 
     if ($has_tags > 0) {
@@ -879,9 +867,9 @@ SELECT
 
         global $name_of_tag; // used for preg_replace
         $name_of_tag = [];
-        $result = pwg_query($query);
-        while ($row = pwg_db_fetch_assoc($result)) {
-            $name_of_tag[$row['id']] = trigger_change('render_tag_name', $row['name'], $row);
+        $result = Mysqli::pwg_query($query);
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
+            $name_of_tag[$row['id']] = FunctionsPlugins::trigger_change('render_tag_name', $row['name'], $row);
         }
     }
 
@@ -967,7 +955,7 @@ SELECT
             $image_title = '';
 
             if (isset($image_infos[$line['image_id']]['label'])) {
-                $image_title .= ' ' . trigger_change(
+                $image_title .= ' ' . FunctionsPlugins::trigger_change(
                     'render_element_description',
                     $image_infos[$line['image_id']]['label']
                 );

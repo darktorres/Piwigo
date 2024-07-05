@@ -3,14 +3,13 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Themes;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_pwg_token;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\pwg_activity;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\userprefs_get_param;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -45,7 +44,7 @@ if (! is_writable($themes_dir)) {
 // +-----------------------------------------------------------------------+
 
 if (isset($_GET['revision']) && isset($_GET['extension'])) {
-    if (! is_webmaster()) {
+    if (! FunctionsUser::is_webmaster()) {
         $page['errors'][] = l10n('Webmaster status is required.');
     } else {
         check_pwg_token();
@@ -136,7 +135,10 @@ if ($themes->get_server_themes(true)) { // only new themes
 
 $template->assign(
     'default_screenshot',
-    get_root_url() . 'admin/themes/' . userprefs_get_param('admin_theme', 'roma') . '/images/missing_screenshot.png'
+    get_root_url() . 'admin/themes/' . FunctionsUser::userprefs_get_param(
+        'admin_theme',
+        'roma'
+    ) . '/images/missing_screenshot.png'
 );
 $template->assign('ADMIN_PAGE_TITLE', l10n('Themes'));
 

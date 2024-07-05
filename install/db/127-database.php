@@ -20,13 +20,13 @@ UPDATE ' . USER_INFOS_TABLE . '
   SET language = \'nb_NO\'
   WHERE language = \'no_NO\'
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 UPDATE ' . LANGUAGES_TABLE . '
   SET id = \'nb_NO\'
   WHERE id = \'no_NO\'
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n" . $upgrade_description . "\n";

@@ -3,12 +3,10 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_admin_client_cache_keys;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\get_boolean;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
@@ -41,7 +39,9 @@ $tabsheet->assign();
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if ($_POST !== [] || isset($_GET['delete']) || isset($_GET['toggle_is_default'])) {
     check_pwg_token();
@@ -73,7 +73,7 @@ SELECT id, name, is_default
   FROM ' . GROUPS_TABLE . '
   ORDER BY name ASC
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
 $admin_url = get_root_url() . 'admin.php?page=';
 $perm_url = $admin_url . 'group_perm&amp;group_id=';
@@ -83,7 +83,7 @@ $toggle_is_default_url = $admin_url . 'group_list&amp;toggle_is_default=';
 
 $group_counter = 0;
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $query = '
 SELECT u.' . $conf['user_fields']['username'] . ' AS username
   FROM ' . USERS_TABLE . ' AS u
@@ -92,8 +92,8 @@ SELECT u.' . $conf['user_fields']['username'] . ' AS username
   WHERE ug.group_id = ' . $row['id'] . '
 ;';
     $members = [];
-    $res = pwg_query($query);
-    while ($us = pwg_db_fetch_assoc($res)) {
+    $res = Mysqli::pwg_query($query);
+    while ($us = Mysqli::pwg_db_fetch_assoc($res)) {
         $members[] = $us['username'];
     }
 
@@ -102,7 +102,7 @@ SELECT u.' . $conf['user_fields']['username'] . ' AS username
         [
             'NAME' => $row['name'],
             'ID' => $row['id'],
-            'IS_DEFAULT' => (get_boolean($row['is_default']) ? ' [' . l10n('default') . ']' : ''),
+            'IS_DEFAULT' => (Mysqli::get_boolean($row['is_default']) ? ' [' . l10n('default') . ']' : ''),
             'NB_MEMBERS' => count($members),
             'L_MEMBERS' => implode(' <span class="userSeparator">&middot;</span> ', $members),
             'MEMBERS' => l10n_dec('%d member', '%d members', count($members)),

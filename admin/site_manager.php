@@ -3,19 +3,16 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\delete_site;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\fatal_error;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_query_string_diff;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\trigger_change;
 use function Piwigo\inc\url_is_remote;
 
 // +-----------------------------------------------------------------------+
@@ -39,7 +36,7 @@ if (! $conf['enable_synchronization']) {
     die('synchronization is disabled');
 }
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(ACCESS_ADMINISTRATOR);
 
 if ($_POST !== [] || isset($_GET['action'])) {
     check_pwg_token();
@@ -84,7 +81,7 @@ SELECT COUNT(id) AS count
   FROM ' . SITES_TABLE . '
   WHERE galleries_url = \'' . $url . '\'
 ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     if ($row['count'] > 0) {
         $page['errors'][] = l10n('This site already exists') . ' [' . $url . ']';
     }
@@ -100,7 +97,7 @@ INSERT INTO ' . SITES_TABLE . '
   VALUES
   (\'' . $url . '\')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         $page['infos'][] = $url . ' ' . l10n('created');
     }
 }
@@ -120,7 +117,7 @@ SELECT galleries_url
   FROM ' . SITES_TABLE . '
   WHERE id = ' . $page['site'] . '
 ;';
-    [$galleries_url] = pwg_db_fetch_row(pwg_query($query));
+    [$galleries_url] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($_GET['action'] === 'delete') {
         delete_site($page['site']);
         $page['infos'][] = $galleries_url . ' ' . l10n('deleted');
@@ -142,15 +139,15 @@ SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_image
   WHERE c.site_id IS NOT NULL
   GROUP BY c.site_id
 ;';
-$sites_detail = query2array($query, 'site_id');
+$sites_detail = Mysqli::query2array($query, 'site_id');
 
 $query = '
 SELECT *
   FROM ' . SITES_TABLE . '
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $is_remote = url_is_remote($row['galleries_url']);
     $base_url = PHPWG_ROOT_PATH . 'admin.php';
     $base_url .= '?page=site_manager';
@@ -178,7 +175,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $plugin_links = [];
     //$plugin_links is array of array composed of U_HREF, U_HINT & U_CAPTION
     $plugin_links =
-      trigger_change(
+      FunctionsPlugins::trigger_change(
           'get_admins_site_links',
           $plugin_links,
           $row['id'],

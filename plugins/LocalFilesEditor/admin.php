@@ -1,12 +1,11 @@
 <?php
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
 
@@ -43,7 +42,7 @@ require_once(LOCALEDIT_PATH . 'inc/functions.inc.php');
 load_language('plugin.lang', LOCALEDIT_PATH);
 $my_base_url = get_root_url() . 'admin.php?page=plugin-' . basename(__DIR__);
 
-check_status(ACCESS_WEBMASTER);
+FunctionsUser::check_status(ACCESS_WEBMASTER);
 
 // +-----------------------------------------------------------------------+
 // |                            Tabssheet
@@ -84,11 +83,11 @@ if (isset($_POST['restore'])) {
 if (isset($_POST['submit'])) {
     check_pwg_token();
 
-    if (! is_webmaster()) {
+    if (! FunctionsUser::is_webmaster()) {
         $page['errors'][] = l10n('locfiledit_webmaster_only');
     } else {
         $content_file = stripslashes((string) $_POST['text']);
-        if (get_extension($edited_file) == 'php') {
+        if (get_extension($edited_file) === 'php') {
             $content_file = eval_syntax($content_file);
         }
 

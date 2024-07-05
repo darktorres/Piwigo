@@ -2,19 +2,16 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\get_image_infos;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_notify;
-use function Piwigo\inc\userprefs_get_param;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -38,7 +35,7 @@ if (isset($_GET['batch'])) {
 DELETE FROM ' . CADDIE_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     $inserts = [];
     foreach (explode(',', (string) $_GET['batch']) as $image_id) {
@@ -48,7 +45,7 @@ DELETE FROM ' . CADDIE_TABLE . '
         ];
     }
 
-    mass_inserts(
+    Mysqli::mass_inserts(
         CADDIE_TABLE,
         array_keys($inserts[0]),
         $inserts
@@ -57,7 +54,7 @@ DELETE FROM ' . CADDIE_TABLE . '
     redirect(get_root_url() . 'admin.php?page=batch_manager&filter=prefilter-caddie');
 }
 
-if (userprefs_get_param('promote-mobile-apps', true)) {
+if (FunctionsUser::userprefs_get_param('promote-mobile-apps', true)) {
     $query = '
 SELECT registration_date 
   FROM ' . USER_INFOS_TABLE . '
@@ -65,19 +62,19 @@ SELECT registration_date
   ORDER BY user_id ASC
   LIMIT 1
 ;';
-    [$register_date] = pwg_db_fetch_row(pwg_query($query));
+    [$register_date] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = '
 SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-    [$nb_cats] = pwg_db_fetch_row(pwg_query($query));
+    [$nb_cats] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $query = '
 SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
 ;';
-    [$nb_images] = pwg_db_fetch_row(pwg_query($query));
+    [$nb_images] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $uagent_obj = new \uagent_info();
     // To see the mobile app promote, the account must have 2 weeks ancient, 3 albums created and 30 photos uploaded
@@ -118,7 +115,7 @@ SELECT *
   FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE image_id = ' . $formats_original_info['id'] . '
 ;';
-        $formats = query2array($query);
+        $formats = Mysqli::query2array($query);
 
         if (! empty($formats)) {
             $format_strings = [];
@@ -153,7 +150,9 @@ require_once(__DIR__ . '/../admin/inc/photos_add_direct_prepare.inc.php');
 // |                           sending html code                           |
 // +-----------------------------------------------------------------------+
 
-trigger_notify('loc_end_photo_add_direct');
+FunctionsPlugins::trigger_notify(
+    'loc_end_photo_add_direct'
+);
 
 $template->assign([
     'ENABLE_FORMATS' => $conf['enable_formats'],

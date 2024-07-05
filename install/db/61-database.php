@@ -23,7 +23,7 @@ $query = '
 alter table ' . GROUPS_TABLE . '
   add UNIQUE KEY `groups_ui1` (`name`)
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

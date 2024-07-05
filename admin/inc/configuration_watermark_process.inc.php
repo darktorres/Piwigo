@@ -2,10 +2,10 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\WatermarkParams;
 use function Piwigo\inc\get_filename_wo_extension;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\mkgetdir;
 use function Piwigo\inc\pwg_activity;
@@ -22,7 +22,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     return;
 }
 

@@ -15,7 +15,7 @@ $upgrade_description = 'change nb_image_page into smallint(3)';
 
 // add column
 if ($conf['dblayer'] == 'mysql') {
-    pwg_query('
+    Mysqli::pwg_query('
     ALTER TABLE ' . USER_INFOS_TABLE . ' 
       CHANGE `nb_image_page` `nb_image_page` SMALLINT(3) UNSIGNED NOT NULL DEFAULT 15
   ;');

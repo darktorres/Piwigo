@@ -22,7 +22,7 @@ require_once(__DIR__ . '/../../inc/constants.php');
 $query = '
 delete from ' . PLUGINS_TABLE . " where id ='dew';
 ";
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

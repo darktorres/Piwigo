@@ -14,7 +14,7 @@ $user['id'] = $conf['guest_id'];
 
 if (isset($_COOKIE[session_name()])) {
     if (isset($_GET['act']) && $_GET['act'] == 'logout') { // logout
-        logout_user();
+        FunctionsUser::logout_user();
         redirect(get_gallery_home_url());
     } elseif (! empty($_SESSION['pwg_uid'])) {
         $user['id'] = $_SESSION['pwg_uid'];
@@ -23,7 +23,7 @@ if (isset($_COOKIE[session_name()])) {
 
 // Now check the auto-login
 if ($user['id'] == $conf['guest_id']) {
-    auto_login();
+    FunctionsUser::auto_login();
 }
 
 // using Apache authentication override the above user search
@@ -36,19 +36,19 @@ if ($conf['apache_authentication']) {
         }
     }
 
-    if (isset($remote_user) && ! ($user['id'] = get_userid($remote_user))) {
-        $user['id'] = register_user($remote_user, '', '', false);
+    if (isset($remote_user) && ! ($user['id'] = FunctionsUser::get_userid($remote_user))) {
+        $user['id'] = FunctionsUser::register_user($remote_user, '', '', false);
     }
 }
 
 // automatic login by authentication key
 if (isset($_GET['auth'])) {
-    auth_key_login($_GET['auth']);
+    FunctionsUser::auth_key_login($_GET['auth']);
 }
 
 if ((defined(
     'IN_WS'
-) && isset($_REQUEST['method']) && $_REQUEST['method'] == 'pwg.images.uploadAsync' && isset($_POST['username']) && isset($_POST['password'])) && ! try_log_user(
+) && isset($_REQUEST['method']) && $_REQUEST['method'] == 'pwg.images.uploadAsync' && isset($_POST['username']) && isset($_POST['password'])) && ! FunctionsUser::try_log_user(
     $_POST['username'],
     $_POST['password'],
     false
@@ -58,12 +58,12 @@ if ((defined(
     exit();
 }
 
-$user = build_user(
+$user = FunctionsUser::build_user(
     $user['id'],
     (defined('IN_ADMIN') && IN_ADMIN) ? false : true // use cache ?
 );
-if ($conf['browser_language'] && (is_a_guest() || is_generic()) && ($language = get_browser_language())) {
+if ($conf['browser_language'] && (FunctionsUser::is_a_guest() || FunctionsUser::is_generic()) && ($language = FunctionsUser::get_browser_language())) {
     $user['language'] = $language;
 }
 
-trigger_notify('user_init', $user);
+FunctionsPlugins::trigger_notify('user_init', $user);

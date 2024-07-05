@@ -3,10 +3,10 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
-use function Piwigo\inc\check_status;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\load_language;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -20,7 +20,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 $help_link = get_root_url() . 'admin.php?page=help&section=';
 $selected = null;
@@ -32,7 +34,7 @@ $tabsheet->set_id('help');
 $tabsheet->select($selected);
 $tabsheet->assign();
 
-trigger_notify('loc_end_help');
+FunctionsPlugins::trigger_notify('loc_end_help');
 
 $template->set_filenames([
     'help' => 'help.tpl',

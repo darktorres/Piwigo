@@ -49,11 +49,11 @@ abstract class ResponseEncoder
      */
     public static function flattenResponse(
         &$value
-    ) {
+    ): void {
         self::flatten($value);
     }
 
-    private static function flatten(&$value)
+    private static function flatten(&$value): void
     {
         if (is_object($value)) {
             $class = strtolower(@$value::class);

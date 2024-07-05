@@ -2,24 +2,21 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\dbLayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsCookie;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\invalidate_user_cache;
 use function Piwigo\inc\access_denied;
-use function Piwigo\inc\add_event_handler;
 use function Piwigo\inc\add_url_params;
-use function Piwigo\inc\can_manage_comment;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_restrictions;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\cookie_path;
 use function Piwigo\inc\correct_slideshow_params;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\decode_slideshow_params;
 use function Piwigo\inc\delete_user_comment;
 use function Piwigo\inc\duplicate_index_url;
@@ -37,25 +34,17 @@ use function Piwigo\inc\get_element_url;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\get_privacy_level_options;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_sql_condition_FandF;
-use function Piwigo\inc\is_a_guest;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\make_picture_url;
 use function Piwigo\inc\page_not_found;
 use function Piwigo\inc\pwg_activity;
-use function Piwigo\inc\pwg_get_session_var;
 use function Piwigo\inc\pwg_log;
-use function Piwigo\inc\pwg_set_session_var;
-use function Piwigo\inc\pwg_unset_session_var;
 use function Piwigo\inc\rate_picture;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\redirect_http;
 use function Piwigo\inc\render_element_name;
 use function Piwigo\inc\set_status_header;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\trigger_notify;
 use function Piwigo\inc\update_user_comment;
 use function Piwigo\inc\validate_user_comment;
 
@@ -72,11 +61,11 @@ require(__DIR__ . '/inc/section_init.inc.php');
 require_once(__DIR__ . '/inc/functions_picture.inc.php');
 
 // Check Access and exit when user status is not ok
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
 // access authorization check
 if (isset($page['category'])) {
-    check_restrictions($page['category']['id']);
+    FunctionsCategory::check_restrictions($page['category']['id']);
 }
 
 $page['rank_of'] = array_flip($page['items']);
@@ -97,7 +86,7 @@ SELECT id, file, level
           ".%' ESCAPE '/' LIMIT 1";
     }
 
-    if (! ($row = pwg_db_fetch_assoc(pwg_query($query)))) {// element does not exist
+    if (! ($row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query)))) {// element does not exist
         page_not_found(
             'The requested image does not exist',
             duplicate_index_url()
@@ -129,14 +118,14 @@ SELECT id, file, level
 SELECT id
   FROM ' . IMAGES_TABLE . ' INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id=image_id
   WHERE id=' . $page['image_id']
-              . get_sql_condition_FandF(
+              . FunctionsUser::get_sql_condition_FandF(
                   [
                       'forbidden_categories' => 'category_id',
                   ],
                   ' AND'
               ) . '
   LIMIT 1';
-            if (pwg_db_num_rows(pwg_query($query)) == 0) {
+            if (Mysqli::pwg_db_num_rows(Mysqli::pwg_query($query)) == 0) {
                 access_denied();
             } elseif ($page['section'] == 'best_rated') {
                 $page['rank_of'][$page['image_id']] = count($page['items']);
@@ -159,20 +148,20 @@ SELECT id
 
 // There is cookie, so we must handle it at the beginning
 if (isset($_GET['metadata'])) {
-    if (pwg_get_session_var('show_metadata') == null) {
-        pwg_set_session_var('show_metadata', 1);
+    if (FunctionsSession::pwg_get_session_var('show_metadata') == null) {
+        FunctionsSession::pwg_set_session_var('show_metadata', 1);
     } else {
-        pwg_unset_session_var('show_metadata');
+        FunctionsSession::pwg_unset_session_var('show_metadata');
     }
 }
 
 // add default event handler for rendering element content
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'render_element_content',
     '\Piwigo\default_picture_content'
 );
 // add default event handler for rendering element description
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'render_element_description',
     '\Piwigo\pwg_nl2br'
 );
@@ -188,7 +177,7 @@ function pwg_nl2br(
     return nl2br((string) $string);
 }
 
-trigger_notify('loc_begin_picture');
+FunctionsPlugins::trigger_notify('loc_begin_picture');
 
 // this is the default handler that generates the display for the element
 function default_picture_content(
@@ -203,16 +192,16 @@ function default_picture_content(
 
     if (isset($_COOKIE['picture_deriv'])) {
         if (array_key_exists($_COOKIE['picture_deriv'], ImageStdParams::get_defined_type_map())) {
-            pwg_set_session_var('picture_deriv', $_COOKIE['picture_deriv']);
+            FunctionsSession::pwg_set_session_var('picture_deriv', $_COOKIE['picture_deriv']);
         }
 
         setcookie('picture_deriv', false, [
             'expires' => 0,
-            'path' => cookie_path(),
+            'path' => FunctionsCookie::cookie_path(),
         ]);
     }
 
-    $deriv_type = pwg_get_session_var('picture_deriv', $conf['derivative_default_size']);
+    $deriv_type = FunctionsSession::pwg_get_session_var('picture_deriv', $conf['derivative_default_size']);
     $selected_derivative = $element_info['derivatives'][$deriv_type];
 
     $unique_derivatives = [];
@@ -261,7 +250,7 @@ function default_picture_content(
     $template->assign(
         [
             'ALT_IMG' => $element_info['file'],
-            'COOKIE_PATH' => cookie_path(),
+            'COOKIE_PATH' => FunctionsCookie::cookie_path(),
         ]
     );
     return $template->parse('default_content', true);
@@ -326,7 +315,7 @@ INSERT INTO ' . FAVORITES_TABLE . '
   VALUES
   (' . $page['image_id'] . ',' . $user['id'] . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
 
             redirect($url_self);
 
@@ -339,7 +328,7 @@ DELETE FROM ' . FAVORITES_TABLE . '
   WHERE user_id = ' . $user['id'] . '
     AND image_id = ' . $page['image_id'] . '
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
 
             if ($page['section'] == 'favorites') {
                 redirect($url_up);
@@ -351,13 +340,13 @@ DELETE FROM ' . FAVORITES_TABLE . '
 
         case 'set_as_representative':
 
-            if (is_admin() && isset($page['category'])) {
+            if (FunctionsUser::is_admin() && isset($page['category'])) {
                 $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = ' . $page['image_id'] . '
   WHERE id = ' . $page['category']['id'] . '
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
                 pwg_activity('album', $page['category']['id'], 'edit', [
                     'action' => $_GET['action'],
                     'image_id' => $page['image_id'],
@@ -390,7 +379,7 @@ UPDATE ' . CATEGORIES_TABLE . '
             check_input_parameter('comment_to_edit', $_GET, false, PATTERN_ID);
             $author_id = get_comment_author_id($_GET['comment_to_edit']);
 
-            if (can_manage_comment('edit', $author_id)) {
+            if (FunctionsUser::can_manage_comment('edit', $author_id)) {
                 if (! empty($_POST['content'])) {
                     check_pwg_token();
                     $comment_action = update_user_comment(
@@ -445,7 +434,7 @@ UPDATE ' . CATEGORIES_TABLE . '
 
             $author_id = get_comment_author_id($_GET['comment_to_delete']);
 
-            if (can_manage_comment('delete', $author_id)) {
+            if (FunctionsUser::can_manage_comment('delete', $author_id)) {
                 delete_user_comment($_GET['comment_to_delete']);
             }
 
@@ -462,7 +451,7 @@ UPDATE ' . CATEGORIES_TABLE . '
 
             $author_id = get_comment_author_id($_GET['comment_to_validate']);
 
-            if (can_manage_comment('validate', $author_id)) {
+            if (FunctionsUser::can_manage_comment('validate', $author_id)) {
                 validate_user_comment($_GET['comment_to_validate']);
             }
 
@@ -478,18 +467,18 @@ if (isset($_SERVER['HTTP_X_MOZ']) && $_SERVER['HTTP_X_MOZ'] == 'prefetch') {
     $inc_hit_count = false;
 } else {
     // don't increment counter if comming from the same picture (actions)
-    if (pwg_get_session_var(
+    if (FunctionsSession::pwg_get_session_var(
         'referer_image_id',
         0
     ) == $page['image_id']) {
         $inc_hit_count = false;
     }
 
-    pwg_set_session_var('referer_image_id', $page['image_id']);
+    FunctionsSession::pwg_set_session_var('referer_image_id', $page['image_id']);
 }
 
 // don't increment if adding a comment
-if (trigger_change(
+if (FunctionsPlugins::trigger_change(
     'allow_increment_element_hit_count',
     $inc_hit_count,
     $page['image_id']
@@ -501,7 +490,7 @@ UPDATE
   SET hit = hit+1, lastmodified = lastmodified
   WHERE id = ' . $page['image_id'] . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 //---------------------------------------------------------- related categories
@@ -510,7 +499,7 @@ SELECT id,uppercats,commentable,visible,status,global_rank
   FROM ' . IMAGE_CATEGORY_TABLE . '
     INNER JOIN ' . CATEGORIES_TABLE . ' ON category_id = id
   WHERE image_id = ' . $page['image_id'] . '
-' . get_sql_condition_FandF(
+' . FunctionsUser::get_sql_condition_FandF(
     [
         'forbidden_categories' => 'id',
         'visible_categories' => 'id',
@@ -518,8 +507,8 @@ SELECT id,uppercats,commentable,visible,status,global_rank
     'AND'
 ) . '
 ;';
-$related_categories = query2array($query);
-usort($related_categories, \Piwigo\inc\global_rank_compare(...));
+$related_categories = Mysqli::query2array($query);
+usort($related_categories, FunctionsCategory::global_rank_compare(...));
 //-------------------------first, prev, current, next & last picture management
 $picture = [];
 
@@ -540,9 +529,9 @@ SELECT *
   WHERE id IN (' . implode(',', $ids) . ')
 ;';
 
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if (isset($page['previous_item']) && $row['id'] == $page['previous_item']) {
         $i = 'previous';
     } elseif (isset($page['next_item']) && $row['id'] == $page['next_item']) {
@@ -654,7 +643,7 @@ $url_metadata = add_url_params($url_metadata, [
 ]);
 
 // do we have a plugin that can show metadata for something else than images?
-$metadata_showable = trigger_change(
+$metadata_showable = FunctionsPlugins::trigger_change(
     'get_element_metadata_available',
     (
         ($conf['show_exif'] || $conf['show_iptc']) && ! $picture['current']['src_image']->is_mimetype()
@@ -662,7 +651,7 @@ $metadata_showable = trigger_change(
     $picture['current']
 );
 
-if ($metadata_showable && pwg_get_session_var('show_metadata')) {
+if ($metadata_showable && FunctionsSession::pwg_get_session_var('show_metadata')) {
     $page['meta_robots'] = [
         'noindex' => 1,
         'nofollow' => 1,
@@ -672,7 +661,7 @@ if ($metadata_showable && pwg_get_session_var('show_metadata')) {
 $page['body_id'] = 'thePicturePage';
 
 // allow plugins to change what we computed before passing data to template
-$picture = trigger_change(
+$picture = FunctionsPlugins::trigger_change(
     'picture_pictures_data',
     $picture
 );
@@ -714,7 +703,7 @@ SELECT *
   FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE image_id = ' . $picture['current']['id'] . '
 ;';
-        $formats = query2array($query);
+        $formats = Mysqli::query2array($query);
 
         // let's add the original as a format among others. It will just have a
         // specific download URL
@@ -840,7 +829,7 @@ if ($conf['picture_metadata_icon']) {
 //------------------------------------------------------- upper menu management
 
 // admin links
-if (is_admin()) {
+if (FunctionsUser::is_admin()) {
     if (isset($page['category']) && $conf['picture_representative_icon']) {
         $template->assign(
             [
@@ -876,7 +865,7 @@ if (is_admin()) {
 }
 
 // favorite manipulation
-if (! is_a_guest() && $conf['picture_favorite_icon']) {
+if (! FunctionsUser::is_a_guest() && $conf['picture_favorite_icon']) {
     // verify if the picture is already in the favorite of the user
     $query = '
 SELECT COUNT(*) AS nb_fav
@@ -884,7 +873,7 @@ SELECT COUNT(*) AS nb_fav
   WHERE image_id = ' . $page['image_id'] . '
     AND user_id = ' . $user['id'] . '
 ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     $is_favorite = $row['nb_fav'] != 0;
 
     $template->assign(
@@ -906,7 +895,7 @@ SELECT COUNT(*) AS nb_fav
 if (isset($picture['current']['comment']) && ! empty($picture['current']['comment'])) {
     $template->assign(
         'COMMENT_IMG',
-        trigger_change(
+        FunctionsPlugins::trigger_change(
             'render_element_description',
             $picture['current']['comment'],
             'picture_page_element_description'
@@ -1014,7 +1003,7 @@ if (count(
 SELECT id, name, permalink
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $ids) . ')';
-    $cat_map = query2array($query, 'id');
+    $cat_map = Mysqli::query2array($query, 'id');
     foreach ($related_categories as $category) {
         $cats = [];
         foreach (explode(',', (string) $category['uppercats']) as $id) {
@@ -1027,7 +1016,7 @@ SELECT id, name, permalink
 
 // maybe someone wants a special display (call it before page_header so that
 // they can add stylesheets)
-$element_content = trigger_change(
+$element_content = FunctionsPlugins::trigger_change(
     'render_element_content',
     '',
     $picture['current']
@@ -1042,7 +1031,7 @@ if (isset($picture['next']) && $picture['next']['src_image']->is_original() && $
 )) {
     $template->assign(
         'U_PREFETCH',
-        $picture['next']['derivatives'][pwg_get_session_var(
+        $picture['next']['derivatives'][FunctionsSession::pwg_get_session_var(
             'picture_deriv',
             $conf['derivative_default_size']
         )]->get_url()
@@ -1068,7 +1057,7 @@ if ($conf['activate_comments']) {
     require(__DIR__ . '/inc/picture_comment.inc.php');
 }
 
-if ($metadata_showable && pwg_get_session_var('show_metadata') != null) {
+if ($metadata_showable && FunctionsSession::pwg_get_session_var('show_metadata') != null) {
     require(__DIR__ . '/inc/picture_metadata.inc.php');
 }
 
@@ -1086,7 +1075,7 @@ if ($conf['picture_menu'] && (! isset($themeconf['hide_menu_on']) || ! in_array(
 }
 
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_picture');
+FunctionsPlugins::trigger_notify('loc_end_picture');
 flush_page_messages();
 if ($page['slideshow'] && $conf['light_slideshow']) {
     $template->pparse('slideshow');

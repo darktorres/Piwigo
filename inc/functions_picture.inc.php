@@ -2,8 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\get_boolean;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -78,7 +77,7 @@ function decode_slideshow_params(
         if (preg_match_all('/([a-z]+)-(true|false)/', (string) $encode_params, $matches)) {
             $matchcount = count($matches[1]);
             for ($i = 0; $i < $matchcount; $i++) {
-                $result[$matches[1][$i]] = get_boolean($matches[2][$i]);
+                $result[$matches[1][$i]] = Mysqli::get_boolean($matches[2][$i]);
             }
         }
     }
@@ -101,8 +100,10 @@ function encode_slideshow_params(
     $result = '';
 
     foreach ($params as $name => $value) {
-        // boolean_to_string return $value, if it's not a bool
-        $result .= '+' . $name . '-' . boolean_to_string($value);
+        // Mysqli::boolean_to_string return $value, if it's not a bool
+        $result .= '+' . $name . '-' . Mysqli::boolean_to_string(
+            $value
+        );
     }
 
     return $result;

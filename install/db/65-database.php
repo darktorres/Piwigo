@@ -38,7 +38,7 @@ function upgrade65_change_table_to_blob(string $table, $field_definitions): void
 
     if ($changes !== []) {
         $query = 'ALTER TABLE ' . $table . ' ' . implode(', ', $changes);
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 }
 
@@ -76,7 +76,7 @@ function upgrade65_change_table_to_charset(string $table, $field_definitions, st
 
     if ($changes !== []) {
         $query = 'ALTER TABLE `' . $table . '` ' . implode(', ', $changes);
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 }
 
@@ -93,8 +93,8 @@ if (! defined('PWG_CHARSET')) {
     $query = '
 SELECT language, COUNT(user_id) AS count FROM ' . USER_INFOS_TABLE . '
   GROUP BY language';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $language = $row['language'];
         $lang_def = explode('.', (string) $language);
         if (count($lang_def) == 2) {
@@ -126,16 +126,16 @@ SELECT language, COUNT(user_id) AS count FROM ' . USER_INFOS_TABLE . '
     $query = '
 SELECT language FROM ' . USER_INFOS_TABLE . '
   WHERE user_id=' . $conf['webmaster_id'];
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result) == 0) {
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         $query = '
 SELECT language FROM ' . USER_INFOS_TABLE . '
   WHERE status="webmaster" and adviser="false"
   LIMIT 1';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
     }
 
-    if ($row = pwg_db_fetch_assoc($result)) {
+    if ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $admin_charset = $all_langs[$row['language']]['charset'];
     }
 
@@ -148,17 +148,17 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
 
     $all_tables = [];
     $query = 'SHOW TABLES LIKE "' . $prefixeTable . '%"';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_row($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_row($result)) {
         $all_tables[] = $row[0];
     }
 
     $all_tables_definition = [];
     foreach ($all_tables as $table) {
         $query = 'SHOW FULL COLUMNS FROM ' . $table;
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
         $field_definitions = [];
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             if (! isset($row['Collation']) || $row['Collation'] == 'NULL') {
                 continue;
             }
@@ -202,7 +202,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
         foreach ($all_tables as $table) {
             upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'utf8');
             $query = 'ALTER TABLE ' . $table . ' DEFAULT CHARACTER SET utf8';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
 
         $upgrade_log .= "< conversion\tchange utf8\n";
@@ -224,7 +224,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
 
             upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'utf8');
             $query = 'ALTER TABLE ' . $table . ' DEFAULT CHARACTER SET utf8';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
 
         $upgrade_log .= "< conversion\tchange binary\n";
@@ -240,7 +240,7 @@ SELECT language FROM ' . USER_INFOS_TABLE . '
 
             upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'utf8');
             $query = 'ALTER TABLE ' . $table . ' DEFAULT CHARACTER SET utf8';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
 
         $upgrade_log .= "< conversion\tchange binary\n";
@@ -258,7 +258,7 @@ define(\'DB_COLLATE\',  \'\');';
         $query = '
   UPDATE ' . USER_INFOS_TABLE . ' SET language="' . $lang_data['new_lang'] . '"
     WHERE language="' . $old_lang . '"';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     define('PWG_CHARSET', $pwg_charset);
@@ -266,7 +266,7 @@ define(\'DB_COLLATE\',  \'\');';
     define('DB_COLLATE', '');
 
     if (version_compare(mysql_get_server_info(), '4.1.0', '>=') && DB_CHARSET !== '') {
-        pwg_query('SET NAMES "' . DB_CHARSET . '"');
+        Mysqli::pwg_query('SET NAMES "' . DB_CHARSET . '"');
     }
 
     echo $upgrade_log;

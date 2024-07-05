@@ -2,16 +2,14 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\save_images_order;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_cat_display_name_cache;
-use function Piwigo\inc\get_cat_info;
 use function Piwigo\inc\get_filename_wo_extension;
 use function Piwigo\inc\get_query_string_diff;
 use function Piwigo\inc\get_root_url;
@@ -37,7 +35,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if (! isset($_GET['cat_id']) || ! is_numeric($_GET['cat_id'])) {
     trigger_error('missing cat_id param', E_USER_ERROR);
@@ -92,16 +92,16 @@ if (isset($_POST['submit'])) {
 UPDATE ' . CATEGORIES_TABLE . ' 
   SET image_order = ' . (isset($image_order) ? "'" . $image_order . "'" : 'NULL') . '
   WHERE id=' . $page['category_id'];
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     if (isset($_POST['image_order_subcats'])) {
-        $cat_info = get_cat_info($page['category_id']);
+        $cat_info = FunctionsCategory::get_cat_info($page['category_id']);
 
         $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET image_order = ' . (isset($image_order) ? "'" . $image_order . "'" : 'NULL') . '
   WHERE uppercats LIKE \'' . $cat_info['uppercats'] . ",%'";
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     $page['infos'][] = l10n('Your configuration settings are saved');
@@ -123,7 +123,7 @@ SELECT *
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $page['category_id'] . '
 ;';
-$category = pwg_db_fetch_assoc(pwg_query($query));
+$category = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
 if ($category['image_order'] == 'rank ASC' || $category['image_order'] == '`rank` ASC') {
     $image_order_choice = 'rank';
@@ -162,12 +162,12 @@ SELECT
   WHERE category_id = ' . $page['category_id'] . '
   ORDER BY `rank`
 ;';
-$result = pwg_query($query);
-if (pwg_db_num_rows($result) > 0) {
+$result = Mysqli::pwg_query($query);
+if (Mysqli::pwg_db_num_rows($result) > 0) {
     // template thumbnail initialization
     $current_rank = 1;
     $derivativeParams = ImageStdParams::get_by_type(IMG_SQUARE);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $derivative = new DerivativeImage($derivativeParams, new SrcImage($row));
 
         if (! empty($row['name'])) {

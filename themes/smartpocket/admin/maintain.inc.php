@@ -6,9 +6,9 @@ use function Piwigo\inc\conf_update_param;
 
 class smartpocket_maintain extends ThemeMaintain
 {
-    private $installed = false;
+    private bool $installed = false;
 
-    private $default_conf = [
+    private array $default_conf = [
         'loop' => true,
         //true - false
         'autohide' => 5000,
@@ -16,7 +16,7 @@ class smartpocket_maintain extends ThemeMaintain
     ];
 
     #[\Override]
-    public function activate($theme_version, &$errors = [])
+    public function activate($theme_version, &$errors = []): void
     {
         global $conf, $prefixeTable;
 
@@ -42,7 +42,7 @@ class smartpocket_maintain extends ThemeMaintain
     }
 
     #[\Override]
-    public function delete()
+    public function delete(): void
     {
         // delete configuration
         conf_delete_param('smartpocket');

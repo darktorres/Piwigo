@@ -18,7 +18,7 @@ SELECT id, image_order
   FROM ' . CATEGORIES_TABLE . '
   WHERE image_order != ""
 ;';
-$cats = query2array($query, 'id');
+$cats = Mysqli::query2array($query, 'id');
 
 foreach ($cats as $id => &$data) {
     $image_order = explode(',', (string) $data['image_order']);
@@ -34,7 +34,7 @@ foreach ($cats as $id => &$data) {
 
 unset($data);
 
-mass_updates(
+Mysqli::mass_updates(
     CATEGORIES_TABLE,
     [
         'primary' => ['id'],

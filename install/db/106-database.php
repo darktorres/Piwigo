@@ -17,13 +17,13 @@ $query = '
 INSERT INTO ' . PREFIX_TABLE . 'config(param,value,comment) 
   VALUES (\'order_by\', \'' . $conf['order_by'] . '\', \'default photos order\')
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 INSERT INTO ' . PREFIX_TABLE . 'config(param,value,comment) 
   VALUES (\'order_by_inside_category\', \'' . $conf['order_by_inside_category'] . '\', \'default photos order inside category\')
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

@@ -2,7 +2,7 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\trigger_change;
+use Piwigo\inc\FunctionsPlugins;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -77,7 +77,7 @@ class Tabsheet
     */
     public function select($name): void
     {
-        $this->sheets = trigger_change('tabsheet_before_select', $this->sheets, $this->uniqid);
+        $this->sheets = FunctionsPlugins::trigger_change('tabsheet_before_select', $this->sheets, $this->uniqid);
         if (! array_key_exists($name, $this->sheets)) {
             $keys = array_keys($this->sheets);
             $name = $keys[0];

@@ -2,12 +2,12 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeParams;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SizingParams;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\pwg_activity;
 use function Piwigo\inc\size_equals;
@@ -23,7 +23,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     return;
 }
 
@@ -203,7 +203,7 @@ if (count($errors) == 0) {
     ImageStdParams::set_and_save($enabled_by);
     if (count($disabled) == 0) {
         $query = 'DELETE FROM ' . CONFIG_TABLE . " WHERE param = 'disabled_derivatives'";
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     } else {
         conf_update_param('disabled_derivatives', addslashes(serialize($disabled)));
     }

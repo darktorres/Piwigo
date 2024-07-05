@@ -23,28 +23,22 @@ class ScriptLoader
     /**
      * @var Script[]
      */
-    private $registered_scripts;
+    private array $registered_scripts;
 
-    /**
-     * @var bool
-     */
-    private $did_head;
+    private bool $did_head;
 
-    private $head_done_scripts;
+    private array $head_done_scripts;
 
-    /**
-     * @var bool
-     */
-    private $did_footer;
+    private bool $did_footer;
 
-    private static $known_paths = [
+    private static array $known_paths = [
         'core.scripts' => 'themes/default/js/scripts.js',
         'jquery' => 'themes/default/js/jquery.min.js',
         'jquery.ui' => 'themes/default/js/ui/minified/jquery.ui.core.min.js',
         'jquery.ui.effect' => 'themes/default/js/ui/minified/jquery.ui.effect.min.js',
     ];
 
-    private static $ui_core_dependencies = [
+    private static array $ui_core_dependencies = [
         'jquery.ui.widget' => ['jquery'],
         'jquery.ui.position' => ['jquery'],
         'jquery.ui.mouse' => ['jquery', 'jquery.ui', 'jquery.ui.widget'],
@@ -55,7 +49,7 @@ class ScriptLoader
         $this->clear();
     }
 
-    public function clear()
+    public function clear(): void
     {
         $this->registered_scripts = [];
         $this->inline_scripts = [];
@@ -64,10 +58,7 @@ class ScriptLoader
         $this->did_footer = false;
     }
 
-    /**
-     * @return bool
-     */
-    public function did_head()
+    public function did_head(): bool
     {
         return $this->did_head;
     }
@@ -75,7 +66,7 @@ class ScriptLoader
     /**
      * @return Script[]
      */
-    public function get_all()
+    public function get_all(): array
     {
         return $this->registered_scripts;
     }
@@ -84,8 +75,10 @@ class ScriptLoader
      * @param string $code
      * @param string[] $require
      */
-    public function add_inline($code, $require)
-    {
+    public function add_inline(
+        $code,
+        $require
+    ): void {
         if ($this->did_footer) {
             trigger_error('Attempt to add inline script but the footer has been written', E_USER_WARNING);
         }
@@ -120,7 +113,7 @@ class ScriptLoader
         $path,
         $version = 0,
         $is_template = false
-    ) {
+    ): void {
         if ($this->did_head && $load_mode == 0) {
             trigger_error(sprintf('Attempt to add script %s but the head has been written', $id), E_USER_WARNING);
         } elseif ($this->did_footer) {
@@ -198,7 +191,7 @@ class ScriptLoader
      *
      * @return array Combinable
      */
-    public function get_footer_scripts()
+    public function get_footer_scripts(): array
     {
         if (! $this->did_head) {
             $this->check_load_dep($this->registered_scripts);
@@ -230,12 +223,11 @@ class ScriptLoader
 
     /**
      * @param Script[] $scripts
-     * @param int $load_mode
      * @return array Combinable
      */
     private function do_combine(
-        $scripts,
-        $load_mode
+        array $scripts,
+        int $load_mode
     ) {
         $combiner = new FileCombiner('js', $scripts);
         return $combiner->combine();
@@ -248,8 +240,8 @@ class ScriptLoader
      * @param Script[] $scripts
      */
     private function check_load_dep(
-        $scripts
-    ) {
+        array $scripts
+    ): void {
         global $conf;
         do {
             $changed = false;
@@ -278,12 +270,11 @@ class ScriptLoader
      * Fill a script dependancies with the known jQuery UI scripts.
      *
      * @param string $id in FileCombiner::$known_paths
-     * @param Script $script
      */
     private function fill_well_known(
         $id,
-        $script
-    ) {
+        \Piwigo\inc\Script $script
+    ): void {
         if (empty($script->path) && isset(self::$known_paths[$id])) {
             $script->path = self::$known_paths[$id];
         }
@@ -323,12 +314,11 @@ class ScriptLoader
      *
      * @param string $id in FileCombiner::$known_paths
      * @param int $load_mode
-     * @return bool
      */
     private function load_known_required_script(
         $id,
         $load_mode
-    ) {
+    ): bool {
         if (isset(self::$known_paths[$id]) || str_starts_with($id, 'jquery.ui.')) {
             $this->add($id, $load_mode, [], null);
             return true;
@@ -347,7 +337,7 @@ class ScriptLoader
      */
     private function compute_script_topological_order(
         $script_id,
-        $recursion_limiter = 0
+        int|float $recursion_limiter = 0
     ) {
         if (! isset($this->registered_scripts[$script_id])) {
             trigger_error(sprintf('Undefined script %s is required by someone', $script_id), E_USER_WARNING);
@@ -379,7 +369,7 @@ class ScriptLoader
     /**
      * Callback for scripts sorter.
      */
-    private function cmp_by_mode_and_order($s1, $s2)
+    private function cmp_by_mode_and_order($s1, $s2): int|float
     {
         $ret = intval($s1->load_mode) - intval($s2->load_mode);
         if ($ret !== 0) {

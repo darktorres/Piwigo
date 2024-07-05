@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'add user_infos.preferences';
 
-pwg_query('
+Mysqli::pwg_query('
 ALTER TABLE `' . PREFIX_TABLE . 'user_infos`
   ADD COLUMN `preferences` TEXT default NULL
 ;');

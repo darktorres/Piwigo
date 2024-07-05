@@ -2,20 +2,17 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_groupname;
 use function Piwigo\admin\inc\get_uppercat_ids;
 use function Piwigo\admin\inc\invalidate_user_cache;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\display_select_cat_wrapper;
 use function Piwigo\inc\fatal_error;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -34,7 +31,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if ($_POST !== []) {
     check_pwg_token();
@@ -63,14 +62,14 @@ if (isset($_POST['falsify']) && isset($_POST['cat_true']) && count(
 ) > 0) {
     // if you forbid access to a category, all sub-categories become
     // automatically forbidden
-    $subcats = get_subcat_ids($_POST['cat_true']);
+    $subcats = FunctionsCategory::get_subcat_ids($_POST['cat_true']);
     $query = '
 DELETE
   FROM ' . GROUP_ACCESS_TABLE . '
   WHERE group_id = ' . $page['group'] . '
   AND cat_id IN (' . implode(',', $subcats) . ')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 } elseif (isset($_POST['trueify']) && isset($_POST['cat_false']) && count($_POST['cat_false']) > 0) {
     $uppercats = get_uppercat_ids($_POST['cat_false']);
     $private_uppercats = [];
@@ -81,8 +80,8 @@ SELECT id
   WHERE id IN (' . implode(',', $uppercats) . ')
   AND status = \'private\'
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $private_uppercats[] = $row['id'];
     }
 
@@ -96,9 +95,9 @@ SELECT cat_id
   FROM ' . GROUP_ACCESS_TABLE . '
   WHERE group_id = ' . $page['group'] . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $authorized_ids[] = $row['cat_id'];
     }
 
@@ -111,7 +110,7 @@ SELECT cat_id
         ];
     }
 
-    mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $inserts);
+    Mysqli::mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $inserts);
     invalidate_user_cache();
 }
 
@@ -150,11 +149,11 @@ SELECT id,name,uppercats,global_rank
   WHERE status = \'private\'
     AND group_id = ' . $page['group'] . '
 ;';
-display_select_cat_wrapper($query_true, [], 'category_option_true');
+FunctionsCategory::display_select_cat_wrapper($query_true, [], 'category_option_true');
 
-$result = pwg_query($query_true);
+$result = Mysqli::pwg_query($query_true);
 $authorized_ids = [];
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $authorized_ids[] = $row['id'];
 }
 
@@ -169,7 +168,7 @@ if ($authorized_ids !== []) {
 
 $query_false .= '
 ;';
-display_select_cat_wrapper($query_false, [], 'category_option_false');
+FunctionsCategory::display_select_cat_wrapper($query_false, [], 'category_option_false');
 
 $template->assign('PWG_TOKEN', get_pwg_token());
 

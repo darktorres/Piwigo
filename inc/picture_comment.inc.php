@@ -2,8 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -27,7 +26,7 @@ foreach ($related_categories as $category) {
 }
 
 if ($page['show_comments'] && isset($_POST['content'])) {
-    if (is_a_guest() && ! $conf['comments_forall']) {
+    if (FunctionsUser::is_a_guest() && ! $conf['comments_forall']) {
         die('Session expired');
     }
 
@@ -61,7 +60,7 @@ if ($page['show_comments'] && isset($_POST['content'])) {
     }
 
     // allow plugins to notify what's going on
-    trigger_notify(
+    FunctionsPlugins::trigger_notify(
         'user_comment_insertion',
         array_merge($comm, [
             'action' => $comment_action,
@@ -73,7 +72,7 @@ if ($page['show_comments'] && isset($_POST['content'])) {
 }
 
 if ($page['show_comments']) {
-    $validated_clause = is_admin() ? '' : "  AND validated = 'true'";
+    $validated_clause = FunctionsUser::is_admin() ? '' : "  AND validated = 'true'";
     // number of comments for this picture
     $query = '
 SELECT
@@ -82,7 +81,7 @@ SELECT
   WHERE image_id = ' . $page['image_id']
     . $validated_clause . '
 ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     // navigation bar creation
     if (! isset($page['start'])) {
         $page['start'] = 0;
@@ -105,10 +104,10 @@ SELECT
             strtoupper((string) $_GET['comments_order']),
             ['ASC', 'DESC']
         )) {
-            pwg_set_session_var('comments_order', $_GET['comments_order']);
+            FunctionsSession::pwg_set_session_var('comments_order', $_GET['comments_order']);
         }
 
-        $comments_order = pwg_get_session_var('comments_order', $conf['comments_order']);
+        $comments_order = FunctionsSession::pwg_get_session_var('comments_order', $conf['comments_order']);
 
         $template->assign([
             'COMMENTS_ORDER_URL' => add_url_params(duplicate_picture_url(), [
@@ -139,9 +138,9 @@ SELECT
   ORDER BY com.date ' . $comments_order . '
   LIMIT ' . $conf['nb_comment_page'] . ' OFFSET ' . $page['start'] . '
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             if ($row['author'] == 'guest') {
                 $row['author'] = l10n('guest');
             }
@@ -156,13 +155,13 @@ SELECT
             $tpl_comment =
               [
                   'ID' => $row['id'],
-                  'AUTHOR' => trigger_change('render_comment_author', $row['author']),
+                  'AUTHOR' => FunctionsPlugins::trigger_change('render_comment_author', $row['author']),
                   'DATE' => format_date($row['date'], ['day_name', 'day', 'month', 'year', 'time']),
-                  'CONTENT' => trigger_change('render_comment_content', $row['content']),
+                  'CONTENT' => FunctionsPlugins::trigger_change('render_comment_content', $row['content']),
                   'WEBSITE_URL' => $row['website_url'],
               ];
 
-            if (can_manage_comment('delete', $row['author_id'])) {
+            if (FunctionsUser::can_manage_comment('delete', $row['author_id'])) {
                 $tpl_comment['U_DELETE'] = add_url_params(
                     $url_self,
                     [
@@ -173,7 +172,7 @@ SELECT
                 );
             }
 
-            if (can_manage_comment('edit', $row['author_id'])) {
+            if (FunctionsUser::can_manage_comment('edit', $row['author_id'])) {
                 $tpl_comment['U_EDIT'] = add_url_params(
                     $url_self,
                     [
@@ -191,7 +190,7 @@ SELECT
                 }
             }
 
-            if (is_admin()) {
+            if (FunctionsUser::is_admin()) {
                 $tpl_comment['EMAIL'] = $email;
 
                 if ($row['validated'] != 'true') {
@@ -215,7 +214,7 @@ SELECT
         $show_add_comment_form = false;
     }
 
-    if (is_a_guest() && ! $conf['comments_forall']) {
+    if (FunctionsUser::is_a_guest() && ! $conf['comments_forall']) {
         $show_add_comment_form = false;
     }
 
@@ -226,11 +225,11 @@ SELECT
             'F_ACTION' => $url_self,
             'KEY' => $key,
             'CONTENT' => '',
-            'SHOW_AUTHOR' => ! is_classic_user(),
+            'SHOW_AUTHOR' => ! FunctionsUser::is_classic_user(),
             'AUTHOR_MANDATORY' => $conf['comments_author_mandatory'],
             'AUTHOR' => '',
             'WEBSITE_URL' => '',
-            'SHOW_EMAIL' => ! is_classic_user() || empty($user['email']),
+            'SHOW_EMAIL' => ! FunctionsUser::is_classic_user() || empty($user['email']),
             'EMAIL_MANDATORY' => $conf['comments_email_mandatory'],
             'EMAIL' => '',
             'SHOW_WEBSITE' => $conf['comments_enable_website'],

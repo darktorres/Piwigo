@@ -3,14 +3,14 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\set_cat_status;
 use function Piwigo\admin\inc\set_cat_visible;
 use function Piwigo\admin\inc\set_random_representant;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\display_select_cat_wrapper;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
@@ -32,7 +32,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if ($_POST !== []) {
     check_pwg_token();
@@ -56,7 +58,7 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET commentable = \'false\'
   WHERE id IN (' . implode(',', $_POST['cat_true']) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
             break;
 
         case 'visible':
@@ -76,7 +78,7 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = NULL
   WHERE id IN (' . implode(',', $_POST['cat_true']) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
             break;
 
     }
@@ -94,7 +96,7 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET commentable = \'true\'
   WHERE id IN (' . implode(',', $_POST['cat_false']) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
             break;
 
         case 'visible':
@@ -160,7 +162,7 @@ $tabsheet->assign();
 // - NA : (not applicable) for virtual categories
 //
 // for true and false status, we associates an array of category ids,
-// function display_select_categories will use the given CSS class for each
+// function FunctionsCategory::display_select_categories will use the given CSS class for each
 // option
 $cats_true = [];
 $cats_false = [];
@@ -251,8 +253,8 @@ SELECT DISTINCT id,name,uppercats,global_rank
 
 }
 
-display_select_cat_wrapper($query_true, [], 'category_option_true');
-display_select_cat_wrapper($query_false, [], 'category_option_false');
+FunctionsCategory::display_select_cat_wrapper($query_true, [], 'category_option_true');
+FunctionsCategory::display_select_cat_wrapper($query_false, [], 'category_option_false');
 $template->assign('PWG_TOKEN', get_pwg_token());
 $template->assign('ADMIN_PAGE_TITLE', l10n('Properties of abums'));
 

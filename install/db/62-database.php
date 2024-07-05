@@ -22,7 +22,7 @@ require_once(__DIR__ . '/../../inc/constants.php');
 $query = '
 INSERT INTO ' . CONFIG_TABLE . " (param,value,comment) VALUES ('obligatory_user_mail_address','false','Mail address is obligatory for users');
 ";
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

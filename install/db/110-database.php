@@ -29,7 +29,7 @@ SELECT
   FROM ' . CONFIG_TABLE . '
   WHERE param =\'gallery_url\'
 ;';
-[$gallery_url] = pwg_db_fetch_row(pwg_query($query));
+[$gallery_url] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 if (! empty($gallery_url)) {
     // let's try to write it in the local configuration file
@@ -77,7 +77,7 @@ DELETE
   FROM ' . CONFIG_TABLE . '
   WHERE param =\'gallery_url\'
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

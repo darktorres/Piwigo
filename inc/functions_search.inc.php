@@ -2,11 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_get_db_version;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -34,7 +30,7 @@ SELECT rules
   FROM ' . SEARCH_TABLE . '
   WHERE id = ' . $search_id . '
 ;';
-    [$serialized_rules] = pwg_db_fetch_row(pwg_query($query));
+    [$serialized_rules] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     return unserialize($serialized_rules);
 }
@@ -132,7 +128,7 @@ function get_sql_search_clause(
     if (isset($search['fields']['cat'])) {
         if ($search['fields']['cat']['sub_inc']) {
             // searching all the categories id of sub-categories
-            $cat_ids = get_subcat_ids(
+            $cat_ids = FunctionsCategory::get_subcat_ids(
                 $search['fields']['cat']['words']
             );
         } else {
@@ -165,7 +161,7 @@ function get_regular_search_results(
 
     $logger->debug(__FUNCTION__, $search);
 
-    $forbidden = get_sql_condition_FandF(
+    $forbidden = FunctionsUser::get_sql_condition_FandF(
         [
             'forbidden_categories' => 'category_id',
             'visible_categories' => 'category_id',
@@ -189,7 +185,7 @@ SELECT
   FROM ' . TAGS_TABLE . '
   WHERE ' . implode(' OR ', $word_clauses) . '
 ;';
-        $tag_ids = query2array($query, null, 'id');
+        $tag_ids = Mysqli::query2array($query, null, 'id');
 
         $search_in_tags_items = get_image_ids_for_tags($tag_ids, 'OR');
 
@@ -219,7 +215,7 @@ SELECT DISTINCT(id)
 
         $query .= $forbidden . '
   ' . $conf['order_by'];
-        $items = query2array($query, null, 'id');
+        $items = Mysqli::query2array($query, null, 'id');
 
         $logger->debug(__FUNCTION__ . ' ' . count($items) . ' items in $items');
     }
@@ -274,7 +270,10 @@ define('QST_WILDCARD_END', 0x10);
 define('QST_WILDCARD', QST_WILDCARD_BEGIN | QST_WILDCARD_END);
 define('QST_BREAK', 0x20);
 
-function qsearch_get_text_token_search_sql($token, $fields)
+/**
+ * @return non-falsy-string[]
+ */
+function qsearch_get_text_token_search_sql($token, $fields): array
 {
     global $page;
 
@@ -306,7 +305,7 @@ function qsearch_get_text_token_search_sql($token, $fields)
                 // Prior to MySQL 8.0.4, MySQL used the Henry Spencer regular expression library to support
                 // regular expression operations, rather than International Components for Unicode (ICU)
                 $page['use_regexp_ICU'] = false;
-                $db_version = pwg_get_db_version();
+                $db_version = Mysqli::pwg_get_db_version();
                 if (! preg_match('/mariadb/i', (string) $db_version) && version_compare($db_version, '8.0.4', '>')) {
                     $page['use_regexp_ICU'] = true;
                 }
@@ -405,7 +404,7 @@ function qsearch_get_images(QExpression $expr, QResults $qsr): void
                 break;
             default:
                 // allow plugins to have their own scope with columns added in db by themselves
-                $clauses = trigger_change(
+                $clauses = FunctionsPlugins::trigger_change(
                     'qsearch_get_images_sql_scopes',
                     $clauses,
                     $token,
@@ -416,7 +415,7 @@ function qsearch_get_images(QExpression $expr, QResults $qsr): void
 
         if (! empty($clauses)) {
             $query = $query_base . '(' . implode("\n OR ", $clauses) . ')';
-            $qsr->images_iids[$i] = query2array($query, null, 'id');
+            $qsr->images_iids[$i] = Mysqli::query2array($query, null, 'id');
         }
     }
 }
@@ -441,8 +440,8 @@ function qsearch_get_tags(QExpression $expr, QResults $qsr): void
         $clauses = qsearch_get_text_token_search_sql($token, ['name']);
         $query = 'SELECT * FROM ' . TAGS_TABLE . '
 WHERE (' . implode("\n OR ", $clauses) . ')';
-        $result = pwg_query($query);
-        while ($tag = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query($query);
+        while ($tag = Mysqli::pwg_db_fetch_assoc($result)) {
             $token_tag_ids[$i][] = $tag['id'];
             $all_tags[$tag['id']] = $tag;
         }
@@ -473,7 +472,7 @@ WHERE (' . implode("\n OR ", $clauses) . ')';
 SELECT image_id FROM ' . IMAGE_TAG_TABLE . '
   WHERE tag_id IN (' . implode(',', $tag_ids) . ')
   GROUP BY image_id';
-            $qsr->tag_iids[$i] = query2array($query, null, 'image_id');
+            $qsr->tag_iids[$i] = Mysqli::query2array($query, null, 'image_id');
             if (($expr->stoken_modifiers[$i] & QST_NOT) !== 0) {
                 $not_ids = array_merge($not_ids, $tag_ids);
             } elseif (strlen($token->term) > 2 || count(
@@ -487,13 +486,13 @@ SELECT image_id FROM ' . IMAGE_TAG_TABLE . '
             }
         } elseif (isset($token->scope) && $token->scope->id == 'tag' && strlen($token->term) == 0) {
             if (($token->modifier & QST_WILDCARD) !== 0) {// eg. 'tag:*' returns all tagged images
-                $qsr->tag_iids[$i] = query2array(
+                $qsr->tag_iids[$i] = Mysqli::query2array(
                     'SELECT DISTINCT image_id FROM ' . IMAGE_TAG_TABLE,
                     null,
                     'image_id'
                 );
             } else {// eg. 'tag:' returns all untagged images
-                $qsr->tag_iids[$i] = query2array(
+                $qsr->tag_iids[$i] = Mysqli::query2array(
                     'SELECT id FROM ' . IMAGES_TABLE . ' LEFT JOIN ' . IMAGE_TAG_TABLE . ' ON id=image_id WHERE image_id IS NULL',
                     null,
                     'id'
@@ -505,7 +504,7 @@ SELECT image_id FROM ' . IMAGE_TAG_TABLE . '
     $all_tags = array_intersect_key($all_tags, array_flip(array_diff($positive_ids, $not_ids)));
     usort($all_tags, \Piwigo\inc\tag_alpha_compare(...));
     foreach ($all_tags as &$tag) {
-        $tag['name'] = trigger_change('render_tag_name', $tag['name'], $tag);
+        $tag['name'] = FunctionsPlugins::trigger_change('render_tag_name', $tag['name'], $tag);
     }
 
     $qsr->all_tags = $all_tags;
@@ -537,8 +536,8 @@ SELECT
   FROM ' . CATEGORIES_TABLE . '
     INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . ' ON id = cat_id and user_id = ' . $user['id'] . '
   WHERE (' . implode("\n OR ", $clauses) . ')';
-        $result = pwg_query($query);
-        while ($cat = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query($query);
+        while ($cat = Mysqli::pwg_db_fetch_assoc($result)) {
             $token_cat_ids[$i][] = $cat['id'];
             $all_cats[$cat['id']] = $cat;
         }
@@ -571,16 +570,16 @@ SELECT
     id
   FROM ' . CATEGORIES_TABLE . '
     INNER JOIN ' . USER_CACHE_CATEGORIES_TABLE . ' ON id = cat_id and user_id = ' . $user['id'] . '
-  WHERE id IN (' . implode(',', get_subcat_ids($cat_ids)) . ')
+  WHERE id IN (' . implode(',', FunctionsCategory::get_subcat_ids($cat_ids)) . ')
 ;';
-                $cat_ids = query2array($query, null, 'id');
+                $cat_ids = Mysqli::query2array($query, null, 'id');
             }
 
             $query = '
 SELECT image_id FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id IN (' . implode(',', $cat_ids) . ')
   GROUP BY image_id';
-            $qsr->cat_iids[$i] = query2array($query, null, 'image_id');
+            $qsr->cat_iids[$i] = Mysqli::query2array($query, null, 'image_id');
             if (($expr->stoken_modifiers[$i] & QST_NOT) !== 0) {
                 $not_ids = array_merge($not_ids, $cat_ids);
             } elseif (strlen($token->term) > 2 || count(
@@ -594,13 +593,13 @@ SELECT image_id FROM ' . IMAGE_CATEGORY_TABLE . '
             }
         } elseif (isset($token->scope) && $token->scope->id == 'category' && strlen($token->term) == 0) {
             if (($token->modifier & QST_WILDCARD) !== 0) {// eg. 'category:*' returns all images associated to an album
-                $qsr->cat_iids[$i] = query2array(
+                $qsr->cat_iids[$i] = Mysqli::query2array(
                     'SELECT DISTINCT image_id FROM ' . IMAGE_CATEGORY_TABLE,
                     null,
                     'image_id'
                 );
             } else {// eg. 'category:' returns all orphan images
-                $qsr->cat_iids[$i] = query2array(
+                $qsr->cat_iids[$i] = Mysqli::query2array(
                     'SELECT id FROM ' . IMAGES_TABLE . ' LEFT JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id=image_id WHERE image_id IS NULL',
                     null,
                     'id'
@@ -612,7 +611,7 @@ SELECT image_id FROM ' . IMAGE_CATEGORY_TABLE . '
     $all_cats = array_intersect_key($all_cats, array_flip(array_diff($positive_ids, $not_ids)));
     usort($all_cats, \Piwigo\inc\tag_alpha_compare(...));
     foreach ($all_cats as &$cat) {
-        $cat['name'] = trigger_change('render_category_name', $cat['name'], $cat);
+        $cat['name'] = FunctionsPlugins::trigger_change('render_category_name', $cat['name'], $cat);
     }
 
     $qsr->all_cats = $all_cats;
@@ -726,7 +725,7 @@ function get_quick_search_results_no_cache(
           ],
       ];
 
-    $q = trigger_change('qsearch_pre', $q);
+    $q = FunctionsPlugins::trigger_change('qsearch_pre', $q);
 
     $scopes = [];
     $scopes[] = new QSearchScope('tag', ['tags']);
@@ -754,12 +753,12 @@ function get_quick_search_results_no_cache(
     $scopes[] = new QDateRangeScope('posted', $postedDateAliases);
 
     // allow plugins to add their own scopes
-    $scopes = trigger_change('qsearch_get_scopes', $scopes);
+    $scopes = FunctionsPlugins::trigger_change('qsearch_get_scopes', $scopes);
     $expression = new QExpression($q, $scopes);
 
     // get inflections for terms
     $inflector = null;
-    $lang_code = substr(get_default_language(), 0, 2);
+    $lang_code = substr(FunctionsUser::get_default_language(), 0, 2);
     if (file_exists(PHPWG_ROOT_PATH . 'inc/inflectors/' . $lang_code . '.php')) {
         require_once(__DIR__ . '/../inc/inflectors/' . $lang_code . '.php');
     }
@@ -780,7 +779,7 @@ function get_quick_search_results_no_cache(
         }
     }
 
-    trigger_notify('qsearch_expression_parsed', $expression);
+    FunctionsPlugins::trigger_notify('qsearch_expression_parsed', $expression);
     //var_export($expression);
 
     if (count($expression->stokens) == 0) {
@@ -793,7 +792,11 @@ function get_quick_search_results_no_cache(
     qsearch_get_images($expression, $qsr);
 
     // allow plugins to evaluate their own scopes
-    trigger_notify('qsearch_before_eval', $expression, $qsr);
+    FunctionsPlugins::trigger_notify(
+        'qsearch_before_eval',
+        $expression,
+        $qsr
+    );
 
     $ids = qsearch_eval($expression, $qsr, $tmp, $search_results['qs']['unmatched_terms']);
 
@@ -820,7 +823,7 @@ function get_quick_search_results_no_cache(
 
     $search_results['qs']['matching_tags'] = $qsr->all_tags;
     $search_results['qs']['matching_cats'] = $qsr->all_cats;
-    $search_results = trigger_change('qsearch_results', $search_results, $expression, $qsr);
+    $search_results = FunctionsPlugins::trigger_change('qsearch_results', $search_results, $expression, $qsr);
     if (isset($search_results['items'])) {
         $ids = array_merge($ids, $search_results['items']);
     }
@@ -842,7 +845,7 @@ function get_quick_search_results_no_cache(
     }
 
     if ($permissions) {
-        $where_clauses[] = get_sql_condition_FandF(
+        $where_clauses[] = FunctionsUser::get_sql_condition_FandF(
             [
                 'forbidden_categories' => 'category_id',
                 'forbidden_images' => 'i.id',
@@ -863,7 +866,7 @@ SELECT DISTINCT(id) FROM ' . IMAGES_TABLE . ' i';
   WHERE ' . implode("\n AND ", $where_clauses) . "\n" .
     $conf['order_by'];
 
-    $ids = query2array($query, null, 'id');
+    $ids = Mysqli::query2array($query, null, 'id');
 
     $debug[] = count($ids) . ' final photo count -->';
     $template->append('footer_elements', implode("\n", $debug));

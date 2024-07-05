@@ -2,13 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_changes;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_get_flood_period_expression;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -17,14 +11,14 @@ use function Piwigo\inc\dbLayer\pwg_query;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'user_comment_check',
     '\Piwigo\inc\user_comment_check'
 );
 
 /**
  * Does basic check on comment and returns action to perform.
- * This method is called by a trigger_change()
+ * This method is called by a FunctionsPlugins::trigger_change()
  *
  * @param string $action before check
  * @return string validate, moderate, reject
@@ -46,7 +40,7 @@ function user_comment_check(
     }
 
     // we do here only BASIC spam check (plugins can do more)
-    if (! is_a_guest()) {
+    if (! FunctionsUser::is_a_guest()) {
         return $action;
     }
 
@@ -92,14 +86,14 @@ function insert_user_comment(
     );
 
     $infos = [];
-    if (! $conf['comments_validation'] || is_admin()) {
+    if (! $conf['comments_validation'] || FunctionsUser::is_admin()) {
         $comment_action = 'validate'; //one of validate, moderate, reject
     } else {
         $comment_action = 'moderate'; //one of validate, moderate, reject
     }
 
     // display author field if the user status is guest or generic
-    if (! is_classic_user()) {
+    if (! FunctionsUser::is_classic_user()) {
         if (empty($comm['author'])) {
             if ($conf['comments_author_mandatory']) {
                 $infos[] = l10n('Username is mandatory');
@@ -117,7 +111,7 @@ function insert_user_comment(
 SELECT COUNT(*) AS user_exists
   FROM ' . USERS_TABLE . '
   WHERE ' . $conf['user_fields']['username'] . " = '" . addslashes((string) $comm['author']) . "'";
-            $row = pwg_db_fetch_assoc(pwg_query($query));
+            $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
             if ($row['user_exists'] == 1) {
                 $infos[] = l10n('This login is already used by another user');
                 $comment_action = 'reject';
@@ -176,14 +170,14 @@ SELECT COUNT(*) AS user_exists
 
     $anonymous_id = implode('.', $ip_components);
 
-    if ($comment_action !== 'reject' && $conf['anti-flood_time'] > 0 && ! is_admin()) { // anti-flood system
-        $reference_date = pwg_db_get_flood_period_expression($conf['anti-flood_time']);
+    if ($comment_action !== 'reject' && $conf['anti-flood_time'] > 0 && ! FunctionsUser::is_admin()) { // anti-flood system
+        $reference_date = Mysqli::pwg_db_get_flood_period_expression($conf['anti-flood_time']);
 
         $query = '
 SELECT count(1) FROM ' . COMMENTS_TABLE . '
   WHERE date > ' . $reference_date . '
     AND author_id = ' . $comm['author_id'];
-        if (! is_classic_user()) {
+        if (! FunctionsUser::is_classic_user()) {
             $query .= '
       AND anonymous_id LIKE "' . $anonymous_id . '.%"';
         }
@@ -191,7 +185,7 @@ SELECT count(1) FROM ' . COMMENTS_TABLE . '
         $query .= '
 ;';
 
-        [$counter] = pwg_db_fetch_row(pwg_query($query));
+        [$counter] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($counter > 0) {
             $infos[] = l10n('Anti-flood system : please wait for a moment before trying to post another comment');
             $comment_action = 'reject';
@@ -200,7 +194,7 @@ SELECT count(1) FROM ' . COMMENTS_TABLE . '
     }
 
     // perform more spam check
-    $comment_action = trigger_change(
+    $comment_action = FunctionsPlugins::trigger_change(
         'user_comment_check',
         $comment_action,
         $comm
@@ -223,8 +217,8 @@ INSERT INTO ' . COMMENTS_TABLE . '
     ' . (empty($comm['email']) ? 'NULL' : "'" . $comm['email'] . "'") . '
   )
 ';
-        pwg_query($query);
-        $comm['id'] = pwg_db_insert_id();
+        Mysqli::pwg_query($query);
+        $comm['id'] = Mysqli::pwg_db_insert_id();
 
         invalidate_user_cache_nb_comments();
 
@@ -267,7 +261,7 @@ function delete_user_comment(
     $comment_id
 ): bool {
     $user_where_clause = '';
-    if (! is_admin()) {
+    if (! FunctionsUser::is_admin()) {
         $user_where_clause = "   AND author_id = '" . $GLOBALS['user']['id'] . "'";
     }
 
@@ -279,7 +273,7 @@ DELETE FROM ' . COMMENTS_TABLE . '
 $user_where_clause . '
 ;';
 
-    if (pwg_db_changes()) {
+    if (Mysqli::pwg_db_changes()) {
         invalidate_user_cache_nb_comments();
 
         email_admin(
@@ -289,7 +283,7 @@ $user_where_clause . '
                 'comment_id' => $comment_id,
             ]
         );
-        trigger_notify('user_comment_deletion', $comment_id);
+        FunctionsPlugins::trigger_notify('user_comment_deletion', $comment_id);
 
         return true;
     }
@@ -316,7 +310,7 @@ function update_user_comment(
 
     if (! verify_ephemeral_key($post_key, $comment['image_id'])) {
         $comment_action = 'reject';
-    } elseif (! $conf['comments_validation'] || is_admin()) { // should the updated comment must be validated
+    } elseif (! $conf['comments_validation'] || FunctionsUser::is_admin()) { // should the updated comment must be validated
         $comment_action = 'validate'; //one of validate, moderate, reject
     } else {
         $comment_action = 'moderate'; //one of validate, moderate, reject
@@ -324,7 +318,7 @@ function update_user_comment(
 
     // perform more spam check
     $comment_action =
-      trigger_change(
+      FunctionsPlugins::trigger_change(
           'user_comment_check',
           $comment_action,
           array_merge(
@@ -350,7 +344,7 @@ function update_user_comment(
 
     if ($comment_action != 'reject') {
         $user_where_clause = '';
-        if (! is_admin()) {
+        if (! FunctionsUser::is_admin()) {
             $user_where_clause = "   AND author_id = '" .
     $GLOBALS['user']['id'] . "'";
         }
@@ -364,7 +358,7 @@ UPDATE ' . COMMENTS_TABLE . '
   WHERE id = ' . $comment['comment_id'] .
 $user_where_clause . '
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
         // mail admin and ask to validate the comment
         if ($result && $conf['email_admin_on_comment_validation'] && $comment_action == 'moderate') {
@@ -452,8 +446,8 @@ SELECT
   FROM ' . COMMENTS_TABLE . '
   WHERE id = ' . $comment_id . '
 ;';
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result) == 0) {
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         if ($die_on_error) {
             fatal_error('Unknown comment identifier');
         } else {
@@ -461,7 +455,7 @@ SELECT
         }
     }
 
-    [$author_id] = pwg_db_fetch_row($result);
+    [$author_id] = Mysqli::pwg_db_fetch_row($result);
 
     return $author_id;
 }
@@ -482,10 +476,10 @@ UPDATE ' . COMMENTS_TABLE . '
     , validation_date = NOW()
   WHERE ' . $where_clause . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     invalidate_user_cache_nb_comments();
-    trigger_notify('user_comment_validation', $comment_id);
+    FunctionsPlugins::trigger_notify('user_comment_validation', $comment_id);
 }
 
 /**
@@ -501,5 +495,5 @@ function invalidate_user_cache_nb_comments(): void
 UPDATE ' . USER_CACHE_TABLE . '
   SET nb_available_comments = NULL
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }

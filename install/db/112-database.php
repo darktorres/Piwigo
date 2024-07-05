@@ -17,7 +17,7 @@ $upgrade_description = 'Change combined dir';
 $query = 'DELETE FROM ' . CONFIG_TABLE . '
   WHERE param IN (\'local_data_dir_checked\', \'combined_dir_checked\') ';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $dir = PHPWG_ROOT_PATH . 'local/combined/';
 if (is_dir($dir)) {

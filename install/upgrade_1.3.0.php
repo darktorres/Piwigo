@@ -54,7 +54,7 @@ ALTER TABLE phpwebgallery_image_category
 
 foreach ($queries as $query) {
     $query = str_replace('phpwebgallery_', PREFIX_TABLE, $query);
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 // filling the new column categories.uppercats
@@ -64,8 +64,8 @@ $query = '
 SELECT id, id_uppercat
   FROM ' . CATEGORIES_TABLE . '
 ;';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if (! isset($row['id_uppercat']) || $row['id_uppercat'] == '') {
         $row['id_uppercat'] = 'NULL';
     }
@@ -91,7 +91,7 @@ foreach (array_keys($id_uppercats) as $id) {
     $datas[] = $data;
 }
 
-mass_updates(
+Mysqli::mass_updates(
     CATEGORIES_TABLE,
     [
         'primary' => ['id'],

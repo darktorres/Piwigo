@@ -19,7 +19,7 @@ $upgrade_description = 'Add #user_cache.cache_update_time';
 
 $query = '
 ALTER TABLE ' . USER_CACHE_TABLE . ' ADD COLUMN `cache_update_time` INTEGER UNSIGNED NOT NULL DEFAULT 0 AFTER need_update';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

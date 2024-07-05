@@ -22,7 +22,7 @@ require_once(__DIR__ . '/../../inc/constants.php');
 $query = '
 ALTER TABLE ' . IMAGES_TABLE . ' ADD COLUMN coi CHAR(4) DEFAULT NULL COMMENT \'center of interest\' AFTER height
 ';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

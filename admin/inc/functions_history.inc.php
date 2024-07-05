@@ -2,18 +2,10 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\add_event_handler;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_get_hour;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\prepend_append_array_items;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -48,7 +40,7 @@ function history_compare(array $a, array $b): int
 /**
  * Perform history search.
  *
- * @param array $data  - used in trigger_change
+ * @param array $data  - used in FunctionsPlugins::trigger_change
  * @param string[] $types
  */
 function get_history(
@@ -63,7 +55,7 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE file LIKE \'' . $search['fields']['filename'] . '\'
 ;';
-        $search['image_ids'] = query2array($query, null, 'id');
+        $search['image_ids'] = Mysqli::query2array($query, null, 'id');
     }
 
     // echo '<pre>'; print_r($search); echo '</pre>';
@@ -143,9 +135,9 @@ SELECT
 
     // LIMIT '.$conf['nb_logs_page'].' OFFSET '.$page['start'].'
 
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $data[] = $row;
     }
 
@@ -169,7 +161,7 @@ SELECT
   ORDER BY history_id_to DESC
   LIMIT 1
 ;';
-    $summary_lines = query2array($query);
+    $summary_lines = Mysqli::query2array($query);
 
     $history_min_id = 0;
     if ($summary_lines !== []) {
@@ -184,8 +176,8 @@ SELECT
     MIN(id) AS min_id
   FROM ' . HISTORY_TABLE . '
 ;';
-        $history_lines = query2array($query);
-        if ($history_lines !== []) {
+        $history_lines = Mysqli::query2array($query);
+        if (count($history_lines) > 0) {
             $history_min_id = $history_lines[0]['min_id'] - 1;
         }
     }
@@ -193,7 +185,7 @@ SELECT
     $query = '
 SELECT
     date,
-    ' . pwg_db_get_hour('time') . ' AS hour,
+    ' . Mysqli::pwg_db_get_hour('time') . ' AS hour,
     MIN(id) AS min_id,
     MAX(id) AS max_id,
     COUNT(*) AS nb_pages
@@ -213,14 +205,14 @@ SELECT
     date ASC,
     hour ASC
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $need_update = [];
 
     $is_first = true;
     $first_time_key = null;
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $time_keys = [
             substr((string) $row['date'], 0, 4), //yyyy
             substr((string) $row['date'], 0, 7), //yyyy-mm
@@ -293,8 +285,8 @@ SELECT *
       )
     )
 ;';
-        $result = pwg_query($query);
-        while ($row = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query($query);
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $key = sprintf('%4u', $row['year']);
             if (isset($row['month'])) {
                 $key .= sprintf('-%02u', $row['month']);
@@ -330,7 +322,7 @@ SELECT *
     }
 
     if ($updates !== []) {
-        mass_updates(
+        Mysqli::mass_updates(
             HISTORY_SUMMARY_TABLE,
             [
                 'primary' => ['year', 'month', 'day', 'hour'],
@@ -341,7 +333,7 @@ SELECT *
     }
 
     if ($inserts !== []) {
-        mass_inserts(
+        Mysqli::mass_inserts(
             HISTORY_SUMMARY_TABLE,
             array_keys($inserts[0]),
             $inserts
@@ -369,7 +361,7 @@ SELECT
     COUNT(*)
   FROM ' . HISTORY_TABLE . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     if ($count <= $conf['history_autopurge_keep_lines']) {
         history_remove_summarized_column();
@@ -385,7 +377,7 @@ SELECT
   ORDER BY history_id_to DESC
   LIMIT 1
 ;';
-    $summary_lines = query2array($query);
+    $summary_lines = Mysqli::query2array($query);
     if (count($summary_lines) == 0) {
         return; // lines not summarized, no purge
     }
@@ -400,7 +392,7 @@ SELECT
   ORDER BY id DESC
   LIMIT 1
 ;';
-    $history_lines = query2array($query);
+    $history_lines = Mysqli::query2array($query);
     if (count($history_lines) == 0) {
         return;
     }
@@ -415,7 +407,7 @@ SELECT
   ORDER BY id ASC
   LIMIT 1
 ;';
-    $history_lines = query2array($query);
+    $history_lines = Mysqli::query2array($query);
     $history_id_oldest = $history_lines[0]['id'];
 
     $search_min = [
@@ -433,7 +425,7 @@ DELETE
   FROM ' . HISTORY_TABLE . '
   WHERE id < ' . $history_id_delete_before . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     history_remove_summarized_column();
 }
@@ -451,20 +443,20 @@ SELECT
     COUNT(*)
   FROM ' . HISTORY_TABLE . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     if ($count > $conf['history_autopurge_keep_lines'] + $conf['history_autopurge_blocksize']) {
         // it's not yet time to remove history.summarized
         return;
     }
 
-    $result = pwg_query('SHOW COLUMNS FROM ' . HISTORY_TABLE . ' LIKE "summarized";');
-    if (pwg_db_num_rows($result)) {
-        pwg_query('ALTER TABLE ' . HISTORY_TABLE . ' DROP COLUMN `summarized`;');
+    $result = Mysqli::pwg_query('SHOW COLUMNS FROM ' . HISTORY_TABLE . ' LIKE "summarized";');
+    if (Mysqli::pwg_db_num_rows($result)) {
+        Mysqli::pwg_query('ALTER TABLE ' . HISTORY_TABLE . ' DROP COLUMN `summarized`;');
     }
 
     conf_update_param('history_summarized_dropped', true);
 }
 
-add_event_handler('get_history', '\Piwigo\admin\inc\get_history');
-trigger_notify('functions_history_included');
+FunctionsPlugins::add_event_handler('get_history', '\Piwigo\admin\inc\get_history');
+FunctionsPlugins::trigger_notify('functions_history_included');

@@ -3,8 +3,8 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Updates;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\safe_version_compare;
 
@@ -23,7 +23,7 @@ if (! $conf['enable_extensions_install']) {
     die('Piwigo extensions install/update system is disabled');
 }
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     $page['warnings'][] = str_replace(
         '%s',
         l10n('user_status_webmaster'),
@@ -85,7 +85,7 @@ $template->assign('UPDATES_EXTENSION', $updates_extension);
 $template->assign('SHOW_RESET', $show_reset);
 $template->assign('PWG_TOKEN', get_pwg_token());
 $template->assign('EXT_TYPE', $page['page'] == 'updates' ? 'extensions' : $page['page']);
-$template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
+$template->assign('isWebmaster', (FunctionsUser::is_webmaster()) ? 1 : 0);
 $template->set_filename('plugin_admin_content', 'updates_ext.tpl');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugin_admin_content');
 $template->assign('ADMIN_PAGE_TITLE', l10n('Updates'));

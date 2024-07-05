@@ -1,10 +1,8 @@
 <?php
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsSession;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\dblayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dblayer\pwg_query;
-use function Piwigo\inc\pwg_get_session_var;
-use function Piwigo\inc\pwg_set_session_var;
 
 /**********************************
  * REQUIRED PATH TO THE TPL FILE */
@@ -22,11 +20,11 @@ if (isset($_GET['page']) && preg_match('/^photo-(\d+)(?:-(.*))?$/', (string) $_G
 }
 
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
-if (isset($_GET['image_id']) && pwg_get_session_var('TAT_image_id') == null) {
+if (isset($_GET['image_id']) && FunctionsSession::pwg_get_session_var('TAT_image_id') == null) {
     $template->assign('TAT_image_id', $_GET['image_id']);
-    pwg_set_session_var('TAT_image_id', $_GET['image_id']);
-} elseif (is_numeric(pwg_get_session_var('TAT_image_id'))) {
-    $template->assign('TAT_image_id', pwg_get_session_var('TAT_image_id'));
+    FunctionsSession::pwg_set_session_var('TAT_image_id', $_GET['image_id']);
+} elseif (is_numeric(FunctionsSession::pwg_get_session_var('TAT_image_id'))) {
+    $template->assign('TAT_image_id', FunctionsSession::pwg_get_session_var('TAT_image_id'));
 } else {
     $query = '
     SELECT id
@@ -34,7 +32,7 @@ if (isset($_GET['image_id']) && pwg_get_session_var('TAT_image_id') == null) {
       ORDER BY RAND()
       LIMIT 1  
     ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     $template->assign('TAT_image_id', $row['id']);
 }
 
@@ -44,11 +42,11 @@ if (isset($_GET['page']) && preg_match('/^album-(\d+)(?:-(.*))?$/', (string) $_G
 }
 
 check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
-if (isset($_GET['cat_id']) && pwg_get_session_var('TAT_cat_id') == null) {
+if (isset($_GET['cat_id']) && FunctionsSession::pwg_get_session_var('TAT_cat_id') == null) {
     $template->assign('TAT_cat_id', $_GET['cat_id']);
-    pwg_set_session_var('TAT_cat_id', $_GET['cat_id']);
-} elseif (is_numeric(pwg_get_session_var('TAT_cat_id'))) {
-    $template->assign('TAT_cat_id', pwg_get_session_var('TAT_cat_id'));
+    FunctionsSession::pwg_set_session_var('TAT_cat_id', $_GET['cat_id']);
+} elseif (is_numeric(FunctionsSession::pwg_get_session_var('TAT_cat_id'))) {
+    $template->assign('TAT_cat_id', FunctionsSession::pwg_get_session_var('TAT_cat_id'));
 } else {
     $query = '
     SELECT id
@@ -56,7 +54,7 @@ if (isset($_GET['cat_id']) && pwg_get_session_var('TAT_cat_id') == null) {
       ORDER BY RAND()
       LIMIT 1  
     ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     $template->assign('TAT_cat_id', $row['id']);
 }
 

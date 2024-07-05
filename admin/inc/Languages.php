@@ -2,11 +2,10 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\convert_charset;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_branch_from_version;
-use function Piwigo\inc\get_default_language;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -67,7 +66,7 @@ INSERT INTO ' . LANGUAGES_TABLE . '
          \'' . $this->fs_languages[$language_id]['version'] . '\',
          \'' . $this->fs_languages[$language_id]['name'] . '\')
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
                 break;
 
             case 'deactivate':
@@ -76,7 +75,7 @@ INSERT INTO ' . LANGUAGES_TABLE . '
                     break;
                 }
 
-                if ($language_id == get_default_language()) {
+                if ($language_id == FunctionsUser::get_default_language()) {
                     $errors[] = 'CANNOT DEACTIVATE - LANGUAGE IS DEFAULT LANGUAGE';
                     break;
                 }
@@ -86,7 +85,7 @@ DELETE
   FROM ' . LANGUAGES_TABLE . '
   WHERE id= \'' . $language_id . '\'
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
                 break;
 
             case 'delete':
@@ -103,10 +102,10 @@ DELETE
                 // Set default language to user who are using this language
                 $query = '
 UPDATE ' . USER_INFOS_TABLE . '
-  SET language = \'' . get_default_language() . '\'
+  SET language = \'' . FunctionsUser::get_default_language() . '\'
   WHERE language = \'' . $language_id . '\'
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
 
                 deltree(PHPWG_ROOT_PATH . 'language/' . $language_id, PHPWG_ROOT_PATH . 'language/trash');
                 break;
@@ -117,7 +116,7 @@ UPDATE ' . USER_INFOS_TABLE . '
   SET language = \'' . $language_id . '\'
   WHERE user_id IN (' . $conf['default_user_id'] . ', ' . $conf['guest_id'] . ')
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
                 break;
         }
 
@@ -202,9 +201,9 @@ UPDATE ' . USER_INFOS_TABLE . '
     FROM ' . LANGUAGES_TABLE . '
     ORDER BY name ASC
   ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $this->db_languages[$row['id']] = $row['name'];
         }
     }

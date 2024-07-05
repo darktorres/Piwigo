@@ -19,7 +19,7 @@ INSERT INTO ' . CONFIG_TABLE . ' (param,value,comment)
     ("allow_user_customization","true","allow users to customize their gallery?")
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

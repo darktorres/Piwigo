@@ -2,12 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dbLayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -39,14 +34,14 @@ SELECT
 
 if ($page['section'] == 'recent_cats') {
     $query .= '
-  WHERE ' . get_recent_photos_sql('date_last');
+  WHERE ' . FunctionsUser::get_recent_photos_sql('date_last');
 } else {
     $query .= '
   WHERE id_uppercat ' . (isset($page['category']) ? '= ' . $page['category']['id'] : 'is NULL');
 }
 
 $query .= '
-      ' . get_sql_condition_FandF(
+      ' . FunctionsUser::get_sql_condition_FandF(
     [
         'visible_categories' => 'id',
     ],
@@ -58,13 +53,13 @@ if ($page['section'] != 'recent_cats') {
   ORDER BY `rank`';
 }
 
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 $categories = [];
 $category_ids = [];
 $image_ids = [];
 $user_representative_updates_for = [];
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $row['is_child_date_last'] = @$row['max_date_last'] > @$row['date_last'];
 
     if (! empty($row['user_representative_picture_id'])) {
@@ -72,7 +67,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     } elseif (! empty($row['representative_picture_id'])) { // if a representative picture is set, it has priority
         $image_id = $row['representative_picture_id'];
     } elseif ($conf['allow_random_representative']) { // searching a random representant among elements in sub-categories
-        $image_id = get_random_image_in_category(
+        $image_id = FunctionsCategory::get_random_image_in_category(
             $row
         );
     } elseif ($row['count_categories'] > 0 && $row['count_images'] > 0) { // searching a random representant among representant of sub-categories
@@ -82,7 +77,7 @@ SELECT representative_picture_id
   ON id = cat_id and user_id = ' . $user['id'] . '
   WHERE uppercats LIKE \'' . $row['uppercats'] . ',%\'
     AND representative_picture_id IS NOT NULL'
-  . get_sql_condition_FandF(
+  . FunctionsUser::get_sql_condition_FandF(
       [
           'visible_categories' => 'id',
       ],
@@ -91,9 +86,9 @@ SELECT representative_picture_id
   ORDER BY ' . DB_RANDOM_FUNCTION . '()
   LIMIT 1
 ;';
-        $subresult = pwg_query($query);
-        if (pwg_db_num_rows($subresult) > 0) {
-            [$image_id] = pwg_db_fetch_row($subresult);
+        $subresult = Mysqli::pwg_query($query);
+        if (Mysqli::pwg_db_num_rows($subresult) > 0) {
+            [$image_id] = Mysqli::pwg_db_fetch_row($subresult);
         }
     }
 
@@ -120,7 +115,7 @@ SELECT
   FROM ' . IMAGE_CATEGORY_TABLE . '
     INNER JOIN ' . IMAGES_TABLE . ' ON image_id = id
   WHERE category_id IN (' . implode(',', $category_ids) . ')
-' . get_sql_condition_FandF(
+' . FunctionsUser::get_sql_condition_FandF(
         [
             'visible_categories' => 'category_id',
             'visible_images' => 'id',
@@ -129,11 +124,11 @@ SELECT
     ) . '
   GROUP BY category_id
 ;';
-    $dates_of_category = query2array($query, 'category_id');
+    $dates_of_category = Mysqli::query2array($query, 'category_id');
 }
 
 if ($page['section'] == 'recent_cats') {
-    usort($categories, \Piwigo\inc\global_rank_compare(...));
+    usort($categories, \Piwigo\inc\FunctionsCategory::global_rank_compare(...));
 }
 
 if ($categories !== []) {
@@ -145,8 +140,8 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $image_ids) . ')
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if ($row['level'] <= $user['level']) {
             $infos_of_image[$row['id']] = $row;
         } else {
@@ -161,7 +156,7 @@ SELECT *
             foreach ($categories as &$category) {
                 if ($row['id'] == $category['representative_picture_id']) {
                     // searching a random representant among elements in sub-categories
-                    $image_id = get_random_image_in_category(
+                    $image_id = FunctionsCategory::get_random_image_in_category(
                         $category
                     );
 
@@ -187,8 +182,8 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $new_image_ids) . ')
 ;';
-        $result = pwg_query($query);
-        while ($row = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query($query);
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $infos_of_image[$row['id']] = $row;
         }
     }
@@ -212,7 +207,7 @@ if ($user_representative_updates_for !== []) {
           ];
     }
 
-    mass_updates(
+    Mysqli::mass_updates(
         USER_CACHE_CATEGORIES_TABLE,
         [
             'primary' => ['user_id', 'cat_id'],
@@ -230,7 +225,7 @@ if ($categories !== []) {
 
     $template->set_filename('index_category_thumbnails', 'mainpage_categories.tpl');
 
-    trigger_notify('loc_begin_index_category_thumbnails', $categories);
+    FunctionsPlugins::trigger_notify('loc_begin_index_category_thumbnails', $categories);
 
     $tpl_thumbnails_var = [];
 
@@ -239,7 +234,7 @@ if ($categories !== []) {
             continue;
         }
 
-        $category['name'] = trigger_change(
+        $category['name'] = FunctionsPlugins::trigger_change(
             'render_category_name',
             $category['name'],
             'subcatify_category_name'
@@ -262,7 +257,7 @@ if ($categories !== []) {
                     'category' => $category,
                 ]
             ),
-            'CAPTION_NB_IMAGES' => get_display_images_count(
+            'CAPTION_NB_IMAGES' => FunctionsCategory::get_display_images_count(
                 $category['nb_images'],
                 $category['count_images'],
                 $category['count_categories'],
@@ -270,9 +265,9 @@ if ($categories !== []) {
                 '<br>'
             ),
             'DESCRIPTION' =>
-              trigger_change(
+              FunctionsPlugins::trigger_change(
                   '\Piwigo\inc\render_category_literal_description',
-                  trigger_change(
+                  FunctionsPlugins::trigger_change(
                       'render_category_description',
                       @$category['comment'],
                       'subcatify_category_description'
@@ -304,8 +299,11 @@ if ($categories !== []) {
         $conf['nb_categories_page']
     );
 
-    $derivative_params = trigger_change('get_index_album_derivative_params', ImageStdParams::get_by_type(IMG_THUMB));
-    $tpl_thumbnails_var_selection = trigger_change(
+    $derivative_params = FunctionsPlugins::trigger_change(
+        'get_index_album_derivative_params',
+        ImageStdParams::get_by_type(IMG_THUMB)
+    );
+    $tpl_thumbnails_var_selection = FunctionsPlugins::trigger_change(
         'loc_end_index_category_thumbnails',
         $tpl_thumbnails_var_selection
     );

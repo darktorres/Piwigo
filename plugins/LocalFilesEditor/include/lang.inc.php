@@ -1,6 +1,6 @@
 <?php
 
-use function Piwigo\inc\get_default_language;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\get_languages;
 use function Piwigo\inc\l10n;
 
@@ -19,7 +19,7 @@ if (isset($_POST['language'])) {
 }
 
 if (! isset($page['language']) || ! in_array($page['language'], array_keys($languages))) {
-    $page['language'] = get_default_language();
+    $page['language'] = FunctionsUser::get_default_language();
 }
 
 $template->assign('language', $page['language']);

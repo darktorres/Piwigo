@@ -24,7 +24,7 @@ SELECT value
   FROM ' . CONFIG_TABLE . '
   WHERE param = \'prefix_thumbnail\'
 ;';
-[$prefix_thumbnail] = pwg_db_fetch_row(pwg_query($query));
+[$prefix_thumbnail] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 // delete obsolete configuration
 $query = '
@@ -46,7 +46,7 @@ DELETE
    \'authorize_remembering\'
    )
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $queries = [
 
@@ -162,7 +162,7 @@ CREATE TABLE piwigo_user_infos (
 
 foreach ($queries as $query) {
     $query = str_replace('piwigo_', PREFIX_TABLE, $query);
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 // user datas migration from piwigo_users to piwigo_user_infos
@@ -172,17 +172,17 @@ SELECT *
 ;';
 
 $datas = [];
-[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT NOW();'));
 
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $row['user_id'] = $row['id'];
     $row['registration_date'] = $dbnow;
     $datas[] = $row;
 }
 
 require_once(__DIR__ . '/../admin/inc/functions.php');
-mass_inserts(
+Mysqli::mass_inserts(
     USER_INFOS_TABLE,
     [
         'user_id',
@@ -253,7 +253,7 @@ INSERT INTO ' . CONFIG_TABLE . "
 
 foreach ($queries as $query) {
     $query = str_replace('piwigo_', PREFIX_TABLE, $query);
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 if ($prefix_thumbnail != 'TN-') {

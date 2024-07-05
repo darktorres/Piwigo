@@ -22,7 +22,7 @@ class QDateRangeScope extends QSearchScope
     }
 
     #[\Override]
-    public function parse($token)
+    public function parse($token): bool
     {
         $str = $token->term;
         $strict = [0, 0];
@@ -74,7 +74,7 @@ class QDateRangeScope extends QSearchScope
         return true;
     }
 
-    public function get_sql($field, $token)
+    public function get_sql(string $field, $token): string
     {
         $clauses = [];
         if ($token->scope_data[0] != '') {

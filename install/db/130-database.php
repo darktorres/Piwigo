@@ -16,7 +16,7 @@ $upgrade_description = 'add "email" field in comments table';
 require_once(__DIR__ . '/../../inc/constants.php');
 
 $query = 'ALTER TABLE `' . COMMENTS_TABLE . '` ADD `email` varchar(255) default NULL;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 conf_update_param('comments_author_mandatory', 'false');
 conf_update_param('comments_email_mandatory', 'false');

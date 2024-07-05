@@ -4,9 +4,9 @@ namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
 use Piwigo\inc\BlockManager;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -20,7 +20,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     $page['warnings'][] = str_replace(
         '%s',
         l10n('user_status_webmaster'),
@@ -82,7 +82,7 @@ foreach (array_keys($reg_blocks) as $id) {
     $idx++;
 }
 
-if (isset($_POST['submit']) && is_webmaster()) {
+if (isset($_POST['submit']) && FunctionsUser::is_webmaster()) {
     foreach ($mb_conf as $id => $pos) {
         $hide = isset($_POST['hide_' . $id]);
         $mb_conf[$id] = ($hide ? -1 : +1) * abs($pos);
@@ -143,7 +143,7 @@ UPDATE ' . CONFIG_TABLE . '
   SET value=\'' . addslashes(serialize($mb_conf_db)) . '\'
   WHERE param=\'blk_' . addslashes($menu->get_id()) . '\'
   ';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     $page['infos'][] = l10n('Order of menubar items has been updated successfully.');
 }
@@ -165,7 +165,7 @@ $template->assign([
     'F_ACTION' => $action,
 ]);
 
-$template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
+$template->assign('isWebmaster', (FunctionsUser::is_webmaster()) ? 1 : 0);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Menu Management'));
 
 $template->set_filename('menubar_admin_content', 'menubar.tpl');

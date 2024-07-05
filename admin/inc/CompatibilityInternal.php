@@ -2,15 +2,10 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\add_event_handler;
-use function Piwigo\inc\create_user_infos;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_get_db_version;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\generate_key;
-use function Piwigo\inc\get_userid;
+use Piwigo\inc\dbLayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -24,9 +19,9 @@ class CompatibilityInternal
 {
     public function __construct()
     {
-        add_event_handler('list_check_integrity', $this->c13y_version(...));
-        add_event_handler('list_check_integrity', $this->c13y_exif(...));
-        add_event_handler('list_check_integrity', $this->c13y_user(...));
+        FunctionsPlugins::add_event_handler('list_check_integrity', $this->c13y_version(...));
+        FunctionsPlugins::add_event_handler('list_check_integrity', $this->c13y_exif(...));
+        FunctionsPlugins::add_event_handler('list_check_integrity', $this->c13y_user(...));
     }
 
     /**
@@ -48,7 +43,7 @@ class CompatibilityInternal
 
         $check_list[] = [
             'type' => 'MySQL',
-            'current' => pwg_get_db_version(),
+            'current' => Mysqli::pwg_get_db_version(),
             'required' => REQUIRED_MYSQL_VERSION,
         ];
 
@@ -142,8 +137,8 @@ class CompatibilityInternal
 
         $status = [];
 
-        $result = pwg_query($query);
-        while ($row = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query($query);
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $status[$row['id']] = $row['status'];
         }
 
@@ -194,15 +189,15 @@ class CompatibilityInternal
                         $password = null;
                     } elseif ($id == $conf['webmaster_id']) {
                         $name = 'webmaster';
-                        $password = generate_key(6);
+                        $password = FunctionsSession::generate_key(6);
                     }
 
                     if (isset($name)) {
                         $name_ok = false;
                         while (! $name_ok) {
-                            $name_ok = (get_userid($name) === false);
+                            $name_ok = (FunctionsUser::get_userid($name) === false);
                             if (! $name_ok) {
-                                $name .= generate_key(1);
+                                $name .= FunctionsSession::generate_key(1);
                             }
                         }
 
@@ -213,9 +208,9 @@ class CompatibilityInternal
                                 'password' => $password,
                             ],
                         ];
-                        mass_inserts(USERS_TABLE, array_keys($inserts[0]), $inserts);
+                        Mysqli::mass_inserts(USERS_TABLE, array_keys($inserts[0]), $inserts);
 
-                        create_user_infos($id);
+                        FunctionsUser::create_user_infos($id);
 
                         $page['infos'][] = sprintf(
                             l10n('User "%s" created with "%s" like password'),
@@ -243,7 +238,7 @@ class CompatibilityInternal
                                 'status' => $status,
                             ],
                         ];
-                        mass_updates(
+                        Mysqli::mass_updates(
                             USER_INFOS_TABLE,
                             [
                                 'primary' => ['user_id'],

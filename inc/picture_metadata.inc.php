@@ -22,7 +22,7 @@ if ($conf['show_exif'] && function_exists('exif_read_data')) {
 
     $exif = get_exif_data($picture['current']['src_image']->get_path(), $exif_mapping);
 
-    if (count($exif) > 0) {
+    if ($exif !== []) {
         $tpl_meta = [
             'TITLE' => l10n('EXIF Metadata'),
             'lines' => [],

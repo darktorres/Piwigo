@@ -21,7 +21,7 @@ WHERE status IN ('webmaster', 'admin')
   AND adviser = 'true'
 ;";
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 // Remove adviser column
 $query = '
@@ -29,7 +29,7 @@ ALTER TABLE ' . USER_INFOS_TABLE . '
 DROP COLUMN adviser
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

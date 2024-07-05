@@ -2,17 +2,15 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCookie;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\history_tabsheet;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\create_navigation_bar;
-use function Piwigo\inc\dbLayer\get_enums;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_query_string_diff;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\pwg_get_cookie_var;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -40,7 +38,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 require_once(__DIR__ . '/../admin/inc/functions.php');
 require_once(__DIR__ . '/../admin/inc/functions_history.inc.php');
 
-$types = array_merge(['none'], get_enums(HISTORY_TABLE, 'image_type'));
+$types = array_merge(['none'], Mysqli::get_enums(HISTORY_TABLE, 'image_type'));
 
 $display_thumbnails = [
     'no_display_thumbnail' => l10n('No display'),
@@ -52,7 +50,9 @@ $display_thumbnails = [
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('filter_ip', $_GET, false, '/^[0-9.]+$/');
 check_input_parameter('filter_image_id', $_GET, false, '/^\d+$/');
@@ -113,7 +113,7 @@ if (isset($page['search'])) {
     $form['types'] = $types;
     // Hoverbox by default
     $form['display_thumbnail'] =
-      pwg_get_cookie_var('display_thumbnail', 'no_display_thumbnail');
+      FunctionsCookie::pwg_get_cookie_var('display_thumbnail', 'no_display_thumbnail');
 }
 
 $form_param['ip'] = $_GET['filter_ip'] ?? @$form['ip'];
@@ -132,8 +132,10 @@ if ($form_param['user_id'] != '-1') {
     WHERE id = ' . $form_param['user_id'] . '
   ;';
 
-    [$form_param['user_name']] = pwg_db_fetch_row(pwg_query($query));
-    $form_param['user_id'] = empty(pwg_db_fetch_row(pwg_query($query))) ? '-1' : $form_param['user_id'];
+    [$form_param['user_name']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
+    $form_param['user_id'] = empty(Mysqli::pwg_db_fetch_row(
+        Mysqli::pwg_query($query)
+    )) ? '-1' : $form_param['user_id'];
 }
 
 $template->assign(

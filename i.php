@@ -3,16 +3,11 @@
 namespace Piwigo;
 
 use Piwigo\admin\inc\Image;
+use Piwigo\inc\dbLayer\Mysqli;
 use Piwigo\inc\DerivativeParams;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SizingParams;
 use function Piwigo\inc\char_to_fraction;
-use function Piwigo\inc\dbLayer\pwg_db_close;
-use function Piwigo\inc\dbLayer\pwg_db_connect;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\single_update;
 use function Piwigo\inc\derivative_to_url;
 use function Piwigo\inc\embellish_url;
 use function Piwigo\inc\get_absolute_root_url;
@@ -321,7 +316,6 @@ function send_derivative($expires): void
     global $page;
 
     if (isset($_GET['ajaxload']) && $_GET['ajaxload'] == 'true') {
-        require_once(__DIR__ . '/inc/functions_cookie.inc.php');
         require_once(__DIR__ . '/inc/functions_url.inc.php');
 
         echo json_encode([
@@ -364,12 +358,12 @@ foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $
     $timing[$k] = '';
 }
 
-require_once(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+// require_once(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 require_once(__DIR__ . '/inc/SizingParams.php');
 require_once(__DIR__ . '/inc/ImageStdParams.php');
 
 try {
-    pwg_db_connect(
+    Mysqli::pwg_db_connect(
         $conf['db_host'],
         $conf['db_user'],
         $conf['db_password'],
@@ -379,8 +373,8 @@ try {
     $logger->error($exception->getMessage());
 }
 
-[$conf['derivatives']] = pwg_db_fetch_row(
-    pwg_query('SELECT value FROM ' . $prefixeTable . "config WHERE param='derivatives'")
+[$conf['derivatives']] = Mysqli::pwg_db_fetch_row(
+    Mysqli::pwg_query('SELECT value FROM ' . $prefixeTable . "config WHERE param='derivatives'")
 );
 $conf['derivatives'] = unserialize($conf['derivatives']);
 ImageStdParams::load_from_db();
@@ -441,7 +435,7 @@ SELECT *
   WHERE path=\'' . addslashes($page['src_location']) . '\'
 ;';
 
-        if (($row = pwg_db_fetch_assoc(pwg_query($query)))) {
+        if (($row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query)))) {
             if (isset($row['width'])) {
                 $page['original_size'] = [$row['width'], $row['height']];
             }
@@ -451,7 +445,7 @@ SELECT *
             if (! isset($row['rotation'])) {
                 $page['rotation_angle'] = Image::get_rotation_angle($page['src_path']);
 
-                single_update(
+                Mysqli::single_update(
                     $prefixeTable . 'images',
                     [
                         'rotation' => Image::get_rotation_code_from_angle($page['rotation_angle']),
@@ -475,7 +469,7 @@ SELECT *
     $page['rotation_angle'] = 0;
 }
 
-pwg_db_close();
+Mysqli::pwg_db_close();
 
 if (! try_switch_source($params, $src_mtime) && $params->type == IMG_CUSTOM) {
     $sharpen = 0;

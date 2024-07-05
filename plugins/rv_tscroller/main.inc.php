@@ -1,14 +1,13 @@
 <?php
 
-use function Piwigo\inc\add_event_handler;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
 use function Piwigo\inc\add_url_params;
 use function Piwigo\inc\duplicate_index_url;
 use function Piwigo\inc\get_absolute_root_url;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
-use function Piwigo\inc\pwg_get_session_var;
-use function Piwigo\inc\pwg_set_session_var;
 use function Piwigo\inc\script_basename;
 
 /*
@@ -27,28 +26,32 @@ define(
 
 class RVTS
 {
-    public static function on_end_section_init()
+    public static function on_end_section_init(): void
     {
         global $page;
-        $page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
+        $page['nb_image_page'] *= FunctionsSession::pwg_get_session_var('rvts_mult', 1);
         if (count(
             $page['items']
-        ) < $page['nb_image_page'] + 3 && (! @$page['start'] || script_basename() == 'picture')) {
+        ) < $page['nb_image_page'] + 3 && (! @$page['start'] || script_basename() === 'picture')) {
             $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
         }
 
-        add_event_handler('loc_begin_index', ['RVTS', 'on_index_begin'], EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
+        FunctionsPlugins::add_event_handler(
+            'loc_begin_index',
+            ['RVTS', 'on_index_begin'],
+            EVENT_HANDLER_PRIORITY_NEUTRAL + 10
+        );
     }
 
-    public static function on_index_begin()
+    public static function on_index_begin(): void
     {
         global $page;
         $is_ajax = isset($_GET['rvts']);
         if (! $is_ajax) {
             if (empty($page['items'])) {
-                add_event_handler('loc_end_index', ['RVTS', 'on_end_index']);
+                FunctionsPlugins::add_event_handler('loc_end_index', ['RVTS', 'on_end_index']);
             } else {
-                add_event_handler(
+                FunctionsPlugins::add_event_handler(
                     'loc_end_index_thumbnails',
                     ['RVTS', 'on_index_thumbnails'],
                     EVENT_HANDLER_PRIORITY_NEUTRAL,
@@ -58,18 +61,18 @@ class RVTS
         } else {
             $adj = (int) @$_GET['adj'];
             if ($adj !== 0) {
-                $mult = pwg_get_session_var('rvts_mult', 1);
+                $mult = FunctionsSession::pwg_get_session_var('rvts_mult', 1);
                 if ($adj > 0 && $mult < 5) {
-                    pwg_set_session_var('rvts_mult', ++$mult);
+                    FunctionsSession::pwg_set_session_var('rvts_mult', ++$mult);
                 }
 
                 if ($adj < 0 && $mult > 1) {
-                    pwg_set_session_var('rvts_mult', --$mult);
+                    FunctionsSession::pwg_set_session_var('rvts_mult', --$mult);
                 }
             }
 
             $page['nb_image_page'] = (int) $_GET['rvts'];
-            add_event_handler(
+            FunctionsPlugins::add_event_handler(
                 'loc_end_index_thumbnails',
                 ['RVTS', 'on_index_thumbnails_ajax'],
                 EVENT_HANDLER_PRIORITY_NEUTRAL + 5,
@@ -87,7 +90,7 @@ class RVTS
         global $page, $template;
         $total = count($page['items']);
         if (count($thumbs) >= $total) {
-            add_event_handler('loc_end_index', ['RVTS', 'on_end_index']);
+            FunctionsPlugins::add_event_handler('loc_end_index', ['RVTS', 'on_end_index']);
             return $thumbs;
         }
 
@@ -151,7 +154,7 @@ jQuery('.navigationBar').hide();"
         exit;
     }
 
-    public static function on_end_index()
+    public static function on_end_index(): void
     {
         global $template;
         $req = null;
@@ -176,4 +179,4 @@ jQuery('.navigationBar').hide();"
     }
 }
 
-add_event_handler('loc_end_section_init', ['RVTS', 'on_end_section_init']);
+FunctionsPlugins::add_event_handler('loc_end_section_init', ['RVTS', 'on_end_section_init']);

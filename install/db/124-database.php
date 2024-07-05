@@ -18,7 +18,7 @@ require_once(__DIR__ . '/../../inc/constants.php');
 //
 // Clean useless configuration settings
 //
-pwg_query('DELETE FROM ' . CONFIG_TABLE . " WHERE param like 'upload_form_%';");
+Mysqli::pwg_query('DELETE FROM ' . CONFIG_TABLE . " WHERE param like 'upload_form_%';");
 
 //
 // Remove useless columns
@@ -29,7 +29,7 @@ ALTER TABLE ' . USER_INFOS_TABLE . '
   DROP `maxwidth`,
   DROP `maxheight`
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 ALTER TABLE ' . IMAGES_TABLE . '
@@ -39,6 +39,6 @@ ALTER TABLE ' . IMAGES_TABLE . '
   DROP `has_high`,
   DROP `tn_ext`
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n" . $upgrade_description . "\n";

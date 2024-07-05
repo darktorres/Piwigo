@@ -25,7 +25,7 @@ if (DB_CHARSET == 'utf8') {
     $query .= ' DEFAULT CHARACTER SET utf8';
 }
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 // Fill table
 require_once(__DIR__ . '/../../inc/constants.php');

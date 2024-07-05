@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Create dedicated user agent column for activity.';
 
-pwg_query('
+Mysqli::pwg_query('
 ALTER TABLE `' . PREFIX_TABLE . 'activity`
   ADD COLUMN `user_agent` varchar(255) default NULL
 ;');

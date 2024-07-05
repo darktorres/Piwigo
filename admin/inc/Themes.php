@@ -2,21 +2,15 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dbLayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\get_boolean;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dblayer\query2array;
 use function Piwigo\inc\get_branch_from_version;
-use function Piwigo\inc\get_default_theme;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
 use function Piwigo\inc\name_compare;
 use function Piwigo\inc\pwg_activity;
-use function Piwigo\inc\userprefs_get_param;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -53,8 +47,8 @@ class Themes
      */
     public function perform_action(
         $action,
-        $theme_id
-    ) {
+        string $theme_id
+    ): array {
         global $conf;
 
         if (! $conf['enable_extensions_install'] && $action == 'delete') {
@@ -79,7 +73,7 @@ class Themes
                     break;
                 }
 
-                if ($theme_id == 'default') {
+                if ($theme_id === 'default') {
                     // you can't activate the "default" theme
                     break;
                 }
@@ -109,7 +103,7 @@ INSERT INTO ' . THEMES_TABLE . '
          \'' . $this->fs_themes[$theme_id]['version'] . '\',
          \'' . $this->fs_themes[$theme_id]['name'] . '\')
 ;';
-                    pwg_query($query);
+                    Mysqli::pwg_query($query);
 
                     $activity_details['version'] = $this->fs_themes[$theme_id]['version'];
 
@@ -132,7 +126,7 @@ INSERT INTO ' . THEMES_TABLE . '
                     break;
                 }
 
-                if ($theme_id == get_default_theme()) {
+                if ($theme_id == FunctionsUser::get_default_theme()) {
                     // find a random theme to replace
                     $new_theme = null;
 
@@ -141,11 +135,11 @@ SELECT id
   FROM ' . THEMES_TABLE . '
   WHERE id != \'' . $theme_id . '\'
 ;';
-                    $result = pwg_query($query);
-                    if (pwg_db_num_rows($result) == 0) {
+                    $result = Mysqli::pwg_query($query);
+                    if (Mysqli::pwg_db_num_rows($result) == 0) {
                         $new_theme = 'default';
                     } else {
-                        [$new_theme] = pwg_db_fetch_row($result);
+                        [$new_theme] = Mysqli::pwg_db_fetch_row($result);
                     }
 
                     $this->set_default_theme($new_theme);
@@ -158,7 +152,7 @@ DELETE
   FROM ' . THEMES_TABLE . '
   WHERE id= \'' . $theme_id . '\'
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
 
                 if ($this->fs_themes[$theme_id]['mobile']) {
                     conf_update_param('mobile_theme', '');
@@ -178,7 +172,7 @@ DELETE
                 }
 
                 $children = $this->get_children_themes($theme_id);
-                if (count($children) > 0) {
+                if ($children !== []) {
                     $errors[] = l10n(
                         'Impossible to delete this theme. Other themes depends on it: %s',
                         implode(', ', $children)
@@ -224,7 +218,10 @@ DELETE
         return $this->missing_parent_theme($parent);
     }
 
-    public function get_children_themes($theme_id)
+    /**
+     * @return mixed[]
+     */
+    public function get_children_themes($theme_id): array
     {
         $children = [];
 
@@ -237,12 +234,12 @@ DELETE
         return $children;
     }
 
-    public function set_default_theme($theme_id)
+    public function set_default_theme(string $theme_id): void
     {
         global $conf;
 
         // first we need to know which users are using the current default theme
-        $default_theme = get_default_theme();
+        $default_theme = FunctionsUser::get_default_theme();
 
         $query = '
 SELECT
@@ -252,7 +249,7 @@ SELECT
 ;';
         $user_ids = array_unique(
             array_merge(
-                query2array($query, null, 'user_id'),
+                Mysqli::query2array($query, null, 'user_id'),
                 [$conf['guest_id'], $conf['default_user_id']]
             )
         );
@@ -265,10 +262,13 @@ UPDATE ' . USER_INFOS_TABLE . '
   SET theme = \'' . $theme_id . '\'
   WHERE user_id IN (' . implode(',', $user_ids) . ')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
-    public function get_db_themes($id = '')
+    /**
+     * @return mixed[]
+     */
+    public function get_db_themes(?string $id = ''): array
     {
         $query = '
 SELECT
@@ -276,7 +276,7 @@ SELECT
   FROM ' . THEMES_TABLE;
 
         $clauses = [];
-        if (! empty($id)) {
+        if ($id !== null && $id !== '' && $id !== '0') {
             $clauses[] = "id = '" . $id . "'";
         }
 
@@ -285,9 +285,9 @@ SELECT
   WHERE ' . implode(' AND ', $clauses);
         }
 
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
         $themes = [];
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $themes[] = $row;
         }
 
@@ -297,7 +297,7 @@ SELECT
     /**
      *  Get themes defined in the theme directory
      */
-    public function get_fs_themes()
+    public function get_fs_themes(): void
     {
         $dir = opendir(PHPWG_THEMES_PATH);
 
@@ -366,11 +366,11 @@ SELECT
                     }
 
                     if (preg_match('/["\']activable["\'].*?(true|false)/i', $theme_data, $val)) {
-                        $theme['activable'] = get_boolean($val[1]);
+                        $theme['activable'] = Mysqli::get_boolean($val[1]);
                     }
 
                     if (preg_match('/["\']mobile["\'].*?(true|false)/i', $theme_data, $val)) {
-                        $theme['mobile'] = get_boolean($val[1]);
+                        $theme['mobile'] = Mysqli::get_boolean($val[1]);
                     }
 
                     // screenshot
@@ -381,7 +381,7 @@ SELECT
                         global $conf;
                         $theme['screenshot'] =
                           PHPWG_ROOT_PATH . 'admin/themes/'
-                          . userprefs_get_param('admin_theme', 'roma')
+                          . FunctionsUser::userprefs_get_param('admin_theme', 'roma')
                           . '/images/missing_screenshot.png'
                         ;
                     }
@@ -404,7 +404,7 @@ SELECT
     /**
      * Sort fs_themes
      */
-    public function sort_fs_themes($order = 'name')
+    public function sort_fs_themes($order = 'name'): void
     {
         switch ($order) {
             case 'name':
@@ -425,7 +425,7 @@ SELECT
     /**
      * Retrieve PEM server datas to $server_themes
      */
-    public function get_server_themes($new = false)
+    public function get_server_themes($new = false): bool
     {
         global $user, $conf;
 
@@ -502,7 +502,7 @@ SELECT
     /**
      * Sort $server_themes
      */
-    public function sort_server_themes($order = 'date')
+    public function sort_server_themes($order = 'date'): void
     {
         switch ($order) {
             case 'date':
@@ -531,9 +531,9 @@ SELECT
      * @param string $dest - theme id or extension id
      */
     public function extract_theme_files(
-        $action,
+        string $action,
         $revision,
-        $dest,
+        string $dest,
         &$theme_id = null
     ) {
         global $logger;
@@ -566,7 +566,7 @@ SELECT
 
                     if (isset($main_filepath)) {
                         $root = dirname((string) $main_filepath); // main.inc.php path in archive
-                        if ($action == 'upgrade') {
+                        if ($action === 'upgrade') {
                             $theme_id = $dest;
                         } else {
                             $theme_id = ($root === '.' ? 'extension_' . $dest : basename($root));
@@ -653,7 +653,7 @@ SELECT
     /**
      * Sort functions
      */
-    public function extension_revision_compare($a, $b)
+    public function extension_revision_compare(array $a, array $b): int
     {
         if ($a['revision_date'] < $b['revision_date']) {
             return 1;
@@ -662,12 +662,12 @@ SELECT
         return -1;
     }
 
-    public function extension_name_compare($a, $b)
+    public function extension_name_compare(array $a, array $b): int
     {
         return strcmp(strtolower((string) $a['extension_name']), strtolower((string) $b['extension_name']));
     }
 
-    public function extension_author_compare($a, $b)
+    public function extension_author_compare(array $a, array $b): int
     {
         $r = strcasecmp((string) $a['author_name'], (string) $b['author_name']);
         if ($r == 0) {
@@ -677,7 +677,7 @@ SELECT
         return $r;
     }
 
-    public function theme_author_compare($a, $b)
+    public function theme_author_compare(array $a, array $b): int
     {
         $r = strcasecmp((string) $a['author'], (string) $b['author']);
         if ($r == 0) {
@@ -687,7 +687,7 @@ SELECT
         return $r;
     }
 
-    public function extension_downloads_compare($a, $b)
+    public function extension_downloads_compare(array $a, array $b): int
     {
         if ($a['extension_nb_downloads'] < $b['extension_nb_downloads']) {
             return 1;
@@ -696,7 +696,7 @@ SELECT
         return -1;
     }
 
-    public function sort_themes_by_state()
+    public function sort_themes_by_state(): void
     {
         uasort($this->fs_themes, \Piwigo\inc\name_compare(...));
 
@@ -719,11 +719,10 @@ SELECT
     /**
      * Returns the maintain class of a theme
      * or build a new class with the procedural methods
-     * @param string $theme_id
      */
     private function build_maintain_class(
-        $theme_id
-    ) {
+        string $theme_id
+    ): ?object {
         $file_to_include = PHPWG_THEMES_PATH . '/' . $theme_id . '/admin/maintain.inc.php';
         $classname = $theme_id . '_maintain';
 

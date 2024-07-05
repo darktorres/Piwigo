@@ -1,8 +1,7 @@
 <?php
 
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\admin\inc\get_orphans;
-use function Piwigo\inc\dblayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dblayer\pwg_query;
 
 /**********************************
  * REQUIRED PATH TO THE TPL FILE */
@@ -11,7 +10,7 @@ $TOUR_PATH = PHPWG_PLUGINS_PATH . 'TakeATour/tours/2_8_0/tour.tpl';
 
 /*********************************/
 
-$template->assign('TAT_HAS_ORPHANS', count(get_orphans()) > 0);
+$template->assign('TAT_HAS_ORPHANS', get_orphans() !== []);
 
 // category id for notification new features
 if (! isset($_SESSION['TAT_cat_id'])) {
@@ -19,7 +18,7 @@ if (! isset($_SESSION['TAT_cat_id'])) {
 SELECT MAX(id) AS cat_id
   FROM ' . CATEGORIES_TABLE . '
 ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     $_SESSION['TAT_cat_id'] = $row['cat_id'];
 }
 

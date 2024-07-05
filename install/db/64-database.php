@@ -24,7 +24,7 @@ REPLACE INTO ' . PLUGINS_TABLE . '
   (id, state)
   VALUES (\'c13y_upgrade\', \'active\')
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

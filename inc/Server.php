@@ -30,8 +30,10 @@ class Server
     /**
      *  Initializes the request handler.
      */
-    public function setHandler($requestFormat, &$requestHandler)
-    {
+    public function setHandler(
+        $requestFormat,
+        &$requestHandler
+    ): void {
         $this->_requestHandler = &$requestHandler;
         $this->_requestFormat = $requestFormat;
     }
@@ -39,7 +41,7 @@ class Server
     /**
      *  Initializes the request handler.
      */
-    public function setEncoder($responseFormat, &$encoder)
+    public function setEncoder($responseFormat, &$encoder): void
     {
         $this->_responseEncoder = &$encoder;
         $this->_responseFormat = $responseFormat;
@@ -49,7 +51,7 @@ class Server
      * Runs the web service call (handler and response encoder should have been
      * created)
      */
-    public function run()
+    public function run(): void
     {
         if ($this->_responseEncoder === null) {
             set_status_header(400);
@@ -76,7 +78,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             ['methodName']
         );
 
-        trigger_notify('ws_add_methods', [&$this]);
+        FunctionsPlugins::trigger_notify('ws_add_methods', [&$this]);
         uksort($this->_methods, strnatcmp(...));
         $this->_requestHandler->handleRequest($this);
     }
@@ -84,14 +86,15 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     /**
      * Encodes a response and sends it back to the browser.
      */
-    public function sendResponse($response)
-    {
+    public function sendResponse(
+        $response
+    ): void {
         $encodedResponse = $this->_responseEncoder->encodeResponse($response);
         $contentType = $this->_responseEncoder->getContentType();
 
         @header('Content-Type: ' . $contentType . '; charset=utf-8');
         print_r($encodedResponse);
-        trigger_notify('sendResponse', $encodedResponse);
+        FunctionsPlugins::trigger_notify('sendResponse', $encodedResponse);
     }
 
     /**
@@ -121,7 +124,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         $include_file = '',
         $options = [
         ]
-    ) {
+    ): void {
         if (! is_array($params)) {
             $params = [];
         }
@@ -162,7 +165,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         ];
     }
 
-    public function hasMethod($methodName)
+    public function hasMethod($methodName): bool
     {
         return isset($this->_methods[$methodName]);
     }
@@ -188,12 +191,12 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         return $options ?? [];
     }
 
-    public static function isPost()
+    public static function isPost(): bool
     {
         return isset($HTTP_RAW_POST_DATA) || $_POST !== [];
     }
 
-    public static function makeArrayParam(&$param)
+    public static function makeArrayParam(&$param): void
     {
         if ($param == null) {
             $param = [];
@@ -202,7 +205,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         }
     }
 
-    public static function checkType(&$param, $type, $name)
+    public static function checkType(&$param, $type, string $name): ?\Piwigo\inc\Error
     {
         $opts = [];
         $msg = '';
@@ -269,7 +272,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         return null;
     }
 
-    public static function hasFlag($val, $flag)
+    public static function hasFlag($val, $flag): bool
     {
         return ($val & $flag) == $flag;
     }
@@ -282,7 +285,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
      */
     public function invoke(
         $methodName,
-        $params
+        array $params
     ) {
         $method = @$this->_methods[$methodName];
 
@@ -294,7 +297,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             return new Error(405, 'This method requires HTTP POST');
         }
 
-        if (isset($method['options']['admin_only']) && $method['options']['admin_only'] && ! is_admin()) {
+        if (isset($method['options']['admin_only']) && $method['options']['admin_only'] && ! FunctionsUser::is_admin()) {
             return new Error(401, 'Access denied');
         }
 
@@ -335,7 +338,11 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                     self::makeArrayParam($the_param);
                 }
 
-                if ($options['type'] > 0 && ($ret = self::checkType($the_param, $options['type'], $name)) !== null) {
+                if ($options['type'] > 0 && ($ret = self::checkType(
+                    $the_param,
+                    $options['type'],
+                    $name
+                )) instanceof \Piwigo\inc\Error) {
                     return $ret;
                 }
 
@@ -351,7 +358,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             return new Error(WS_ERR_MISSING_PARAM, 'Missing parameters: ' . implode(',', $missing_params));
         }
 
-        $result = trigger_change('ws_invoke_allowed', true, $methodName, $params);
+        $result = FunctionsPlugins::trigger_change('ws_invoke_allowed', true, $methodName, $params);
 
         $is_error = false;
         if ($result instanceof Error) {
@@ -375,10 +382,10 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     public static function ws_getMethodList(
         $params,
         &$service
-    ) {
+    ): array {
         $methods = array_filter(
             $service->_methods,
-            fn ($m) => empty($m['options']['hidden']) || ! $m['options']['hidden']
+            fn ($m): bool => empty($m['options']['hidden']) || ! $m['options']['hidden']
         );
         return [
             'methods' => new NamedArray(array_keys($methods), 'method'),
@@ -389,9 +396,9 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
      * WS reflection method implementation: gets information about a given method
      */
     public static function ws_getMethodDetails(
-        $params,
+        array $params,
         &$service
-    ) {
+    ): \Piwigo\inc\Error|array {
         $methodName = $params['methodName'];
 
         if (! $service->hasMethod($methodName)) {

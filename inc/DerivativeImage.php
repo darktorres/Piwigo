@@ -68,7 +68,7 @@ final class DerivativeImage
         }
 
         return embellish_url(
-            trigger_change(
+            FunctionsPlugins::trigger_change(
                 'get_derivative_url',
                 get_root_url() . $rel_url,
                 $params,
@@ -154,7 +154,7 @@ final class DerivativeImage
         }
 
         return embellish_url(
-            trigger_change(
+            FunctionsPlugins::trigger_change(
                 'get_derivative_url',
                 get_root_url() . $this->rel_url,
                 $this->params,
@@ -281,7 +281,7 @@ final class DerivativeImage
         &$params,
         &$rel_path,
         &$rel_url,
-    ) {
+    ): void {
         if ($src->has_size() && $params->is_identity(
             $src->get_size()
         )) {// the source image is smaller than what we should do - we do not upsample

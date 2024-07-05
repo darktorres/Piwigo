@@ -2,28 +2,24 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use function Piwigo\inc\add_url_params;
-use function Piwigo\inc\check_restrictions;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\create_navigation_bar;
 use function Piwigo\inc\duplicate_index_url;
 use function Piwigo\inc\fill_caddie;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\get_cat_display_name;
-use function Piwigo\inc\get_category_preferred_image_orders;
 use function Piwigo\inc\get_gallery_home_url;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\page_not_found;
-use function Piwigo\inc\pwg_get_session_var;
 use function Piwigo\inc\pwg_log;
-use function Piwigo\inc\pwg_set_session_var;
-use function Piwigo\inc\pwg_unset_session_var;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -38,11 +34,11 @@ require_once(__DIR__ . '/inc/common.inc.php');
 require(__DIR__ . '/inc/section_init.inc.php');
 
 // Check Access and exit when user status is not ok
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
 // access authorization check
 if (isset($page['category'])) {
-    check_restrictions($page['category']['id']);
+    FunctionsCategory::check_restrictions($page['category']['id']);
 }
 
 if ($page['start'] > 0 && $page['start'] >= count($page['items'])) {
@@ -51,14 +47,14 @@ if ($page['start'] > 0 && $page['start'] >= count($page['items'])) {
     ]));
 }
 
-trigger_notify('loc_begin_index');
+FunctionsPlugins::trigger_notify('loc_begin_index');
 
 //---------------------------------------------- change of image display order
 if (isset($_GET['image_order'])) {
     if ((int) $_GET['image_order'] > 0) {
-        pwg_set_session_var('image_order', (int) $_GET['image_order']);
+        FunctionsSession::pwg_set_session_var('image_order', (int) $_GET['image_order']);
     } else {
-        pwg_unset_session_var('image_order');
+        FunctionsSession::pwg_unset_session_var('image_order');
     }
 
     redirect(
@@ -72,7 +68,7 @@ if (isset($_GET['image_order'])) {
 if (isset($_GET['display'])) {
     $page['meta_robots']['noindex'] = 1;
     if (array_key_exists($_GET['display'], ImageStdParams::get_defined_type_map())) {
-        pwg_set_session_var('index_deriv', $_GET['display']);
+        FunctionsSession::pwg_set_session_var('index_deriv', $_GET['display']);
     }
 }
 
@@ -191,14 +187,14 @@ if (empty($page['is_external'])) {
         );
     }
 
-    if (isset($page['category']) && is_admin() && $conf['index_edit_icon']) {
+    if (isset($page['category']) && FunctionsUser::is_admin() && $conf['index_edit_icon']) {
         $template->assign(
             'U_EDIT',
             get_root_url() . 'admin.php?page=album-' . $page['category']['id']
         );
     }
 
-    if (is_admin() && ! empty($page['items']) && $conf['index_caddie_icon']) {
+    if (FunctionsUser::is_admin() && ! empty($page['items']) && $conf['index_caddie_icon']) {
         $template->assign(
             'U_CADDIE',
             add_url_params(duplicate_index_url(), [
@@ -244,8 +240,8 @@ if (empty($page['is_external'])) {
     if ($conf['index_sort_order_input'] && count(
         $page['items']
     ) > 0 && $page['section'] != 'most_visited' && $page['section'] != 'best_rated') {
-        $preferred_image_orders = get_category_preferred_image_orders();
-        $order_idx = pwg_get_session_var('image_order', 0);
+        $preferred_image_orders = FunctionsCategory::get_category_preferred_image_orders();
+        $order_idx = FunctionsSession::pwg_get_session_var('image_order', 0);
 
         // get first order field and direction
         $first_order = substr((string) $conf['order_by'], 9);
@@ -344,7 +340,7 @@ if (empty($page['is_external'])) {
 
 //------------------------------------------------------------ end
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_index');
+FunctionsPlugins::trigger_notify('loc_end_index');
 flush_page_messages();
 $template->parse_index_buttons();
 $template->pparse('index');

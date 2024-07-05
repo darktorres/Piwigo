@@ -2,19 +2,16 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\check_status;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\email_check_format;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\get_ephemeral_key;
-use function Piwigo\inc\get_userid;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\log_user;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\page_forbidden;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\register_user;
 use function Piwigo\inc\set_status_header;
-use function Piwigo\inc\trigger_notify;
 use function Piwigo\inc\verify_ephemeral_key;
 
 // +-----------------------------------------------------------------------+
@@ -31,7 +28,7 @@ require_once(__DIR__ . '/inc/common.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_FREE);
+FunctionsUser::check_status(ACCESS_FREE);
 
 //----------------------------------------------------------- user registration
 
@@ -39,7 +36,7 @@ if (! $conf['allow_user_registration']) {
     page_forbidden('User registration closed');
 }
 
-trigger_notify('loc_begin_register');
+FunctionsPlugins::trigger_notify('loc_begin_register');
 
 if (isset($_POST['submit'])) {
     if (! verify_ephemeral_key(@$_POST['key'])) {
@@ -55,7 +52,7 @@ if (isset($_POST['submit'])) {
         $page['errors'][] = l10n('The passwords do not match');
     }
 
-    register_user(
+    FunctionsUser::register_user(
         $_POST['login'],
         $_POST['password'],
         $_POST['mail_address'],
@@ -75,8 +72,8 @@ if (isset($_POST['submit'])) {
         }
 
         // log user and redirect
-        $user_id = get_userid($_POST['login']);
-        log_user($user_id, false);
+        $user_id = FunctionsUser::get_userid($_POST['login']);
+        FunctionsUser::log_user($user_id, false);
         redirect(make_index_url());
     }
 
@@ -114,7 +111,7 @@ if (! isset($themeconf['hide_menu_on']) || ! in_array('theRegisterPage', $themec
 }
 
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_register');
+FunctionsPlugins::trigger_notify('loc_end_register');
 flush_page_messages();
 $template->parse('register');
 require(__DIR__ . '/inc/page_tail.php');

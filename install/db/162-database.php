@@ -18,6 +18,6 @@ UPDATE ' . PREFIX_TABLE . 'activity
   SET performed_by = object_id
   WHERE action = \'logout\'
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n" . $upgrade_description . "\n";

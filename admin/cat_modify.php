@@ -2,25 +2,20 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_admin_client_cache_keys;
 use function Piwigo\admin\inc\get_category_representant_properties;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_cat_display_name_cache;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -62,7 +57,7 @@ function get_local_dir(string $category_id): string
         $query = 'SELECT uppercats';
         $query .= ' FROM ' . CATEGORIES_TABLE . ' WHERE id = ' . $category_id;
         $query .= ';';
-        $row = pwg_db_fetch_assoc(pwg_query($query));
+        $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
         $uppercats = $row['uppercats'];
     }
 
@@ -72,8 +67,8 @@ function get_local_dir(string $category_id): string
     $query = 'SELECT id,dir';
     $query .= ' FROM ' . CATEGORIES_TABLE . ' WHERE id IN (' . $uppercats . ')';
     $query .= ';';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $database_dirs[$row['id']] = $row['dir'];
     }
 
@@ -96,16 +91,18 @@ SELECT galleries_url
   WHERE s.id = c.site_id
     AND c.id = ' . $category_id . '
 ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     return $row['galleries_url'];
 }
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
-trigger_notify('loc_begin_cat_modify');
+FunctionsPlugins::trigger_notify('loc_begin_cat_modify');
 
 //---------------------------------------------------------------- verification
 if (! isset($_GET['cat_id']) || ! is_numeric(
@@ -133,11 +130,11 @@ $query = 'SELECT DISTINCT category_id
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id = ' . $_GET['cat_id'] . '
   LIMIT 1';
-$result = pwg_query($query);
-$category['has_images'] = pwg_db_num_rows($result) > 0;
+$result = Mysqli::pwg_query($query);
+$category['has_images'] = Mysqli::pwg_db_num_rows($result) > 0;
 
 // number of sub-categories
-$subcat_ids = get_subcat_ids([$category['id']]);
+$subcat_ids = FunctionsCategory::get_subcat_ids([$category['id']]);
 
 $category['nb_subcats'] = count($subcat_ids) - 1;
 
@@ -192,7 +189,7 @@ $template->assign(
         'CAT_ID' => $category['id'],
         'CAT_NAME' => @htmlspecialchars((string) $category['name']),
         'CAT_COMMENT' => @htmlspecialchars((string) $category['comment']),
-        'IS_VISIBLE' => boolean_to_string($category['visible']),
+        'IS_VISIBLE' => Mysqli::boolean_to_string($category['visible']),
 
         'U_DELETE' => $base_url . 'albums',
 
@@ -209,7 +206,7 @@ $template->assign(
 );
 
 if ($conf['activate_comments']) {
-    $template->assign('CAT_COMMENTABLE', boolean_to_string($category['commentable']));
+    $template->assign('CAT_COMMENTABLE', Mysqli::boolean_to_string($category['commentable']));
 }
 
 // manage album elements link
@@ -230,7 +227,7 @@ SELECT
     JOIN ' . IMAGE_CATEGORY_TABLE . ' ON image_id = id
   WHERE category_id = ' . $category['id'] . '
 ;';
-    [$image_count, $min_date, $max_date] = pwg_db_fetch_row(pwg_query($query));
+    [$image_count, $min_date, $max_date] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     if ($min_date == $max_date) {
         $info_title = l10n(
@@ -267,7 +264,7 @@ SELECT DISTINCT
   WHERE 
     category_id IN (' . implode(',', $subcat_ids) . ')
   ;';
-$image_ids_recursive = query2array($query, null, 'image_id');
+$image_ids_recursive = Mysqli::query2array($query, null, 'image_id');
 
 $category['nb_images_recursive'] = count($image_ids_recursive);
 
@@ -279,7 +276,7 @@ SELECT occured_on
     AND object = "album"
     AND action = "add"
 ';
-$result = query2array($query);
+$result = Mysqli::query2array($query);
 
 if ($result !== []) {
     $template->assign(
@@ -303,7 +300,7 @@ SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
   WHERE id_uppercat = ' . $category['id'] . '
 ';
-$result = query2array($query);
+$result = Mysqli::query2array($query);
 
 $template->assign(
     [
@@ -392,7 +389,7 @@ if ($category['is_virtual']) {
 
 $template->assign('PWG_TOKEN', get_pwg_token());
 
-trigger_notify('loc_end_cat_modify');
+FunctionsPlugins::trigger_notify('loc_end_cat_modify');
 
 //----------------------------------------------------------- sending html code
 $template->assign_var_from_handle(

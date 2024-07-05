@@ -4,7 +4,11 @@ namespace Piwigo\admin;
 
 use Piwigo\admin\inc\CheckIntegrity;
 use Piwigo\admin\inc\Image;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\FileCombiner;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use function Piwigo\admin\inc\categories_integrity;
 use function Piwigo\admin\inc\clear_derivative_cache;
@@ -18,20 +22,12 @@ use function Piwigo\admin\inc\update_global_rank;
 use function Piwigo\admin\inc\update_path;
 use function Piwigo\admin\inc\update_uppercats;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\do_maintenance_all_tables;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_get_db_version;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\pwg_activity;
-use function Piwigo\inc\pwg_session_gc;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_change;
 use function Piwigo\inc\update_rating_score;
 
 // +-----------------------------------------------------------------------+
@@ -122,7 +118,7 @@ switch ($action) {
 DELETE
   FROM ' . HISTORY_TABLE . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         $page['infos'][] = sprintf('%s : %s', l10n('Purge history detail'), l10n('action successfully performed.'));
         break;
 
@@ -132,13 +128,13 @@ DELETE
 DELETE
   FROM ' . HISTORY_SUMMARY_TABLE . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         $page['infos'][] = sprintf('%s : %s', l10n('Purge history summary'), l10n('action successfully performed.'));
         break;
 
     case 'sessions':
 
-        pwg_session_gc();
+        FunctionsSession::pwg_session_gc();
 
         // delete all sessions associated to invalid user ids (it should never happen)
         $query = '
@@ -147,14 +143,14 @@ SELECT
     data
   FROM ' . SESSIONS_TABLE . '
 ;';
-        $sessions = query2array($query);
+        $sessions = Mysqli::query2array($query);
 
         $query = '
 SELECT
     ' . $conf['user_fields']['id'] . ' AS id
   FROM ' . USERS_TABLE . '
 ;';
-        $all_user_ids = query2array($query, 'id', null);
+        $all_user_ids = Mysqli::query2array($query, 'id', null);
 
         $sessions_to_delete = [];
 
@@ -174,7 +170,7 @@ DELETE
   FROM ' . SESSIONS_TABLE . '
   WHERE id IN (\'' . implode("','", $sessions_to_delete) . '\')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
 
         $page['infos'][] = sprintf('%s : %s', l10n('Purge sessions'), l10n('action successfully performed.'));
@@ -187,7 +183,7 @@ DELETE
   FROM ' . USER_FEED_TABLE . '
   WHERE last_check IS NULL
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         $page['infos'][] = sprintf(
             '%s : %s',
             l10n('Purge never used notification feeds'),
@@ -197,7 +193,7 @@ DELETE
 
     case 'database':
 
-        do_maintenance_all_tables();
+        Mysqli::do_maintenance_all_tables();
         break;
 
     case 'c13y':
@@ -217,7 +213,7 @@ DELETE
 DELETE
   FROM ' . SEARCH_TABLE . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         sprintf('%s : %s', l10n('Reinitialize check integrity'), l10n('action successfully performed.'));
         break;
 
@@ -316,7 +312,7 @@ $template->set_filenames([
 $pwg_token = get_pwg_token();
 $url_format = get_root_url() . 'admin.php?page=maintenance&amp;action=%s&amp;pwg_token=' . get_pwg_token();
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     $page['warnings'][] = str_replace(
         '%s',
         l10n('user_status_webmaster'),
@@ -332,8 +328,8 @@ foreach (ImageStdParams::get_defined_type_map() as $params) {
 $purge_urls[l10n(IMG_CUSTOM)] = IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
-$db_version = pwg_get_db_version();
-[$db_current_date] = pwg_db_fetch_row(pwg_query('SELECT now();'));
+$db_version = Mysqli::pwg_get_db_version();
+[$db_current_date] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT now();'));
 
 $template->assign(
     [
@@ -420,7 +416,7 @@ if ($conf['gallery_locked']) {
     );
 }
 
-$template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
+$template->assign('isWebmaster', (FunctionsUser::is_webmaster()) ? 1 : 0);
 
 // +-----------------------------------------------------------------------+
 // | Define advanced features                                              |
@@ -429,7 +425,7 @@ $template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
 $advanced_features = [];
 
 //$advanced_features is array of array composed of CAPTION & URL
-$advanced_features = trigger_change(
+$advanced_features = FunctionsPlugins::trigger_change(
     'get_admin_advanced_features_links',
     $advanced_features
 );

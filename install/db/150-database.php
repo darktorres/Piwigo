@@ -14,7 +14,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 $upgrade_description = 'add history_id_from+history_id_to in history_summary table';
 
 // we use PREFIX_TABLE, in case Piwigo uses an external user table
-pwg_query('
+Mysqli::pwg_query('
 ALTER TABLE `' . PREFIX_TABLE . 'history_summary`
   ADD COLUMN `history_id_from` int(10) unsigned default NULL,
   ADD COLUMN `history_id_to` int(10) unsigned default NULL
@@ -29,7 +29,7 @@ SELECT
   LIMIT 1
 ;';
 // note : much faster than searching MAX(ID), ie on my big sample 14 seconds Vs 2 seconds
-$history_lines = query2array(
+$history_lines = Mysqli::query2array(
     $query
 );
 if (count($history_lines) > 0) {
@@ -38,7 +38,7 @@ if (count($history_lines) > 0) {
     [$year, $month, $day] = explode('-', (string) $last_summarized['date']);
     [$hour] = explode(':', (string) $last_summarized['time']);
 
-    single_update(
+    Mysqli::single_update(
         PREFIX_TABLE . 'history_summary',
         [
             'history_id_to' => $last_summarized['id'],

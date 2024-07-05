@@ -3,8 +3,8 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_upload_form_config;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\get_root_url;
 
 // +-----------------------------------------------------------------------+
@@ -30,7 +30,9 @@ define(
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // |                          Load configuration                           |

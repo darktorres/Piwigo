@@ -4,6 +4,7 @@ namespace Piwigo;
 
 use Piwigo\admin\inc\Languages;
 use Piwigo\admin\inc\Updates;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\Template;
 use function Piwigo\admin\inc\check_upgrade;
 use function Piwigo\admin\inc\check_upgrade_access_rights;
@@ -13,10 +14,6 @@ use function Piwigo\admin\inc\deactivate_templates;
 use function Piwigo\admin\inc\invalidate_user_cache;
 use function Piwigo\admin\inc\upgrade_db_connect;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_branch_from_version;
 use function Piwigo\inc\get_elapsed_time;
 use function Piwigo\inc\get_moment;
@@ -77,9 +74,9 @@ function get_tables(): array
     $query = '
 SHOW TABLES
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_row($result)) {
+    while ($row = Mysqli::pwg_db_fetch_row($result)) {
         if (preg_match('/^' . PREFIX_TABLE . '/', (string) $row[0])) {
             $tables[] = $row[0];
         }
@@ -101,11 +98,11 @@ function get_columns_of($tables): array
         $query = '
 DESC ' . $table . '
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
         $columns_of[$table] = [];
 
-        while ($row = pwg_db_fetch_row($result)) {
+        while ($row = Mysqli::pwg_db_fetch_row($result)) {
             $columns_of[$table][] = $row[0];
         }
     }
@@ -211,11 +208,11 @@ load_language('upgrade.lang', '', [
 // |                          database connection                          |
 // +-----------------------------------------------------------------------+
 require_once(__DIR__ . '/admin/inc/functions_upgrade.php');
-require(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+// require(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 upgrade_db_connect();
 
-[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT NOW();'));
 define('CURRENT_DATE', $dbnow);
 
 // +-----------------------------------------------------------------------+
@@ -246,8 +243,8 @@ $template->assign(
 $has_remote_site = false;
 
 $query = 'SELECT galleries_url FROM ' . SITES_TABLE . ';';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if (url_is_remote($row['galleries_url'])) {
         $has_remote_site = true;
     }
@@ -289,7 +286,10 @@ if (! in_array('param', $columns_of[PREFIX_TABLE . 'config'])) {
 } elseif (! in_array(PREFIX_TABLE . 'tags', $tables)) {
     $current_release = '1.5.0';
 } elseif (! in_array(PREFIX_TABLE . 'plugins', $tables)) {
-    $current_release = in_array('auto_login_key', $columns_of[PREFIX_TABLE . 'user_infos']) ? '1.6.2' : '1.6.0';
+    $current_release = in_array(
+        'FunctionsUser::auto_login_key',
+        $columns_of[PREFIX_TABLE . 'user_infos']
+    ) ? '1.6.2' : '1.6.0';
 } elseif (! in_array('md5sum', $columns_of[PREFIX_TABLE . 'images'])) {
     $current_release = '1.7.0';
 } elseif (! in_array(PREFIX_TABLE . 'themes', $tables)) {
@@ -318,7 +318,7 @@ if (! in_array('param', $columns_of[PREFIX_TABLE . 'config'])) {
 SELECT id
   FROM ' . PREFIX_TABLE . 'upgrade
 ;';
-    $applied_upgrades = query2array($query, null, 'id');
+    $applied_upgrades = Mysqli::query2array($query, null, 'id');
 
     if (! in_array(159, $applied_upgrades)) {
         $current_release = '2.10.0';
@@ -425,7 +425,7 @@ REPLACE INTO ' . PLUGINS_TABLE . '
   (id, state)
   VALUES (\'TakeATour\', \'active\')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         $template->assign(
             [
@@ -438,7 +438,9 @@ REPLACE INTO ' . PLUGINS_TABLE . '
         if (! empty($_SESSION['pwg_uid'])) {
             $version_ = str_replace('.', '_', get_branch_from_version(PHPWG_VERSION) . '.0');
 
-            if (file_exists(PHPWG_PLUGINS_PATH . 'TakeATour/tours/' . $version_ . '/config.inc.php')) {
+            if (file_exists(
+                PHPWG_PLUGINS_PATH . 'TakeATour/tours/' . $version_ . '/config.inc.php'
+            )) {
                 // we need the secret key for get_pwg_token()
                 load_conf_from_db();
 

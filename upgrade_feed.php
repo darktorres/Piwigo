@@ -2,12 +2,9 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\admin\inc\get_available_upgrade_ids;
 use function Piwigo\admin\inc\prepare_conf_upgrade;
-use function Piwigo\inc\dbLayer\my_error;
-use function Piwigo\inc\dbLayer\pwg_db_connect;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -30,7 +27,7 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
 }
 
 require(__DIR__ . '/local/config/database.inc.php');
-require(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+// require(__DIR__ . '/inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 require_once(__DIR__ . '/inc/functions.inc.php');
 require_once(__DIR__ . '/admin/inc/functions.php');
@@ -53,14 +50,14 @@ define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 // |                         Database connection                           |
 // +-----------------------------------------------------------------------+
 try {
-    pwg_db_connect(
+    Mysqli::pwg_db_connect(
         $conf['db_host'],
         $conf['db_user'],
         $conf['db_password'],
         $conf['db_base']
     );
 } catch (\Exception $exception) {
-    my_error(l10n($exception->getMessage()), true);
+    Mysqli::my_error(l10n($exception->getMessage()), true);
 }
 
 // +-----------------------------------------------------------------------+
@@ -72,7 +69,7 @@ $query = '
 SELECT id
   FROM ' . PREFIX_TABLE . 'upgrade
 ;';
-$applied = query2array($query, null, 'id');
+$applied = Mysqli::query2array($query, null, 'id');
 
 // retrieve existing upgrades
 $existing = get_available_upgrade_ids();
@@ -101,7 +98,7 @@ INSERT INTO ' . PREFIX_TABLE . 'upgrade
   VALUES
   (\'' . $upgrade_id . "', NOW(), '" . $upgrade_description . '\')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 echo '</pre>';

@@ -2,12 +2,12 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\conf_delete_param;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
 use function Piwigo\inc\get_absolute_root_url;
 use function Piwigo\inc\get_branch_from_version;
-use function Piwigo\inc\get_default_language;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\mkgetdir;
@@ -27,6 +27,9 @@ use function Piwigo\inc\switch_lang_to;
 
 class Updates
 {
+    /**
+     * @var mixed[]
+     */
     public $types = ['plugins', 'themes', 'languages'];
 
     public $plugins;
@@ -37,8 +40,14 @@ class Updates
 
     public $missing = [];
 
+    /**
+     * @var 'AdminTools'[]|'language_switch'[]|'LocalFilesEditor'[]|'TakeATour'[]
+     */
     public $default_plugins = [];
 
+    /**
+     * @var 'elegant'[]|'modus'[]|'smartpocket'[]
+     */
     public $default_themes = [];
 
     public $default_languages = [];
@@ -63,7 +72,7 @@ class Updates
         }
     }
 
-    public static function check_piwigo_upgrade()
+    public static function check_piwigo_upgrade(): void
     {
         $_SESSION['need_update' . PHPWG_VERSION] = null;
 
@@ -88,7 +97,7 @@ class Updates
      *   'major_version' => new major version available,
      * )
      */
-    public function get_piwigo_new_versions()
+    public function get_piwigo_new_versions(): array
     {
         $new_versions = [
             'piwigo.org-checked' => false,
@@ -113,7 +122,7 @@ class Updates
                 if (version_compare(PHPWG_VERSION, $last_version_number, '<')) {
                     $last_branch = get_branch_from_version($last_version_number);
 
-                    if ($last_branch == $actual_branch) {
+                    if ($last_branch === $actual_branch) {
                         $new_versions['minor'] = $last_version_number;
                         $new_versions['minor_php'] = $last_version_php;
                     } else {
@@ -125,7 +134,7 @@ class Updates
                             [$version_number, $version_php] = explode('/', trim($version));
                             $branch = get_branch_from_version($version_number);
 
-                            if ($branch == $actual_branch) {
+                            if ($branch === $actual_branch) {
                                 if (version_compare(PHPWG_VERSION, $version_number, '<')) {
                                     $new_versions['minor'] = $version_number;
                                     $new_versions['minor_php'] = $version_php;
@@ -148,7 +157,7 @@ class Updates
      *
      * @since 2.9
      */
-    public function notify_piwigo_new_versions()
+    public function notify_piwigo_new_versions(): void
     {
         global $conf;
 
@@ -197,7 +206,7 @@ class Updates
             // send email
             require_once(__DIR__ . '/../../inc/functions_mail.inc.php');
 
-            switch_lang_to(get_default_language());
+            switch_lang_to(FunctionsUser::get_default_language());
 
             $content = l10n('Hello,');
             $content .= "\n\n" . l10n(
@@ -234,7 +243,7 @@ class Updates
         }
     }
 
-    public function get_server_extensions($version = PHPWG_VERSION)
+    public function get_server_extensions($version = PHPWG_VERSION): bool
     {
         global $user;
 
@@ -326,7 +335,7 @@ class Updates
     }
 
     // Check all extensions upgrades
-    public function check_extensions()
+    public function check_extensions(): ?bool
     {
         global $conf;
 
@@ -362,12 +371,12 @@ class Updates
             $conf['updates_ignored'][$type] = $ignore_list;
         }
 
-        conf_update_param('updates_ignored', pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
+        conf_update_param('updates_ignored', Mysqli::pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
         return null;
     }
 
     // Check if extension have been upgraded since last check
-    public function check_updated_extensions()
+    public function check_updated_extensions(): void
     {
         foreach ($this->types as $type) {
             if (! empty($_SESSION['extensions_need_update'][$type])) {
@@ -387,7 +396,7 @@ class Updates
         }
     }
 
-    public function check_missing_extensions($missing)
+    public function check_missing_extensions($missing): void
     {
         foreach ($missing as $id => $type) {
             $fs = 'fs_' . $type;
@@ -407,7 +416,7 @@ class Updates
         }
     }
 
-    public function get_merged_extensions($version)
+    public function get_merged_extensions($version): void
     {
         if (fetchRemote($this->merged_extension_url, $result)) {
             $rows = explode("\n", (string) $result);
@@ -420,7 +429,7 @@ class Updates
         }
     }
 
-    public static function process_obsolete_list($file)
+    public static function process_obsolete_list(string $file): void
     {
         if (file_exists(PHPWG_ROOT_PATH . $file) && ($old_files = file(
             PHPWG_ROOT_PATH . $file,
@@ -438,7 +447,7 @@ class Updates
         }
     }
 
-    public static function upgrade_to($upgrade_to, &$step, $check_current_version = true)
+    public static function upgrade_to(string $upgrade_to, &$step, $check_current_version = true): void
     {
         global $page, $conf, $template;
 

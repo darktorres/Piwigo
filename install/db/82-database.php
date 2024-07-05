@@ -19,7 +19,7 @@ ALTER TABLE ' . PREFIX_TABLE . 'comments
   ADD COLUMN author_id smallint(5) DEFAULT NULL
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

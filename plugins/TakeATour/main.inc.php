@@ -1,16 +1,13 @@
 <?php
 
-use function Piwigo\inc\add_event_handler;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_pwg_token;
 use function Piwigo\inc\get_absolute_root_url;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\load_language;
-use function Piwigo\inc\pwg_get_session_var;
-use function Piwigo\inc\pwg_set_session_var;
-use function Piwigo\inc\pwg_unset_session_var;
-use function Piwigo\inc\trigger_notify;
 
 /*
 Plugin Name: Take A Tour of Your Piwigo
@@ -32,11 +29,11 @@ if (isset($_REQUEST['submited_tour_path']) && defined(
     'IN_ADMIN'
 ) && IN_ADMIN) {
     check_pwg_token();
-    pwg_set_session_var('tour_to_launch', $_REQUEST['submited_tour_path']);
+    FunctionsSession::pwg_set_session_var('tour_to_launch', $_REQUEST['submited_tour_path']);
     global $TAT_restart;
     $TAT_restart = true;
 } elseif (isset($_GET['tour_ended']) && defined('IN_ADMIN') && IN_ADMIN) {
-    pwg_unset_session_var('tour_to_launch');
+    FunctionsSession::pwg_unset_session_var('tour_to_launch');
 }
 
 /** Setup the tour **/
@@ -45,22 +42,22 @@ if (isset($_REQUEST['submited_tour_path']) && defined(
 $version_=str_replace('.','_',PHPWG_VERSION);*/
 $version_ = '2_8_0';
 /***/
-if (pwg_get_session_var(
+if (FunctionsSession::pwg_get_session_var(
     'tour_to_launch'
 ) != 'tours/' . $version_ && isset($_GET['page']) && $_GET['page'] == 'plugin-TakeATour') {
-    pwg_unset_session_var('tour_to_launch');
-} elseif (pwg_get_session_var('tour_to_launch')) {
-    add_event_handler('init', 'TAT_tour_setup');
+    FunctionsSession::pwg_unset_session_var('tour_to_launch');
+} elseif (FunctionsSession::pwg_get_session_var('tour_to_launch')) {
+    FunctionsPlugins::add_event_handler('init', 'TAT_tour_setup');
 }
 
-function TAT_tour_setup()
+function TAT_tour_setup(): void
 {
-    if (! is_admin()) {
+    if (! FunctionsUser::is_admin()) {
         return;
     }
 
     global $template, $TAT_restart, $conf;
-    $tour_to_launch = pwg_get_session_var('tour_to_launch');
+    $tour_to_launch = FunctionsSession::pwg_get_session_var('tour_to_launch');
     load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/', [
         'force_fallback' => 'en_UK',
     ]);
@@ -109,21 +106,21 @@ function TAT_tour_setup()
     require($tour_to_launch . '/config.inc.php');
     $template->set_filename('TAT_tour_tpl', $TOUR_PATH);
 
-    trigger_notify('TAT_before_parse_tour');
+    FunctionsPlugins::trigger_notify('TAT_before_parse_tour');
 
     $template->parse('TAT_tour_tpl');
 }
 
 /** Add link in Help pages **/
-add_event_handler('loc_end_help', 'TAT_help');
-function TAT_help()
+FunctionsPlugins::add_event_handler('loc_end_help', 'TAT_help');
+function TAT_help(): void
 {
     global $template;
     load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/');
     $template->set_prefilter('help', 'TAT_help_prefilter');
 }
 
-function TAT_help_prefilter($content)
+function TAT_help_prefilter($content): string|array
 {
 
     $search = '<div id="helpContent">';
@@ -137,8 +134,8 @@ function TAT_help_prefilter($content)
 }
 
 /** Add link in no_photo_yet **/
-add_event_handler('loc_end_no_photo_yet', 'TAT_no_photo_yet');
-function TAT_no_photo_yet()
+FunctionsPlugins::add_event_handler('loc_end_no_photo_yet', 'TAT_no_photo_yet');
+function TAT_no_photo_yet(): void
 {
     global $template;
     load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/');
@@ -151,7 +148,7 @@ function TAT_no_photo_yet()
     );
 }
 
-function TAT_no_photo_yet_prefilter($content)
+function TAT_no_photo_yet_prefilter($content): string|array
 {
     $search = '<div class="bigButton"><a href="{$next_step_url}">{\'I want to add photos\'|@translate}</a></div>';
     $replacement = '<div class="bigButton"><a href="{$F_ACTION}?submited_tour_path=tours/first_contact&pwg_token={$pwg_token}">{\'Start the Tour\'|@translate}</a></div>';

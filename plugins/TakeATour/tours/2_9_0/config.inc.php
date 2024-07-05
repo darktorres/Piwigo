@@ -1,9 +1,7 @@
 <?php
 
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\admin\inc\get_orphans;
-use function Piwigo\inc\dblayer\pwg_db_fetch_row;
-use function Piwigo\inc\dblayer\pwg_query;
-use function Piwigo\inc\dblayer\query2array;
 
 /**********************************
  * REQUIRED PATH TO THE TPL FILE */
@@ -12,7 +10,7 @@ $TOUR_PATH = PHPWG_PLUGINS_PATH . 'TakeATour/tours/2_9_0/tour.tpl';
 
 /*********************************/
 
-$template->assign('TAT_HAS_ORPHANS', count(get_orphans()) > 0);
+$template->assign('TAT_HAS_ORPHANS', get_orphans() !== []);
 
 // category id for example of delete options. To illustrate the new
 // features, we need an album with photos.
@@ -23,7 +21,7 @@ SELECT
   FROM ' . IMAGE_CATEGORY_TABLE . '
   LIMIT 1
 ;';
-    $rows = query2array($query);
+    $rows = Mysqli::query2array($query);
     $_SESSION['TAT_tour29_delete_cat_id'] = count($rows) == 0 ? -1 : $rows[0]['category_id'];
 }
 
@@ -39,7 +37,7 @@ SELECT
   ORDER BY id DESC
   LIMIT 1
 ;';
-    $images = query2array($query);
+    $images = Mysqli::query2array($query);
     $_SESSION['TAT_tour29_image_id'] = count($images) == 0 ? -1 : $images[0]['id'];
 }
 
@@ -54,7 +52,7 @@ SELECT
     COUNT(*)
   FROM ' . TAGS_TABLE . '
 ;';
-[$counter] = pwg_db_fetch_row(pwg_query($query));
+[$counter] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 if ($counter > 0) {
     $template->assign('TAT_tour29_has_tags', true);
 }

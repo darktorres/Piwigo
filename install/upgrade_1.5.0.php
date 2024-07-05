@@ -31,7 +31,7 @@ CREATE TABLE ' . PREFIX_TABLE . 'tags (
   PRIMARY KEY (id)
 )
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     $query = '
 CREATE TABLE ' . PREFIX_TABLE . 'image_tag (
@@ -40,7 +40,7 @@ CREATE TABLE ' . PREFIX_TABLE . 'image_tag (
   PRIMARY KEY (image_id,tag_id)
 )
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     //
     // Move keywords to tags
@@ -58,8 +58,8 @@ SELECT id, keywords
   FROM ' . PREFIX_TABLE . 'images
   WHERE keywords IS NOT NULL
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         foreach (preg_split('/[,]+/', (string) $row['keywords']) as $keyword) {
             if (! isset($tag_id[$keyword])) {
                 $tag_id[$keyword] = $current_id++;
@@ -83,7 +83,7 @@ SELECT id, keywords
     }
 
     if ($datas !== []) {
-        mass_inserts(
+        Mysqli::mass_inserts(
             PREFIX_TABLE . 'tags',
             array_keys($datas[0]),
             $datas
@@ -101,7 +101,7 @@ SELECT id, keywords
     }
 
     if ($datas !== []) {
-        mass_inserts(
+        Mysqli::mass_inserts(
             PREFIX_TABLE . 'image_tag',
             array_keys($datas[0]),
             $datas
@@ -114,7 +114,7 @@ SELECT id, keywords
     $query = '
 ALTER TABLE ' . PREFIX_TABLE . 'images DROP COLUMN keywords
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     //
     // Add useful indexes
@@ -123,13 +123,13 @@ ALTER TABLE ' . PREFIX_TABLE . 'images DROP COLUMN keywords
 ALTER TABLE ' . PREFIX_TABLE . 'tags
   ADD INDEX tags_i1(url_name)
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     $query = '
 ALTER TABLE ' . PREFIX_TABLE . 'image_tag
   ADD INDEX image_tag_i1(tag_id)
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     // print_time('tags have replaced keywords');
 }
@@ -270,7 +270,7 @@ UPDATE ' . PREFIX_TABLE . "config
 ];
 
 foreach ($queries as $query) {
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 //
@@ -313,8 +313,8 @@ $conf = $conf_save;
 
 // Do I already have them in DB ?
 $query = 'SELECT param FROM ' . PREFIX_TABLE . 'config';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     unset($params[$row['param']]);
 }
 
@@ -326,12 +326,12 @@ INSERT INTO ' . PREFIX_TABLE . 'config
   VALUES
  (' . "'{$param_key}','{$param_values[0]}','{$param_values[1]}')
 ;";
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 $query = '
 ALTER TABLE ' . PREFIX_TABLE . 'config MODIFY COLUMN `value` TEXT;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 //
 // replace gallery_description by page_banner
@@ -341,14 +341,14 @@ SELECT value
   FROM ' . PREFIX_TABLE . 'config
   WHERE param=\'gallery_title\'
 ;';
-[$t] = query2array($query, null, 'value');
+[$t] = Mysqli::query2array($query, null, 'value');
 
 $query = '
 SELECT value
   FROM ' . PREFIX_TABLE . 'config
   WHERE param=\'gallery_description\'
 ;';
-[$d] = query2array($query, null, 'value');
+[$d] = Mysqli::query2array($query, null, 'value');
 
 $page_banner = '<h1>' . $t . '</h1><p>' . $d . '</p>';
 $page_banner = addslashes($page_banner);
@@ -362,13 +362,13 @@ INSERT INTO ' . PREFIX_TABLE . 'config
     \'html displayed on the top each page of your gallery\'
   )
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 DELETE FROM ' . PREFIX_TABLE . 'config
   WHERE param=\'gallery_description\'
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 //
 // configuration for notification by mail
@@ -393,7 +393,7 @@ INSERT INTO ' . CONFIG_TABLE . "
     'Complementary mail content for notification by mail'
   )
 ;";
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 // depending on the way the 1.5.0 was installed (from scratch or by upgrade)
 // the database structure has small differences that should be corrected.
@@ -402,7 +402,7 @@ $query = '
 ALTER TABLE ' . PREFIX_TABLE . 'users
   CHANGE COLUMN password password varchar(32) default NULL
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $to_keep = ['id', 'username', 'password', 'mail_address'];
 
@@ -410,15 +410,15 @@ $query = '
 DESC ' . PREFIX_TABLE . 'users
 ;';
 
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if (! in_array($row['Field'], $to_keep)) {
         $query = '
 ALTER TABLE ' . PREFIX_TABLE . 'users
   DROP COLUMN ' . $row['Field'] . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 }
 

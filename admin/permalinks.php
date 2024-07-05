@@ -2,16 +2,13 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
 use function Piwigo\admin\inc\delete_cat_permalink;
 use function Piwigo\admin\inc\set_cat_permalink;
 use function Piwigo\inc\add_url_params;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\dbLayer\pwg_db_changes;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\display_select_cat_wrapper;
 use function Piwigo\inc\fatal_error;
 use function Piwigo\inc\get_cat_display_name_cache;
 use function Piwigo\inc\get_pwg_token;
@@ -109,10 +106,10 @@ if (isset($_POST['set_permalink']) && $_POST['cat_id'] > 0) {
     check_pwg_token();
     $query = '
 DELETE FROM ' . OLD_PERMALINKS_TABLE . '
-  WHERE permalink=\'' . pwg_db_real_escape_string($_GET['delete_permanent']) . '\'
+  WHERE permalink=\'' . Mysqli::pwg_db_real_escape_string($_GET['delete_permanent']) . '\'
   LIMIT 1';
-    $result = pwg_query($query);
-    if (pwg_db_changes() == 0) {
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_changes() == 0) {
         $page['errors'][] = l10n('Cannot delete the old permalink !');
     }
 }
@@ -133,7 +130,7 @@ SELECT
   uppercats, global_rank
 FROM ' . CATEGORIES_TABLE;
 
-display_select_cat_wrapper($query, $selected_cat, 'categories', false);
+FunctionsCategory::display_select_cat_wrapper($query, $selected_cat, 'categories', false);
 
 $pwg_token = get_pwg_token();
 
@@ -156,14 +153,14 @@ if ($sort_by[0] == 'id' || $sort_by[0] == 'permalink') {
 }
 
 $categories = [];
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $row['name'] = get_cat_display_name_cache($row['uppercats']);
     $categories[] = $row;
 }
 
 if ($sort_by[0] == 'name') {
-    usort($categories, \Piwigo\inc\global_rank_compare(...));
+    usort($categories, FunctionsCategory::global_rank_compare(...));
 }
 
 $template->assign('permalinks', $categories);
@@ -185,9 +182,9 @@ if ($sort_by !== []) {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
 
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 $deleted_permalinks = [];
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $row['name'] = get_cat_display_name_cache($row['cat_id']);
     $row['U_DELETE'] =
         add_url_params(

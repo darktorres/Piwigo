@@ -3,10 +3,9 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 
@@ -25,7 +24,9 @@ if (! defined('PHPWG_ROOT_PATH')) {
 // | Basic checks                                                          |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
 
@@ -36,7 +37,7 @@ SELECT *
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $_GET['cat_id'] . '
 ;';
-$category = pwg_db_fetch_assoc(pwg_query($query));
+$category = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
 if (! isset($category['id'])) {
     die('unknown album');

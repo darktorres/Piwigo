@@ -2,19 +2,13 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\Error;
+use Piwigo\inc\FunctionsPlugins;
 use Piwigo\inc\NamedArray;
 use Piwigo\inc\NamedStruct;
 use function Piwigo\admin\inc\create_tag;
 use function Piwigo\admin\inc\delete_tags;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_insert;
-use function Piwigo\inc\dbLayer\single_update;
 use function Piwigo\inc\find_tags;
 use function Piwigo\inc\get_all_tags;
 use function Piwigo\inc\get_available_tags;
@@ -24,7 +18,6 @@ use function Piwigo\inc\get_user_favorites;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\make_picture_url;
 use function Piwigo\inc\pwg_activity;
-use function Piwigo\inc\trigger_change;
 use function Piwigo\inc\ws_std_get_image_xml_attributes;
 use function Piwigo\inc\ws_std_get_tag_xml_attributes;
 use function Piwigo\inc\ws_std_get_urls;
@@ -159,9 +152,9 @@ SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
     AND image_id IN (' . implode(',', $image_ids) . ')
   GROUP BY image_id
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $row['image_id'] = (int) $row['image_id'];
             $image_tag_map[$row['image_id']] = explode(',', (string) $row['tag_ids']);
         }
@@ -177,9 +170,9 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $image_ids) . ')
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $image = [];
             $image['rank'] = $rank_of[$row['id']];
             $image['is_favorite'] = isset($favorite_ids[$row['id']]);
@@ -224,7 +217,7 @@ SELECT *
             $images[] = $image;
         }
 
-        usort($images, \Piwigo\inc\rank_compare(...));
+        usort($images, \Piwigo\inc\FunctionsCategory::rank_compare(...));
         unset($rank_of);
     }
 
@@ -270,7 +263,7 @@ SELECT name, url_name
 FROM ' . TAGS_TABLE . '
 WHERE id = ' . $creation_output['id'] . ';';
 
-    $new_tag = query2array($query);
+    $new_tag = Mysqli::query2array($query);
 
     return [
         'info' => $creation_output['info'],
@@ -293,7 +286,7 @@ SELECT COUNT(*)
   FROM ' . TAGS_TABLE . '
   WHERE id in (' . implode(',', $params['tag_id']) . ')
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count != count($params['tag_id'])) {
         return new Error(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
     }
@@ -330,7 +323,7 @@ SELECT COUNT(*)
   FROM ' . TAGS_TABLE . '
   WHERE id = ' . $tag_id . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
@@ -340,7 +333,7 @@ SELECT name
   FROM ' . TAGS_TABLE . '
   WHERE id != ' . $tag_id . '
 ;';
-    $existing_names = query2array($query, null, 'name');
+    $existing_names = Mysqli::query2array($query, null, 'name');
 
     $update = [];
 
@@ -349,14 +342,14 @@ SELECT name
     } elseif (! empty($tag_name)) {
         $update = [
             'name' => addslashes((string) $tag_name),
-            'url_name' => trigger_change('render_tag_url', $tag_name),
+            'url_name' => FunctionsPlugins::trigger_change('render_tag_url', $tag_name),
         ];
 
     }
 
     pwg_activity('tag', $tag_id, 'edit');
 
-    single_update(
+    Mysqli::single_update(
         TAGS_TABLE,
         $update,
         [
@@ -367,7 +360,7 @@ SELECT name
     return [
         'id' => $tag_id,
         'name' => addslashes((string) $tag_name),
-        'url_name' => trigger_change('render_tag_url', $tag_name),
+        'url_name' => FunctionsPlugins::trigger_change('render_tag_url', $tag_name),
     ];
 }
 
@@ -389,7 +382,7 @@ SELECT COUNT(*)
   FROM ' . TAGS_TABLE . '
   WHERE id = ' . $tag_id . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
@@ -399,19 +392,19 @@ SELECT COUNT(*)
   FROM ' . TAGS_TABLE . '
   WHERE name = "' . $copy_name . '"
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count != 0) {
         return new Error(WS_ERR_INVALID_PARAM, 'This name is already taken.');
     }
 
-    single_insert(
+    Mysqli::single_insert(
         TAGS_TABLE,
         [
             'name' => $copy_name,
-            'url_name' => trigger_change('render_tag_url', $copy_name),
+            'url_name' => FunctionsPlugins::trigger_change('render_tag_url', $copy_name),
         ]
     );
-    $destination_tag_id = pwg_db_insert_id();
+    $destination_tag_id = Mysqli::pwg_db_insert_id();
 
     pwg_activity('tag', $destination_tag_id, 'add', [
         'action' => 'duplicate',
@@ -423,7 +416,7 @@ SELECT image_id
   FROM ' . IMAGE_TAG_TABLE . '
   WHERE tag_id = ' . $tag_id . '
 ;';
-    $destination_tag_image_ids = query2array($query, null, 'image_id');
+    $destination_tag_image_ids = Mysqli::query2array($query, null, 'image_id');
 
     $inserts = [];
 
@@ -438,7 +431,7 @@ SELECT image_id
     }
 
     if ($inserts !== []) {
-        mass_inserts(
+        Mysqli::mass_inserts(
             IMAGE_TAG_TABLE,
             array_keys($inserts[0]),
             $inserts
@@ -448,7 +441,7 @@ SELECT image_id
     return [
         'id' => $destination_tag_id,
         'name' => $copy_name,
-        'url_name' => trigger_change('render_tag_url', $copy_name),
+        'url_name' => FunctionsPlugins::trigger_change('render_tag_url', $copy_name),
         'count' => count($inserts),
     ];
 }
@@ -471,7 +464,7 @@ SELECT COUNT(*)
   FROM ' . TAGS_TABLE . '
   WHERE id in (' . implode(',', $all_tags) . ')
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count != count($all_tags)) {
         return new Error(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
     }
@@ -486,7 +479,7 @@ SELECT DISTINCT(image_id)
   WHERE 
     tag_id IN (' . implode(',', $merge_tag) . ')
 ;';
-    $image_in_merge_tags = query2array($query, null, 'image_id');
+    $image_in_merge_tags = Mysqli::query2array($query, null, 'image_id');
 
     $query = '
 SELECT image_id 
@@ -494,7 +487,7 @@ SELECT image_id
   WHERE tag_id = ' . $params['destination_tag_id'] . '
 ;';
 
-    $image_in_dest = query2array($query, null, 'image_id');
+    $image_in_dest = Mysqli::query2array($query, null, 'image_id');
 
     $image_to_add = array_diff($image_in_merge_tags, $image_in_dest);
 
@@ -506,7 +499,7 @@ SELECT image_id
         ];
     }
 
-    mass_inserts(
+    Mysqli::mass_inserts(
         IMAGE_TAG_TABLE,
         ['tag_id', 'image_id'],
         $inserts,

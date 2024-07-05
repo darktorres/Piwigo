@@ -32,7 +32,7 @@ class XmlWriter
         return $this->_encodedXml;
     }
 
-    public function start_element($name)
+    public function start_element($name): void
     {
         $this->_end_prev(false);
         if (! empty($this->_elementStack)) {
@@ -51,7 +51,7 @@ class XmlWriter
         $this->_elementStack[] = $name;
     }
 
-    public function end_element($x)
+    public function end_element($x): void
     {
         $close_tag = $this->_end_prev(true);
         $name = array_pop($this->_elementStack);
@@ -63,14 +63,14 @@ class XmlWriter
         }
     }
 
-    public function write_content($value)
+    public function write_content($value): void
     {
         $this->_end_prev(false);
         $value = (string) $value;
         $this->_output(htmlspecialchars($value));
     }
 
-    public function write_cdata($value)
+    public function write_cdata($value): void
     {
         $this->_end_prev(false);
         $value = (string) $value;
@@ -81,17 +81,17 @@ class XmlWriter
         );
     }
 
-    public function write_attribute($name, $value)
+    public function write_attribute(string $name, $value): void
     {
         $this->_output(' ' . $name . '="' . $this->encode_attribute($value) . '"');
     }
 
-    public function encode_attribute($value)
+    public function encode_attribute($value): string
     {
         return htmlspecialchars((string) $value);
     }
 
-    public function _end_prev($done)
+    public function _end_prev($done): bool
     {
         $ret = true;
         if ($this->_lastTagOpen) {
@@ -110,14 +110,14 @@ class XmlWriter
         return $ret;
     }
 
-    public function _eol_indent()
+    public function _eol_indent(): void
     {
         if ($this->_indent) {
             $this->_output("\n");
         }
     }
 
-    public function _indent()
+    public function _indent(): void
     {
         if ($this->_indent && $this->_indentLevel > count($this->_elementStack)) {
             $this->_output(
@@ -126,7 +126,7 @@ class XmlWriter
         }
     }
 
-    public function _output($raw_content)
+    public function _output(string $raw_content): void
     {
         $this->_encodedXml .= $raw_content;
     }

@@ -2,15 +2,8 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dbLayer\Mysqli;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\my_error;
-use function Piwigo\inc\dbLayer\pwg_db_check_version;
-use function Piwigo\inc\dbLayer\pwg_db_connect;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -87,9 +80,9 @@ WHERE state = \'active\'
 AND id NOT IN (\'' . implode("','", $standard_plugins) . '\')
 ;';
 
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
     $plugins = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $plugins[] = $row['id'];
     }
 
@@ -99,7 +92,7 @@ UPDATE ' . PREFIX_TABLE . 'plugins
 SET state=\'inactive\'
 WHERE id IN (\'' . implode("','", $plugins) . '\')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         $page['infos'][] = l10n(
             'As a precaution, following plugins have been deactivated. You must check for plugins upgrade before reactiving them:'
@@ -126,10 +119,10 @@ SELECT
   FROM ' . PREFIX_TABLE . 'themes
   WHERE id NOT IN (\'' . implode("','", $standard_themes) . '\')
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
     $theme_ids = [];
     $theme_names = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $theme_ids[] = $row['id'];
         $theme_names[] = $row['name'];
     }
@@ -140,7 +133,7 @@ DELETE
   FROM ' . PREFIX_TABLE . 'themes
   WHERE id IN (\'' . implode("','", $theme_ids) . '\')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         $page['infos'][] = l10n(
             'As a precaution, following themes have been deactivated. You must check for themes upgrade before reactiving them:'
@@ -153,7 +146,7 @@ SELECT theme
   FROM ' . PREFIX_TABLE . 'user_infos
   WHERE user_id = ' . $conf['default_user_id'] . '
 ;';
-        [$default_theme] = pwg_db_fetch_row(pwg_query($query));
+        [$default_theme] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
         // if the default theme has just been deactivated, let's set another core theme as default
         if (in_array(
@@ -167,7 +160,7 @@ SELECT
   FROM ' . PREFIX_TABLE . 'themes
   WHERE id = \'' . PHPWG_DEFAULT_TEMPLATE . '\'
 ;';
-            [$counter] = pwg_db_fetch_row(pwg_query($query));
+            [$counter] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
             if ($counter < 1) {
                 // we need to activate theme first
                 $themes = new Themes();
@@ -180,7 +173,7 @@ UPDATE ' . PREFIX_TABLE . 'user_infos
   SET theme = \'' . PHPWG_DEFAULT_TEMPLATE . '\'
   WHERE user_id = ' . $conf['default_user_id'] . '
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
     }
 }
@@ -205,9 +198,9 @@ SELECT status
   FROM ' . USER_INFOS_TABLE . '
   WHERE user_id = ' . $_SESSION['pwg_uid'] . '
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
 
-            $row = pwg_db_fetch_assoc(pwg_query($query));
+            $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
             if (isset($row['status']) && $row['status'] == 'webmaster') {
                 define('PHPWG_IN_UPGRADE', true);
                 return;
@@ -223,7 +216,7 @@ SELECT status
     $password = $_POST['password'];
 
     if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
-        $username = pwg_db_real_escape_string($username);
+        $username = Mysqli::pwg_db_real_escape_string($username);
     }
 
     if (version_compare($current_release, '2.0', '<')) {
@@ -247,7 +240,7 @@ WHERE ' . $conf['user_fields']['username'] . "='" . $username . '\'
 ;';
     }
 
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
     if (! $conf['password_verify']($password, $row['password'])) {
         $page['errors'][] = l10n('Invalid password!');
@@ -290,7 +283,7 @@ function check_upgrade_feed(): bool
 SELECT id
   FROM ' . UPGRADE_TABLE . '
 ;';
-    $applied = query2array($query, null, 'id');
+    $applied = Mysqli::query2array($query, null, 'id');
 
     // retrieve existing upgrades
     $existing = get_available_upgrade_ids();
@@ -304,14 +297,14 @@ function upgrade_db_connect(): void
     global $conf;
 
     try {
-        pwg_db_connect(
+        Mysqli::pwg_db_connect(
             $conf['db_host'],
             $conf['db_user'],
             $conf['db_password'],
             $conf['db_base']
         );
-        pwg_db_check_version();
+        Mysqli::pwg_db_check_version();
     } catch (\Exception $exception) {
-        my_error(l10n($exception->getMessage()), true);
+        Mysqli::my_error(l10n($exception->getMessage()), true);
     }
 }

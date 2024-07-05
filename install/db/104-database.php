@@ -44,13 +44,13 @@ foreach ($upload_form_config as $param_shortname => $param) {
 
         $inserts[] = [
             'param' => $param_name,
-            'value' => boolean_to_string($param),
+            'value' => Mysqli::boolean_to_string($param),
         ];
     }
 }
 
 if ($inserts !== []) {
-    mass_inserts(
+    Mysqli::mass_inserts(
         CONFIG_TABLE,
         array_keys($inserts[0]),
         $inserts

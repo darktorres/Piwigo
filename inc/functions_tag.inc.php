@@ -2,10 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_update;
+use Piwigo\inc\dbLayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -24,7 +21,7 @@ function get_nb_available_tags()
     global $user;
     if (! isset($user['nb_available_tags'])) {
         $user['nb_available_tags'] = count(get_available_tags());
-        single_update(
+        Mysqli::single_update(
             USER_CACHE_TABLE,
             [
                 'nb_available_tags' => $user['nb_available_tags'],
@@ -53,7 +50,7 @@ SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter
   FROM ' . IMAGE_CATEGORY_TABLE . ' ic
     INNER JOIN ' . IMAGE_TAG_TABLE . ' it
     ON ic.image_id=it.image_id
-  ' . get_sql_condition_FandF(
+  ' . FunctionsUser::get_sql_condition_FandF(
         [
             'forbidden_categories' => 'category_id',
             'visible_categories' => 'category_id',
@@ -63,7 +60,7 @@ SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter
     ) . '
   GROUP BY tag_id
 ;';
-    $tag_counters = query2array($query, 'tag_id', 'counter');
+    $tag_counters = Mysqli::query2array($query, 'tag_id', 'counter');
 
     if ($tag_counters === []) {
         return [];
@@ -72,14 +69,14 @@ SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter
     $query = '
 SELECT *
   FROM ' . TAGS_TABLE;
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $tags = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $counter = intval(@$tag_counters[$row['id']]);
         if ($counter !== 0) {
             $row['counter'] = $counter;
-            $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
+            $row['name'] = FunctionsPlugins::trigger_change('render_tag_name', $row['name'], $row);
             $tags[] = $row;
         }
     }
@@ -98,10 +95,10 @@ function get_all_tags(): array
 SELECT *
   FROM ' . TAGS_TABLE . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
     $tags = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
-        $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
+        $row['name'] = FunctionsPlugins::trigger_change('render_tag_name', $row['name'], $row);
         $tags[] = $row;
     }
 
@@ -201,7 +198,7 @@ SELECT id
     WHERE tag_id IN (' . implode(',', $tag_ids) . ')';
 
     if ($use_permissions) {
-        $query .= get_sql_condition_FandF(
+        $query .= FunctionsUser::get_sql_condition_FandF(
             [
                 'forbidden_categories' => 'category_id',
                 'visible_categories' => 'category_id',
@@ -221,7 +218,7 @@ SELECT id
 
     $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
 
-    return query2array($query, null, 'id');
+    return Mysqli::query2array($query, null, 'id');
 }
 
 /**
@@ -262,10 +259,10 @@ SELECT t.*, count(*) AS counter
         $query .= 'NULL';
     }
 
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
     $tags = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
-        $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
+        $row['name'] = FunctionsPlugins::trigger_change('render_tag_name', $row['name'], $row);
         $tags[] = $row;
     }
 
@@ -312,7 +309,7 @@ SELECT *
   WHERE ' . implode('
     OR ', $where_clauses);
 
-    return query2array($query);
+    return Mysqli::query2array($query);
 }
 
 function tags_id_compare(array $a, array $b): int

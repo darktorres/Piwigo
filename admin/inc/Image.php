@@ -2,9 +2,9 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\FunctionsPlugins;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\get_moment;
-use function Piwigo\inc\trigger_notify;
 
 require_once __DIR__ . '/../../Inc/PluginMaintain.php';
 require_once __DIR__ . '/../../Inc/functions.inc.php';
@@ -22,6 +22,9 @@ require_once __DIR__ . '/../../Inc/functions.inc.php';
 
 class Image
 {
+    /**
+     * @var object
+     */
     public $image;
 
     public $library = '';
@@ -32,7 +35,7 @@ class Image
         public $source_filepath,
         $library = null
     ) {
-        trigger_notify('load_image_library', [&$this]);
+        FunctionsPlugins::trigger_notify('load_image_library', [&$this]);
 
         if (is_object($this->image)) {
             return; // A plugin may have load its own library
@@ -59,6 +62,9 @@ class Image
     }
 
     // Piwigo resize function
+    /**
+     * @return mixed[]
+     */
     public function pwg_resize(
         $destination_filepath,
         $max_width,
@@ -68,7 +74,7 @@ class Image
         $strip_metadata = false,
         $crop = false,
         $follow_orientation = true
-    ) {
+    ): array {
         $starttime = get_moment();
 
         // width/height
@@ -124,7 +130,7 @@ class Image
 
         $this->image->resize($resize_dimensions['width'], $resize_dimensions['height']);
 
-        if (! empty($rotation)) {
+        if ($rotation !== null && $rotation !== 0) {
             $this->image->rotate($rotation);
         }
 
@@ -147,7 +153,7 @@ class Image
         $rotation = null,
         $crop = false,
         $follow_orientation = true
-    ) {
+    ): array {
         $rotate_for_dimensions = false;
         if (isset($rotation) && in_array(abs($rotation), [90, 270])) {
             $rotate_for_dimensions = true;
@@ -216,7 +222,7 @@ class Image
         return $result;
     }
 
-    public static function get_rotation_angle($source_filepath)
+    public static function get_rotation_angle($source_filepath): ?int
     {
         [$width, $height, $type] = getimagesize($source_filepath);
         if ($type != IMAGETYPE_JPEG) {
@@ -245,7 +251,7 @@ class Image
         return $rotation;
     }
 
-    public static function get_rotation_code_from_angle($rotation_angle)
+    public static function get_rotation_code_from_angle($rotation_angle): ?int
     {
         return match ($rotation_angle) {
             0 => 0,
@@ -256,7 +262,7 @@ class Image
         };
     }
 
-    public static function get_rotation_angle_from_code($rotation_code)
+    public static function get_rotation_angle_from_code($rotation_code): ?int
     {
         return match ($rotation_code % 4) {
             0 => 0,
@@ -272,7 +278,7 @@ class Image
      */
     public static function get_sharpen_matrix(
         $amount
-    ) {
+    ): array {
         // Amount should be in the range of 48-10
         $amount = round(abs(-48 + ($amount * 0.38)), 2);
 
@@ -293,12 +299,12 @@ class Image
         return $matrix;
     }
 
-    public static function is_imagick()
+    public static function is_imagick(): bool
     {
         return extension_loaded('imagick') && class_exists('Imagick');
     }
 
-    public static function is_ext_imagick()
+    public static function is_ext_imagick(): bool
     {
         global $conf;
 
@@ -322,12 +328,12 @@ class Image
         return false;
     }
 
-    public static function is_gd()
+    public static function is_gd(): bool
     {
         return function_exists('gd_info');
     }
 
-    public static function is_vips()
+    public static function is_vips(): bool
     {
         return class_exists('image_vips');
     }
@@ -385,7 +391,7 @@ class Image
         return true;
     }
 
-    private function get_resize_result($destination_filepath, $width, $height, $time = null)
+    private function get_resize_result($destination_filepath, $width, $height, $time = null): array
     {
         return [
             'source' => $this->source_filepath,

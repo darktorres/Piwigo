@@ -24,7 +24,10 @@ function ws_isInvokeAllowed(
         return $res;
     }
 
-    if (! is_autorize_status(ACCESS_GUEST) && ! str_starts_with((string) $methodName, 'pwg.session.')) {
+    if (! FunctionsUser::is_autorize_status(ACCESS_GUEST) && ! str_starts_with(
+        (string) $methodName,
+        'pwg.session.'
+    )) {
         return new Error(401, 'Access denied');
     }
 

@@ -1,18 +1,16 @@
 <?php
 
 use Piwigo\admin\inc\Languages;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\add_url_params;
-use function Piwigo\inc\dblayer\pwg_query;
 use function Piwigo\inc\duplicate_index_url;
 use function Piwigo\inc\get_absolute_root_url;
 use function Piwigo\inc\get_languages;
 use function Piwigo\inc\get_query_string_diff;
-use function Piwigo\inc\is_a_guest;
-use function Piwigo\inc\is_generic;
 use function Piwigo\inc\load_language;
 use function Piwigo\inc\make_index_url;
-use function Piwigo\inc\pwg_get_session_var;
-use function Piwigo\inc\pwg_set_session_var;
 use function Piwigo\inc\redirect;
 
 // +-----------------------------------------------------------------------+
@@ -43,7 +41,7 @@ if (! defined(
     die('Hacking attempt!');
 }
 
-function language_controler_switch()
+function language_controler_switch(): void
 {
     global $user;
 
@@ -59,15 +57,15 @@ function language_controler_switch()
         if (! empty($_GET['lang']) && file_exists(
             PHPWG_ROOT_PATH . 'language/' . $_GET['lang'] . '/common.lang.php'
         )) {
-            if (is_a_guest() || is_generic()) {
-                pwg_set_session_var('lang_switch', $_GET['lang']);
+            if (FunctionsUser::is_a_guest() || FunctionsUser::is_generic()) {
+                FunctionsSession::pwg_set_session_var('lang_switch', $_GET['lang']);
             } else {
                 $query = '
 UPDATE ' . USER_INFOS_TABLE . '
   SET language = \'' . $_GET['lang'] . '\'
   WHERE user_id = ' . $user['id'] . '
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
             }
 
             $user['language'] = $_GET['lang'];
@@ -76,8 +74,8 @@ UPDATE ' . USER_INFOS_TABLE . '
         if (isset($_GET['redirect_to_home'])) {
             redirect(get_absolute_root_url());
         }
-    } elseif ((is_a_guest() || is_generic())) {
-        $user['language'] = pwg_get_session_var('lang_switch', $user['language']);
+    } elseif ((FunctionsUser::is_a_guest() || FunctionsUser::is_generic())) {
+        $user['language'] = FunctionsSession::pwg_get_session_var('lang_switch', $user['language']);
     }
 
     // Reload language only if it isn't the same one
@@ -105,7 +103,7 @@ UPDATE ' . USER_INFOS_TABLE . '
     }
 }
 
-function language_controler_flags()
+function language_controler_flags(): void
 {
     global $user, $template, $conf, $page;
 

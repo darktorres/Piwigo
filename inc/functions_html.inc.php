@@ -2,7 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -36,7 +36,7 @@ function get_cat_display_name(
             trigger_error('get_cat_display_name wrong type for category ', E_USER_WARNING);
         }
 
-        $cat['name'] = trigger_change(
+        $cat['name'] = FunctionsPlugins::trigger_change(
             'render_category_name',
             $cat['name'],
             'get_cat_display_name'
@@ -96,7 +96,7 @@ function get_cat_display_name_cache(
 SELECT id, name, permalink
   FROM ' . CATEGORIES_TABLE . '
 ;';
-        $cache['cat_names'] = query2array($query, 'id');
+        $cache['cat_names'] = Mysqli::query2array($query, 'id');
     }
 
     $output = '';
@@ -114,7 +114,7 @@ SELECT id, name, permalink
     foreach (explode(',', $uppercats) as $category_id) {
         $cat = $cache['cat_names'][$category_id];
 
-        $cat['name'] = trigger_change(
+        $cat['name'] = FunctionsPlugins::trigger_change(
             'render_category_name',
             $cat['name'],
             'get_cat_display_name_cache'
@@ -164,7 +164,7 @@ function get_cat_display_name_from_id(
     $cat_id,
     $url = ''
 ): string {
-    $cat_info = get_cat_info($cat_id);
+    $cat_info = FunctionsCategory::get_cat_info($cat_id);
     return get_cat_display_name($cat_info['upper_names'], $url);
 }
 
@@ -242,7 +242,7 @@ function access_denied(): void
         get_root_url() . 'identification.php?redirect='
         . urlencode(urlencode((string) $_SERVER['REQUEST_URI']));
 
-    if (isset($user) && ! is_a_guest()) {
+    if (isset($user) && ! FunctionsUser::is_a_guest()) {
         set_status_header(401);
 
         echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
@@ -253,7 +253,7 @@ function access_denied(): void
         echo '<a href="' . make_index_url() . '">' . l10n('Home') . '</a></div>';
         echo str_repeat(' ', 512); //IE6 doesn't error output if below a size
         exit();
-    } elseif (! $conf['guest_access'] && is_a_guest()) {
+    } elseif (! $conf['guest_access'] && FunctionsUser::is_a_guest()) {
         redirect_http($login_url);
     } else {
         redirect_html($login_url);
@@ -409,7 +409,7 @@ function get_tags_content_title(): string
           . '" title="'
           . l10n('display photos linked to this tag')
           . '">'
-          . trigger_change('render_tag_name', $page['tags'][$i]['name'], $page['tags'][$i])
+          . FunctionsPlugins::trigger_change('render_tag_name', $page['tags'][$i]['name'], $page['tags'][$i])
           . '</a>';
 
         if (count($page['tags']) > 1) {
@@ -523,12 +523,12 @@ function set_status_header(
     }
 
     header(sprintf('%s %d %s', $protocol, $code, $text), true, $code);
-    trigger_notify('set_status_header', $code, $text);
+    FunctionsPlugins::trigger_notify('set_status_header', $code, $text);
 }
 
 /**
  * Returns the category comment for rendering in html textual mode (subcatify)
- * This method is called by a trigger_notify()
+ * This method is called by a FunctionsPlugins::trigger_notify()
  *
  * @param string $desc
  */
@@ -544,7 +544,7 @@ function render_category_literal_description(
 
 /**
  * Add known menubar blocks.
- * This method is called by a trigger_change()
+ * This method is called by a FunctionsPlugins::trigger_change()
  *
  * @param BlockManager[] $menu_ref_arr
  */
@@ -581,7 +581,7 @@ function render_element_name(
     array $info
 ) {
     if (! empty($info['name'])) {
-        return trigger_change('render_element_name', $info['name']);
+        return FunctionsPlugins::trigger_change('render_element_name', $info['name']);
     }
 
     return get_name_from_file($info['file']);
@@ -599,7 +599,7 @@ function render_element_description(
     $param = ''
 ) {
     if (! empty($info['comment'])) {
-        return trigger_change('render_element_description', $info['comment'], $param);
+        return FunctionsPlugins::trigger_change('render_element_description', $info['comment'], $param);
     }
 
     return '';
@@ -645,7 +645,7 @@ function get_thumbnail_title(
 
     $title = htmlspecialchars(strip_tags($title));
 
-    return trigger_change('get_thumbnail_title', $title, $info);
+    return FunctionsPlugins::trigger_change('get_thumbnail_title', $title, $info);
 }
 
 /**

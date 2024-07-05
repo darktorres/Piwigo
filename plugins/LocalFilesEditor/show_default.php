@@ -1,8 +1,7 @@
 <?php
 
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\load_language;
 
 // +-----------------------------------------------------------------------+
@@ -32,7 +31,7 @@ define('IN_ADMIN', true);
 require_once(__DIR__ . '/../../inc/common.inc.php');
 require_once(LOCALEDIT_PATH . 'inc/functions.inc.php');
 load_language('plugin.lang', LOCALEDIT_PATH);
-check_status(ACCESS_WEBMASTER);
+FunctionsUser::check_status(ACCESS_WEBMASTER);
 
 check_input_parameter(
     'file',
@@ -43,7 +42,7 @@ check_input_parameter(
 
 if (isset($_GET['file'])) {
     $path = $_GET['file'];
-    if (! is_admin()) {
+    if (! FunctionsUser::is_admin()) {
         die('Hacking attempt!');
     }
 

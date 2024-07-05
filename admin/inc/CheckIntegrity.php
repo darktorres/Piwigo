@@ -2,10 +2,10 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\l10n_dec;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -53,7 +53,7 @@ class CheckIntegrity
         $this->retrieve_list = [];
         $this->build_ignore_list = [];
 
-        trigger_notify('list_check_integrity', $this);
+        FunctionsPlugins::trigger_notify('list_check_integrity', $this);
 
         // Information
         if ($this->retrieve_list !== []) {
@@ -258,7 +258,7 @@ class CheckIntegrity
         $query = 'update ' . CONFIG_TABLE . " set value ='" . serialize(
             $conf_c13y_ignore
         ) . "'where param = 'c13y_ignore';";
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     /**

@@ -22,7 +22,7 @@ require_once(__DIR__ . '/../../inc/constants.php');
 $query = '
 INSERT INTO ' . CONFIG_TABLE . " (param,value,comment) VALUES ('c13y_ignore',null,'List of ignored anomalies');
 ";
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

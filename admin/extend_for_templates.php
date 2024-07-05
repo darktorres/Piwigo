@@ -2,11 +2,10 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_dirs;
 use function Piwigo\admin\inc\get_extents;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 
@@ -42,7 +41,7 @@ if (! defined(
 }
 
 require_once(__DIR__ . '/../admin/inc/functions.php');
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(ACCESS_ADMINISTRATOR);
 
 $tpl_extension = $conf['extents_for_templates'] ?? [];
 $new_extensions = get_extents();
@@ -70,7 +69,7 @@ SELECT permalink
 ';
 
 /* Add active permalinks */
-$permalinks = query2array($query, null, 'permalink');
+$permalinks = Mysqli::query2array($query, null, 'permalink');
 $relevant_parameters = array_merge($relevant_parameters, $permalinks);
 
 /* Link all supported templates to their respective handle */
@@ -155,7 +154,7 @@ if (isset($_POST['submit'])) {
 UPDATE ' . CONFIG_TABLE . '
   SET value = \'' . $conf['extents_for_templates'] . '\'
 WHERE param = \'extents_for_templates\';';
-    if (pwg_query($query)) {
+    if (Mysqli::pwg_query($query)) {
         $page['infos'][] = l10n('Templates configuration has been recorded.');
     }
 }

@@ -24,7 +24,7 @@ $query = '
 SELECT id
   FROM ' . PREFIX_TABLE . 'upgrade
 ;';
-$applied = query2array($query, null, 'id');
+$applied = Mysqli::query2array($query, null, 'id');
 
 // retrieve existing upgrades
 $existing = get_available_upgrade_ids();
@@ -45,7 +45,7 @@ foreach ($to_apply as $upgrade_id) {
 }
 
 if ($inserts !== []) {
-    mass_inserts(
+    Mysqli::mass_inserts(
         '`' . UPGRADE_TABLE . '`',
         array_keys($inserts[0]),
         $inserts
@@ -91,7 +91,7 @@ INSERT INTO `' . PREFIX_TABLE . 'upgrade`
         get_moment()
     ) . '] ' . $upgrade_description . '\')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 echo '</pre>';

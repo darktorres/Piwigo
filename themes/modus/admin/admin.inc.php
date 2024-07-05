@@ -62,7 +62,7 @@ $tabs = [
 ];
 
 $tab_codes = array_map(
-    fn ($a) => $a['code'],
+    fn ($a): string => $a['code'],
     $tabs
 );
 

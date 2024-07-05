@@ -17,7 +17,7 @@ $query = '
 INSERT INTO ' . PREFIX_TABLE . 'config (param,value,comment)
   VALUES (\'updates_ignored\',\'a:3:{s:7:"plugins";a:0:{}s:6:"themes";a:0:{}s:9:"languages";a:0:{}}\', \'' . $upgrade_description . '\')
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

@@ -32,7 +32,7 @@ final class ImageRect
      * @param int[] $l width and height
      */
     public function __construct(
-        $l
+        array $l
     ) {
         $this->r = $l[0];
         $this->b = $l[1];
@@ -41,7 +41,7 @@ final class ImageRect
     /**
      * @return int
      */
-    public function width()
+    public function width(): int|float
     {
         return $this->r - $this->l;
     }
@@ -49,7 +49,7 @@ final class ImageRect
     /**
      * @return int
      */
-    public function height()
+    public function height(): int|float
     {
         return $this->b - $this->t;
     }
@@ -63,7 +63,7 @@ final class ImageRect
     public function crop_h(
         $pixels,
         $coi
-    ) {
+    ): void {
         if ($this->width() <= $pixels) {
             return;
         }
@@ -97,7 +97,7 @@ final class ImageRect
     public function crop_v(
         $pixels,
         $coi
-    ) {
+    ): void {
         if ($this->height() <= $pixels) {
             return;
         }

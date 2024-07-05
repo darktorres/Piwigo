@@ -2,10 +2,7 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -23,8 +20,8 @@ function get_cat_id_from_permalink(
     $query = '
 SELECT id FROM ' . CATEGORIES_TABLE . '
   WHERE permalink=\'' . $permalink . "'";
-    $ids = query2array($query, null, 'id');
-    if ($ids !== []) {
+    $ids = Mysqli::query2array($query, null, 'id');
+    if (! empty($ids)) {
         return $ids[0];
     }
 
@@ -43,10 +40,10 @@ SELECT c.id
     ON op.cat_id=c.id
   WHERE op.permalink=\'' . $permalink . '\'
   LIMIT 1';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
     $cat_id = null;
-    if (pwg_db_num_rows($result)) {
-        [$cat_id] = pwg_db_fetch_row($result);
+    if (Mysqli::pwg_db_num_rows($result)) {
+        [$cat_id] = Mysqli::pwg_db_fetch_row($result);
     }
 
     return $cat_id;
@@ -68,9 +65,9 @@ SELECT permalink
   FROM ' . CATEGORIES_TABLE . '
   WHERE id=\'' . $cat_id . '\'
 ;';
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result)) {
-        [$permalink] = pwg_db_fetch_row($result);
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result)) {
+        [$permalink] = Mysqli::pwg_db_fetch_row($result);
     }
 
     if (! isset($permalink)) {// no permalink; nothing to do
@@ -95,7 +92,7 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET permalink=NULL
   WHERE id=' . $cat_id . '
   LIMIT 1';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     unset($cache['cat_names']); //force regeneration
     if ($save) {
@@ -112,7 +109,7 @@ VALUES
   ( \'' . $permalink . "'," . $cat_id . ',NOW() )';
         }
 
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     return true;
@@ -180,7 +177,7 @@ function set_cat_permalink(
         $query = '
 DELETE FROM ' . OLD_PERMALINKS_TABLE . '
   WHERE cat_id=' . $old_cat_id . " AND permalink='" . $permalink . "'";
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     $query = '
@@ -188,7 +185,7 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET permalink=\'' . $permalink . '\'
   WHERE id=' . $cat_id;
     //  LIMIT 1';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     unset($cache['cat_names']); //force regeneration
 

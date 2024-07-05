@@ -2,9 +2,7 @@
 
 namespace Piwigo\admin\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_check_version;
-use function Piwigo\inc\dbLayer\pwg_db_connect;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -46,7 +44,7 @@ function execute_sqlfile(
             $query = str_replace($replaced, $replacing, $query);
             // we don't execute "DROP TABLE" queries
             if (! preg_match('/^DROP TABLE/i', $query)) {
-                pwg_query($query);
+                Mysqli::pwg_query($query);
             }
 
             $query = '';
@@ -92,13 +90,13 @@ function install_db_connect(
     &$errors
 ): void {
     try {
-        pwg_db_connect(
+        Mysqli::pwg_db_connect(
             $_POST['dbhost'],
             $_POST['dbuser'],
             $_POST['dbpasswd'],
             $_POST['dbname']
         );
-        pwg_db_check_version();
+        Mysqli::pwg_db_check_version();
     } catch (\Exception $exception) {
         $errors[] = l10n($exception->getMessage());
     }

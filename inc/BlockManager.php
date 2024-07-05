@@ -37,7 +37,7 @@ class BlockManager
      */
     public function load_registered_blocks(): void
     {
-        trigger_notify('blockmanager_register_blocks', [$this]);
+        FunctionsPlugins::trigger_notify('blockmanager_register_blocks', [$this]);
     }
 
     /**
@@ -98,7 +98,7 @@ class BlockManager
         }
 
         $this->sort_blocks();
-        trigger_notify('blockmanager_prepare_display', [$this]);
+        FunctionsPlugins::trigger_notify('blockmanager_prepare_display', [$this]);
         $this->sort_blocks();
     }
 
@@ -164,7 +164,7 @@ class BlockManager
         global $template;
 
         $template->set_filename('menubar', $file);
-        trigger_notify('blockmanager_apply', [$this]);
+        FunctionsPlugins::trigger_notify('blockmanager_apply', [$this]);
 
         foreach ($this->display_blocks as $id => $block) {
             if (empty($block->raw_content) && empty($block->template)) {

@@ -27,7 +27,7 @@ values
 ('upload_user_access'," . ACCESS_CLASSIC . ",'Minimal user status allowed to upload pictures')
 ;";
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

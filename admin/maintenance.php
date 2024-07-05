@@ -3,9 +3,9 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 
@@ -26,7 +26,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if (isset($_GET['action'])) {
     check_pwg_token();

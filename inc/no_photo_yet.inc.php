@@ -2,8 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -18,14 +17,14 @@ use function Piwigo\inc\dbLayer\pwg_query;
 if (
     ! (defined(
         'IN_ADMIN'
-    ) && IN_ADMIN) && script_basename() != 'identification' && script_basename() != 'password' && script_basename() != 'ws' && script_basename() != 'popuphelp' && (is_a_guest() || is_admin()) && ! isset($_SESSION['no_photo_yet'])     // temporary hide
+    ) && IN_ADMIN) && script_basename() !== 'identification' && script_basename() !== 'password' && script_basename() !== 'ws' && script_basename() !== 'popuphelp' && (FunctionsUser::is_a_guest() || FunctionsUser::is_admin()) && ! isset($_SESSION['no_photo_yet'])     // temporary hide
 ) {
     $query = '
 SELECT
     COUNT(*)
   FROM ' . IMAGES_TABLE . '
 ;';
-    [$nb_photos] = pwg_db_fetch_row(pwg_query($query));
+    [$nb_photos] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($nb_photos == 0) {
         // make sure we don't use the mobile theme, which is not compatible with
         // the "no photo yet" feature
@@ -50,7 +49,7 @@ SELECT
             'no_photo_yet' => 'no_photo_yet.tpl',
         ]);
 
-        if (is_admin()) {
+        if (FunctionsUser::is_admin()) {
             $url = $conf['no_photo_yet_url'];
             if (! str_starts_with((string) $url, 'http')) {
                 $url = get_root_url() . $url;
@@ -78,7 +77,7 @@ SELECT
             );
         }
 
-        trigger_notify('loc_end_no_photo_yet');
+        FunctionsPlugins::trigger_notify('loc_end_no_photo_yet');
 
         $template->pparse('no_photo_yet');
         exit();

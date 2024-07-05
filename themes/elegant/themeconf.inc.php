@@ -1,6 +1,6 @@
 <?php
 
-use function Piwigo\inc\add_event_handler;
+use Piwigo\inc\FunctionsPlugins;
 
 /*
 Theme Name: elegant
@@ -19,8 +19,8 @@ $themeconf = [
 global $conf;
 require(PHPWG_THEMES_PATH . 'elegant/admin/upgrade.inc.php');
 
-add_event_handler('init', 'set_config_values_elegant');
-function set_config_values_elegant()
+FunctionsPlugins::add_event_handler('init', 'set_config_values_elegant');
+function set_config_values_elegant(): void
 {
     global $conf, $template;
     $config = $conf['elegant'];

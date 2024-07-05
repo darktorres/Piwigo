@@ -174,8 +174,8 @@ $conf['meta_ref'] = true;
 //  you can pass a array with different optional parameter values
 //  $conf['links'] = array(
 //    'http://piwigo.org' => array('label' => 'PWG website', 'new_window' => false, 'eval_visible' => 'return true;'),
-//    'http://piwigo.org/forum' => array('label' => 'For ADMIN', 'new_window' => true, 'eval_visible' => 'return is_admin();'),
-//    'http://piwigo.org/ext' => array('label' => 'For Guest', 'new_window' => true, 'eval_visible' => 'return is_a_guest();'),
+//    'http://piwigo.org/forum' => array('label' => 'For ADMIN', 'new_window' => true, 'eval_visible' => 'return FunctionsUser::is_admin();'),
+//    'http://piwigo.org/ext' => array('label' => 'For Guest', 'new_window' => true, 'eval_visible' => 'return FunctionsUser::is_a_guest();'),
 //    'http://piwigo.org/downloads' =>
 //      array('label' => 'PopUp', 'new_window' => true,
 //      'nw_name' => 'PopUp', 'nw_features' => 'width=800,height=450,location=no,status=no,toolbar=no,scrollbars=no,menubar=no'),
@@ -215,7 +215,7 @@ $conf['links'] = [];
 //  '' condition is equivalent to 'return true;'
 //  $conf['random_index_redirect'] = array(
 //    PHPWG_ROOT_PATH.'index.php?/best_rated' => 'return true;',
-//    PHPWG_ROOT_PATH.'index.php?/recent_pics' => 'return is_a_guest();',
+//    PHPWG_ROOT_PATH.'index.php?/recent_pics' => 'return FunctionsUser::is_a_guest();',
 //    PHPWG_ROOT_PATH.'random.php' => '',
 //    PHPWG_ROOT_PATH.'index.php?/categories' => '',
 //    );
@@ -598,14 +598,14 @@ $conf['user_fields'] = [
 
 // password_hash: function hash the clear user password to store it in the
 // database. The function takes only one parameter: the clear password.
-$conf['password_hash'] = '\Piwigo\inc\pwg_password_hash';
+$conf['password_hash'] = \Piwigo\inc\FunctionsUser::class . '::pwg_password_hash';
 
 // password_verify: function that checks the password against its hash. The
 // function takes 2 mandatory parameter : clear password, hashed password +
 // an optional parameter user_id. The user_id is used to update the password
 // with the new hash introduced in Piwigo 2.5. See function
-// pwg_password_verify in inc/functions_user.inc.php
-$conf['password_verify'] = '\Piwigo\inc\pwg_password_verify';
+// FunctionsUser::pwg_password_verify in inc/FunctionsUser.php
+$conf['password_verify'] = \Piwigo\inc\FunctionsUser::class . '::pwg_password_verify';
 
 // guest_id : id of the anonymous user
 $conf['guest_id'] = 2;

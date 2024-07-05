@@ -16,7 +16,7 @@ $upgrade_description = 'add nb direct child categories';
 $query = '
 ALTER TABLE ' . USER_CACHE_CATEGORIES_TABLE . '
   ADD COLUMN nb_categories mediumint(8) unsigned NOT NULL default 0 AFTER count_images';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 invalidate_user_cache();
 

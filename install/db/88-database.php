@@ -24,7 +24,7 @@ INSERT INTO ' . CONFIG_TABLE . ' (param,value,comment)
     )
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

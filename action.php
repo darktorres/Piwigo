@@ -2,20 +2,15 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\SrcImage;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_element_path;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\get_filename_wo_extension;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\get_sql_condition_FandF;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\original_to_format;
 use function Piwigo\inc\original_to_representative;
 use function Piwigo\inc\pwg_log;
@@ -34,7 +29,7 @@ session_cache_limiter('public');
 require_once(__DIR__ . '/inc/common.inc.php');
 
 // Check Access and exit when user status is not ok
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
 function guess_mime_type($ext): string
 {
@@ -69,7 +64,7 @@ SELECT
   FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE format_id = ' . $_GET['format'] . '
 ;';
-    $formats = query2array($query);
+    $formats = Mysqli::query2array($query);
 
     if (count($formats) == 0) {
         do_error(400, 'Invalid request - format');
@@ -93,15 +88,16 @@ SELECT * FROM ' . IMAGES_TABLE . '
   WHERE id=' . $_GET['id'] . '
 ;';
 
-$element_info = pwg_db_fetch_assoc(pwg_query($query));
+$element_info = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 if (empty($element_info)) {
     do_error(404, 'Requested id not found');
 }
 
 // special download action for admins
 $is_admin_download = false;
-if (is_admin() && isset($_GET['pwg_token']) && get_pwg_token() == $_GET['pwg_token']) {
+if (FunctionsUser::is_admin() && isset($_GET['pwg_token']) && get_pwg_token() == $_GET['pwg_token']) {
     $is_admin_download = true;
+
     $user['enabled_high'] = true;
 }
 
@@ -114,7 +110,7 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON category_id = id
   WHERE image_id = ' . $_GET['id'] . '
-' . get_sql_condition_FandF(
+' . FunctionsUser::get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',
         'forbidden_images' => 'image_id',
@@ -123,7 +119,7 @@ SELECT id
 ) . '
   LIMIT 1
 ;';
-if (! $is_admin_download && pwg_db_num_rows(pwg_query($query)) < 1) {
+if (! $is_admin_download && Mysqli::pwg_db_num_rows(Mysqli::pwg_query($query)) < 1) {
     do_error(401, 'Access denied');
 }
 

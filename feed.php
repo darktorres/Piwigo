@@ -2,19 +2,14 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\build_user;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_gallery_home_url;
 use function Piwigo\inc\get_html_description_recent_post_date;
 use function Piwigo\inc\get_recent_post_dates_array;
 use function Piwigo\inc\get_title_recent_post_date;
-use function Piwigo\inc\is_a_guest;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\mkgetdir;
@@ -81,7 +76,7 @@ check_input_parameter(
 $feed_id = $_GET['feed'] ?? '';
 $image_only = isset($_GET['image_only']);
 
-// echo '<pre>'.generate_key(50).'</pre>';
+// echo '<pre>'.FunctionsSession::generate_key(50).'</pre>';
 if (! empty($feed_id)) {
     $query = '
 SELECT user_id,
@@ -89,25 +84,25 @@ SELECT user_id,
   FROM ' . USER_FEED_TABLE . '
   WHERE id = \'' . $feed_id . '\'
 ;';
-    $feed_row = pwg_db_fetch_assoc(pwg_query($query));
+    $feed_row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     if (empty($feed_row)) {
         page_not_found(l10n('Unknown feed identifier'));
     }
 
     if ($feed_row['user_id'] != $user['id']) { // new user
-        $user = build_user($feed_row['user_id'], true);
+        $user = FunctionsUser::build_user($feed_row['user_id'], true);
     }
 } else {
     $image_only = true;
-    if (! is_a_guest()) {// auto session was created - so switch to guest
-        $user = build_user($conf['guest_id'], true);
+    if (! FunctionsUser::is_a_guest()) {// auto session was created - so switch to guest
+        $user = FunctionsUser::build_user($conf['guest_id'], true);
     }
 }
 
 // Check the status now after the user has been loaded
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
-[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT NOW();'));
 
 set_make_full_url();
 
@@ -150,7 +145,7 @@ UPDATE ' . USER_FEED_TABLE . '
   SET last_check = \'' . $dbnow . '\'
   WHERE id = \'' . $feed_id . '\'
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 }
 
@@ -160,10 +155,10 @@ if ((! empty($feed_id) && empty($news)) && (! isset($feed_row['last_check']) || 
 ) > 30 * 24 * 3600)) {
     $query = '
 UPDATE ' . USER_FEED_TABLE . '
-  SET last_check = ' . pwg_db_get_recent_period_expression(-15, $dbnow) . '
+  SET last_check = ' . Mysqli::pwg_db_get_recent_period_expression(-15, $dbnow) . '
   WHERE id = \'' . $feed_id . '\'
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 $dates = get_recent_post_dates_array($conf['recent_post_dates']['RSS']);

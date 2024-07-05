@@ -66,7 +66,7 @@ class DisplayBlock
     /**
      * @param int $position
      */
-    public function set_position($position)
+    public function set_position($position): void
     {
         $this->_position = $position;
     }
@@ -83,7 +83,7 @@ class DisplayBlock
     /**
      * @param string $title
      */
-    public function set_title($title)
+    public function set_title($title): void
     {
         $this->_title = $title;
     }

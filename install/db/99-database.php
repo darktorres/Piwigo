@@ -15,7 +15,7 @@ $upgrade_description = 'delete the config parameter comments_update_validation';
 
 $query = 'DELETE FROM ' . CONFIG_TABLE . " WHERE param = 'comments_update_validation';";
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

@@ -14,7 +14,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 $upgrade_description = 'add auth_key_id in history table';
 
 // we use PREFIX_TABLE, in case Piwigo uses an external user table
-pwg_query('
+Mysqli::pwg_query('
 ALTER TABLE `' . PREFIX_TABLE . 'history`
   ADD COLUMN `auth_key_id` int(11) unsigned DEFAULT NULL
 ;');

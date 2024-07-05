@@ -2,10 +2,10 @@
 
 namespace Piwigo\admin;
 
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\trigger_change;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -23,7 +23,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
@@ -42,10 +44,10 @@ $query = '
 SELECT id, name, status, uppercats
   FROM ' . CATEGORIES_TABLE;
 
-$result = query2array($query);
+$result = Mysqli::query2array($query);
 
 foreach ($result as $cat) {
-    $cat['name'] = trigger_change('render_category_name', $cat['name'], 'admin_cat_list');
+    $cat['name'] = FunctionsPlugins::trigger_change('render_category_name', $cat['name'], 'admin_cat_list');
 
     $private = ($cat['status'] == 'private') ? 1 : 0;
 
@@ -67,10 +69,10 @@ SELECT
   ORDER BY RAND()
   LIMIT 1
 ;';
-$lines = query2array($query);
+$lines = Mysqli::query2array($query);
 $placeholder = null;
 foreach ($lines as $line) {
-    $name = trigger_change('render_category_name', $line['name']);
+    $name = FunctionsPlugins::trigger_change('render_category_name', $line['name']);
 
     if (mb_strlen((string) $name) > 25) {
         $name = mb_substr((string) $name, 0, 25) . '...';

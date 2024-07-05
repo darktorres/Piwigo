@@ -3,10 +3,10 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Languages;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_pwg_token;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\redirect;
 
@@ -48,7 +48,7 @@ if (! is_writable($languages_dir)) {
 // +-----------------------------------------------------------------------+
 
 if (isset($_GET['revision'])) {
-    if (! is_webmaster()) {
+    if (! FunctionsUser::is_webmaster()) {
         $page['errors'][] = l10n('Webmaster status is required.');
     } else {
         check_pwg_token();
@@ -119,6 +119,6 @@ if ($languages->get_server_languages(
 }
 
 $template->assign('ADMIN_PAGE_TITLE', l10n('Languages'));
-$template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
+$template->assign('isWebmaster', (FunctionsUser::is_webmaster()) ? 1 : 0);
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'languages');

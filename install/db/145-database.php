@@ -14,7 +14,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 $upgrade_description = 'add image formats table';
 
 // we use PREFIX_TABLE, in case Piwigo uses an external user table
-pwg_query('
+Mysqli::pwg_query('
 CREATE TABLE `' . PREFIX_TABLE . 'image_format` (
   `format_id` int(11) unsigned NOT NULL auto_increment,
   `image_id` mediumint(8) unsigned NOT NULL DEFAULT \'0\',

@@ -29,7 +29,7 @@ INSERT INTO ' . CONFIG_TABLE . ' (param,value,comment)
     ("picture_navigation_thumb","true","Display navigation thumbnails on picture page")
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

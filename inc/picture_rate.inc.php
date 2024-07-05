@@ -2,10 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -31,20 +28,20 @@ SELECT COUNT(rate) AS count
   FROM ' . RATE_TABLE . '
   WHERE element_id = ' . $picture['current']['id'] . '
 ;';
-        [$rate_summary['count'], $rate_summary['average']] = pwg_db_fetch_row(pwg_query($query));
+        [$rate_summary['count'], $rate_summary['average']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     }
 
     $template->assign('rate_summary', $rate_summary);
 
     $user_rate = null;
-    if ($conf['rate_anonymous'] || is_autorize_status(ACCESS_CLASSIC)) {
+    if ($conf['rate_anonymous'] || FunctionsUser::is_autorize_status(ACCESS_CLASSIC)) {
         if ($rate_summary['count'] > 0) {
             $query = 'SELECT rate
       FROM ' . RATE_TABLE . '
       WHERE element_id = ' . $page['image_id'] . '
       AND user_id = ' . $user['id'];
 
-            if (! is_autorize_status(ACCESS_CLASSIC)) {
+            if (! FunctionsUser::is_autorize_status(ACCESS_CLASSIC)) {
                 $ip_components = explode('.', (string) $_SERVER['REMOTE_ADDR']);
                 if (count($ip_components) > 3) {
                     array_pop($ip_components);
@@ -54,9 +51,9 @@ SELECT COUNT(rate) AS count
                 $query .= " AND anonymous_id = '" . $anonymous_id . "'";
             }
 
-            $result = pwg_query($query);
-            if (pwg_db_num_rows($result) > 0) {
-                $row = pwg_db_fetch_assoc($result);
+            $result = Mysqli::pwg_query($query);
+            if (Mysqli::pwg_db_num_rows($result) > 0) {
+                $row = Mysqli::pwg_db_fetch_assoc($result);
                 $user_rate = $row['rate'];
             }
         }

@@ -32,13 +32,13 @@ if (is_writable($local_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php')) 
       SET value = \'' . preg_replace('# rank (ASC|DESC)(,?)#', '', $order_by) . '\'
       WHERE param = \'order_by\'
     ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         $query = '
     UPDATE ' . PREFIX_TABLE . 'config
       SET value = \'' . $order_by . '\'
       WHERE param = \'order_by_inside_category\'
     ';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         // update local file (delete lines)
         $local_config = file($local_file);
@@ -63,13 +63,13 @@ if (is_writable($local_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php')) 
       SET value = \'ORDER BY date_available DESC, file ASC, id ASC\'
       WHERE param = \'order_by\'
     ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         $query = '
     UPDATE ' . PREFIX_TABLE . 'config
       SET value = \'ORDER BY date_available DESC, file ASC, id ASC\'
       WHERE param = \'order_by_inside_category\'
     ';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         // update local file (rename lines)
         $local_config = file_get_contents($local_file);
@@ -90,13 +90,13 @@ else {
     SET value = \'ORDER BY date_available DESC, file ASC, id ASC\'
     WHERE param = \'order_by\'
   ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
     $query = '
   UPDATE ' . PREFIX_TABLE . 'config
     SET value = \'ORDER BY date_available DESC, file ASC, id ASC\'
     WHERE param = \'order_by_inside_category\'
   ';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 echo "\n"

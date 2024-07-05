@@ -24,7 +24,7 @@ DROP PRIMARY KEY,
 DROP COLUMN id,
 ADD UNIQUE KEY history_summary_ymdh (`year`, `month`, `day`, `hour`)
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = 'ALTER TABLE ' . HISTORY_TABLE . '
 DROP COLUMN year,
@@ -32,7 +32,7 @@ DROP COLUMN month,
 DROP COLUMN day,
 DROP COLUMN hour
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . '"' . $upgrade_description . '"' . ' ended'

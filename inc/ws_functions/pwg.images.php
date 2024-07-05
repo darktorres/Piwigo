@@ -2,8 +2,11 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
 use Piwigo\inc\Error;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\NamedArray;
 use Piwigo\inc\NamedStruct;
@@ -23,14 +26,6 @@ use function Piwigo\admin\inc\set_tags;
 use function Piwigo\admin\inc\sync_metadata;
 use function Piwigo\admin\inc\tag_id_from_tag_name;
 use function Piwigo\admin\inc\update_category;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_changes;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_update;
 use function Piwigo\inc\get_cat_display_name_from_id;
 use function Piwigo\inc\get_common_tags;
 use function Piwigo\inc\get_element_path;
@@ -38,11 +33,8 @@ use function Piwigo\inc\get_ephemeral_key;
 use function Piwigo\inc\get_filename_wo_extension;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_quick_search_results;
-use function Piwigo\inc\get_sql_condition_FandF;
 use function Piwigo\inc\get_user_favorites;
 use function Piwigo\inc\insert_user_comment;
-use function Piwigo\inc\is_a_guest;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\make_picture_url;
@@ -51,7 +43,6 @@ use function Piwigo\inc\original_to_format;
 use function Piwigo\inc\pwg_activity;
 use function Piwigo\inc\rate_picture;
 use function Piwigo\inc\secure_directory;
-use function Piwigo\inc\trigger_notify;
 use function Piwigo\inc\url_is_remote;
 use function Piwigo\inc\ws_std_get_image_xml_attributes;
 use function Piwigo\inc\ws_std_get_tag_xml_attributes;
@@ -127,7 +118,7 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE id IN (' . implode(',', $cat_ids) . ')
 ;';
-    $db_cat_ids = query2array($query, null, 'id');
+    $db_cat_ids = Mysqli::query2array($query, null, 'id');
 
     $unknown_cat_ids = array_diff($cat_ids, $db_cat_ids);
     if (count($unknown_cat_ids) != 0) {
@@ -148,7 +139,7 @@ SELECT category_id
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE image_id = ' . $image_id . '
 ;';
-    $existing_cat_ids = query2array($query, null, 'category_id');
+    $existing_cat_ids = Mysqli::query2array($query, null, 'category_id');
 
     if ($replace_mode) {
         $to_remove_cat_ids = array_diff($existing_cat_ids, $cat_ids);
@@ -159,7 +150,7 @@ DELETE
   WHERE image_id = ' . $image_id . '
     AND category_id IN (' . implode(', ', $to_remove_cat_ids) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
             update_category($to_remove_cat_ids);
         }
     }
@@ -177,7 +168,7 @@ SELECT category_id, MAX(`rank`) AS max_rank
     AND category_id IN (' . implode(',', $new_cat_ids) . ')
   GROUP BY category_id
 ;';
-        $current_rank_of = query2array(
+        $current_rank_of = Mysqli::query2array(
             $query,
             'category_id',
             'max_rank'
@@ -204,7 +195,7 @@ SELECT category_id, MAX(`rank`) AS max_rank
         ];
     }
 
-    mass_inserts(
+    Mysqli::mass_inserts(
         IMAGE_CATEGORY_TABLE,
         array_keys($inserts[0]),
         $inserts
@@ -335,7 +326,7 @@ SELECT DISTINCT image_id
       INNER JOIN ' . CATEGORIES_TABLE . ' ON category_id=id
   WHERE commentable="true"
     AND image_id=' . $params['image_id'] .
-      get_sql_condition_FandF(
+      FunctionsUser::get_sql_condition_FandF(
           [
               'forbidden_categories' => 'id',
               'visible_categories' => 'id',
@@ -345,7 +336,7 @@ SELECT DISTINCT image_id
       ) . '
 ;';
 
-    if (! pwg_db_num_rows(pwg_query($query))) {
+    if (! Mysqli::pwg_db_num_rows(Mysqli::pwg_query($query))) {
         return new Error(WS_ERR_INVALID_PARAM, 'Invalid image_id');
     }
 
@@ -397,7 +388,7 @@ function ws_images_getInfo(
 SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id=' . $params['image_id'] .
-      get_sql_condition_FandF(
+      FunctionsUser::get_sql_condition_FandF(
           [
               'visible_images' => 'id',
           ],
@@ -405,13 +396,13 @@ SELECT *
       ) . '
 LIMIT 1
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    if (pwg_db_num_rows($result) == 0) {
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         return new Error(404, 'image_id not found');
     }
 
-    $image_row = pwg_db_fetch_assoc($result);
+    $image_row = Mysqli::pwg_db_fetch_assoc($result);
     $image_row = array_merge($image_row, ws_std_get_urls($image_row));
 
     //-------------------------------------------------------- related categories
@@ -420,18 +411,18 @@ SELECT id, name, permalink, uppercats, global_rank, commentable
   FROM ' . IMAGE_CATEGORY_TABLE . '
     INNER JOIN ' . CATEGORIES_TABLE . ' ON category_id = id
   WHERE image_id = ' . $image_row['id'] .
-      get_sql_condition_FandF(
+      FunctionsUser::get_sql_condition_FandF(
           [
               'forbidden_categories' => 'category_id',
           ],
           ' AND'
       ) . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $is_commentable = false;
     $related_categories = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if ($row['commentable'] == 'true') {
             $is_commentable = true;
         }
@@ -456,9 +447,9 @@ SELECT id, name, permalink, uppercats, global_rank, commentable
         $related_categories[] = $row;
     }
 
-    usort($related_categories, \Piwigo\inc\global_rank_compare(...));
+    usort($related_categories, \Piwigo\inc\FunctionsCategory::global_rank_compare(...));
 
-    if ($related_categories === [] && ! is_admin()) {
+    if ($related_categories === [] && ! FunctionsUser::is_admin()) {
         // photo might be in the lounge? or simply orphan. A standard user should not get
         // info. An admin should still be able to get info.
         return new Error(401, 'Access denied');
@@ -501,7 +492,7 @@ SELECT COUNT(rate) AS count, ROUND(AVG(rate),2) AS average
   FROM ' . RATE_TABLE . '
   WHERE element_id = ' . $image_row['id'] . '
 ;';
-        $row = pwg_db_fetch_assoc(pwg_query($query));
+        $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
         $rating['score'] = (float) $rating['score'];
         $rating['average'] = (float) $row['average'];
@@ -512,7 +503,7 @@ SELECT COUNT(rate) AS count, ROUND(AVG(rate),2) AS average
     $related_comments = [];
 
     $where_comments = 'image_id = ' . $image_row['id'];
-    if (! is_admin()) {
+    if (! FunctionsUser::is_admin()) {
         $where_comments .= ' AND validated="true"';
     }
 
@@ -521,7 +512,7 @@ SELECT COUNT(id) AS nb_comments
   FROM ' . COMMENTS_TABLE . '
   WHERE ' . $where_comments . '
 ;';
-    [$nb_comments] = query2array($query, null, 'nb_comments');
+    [$nb_comments] = Mysqli::query2array($query, null, 'nb_comments');
     $nb_comments = (int) $nb_comments;
 
     if ($nb_comments > 0 && $params['comments_per_page'] > 0) {
@@ -533,16 +524,16 @@ SELECT id, date, author, content
   LIMIT ' . (int) $params['comments_per_page'] . '
   OFFSET ' . (int) ($params['comments_per_page'] * $params['comments_page']) . '
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $row['id'] = (int) $row['id'];
             $related_comments[] = $row;
         }
     }
 
     $comment_post_data = null;
-    if ($is_commentable && (! is_a_guest() || is_a_guest() && $conf['comments_forall'])
+    if ($is_commentable && (! FunctionsUser::is_a_guest() || FunctionsUser::is_a_guest() && $conf['comments_forall'])
     ) {
         $comment_post_data['author'] = stripslashes((string) $user['username']);
         $comment_post_data['key'] = get_ephemeral_key(2, $params['image_id']);
@@ -618,7 +609,7 @@ SELECT DISTINCT id
   FROM ' . IMAGES_TABLE . '
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id=image_id
   WHERE id=' . $params['image_id']
-      . get_sql_condition_FandF(
+      . FunctionsUser::get_sql_condition_FandF(
           [
               'forbidden_categories' => 'category_id',
               'forbidden_images' => 'id',
@@ -627,7 +618,7 @@ SELECT DISTINCT id
       ) . '
   LIMIT 1
 ;';
-    if (pwg_db_num_rows(pwg_query($query)) == 0) {
+    if (Mysqli::pwg_db_num_rows(Mysqli::pwg_query($query)) == 0) {
         return new Error(404, 'Invalid image_id or access denied');
     }
 
@@ -688,11 +679,11 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $image_ids) . ')
 ;';
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
         $image_ids = array_flip($image_ids);
         $favorite_ids = get_user_favorites();
 
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $image = [];
             $image['is_favorite'] = isset($favorite_ids[$row['id']]);
             foreach (['id', 'width', 'height', 'hit'] as $k) {
@@ -752,11 +743,11 @@ UPDATE ' . IMAGES_TABLE . '
   SET level=' . (int) $params['level'] . '
   WHERE id IN (' . implode(',', $params['image_id']) . ')
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     pwg_activity('photo', $params['image_id'], 'edit');
 
-    $affected_rows = pwg_db_changes();
+    $affected_rows = Mysqli::pwg_db_changes();
     if ($affected_rows) {
         require_once(__DIR__ . '/../../admin/inc/functions.php');
         invalidate_user_cache();
@@ -792,7 +783,7 @@ SELECT
   WHERE category_id = ' . $params['category_id'] . '
   ORDER BY `rank` ASC
 ;';
-        $image_ids = query2array($query, null, 'image_id');
+        $image_ids = Mysqli::query2array($query, null, 'image_id');
 
         // return data for client
         return [
@@ -814,7 +805,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(404, 'image_id not found');
     }
@@ -826,7 +817,7 @@ SELECT COUNT(*)
   WHERE image_id = ' . $params['image_id'] . '
     AND category_id = ' . $params['category_id'] . '
 ;';
-    [$count] = pwg_db_fetch_row(pwg_query($query));
+    [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($count == 0) {
         return new Error(404, 'This image is not associated to this category');
     }
@@ -837,7 +828,7 @@ SELECT MAX(`rank`) AS max_rank
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id = ' . $params['category_id'] . '
 ;';
-    $row = pwg_db_fetch_assoc(pwg_query($query));
+    $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
     if (is_numeric($row['max_rank'])) {
         if ($params['rank'] > $row['max_rank']) {
@@ -855,7 +846,7 @@ UPDATE ' . IMAGE_CATEGORY_TABLE . '
     AND `rank` IS NOT NULL
     AND `rank` >= ' . $params['rank'] . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     // set the new rank for the photo
     $query = '
@@ -864,7 +855,7 @@ UPDATE ' . IMAGE_CATEGORY_TABLE . '
   WHERE image_id = ' . $params['image_id'] . '
     AND category_id = ' . $params['category_id'] . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     // return data for client
     return [
@@ -957,13 +948,13 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    if (pwg_db_num_rows($result) == 0) {
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         return new Error(404, 'image_id not found');
     }
 
-    $image = pwg_db_fetch_assoc($result);
+    $image = Mysqli::pwg_db_fetch_assoc($result);
 
     // since Piwigo 2.4 and derivatives, we do not take the imported "thumb" into account
     if ($params['type'] == 'thumb') {
@@ -1049,7 +1040,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-        [$count] = pwg_db_fetch_row(pwg_query($query));
+        [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($count == 0) {
             return new Error(404, 'image_id not found');
         }
@@ -1070,7 +1061,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE ' . $where_clause . '
 ;';
-        [$counter] = pwg_db_fetch_row(pwg_query($query));
+        [$counter] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($counter != 0) {
             return new Error(500, 'file already exists');
         }
@@ -1120,7 +1111,7 @@ SELECT COUNT(*)
     }
 
     if (array_keys($update) !== []) {
-        single_update(
+        Mysqli::single_update(
             IMAGES_TABLE,
             $update,
             [
@@ -1145,8 +1136,8 @@ SELECT id, name, permalink
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $category_id . '
 ;';
-            $result = pwg_query($query);
-            $category = pwg_db_fetch_assoc($result);
+            $result = Mysqli::pwg_query($query);
+            $category = Mysqli::pwg_db_fetch_assoc($result);
 
             $url_params['section'] = 'categories';
             $url_params['category'] = $category;
@@ -1215,7 +1206,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-        [$count] = pwg_db_fetch_row(pwg_query($query));
+        [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($count == 0) {
             return new Error(404, 'image_id not found');
         }
@@ -1246,7 +1237,7 @@ SELECT COUNT(*)
         }
     }
 
-    single_update(
+    Mysqli::single_update(
         IMAGES_TABLE,
         $update,
         [
@@ -1282,8 +1273,8 @@ SELECT id, name, permalink
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $params['category'][0] . '
 ;';
-        $result = pwg_query($query);
-        $category = pwg_db_fetch_assoc($result);
+        $result = Mysqli::pwg_query($query);
+        $category = Mysqli::pwg_db_fetch_assoc($result);
 
         $url_params['section'] = 'categories';
         $url_params['category'] = $category;
@@ -1430,7 +1421,7 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['format_of'] . '
 ;';
-            $images = query2array($query);
+            $images = Mysqli::query2array($query);
             if (count($images) == 0) {
                 return new Error(404, __FUNCTION__ . ' : image_id not found');
             }
@@ -1464,7 +1455,7 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $image_id . '
 ;';
-        $image_infos = pwg_db_fetch_assoc(pwg_query($query));
+        $image_infos = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
         $query = '
 SELECT
@@ -1472,7 +1463,7 @@ SELECT
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id = ' . $params['category'][0] . '
 ;';
-        $category_infos = pwg_db_fetch_assoc(pwg_query($query));
+        $category_infos = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
         $query = '
 SELECT
@@ -1480,7 +1471,7 @@ SELECT
   FROM ' . LOUNGE_TABLE . '
   WHERE category_id = ' . $params['category'][0] . '
 ;';
-        [$nb_photos_lounge] = pwg_db_fetch_row(pwg_query($query));
+        [$nb_photos_lounge] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
         $category_name = get_cat_display_name_from_id($params['category'][0], null);
 
@@ -1539,7 +1530,7 @@ SELECT COUNT(*)
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-        [$count] = pwg_db_fetch_row(pwg_query($query));
+        [$count] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
         if ($count == 0) {
             return new Error(404, __FUNCTION__ . ' : image_id not found');
         }
@@ -1724,7 +1715,7 @@ SELECT COUNT(*)
     }
 
     if (array_keys($update) !== []) {
-        single_update(
+        Mysqli::single_update(
             IMAGES_TABLE,
             $update,
             [
@@ -1736,7 +1727,7 @@ SELECT COUNT(*)
     // final step, reset user cache
     invalidate_user_cache();
 
-    // trick to bypass get_sql_condition_FandF
+    // trick to bypass FunctionsUser::get_sql_condition_FandF
     if (! empty($params['level']) && $params['level'] > $user['level']) {
         // this will not persist
         $user['level'] = $params['level'];
@@ -1805,7 +1796,7 @@ SELECT id, md5sum
   FROM ' . IMAGES_TABLE . '
   WHERE md5sum IN (\'' . implode("','", $md5sums) . '\')
 ;';
-        $id_of_md5 = query2array($query, 'md5sum', 'id');
+        $id_of_md5 = Mysqli::query2array($query, 'md5sum', 'id');
 
         foreach ($md5sums as $md5sum) {
             $result[$md5sum] = null;
@@ -1828,7 +1819,7 @@ SELECT id, file
   FROM ' . IMAGES_TABLE . '
   WHERE file IN (\'' . implode("','", $filenames) . '\')
 ;';
-        $id_of_filename = query2array($query, 'file', 'id');
+        $id_of_filename = Mysqli::query2array($query, 'file', 'id');
 
         foreach ($filenames as $filename) {
             $result[$filename] = null;
@@ -1868,8 +1859,8 @@ SELECT
     file
   FROM ' . IMAGES_TABLE . '
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $filename_wo_ext = get_filename_wo_extension($row['file']);
         @$unique_filenames_db[$filename_wo_ext][] = $row['id'];
     }
@@ -1973,8 +1964,8 @@ SELECT
   FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE format_id IN (' . implode(',', $format_ids) . ')
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
 
         if (! isset($formats_of[$row['image_id']])) {
             $image_ids[] = $row['image_id'];
@@ -1996,8 +1987,8 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $image_ids) . ')
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if (url_is_remote($row['path'])) {
             continue;
         }
@@ -2025,7 +2016,7 @@ SELECT
 DELETE FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE format_id IN (' . implode(',', $format_ids) . ')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     invalidate_user_cache();
 
@@ -2052,13 +2043,13 @@ SELECT path
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    if (pwg_db_num_rows($result) == 0) {
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         return new Error(404, 'image_id not found');
     }
 
-    [$path] = pwg_db_fetch_row($result);
+    [$path] = Mysqli::pwg_db_fetch_row($result);
 
     $ret = [];
 
@@ -2115,13 +2106,13 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $params['image_id'] . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    if (pwg_db_num_rows($result) == 0) {
+    if (Mysqli::pwg_db_num_rows($result) == 0) {
         return new Error(404, 'image_id not found');
     }
 
-    $image_row = pwg_db_fetch_assoc($result);
+    $image_row = Mysqli::pwg_db_fetch_assoc($result);
 
     // database registration
     $update = [];
@@ -2179,7 +2170,7 @@ SELECT *
     if (array_keys($update) !== []) {
         $update['id'] = $params['image_id'];
 
-        single_update(
+        Mysqli::single_update(
             IMAGES_TABLE,
             $update,
             [
@@ -2353,10 +2344,10 @@ SELECT
   FROM ' . IMAGE_CATEGORY_TABLE . '
   WHERE category_id = ' . $params['category_id'] . '
 ;';
-    $category_infos = pwg_db_fetch_assoc(pwg_query($query));
+    $category_infos = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     $category_name = get_cat_display_name_from_id($params['category_id'], null);
 
-    trigger_notify(
+    FunctionsPlugins::trigger_notify(
         'ws_images_uploadCompleted',
         [
             'image_ids' => $image_ids,
@@ -2419,7 +2410,7 @@ SELECT id
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(', ', $params['image_id']) . ')
 ;';
-    $params['image_id'] = query2array($query, null, 'id');
+    $params['image_id'] = Mysqli::query2array($query, null, 'id');
 
     if (empty($params['image_id'])) {
         return new Error(403, 'No image found');

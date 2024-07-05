@@ -22,7 +22,7 @@ $tables = [
 ];
 
 foreach ($tables as $table) {
-    pwg_query('
+    Mysqli::pwg_query('
 ALTER TABLE ' . $table . '
   ADD `lastmodified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   ADD INDEX `lastmodified` (`lastmodified`)

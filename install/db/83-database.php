@@ -26,7 +26,7 @@ AND u.' . $conf['user_fields']['id'] . ' = i.user_id
 AND i.registration_date <= c.date
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 UPDATE ' . COMMENTS_TABLE . ' AS c 
@@ -34,7 +34,7 @@ SET c.author_id = ' . $conf['guest_id'] . '
 WHERE c.author_id is null
 ;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

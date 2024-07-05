@@ -2,7 +2,7 @@
 
 namespace Piwigo\admin;
 
-use function Piwigo\inc\build_user;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
 use function Piwigo\inc\get_root_url;
@@ -24,7 +24,7 @@ if (! defined(
 
 check_input_parameter('user_id', $_GET, false, PATTERN_ID);
 
-$edit_user = build_user($_GET['user_id'], false);
+$edit_user = FunctionsUser::build_user($_GET['user_id'], false);
 
 if ($_POST !== []) {
     check_pwg_token();

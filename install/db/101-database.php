@@ -15,25 +15,25 @@ $upgrade_description = 'merge nb_line_page and nb_image_line into nb_image_page'
 
 // add column
 if ($conf['dblayer'] == 'mysql') {
-    pwg_query('
+    Mysqli::pwg_query('
     ALTER TABLE ' . USER_INFOS_TABLE . ' 
       ADD COLUMN `nb_image_page` smallint(3) unsigned NOT NULL default \'15\'
   ;');
 } elseif (in_array($conf['dblayer'], ['pgsql', 'sqlite', 'pdo-sqlite'])) {
-    pwg_query('
+    Mysqli::pwg_query('
     ALTER TABLE ' . USER_INFOS_TABLE . ' 
       ADD COLUMN "nb_image_page" INTEGER default 15 NOT NULL
   ;');
 }
 
 // merge datas
-pwg_query('
+Mysqli::pwg_query('
   UPDATE ' . USER_INFOS_TABLE . ' 
   SET nb_image_page = nb_line_page*nb_image_line
 ;');
 
 // delete old columns
-pwg_query('
+Mysqli::pwg_query('
   ALTER TABLE ' . USER_INFOS_TABLE . ' 
     DROP `nb_line_page`,
     DROP `nb_image_line`

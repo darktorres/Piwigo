@@ -24,12 +24,12 @@ class QSearchScope
     ) {
     }
 
-    public function parse($token)
+    public function parse($token): bool
     {
         return ! (! $this->nullable && strlen($token->term) == 0);
     }
 
-    public function process_char(&$ch, &$crt_token)
+    public function process_char(&$ch, &$crt_token): bool
     {
         return false;
     }

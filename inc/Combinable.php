@@ -40,17 +40,14 @@ class Combinable
     /**
      * @param string $path
      */
-    public function set_path($path)
+    public function set_path($path): void
     {
         if (! empty($path)) {
             $this->path = $path;
         }
     }
 
-    /**
-     * @return bool
-     */
-    public function is_remote()
+    public function is_remote(): bool
     {
         return url_is_remote($this->path) || str_starts_with($this->path, '//');
     }

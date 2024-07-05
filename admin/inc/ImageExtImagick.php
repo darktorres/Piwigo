@@ -47,7 +47,7 @@ class ImageExtImagick implements imageInterface
         $this->height = $match[2];
     }
 
-    public function add_command($command, $params = null)
+    public function add_command($command, $params = null): void
     {
         $this->commands[$command] = $params;
     }
@@ -65,7 +65,7 @@ class ImageExtImagick implements imageInterface
     }
 
     #[\Override]
-    public function crop($width, $height, $x, $y)
+    public function crop($width, $height, $x, $y): bool
     {
         $this->width = $width;
         $this->height = $height;
@@ -75,14 +75,14 @@ class ImageExtImagick implements imageInterface
     }
 
     #[\Override]
-    public function strip()
+    public function strip(): bool
     {
         $this->add_command('strip');
         return true;
     }
 
     #[\Override]
-    public function rotate($rotation)
+    public function rotate($rotation): bool
     {
         if (empty($rotation)) {
             return true;
@@ -100,14 +100,14 @@ class ImageExtImagick implements imageInterface
     }
 
     #[\Override]
-    public function set_compression_quality($quality)
+    public function set_compression_quality($quality): bool
     {
         $this->add_command('quality', $quality);
         return true;
     }
 
     #[\Override]
-    public function resize($width, $height)
+    public function resize($width, $height): bool
     {
         $this->width = $width;
         $this->height = $height;
@@ -118,7 +118,7 @@ class ImageExtImagick implements imageInterface
     }
 
     #[\Override]
-    public function sharpen($amount)
+    public function sharpen($amount): bool
     {
         $m = Image::get_sharpen_matrix($amount);
 
@@ -134,7 +134,7 @@ class ImageExtImagick implements imageInterface
     }
 
     #[\Override]
-    public function compose($overlay, $x, $y, $opacity)
+    public function compose($overlay, $x, $y, $opacity): bool
     {
         $param = 'compose dissolve -define compose:args=' . $opacity;
         $param .= ' ' . escapeshellarg(realpath($overlay->image->source_filepath));
@@ -145,7 +145,7 @@ class ImageExtImagick implements imageInterface
     }
 
     #[\Override]
-    public function write($destination_filepath)
+    public function write($destination_filepath): bool
     {
         global $logger;
 

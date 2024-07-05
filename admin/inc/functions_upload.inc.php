@@ -2,21 +2,12 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsPlugins;
 use Piwigo\inc\SrcImage;
-use function Piwigo\inc\add_event_handler;
 use function Piwigo\inc\conf_get_param;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_insert;
-use function Piwigo\inc\dbLayer\single_update;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\get_filename_wo_extension;
 use function Piwigo\inc\get_name_from_file;
@@ -25,8 +16,6 @@ use function Piwigo\inc\original_to_representative;
 use function Piwigo\inc\pwg_activity;
 use function Piwigo\inc\secure_directory;
 use function Piwigo\inc\set_make_full_url;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\trigger_notify;
 use function Piwigo\inc\unset_make_full_url;
 
 // +-----------------------------------------------------------------------+
@@ -39,11 +28,11 @@ use function Piwigo\inc\unset_make_full_url;
 require_once(__DIR__ . '/../../admin/inc/functions.php');
 
 // add default event handler for image and thumbnail resize
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'upload_image_resize',
     '\Piwigo\admin\inc\pwg_resize'
 );
-add_event_handler('upload_thumbnail_resize', '\Piwigo\admin\inc\pwg_resize');
+FunctionsPlugins::add_event_handler('upload_thumbnail_resize', '\Piwigo\admin\inc\pwg_resize');
 
 function get_upload_form_config(): array
 {
@@ -103,7 +92,7 @@ function save_upload_form_config($data, &$errors = [], array &$form_errors = [])
             $value = isset($value);
             $updates[] = [
                 'param' => $field,
-                'value' => boolean_to_string($value),
+                'value' => Mysqli::boolean_to_string($value),
             ];
         } elseif ($upload_form_config[$field]['can_be_null'] && empty($value)) {
             $updates[] = [
@@ -133,7 +122,7 @@ function save_upload_form_config($data, &$errors = [], array &$form_errors = [])
     }
 
     if (count($errors) == 0) {
-        mass_updates(
+        Mysqli::mass_updates(
             CONFIG_TABLE,
             [
                 'primary' => ['param'],
@@ -182,8 +171,8 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $image_id . '
 ;';
-        $result = pwg_query($query);
-        while ($row = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query($query);
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $file_path = $row['path'];
         }
 
@@ -197,7 +186,7 @@ SELECT
         // this photo is new
 
         // current date
-        [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        [$dbnow] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT NOW();'));
         [$year, $month, $day] = preg_split('/[^\d]/', (string) $dbnow, 4);
 
         // upload directory hierarchy
@@ -249,7 +238,7 @@ SELECT
 
     // handle the uploaded file type by potentially making a
     // pwg_representative file.
-    $representative_ext = trigger_change('upload_file', null, $file_path);
+    $representative_ext = FunctionsPlugins::trigger_change('upload_file', null, $file_path);
 
     global $logger;
     $logger->info('Handling ' . (string) $file_path . ' got ' . (string) $representative_ext);
@@ -293,7 +282,7 @@ SELECT
 
     if (isset($image_id)) {
         $update = [
-            'file' => pwg_db_real_escape_string(
+            'file' => Mysqli::pwg_db_real_escape_string(
                 $original_filename ?? basename((string) $file_path)
             ),
             'filesize' => $file_infos['filesize'],
@@ -308,7 +297,7 @@ SELECT
             $update['level'] = $level;
         }
 
-        single_update(
+        Mysqli::single_update(
             IMAGES_TABLE,
             $update,
             [
@@ -317,7 +306,7 @@ SELECT
         );
     } else {
         // database registration
-        $file = pwg_db_real_escape_string(
+        $file = Mysqli::pwg_db_real_escape_string(
             $original_filename ?? basename((string) $file_path)
         );
         $insert = [
@@ -341,9 +330,9 @@ SELECT
             $insert['representative_ext'] = $representative_ext;
         }
 
-        single_insert(IMAGES_TABLE, $insert);
+        Mysqli::single_insert(IMAGES_TABLE, $insert);
 
-        $image_id = pwg_db_insert_id();
+        $image_id = Mysqli::pwg_db_insert_id();
         pwg_activity('photo', $image_id, 'add');
     }
 
@@ -353,8 +342,8 @@ SELECT
 
     if (! $conf['lounge_active']) {
         // check if we need to use the lounge from now
-        [$nb_photos] = pwg_db_fetch_row(
-            pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE . ';')
+        [$nb_photos] = Mysqli::pwg_db_fetch_row(
+            Mysqli::pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE . ';')
         );
         if ($nb_photos >= $conf['lounge_activate_threshold']) {
             conf_update_param('lounge_active', true, true);
@@ -391,7 +380,7 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $image_id . '
 ;';
-    $image_infos = pwg_db_fetch_assoc(pwg_query($query));
+    $image_infos = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
     $src_image = new SrcImage($image_infos);
 
     set_make_full_url();
@@ -407,7 +396,7 @@ SELECT
 
     fetchRemote($derivative_url, $dest);
 
-    trigger_notify('loc_end_add_uploaded_file', $image_infos);
+    FunctionsPlugins::trigger_notify('loc_end_add_uploaded_file', $image_infos);
 
     return $image_id;
 }
@@ -437,7 +426,7 @@ SELECT
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $format_of . '
 ;';
-    $images = query2array($query);
+    $images = Mysqli::query2array($query);
 
     if (! isset($images[0])) {
         die('[' . __FUNCTION__ . '] this photo does not exist in the database');
@@ -465,8 +454,8 @@ SELECT
         'filesize' => $file_infos['filesize'],
     ];
 
-    single_insert(IMAGE_FORMAT_TABLE, $insert);
-    $format_id = pwg_db_insert_id();
+    Mysqli::single_insert(IMAGE_FORMAT_TABLE, $insert);
+    $format_id = Mysqli::pwg_db_insert_id();
 
     pwg_activity('photo', $format_of, 'edit', [
         'action' => 'add format',
@@ -477,13 +466,13 @@ SELECT
     $format_infos = $insert;
     $format_infos['format_id'] = $format_id;
 
-    trigger_notify('loc_end_add_format', $format_infos);
+    FunctionsPlugins::trigger_notify('loc_end_add_format', $format_infos);
 
     return $format_id;
 }
 
-add_event_handler('upload_file', '\Piwigo\admin\inc\upload_file_pdf');
-function upload_file_pdf($representative_ext, $file_path)
+FunctionsPlugins::add_event_handler('upload_file', '\Piwigo\admin\inc\upload_file_pdf');
+function upload_file_pdf($representative_ext, string $file_path)
 {
     global $logger, $conf;
 
@@ -529,8 +518,8 @@ function upload_file_pdf($representative_ext, $file_path)
     return $representative_ext;
 }
 
-add_event_handler('upload_file', '\Piwigo\admin\inc\upload_file_tiff');
-function upload_file_tiff($representative_ext, $file_path)
+FunctionsPlugins::add_event_handler('upload_file', '\Piwigo\admin\inc\upload_file_tiff');
+function upload_file_tiff($representative_ext, string $file_path)
 {
     global $logger, $conf;
 
@@ -593,8 +582,8 @@ function upload_file_tiff($representative_ext, $file_path)
     return get_extension($representative_file_abspath);
 }
 
-add_event_handler('upload_file', '\Piwigo\admin\inc\upload_file_video');
-function upload_file_video($representative_ext, $file_path)
+FunctionsPlugins::add_event_handler('upload_file', '\Piwigo\admin\inc\upload_file_video');
+function upload_file_video($representative_ext, string $file_path)
 {
     global $logger, $conf;
 

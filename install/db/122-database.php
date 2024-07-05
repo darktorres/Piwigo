@@ -24,12 +24,12 @@ SELECT
     high_height
   FROM ' . IMAGES_TABLE . '
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 $starttime = get_moment();
 
 $updates = [];
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if ($row['has_high'] == 'true') {
         $high_path = dirname((string) $row['path']) . '/pwg_high/' . basename((string) $row['path']);
         rename($high_path, $row['path']);
@@ -44,7 +44,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 if ($updates !== []) {
-    mass_updates(
+    Mysqli::mass_updates(
         IMAGES_TABLE,
         [
             'primary' => ['id'],

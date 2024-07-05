@@ -19,7 +19,7 @@ if ($conf['dblayer'] == 'mysql') {
 ALTER TABLE ' . IMAGES_TABLE . '
   MODIFY date_creation datetime
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 echo "\n"

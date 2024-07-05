@@ -2,16 +2,13 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\Error;
+use Piwigo\inc\FunctionsCategory;
 use Piwigo\inc\NamedArray;
 use function Piwigo\admin\inc\add_permission_on_category;
 use function Piwigo\admin\inc\get_uppercat_ids;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dblayer\query2array;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\get_subcat_ids;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -50,9 +47,9 @@ SELECT user_id, cat_id
   FROM ' . USER_ACCESS_TABLE . '
   ' . $cat_filter . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
@@ -68,9 +65,9 @@ SELECT ug.user_id, ga.cat_id
     ON ug.group_id = ga.group_id
   ' . $cat_filter . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
@@ -84,9 +81,9 @@ SELECT group_id, cat_id
   FROM ' . GROUP_ACCESS_TABLE . '
   ' . $cat_filter . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
@@ -150,7 +147,7 @@ function ws_permissions_add(
     if (! empty($params['group_id'])) {
         $cat_ids = get_uppercat_ids($params['cat_id']);
         if ($params['recursive']) {
-            $cat_ids = array_merge($cat_ids, get_subcat_ids($params['cat_id']));
+            $cat_ids = array_merge($cat_ids, FunctionsCategory::get_subcat_ids($params['cat_id']));
         }
 
         $query = '
@@ -159,7 +156,7 @@ SELECT id
   WHERE id IN (' . implode(',', $cat_ids) . ')
     AND status = \'private\'
 ;';
-        $private_cats = query2array($query, null, 'id');
+        $private_cats = Mysqli::query2array($query, null, 'id');
 
         $inserts = [];
         foreach ($private_cats as $cat_id) {
@@ -171,7 +168,7 @@ SELECT id
             }
         }
 
-        mass_inserts(
+        Mysqli::mass_inserts(
             GROUP_ACCESS_TABLE,
             ['group_id', 'cat_id'],
             $inserts,
@@ -212,7 +209,7 @@ function ws_permissions_remove(
 
     require_once(__DIR__ . '/../../admin/inc/functions.php');
 
-    $cat_ids = get_subcat_ids($params['cat_id']);
+    $cat_ids = FunctionsCategory::get_subcat_ids($params['cat_id']);
 
     if (! empty($params['group_id'])) {
         $query = '
@@ -221,7 +218,7 @@ DELETE
   WHERE group_id IN (' . implode(',', $params['group_id']) . ')
     AND cat_id IN (' . implode(',', $cat_ids) . ')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     if (! empty($params['user_id'])) {
@@ -231,7 +228,7 @@ DELETE
   WHERE user_id IN (' . implode(',', $params['user_id']) . ')
     AND cat_id IN (' . implode(',', $cat_ids) . ')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     return $service->invoke('pwg.permissions.getList', [

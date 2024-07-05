@@ -2,7 +2,11 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\get_admin_client_cache_keys;
 use function Piwigo\admin\inc\get_tag_ids;
@@ -10,19 +14,13 @@ use function Piwigo\admin\inc\get_taglist;
 use function Piwigo\admin\inc\invalidate_user_cache;
 use function Piwigo\admin\inc\set_tags;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\create_navigation_bar;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\get_cat_info;
 use function Piwigo\inc\get_name_from_file;
 use function Piwigo\inc\get_privacy_level_options;
 use function Piwigo\inc\get_query_string_diff;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\render_element_name;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -47,9 +45,11 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
-trigger_notify('loc_begin_element_set_unit');
+FunctionsPlugins::trigger_notify('loc_begin_element_set_unit');
 
 // +-----------------------------------------------------------------------+
 // |                        unit mode form submission                      |
@@ -66,9 +66,9 @@ SELECT id, date_creation
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $collection) . ')
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $data = [];
 
         $data['id'] = $row['id'];
@@ -95,7 +95,7 @@ SELECT id, date_creation
         set_tags($tag_ids, $row['id']);
     }
 
-    mass_updates(
+    Mysqli::mass_updates(
         IMAGES_TABLE,
         [
             'primary' => ['id'],
@@ -169,7 +169,7 @@ SELECT *
   FROM ' . IMAGES_TABLE;
 
     if ($is_category) {
-        $category_info = get_cat_info($_SESSION['bulk_manager_filter']['category']);
+        $category_info = FunctionsCategory::get_cat_info($_SESSION['bulk_manager_filter']['category']);
 
         $conf['order_by'] = $conf['order_by_inside_category'];
         if (! empty($category_info['image_order'])) {
@@ -192,9 +192,9 @@ SELECT *
   ' . $conf['order_by'] . '
   LIMIT ' . $page['nb_images'] . ' OFFSET ' . $page['start'] . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $element_ids[] = $row['id'];
 
         $src_image = new SrcImage($row);
@@ -244,7 +244,7 @@ SELECT
     ]);
 }
 
-trigger_notify('loc_end_element_set_unit');
+FunctionsPlugins::trigger_notify('loc_end_element_set_unit');
 
 // +-----------------------------------------------------------------------+
 // |                           sending html code                           |

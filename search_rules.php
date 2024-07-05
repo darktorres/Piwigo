@@ -2,14 +2,12 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_cat_display_name_cache;
 use function Piwigo\inc\get_search_array;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -38,7 +36,7 @@ function inc_exc_str(
 
 define('PHPWG_ROOT_PATH', './');
 require_once(__DIR__ . '/inc/common.inc.php');
-check_status(ACCESS_FREE);
+FunctionsUser::check_status(ACCESS_FREE);
 require_once(__DIR__ . '/inc/functions_search.inc.php');
 
 $page['body_id'] = 'thePopuphelpPage';
@@ -96,7 +94,7 @@ SELECT name
 ;';
     $template->assign(
         'search_tags',
-        query2array($query, null, 'name')
+        Mysqli::query2array($query, null, 'name')
     );
 }
 
@@ -113,7 +111,7 @@ if (isset($search['fields']['author'])) {
 if (isset($search['fields']['cat'])) {
     if ($search['fields']['cat']['sub_inc']) {
         // searching all the categories id of sub-categories
-        $cat_ids = get_subcat_ids(
+        $cat_ids = FunctionsCategory::get_subcat_ids(
             $search['fields']['cat']['words']
         );
     } else {
@@ -127,16 +125,16 @@ SELECT id, uppercats, global_rank
       implode(',', $cat_ids) .
       ')
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $categories = [];
     if (! empty($result)) {
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $categories[] = $row;
         }
     }
 
-    usort($categories, \Piwigo\inc\global_rank_compare(...));
+    usort($categories, FunctionsCategory::global_rank_compare(...));
 
     foreach ($categories as $category) {
         $template->append(

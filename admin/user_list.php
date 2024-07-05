@@ -2,21 +2,14 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\dbLayer\get_enums;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\get_default_language;
-use function Piwigo\inc\get_default_theme;
-use function Piwigo\inc\get_default_user_info;
 use function Piwigo\inc\get_languages;
 use function Piwigo\inc\get_pwg_themes;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\userprefs_get_param;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -49,9 +42,9 @@ SELECT id, name
   FROM ' . GROUPS_TABLE . '
   ORDER BY name ASC
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $groups[$row['id']] = $row['name'];
 }
 
@@ -66,10 +59,10 @@ SELECT DISTINCT
 FROM ' . USER_INFOS_TABLE . '
 ORDER BY registration_date
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
 $register_dates = [];
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $register_dates[] = $row['registration_month'] . ' ' . $row['registration_year'];
 }
 
@@ -90,7 +83,7 @@ $template->set_filenames([
     'user_list' => 'user_list.tpl',
 ]);
 
-$default_user = get_default_user_info(true);
+$default_user = FunctionsUser::get_default_user_info(true);
 
 $protected_users = [
     $user['id'],
@@ -109,7 +102,7 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-    $admin_ids = query2array($query, null, 'user_id');
+    $admin_ids = Mysqli::query2array($query, null, 'user_id');
 
     $protected_users = array_merge($protected_users, $admin_ids);
 
@@ -127,9 +120,9 @@ $template->assign(
         'NB_IMAGE_PAGE' => $default_user['nb_image_page'],
         'RECENT_PERIOD' => $default_user['recent_period'],
         'theme_options' => get_pwg_themes(),
-        'theme_selected' => get_default_theme(),
+        'theme_selected' => FunctionsUser::get_default_theme(),
         'language_options' => get_languages(),
-        'language_selected' => get_default_language(),
+        'language_selected' => FunctionsUser::get_default_language(),
         'association_options' => $groups,
         'protected_users' => implode(',', array_unique($protected_users)),
         'password_protected_users' => implode(',', array_unique($password_protected_users)),
@@ -146,7 +139,7 @@ if (isset($_GET['show_add_user'])) {
 }
 
 // Status options
-foreach (get_enums(USER_INFOS_TABLE, 'status') as $status) {
+foreach (Mysqli::get_enums(USER_INFOS_TABLE, 'status') as $status) {
     $label_of_status[$status] = l10n('user_status_' . $status);
 }
 
@@ -175,12 +168,12 @@ SELECT id, name, is_default
   FROM ' . GROUPS_TABLE . '
   ORDER BY name ASC
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
 $groups_arr_id = [];
 $groups_arr_name = [];
-while ($row = pwg_db_fetch_assoc($result)) {
-    $groups_arr_name[] = '"' . pwg_db_real_escape_string($row['name']) . '"';
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
+    $groups_arr_name[] = '"' . Mysqli::pwg_db_real_escape_string($row['name']) . '"';
     $groups_arr_id[] = $row['id'];
 }
 
@@ -188,14 +181,20 @@ $template->assign('groups_arr_id', implode(',', $groups_arr_id));
 $template->assign('groups_arr_name', implode(',', $groups_arr_name));
 $template->assign('guest_id', $conf['guest_id']);
 
-$template->assign('view_selector', userprefs_get_param('user-manager-view', 'line'));
+$template->assign('view_selector', FunctionsUser::userprefs_get_param('user-manager-view', 'line'));
 
-if (userprefs_get_param('user-manager-view', 'line') == 'line') {
+if (FunctionsUser::userprefs_get_param('user-manager-view', 'line') == 'line') {
     //Show 5 users by default
-    $template->assign('pagination', userprefs_get_param('user-manager-pagination', 5));
+    $template->assign(
+        'pagination',
+        FunctionsUser::userprefs_get_param('user-manager-pagination', 5)
+    );
 } else {
     //Show 10 users by default
-    $template->assign('pagination', userprefs_get_param('user-manager-pagination', 10));
+    $template->assign(
+        'pagination',
+        FunctionsUser::userprefs_get_param('user-manager-pagination', 10)
+    );
 }
 
 // +-----------------------------------------------------------------------+

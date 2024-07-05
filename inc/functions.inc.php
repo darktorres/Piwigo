@@ -2,22 +2,10 @@
 
 namespace Piwigo\inc;
 
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\admin\inc\empty_lounge;
 use function Piwigo\admin\inc\history_autopurge;
 use function Piwigo\admin\inc\history_summarize;
-use function Piwigo\inc\dbLayer\boolean_to_string;
-use function Piwigo\inc\dbLayer\get_boolean;
-use function Piwigo\inc\dbLayer\get_enums;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_get_recent_period;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_update;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -25,11 +13,10 @@ use function Piwigo\inc\dbLayer\single_update;
 // | For copyright and license information, please view the COPYING.txt    |
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
-
-require_once(__DIR__ . '/../inc/functions_user.inc.php');
-require_once(__DIR__ . '/../inc/functions_cookie.inc.php');
-require_once(__DIR__ . '/../inc/functions_session.inc.php');
-require_once(__DIR__ . '/../inc/functions_category.inc.php');
+require_once(__DIR__ . '/../inc/FunctionsUser.php');
+require_once(__DIR__ . '/../inc/FunctionsCookie.php');
+require_once(__DIR__ . '/../inc/FunctionsSession.php');
+require_once(__DIR__ . '/../inc/FunctionsCategory.php');
 require_once(__DIR__ . '/../inc/functions_html.inc.php');
 require_once(__DIR__ . '/../inc/functions_tag.inc.php');
 require_once(__DIR__ . '/../inc/functions_url.inc.php');
@@ -518,10 +505,10 @@ SELECT id, name
   FROM ' . LANGUAGES_TABLE . '
   ORDER BY name ASC
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $languages = [];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if (is_dir(PHPWG_ROOT_PATH . 'language/' . $row['id'])) {
             $languages[$row['id']] = $row['name'];
         }
@@ -548,7 +535,7 @@ function pwg_log(
         $update_last_visit = true;
     }
 
-    $update_last_visit = trigger_change('pwg_log_update_last_visit', $update_last_visit);
+    $update_last_visit = FunctionsPlugins::trigger_change('pwg_log_update_last_visit', $update_last_visit);
 
     if ($update_last_visit) {
         $query = '
@@ -557,19 +544,19 @@ UPDATE ' . USER_INFOS_TABLE . '
       lastmodified = lastmodified
   WHERE user_id = ' . $user['id'] . '
 ';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     $do_log = $conf['log'];
-    if (is_admin()) {
+    if (FunctionsUser::is_admin()) {
         $do_log = $conf['history_admin'];
     }
 
-    if (is_a_guest()) {
+    if (FunctionsUser::is_a_guest()) {
         $do_log = $conf['history_guest'];
     }
 
-    $do_log = trigger_change('pwg_log_allowed', $do_log, $image_id, $image_type);
+    $do_log = FunctionsPlugins::trigger_change('pwg_log_allowed', $do_log, $image_id, $image_type);
 
     if (! $do_log) {
         return false;
@@ -596,17 +583,17 @@ UPDATE ' . USER_INFOS_TABLE . '
     if (isset($page['section'])) {
         // set cache if not available
         if (! isset($conf['history_sections_cache'])) {
-            conf_update_param('history_sections_cache', get_enums(HISTORY_TABLE, 'section'), true);
+            conf_update_param('history_sections_cache', Mysqli::get_enums(HISTORY_TABLE, 'section'), true);
         }
 
         if (in_array($page['section'], $conf['history_sections_cache'])) {
             $section = $page['section'];
         } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', (string) $page['section'])) {
-            $history_sections = get_enums(HISTORY_TABLE, 'section');
+            $history_sections = Mysqli::get_enums(HISTORY_TABLE, 'section');
             $history_sections[] = $page['section'];
 
             // alter history table structure, to include a new section
-            pwg_query(
+            Mysqli::pwg_query(
                 'ALTER TABLE ' . HISTORY_TABLE . " CHANGE section section enum('" . implode(
                     "','",
                     array_unique($history_sections)
@@ -614,7 +601,11 @@ UPDATE ' . USER_INFOS_TABLE . '
             );
 
             // and refresh cache
-            conf_update_param('history_sections_cache', get_enums(HISTORY_TABLE, 'section'), true);
+            conf_update_param(
+                'history_sections_cache',
+                Mysqli::get_enums(HISTORY_TABLE, 'section'),
+                true
+            );
 
             $section = $page['section'];
         }
@@ -650,9 +641,9 @@ INSERT INTO ' . HISTORY_TABLE . '
     ' . (isset($tags_string) ? "'" . $tags_string . "'" : 'NULL') . '
   )
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
-    $history_id = pwg_db_insert_id();
+    $history_id = Mysqli::pwg_db_insert_id();
     if ($history_id % 1000 == 0) {
         require_once(__DIR__ . '/../admin/inc/functions_history.inc.php');
         history_summarize(50000);
@@ -727,7 +718,7 @@ function pwg_activity($object, $object_id, $action, array $details = []): void
     }
 
     $inserts = [];
-    $details_insert = pwg_db_real_escape_string(serialize($details));
+    $details_insert = Mysqli::pwg_db_real_escape_string(serialize($details));
     $ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
     $session_id = session_id() === '' || session_id() === '0' || session_id() === false ? 'none' : session_id();
 
@@ -750,7 +741,7 @@ function pwg_activity($object, $object_id, $action, array $details = []): void
         ];
     }
 
-    mass_inserts(ACTIVITY_TABLE, array_keys($inserts[0]), $inserts);
+    Mysqli::mass_inserts(ACTIVITY_TABLE, array_keys($inserts[0]), $inserts);
 }
 
 /**
@@ -1138,16 +1129,16 @@ function redirect_html(
     global $user, $template, $lang_info, $conf, $lang, $t2, $page, $debug;
 
     if (! isset($lang_info) || ! isset($template)) {
-        $user = build_user($conf['guest_id'], true);
+        $user = FunctionsUser::build_user($conf['guest_id'], true);
         load_language('common.lang');
-        trigger_notify('loading_lang');
+        FunctionsPlugins::trigger_notify('loading_lang');
         load_language('lang', PHPWG_ROOT_PATH . 'local/', [
             'no_fallback' => true,
             'local' => true,
         ]);
-        $template = new Template(PHPWG_ROOT_PATH . 'themes', get_default_theme());
+        $template = new Template(PHPWG_ROOT_PATH . 'themes', FunctionsUser::get_default_theme());
     } elseif (defined('IN_ADMIN') && IN_ADMIN) {
-        $template = new Template(PHPWG_ROOT_PATH . 'themes', get_default_theme());
+        $template = new Template(PHPWG_ROOT_PATH . 'themes', FunctionsUser::get_default_theme());
     }
 
     if (empty($msg)) {
@@ -1221,8 +1212,8 @@ SELECT
   FROM ' . THEMES_TABLE . '
   ORDER BY name ASC
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if ($row['id'] == $conf['mobile_theme']) {
             if (! $show_mobile) {
                 continue;
@@ -1237,7 +1228,10 @@ SELECT
     }
 
     // plugins want remove some themes based on user status maybe?
-    $themes = trigger_change('get_pwg_themes', $themes);
+    $themes = FunctionsPlugins::trigger_change(
+        'get_pwg_themes',
+        $themes
+    );
 
     return $themes;
 }
@@ -1317,7 +1311,7 @@ SELECT element_id
   FROM ' . CADDIE_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-    $in_caddie = query2array($query, null, 'element_id');
+    $in_caddie = Mysqli::query2array($query, null, 'element_id');
 
     $caddiables = array_diff($elements_id, $in_caddie);
 
@@ -1331,7 +1325,7 @@ SELECT element_id
     }
 
     if ($caddiables !== []) {
-        mass_inserts(CADDIE_TABLE, ['element_id', 'user_id'], $datas);
+        Mysqli::mass_inserts(CADDIE_TABLE, ['element_id', 'user_id'], $datas);
     }
 }
 
@@ -1480,9 +1474,9 @@ SELECT ' . $conf['user_fields']['email'] . '
   FROM ' . USERS_TABLE . '
   WHERE ' . $conf['user_fields']['id'] . ' = ' . $conf['webmaster_id'] . '
 ;';
-    [$email] = pwg_db_fetch_row(pwg_query($query));
+    [$email] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
-    return trigger_change('get_webmaster_mail_address', $email);
+    return FunctionsPlugins::trigger_change('get_webmaster_mail_address', $email);
 }
 
 function is_serialized(mixed $data, bool $strict = true): bool
@@ -1572,13 +1566,13 @@ SELECT param, value
  FROM ' . CONFIG_TABLE . '
  ' . ($condition === null || $condition === '' || $condition === '0' ? '' : 'WHERE ' . $condition) . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
-    if (pwg_db_num_rows($result) == 0 && ($condition !== null && $condition !== '' && $condition !== '0')) {
+    if (Mysqli::pwg_db_num_rows($result) == 0 && ($condition !== null && $condition !== '' && $condition !== '0')) {
         fatal_error('No configuration data');
     }
 
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $val = $row['value'] ?? '';
 
         if ($val === 'true') {
@@ -1594,7 +1588,7 @@ SELECT param, value
         $conf[$row['param']] = $val;
     }
 
-    trigger_notify('load_conf', $condition);
+    FunctionsPlugins::trigger_notify('load_conf', $condition);
 }
 
 /**
@@ -1615,7 +1609,7 @@ function conf_update_param(
     } elseif (is_array($value) || is_object($value)) {
         $dbValue = addslashes(serialize($value));
     } else {
-        $dbValue = boolean_to_string($value);
+        $dbValue = Mysqli::boolean_to_string($value);
     }
 
     $query = '
@@ -1625,7 +1619,7 @@ INSERT INTO
   ON DUPLICATE KEY UPDATE value = \'' . $dbValue . '\'
 ;';
 
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     if ($updateGlobal) {
         global $conf;
@@ -1656,7 +1650,7 @@ function conf_delete_param(
 DELETE FROM ' . CONFIG_TABLE . '
   WHERE param IN(\'' . implode("','", $params) . '\')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     foreach ($params as $param) {
         unset($conf[$param]);
@@ -1830,7 +1824,7 @@ function load_language(
     $dirname .= 'language/';
 
     $default_language = (defined('PHPWG_INSTALLED') && ! defined('UPGRADES_PATH')) ?
-        get_default_language() : PHPWG_DEFAULT_LANGUAGE;
+        FunctionsUser::get_default_language() : PHPWG_DEFAULT_LANGUAGE;
 
     // construct list of potential languages
     $languages = [];
@@ -2132,7 +2126,7 @@ function get_icon(
 
     if (! isset($cache['get_icon']['sql_recent_date'])) {
         // Use MySql date in order to standardize all recent "actions/queries"
-        $cache['get_icon']['sql_recent_date'] = pwg_db_get_recent_period(
+        $cache['get_icon']['sql_recent_date'] = Mysqli::pwg_db_get_recent_period(
             $user['recent_period']
         );
     }
@@ -2263,7 +2257,7 @@ function get_branch_from_version(
  */
 function get_device()
 {
-    $device = pwg_get_session_var('device');
+    $device = FunctionsSession::pwg_get_session_var('device');
 
     if ($device === null) {
         $uagent_obj = new \uagent_info();
@@ -2275,7 +2269,7 @@ function get_device()
             $device = 'desktop';
         }
 
-        pwg_set_session_var('device', $device);
+        FunctionsSession::pwg_set_session_var('device', $device);
     }
 
     return $device;
@@ -2295,15 +2289,15 @@ function mobile_theme()
     }
 
     if (isset($_GET['mobile'])) {
-        $is_mobile_theme = get_boolean($_GET['mobile']);
-        pwg_set_session_var('mobile_theme', $is_mobile_theme);
+        $is_mobile_theme = Mysqli::get_boolean($_GET['mobile']);
+        FunctionsSession::pwg_set_session_var('mobile_theme', $is_mobile_theme);
     } else {
-        $is_mobile_theme = pwg_get_session_var('mobile_theme');
+        $is_mobile_theme = FunctionsSession::pwg_get_session_var('mobile_theme');
     }
 
     if ($is_mobile_theme === null) {
         $is_mobile_theme = (get_device() == 'mobile');
-        pwg_set_session_var('mobile_theme', $is_mobile_theme);
+        FunctionsSession::pwg_set_session_var('mobile_theme', $is_mobile_theme);
     }
 
     return $is_mobile_theme;
@@ -2348,11 +2342,11 @@ function get_nb_available_comments()
     global $user;
     if (! isset($user['nb_available_comments'])) {
         $where = [];
-        if (! is_admin()) {
+        if (! FunctionsUser::is_admin()) {
             $where[] = "validated='true'";
         }
 
-        $where[] = get_sql_condition_FandF(
+        $where[] = FunctionsUser::get_sql_condition_FandF(
             [
                 'forbidden_categories' => 'category_id',
                 'forbidden_images' => 'ic.image_id',
@@ -2368,9 +2362,9 @@ SELECT COUNT(DISTINCT(com.id))
     ON ic.image_id = com.image_id
   WHERE ' . implode('
     AND ', $where);
-        [$user['nb_available_comments']] = pwg_db_fetch_row(pwg_query($query));
+        [$user['nb_available_comments']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
-        single_update(
+        Mysqli::single_update(
             USER_CACHE_TABLE,
             [
                 'nb_available_comments' => $user['nb_available_comments'],
@@ -2452,7 +2446,7 @@ SELECT
   ORDER BY image_id ASC
   LIMIT 1
 ;';
-    $voyagers = query2array($query);
+    $voyagers = Mysqli::query2array($query);
     if ($voyagers !== []) {
         $voyager = $voyagers[0];
         $age = strtotime((string) $voyager['dbnow']) - strtotime((string) $voyager['date_available']);

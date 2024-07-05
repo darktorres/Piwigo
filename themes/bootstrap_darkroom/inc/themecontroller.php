@@ -2,11 +2,10 @@
 
 namespace BootstrapDarkroom;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SrcImage;
-use function Piwigo\inc\add_event_handler;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\duplicate_picture_url;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\l10n;
@@ -14,18 +13,17 @@ use function Piwigo\inc\load_language;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\render_element_description;
 use function Piwigo\inc\render_element_name;
-use function Piwigo\inc\trigger_change;
 
 class ThemeController
 {
-    private $config;
+    private readonly \BootstrapDarkroom\Config $config;
 
     public function __construct()
     {
         $this->config = new Config();
     }
 
-    public function init()
+    public function init(): void
     {
         load_language('theme.lang', PHPWG_THEMES_PATH . 'bootstrap_darkroom/');
         load_language('lang', PHPWG_ROOT_PATH . 'local/', [
@@ -33,40 +31,40 @@ class ThemeController
             'local' => true,
         ]);
 
-        add_event_handler('init', $this->assignConfig(...));
-        add_event_handler('init', $this->setInitValues(...));
+        FunctionsPlugins::add_event_handler('init', $this->assignConfig(...));
+        FunctionsPlugins::add_event_handler('init', $this->setInitValues(...));
 
         if ($this->config->bootstrap_theme === 'darkroom' || $this->config->bootstrap_theme === 'material' || $this->config->bootstrap_theme === 'bootswatch') {
             $this->config->bootstrap_theme = 'bootstrap-darkroom';
             $this->config->save();
-            add_event_handler('loc_begin_page_header', $this->showUpgradeWarning(...));
+            FunctionsPlugins::add_event_handler('loc_begin_page_header', $this->showUpgradeWarning(...));
         }
 
         $shortname = $this->config->comments_disqus_shortname;
         if ($this->config->comments_type == 'disqus' && ! empty($shortname)) {
-            add_event_handler(
+            FunctionsPlugins::add_event_handler(
                 'blockmanager_apply',
                 $this->hideMenus(...)
             );
         }
 
-        add_event_handler('loc_begin_page_header', $this->checkIfHomepage(...));
-        add_event_handler('loc_after_page_header', $this->stripBreadcrumbs(...));
-        add_event_handler('format_exif_data', $this->exifReplacements(...));
-        add_event_handler('loc_end_picture', $this->registerPictureTemplates(...), 1000);
-        add_event_handler('loc_begin_index_thumbnails', $this->returnPageStart(...));
+        FunctionsPlugins::add_event_handler('loc_begin_page_header', $this->checkIfHomepage(...));
+        FunctionsPlugins::add_event_handler('loc_after_page_header', $this->stripBreadcrumbs(...));
+        FunctionsPlugins::add_event_handler('format_exif_data', $this->exifReplacements(...));
+        FunctionsPlugins::add_event_handler('loc_end_picture', $this->registerPictureTemplates(...), 1000);
+        FunctionsPlugins::add_event_handler('loc_begin_index_thumbnails', $this->returnPageStart(...));
 
         if ($this->config->slick_enabled === true || $this->config->photoswipe === true) {
-            add_event_handler('loc_end_picture', $this->getAllThumbnailsInCategory(...));
+            FunctionsPlugins::add_event_handler('loc_end_picture', $this->getAllThumbnailsInCategory(...));
             // also needed on index.tpl for compatibility with GThumb+/GDThumb
-            add_event_handler(
+            FunctionsPlugins::add_event_handler(
                 'loc_end_index',
                 $this->getAllThumbnailsInCategory(...)
             );
         }
     }
 
-    public function assignConfig()
+    public function assignConfig(): void
     {
         global $template, $conf;
 
@@ -101,7 +99,7 @@ class ThemeController
         $template->assign('theme_config', $this->config);
     }
 
-    public function showUpgradeWarning()
+    public function showUpgradeWarning(): void
     {
         global $page;
         $page['errors'][] = l10n(
@@ -109,7 +107,7 @@ class ThemeController
         );
     }
 
-    public function hideMenus($menus)
+    public function hideMenus($menus): void
     {
         $menu = &$menus[0];
 
@@ -117,14 +115,14 @@ class ThemeController
         unset($mbMenu->data['comments']);
     }
 
-    public function returnPageStart()
+    public function returnPageStart(): void
     {
         global $page, $template;
 
         $template->assign('START_ID', $page['start']);
     }
 
-    public function checkIfHomepage()
+    public function checkIfHomepage(): void
     {
         global $template, $page;
 
@@ -135,7 +133,7 @@ class ThemeController
         }
     }
 
-    public function setInitValues()
+    public function setInitValues(): void
     {
         global $template, $pwg_loaded_plugins, $conf;
 
@@ -150,12 +148,12 @@ class ThemeController
         }
 
         if (isset($pwg_loaded_plugins['language_switch'])) {
-            add_event_handler('loc_end_search', 'language_controler_flags', 95);
-            add_event_handler('loc_end_identification', 'language_controler_flags', 95);
-            add_event_handler('loc_end_tags', 'language_controler_flags', 95);
-            add_event_handler('loc_begin_about', 'language_controler_flags', 95);
-            add_event_handler('loc_end_register', 'language_controler_flags', 95);
-            add_event_handler('loc_end_password', 'language_controler_flags', 95);
+            FunctionsPlugins::add_event_handler('loc_end_search', 'language_controler_flags', 95);
+            FunctionsPlugins::add_event_handler('loc_end_identification', 'language_controler_flags', 95);
+            FunctionsPlugins::add_event_handler('loc_end_tags', 'language_controler_flags', 95);
+            FunctionsPlugins::add_event_handler('loc_begin_about', 'language_controler_flags', 95);
+            FunctionsPlugins::add_event_handler('loc_end_register', 'language_controler_flags', 95);
+            FunctionsPlugins::add_event_handler('loc_end_password', 'language_controler_flags', 95);
         }
 
         if (isset($pwg_loaded_plugins['exif_view'])) {
@@ -179,7 +177,7 @@ class ThemeController
     }
 
     // register additional template files
-    public function registerPictureTemplates()
+    public function registerPictureTemplates(): void
     {
         global $template;
 
@@ -191,7 +189,7 @@ class ThemeController
         $template->assign_var_from_handle('PICTURE_NAV', 'picture_nav');
     }
 
-    public function stripBreadcrumbs()
+    public function stripBreadcrumbs(): void
     {
         global $page, $template;
 
@@ -229,7 +227,7 @@ class ThemeController
         }
     }
 
-    public function getAllThumbnailsInCategory()
+    public function getAllThumbnailsInCategory(): void
     {
         global $template, $conf, $user, $page;
 
@@ -262,10 +260,10 @@ class ThemeController
             ORDER BY FIELD(id, ' . implode(',', $page['items']) . ')
             ;';
 
-        $result = pwg_query($query);
+        $result = Mysqli::pwg_query($query);
 
         $pictures = [];
-        while ($row = pwg_db_fetch_assoc($result)) {
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $pictures[] = $row;
         }
 
@@ -304,19 +302,19 @@ class ThemeController
         $template->assign('thumbnails', $tpl_thumbnails_var);
 
         $template->assign([
-            'derivative_params_square' => trigger_change(
+            'derivative_params_square' => FunctionsPlugins::trigger_change(
                 'get_index_derivative_params',
                 ImageStdParams::get_by_type(IMG_SQUARE)
             ),
-            'derivative_params_medium' => trigger_change(
+            'derivative_params_medium' => FunctionsPlugins::trigger_change(
                 'get_index_derivative_params',
                 ImageStdParams::get_by_type(IMG_MEDIUM)
             ),
-            'derivative_params_large' => trigger_change(
+            'derivative_params_large' => FunctionsPlugins::trigger_change(
                 'get_index_derivative_params',
                 ImageStdParams::get_by_type(IMG_LARGE)
             ),
-            'derivative_params_xxlarge' => trigger_change(
+            'derivative_params_xxlarge' => FunctionsPlugins::trigger_change(
                 'get_index_derivative_params',
                 ImageStdParams::get_by_type(IMG_XXLARGE)
             ),

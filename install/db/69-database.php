@@ -23,14 +23,14 @@ $query = '
 ALTER TABLE ' . USER_CACHE_CATEGORIES_TABLE . '
   ADD COLUMN date_last datetime default NULL AFTER cat_id,
   ADD COLUMN nb_images mediumint(8) unsigned NOT NULL default 0 AFTER max_date_last';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $query = '
 ALTER TABLE ' . CATEGORIES_TABLE . '
   DROP COLUMN date_last,
   DROP COLUMN nb_images
   ';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 invalidate_user_cache(); // just to force recalculation
 

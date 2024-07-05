@@ -49,34 +49,34 @@ class ImageVips implements ImageInterface
     }
 
     #[\Override]
-    public function crop($width, $height, $x, $y)
+    public function crop($width, $height, $x, $y): bool
     {
         $this->image = $this->image->crop($x, $y, $width, $height);
         return true;
     }
 
     #[\Override]
-    public function strip()
+    public function strip(): bool
     {
         return true;
     }
 
     #[\Override]
-    public function rotate($rotation)
+    public function rotate($rotation): bool
     {
         $this->image = $this->image->rotate($rotation);
         return true;
     }
 
     #[\Override]
-    public function set_compression_quality($quality)
+    public function set_compression_quality($quality): bool
     {
         $this->quality = $quality;
         return true;
     }
 
     #[\Override]
-    public function resize($width, $height)
+    public function resize($width, $height): bool
     {
         $this->image = \Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, [
             'height' => $height,
@@ -85,19 +85,19 @@ class ImageVips implements ImageInterface
     }
 
     #[\Override]
-    public function sharpen($amount)
+    public function sharpen($amount): bool
     {
         return true;
     }
 
     #[\Override]
-    public function compose($overlay, $x, $y, $opacity)
+    public function compose($overlay, $x, $y, $opacity): bool
     {
         return true;
     }
 
     #[\Override]
-    public function write($destination_filepath)
+    public function write($destination_filepath): bool
     {
         $dest = pathinfo((string) $destination_filepath);
         $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);

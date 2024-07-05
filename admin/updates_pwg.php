@@ -3,8 +3,8 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Updates;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -66,14 +66,14 @@ if ($step == 1) {
 // +-----------------------------------------------------------------------+
 // |                                Step 2                                 |
 // +-----------------------------------------------------------------------+
-if (($step == 2 && is_webmaster()) && (isset($_POST['submit']) && isset($_POST['upgrade_to']))) {
+if (($step == 2 && FunctionsUser::is_webmaster()) && (isset($_POST['submit']) && isset($_POST['upgrade_to']))) {
     Updates::upgrade_to($_POST['upgrade_to'], $step);
 }
 
 // +-----------------------------------------------------------------------+
 // |                                Step 3                                 |
 // +-----------------------------------------------------------------------+
-if ($step == 3 && is_webmaster()) {
+if ($step == 3 && FunctionsUser::is_webmaster()) {
     if (isset($_POST['submit']) && isset($_POST['upgrade_to'])) {
         Updates::upgrade_to($_POST['upgrade_to'], $step);
     }
@@ -103,7 +103,7 @@ if (isset($new_versions['major_php']) && version_compare(PHP_VERSION, $new_versi
 // |                        Process template                               |
 // +-----------------------------------------------------------------------+
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     $page['warnings'][] = str_replace(
         '%s',
         l10n('user_status_webmaster'),

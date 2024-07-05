@@ -2,10 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -34,7 +31,7 @@ function rate_picture(
         return false;
     }
 
-    $user_anonymous = ! is_autorize_status(ACCESS_CLASSIC);
+    $user_anonymous = ! FunctionsUser::is_autorize_status(ACCESS_CLASSIC);
 
     if ($user_anonymous && ! $conf['rate_anonymous']) {
         return false;
@@ -48,7 +45,7 @@ function rate_picture(
     $anonymous_id = implode('.', $ip_components);
 
     if ($user_anonymous) {
-        $save_anonymous_id = pwg_get_cookie_var('anonymous_rater', $anonymous_id);
+        $save_anonymous_id = FunctionsCookie::pwg_get_cookie_var('anonymous_rater', $anonymous_id);
 
         if ($anonymous_id != $save_anonymous_id) { // client has changed his IP adress or he's trying to fool us
             $query = '
@@ -57,7 +54,7 @@ SELECT element_id
   WHERE user_id = ' . $user['id'] . '
     AND anonymous_id = \'' . $anonymous_id . '\'
 ;';
-            $already_there = query2array($query, null, 'element_id');
+            $already_there = Mysqli::query2array($query, null, 'element_id');
 
             if ($already_there !== []) {
                 $query = '
@@ -67,7 +64,7 @@ DELETE
     AND anonymous_id = \'' . $save_anonymous_id . '\'
     AND element_id IN (' . implode(',', $already_there) . ')
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
             }
 
             $query = '
@@ -76,10 +73,10 @@ UPDATE ' . RATE_TABLE . '
   WHERE user_id = ' . $user['id'] . '
     AND anonymous_id = \'' . $save_anonymous_id . '\'
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         } // end client changed ip
 
-        pwg_set_cookie_var('anonymous_rater', $anonymous_id);
+        FunctionsCookie::pwg_set_cookie_var('anonymous_rater', $anonymous_id);
     } // end anonymous user
 
     $query = '
@@ -92,7 +89,7 @@ DELETE
         $query .= " AND anonymous_id = '" . $anonymous_id . "'";
     }
 
-    pwg_query($query);
+    Mysqli::pwg_query($query);
     $query = '
 INSERT
   INTO ' . RATE_TABLE . '
@@ -105,7 +102,7 @@ INSERT
       . $rate
       . ',NOW())
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     return update_rating_score($image_id);
 }
@@ -122,7 +119,7 @@ INSERT
 function update_rating_score(
     $element_id = false
 ) {
-    if (($alt_result = trigger_change('update_rating_score', false, $element_id)) !== false) {
+    if (($alt_result = FunctionsPlugins::trigger_change('update_rating_score', false, $element_id)) !== false) {
         return $alt_result;
     }
 
@@ -138,8 +135,8 @@ SELECT element_id,
     $item_ratecount_avg = 0;
     $by_item = [];
 
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $all_rates_count += $row['rcount'];
         $all_rates_avg += $row['rsum'];
         $by_item[$row['element_id']] = $row;
@@ -168,7 +165,7 @@ SELECT element_id,
         ];
     }
 
-    mass_updates(
+    Mysqli::mass_updates(
         IMAGES_TABLE,
         [
             'primary' => ['id'],
@@ -184,14 +181,14 @@ SELECT id FROM ' . IMAGES_TABLE . '
   LEFT JOIN ' . RATE_TABLE . ' ON id=element_id
   WHERE element_id IS NULL AND rating_score IS NOT NULL';
 
-        $to_update = query2array($query, null, 'id');
+        $to_update = Mysqli::query2array($query, null, 'id');
 
         if ($to_update !== []) {
             $query = '
 UPDATE ' . IMAGES_TABLE . '
   SET rating_score=NULL
   WHERE id IN (' . implode(',', $to_update) . ')';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
     }
 

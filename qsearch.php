@@ -2,10 +2,8 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_insert_id;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\redirect;
 
@@ -22,7 +20,7 @@ require_once(__DIR__ . '/inc/common.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
 if (empty($_GET['q'])) {
     redirect(make_index_url());
@@ -35,14 +33,14 @@ $query = '
 SElECT id FROM ' . SEARCH_TABLE . '
   WHERE rules = \'' . addslashes(serialize($search)) . '\'
 ;';
-$search_id = query2array($query, null, 'id');
-if ($search_id !== []) {
+$search_id = Mysqli::query2array($query, null, 'id');
+if (! empty($search_id)) {
     $search_id = $search_id[0];
     $query = '
 UPDATE ' . SEARCH_TABLE . '
   SET last_seen=NOW()
   WHERE id=' . $search_id;
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 } else {
     $query = '
 INSERT INTO ' . SEARCH_TABLE . '
@@ -50,8 +48,8 @@ INSERT INTO ' . SEARCH_TABLE . '
   VALUES
   (\'' . addslashes(serialize($search)) . '\', NOW() )
 ;';
-    pwg_query($query);
-    $search_id = pwg_db_insert_id();
+    Mysqli::pwg_query($query);
+    $search_id = Mysqli::pwg_db_insert_id();
 }
 
 redirect(

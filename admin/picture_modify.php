@@ -2,7 +2,11 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\delete_elements;
 use function Piwigo\admin\inc\get_admin_client_cache_keys;
@@ -14,18 +18,10 @@ use function Piwigo\admin\inc\move_images_to_categories;
 use function Piwigo\admin\inc\set_random_representant;
 use function Piwigo\admin\inc\set_tags;
 use function Piwigo\admin\inc\sync_metadata;
-use function Piwigo\inc\calculate_permissions;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_update;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_cat_display_name_cache;
-use function Piwigo\inc\get_cat_info;
 use function Piwigo\inc\get_extension;
 use function Piwigo\inc\get_privacy_level_options;
 use function Piwigo\inc\get_pwg_token;
@@ -38,8 +34,6 @@ use function Piwigo\inc\pwg_activity;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\render_element_name;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -57,7 +51,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
@@ -75,7 +71,7 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE representative_picture_id = ' . $_GET['image_id'] . '
 ;';
-$represented_albums = query2array($query, null, 'id');
+$represented_albums = Mysqli::query2array($query, null, 'id');
 
 // +-----------------------------------------------------------------------+
 // |                             delete photo                              |
@@ -97,7 +93,7 @@ if (isset($_GET['delete'])) {
         redirect(
             make_index_url(
                 [
-                    'category' => get_cat_info($_GET['cat_id']),
+                    'category' => FunctionsCategory::get_cat_info($_GET['cat_id']),
                 ]
             )
         );
@@ -110,15 +106,15 @@ SELECT category_id
 ;';
 
     $authorizeds = array_diff(
-        query2array($query, null, 'category_id'),
-        explode(',', calculate_permissions($user['id'], $user['status']))
+        Mysqli::query2array($query, null, 'category_id'),
+        explode(',', FunctionsUser::calculate_permissions($user['id'], $user['status']))
     );
 
     foreach ($authorizeds as $category_id) {
         redirect(
             make_index_url(
                 [
-                    'category' => get_cat_info($category_id),
+                    'category' => FunctionsCategory::get_cat_info($category_id),
                 ]
             )
         );
@@ -154,9 +150,9 @@ if (isset($_POST['submit'])) {
 
     $data['date_creation'] = empty($_POST['date_creation']) ? null : $_POST['date_creation'];
 
-    $data = trigger_change('picture_modify_before_update', $data);
+    $data = FunctionsPlugins::trigger_change('picture_modify_before_update', $data);
 
-    single_update(
+    Mysqli::single_update(
         IMAGES_TABLE,
         $data,
         [
@@ -201,7 +197,7 @@ UPDATE ' . CATEGORIES_TABLE . '
   SET representative_picture_id = ' . $_GET['image_id'] . '
   WHERE id IN (' . implode(',', $new_thumbnail_for) . ')
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
     }
 
     $represented_albums = $_POST['represent'];
@@ -311,8 +307,8 @@ SELECT ' . $conf['user_fields']['username'] . ' AS username
   FROM ' . USERS_TABLE . '
   WHERE ' . $conf['user_fields']['id'] . ' = ' . $row['added_by'] . '
 ;';
-$result = pwg_query($query);
-while ($user_row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($user_row = Mysqli::pwg_db_fetch_assoc($result)) {
     $row['added_by'] = $user_row['username'];
 }
 
@@ -337,7 +333,7 @@ SELECT
   FROM ' . RATE_TABLE . '
   WHERE element_id = ' . $_GET['image_id'] . '
 ;';
-    [$row['nb_rates']] = pwg_db_fetch_row(pwg_query($query));
+    [$row['nb_rates']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     $intro_vars['stats'] .= ', ' . sprintf(
         l10n('Rated %d times, score : %.2f'),
@@ -351,7 +347,7 @@ SELECT *
   FROM ' . IMAGE_FORMAT_TABLE . '
   WHERE image_id = ' . $row['id'] . '
 ;';
-$formats = query2array($query);
+$formats = Mysqli::query2array($query);
 
 if ($formats !== []) {
     $format_strings = [];
@@ -386,12 +382,12 @@ SELECT category_id, uppercats, dir
       ON c.id = ic.category_id
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
 $related_categories = [];
 $related_categories_ids = [];
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $name =
       get_cat_display_name_cache(
           $row['uppercats'],
@@ -428,10 +424,10 @@ SELECT category_id
 ;';
 
 $authorizeds = array_diff(
-    query2array($query, null, 'category_id'),
+    Mysqli::query2array($query, null, 'category_id'),
     explode(
         ',',
-        calculate_permissions($user['id'], $user['status'])
+        FunctionsUser::calculate_permissions($user['id'], $user['status'])
     )
 );
 
@@ -467,7 +463,7 @@ SELECT id
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = category_id
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
-$associated_albums = query2array($query, null, 'id');
+$associated_albums = Mysqli::query2array($query, null, 'id');
 
 $template->assign([
     'associated_albums' => $associated_albums,
@@ -477,7 +473,7 @@ $template->assign([
     'PWG_TOKEN' => get_pwg_token(),
 ]);
 
-trigger_notify('loc_end_picture_modify');
+FunctionsPlugins::trigger_notify('loc_end_picture_modify');
 
 //----------------------------------------------------------- sending html code
 

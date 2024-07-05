@@ -1,8 +1,8 @@
 <?php
 
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsPlugins;
 use Piwigo\inc\ImageStdParams;
-use function Piwigo\inc\add_event_handler;
 use function Piwigo\inc\conf_update_param;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\load_conf_from_db;
@@ -48,19 +48,19 @@ if (! isset($conf['gdThumb'])) {
 // RV Thumbnails Scroller
 if (isset($_GET['rvts'])) {
     $conf['gdThumb']['big_thumb'] = false;
-    add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb', 50, 2);
+    FunctionsPlugins::add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb', 50, 2);
 }
 
-add_event_handler('init', 'GDThumb_init');
-add_event_handler('loc_begin_index', 'GDThumb_index', 60);
-// add_event_handler('loc_end_index_category_thumbnails', 'GDThumb_process_category', 50, 2);
-add_event_handler(
+FunctionsPlugins::add_event_handler('init', 'GDThumb_init');
+FunctionsPlugins::add_event_handler('loc_begin_index', 'GDThumb_index', 60);
+// FunctionsPlugins::add_event_handler('loc_end_index_category_thumbnails', 'GDThumb_process_category', 50, 2);
+FunctionsPlugins::add_event_handler(
     'get_admin_plugin_menu_links',
     'GDThumb_admin_menu'
 );
-add_event_handler('loc_end_index', 'GDThumb_remove_thumb_size');
+FunctionsPlugins::add_event_handler('loc_end_index', 'GDThumb_remove_thumb_size');
 
-function GDThumb_init()
+function GDThumb_init(): void
 {
     global $conf, $user, $page, $stripped;
 
@@ -70,17 +70,17 @@ function GDThumb_init()
     $stripped['maxThumb'] = $confTemp['nb_image_page'];
 }
 
-function GDThumb_index()
+function GDThumb_index(): void
 {
     global $template;
 
     $template->smarty->registerPlugin('function', 'media_type', 'GDThumb_media_type');
     $template->set_prefilter('index', 'GDThumb_prefilter');
 
-    add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb', 50, 2);
+    FunctionsPlugins::add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb', 50, 2);
 }
 
-function GDThumb_endsWith($needles, $haystack)
+function GDThumb_endsWith($needles, $haystack): bool
 {
     if (empty($needles) || empty($haystack)) {
         return false;
@@ -98,7 +98,7 @@ function GDThumb_endsWith($needles, $haystack)
 
 }
 
-function GDThumb_media_type($params, $smarty)
+function GDThumb_media_type(array $params, $smarty): string
 {
     if (empty($params['file'])) {
         return 'image';
@@ -195,7 +195,7 @@ function GDThumb_process_category($tpl_vars)
     return $tpl_vars;
 }
 
-function GDThumb_prefilter($content)
+function GDThumb_prefilter($content): string|array|null
 {
     $pattern = '#\<div.*?id\="thumbnails".*?\>\{\$THUMBNAILS\}\</div\>#';
     $replacement = '<ul id="thumbnails">{$THUMBNAILS}</ul>';
@@ -212,7 +212,7 @@ function GDThumb_admin_menu($menu)
     return $menu;
 }
 
-function GDThumb_remove_thumb_size()
+function GDThumb_remove_thumb_size(): void
 {
     global $template;
     $template->clear_assign('image_derivatives');

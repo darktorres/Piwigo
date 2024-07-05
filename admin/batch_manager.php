@@ -3,25 +3,20 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_orphans;
 use function Piwigo\admin\inc\get_photos_no_md5sum;
 use function Piwigo\admin\inc\get_tag_ids;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_get_recent_period_expression;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_image_ids_for_tags;
 use function Piwigo\inc\get_quick_search_results_no_cache;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\l10n_dec;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_change;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -47,7 +42,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('selection', $_POST, true, PATTERN_ID);
 check_input_parameter('display', $_REQUEST, false, '/^(\d+|all)$/');
@@ -62,7 +59,7 @@ if (isset($_GET['action'])) {
 DELETE FROM ' . CADDIE_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         $_SESSION['page_infos'] = [
             l10n('Information data registered in database'),
@@ -192,7 +189,7 @@ if (isset($_POST['submitFilter'])) {
         $_SESSION['bulk_manager_filter']['search']['q'] = $_POST['q'];
     }
 
-    $_SESSION['bulk_manager_filter'] = trigger_change(
+    $_SESSION['bulk_manager_filter'] = FunctionsPlugins::trigger_change(
         'batch_manager_register_filters',
         $_SESSION['bulk_manager_filter']
     );
@@ -273,7 +270,7 @@ elseif (isset($_GET['filter'])) {
                 break;
 
             default:
-                $_SESSION['bulk_manager_filter'] = trigger_change(
+                $_SESSION['bulk_manager_filter'] = FunctionsPlugins::trigger_change(
                     'batch_manager_url_filter',
                     $_SESSION['bulk_manager_filter'],
                     $filter
@@ -301,7 +298,7 @@ SELECT element_id
   FROM ' . CADDIE_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-            $filter_sets[] = query2array($query, null, 'element_id');
+            $filter_sets[] = Mysqli::query2array($query, null, 'element_id');
 
             break;
 
@@ -311,7 +308,7 @@ SELECT image_id
   FROM ' . FAVORITES_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-            $filter_sets[] = query2array($query, null, 'image_id');
+            $filter_sets[] = Mysqli::query2array($query, null, 'image_id');
 
             break;
 
@@ -320,17 +317,17 @@ SELECT image_id
 SELECT MAX(date_available) AS date
   FROM ' . IMAGES_TABLE . '
 ;';
-            $row = pwg_db_fetch_assoc(pwg_query($query));
+            $row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
             if (! empty($row['date'])) {
                 $query = '
 SELECT id
   FROM ' . IMAGES_TABLE . '
-  WHERE date_available BETWEEN ' . pwg_db_get_recent_period_expression(
+  WHERE date_available BETWEEN ' . Mysqli::pwg_db_get_recent_period_expression(
                     1,
                     $row['date']
                 ) . " AND '" . $row['date'] . '\'
 ;';
-                $filter_sets[] = query2array($query, null, 'id');
+                $filter_sets[] = Mysqli::query2array($query, null, 'id');
             }
 
             break;
@@ -341,7 +338,7 @@ SELECT id
  SELECT id
    FROM ' . IMAGES_TABLE . '
  ;';
-            $all_elements = query2array($query, null, 'id');
+            $all_elements = Mysqli::query2array($query, null, 'id');
 
             $linked_to_virtual = [];
 
@@ -350,14 +347,14 @@ SELECT id
    FROM ' . CATEGORIES_TABLE . '
    WHERE dir IS NULL
  ;';
-            $virtual_categories = query2array($query, null, 'id');
+            $virtual_categories = Mysqli::query2array($query, null, 'id');
             if (! empty($virtual_categories)) {
                 $query = '
  SELECT DISTINCT(image_id)
    FROM ' . IMAGE_CATEGORY_TABLE . '
    WHERE category_id IN (' . implode(',', $virtual_categories) . ')
  ;';
-                $linked_to_virtual = query2array($query, null, 'image_id');
+                $linked_to_virtual = Mysqli::query2array($query, null, 'image_id');
             }
 
             $filter_sets[] = array_diff($all_elements, $linked_to_virtual);
@@ -379,7 +376,7 @@ SELECT
     LEFT JOIN ' . IMAGE_TAG_TABLE . ' ON id = image_id
   WHERE tag_id is null
 ;';
-            $filter_sets[] = query2array($query, null, 'id');
+            $filter_sets[] = Mysqli::query2array($query, null, 'id');
 
             break;
 
@@ -423,7 +420,7 @@ SELECT
   GROUP BY ' . implode(',', $duplicates_on_fields) . '
   HAVING COUNT(*) > 1
 ;';
-            $array_of_ids_string = query2array($query, null, 'ids');
+            $array_of_ids_string = Mysqli::query2array($query, null, 'ids');
 
             $ids = [];
 
@@ -443,13 +440,13 @@ SELECT id
   FROM ' . IMAGES_TABLE . '
   ' . $conf['order_by'];
 
-                $filter_sets[] = query2array($query, null, 'id');
+                $filter_sets[] = Mysqli::query2array($query, null, 'id');
             }
 
             break;
 
         default:
-            $filter_sets = trigger_change(
+            $filter_sets = FunctionsPlugins::trigger_change(
                 'perform_batch_manager_prefilters',
                 $filter_sets,
                 $_SESSION['bulk_manager_filter']['prefilter']
@@ -467,14 +464,14 @@ SELECT COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $_SESSION['bulk_manager_filter']['category'] . '
 ;';
-    [$counter] = pwg_db_fetch_row(pwg_query($query));
+    [$counter] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
     if ($counter == 0) {
         unset($_SESSION['bulk_manager_filter']);
         redirect(get_root_url() . 'admin.php?page=' . $_GET['page']);
     }
 
     if (isset($_SESSION['bulk_manager_filter']['category_recursive'])) {
-        $categories = get_subcat_ids([$_SESSION['bulk_manager_filter']['category']]);
+        $categories = FunctionsCategory::get_subcat_ids([$_SESSION['bulk_manager_filter']['category']]);
     } else {
         $categories = [$_SESSION['bulk_manager_filter']['category']];
     }
@@ -484,7 +481,7 @@ SELECT COUNT(*)
    FROM ' . IMAGE_CATEGORY_TABLE . '
    WHERE category_id IN (' . implode(',', $categories) . ')
  ;';
-    $filter_sets[] = query2array($query, null, 'image_id');
+    $filter_sets[] = Mysqli::query2array($query, null, 'image_id');
 }
 
 if (isset($_SESSION['bulk_manager_filter']['level'])) {
@@ -499,7 +496,7 @@ SELECT id
   WHERE level ' . $operator . ' ' . $_SESSION['bulk_manager_filter']['level'] . '
   ' . $conf['order_by'];
 
-    $filter_sets[] = query2array($query, null, 'id');
+    $filter_sets[] = Mysqli::query2array($query, null, 'id');
 }
 
 if (! empty($_SESSION['bulk_manager_filter']['tags'])) {
@@ -545,7 +542,7 @@ SELECT id
   WHERE ' . implode(' AND ', $where_clause) . '
   ' . $conf['order_by'];
 
-    $filter_sets[] = query2array($query, null, 'id');
+    $filter_sets[] = Mysqli::query2array($query, null, 'id');
 }
 
 if (isset($_SESSION['bulk_manager_filter']['filesize'])) {
@@ -565,7 +562,7 @@ SELECT id
   WHERE ' . implode(' AND ', $where_clause) . '
   ' . $conf['order_by'];
 
-    $filter_sets[] = query2array($query, null, 'id');
+    $filter_sets[] = Mysqli::query2array($query, null, 'id');
 }
 
 if (isset($_SESSION['bulk_manager_filter']['search']) &&
@@ -581,7 +578,11 @@ if (isset($_SESSION['bulk_manager_filter']['search']) &&
     $filter_sets[] = $res['items'];
 }
 
-$filter_sets = trigger_change('batch_manager_perform_filters', $filter_sets, $_SESSION['bulk_manager_filter']);
+$filter_sets = FunctionsPlugins::trigger_change(
+    'batch_manager_perform_filters',
+    $filter_sets,
+    $_SESSION['bulk_manager_filter']
+);
 
 $current_set = array_shift($filter_sets);
 foreach ($filter_sets as $set) {
@@ -640,10 +641,10 @@ SELECT
   WHERE width IS NOT NULL
     AND height IS NOT NULL
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-if (pwg_db_num_rows($result)) {
-    while ($row = pwg_db_fetch_assoc($result)) {
+if (Mysqli::pwg_db_num_rows($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if ($row['width'] > 0 && $row['height'] > 0) {
             $widths[] = $row['width'];
             $heights[] = $row['height'];
@@ -724,9 +725,9 @@ SELECT
   WHERE filesize IS NOT NULL
   GROUP BY filesize
 ;';
-$result = pwg_query($query);
+$result = Mysqli::pwg_query($query);
 
-while ($row = pwg_db_fetch_assoc($result)) {
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $filesizes[] = sprintf('%.1f', $row['filesize'] / 1024);
 }
 

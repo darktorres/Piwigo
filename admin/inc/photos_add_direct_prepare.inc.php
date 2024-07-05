@@ -2,11 +2,8 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\Mysqli;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\fatal_error;
 use function Piwigo\inc\get_cat_display_name_cache;
 use function Piwigo\inc\get_privacy_level_options;
@@ -106,11 +103,11 @@ SELECT id, uppercats
   FROM ' . CATEGORIES_TABLE . '
   WHERE id = ' . $_GET['album'] . '
 ;';
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result) == 1) {
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result) == 1) {
         $selected_category = [$_GET['album']];
 
-        $cat = pwg_db_fetch_assoc($result);
+        $cat = Mysqli::pwg_db_fetch_assoc($result);
         $template->assign('ADD_TO_ALBUM', get_cat_display_name_cache($cat['uppercats'], null));
     } else {
         fatal_error('[Hacking attempt] the album id = "' . $_GET['album'] . '" is not valid');
@@ -126,9 +123,9 @@ SELECT category_id
   LIMIT 1
 ;
 ';
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result) > 0) {
-        $row = pwg_db_fetch_assoc($result);
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result) > 0) {
+        $row = Mysqli::pwg_db_fetch_assoc($result);
         $selected_category = [$row['category_id']];
     }
 }
@@ -142,7 +139,7 @@ SELECT
     COUNT(*)
   FROM ' . CATEGORIES_TABLE . '
 ;';
-[$nb_albums] = pwg_db_fetch_row(pwg_query($query));
+[$nb_albums] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 // $nb_albums = 0;
 $template->assign('NB_ALBUMS', $nb_albums);
 
@@ -163,7 +160,7 @@ $template->assign(
 $setup_errors = [];
 
 $error_message = ready_for_upload_message();
-if (! empty($error_message)) {
+if ($error_message !== null && $error_message !== '' && $error_message !== '0') {
     $setup_errors[] = $error_message;
 }
 

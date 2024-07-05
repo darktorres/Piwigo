@@ -5,11 +5,11 @@ namespace Piwigo\inc\ws_functions;
 use Piwigo\admin\inc\Plugins;
 use Piwigo\admin\inc\Themes;
 use Piwigo\admin\inc\Updates;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\Error;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
 use function Piwigo\inc\get_pwg_token;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\pwg_activity;
 use function Piwigo\inc\redirect;
@@ -29,7 +29,7 @@ use function Piwigo\inc\redirect;
 function ws_plugins_getList(
     $params,
     $service
-) {
+): array {
     $plugins = new Plugins();
     $plugins->sort_fs_plugins('name');
 
@@ -68,7 +68,7 @@ function ws_plugins_performAction(
         return new Error(403, 'Invalid security token');
     }
 
-    if (! is_webmaster()) {
+    if (! FunctionsUser::is_webmaster()) {
         return new Error(403, l10n('Webmaster status is required.'));
     }
 
@@ -120,7 +120,7 @@ function ws_themes_performAction(
     $themes = new Themes();
     $errors = $themes->perform_action($params['action'], $params['theme']);
 
-    if (! empty($errors)) {
+    if ($errors !== []) {
         return new Error(500, $errors);
     }
 
@@ -152,7 +152,7 @@ function ws_extensions_update(
         return new Error(401, 'Piwigo extensions install/update system is disabled');
     }
 
-    if (! is_webmaster()) {
+    if (! FunctionsUser::is_webmaster()) {
         return new Error(401, l10n('Webmaster status is required.'));
     }
 
@@ -252,7 +252,7 @@ function ws_extensions_ignoreupdate(
     define('IN_ADMIN', true);
     require_once(__DIR__ . '/../../admin/inc/functions.php');
 
-    if (! is_webmaster()) {
+    if (! FunctionsUser::is_webmaster()) {
         return new Error(401, 'Access denied');
     }
 
@@ -272,7 +272,7 @@ function ws_extensions_ignoreupdate(
             ];
         }
 
-        conf_update_param('updates_ignored', pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
+        conf_update_param('updates_ignored', Mysqli::pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
         unset($_SESSION['extensions_need_update']);
         return true;
     }
@@ -292,7 +292,7 @@ function ws_extensions_ignoreupdate(
         $conf['updates_ignored'][$params['type']][] = $params['id'];
     }
 
-    conf_update_param('updates_ignored', pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
+    conf_update_param('updates_ignored', Mysqli::pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
     unset($_SESSION['extensions_need_update']);
     return true;
 }

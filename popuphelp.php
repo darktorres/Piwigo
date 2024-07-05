@@ -2,10 +2,10 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\check_status;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
-use function Piwigo\inc\trigger_change;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -25,7 +25,7 @@ require_once(__DIR__ . '/inc/common.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
 $page['body_id'] = 'thePopuphelpPage';
 $title = l10n('Piwigo Help');
@@ -48,7 +48,7 @@ if (
         $help_content = '';
     }
 
-    $help_content = trigger_change(
+    $help_content = FunctionsPlugins::trigger_change(
         'get_popup_help_content',
         $help_content,
         $_GET['page']

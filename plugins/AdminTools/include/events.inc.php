@@ -1,6 +1,8 @@
 <?php
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\delete_elements;
 use function Piwigo\admin\inc\get_tag_ids;
 use function Piwigo\admin\inc\get_taglist;
@@ -8,17 +10,10 @@ use function Piwigo\admin\inc\invalidate_user_cache;
 use function Piwigo\admin\inc\set_tags;
 use function Piwigo\inc\add_url_params;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\dblayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dblayer\pwg_db_fetch_row;
-use function Piwigo\inc\dblayer\pwg_db_num_rows;
-use function Piwigo\inc\dblayer\pwg_query;
-use function Piwigo\inc\dblayer\single_update;
 use function Piwigo\inc\duplicate_index_url;
 use function Piwigo\inc\duplicate_picture_url;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_a_guest;
-use function Piwigo\inc\is_admin;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\redirect;
@@ -32,11 +27,11 @@ defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
  * Add main toolbar to current page
  * @trigger loc_after_page_header
  */
-function admintools_add_public_controller()
+function admintools_add_public_controller(): void
 {
     global $MultiView, $conf, $template, $page, $user, $picture;
 
-    if (script_basename() == 'picture' && empty($picture['current'])) {
+    if (script_basename() === 'picture' && empty($picture['current'])) {
         return;
     }
 
@@ -54,7 +49,7 @@ function admintools_add_public_controller()
             require_once(__DIR__ . '/../../../inc/functions_mail.inc.php');
             switch_lang_to($admin_lang);
         }
-    } elseif ($conf['AdminTools']['public_quick_edit'] && script_basename() == 'picture' && $picture['current']['added_by'] == $user['id'] && ! is_a_guest()
+    } elseif ($conf['AdminTools']['public_quick_edit'] && script_basename() === 'picture' && $picture['current']['added_by'] == $user['id'] && ! FunctionsUser::is_a_guest()
     ) { // only "edit" button for photo owner
     } else {
         return;
@@ -65,7 +60,7 @@ function admintools_add_public_controller()
     $tpl_vars['U_SELF'] = $MultiView->get_clean_url(true);
 
     // photo page
-    if (script_basename() == 'picture') {
+    if (script_basename() === 'picture') {
         $url_self = duplicate_picture_url();
         $tpl_vars['IS_PICTURE'] = true;
 
@@ -90,7 +85,7 @@ function admintools_add_public_controller()
 SELECT element_id FROM ' . CADDIE_TABLE . '
   WHERE element_id = ' . $page['image_id'] . '
 ;';
-            $tpl_vars['IS_IN_CADDIE'] = pwg_db_num_rows(pwg_query($query)) > 0;
+            $tpl_vars['IS_IN_CADDIE'] = Mysqli::pwg_db_num_rows(Mysqli::pwg_query($query)) > 0;
 
             if (isset($page['category'])) {
                 $tpl_vars['CATEGORY_ID'] = $page['category']['id'];
@@ -177,7 +172,7 @@ SELECT id, name
 SELECT * FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $page['category']['representative_picture_id'] . '
 ;';
-            $image_infos = pwg_db_fetch_assoc(pwg_query($query));
+            $image_infos = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
             $tpl_vars['QUICK_EDIT']['img'] = DerivativeImage::get_one(IMG_SQUARE, $image_infos)->get_url();
         }
@@ -201,7 +196,7 @@ SELECT * FROM ' . IMAGES_TABLE . '
  * Add main toolbar to current page
  * @trigger loc_after_page_header
  */
-function admintools_add_admin_controller()
+function admintools_add_admin_controller(): void
 {
     global $MultiView, $conf, $template, $page, $user;
 
@@ -230,13 +225,13 @@ function admintools_add_admin_controller()
     }
 }
 
-function admintools_add_admin_controller_setprefilter()
+function admintools_add_admin_controller_setprefilter(): void
 {
     global $template;
     $template->set_prefilter('header', 'admintools_admin_prefilter');
 }
 
-function admintools_admin_prefilter($content)
+function admintools_admin_prefilter($content): string|array
 {
     if (version_compare(PHPWG_VERSION, '2.9', '>=')) {
         $search = '<a href="{$U_LOGOUT}">';
@@ -252,7 +247,7 @@ function admintools_admin_prefilter($content)
 /**
  * Disable privacy level switchbox
  */
-function admintools_remove_privacy($content)
+function admintools_remove_privacy($content): string|array
 {
     $search = '{if $display_info.privacy_level and isset($available_permission_levels)}';
     $replace = '{if false}';
@@ -263,7 +258,7 @@ function admintools_remove_privacy($content)
  * Save picture form
  * @trigger loc_begin_picture
  */
-function admintools_save_picture()
+function admintools_save_picture(): void
 {
     global $page, $conf, $MultiView, $user, $picture;
 
@@ -271,12 +266,12 @@ function admintools_save_picture()
         return;
     }
 
-    if (is_a_guest()) {
+    if (FunctionsUser::is_a_guest()) {
         return;
     }
 
     $query = 'SELECT added_by FROM ' . IMAGES_TABLE . ' WHERE id = ' . $page['image_id'] . ';';
-    [$added_by] = pwg_db_fetch_row(pwg_query($query));
+    [$added_by] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     if (! $MultiView->is_admin() && $user['id'] != $added_by) {
         return;
@@ -309,10 +304,10 @@ function admintools_save_picture()
         check_pwg_token();
 
         $data = [
-            'name' => (is_admin() && $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags(
+            'name' => (FunctionsUser::is_admin() && $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags(
                 (string) $_POST['name']
             ),
-            'author' => (is_admin() && $conf['allow_html_descriptions']) ? $_POST['author'] : strip_tags(
+            'author' => (FunctionsUser::is_admin() && $conf['allow_html_descriptions']) ? $_POST['author'] : strip_tags(
                 (string) $_POST['author']
             ),
         ];
@@ -321,7 +316,7 @@ function admintools_save_picture()
             $data['level'] = $_POST['level'];
         }
 
-        if (is_admin() && $conf['allow_html_descriptions']) {
+        if (FunctionsUser::is_admin() && $conf['allow_html_descriptions']) {
             $data['comment'] = @$_POST['comment'];
         } else {
             $data['comment'] = strip_tags((string) @$_POST['comment']);
@@ -331,7 +326,7 @@ function admintools_save_picture()
             $data['date_creation'] = $_POST['date_creation'] . ' ' . $_POST['date_creation_time'];
         }
 
-        single_update(
+        Mysqli::single_update(
             IMAGES_TABLE,
             $data,
             [
@@ -352,7 +347,7 @@ function admintools_save_picture()
  * Save category form
  * @trigger loc_begin_index
  */
-function admintools_save_category()
+function admintools_save_category(): void
 {
     global $page, $conf, $MultiView;
 
@@ -364,18 +359,18 @@ function admintools_save_category()
         check_pwg_token();
 
         $data = [
-            'name' => (is_admin() && $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags(
+            'name' => (FunctionsUser::is_admin() && $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags(
                 (string) $_POST['name']
             ),
         ];
 
-        if (is_admin() && $conf['allow_html_descriptions']) {
+        if (FunctionsUser::is_admin() && $conf['allow_html_descriptions']) {
             $data['comment'] = @$_POST['comment'];
         } else {
             $data['comment'] = strip_tags((string) @$_POST['comment']);
         }
 
-        single_update(
+        Mysqli::single_update(
             CATEGORIES_TABLE,
             $data,
             [

@@ -1,8 +1,8 @@
 <?php
 
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsPlugins;
 use Piwigo\inc\ImageStdParams;
-use function Piwigo\inc\add_event_handler;
 use function Piwigo\inc\add_url_params;
 use function Piwigo\inc\get_device;
 use function Piwigo\inc\load_language;
@@ -45,7 +45,7 @@ class SPThumbPicker
 
     public $height;
 
-    public function init($height)
+    public function init($height): void
     {
         $this->candidates = [];
         foreach (ImageStdParams::get_defined_type_map() as $params) {
@@ -85,7 +85,7 @@ class SPThumbPicker
 }
 
 //Retrive all pictures on thumbnails page
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'loc_index_thumbnails_selection',
     'sp_select_all_thumbnails'
 );
@@ -100,7 +100,7 @@ function sp_select_all_thumbnails($selection)
 }
 
 // Retrive all categories on thumbnails page
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'loc_end_index_category_thumbnails',
     'sp_select_all_categories'
 );
@@ -127,8 +127,8 @@ if (! empty($_COOKIE['screen_size'])) {
 $this->assign('picture_derivative_params', ImageStdParams::get_by_type($type));
 $this->assign('thumbnail_derivative_params', ImageStdParams::get_by_type(IMG_SQUARE));
 
-add_event_handler('loc_end_section_init', 'sp_end_section_init');
-function sp_end_section_init()
+FunctionsPlugins::add_event_handler('loc_end_section_init', 'sp_end_section_init');
+function sp_end_section_init(): void
 {
     global $page, $template;
 
@@ -144,12 +144,12 @@ function sp_end_section_init()
 }
 
 //------------------------------------------------------------- mobile version & theme config
-add_event_handler(
+FunctionsPlugins::add_event_handler(
     'init',
     'mobile_link'
 );
 
-function mobile_link()
+function mobile_link(): void
 {
     global $template, $conf;
     $config = $conf['smartpocket'];
@@ -168,7 +168,7 @@ if (! function_exists('add_menu_on_public_pages')) {
         return false;
     }
 
-    add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20);
+    FunctionsPlugins::add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20);
 
     function add_menu_on_public_pages()
     {

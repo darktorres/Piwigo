@@ -37,7 +37,7 @@ class QExpression extends QMultiToken
         $this->build_single_tokens($this, 0);
     }
 
-    private function build_single_tokens(QMultiToken $expr, $this_is_not)
+    private function build_single_tokens(QMultiToken $expr, int $this_is_not): void
     {
         $counter = count($expr->tokens);
         for ($i = 0; $i < $counter; $i++) {

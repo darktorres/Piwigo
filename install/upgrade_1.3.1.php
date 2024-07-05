@@ -24,7 +24,7 @@ $query = '
 SELECT prefix_thumbnail, mail_webmaster
   FROM ' . PREFIX_TABLE . 'config
 ;';
-$save = pwg_db_fetch_assoc(pwg_query($query));
+$save = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
 $queries = [
     '
@@ -291,7 +291,7 @@ DELETE FROM phpwebgallery_group_access
 
 foreach ($queries as $query) {
     $query = str_replace('phpwebgallery_', PREFIX_TABLE, $query);
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 //
@@ -323,15 +323,15 @@ foreach (array_keys($indexes_of) as $table) {
 SHOW INDEX
   FROM ' . PREFIX_TABLE . $table . '
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if ($row['Key_name'] != 'PRIMARY') {
             if (! in_array($row['Key_name'], array_keys($indexes_of[$table]))) {
                 $query = '
 ALTER TABLE ' . PREFIX_TABLE . $table . '
   DROP INDEX ' . $row['Key_name'] . '
 ;';
-                pwg_query($query);
+                Mysqli::pwg_query($query);
             } else {
                 $existing_indexes[] = $row['Key_name'];
             }
@@ -345,7 +345,7 @@ ALTER TABLE ' . PREFIX_TABLE . $table . '
   ADD ' . ($index['unique'] ? 'UNIQUE' : 'INDEX') . ' '
               . $index_name . ' (' . implode(',', $index['columns']) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
     }
 }
@@ -491,7 +491,7 @@ $params = [
     ],
 ];
 
-mass_inserts(
+Mysqli::mass_inserts(
     CONFIG_TABLE,
     array_keys($params[0]),
     $params
@@ -508,8 +508,8 @@ $query = '
 SELECT DISTINCT(storage_category_id) AS unique_storage_category_id
   FROM ' . IMAGES_TABLE . '
 ;';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $cat_ids[] = $row['unique_storage_category_id'];
 }
 
@@ -521,7 +521,7 @@ UPDATE ' . IMAGES_TABLE . '
   SET path = CONCAT(\'' . $fulldirs[$cat_id] . '\',\'/\',file)
   WHERE storage_category_id = ' . $cat_id . '
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 // all sub-categories of private categories become private
@@ -532,20 +532,20 @@ SELECT id
   FROM ' . CATEGORIES_TABLE . '
   WHERE status = \'private\'
 ;';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $cat_ids[] = $row['id'];
 }
 
 if ($cat_ids !== []) {
-    $privates = get_subcat_ids($cat_ids);
+    $privates = FunctionsCategory::get_subcat_ids($cat_ids);
 
     $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET status = \'private\'
   WHERE id IN (' . implode(',', $privates) . ')
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 // load the config file

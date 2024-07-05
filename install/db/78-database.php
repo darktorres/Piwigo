@@ -18,7 +18,7 @@ $upgrade_description = 'Add images.md5sum column, for web API uploaded photos';
 // +-----------------------------------------------------------------------+
 
 $query = 'ALTER TABLE ' . IMAGES_TABLE . ' add column `md5sum` char(32) default NULL';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 $upgrade_description = $query;
 

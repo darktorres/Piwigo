@@ -24,7 +24,8 @@
     "config": {
         "allow-plugins": {
             "cweagans/composer-patches": true
-        }
+        },
+        "optimize-autoloader": true
     },
     "extra": {
         "patches": {

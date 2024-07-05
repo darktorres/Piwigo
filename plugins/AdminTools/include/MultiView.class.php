@@ -1,20 +1,18 @@
 <?php
 
 use Piwigo\admin\inc\Themes;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\FileCombiner;
-use function Piwigo\inc\add_event_handler;
-use function Piwigo\inc\build_user;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\conf_delete_param;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dblayer\query2array;
 use function Piwigo\inc\duplicate_index_url;
 use function Piwigo\inc\duplicate_picture_url;
 use function Piwigo\inc\get_languages;
 use function Piwigo\inc\get_query_string_diff;
-use function Piwigo\inc\is_admin;
-use function Piwigo\inc\pwg_get_session_var;
-use function Piwigo\inc\pwg_set_session_var;
 use function Piwigo\inc\script_basename;
 
 defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
@@ -24,22 +22,13 @@ defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
  */
 class MultiView
 {
-    /**
-     * @var bool
-     */
-    private $is_admin = false;
+    private bool $is_admin = false;
 
-    /**
-     * @var array
-     */
-    private $data = [];
+    private array $data = [];
 
-    private $data_url_params = [];
+    private array $data_url_params = [];
 
-    /**
-     * @var array
-     */
-    private $user = [];
+    private array $user = [];
 
     /**
      * Constructor, load $data from session
@@ -59,33 +48,24 @@ class MultiView
                 'template_combine_files' => $conf['template_combine_files'],
                 'no_history' => false,
             ],
-            pwg_get_session_var('multiview', [])
+            FunctionsSession::pwg_get_session_var('multiview', [])
         );
 
         $this->data_url_params = array_keys($this->data);
-        $this->data_url_params = array_map(fn ($d) => 'ato_' . $d, $this->data_url_params);
+        $this->data_url_params = array_map(fn ($d): string => 'ato_' . $d, $this->data_url_params);
     }
 
-    /**
-     * @return bool
-     */
-    public function is_admin()
+    public function is_admin(): bool
     {
         return $this->is_admin;
     }
 
-    /**
-     * @return array
-     */
-    public function get_data()
+    public function get_data(): array
     {
         return $this->data;
     }
 
-    /**
-     * @return array
-     */
-    public function get_user()
+    public function get_user(): array
     {
         return $this->user;
     }
@@ -94,14 +74,13 @@ class MultiView
      * Returns the current url minus MultiView params
      *
      * @param bool $with_amp - adds ? or & at the end of the url
-     * @return string
      */
     public function get_clean_url(
         $with_amp = false
-    ) {
-        if (script_basename() == 'picture') {
+    ): string {
+        if (script_basename() === 'picture') {
             $url = duplicate_picture_url([], $this->data_url_params);
-        } elseif (script_basename() == 'index') {
+        } elseif (script_basename() === 'index') {
             $url = duplicate_index_url([], $this->data_url_params);
         } else {
             $url = get_query_string_diff($this->data_url_params);
@@ -118,11 +97,10 @@ class MultiView
      * Returns the current url minus MultiView params
      *
      * @param bool $with_amp - adds ? or & at the end of the url
-     * @return string
      */
     public function get_clean_admin_url(
         $with_amp = false
-    ) {
+    ): string {
         $url = PHPWG_ROOT_PATH . 'admin.php';
 
         $get = $_GET;
@@ -141,11 +119,11 @@ class MultiView
     /**
      * Triggered on "user_init", change current view depending of URL params.
      */
-    public function user_init()
+    public function user_init(): void
     {
         global $user, $conf;
 
-        $this->is_admin = is_admin();
+        $this->is_admin = FunctionsUser::is_admin();
 
         $this->user = [
             'id' => $user['id'],
@@ -155,7 +133,7 @@ class MultiView
         ];
 
         // inactive on ws.php to allow AJAX admin tasks
-        if ($this->is_admin && script_basename() != 'ws') {
+        if ($this->is_admin && script_basename() !== 'ws') {
             // show_queries
             if (isset($_GET['ato_show_queries'])) {
                 $this->data['show_queries'] = (bool) $_GET['ato_show_queries'];
@@ -182,7 +160,7 @@ class MultiView
                 }
 
                 if ($this->data['view_as'] != $user['id']) {
-                    $user = build_user($this->data['view_as'], true);
+                    $user = FunctionsUser::build_user($this->data['view_as'], true);
                     if (isset($_GET['ato_view_as'])) {
                         $this->data['theme'] = $user['theme'];
                         $this->data['lang'] = $user['language'];
@@ -232,9 +210,9 @@ class MultiView
             }
 
             if ($this->data['no_history']) {
-                $ret_false = fn () => false;
-                add_event_handler('pwg_log_allowed', $ret_false);
-                add_event_handler('pwg_log_update_last_visit', $ret_false);
+                $ret_false = fn (): false => false;
+                FunctionsPlugins::add_event_handler('pwg_log_allowed', $ret_false);
+                FunctionsPlugins::add_event_handler('pwg_log_update_last_visit', $ret_false);
             }
 
             $this->save();
@@ -259,7 +237,7 @@ class MultiView
     /**
      * Triggered on "init", in order to clean template files (not initialized on "user_init")
      */
-    public function init()
+    public function init(): void
     {
         if ($this->is_admin && isset($_GET['ato_purge_template'])) {
             global $template;
@@ -271,7 +249,7 @@ class MultiView
     /**
      * Mark browser session cache for deletion
      */
-    public static function invalidate_cache()
+    public static function invalidate_cache(): void
     {
         global $conf;
         conf_update_param('multiview_invalidate_cache', true, true);
@@ -280,7 +258,7 @@ class MultiView
     /**
      * Register custom API methods
      */
-    public static function register_ws($arr)
+    public static function register_ws($arr): void
     {
         $service = &$arr[0];
 
@@ -317,7 +295,7 @@ FROM ' . USERS_TABLE . ' AS u
     ON ' . $conf['user_fields']['id'] . ' = user_id
   ORDER BY CONVERT(' . $conf['user_fields']['username'] . ', CHAR)
 ;';
-        $out['users'] = query2array($query);
+        $out['users'] = Mysqli::query2array($query);
 
         // get themes
         require_once(__DIR__ . '/../../../admin/inc/themes.class.php');
@@ -344,8 +322,8 @@ FROM ' . USERS_TABLE . ' AS u
     /**
      * Save $data in session
      */
-    private function save()
+    private function save(): void
     {
-        pwg_set_session_var('multiview', $this->data);
+        FunctionsSession::pwg_set_session_var('multiview', $this->data);
     }
 }

@@ -3,15 +3,15 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Plugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_pwg_token;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_branch_from_version;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\pwg_activity;
-use function Piwigo\inc\pwg_get_session_var;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\time_since;
 
@@ -40,7 +40,7 @@ $plugins = new Plugins();
 
 //------------------------------------------------------automatic installation
 if (isset($_GET['revision']) && isset($_GET['extension'])) {
-    if (! is_webmaster()) {
+    if (! FunctionsUser::is_webmaster()) {
         $page['errors'][] = l10n('Webmaster status is required.');
     } else {
         check_pwg_token();
@@ -130,8 +130,8 @@ if (isset($_GET['beta-test']) && $_GET['beta-test'] == 'true') {
 
 if ($plugins->get_server_plugins(true, $beta_test)) {
     /* order plugins */
-    if (pwg_get_session_var('plugins_new_order') != null) {
-        $order_selected = pwg_get_session_var('plugins_new_order');
+    if (FunctionsSession::pwg_get_session_var('plugins_new_order') != null) {
+        $order_selected = FunctionsSession::pwg_get_session_var('plugins_new_order');
         $plugins->sort_server_plugins($order_selected);
         $template->assign('order_selected', $order_selected);
     } else {
@@ -161,7 +161,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
         // Check if the current version is in the compatible version (not necessary if we are in beta test)
         if ($beta_test) {
             foreach ($plugin['compatible_with_versions'] as $vers) {
-                if (get_branch_from_version($vers) == get_branch_from_version(PHPWG_VERSION)) {
+                if (get_branch_from_version($vers) === get_branch_from_version(PHPWG_VERSION)) {
                     $has_compatible_version = true;
                 }
             }

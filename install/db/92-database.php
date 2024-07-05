@@ -26,11 +26,11 @@ if (in_array($conf['dblayer'], ['pgsql', 'sqlite', 'pdo-sqlite'])) {
 
 $query .= ' NOT NULL;';
 
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 // set the existing photos with the webmaster_id as added_by
 $query = 'UPDATE ' . IMAGES_TABLE . ' SET added_by = ' . $conf['webmaster_id'] . ';';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

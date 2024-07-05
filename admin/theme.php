@@ -3,7 +3,7 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Themes;
-use function Piwigo\inc\check_status;
+use Piwigo\inc\FunctionsUser;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -17,7 +17,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 require_once(__DIR__ . '/../admin/inc/functions.php');
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(ACCESS_ADMINISTRATOR);
 
 if (empty($_GET['theme'])) {
     die('Invalid theme URL');

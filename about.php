@@ -2,11 +2,11 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\check_status;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -22,7 +22,7 @@ require_once(__DIR__ . '/inc/common.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
 //----------------------------------------------------- template initialization
 //
@@ -31,7 +31,7 @@ check_status(ACCESS_GUEST);
 $title = l10n('About Piwigo');
 $page['body_id'] = 'theAboutPage';
 
-trigger_notify('loc_begin_about');
+FunctionsPlugins::trigger_notify('loc_begin_about');
 
 $template->set_filename('about', 'about.tpl');
 

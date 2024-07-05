@@ -1,0 +1,857 @@
+<?php
+
+namespace Piwigo\inc\dblayer;
+
+use function Piwigo\inc\fatal_error;
+use function Piwigo\inc\l10n;
+use function Piwigo\inc\micro_seconds;
+
+// +-----------------------------------------------------------------------+
+// | This file is part of Piwigo.                                          |
+// |                                                                       |
+// | For copyright and license information, please view the COPYING.txt    |
+// | file that was distributed with this source code.                      |
+// +-----------------------------------------------------------------------+
+
+define('DB_ENGINE', 'MySQL');
+define('REQUIRED_MYSQL_VERSION', '8.0.37');
+
+define('DB_REGEX_OPERATOR', 'REGEXP');
+define('DB_RANDOM_FUNCTION', 'RAND');
+
+define('MASS_UPDATES_SKIP_EMPTY', 1);
+
+class Mysqli
+{
+    /**
+     * Connect to database and store MySQLi resource in __$mysqli__ global variable.
+     *
+     * @param string $host
+     *    - localhost
+     *    - 1.2.3.4:3405
+     *    - /path/to/socket
+     * @param string $user
+     * @param string $password
+     * @param string $database
+     */
+    public static function pwg_db_connect(
+        $host,
+        $user,
+        $password,
+        $database
+    ): void {
+        global $mysqli;
+
+        $port = null;
+        $socket = null;
+
+        if (str_starts_with($host, '/')) {
+            $socket = $host;
+            $host = null;
+        } elseif (str_contains($host, ':')) {
+            [$host, $port] = explode(':', $host);
+        }
+
+        $mysqli = new \mysqli($host, $user, $password, '', $port, $socket);
+        if (mysqli_connect_error()) {
+            throw new \Exception("Can't connect to server");
+        }
+
+        if (! empty($database) && ! $mysqli->select_db($database)) {
+            throw new \Exception('Connection to server succeed, but it was impossible to connect to database');
+        }
+
+        // MySQL 5.7 default settings forbid to select a colum that is not in the
+        // group by. We've used that in Piwigo, for years. As an immediate solution
+        // we can remove this constraint in the current MySQL session.
+        [$sql_mode_current] = self::pwg_db_fetch_row(
+            self::pwg_query('SELECT @@SESSION.sql_mode')
+        );
+
+        // remove ONLY_FULL_GROUP_BY from the list
+        $sql_mode_altered = implode(
+            ',',
+            array_diff(explode(',', (string) $sql_mode_current), ['ONLY_FULL_GROUP_BY'])
+        );
+
+        if ($sql_mode_altered != $sql_mode_current) {
+            self::pwg_query("SET SESSION sql_mode='" . $sql_mode_altered . "'");
+        }
+    }
+
+    /**
+     * Check MySQL version. Can call fatal_error().
+     */
+    public static function pwg_db_check_version(): void
+    {
+        $current_mysql = self::pwg_get_db_version();
+        if (version_compare($current_mysql, REQUIRED_MYSQL_VERSION, '<')) {
+            fatal_error(
+                sprintf(
+                    'your MySQL version is too old, you have "%s" and you need at least "%s"',
+                    $current_mysql,
+                    REQUIRED_MYSQL_VERSION
+                )
+            );
+        }
+    }
+
+    /**
+     * Get Mysql Version.
+     *
+     * @return string
+     */
+    public static function pwg_get_db_version()
+    {
+        global $mysqli;
+
+        return $mysqli->server_info;
+    }
+
+    /**
+     * Execute a query
+     *
+     * @return \mysqli_result|bool
+     */
+    public static function pwg_query(
+        string $query
+    ) {
+        global $mysqli, $conf, $page, $debug, $t2;
+
+        $start = microtime(true);
+
+        try {
+            $result = $mysqli->query($query);
+        } catch (Throwable) {
+            self::my_error($query, $conf['die_on_sql_error']);
+        }
+
+        $time = microtime(true) - $start;
+
+        if (! isset($page['count_queries'])) {
+            $page['count_queries'] = 0;
+            $page['queries_time'] = 0;
+        }
+
+        $page['count_queries']++;
+        $page['queries_time'] += $time;
+
+        if ($conf['show_queries']) {
+            $output = '';
+            $output .= '<pre>[' . $page['count_queries'] . '] ';
+            $output .= "\n" . $query;
+            $output .= "\n" . '(this query time : ';
+            $output .= '<b>' . number_format($time, 3, '.', ' ') . ' s)</b>';
+            $output .= "\n" . '(total SQL time  : ';
+            $output .= number_format($page['queries_time'], 3, '.', ' ') . ' s)';
+            $output .= "\n" . '(total time      : ';
+            $output .= number_format(($time + $start - $t2), 3, '.', ' ') . ' s)';
+            if ($result != null && preg_match('/\s*SELECT\s+/i', $query)) {
+                $output .= "\n" . '(num rows        : ';
+                $output .= self::pwg_db_num_rows($result) . ' )';
+            } elseif ($result != null && preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i', $query)) {
+                $output .= "\n" . '(affected rows   : ';
+                $output .= self::pwg_db_changes() . ' )';
+            }
+
+            $output .= "</pre>\n";
+
+            $debug .= $output;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get max value plus one of a particular column.
+     */
+    public static function pwg_db_nextval(
+        string $column,
+        string $table
+    ) {
+        $query = '
+SELECT IF(MAX(' . $column . ')+1 IS NULL, 1, MAX(' . $column . ')+1)
+  FROM ' . $table;
+        [$next] = self::pwg_db_fetch_row(self::pwg_query($query));
+
+        return $next;
+    }
+
+    public static function pwg_db_changes()
+    {
+        global $mysqli;
+
+        return $mysqli->affected_rows;
+    }
+
+    public static function pwg_db_num_rows($result)
+    {
+        return $result->num_rows;
+    }
+
+    public static function pwg_db_fetch_array($result)
+    {
+        return $result->fetch_array();
+    }
+
+    public static function pwg_db_fetch_assoc($result)
+    {
+        return $result->fetch_assoc();
+    }
+
+    public static function pwg_db_fetch_row($result)
+    {
+        return $result->fetch_row();
+    }
+
+    public static function pwg_db_fetch_object($result)
+    {
+        return $result->fetch_object();
+    }
+
+    public static function pwg_db_free_result($result)
+    {
+        return $result->free_result();
+    }
+
+    public static function pwg_db_real_escape_string($s)
+    {
+        global $mysqli;
+
+        return isset($s) ? $mysqli->real_escape_string($s) : null;
+    }
+
+    public static function pwg_db_insert_id()
+    {
+        global $mysqli;
+
+        return $mysqli->insert_id;
+    }
+
+    public static function pwg_db_errno()
+    {
+        global $mysqli;
+
+        return $mysqli->errno;
+    }
+
+    public static function pwg_db_error()
+    {
+        global $mysqli;
+
+        return $mysqli->error;
+    }
+
+    public static function pwg_db_close()
+    {
+        global $mysqli;
+
+        return $mysqli->close();
+    }
+
+    /**
+     * Updates multiple lines in a table.
+     *
+     * @param array $dbfields - contains 'primary' and 'update' arrays
+     * @param array $datas - indexed by column names
+     * @param int $flags - if MASS_UPDATES_SKIP_EMPTY, empty values do not overwrite existing ones
+     */
+    public static function mass_updates(
+        string $tablename,
+        array $dbfields,
+        $datas,
+        $flags = 0
+    ): void {
+        if (count($datas) == 0) {
+            return;
+        }
+
+        // we use the multi table update or N update queries
+        if (count($datas) < 10) {
+            foreach ($datas as $data) {
+                $is_first = true;
+
+                $query = '
+UPDATE ' . self::protect_column_name($tablename) . '
+  SET ';
+
+                foreach ($dbfields['update'] as $key) {
+                    $separator = $is_first ? '' : ",\n    ";
+
+                    if (isset($data[$key]) && $data[$key] != '') {
+                        $query .= $separator . self::protect_column_name($key) . " = '" . $data[$key] . "'";
+                    } else {
+                        if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
+                            continue; // next field
+                        }
+
+                        $query .= $separator . self::protect_column_name($key) . ' = NULL';
+                    }
+
+                    $is_first = false;
+                }
+
+                if (! $is_first) {// only if one field at least updated
+                    $is_first = true;
+
+                    $query .= '
+  WHERE ';
+                    foreach ($dbfields['primary'] as $key) {
+                        if (! $is_first) {
+                            $query .= ' AND ';
+                        }
+
+                        if (isset($data[$key])) {
+                            $query .= self::protect_column_name($key) . " = '" . $data[$key] . "'";
+                        } else {
+                            $query .= self::protect_column_name($key) . ' IS NULL';
+                        }
+
+                        $is_first = false;
+                    }
+
+                    self::pwg_query($query);
+                }
+            } // foreach update
+        } // if count<X
+        else {
+            // creation of the temporary table
+            $result = self::pwg_query(
+                'SHOW FULL COLUMNS FROM ' . self::protect_column_name($tablename)
+            );
+            $columns = [];
+            $all_fields = array_merge($dbfields['primary'], $dbfields['update']);
+
+            while ($row = self::pwg_db_fetch_assoc($result)) {
+                if (in_array($row['Field'], $all_fields)) {
+                    $column = '`' . $row['Field'] . '`';
+                    $column .= ' ' . $row['Type'];
+
+                    $nullable = true;
+                    if (! isset($row['Null']) || $row['Null'] == '' || $row['Null'] == 'NO') {
+                        $column .= ' NOT NULL';
+                        $nullable = false;
+                    }
+
+                    if (isset($row['Default'])) {
+                        $column .= " default '" . $row['Default'] . "'";
+                    } elseif ($nullable) {
+                        $column .= ' default NULL';
+                    }
+
+                    if (isset($row['Collation']) && $row['Collation'] != 'NULL') {
+                        $column .= " collate '" . $row['Collation'] . "'";
+                    }
+
+                    $columns[] = $column;
+                }
+            }
+
+            $temporary_tablename = $tablename . '_' . micro_seconds();
+
+            $query = '
+CREATE TABLE ' . $temporary_tablename . '
+(
+  ' . implode(",\n  ", $columns) . ',
+  UNIQUE KEY the_key (' . implode(',', $dbfields['primary']) . ')
+)';
+
+            self::pwg_query($query);
+            self::mass_inserts($temporary_tablename, $all_fields, $datas);
+
+            if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
+                $func_set = fn ($s): string => sprintf('t1.%s = IFNULL(t2.%s, t1.%s)', $s, $s, $s);
+            } else {
+                $func_set = fn ($s): string => sprintf('t1.%s = t2.%s', $s, $s);
+            }
+
+            // update of table by joining with temporary table
+            $query = '
+UPDATE ' . self::protect_column_name($tablename) . ' AS t1, ' . $temporary_tablename . ' AS t2
+  SET ' .
+              implode(
+                  "\n    , ",
+                  array_map($func_set, $dbfields['update'])
+              ) . '
+  WHERE ' .
+              implode(
+                  "\n    AND ",
+                  array_map(
+                      fn ($s): string => sprintf('t1.%s = t2.%s', $s, $s),
+                      $dbfields['primary']
+                  )
+              );
+            self::pwg_query($query);
+
+            self::pwg_query('DROP TABLE ' . $temporary_tablename);
+        }
+    }
+
+    /**
+     * Updates one line in a table.
+     *
+     * @param string $tablename
+     * @param array $datas
+     * @param array $where
+     * @param int $flags - if MASS_UPDATES_SKIP_EMPTY, empty values do not overwrite existing ones
+     */
+    public static function single_update(
+        $tablename,
+        $datas,
+        $where,
+        $flags = 0
+    ): void {
+        if (count($datas) == 0) {
+            return;
+        }
+
+        $is_first = true;
+
+        $query = '
+UPDATE ' . self::protect_column_name($tablename) . '
+  SET ';
+
+        foreach ($datas as $key => $value) {
+            $separator = $is_first ? '' : ",\n    ";
+
+            if (isset($value) && $value !== '') {
+                $query .= $separator . self::protect_column_name($key) . " = '" . $value . "'";
+            } else {
+                if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
+                    continue; // next field
+                }
+
+                $query .= $separator . self::protect_column_name($key) . ' = NULL';
+            }
+
+            $is_first = false;
+        }
+
+        if (! $is_first) {// only if one field at least updated
+            $is_first = true;
+
+            $query .= '
+  WHERE ';
+
+            foreach ($where as $key => $value) {
+                if (! $is_first) {
+                    $query .= ' AND ';
+                }
+
+                if (isset($value)) {
+                    $query .= self::protect_column_name($key) . " = '" . $value . "'";
+                } else {
+                    $query .= self::protect_column_name($key) . ' IS NULL';
+                }
+
+                $is_first = false;
+            }
+
+            self::pwg_query($query);
+        }
+    }
+
+    /**
+     * Inserts multiple lines in a table.
+     *
+     * @param string $table_name
+     * @param array $dbfields - fields from $datas which will be used
+     * @param array $datas
+     * @param array $options
+     *    - boolean ignore - use "INSERT IGNORE"
+     */
+    public static function mass_inserts(
+        $table_name,
+        $dbfields,
+        $datas,
+        array $options = [
+        ]
+    ): void {
+        $ignore = '';
+        if (isset($options['ignore']) && $options['ignore']) {
+            $ignore = 'IGNORE';
+        }
+
+        if (count($datas) != 0) {
+            [, $packet_size] = self::pwg_db_fetch_row(self::pwg_query("SHOW VARIABLES LIKE 'max_allowed_packet'"));
+            $queryBase = 'INSERT ' . $ignore . ' INTO ' . self::protect_column_name($table_name) . ' (' . implode(
+                ',',
+                array_map(self::protect_column_name(...), $dbfields)
+            ) . ') VALUES ';
+            $query = '';
+
+            foreach ($datas as $insert) {
+                $queryTemp = '(';
+
+                foreach ($dbfields as $field_id => $dbfield) {
+                    if ($field_id > 0) {
+                        $queryTemp .= ',';
+                    }
+
+                    if (! isset($insert[$dbfield]) || $insert[$dbfield] === '') {
+                        $queryTemp .= 'NULL';
+                    } else {
+                        $queryTemp .= "'" . $insert[$dbfield] . "'";
+                    }
+                }
+
+                $queryTemp .= ')';
+
+                $len = strlen($queryBase . $query . ', ' . $queryTemp);
+
+                if ($len >= $packet_size) { // delay $insert to next query
+                    self::pwg_query($queryBase . $query);
+                    $query = $queryTemp;
+                } else {
+                    if ($query !== '' && $query !== '0') {
+                        $query .= ', ';
+                    }
+
+                    $query .= $queryTemp;
+                }
+            }
+
+            self::pwg_query($queryBase . $query);
+        }
+    }
+
+    /**
+     * Inserts one line in a table.
+     *
+     * @param string $table_name
+     * @param array $data
+     * @param array $options
+     *    - boolean ignore - use "INSERT IGNORE"
+     */
+    public static function single_insert(
+        $table_name,
+        $data,
+        array $options = [
+        ]
+    ): void {
+        $ignore = '';
+        if (isset($options['ignore']) && $options['ignore']) {
+            $ignore = 'IGNORE';
+        }
+
+        if (count($data) != 0) {
+            $query = '
+INSERT ' . $ignore . ' INTO ' . self::protect_column_name($table_name) . '
+  (' . implode(',', array_map(protect_column_name(...), array_keys($data))) . ')
+  VALUES';
+
+            $query .= '(';
+            $is_first = true;
+            foreach ($data as $key => $value) {
+                if (! $is_first) {
+                    $query .= ',';
+                } else {
+                    $is_first = false;
+                }
+
+                if ($value === '' || $value === null) {
+                    $query .= 'NULL';
+                } else {
+                    $query .= "'" . $value . "'";
+                }
+            }
+
+            $query .= ')';
+
+            self::pwg_query($query);
+        }
+    }
+
+    public static function protect_column_name($column_name)
+    {
+        if ($column_name[0] != '`') {
+            $column_name = '`' . $column_name . '`';
+        }
+
+        return $column_name;
+    }
+
+    /**
+     * Do maintenance on all Piwigo tables
+     */
+    public static function do_maintenance_all_tables(): void
+    {
+        global $prefixeTable, $page;
+
+        $all_tables = [];
+
+        // List all tables
+        $query = "SHOW TABLES LIKE '" . $prefixeTable . "%'";
+        $result = self::pwg_query($query);
+        while ($row = self::pwg_db_fetch_row($result)) {
+            $all_tables[] = $row[0];
+        }
+
+        // Repair all tables
+        $query = 'REPAIR TABLE ' . implode(', ', $all_tables);
+        $mysqli_rc = self::pwg_query($query);
+
+        // Re-Order all tables
+        foreach ($all_tables as $table_name) {
+            $all_primary_key = [];
+
+            $query = 'DESC ' . $table_name . ';';
+            $result = self::pwg_query($query);
+            while ($row = self::pwg_db_fetch_assoc($result)) {
+                if ($row['Key'] == 'PRI') {
+                    $all_primary_key[] = $row['Field'];
+                }
+            }
+
+            if (count($all_primary_key) != 0) {
+                $query = 'ALTER TABLE ' . $table_name . ' ORDER BY ' . implode(', ', $all_primary_key) . ';';
+                $mysqli_rc = $mysqli_rc && self::pwg_query($query);
+            }
+        }
+
+        // Optimize all tables
+        $query = 'OPTIMIZE TABLE ' . implode(', ', $all_tables);
+        $mysqli_rc = $mysqli_rc && self::pwg_query($query);
+        if ($mysqli_rc) {
+            $page['infos'][] = l10n('All optimizations have been successfully completed.');
+        } else {
+            $page['errors'][] = l10n('Optimizations have been completed with some errors.');
+        }
+    }
+
+    public static function pwg_db_concat($array): string
+    {
+        $string = implode(',', $array);
+        return 'CONCAT(' . $string . ')';
+    }
+
+    public static function pwg_db_concat_ws($array, string $separator): string
+    {
+        $string = implode(',', $array);
+        return "CONCAT_WS('" . $separator . "'," . $string . ')';
+    }
+
+    public static function pwg_db_cast_to_text($string)
+    {
+        return $string;
+    }
+
+    /**
+     * Returns an array containing the possible values of an enum field.
+     *
+     * @param string $field
+     * @return string[]
+     */
+    public static function get_enums(
+        string $table,
+        $field
+    ) {
+        $result = self::pwg_query('DESC ' . $table);
+        while ($row = self::pwg_db_fetch_assoc($result)) {
+            if ($row['Field'] == $field) {
+                // parse enum('blue','green','black')
+                $options = explode(',', substr((string) $row['Type'], 5, -1));
+                foreach ($options as $i => $option) {
+                    $options[$i] = str_replace("'", '', $option);
+                }
+            }
+        }
+
+        self::pwg_db_free_result($result);
+        return $options;
+    }
+
+    /**
+     * Checks if a variable is equivalent to true or false.
+     */
+    public static function get_boolean(
+        mixed $input
+    ): bool {
+        if (strtolower((string) $input) === 'false') {
+            return false;
+        }
+
+        return (bool) $input;
+    }
+
+    /**
+     * Returns string 'true' or 'false' if the given var is boolean.
+     * If the input is another type, it is not changed.
+     *
+     * @return mixed
+     */
+    public static function boolean_to_string(
+        mixed $var
+    ) {
+        if (is_bool($var)) {
+            return $var ? 'true' : 'false';
+        }
+
+        return $var;
+
+    }
+
+    public static function pwg_db_get_recent_period_expression(string $period, $date = 'CURRENT_DATE'): string
+    {
+        if ($date != 'CURRENT_DATE') {
+            $date = "'" . $date . "'";
+        }
+
+        return 'SUBDATE(' . $date . ',INTERVAL ' . $period . ' DAY)';
+    }
+
+    public static function pwg_db_get_recent_period(string $period, $date = 'CURRENT_DATE')
+    {
+        $query = '
+SELECT ' . self::pwg_db_get_recent_period_expression($period);
+        [$d] = self::pwg_db_fetch_row(self::pwg_query($query));
+
+        return $d;
+    }
+
+    public static function pwg_db_get_flood_period_expression(string $seconds): string
+    {
+        return 'SUBDATE(NOW(), INTERVAL ' . $seconds . ' SECOND)';
+    }
+
+    public static function pwg_db_get_hour(string $date): string
+    {
+        return 'HOUR(' . $date . ')';
+    }
+
+    public static function pwg_db_get_date_YYYYMM(string $date): string
+    {
+        return 'DATE_FORMAT(' . $date . ", '%Y%m')";
+    }
+
+    public static function pwg_db_get_date_MMDD(string $date): string
+    {
+        return 'DATE_FORMAT(' . $date . ", '%m%d')";
+    }
+
+    public static function pwg_db_get_year(string $date): string
+    {
+        return 'YEAR(' . $date . ')';
+    }
+
+    public static function pwg_db_get_month(string $date): string
+    {
+        return 'MONTH(' . $date . ')';
+    }
+
+    public static function pwg_db_get_week(string $date, $mode = null): string
+    {
+        if ($mode) {
+            return 'WEEK(' . $date . ', ' . $mode . ')';
+        }
+
+        return 'WEEK(' . $date . ')';
+
+    }
+
+    public static function pwg_db_get_dayofmonth(string $date): string
+    {
+        return 'DAYOFMONTH(' . $date . ')';
+    }
+
+    public static function pwg_db_get_dayofweek(string $date): string
+    {
+        return 'DAYOFWEEK(' . $date . ')';
+    }
+
+    public static function pwg_db_get_weekday(string $date): string
+    {
+        return 'WEEKDAY(' . $date . ')';
+    }
+
+    public static function pwg_db_date_to_ts(string $date): string
+    {
+        return 'UNIX_TIMESTAMP(' . $date . ')';
+    }
+
+    /**
+     * Returns (or send to standard output) the message concerning the
+     * error occured for the last mysql query.
+     */
+    public static function my_error(
+        string $header,
+        $die
+    ): void {
+        global $mysqli;
+
+        $error = '[mysql error ' . $mysqli->errno . '] ' . $mysqli->error . "\n";
+        $error .= $header;
+
+        if ($die) {
+            fatal_error($error);
+        }
+
+        echo '<pre>';
+        trigger_error($error, E_USER_WARNING);
+        echo '</pre>';
+    }
+
+    /**
+     * Builds an data array from a SQL query.
+     * Depending on $key_name and $value_name it can return :
+     *
+     *    - an array of arrays of all fields (key=null, value=null)
+     *        array(
+     *          array('id'=>1, 'name'=>'DSC8956', ...),
+     *          array('id'=>2, 'name'=>'DSC8957', ...),
+     *          ...
+     *          )
+     *
+     *    - an array of a single field (key=null, value='...')
+     *        array('DSC8956', 'DSC8957', ...)
+     *
+     *    - an associative array of array of all fields (key='...', value=null)
+     *        array(
+     *          'DSC8956' => array('id'=>1, 'name'=>'DSC8956', ...),
+     *          'DSC8957' => array('id'=>2, 'name'=>'DSC8957', ...),
+     *          ...
+     *          )
+     *
+     *    - an associative array of a single field (key='...', value='...')
+     *        array(
+     *          'DSC8956' => 1,
+     *          'DSC8957' => 2,
+     *          ...
+     *          )
+     *
+     * @since 2.6
+     *
+     * @param string $key_name
+     * @param string $value_name
+     */
+    public static function query2array(
+        string $query,
+        $key_name = null,
+        $value_name = null
+    ): array {
+        $result = self::pwg_query($query);
+        $data = [];
+
+        if (isset($key_name)) {
+            if (isset($value_name)) {
+                while ($row = $result->fetch_assoc()) {
+                    $data[$row[$key_name]] = $row[$value_name];
+                }
+            } else {
+                while ($row = $result->fetch_assoc()) {
+                    $data[$row[$key_name]] = $row;
+                }
+            }
+        } elseif (isset($value_name)) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row[$value_name];
+            }
+        } else {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+        }
+
+        return $data;
+    }
+}

@@ -2,6 +2,10 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\dbLayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\fs_quick_check;
 use function Piwigo\admin\inc\get_active_menu;
 use function Piwigo\admin\inc\get_orphans;
@@ -10,17 +14,10 @@ use function Piwigo\admin\inc\invalidate_user_cache;
 use function Piwigo\admin\inc\pwg_URL;
 use function Piwigo\admin\inc\sync_users;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\flush_page_messages;
 use function Piwigo\inc\get_gallery_home_url;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\pwg_set_session_var;
 use function Piwigo\inc\redirect;
-use function Piwigo\inc\trigger_notify;
-use function Piwigo\inc\userprefs_get_param;
-use function Piwigo\inc\userprefs_update_param;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -40,13 +37,15 @@ require_once(__DIR__ . '/inc/common.inc.php');
 require_once(__DIR__ . '/admin/inc/functions.php');
 require_once(__DIR__ . '/admin/inc/add_core_tabs.inc.php');
 
-trigger_notify('loc_begin_admin');
+FunctionsPlugins::trigger_notify('loc_begin_admin');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('page', $_GET, false, '/^[a-zA-Z\d_-]+$/');
 check_input_parameter('section', $_GET, false, '/^[a-z]+[a-z_\/-]*(\.php)?$/i');
@@ -78,14 +77,14 @@ if ($conf['fs_quick_check_period'] > 0) {
 
 // save plugins_new display order (AJAX action)
 if (isset($_GET['plugins_new_order'])) {
-    pwg_set_session_var('plugins_new_order', $_GET['plugins_new_order']);
+    FunctionsSession::pwg_set_session_var('plugins_new_order', $_GET['plugins_new_order']);
     exit;
 }
 
 // theme changer
 if (isset($_GET['change_theme'])) {
     $admin_themes = ['roma', 'clear'];
-    $admin_theme_array = [userprefs_get_param('admin_theme', 'roma')];
+    $admin_theme_array = [FunctionsUser::userprefs_get_param('admin_theme', 'roma')];
     $result = array_diff(
         $admin_themes,
         $admin_theme_array
@@ -95,7 +94,7 @@ if (isset($_GET['change_theme'])) {
         $result
     );
 
-    userprefs_update_param('admin_theme', $new_admin_theme);
+    FunctionsUser::userprefs_update_param('admin_theme', $new_admin_theme);
 
     $url_params = [];
     foreach (['page', 'tab', 'section'] as $url_param) {
@@ -266,7 +265,7 @@ SELECT COUNT(*)
   FROM ' . COMMENTS_TABLE . '
   WHERE validated=\'false\'
 ;';
-    [$nb_comments] = pwg_db_fetch_row(pwg_query($query));
+    [$nb_comments] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
     if ($nb_comments > 0) {
         $template->assign('NB_PENDING_COMMENTS', $nb_comments);
@@ -280,7 +279,7 @@ SELECT COUNT(*)
   FROM ' . CADDIE_TABLE . '
   WHERE user_id = ' . $user['id'] . '
 ;';
-[$nb_photos_in_caddie] = pwg_db_fetch_row(pwg_query($query));
+[$nb_photos_in_caddie] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 if ($nb_photos_in_caddie > 0) {
     $template->assign(
@@ -310,7 +309,7 @@ if (in_array($page['page'], ['site_update', 'batch_manager'])) {
 // only calculate number of orphans on all pages if the number of images is "not huge"
 $page['nb_orphans'] = 0;
 
-[$page['nb_photos_total']] = pwg_db_fetch_row(pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE));
+[$page['nb_photos_total']] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE));
 if ($page['nb_photos_total'] < 100000) { // 100k is already a big gallery
     $page['nb_orphans'] = count(get_orphans());
 }
@@ -352,7 +351,9 @@ if (
 // | Include specific page                                                 |
 // +-----------------------------------------------------------------------+
 
-trigger_notify('loc_begin_admin_page');
+FunctionsPlugins::trigger_notify(
+    'loc_begin_admin_page'
+);
 require(__DIR__ . '/admin/' . $page['page'] . '.php');
 
 $template->assign('ACTIVE_MENU', get_active_menu($page['page']));
@@ -366,7 +367,7 @@ $template->assign('pwgmenu', pwg_URL());
 
 require(__DIR__ . '/inc/page_header.php');
 
-trigger_notify('loc_end_admin');
+FunctionsPlugins::trigger_notify('loc_end_admin');
 
 flush_page_messages();
 

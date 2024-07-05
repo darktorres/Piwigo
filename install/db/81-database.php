@@ -25,7 +25,7 @@ INSERT INTO ' . PREFIX_TABLE . 'config (param,value,comment)
   (\'email_admin_on_comment_deletion\',\'false\',
     \'Send an email to the administrators when a comment is deleted\')
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . $upgrade_description

@@ -2,16 +2,12 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\add_url_params;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\create_user_auth_key;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_cat_display_name_from_id;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\l10n;
@@ -24,7 +20,6 @@ use function Piwigo\inc\set_make_full_url;
 use function Piwigo\inc\switch_lang_back;
 use function Piwigo\inc\switch_lang_to;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_change;
 use function Piwigo\inc\unset_make_full_url;
 
 // +-----------------------------------------------------------------------+
@@ -45,7 +40,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // |                       variable initialization                         |
@@ -72,9 +69,9 @@ SELECT id, file, path, representative_ext
   WHERE id = ' . $category['representative_picture_id'] . '
 ;';
 
-        $result = pwg_query($query);
-        if (pwg_db_num_rows($result) > 0) {
-            $element = pwg_db_fetch_assoc($result);
+        $result = Mysqli::pwg_query($query);
+        if (Mysqli::pwg_db_num_rows($result) > 0) {
+            $element = Mysqli::pwg_db_fetch_assoc($result);
 
             $img = [
                 'link' => make_picture_url(
@@ -93,7 +90,7 @@ SELECT id, file, path, representative_ext
         'subject' => l10n(
             '[%s] Visit album %s',
             $conf['gallery_title'],
-            trigger_change('render_category_name', $category['name'], 'admin_cat_list')
+            FunctionsPlugins::trigger_change('render_category_name', $category['name'], 'admin_cat_list')
         ),
         // TODO : change this language variable to 'Visit album %s'
         // TODO : 'language_selected' => ....
@@ -103,12 +100,20 @@ SELECT id, file, path, representative_ext
         'filename' => 'cat_group_info',
         'assign' => [
             'IMG' => $img,
-            'CAT_NAME' => trigger_change('render_category_name', $category['name'], 'admin_cat_list'),
+            'CAT_NAME' => FunctionsPlugins::trigger_change(
+                'render_category_name',
+                $category['name'],
+                'admin_cat_list'
+            ),
             'LINK' => make_index_url(
                 [
                     'category' => [
                         'id' => $category['id'],
-                        'name' => trigger_change('render_category_name', $category['name'], 'admin_cat_list'),
+                        'name' => FunctionsPlugins::trigger_change(
+                            'render_category_name',
+                            $category['name'],
+                            'admin_cat_list'
+                        ),
                         'permalink' => $category['permalink'],
                     ],
                 ]
@@ -139,13 +144,13 @@ SELECT
     JOIN ' . USERS_TABLE . ' AS u ON u.' . $conf['user_fields']['id'] . ' = ui.user_id
   WHERE ui.user_id IN (' . implode(',', $_POST['users']) . ')
 ;';
-        $users = query2array($query);
+        $users = Mysqli::query2array($query);
         $usernames = [];
 
         foreach ($users as $u) {
             $usernames[] = $u['username'];
 
-            $authkey = create_user_auth_key($u['user_id'], $u['status']);
+            $authkey = FunctionsUser::create_user_auth_key($u['user_id'], $u['status']);
 
             $user_tpl = $tpl;
 
@@ -189,7 +194,7 @@ SELECT
   FROM ' . GROUPS_TABLE . '
   WHERE id = ' . $_POST['group'] . '
 ;';
-        [$group_name] = pwg_db_fetch_row(pwg_query($query));
+        [$group_name] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
         $page['infos'][] = l10n('An information email was sent to group "%s"', $group_name);
     }
@@ -210,7 +215,7 @@ $template->assign(
     [
         'CATEGORIES_NAV' =>
           trim(
-              get_cat_display_name_from_id(
+              (string) get_cat_display_name_from_id(
                   $page['cat'],
                   'admin.php?page=album-'
               )
@@ -241,7 +246,7 @@ SELECT
     id AS group_id
   FROM ' . GROUPS_TABLE . '
 ;';
-$all_group_ids = query2array($query, null, 'group_id');
+$all_group_ids = Mysqli::query2array($query, null, 'group_id');
 
 if (count($all_group_ids) == 0) {
     $template->assign('no_group_in_gallery', true);
@@ -253,7 +258,7 @@ SELECT
   FROM ' . GROUP_ACCESS_TABLE . '
   WHERE cat_id = ' . $category['id'] . '
 ;';
-        $group_ids = query2array($query, null, 'group_id');
+        $group_ids = Mysqli::query2array($query, null, 'group_id');
 
         if (count($group_ids) == 0) {
             $template->assign('permission_url', $admin_album_base_url . '-permissions');
@@ -273,7 +278,7 @@ SELECT
 ;';
         $template->assign(
             'group_mail_options',
-            query2array($query, 'id', 'name')
+            Mysqli::query2array($query, 'id', 'name')
         );
     }
 }
@@ -287,7 +292,7 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE status != \'guest\'
 ;';
-$all_user_ids = query2array($query, null, 'user_id');
+$all_user_ids = Mysqli::query2array($query, null, 'user_id');
 
 if ($category['status'] == 'private') {
     $user_ids_access_indirect = [];
@@ -299,7 +304,7 @@ SELECT
   FROM ' . USER_GROUP_TABLE . '
   WHERE group_id IN (' . implode(',', $group_ids) . ') 
 ';
-        $user_ids_access_indirect = query2array($query, null, 'user_id');
+        $user_ids_access_indirect = Mysqli::query2array($query, null, 'user_id');
     }
 
     $query = '
@@ -308,7 +313,7 @@ SELECT
   FROM ' . USER_ACCESS_TABLE . '
   WHERE cat_id = ' . $category['id'] . '
 ;';
-    $user_ids_access_direct = query2array($query, null, 'user_id');
+    $user_ids_access_direct = Mysqli::query2array($query, null, 'user_id');
 
     $user_ids_access = array_unique(array_merge($user_ids_access_direct, $user_ids_access_indirect));
 
@@ -326,7 +331,7 @@ SELECT
   WHERE id IN (' . implode(',', $user_ids) . ')
 ;';
 
-    $users = query2array($query, 'id', 'username');
+    $users = Mysqli::query2array($query, 'id', 'username');
 
     $template->assign('user_options', $users);
 }

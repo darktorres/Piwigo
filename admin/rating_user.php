@@ -3,14 +3,11 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Tabsheet;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_autorize_status;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\make_picture_url;
 
@@ -50,11 +47,11 @@ $query = 'SELECT DISTINCT
     ON u.' . $conf['user_fields']['id'] . ' = ui.user_id';
 
 $users_by_id = [];
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $users_by_id[(int) $row['id']] = [
         'name' => $row['name'],
-        'anon' => ! is_autorize_status(ACCESS_CLASSIC, $row['status']),
+        'anon' => ! FunctionsUser::is_autorize_status(ACCESS_CLASSIC, $row['status']),
     ];
 }
 
@@ -70,8 +67,8 @@ $image_ids = [];
 $by_user_ratings = [];
 $query = '
 SELECT * FROM ' . RATE_TABLE . ' ORDER by date DESC';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     if (! isset($users_by_id[$row['user_id']])) {
         $users_by_id[$row['user_id']] = [
             'name' => '???' . $row['user_id'],
@@ -106,9 +103,9 @@ if ($image_ids !== []) {
     $query = 'SELECT id, name, file, path, representative_ext, level
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', array_keys($image_ids)) . ')';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
     $params = ImageStdParams::get_by_type(IMG_SQUARE);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $image_urls[$row['id']] = [
             'tn' => DerivativeImage::url($params, $row),
             'page' => make_picture_url([
@@ -125,8 +122,8 @@ $query = 'SELECT element_id,
   FROM ' . RATE_TABLE . '
   GROUP BY element_id';
 $all_img_sum = [];
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result)) {
+$result = Mysqli::pwg_query($query);
+while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
     $all_img_sum[(int) $row['element_id']] = [
         'avg' => (float) $row['avg'],
     ];
@@ -136,7 +133,7 @@ $query = 'SELECT id
   FROM ' . IMAGES_TABLE . '
   ORDER by rating_score DESC
   LIMIT ' . $consensus_top_number;
-$best_rated = array_flip(query2array($query, null, 'id'));
+$best_rated = array_flip(Mysqli::query2array($query, null, 'id'));
 
 // by user stats
 foreach ($by_user_ratings as $id => &$rating) {
@@ -245,7 +242,7 @@ SELECT
     COUNT(*)
   FROM ' . RATE_TABLE .
 ';';
-[$nb_elements] = pwg_db_fetch_row(pwg_query($query));
+[$nb_elements] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 
 $template->assign([
     'F_ACTION' => get_root_url() . 'admin.php',

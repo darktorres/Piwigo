@@ -2,9 +2,8 @@
 
 namespace Piwigo;
 
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\get_sql_condition_FandF;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\make_index_url;
 use function Piwigo\inc\redirect;
 
@@ -25,7 +24,7 @@ require_once(__DIR__ . '/inc/common.inc.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_GUEST);
+FunctionsUser::check_status(ACCESS_GUEST);
 
 // +-----------------------------------------------------------------------+
 // |                     generate random element list                      |
@@ -35,7 +34,7 @@ $query = '
 SELECT id
   FROM ' . IMAGES_TABLE . '
     INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON id = ic.image_id
-' . get_sql_condition_FandF(
+' . FunctionsUser::get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',
         'visible_categories' => 'category_id',
@@ -52,5 +51,5 @@ SELECT id
 // +-----------------------------------------------------------------------+
 
 redirect(make_index_url([
-    'list' => query2array($query, null, 'id'),
+    'list' => Mysqli::query2array($query, null, 'id'),
 ]));

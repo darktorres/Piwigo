@@ -59,7 +59,7 @@ final class DerivativeParams
      */
     public function add_url_tokens(
         &$tokens
-    ) {
+    ): void {
         $this->sizing->add_url_tokens($tokens);
     }
 
@@ -90,19 +90,14 @@ final class DerivativeParams
 
     /**
      * @todo : description of DerivativeParams::is_identity
-     *
-     * @return bool
      */
     public function is_identity(
         $in_size
-    ) {
+    ): bool {
         return $in_size[0] <= $this->sizing->ideal_size[0] && $in_size[1] <= $this->sizing->ideal_size[1];
     }
 
-    /**
-     * @return bool
-     */
-    public function will_watermark($out_size)
+    public function will_watermark($out_size): bool
     {
         if ($this->use_watermark) {
             $min_size = ImageStdParams::get_watermark()->min_size;

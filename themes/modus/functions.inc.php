@@ -28,7 +28,7 @@ function modus_get_default_config()
     ];
 }
 
-function modus_smarty_prefilter($source)
+function modus_smarty_prefilter($source): string|array|null
 {
     global $lang, $conf;
 

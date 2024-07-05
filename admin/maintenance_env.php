@@ -4,7 +4,11 @@ namespace Piwigo\admin;
 
 use Piwigo\admin\inc\CheckIntegrity;
 use Piwigo\admin\inc\Image;
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\FileCombiner;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use function Piwigo\admin\inc\categories_integrity;
 use function Piwigo\admin\inc\clear_derivative_cache;
@@ -17,21 +21,13 @@ use function Piwigo\admin\inc\update_global_rank;
 use function Piwigo\admin\inc\update_path;
 use function Piwigo\admin\inc\update_uppercats;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\do_maintenance_all_tables;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_get_db_version;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\format_date;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
 use function Piwigo\inc\l10n;
-use function Piwigo\inc\pwg_session_gc;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\time_since;
-use function Piwigo\inc\trigger_change;
 use function Piwigo\inc\update_rating_score;
 
 // +-----------------------------------------------------------------------+
@@ -51,7 +47,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if (isset($_GET['action'])) {
     check_pwg_token();
@@ -117,7 +115,7 @@ switch ($action) {
 DELETE
   FROM ' . HISTORY_TABLE . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         break;
 
     case 'history_summary':
@@ -126,12 +124,12 @@ DELETE
 DELETE
   FROM ' . HISTORY_SUMMARY_TABLE . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         break;
 
     case 'sessions':
 
-        pwg_session_gc();
+        FunctionsSession::pwg_session_gc();
 
         // delete all sessions associated to invalid user ids (it should never happen)
         $query = '
@@ -140,14 +138,14 @@ SELECT
     data
   FROM ' . SESSIONS_TABLE . '
 ;';
-        $sessions = query2array($query);
+        $sessions = Mysqli::query2array($query);
 
         $query = '
 SELECT
     ' . $conf['user_fields']['id'] . ' AS id
   FROM ' . USERS_TABLE . '
 ;';
-        $all_user_ids = query2array($query, 'id', null);
+        $all_user_ids = Mysqli::query2array($query, 'id', null);
 
         $sessions_to_delete = [];
 
@@ -167,7 +165,7 @@ DELETE
   FROM ' . SESSIONS_TABLE . '
   WHERE id IN (\'' . implode("','", $sessions_to_delete) . '\')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
 
         break;
@@ -179,12 +177,12 @@ DELETE
   FROM ' . USER_FEED_TABLE . '
   WHERE last_check IS NULL
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         break;
 
     case 'database':
 
-        do_maintenance_all_tables();
+        Mysqli::do_maintenance_all_tables();
         break;
 
     case 'c13y':
@@ -199,7 +197,7 @@ DELETE
 DELETE
   FROM ' . SEARCH_TABLE . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
         break;
 
     case 'compiled-templates':
@@ -287,8 +285,8 @@ foreach (ImageStdParams::get_defined_type_map() as $params) {
 $purge_urls[l10n(IMG_CUSTOM)] = sprintf($url_format, 'derivatives') . '&amp;type=' . IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
-$db_version = pwg_get_db_version();
-[$db_current_date] = pwg_db_fetch_row(pwg_query('SELECT now();'));
+$db_version = Mysqli::pwg_get_db_version();
+[$db_current_date] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT now();'));
 
 $template->assign(
     [
@@ -380,7 +378,7 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE user_id = 2
 ;';
-$users = query2array($query);
+$users = Mysqli::query2array($query);
 if (count($users) > 0) {
     $installed_on = $users[0]['registration_date'];
 
@@ -401,7 +399,7 @@ if (count($users) > 0) {
 $advanced_features = [];
 
 //$advanced_features is array of array composed of CAPTION & URL
-$advanced_features = trigger_change(
+$advanced_features = FunctionsPlugins::trigger_change(
     'get_admin_advanced_features_links',
     $advanced_features
 );

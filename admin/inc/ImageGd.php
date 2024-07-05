@@ -39,19 +39,19 @@ class ImageGd implements ImageInterface
     }
 
     #[\Override]
-    public function get_width()
+    public function get_width(): int
     {
         return imagesx($this->image);
     }
 
     #[\Override]
-    public function get_height()
+    public function get_height(): int
     {
         return imagesy($this->image);
     }
 
     #[\Override]
-    public function crop($width, $height, $x, $y)
+    public function crop($width, $height, $x, $y): bool
     {
         $dest = imagecreatetruecolor($width, $height);
 
@@ -74,13 +74,13 @@ class ImageGd implements ImageInterface
     }
 
     #[\Override]
-    public function strip()
+    public function strip(): bool
     {
         return true;
     }
 
     #[\Override]
-    public function rotate($rotation)
+    public function rotate($rotation): bool
     {
         $dest = imagerotate($this->image, $rotation, 0);
         imagedestroy($this->image);
@@ -89,14 +89,14 @@ class ImageGd implements ImageInterface
     }
 
     #[\Override]
-    public function set_compression_quality($quality)
+    public function set_compression_quality($quality): bool
     {
         $this->quality = $quality;
         return true;
     }
 
     #[\Override]
-    public function resize($width, $height)
+    public function resize($width, $height): bool
     {
         $dest = imagecreatetruecolor($width, $height);
 
@@ -130,14 +130,14 @@ class ImageGd implements ImageInterface
     }
 
     #[\Override]
-    public function sharpen($amount)
+    public function sharpen($amount): bool
     {
         $m = Image::get_sharpen_matrix($amount);
         return imageconvolution($this->image, $m, 1, 0);
     }
 
     #[\Override]
-    public function compose($overlay, $x, $y, $opacity)
+    public function compose($overlay, $x, $y, $opacity): bool
     {
         $ioverlay = $overlay->image->image;
         /* A replacement for php's imagecopymerge() function that supports the alpha channel
@@ -171,7 +171,7 @@ class ImageGd implements ImageInterface
     }
 
     #[\Override]
-    public function write($destination_filepath)
+    public function write($destination_filepath): void
     {
         $extension = strtolower(get_extension($destination_filepath));
 
@@ -184,7 +184,7 @@ class ImageGd implements ImageInterface
         }
     }
 
-    public function destroy()
+    public function destroy(): void
     {
         imagedestroy($this->image);
     }

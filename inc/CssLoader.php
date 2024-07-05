@@ -17,19 +17,19 @@ class CssLoader
     /**
      * @param Css[]
      */
-    private $registered_css;
+    private array $registered_css;
 
     /**
      * @param int used to keep declaration order
      */
-    private $counter;
+    private int $counter;
 
     public function __construct()
     {
         $this->clear();
     }
 
-    public function clear()
+    public function clear(): void
     {
         $this->registered_css = [];
         $this->counter = 0;
@@ -61,7 +61,7 @@ class CssLoader
         $version = 0,
         $order = 0,
         $is_template = false
-    ) {
+    ): void {
         if (! isset($this->registered_css[$id])) {
             // costum order as an higher impact than declaration order
             $css = new Css(
@@ -85,7 +85,7 @@ class CssLoader
     /**
      * Callback for CSS files sorting.
      */
-    private function cmp_by_order($a, $b)
+    private function cmp_by_order($a, $b): int|float
     {
         return $a->order - $b->order;
     }

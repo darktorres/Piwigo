@@ -2,7 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dblayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -79,7 +79,7 @@ function get_absolute_root_url(
         }
     }
 
-    return $url . cookie_path();
+    return $url . FunctionsCookie::cookie_path();
 }
 
 /**
@@ -489,7 +489,7 @@ function parse_section_url(
                 }
 
                 if ($maybe_permalinks !== []) {
-                    $cat_id = get_cat_id_from_permalinks($maybe_permalinks, $perma_index);
+                    $cat_id = FunctionsCategory::get_cat_id_from_permalinks($maybe_permalinks, $perma_index);
                     if (isset($cat_id)) {
                         $next_token += $perma_index + 1;
 
@@ -507,7 +507,7 @@ function parse_section_url(
         }
 
         if (isset($page['category'])) {
-            $result = get_cat_info($page['category']);
+            $result = FunctionsCategory::get_cat_info($page['category']);
             if (empty($result)) {
                 page_not_found(l10n('Requested album does not exist'));
             }
@@ -519,7 +519,7 @@ function parse_section_url(
             $combined_categories = [];
 
             foreach ($page['combined_categories'] as $cat_id) {
-                $result = get_cat_info($cat_id);
+                $result = FunctionsCategory::get_cat_info($cat_id);
                 if (empty($result)) {
                     page_not_found(l10n('Requested album does not exist'));
                 }
@@ -843,7 +843,7 @@ function get_user_favorites(): array
 {
     global $user;
 
-    if (is_a_guest()) {
+    if (FunctionsUser::is_a_guest()) {
         return [];
     }
 
@@ -855,5 +855,5 @@ SELECT
   WHERE user_id = ' . $user['id'] . '
 ';
 
-    return query2array($query, 'image_id', 'fake_value');
+    return Mysqli::query2array($query, 'image_id', 'fake_value');
 }

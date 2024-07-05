@@ -1,15 +1,12 @@
 <?php
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\clear_derivative_cache_rec;
 use function Piwigo\inc\check_pwg_token;
 use function Piwigo\inc\conf_update_param;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\load_language;
@@ -19,7 +16,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-function int_delete_gdthumb_cache($pattern)
+function int_delete_gdthumb_cache($pattern): void
 {
     if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
         while (($node = readdir($contents)) !== false) {
@@ -32,7 +29,7 @@ function int_delete_gdthumb_cache($pattern)
     }
 }
 
-function delete_gdthumb_cache($height)
+function delete_gdthumb_cache(string $height): void
 {
     int_delete_gdthumb_cache('#.*-cu_s9999x' . $height . '\.[a-zA-Z0-9]{3,4}$#');
     int_delete_gdthumb_cache('#.*-cu_s' . $height . 'x9999\.[a-zA-Z0-9]{3,4}$#');
@@ -45,7 +42,9 @@ require(__DIR__ . '/config_default.inc.php');
 $params = $conf['gdThumb'];
 
 if (isset($_GET['getMissingDerivative'])) {
-    [$max_id, $image_count] = pwg_db_fetch_row(pwg_query('SELECT MAX(id)+1, COUNT(*) FROM ' . IMAGES_TABLE));
+    [$max_id, $image_count] = Mysqli::pwg_db_fetch_row(
+        Mysqli::pwg_query('SELECT MAX(id)+1, COUNT(*) FROM ' . IMAGES_TABLE)
+    );
     $start_id = intval($_POST['prev_page']);
     $max_urls = intval($_POST['max_urls']);
     if ($start_id <= 0) {
@@ -63,12 +62,12 @@ if (isset($_GET['getMissingDerivative'])) {
 
     $urls = [];
     do {
-        $result = pwg_query(str_replace('start_id', $start_id, $query_model));
-        $is_last = pwg_db_num_rows($result) < $qlimit;
-        while ($row = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query(str_replace('start_id', $start_id, $query_model));
+        $is_last = Mysqli::pwg_db_num_rows($result) < $qlimit;
+        while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
             $start_id = $row['id'];
             $src_image = new SrcImage($row);
-            if ($src_image->is_mimetype()) {
+            if ($src_image->is_mimetype() !== 0) {
                 continue;
             }
 

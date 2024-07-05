@@ -2,11 +2,11 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
 
@@ -24,7 +24,9 @@ if (! defined('PHPWG_ROOT_PATH')) {
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 
@@ -33,7 +35,7 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id = ' . $_GET['image_id'] . '
 ;';
-$images = query2array($query);
+$images = Mysqli::query2array($query);
 $image = $images[0];
 
 $query = '
@@ -43,7 +45,7 @@ SELECT
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
 
-$formats = query2array($query);
+$formats = Mysqli::query2array($query);
 
 foreach ($formats as &$format) {
     $format['download_url'] = 'action.php?format=' . $format['format_id'] . '&amp;download';

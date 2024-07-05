@@ -2,15 +2,14 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\delete_element_derivatives;
 use function Piwigo\inc\char_to_fraction;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
 use function Piwigo\inc\fraction_to_char;
 use function Piwigo\inc\render_element_name;
 
@@ -28,7 +27,9 @@ if (! defined('PHPWG_ROOT_PATH')) {
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 
@@ -45,11 +46,11 @@ if (isset($_POST['submit'])) {
     }
 
     $query .= ' WHERE id=' . $_GET['image_id'];
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
 $query = 'SELECT * FROM ' . IMAGES_TABLE . ' WHERE id=' . $_GET['image_id'];
-$row = pwg_db_fetch_assoc(pwg_query($query));
+$row = Mysqli::pwg_db_fetch_assoc(Mysqli::pwg_query($query));
 
 if (isset($_POST['submit'])) {
     foreach (ImageStdParams::get_defined_type_map() as $params) {

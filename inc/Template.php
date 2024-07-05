@@ -14,7 +14,7 @@ function customErrorHandler(
     $errstr,
     $errfile,
     $errline
-) {
+): bool {
     // Define error types and corresponding prefixes
     $error_types = [
         E_ERROR => 'error',
@@ -186,7 +186,7 @@ class Template
         }
 
         $this->smarty->setTemplateDir([]);
-        if (! empty($theme)) {
+        if ($theme !== '' && $theme !== '0') {
             $this->set_theme($root, $theme, $path);
             if (! defined('IN_ADMIN')) {
                 $this->set_prefilter('header', $this->prefilter_local_css(...));
@@ -214,20 +214,17 @@ class Template
     /**
      * Loads theme's parameters.
      *
-     * @param string $root
-     * @param string $theme
-     * @param string $path
      * @param bool $load_css
      * @param bool $load_local_head
      */
     public function set_theme(
-        $root,
-        $theme,
-        $path,
+        string $root,
+        string $theme,
+        string $path,
         $load_css = true,
         $load_local_head = true,
         $colorscheme = 'dark'
-    ) {
+    ): void {
         $this->set_template_dir($root . '/' . $theme . '/' . $path);
 
         $themeconf = $this->load_themeconf($root . '/' . $theme);
@@ -268,7 +265,7 @@ class Template
      */
     public function set_template_dir(
         $dir
-    ) {
+    ): void {
         $this->smarty->addTemplateDir($dir);
 
         if ($this->smarty->compile_id === null) {
@@ -291,7 +288,7 @@ class Template
     /**
      * Deletes all compiled templates.
      */
-    public function delete_compiled_templates()
+    public function delete_compiled_templates(): void
     {
         $save_compile_id = $this->smarty->compile_id;
         $this->smarty->compile_id = null;
@@ -318,12 +315,11 @@ class Template
      *
      * @param string $handle
      * @param string $filename
-     * @return bool
      */
     public function set_filename(
         $handle,
         $filename
-    ) {
+    ): bool {
         return $this->set_filenames([
             $handle => $filename,
         ]);
@@ -337,7 +333,7 @@ class Template
      */
     public function set_filenames(
         $filename_array
-    ) {
+    ): bool {
         if (! is_array($filename_array)) {
             return false;
         }
@@ -358,18 +354,16 @@ class Template
      * Sets template extention filename for handles.
      *
      * @param string $filename
-     * @param string $dir
      * @param bool $overwrite
      * @param string $theme
-     * @return bool
      */
     public function set_extent(
         $filename,
         mixed $param,
-        $dir = '',
+        string $dir = '',
         $overwrite = true,
         $theme = 'N/A'
-    ) {
+    ): bool {
         return $this->set_extents([
             $filename => $param,
         ], $dir, $overwrite);
@@ -379,17 +373,15 @@ class Template
      * Sets template extentions filenames for handles.
      *
      * @param string[] $filename_array hashmap of handle=>filename
-     * @param string $dir
      * @param bool $overwrite
      * @param string $theme
-     * @return bool
      */
     public function set_extents(
         $filename_array,
-        $dir = '',
+        string $dir = '',
         $overwrite = true,
         $theme = 'N/A'
-    ) {
+    ): bool {
         if (! is_array($filename_array)) {
             return false;
         }
@@ -448,7 +440,7 @@ class Template
     public function assign(
         $tpl_var,
         mixed $value = null
-    ) {
+    ): void {
         $this->smarty->assign($tpl_var, $value);
     }
 
@@ -458,13 +450,12 @@ class Template
      * This is equivalent to assign($varname, $this->parse($handle, true)).
      *
      * @param string $varname
-     * @param string $handle
      * @return true
      */
     public function assign_var_from_handle(
         $varname,
-        $handle
-    ) {
+        string $handle
+    ): bool {
         $this->assign($varname, $this->parse($handle, true));
         return true;
     }
@@ -480,7 +471,7 @@ class Template
         $tpl_var,
         mixed $value = null,
         $merge = false
-    ) {
+    ): void {
         $this->smarty->append($tpl_var, $value, $merge);
     }
 
@@ -488,12 +479,11 @@ class Template
      * Performs a string concatenation.
      *
      * @param string $tpl_var
-     * @param string $value
      */
     public function concat(
         $tpl_var,
-        $value
-    ) {
+        string $value
+    ): void {
         $this->assign(
             $tpl_var,
             $this->smarty->getTemplateVars($tpl_var) . $value
@@ -506,7 +496,7 @@ class Template
      */
     public function clear_assign(
         mixed $tpl_var
-    ) {
+    ): void {
         $this->smarty->clearAssign($tpl_var);
     }
 
@@ -526,12 +516,11 @@ class Template
      * Loads the template file of the handle, compiles it and appends the result to the output
      * (or returns it if _$return_ is true).
      *
-     * @param string $handle
      * @param bool $return
      * @return null|string
      */
     public function parse(
-        $handle,
+        string $handle,
         $return = false
     ) {
         if (! isset($this->files[$handle])) {
@@ -564,12 +553,10 @@ class Template
     /**
      * Loads the template file of the handle, compiles it and appends the result to the output,
      * then sends the output to the browser.
-     *
-     * @param string $handle
      */
     public function pparse(
-        $handle
-    ) {
+        string $handle
+    ): void {
         $this->parse($handle, false);
         $this->flush();
     }
@@ -577,7 +564,7 @@ class Template
     /**
      * Load and compile JS & CSS into the template and sends the output to the browser.
      */
-    public function flush()
+    public function flush(): void
     {
         if (! $this->scriptLoader->did_head()) {
             $pos = strpos($this->output, self::COMBINED_SCRIPTS_TAG);
@@ -653,7 +640,7 @@ class Template
      * Same as flush() but with optional debugging.
      * @see Template::flush()
      */
-    public function p()
+    public function p(): void
     {
         $this->flush();
 
@@ -692,13 +679,10 @@ class Template
      *    - {'Comment'|translate}
      *    - {'%d comments'|translate:$count}
      * @see l10n()
-     *
-     * @param array $params
-     * @return string
      */
     public static function modcompiler_translate(
-        $params
-    ) {
+        array $params
+    ): ?string {
         global $conf, $lang;
 
         switch (count($params)) {
@@ -729,13 +713,10 @@ class Template
      * Usage :
      *    - {$count|translate_dec:'%d comment':'%d comments'}
      * @see l10n_dec()
-     *
-     * @param array $params
-     * @return string
      */
     public static function modcompiler_translate_dec(
-        $params
-    ) {
+        array $params
+    ): string {
         global $conf, $lang, $lang_info;
         if ($conf['compiled_template_cache_language']) {
             $ret = 'sprintf(';
@@ -763,12 +744,11 @@ class Template
      *
      * @param string $text
      * @param string $delimiter
-     * @return array
      */
     public static function mod_explode(
         $text,
         $delimiter = ','
-    ) {
+    ): array {
         return explode($delimiter, $text);
     }
 
@@ -797,7 +777,7 @@ class Template
     public function block_html_head(
         $params,
         $content
-    ) {
+    ): void {
         $content = isset($content) ? trim($content) : '';
         if ($content !== '' && $content !== '0') { // second call
             $this->html_head_elements[] = $content;
@@ -814,7 +794,7 @@ class Template
     public function block_html_style(
         $params,
         $content
-    ) {
+    ): void {
         $content = isset($content) ? trim($content) : '';
         if ($content !== '' && $content !== '0') { // second call
             $this->html_style .= "\n" . $content;
@@ -838,7 +818,7 @@ class Template
     public function func_define_derivative(
         $params,
         $smarty
-    ) {
+    ): void {
         if (empty($params['name'])) {
             fatal_error('define_derivative missing name');
         }
@@ -900,7 +880,7 @@ class Template
      */
     public function func_combine_script(
         $params
-    ) {
+    ): void {
         if (! isset($params['id'])) {
             trigger_error("combine_script: missing 'id' parameter", E_USER_ERROR);
         }
@@ -935,8 +915,8 @@ class Template
      *    - load (required)
      */
     public function func_get_combined_scripts(
-        $params
-    ) {
+        array $params
+    ): string {
         if (! isset($params['load'])) {
             trigger_error("get_combined_scripts: missing 'load' parameter", E_USER_ERROR);
         }
@@ -992,9 +972,9 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      * @param string $content
      */
     public function block_footer_script(
-        $params,
+        array $params,
         $content
-    ) {
+    ): void {
         $content = isset($content) ? trim($content) : '';
         if ($content !== '' && $content !== '0') { // second call
 
@@ -1018,7 +998,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public function func_combine_css(
         $params
-    ) {
+    ): void {
         if (empty($params['path'])) {
             fatal_error('combine_css missing path');
         }
@@ -1044,7 +1024,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public function func_get_combined_css(
         $params
-    ) {
+    ): string {
         return self::COMBINED_CSS_TAG;
     }
 
@@ -1062,7 +1042,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         $handle,
         $callback,
         $weight = 50
-    ) {
+    ): void {
         $this->external_filters[$handle][$weight][] = ['pre', $callback];
         ksort($this->external_filters[$handle]);
     }
@@ -1080,7 +1060,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         $handle,
         $callback,
         $weight = 50
-    ) {
+    ): void {
         $this->external_filters[$handle][$weight][] = ['post', $callback];
         ksort($this->external_filters[$handle]);
     }
@@ -1098,7 +1078,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         $handle,
         $callback,
         $weight = 50
-    ) {
+    ): void {
         $this->external_filters[$handle][$weight][] = ['output', $callback];
         ksort($this->external_filters[$handle]);
     }
@@ -1110,7 +1090,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public function load_external_filters(
         $handle
-    ) {
+    ): void {
         if (isset($this->external_filters[$handle])) {
             $compile_id = '';
             foreach ($this->external_filters[$handle] as $filters) {
@@ -1141,7 +1121,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public function unload_external_filters(
         $handle
-    ) {
+    ): void {
         if (isset($this->external_filters[$handle])) {
             foreach ($this->external_filters[$handle] as $filters) {
                 foreach ($filters as $filter) {
@@ -1157,12 +1137,11 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      *
      * @param string $source
      * @param \Smarty $smarty
-     * @return string
      */
     public static function prefilter_white_space(
         $source,
         $smarty
-    ) {
+    ): ?string {
         $ld = $smarty->left_delimiter;
         $rd = $smarty->right_delimiter;
         $ldq = preg_quote($ld, '#');
@@ -1193,11 +1172,11 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
     public static function postfilter_language(
         $source,
         $smarty
-    ) {
+    ): string|array|null {
         // replaces echo PHP_STRING_LITERAL; with the string literal value
         $source = preg_replace_callback(
             '/\\<\\?php echo ((?:\'(?:(?:\\\\.)|[^\'])*\')|(?:"(?:(?:\\\\.)|[^"])*"));\\?\\>\\n/',
-            function ($matches) {
+            function (array $matches) {
                 eval('$tmp=' . $matches[1] . ';');
                 return $tmp;
             },
@@ -1268,7 +1247,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
     public function add_picture_button(
         $content,
         $rank = BUTTONS_RANK_NEUTRAL
-    ) {
+    ): void {
         $this->picture_buttons[$rank][] = $content;
     }
 
@@ -1281,14 +1260,14 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
     public function add_index_button(
         $content,
         $rank = BUTTONS_RANK_NEUTRAL
-    ) {
+    ): void {
         $this->index_buttons[$rank][] = $content;
     }
 
     /**
      * Assigns PLUGIN_PICTURE_BUTTONS template variable with registered picture buttons.
      */
-    public function parse_picture_buttons()
+    public function parse_picture_buttons(): void
     {
         if ($this->picture_buttons !== []) {
             ksort($this->picture_buttons);
@@ -1312,7 +1291,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
     /**
      * Assigns PLUGIN_INDEX_BUTTONS template variable with registered index buttons.
      */
-    public function parse_index_buttons()
+    public function parse_index_buttons(): void
     {
         if ($this->index_buttons !== []) {
             ksort($this->index_buttons);

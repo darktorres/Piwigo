@@ -14,7 +14,7 @@ namespace Piwigo\inc;
  */
 class PersistentFileCache extends PersistentCache
 {
-    private $dir;
+    private readonly string $dir;
 
     public function __construct()
     {
@@ -23,7 +23,7 @@ class PersistentFileCache extends PersistentCache
     }
 
     #[\Override]
-    public function get($key, &$value)
+    public function get($key, &$value): bool
     {
         $loaded = @file_get_contents($this->dir . $key . '.cache');
         if ($loaded !== false && ($loaded = unserialize($loaded)) !== false && $loaded['expire'] > time()) {
@@ -35,7 +35,7 @@ class PersistentFileCache extends PersistentCache
     }
 
     #[\Override]
-    public function set($key, $value, $lifetime = null)
+    public function set($key, $value, $lifetime = null): bool
     {
         if ($lifetime === null) {
             $lifetime = $this->default_lifetime;
@@ -61,7 +61,7 @@ class PersistentFileCache extends PersistentCache
     }
 
     #[\Override]
-    public function purge($all)
+    public function purge($all): void
     {
         $files = glob($this->dir . '*.cache');
         if ($files === [] || $files === false) {

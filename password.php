@@ -2,35 +2,20 @@
 
 namespace Piwigo;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsSession;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_db_real_escape_string;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
-use function Piwigo\inc\dbLayer\single_update;
-use function Piwigo\inc\deactivate_password_reset_key;
-use function Piwigo\inc\deactivate_user_auth_keys;
 use function Piwigo\inc\flush_page_messages;
-use function Piwigo\inc\generate_key;
 use function Piwigo\inc\get_gallery_home_url;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_userid;
-use function Piwigo\inc\get_userid_by_email;
-use function Piwigo\inc\getuserdata;
-use function Piwigo\inc\is_a_guest;
-use function Piwigo\inc\is_generic;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\pwg_mail;
-use function Piwigo\inc\pwg_password_hash;
-use function Piwigo\inc\pwg_password_verify;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\set_make_full_url;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\trigger_notify;
 use function Piwigo\inc\unset_make_full_url;
 
 // +-----------------------------------------------------------------------+
@@ -52,9 +37,9 @@ require_once(__DIR__ . '/inc/functions_mail.inc.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_FREE);
+FunctionsUser::check_status(ACCESS_FREE);
 
-trigger_notify('loc_begin_password');
+FunctionsPlugins::trigger_notify('loc_begin_password');
 
 check_input_parameter('action', $_GET, false, '/^(lost|reset|none)$/');
 
@@ -77,10 +62,10 @@ function process_password_request(): bool
         return false;
     }
 
-    $user_id = get_userid_by_email($_POST['username_or_email']);
+    $user_id = FunctionsUser::get_userid_by_email($_POST['username_or_email']);
 
     if (! is_numeric($user_id)) {
-        $user_id = get_userid($_POST['username_or_email']);
+        $user_id = FunctionsUser::get_userid($_POST['username_or_email']);
     }
 
     if (! is_numeric($user_id)) {
@@ -88,11 +73,11 @@ function process_password_request(): bool
         return false;
     }
 
-    $userdata = getuserdata($user_id, false);
+    $userdata = FunctionsUser::getuserdata($user_id, false);
 
     // password request is not possible for guest/generic users
     $status = $userdata['status'];
-    if (is_a_guest($status) || is_generic($status)) {
+    if (FunctionsUser::is_a_guest($status) || FunctionsUser::is_generic($status)) {
         $page['errors'][] = l10n('Password reset is not allowed for this user');
         return false;
     }
@@ -105,14 +90,14 @@ function process_password_request(): bool
         return false;
     }
 
-    $activation_key = generate_key(20);
+    $activation_key = FunctionsSession::generate_key(20);
 
-    [$expire] = pwg_db_fetch_row(pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
+    [$expire] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
 
-    single_update(
+    Mysqli::single_update(
         USER_INFOS_TABLE,
         [
-            'activation_key' => pwg_password_hash($activation_key),
+            'activation_key' => FunctionsUser::pwg_password_hash($activation_key),
             'activation_key_expire' => $expire,
         ],
         [
@@ -138,7 +123,7 @@ function process_password_request(): bool
 
     unset_make_full_url();
 
-    $message = trigger_change('render_lost_password_mail_content', $message);
+    $message = FunctionsPlugins::trigger_change('render_lost_password_mail_content', $message);
 
     $email_params = [
         'subject' => '[' . $conf['gallery_title'] . '] ' . l10n('Password Reset'),
@@ -180,9 +165,9 @@ function check_password_reset_key(
 SELECT
   ' . $conf['user_fields']['id'] . ' AS id
   FROM ' . USERS_TABLE . '
-  WHERE ' . $conf['user_fields']['email'] . " = '" . pwg_db_real_escape_string($email) . '\'
+  WHERE ' . $conf['user_fields']['email'] . " = '" . Mysqli::pwg_db_real_escape_string($email) . '\'
 ;';
-    $user_ids = query2array($query, null, 'id');
+    $user_ids = Mysqli::query2array($query, null, 'id');
 
     if (count($user_ids) == 0) {
         $page['errors'][] = l10n('Invalid username or email');
@@ -201,16 +186,16 @@ SELECT
   FROM ' . USER_INFOS_TABLE . '
   WHERE user_id IN (' . implode(',', $user_ids) . ')
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
-        if (pwg_password_verify($key, $row['activation_key'])) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
+        if (FunctionsUser::pwg_password_verify($key, $row['activation_key'])) {
             if (strtotime((string) $row['dbnow']) > strtotime((string) $row['activation_key_expire'])) {
                 // key has expired
                 $page['errors'][] = l10n('Invalid key');
                 return false;
             }
 
-            if (is_a_guest($row['status']) || is_generic($row['status'])) {
+            if (FunctionsUser::is_a_guest($row['status']) || FunctionsUser::is_generic($row['status'])) {
                 $page['errors'][] = l10n('Password reset is not allowed for this user');
                 return false;
             }
@@ -252,7 +237,7 @@ function reset_password(): bool
         return false;
     }
 
-    single_update(
+    Mysqli::single_update(
         USERS_TABLE,
         [
             $conf['user_fields']['password'] => $conf['password_hash']($_POST['use_new_pwd']),
@@ -262,8 +247,8 @@ function reset_password(): bool
         ]
     );
 
-    deactivate_password_reset_key($user_id);
-    deactivate_user_auth_keys($user_id);
+    FunctionsUser::deactivate_password_reset_key($user_id);
+    FunctionsUser::deactivate_user_auth_keys($user_id);
 
     $page['infos'][] = l10n('Your password has been reset');
     $page['infos'][] = '<a href="' . get_root_url() . 'identification.php">' . l10n('Login') . '</a>';
@@ -291,14 +276,14 @@ if (isset($_POST['submit'])) {
 // +-----------------------------------------------------------------------+
 
 // a connected user can't reset the password from a mail
-if (isset($_GET['key']) && ! is_a_guest()) {
+if (isset($_GET['key']) && ! FunctionsUser::is_a_guest()) {
     unset($_GET['key']);
 }
 
 if (isset($_GET['key']) && ! isset($_POST['submit'])) {
     $user_id = check_password_reset_key($_GET['key']);
     if (is_numeric($user_id)) {
-        $userdata = getuserdata($user_id, false);
+        $userdata = FunctionsUser::getuserdata($user_id, false);
         $page['username'] = $userdata['username'];
         $template->assign('key', $_GET['key']);
 
@@ -318,11 +303,11 @@ if (! isset($page['action'])) {
     }
 }
 
-if ($page['action'] == 'reset' && ! isset($_GET['key']) && (is_a_guest() || is_generic())) {
+if ($page['action'] == 'reset' && ! isset($_GET['key']) && (FunctionsUser::is_a_guest() || FunctionsUser::is_generic())) {
     redirect(get_gallery_home_url());
 }
 
-if ($page['action'] == 'lost' && ! is_a_guest()) {
+if ($page['action'] == 'lost' && ! FunctionsUser::is_a_guest()) {
     redirect(get_gallery_home_url());
 }
 
@@ -365,7 +350,7 @@ if (! isset($themeconf['hide_menu_on']) || ! in_array('thePasswordPage', $themec
 // +-----------------------------------------------------------------------+
 
 require(__DIR__ . '/inc/page_header.php');
-trigger_notify('loc_end_password');
+FunctionsPlugins::trigger_notify('loc_end_password');
 flush_page_messages();
 $template->pparse('password');
 require(__DIR__ . '/inc/page_tail.php');

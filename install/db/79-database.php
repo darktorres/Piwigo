@@ -22,7 +22,7 @@ $query = '
 ALTER TABLE ' . PREFIX_TABLE . 'user_infos
   CHANGE COLUMN template template varchar(255) NOT NULL default \'yoga/Sylvia\'
 ;';
-pwg_query($query);
+Mysqli::pwg_query($query);
 
 echo "\n"
 . 'Default template modified to yoga/Sylvia'

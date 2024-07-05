@@ -2,20 +2,17 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\add_permission_on_category;
 use function Piwigo\admin\inc\get_admin_client_cache_keys;
 use function Piwigo\admin\inc\get_uppercat_ids;
 use function Piwigo\admin\inc\set_cat_status;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\mass_inserts;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_cat_display_name_from_id;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\get_subcat_ids;
 use function Piwigo\inc\l10n;
 
 // +-----------------------------------------------------------------------+
@@ -34,7 +31,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // |                       variable initialization                         |
@@ -52,7 +51,7 @@ if ($_POST !== []) {
     if ($category['status'] != $_POST['status'] || $category['status'] != 'public' && isset($_POST['apply_on_sub'])) {
         $cat_ids = [$page['cat']];
         if (isset($_POST['apply_on_sub'])) {
-            $cat_ids = array_merge($cat_ids, get_subcat_ids([$page['cat']]));
+            $cat_ids = array_merge($cat_ids, FunctionsCategory::get_subcat_ids([$page['cat']]));
         }
 
         set_cat_status($cat_ids, $_POST['status']);
@@ -68,7 +67,7 @@ SELECT group_id
   FROM ' . GROUP_ACCESS_TABLE . '
   WHERE cat_id = ' . $page['cat'] . '
 ;';
-        $groups_granted = query2array($query, null, 'group_id');
+        $groups_granted = Mysqli::query2array($query, null, 'group_id');
 
         if (! isset($_POST['groups'])) {
             $_POST['groups'] = [];
@@ -85,9 +84,9 @@ SELECT group_id
 DELETE
   FROM ' . GROUP_ACCESS_TABLE . '
   WHERE group_id IN (' . implode(',', $deny_groups) . ')
-    AND cat_id IN (' . implode(',', get_subcat_ids([$page['cat']])) . ')
+    AND cat_id IN (' . implode(',', FunctionsCategory::get_subcat_ids([$page['cat']])) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
 
         //
@@ -97,7 +96,7 @@ DELETE
         if (count($grant_groups) > 0) {
             $cat_ids = get_uppercat_ids([$page['cat']]);
             if (isset($_POST['apply_on_sub'])) {
-                $cat_ids = array_merge($cat_ids, get_subcat_ids([$page['cat']]));
+                $cat_ids = array_merge($cat_ids, FunctionsCategory::get_subcat_ids([$page['cat']]));
             }
 
             $query = '
@@ -106,7 +105,7 @@ SELECT id
   WHERE id IN (' . implode(',', $cat_ids) . ')
     AND status = \'private\'
 ;';
-            $private_cats = query2array($query, null, 'id');
+            $private_cats = Mysqli::query2array($query, null, 'id');
 
             $inserts = [];
             foreach ($private_cats as $cat_id) {
@@ -118,7 +117,7 @@ SELECT id
                 }
             }
 
-            mass_inserts(
+            Mysqli::mass_inserts(
                 GROUP_ACCESS_TABLE,
                 ['group_id', 'cat_id'],
                 $inserts,
@@ -136,7 +135,7 @@ SELECT user_id
   FROM ' . USER_ACCESS_TABLE . '
   WHERE cat_id = ' . $page['cat'] . '
 ;';
-        $users_granted = query2array($query, null, 'user_id');
+        $users_granted = Mysqli::query2array($query, null, 'user_id');
 
         if (! isset($_POST['users'])) {
             $_POST['users'] = [];
@@ -153,9 +152,9 @@ SELECT user_id
 DELETE
   FROM ' . USER_ACCESS_TABLE . '
   WHERE user_id IN (' . implode(',', $deny_users) . ')
-    AND cat_id IN (' . implode(',', get_subcat_ids([$page['cat']])) . ')
+    AND cat_id IN (' . implode(',', FunctionsCategory::get_subcat_ids([$page['cat']])) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
         }
 
         //
@@ -206,7 +205,7 @@ SELECT id, name
   FROM ' . GROUPS_TABLE . '
   ORDER BY name ASC
 ;';
-$groups = query2array($query, 'id', 'name');
+$groups = Mysqli::query2array($query, 'id', 'name');
 $template->assign('groups', $groups);
 
 // groups granted to access the category
@@ -215,7 +214,7 @@ SELECT group_id
   FROM ' . GROUP_ACCESS_TABLE . '
   WHERE cat_id = ' . $page['cat'] . '
 ;';
-$group_granted_ids = query2array($query, null, 'group_id');
+$group_granted_ids = Mysqli::query2array($query, null, 'group_id');
 $template->assign('groups_selected', $group_granted_ids);
 
 // users...
@@ -226,7 +225,7 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id,
        ' . $conf['user_fields']['username'] . ' AS username
   FROM ' . USERS_TABLE . '
 ;';
-$users = query2array($query, 'id', 'username');
+$users = Mysqli::query2array($query, 'id', 'username');
 $template->assign('users', $users);
 
 $query = '
@@ -234,7 +233,7 @@ SELECT user_id
   FROM ' . USER_ACCESS_TABLE . '
   WHERE cat_id = ' . $page['cat'] . '
 ;';
-$user_granted_direct_ids = query2array($query, null, 'user_id');
+$user_granted_direct_ids = Mysqli::query2array($query, null, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 $user_granted_indirect_ids = [];
@@ -246,8 +245,8 @@ SELECT user_id, group_id
   FROM ' . USER_GROUP_TABLE . '
   WHERE group_id IN (' . implode(',', $group_granted_ids) . ') 
 ';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         if (! isset($granted_groups[$row['group_id']])) {
             $granted_groups[$row['group_id']] = [];
         }

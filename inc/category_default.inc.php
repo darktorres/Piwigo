@@ -2,9 +2,7 @@
 
 namespace Piwigo\inc;
 
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
+use Piwigo\inc\dbLayer\Mysqli;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -26,7 +24,7 @@ $selection = array_slice(
     $page['nb_image_page']
 );
 
-$selection = trigger_change('loc_index_thumbnails_selection', $selection);
+$selection = FunctionsPlugins::trigger_change('loc_index_thumbnails_selection', $selection);
 
 if (count($selection) > 0) {
     $rank_of = array_flip($selection);
@@ -36,13 +34,13 @@ SELECT *
   FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $selection) . ')
 ;';
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result)) {
+    $result = Mysqli::pwg_query($query);
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $row['rank'] = $rank_of[$row['id']];
         $pictures[] = $row;
     }
 
-    usort($pictures, \Piwigo\inc\rank_compare(...));
+    usort($pictures, \Piwigo\inc\FunctionsCategory::rank_compare(...));
     unset($rank_of);
 }
 
@@ -72,7 +70,7 @@ SELECT image_id, COUNT(*) AS nb_comments
     AND image_id IN (' . implode(',', $selection) . ')
   GROUP BY image_id
 ;';
-        $nb_comments_of = query2array($query, 'image_id', 'nb_comments');
+        $nb_comments_of = Mysqli::query2array($query, 'image_id', 'nb_comments');
     }
 }
 
@@ -81,7 +79,7 @@ $template->set_filenames([
     'index_thumbnails' => 'thumbnails.tpl',
 ]);
 
-trigger_notify('loc_begin_index_thumbnails', $pictures);
+FunctionsPlugins::trigger_notify('loc_begin_index_thumbnails', $pictures);
 $tpl_thumbnails_var = [];
 
 foreach ($pictures as $row) {
@@ -140,13 +138,13 @@ foreach ($pictures as $row) {
 }
 
 $template->assign([
-    'derivative_params' => trigger_change(
+    'derivative_params' => FunctionsPlugins::trigger_change(
         'get_index_derivative_params',
-        ImageStdParams::get_by_type(pwg_get_session_var('index_deriv', IMG_THUMB))
+        ImageStdParams::get_by_type(FunctionsSession::pwg_get_session_var('index_deriv', IMG_THUMB))
     ),
     'SHOW_THUMBNAIL_CAPTION' => $conf['show_thumbnail_caption'],
 ]);
-$tpl_thumbnails_var = trigger_change('loc_end_index_thumbnails', $tpl_thumbnails_var, $pictures);
+$tpl_thumbnails_var = FunctionsPlugins::trigger_change('loc_end_index_thumbnails', $tpl_thumbnails_var, $pictures);
 $template->assign('thumbnails', $tpl_thumbnails_var);
 
 $template->assign_var_from_handle('THUMBNAILS', 'index_thumbnails');

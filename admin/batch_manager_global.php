@@ -2,7 +2,11 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\FunctionsCategory;
+use Piwigo\inc\FunctionsPlugins;
+use Piwigo\inc\FunctionsUser;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SrcImage;
 use function Piwigo\admin\inc\add_tags;
@@ -18,15 +22,8 @@ use function Piwigo\admin\inc\move_images_to_categories;
 use function Piwigo\admin\inc\update_images_lastmodified;
 use function Piwigo\inc\check_input_parameter;
 use function Piwigo\inc\check_pwg_token;
-use function Piwigo\inc\check_status;
 use function Piwigo\inc\create_navigation_bar;
-use function Piwigo\inc\dbLayer\mass_updates;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_num_rows;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\fill_caddie;
-use function Piwigo\inc\get_cat_info;
 use function Piwigo\inc\get_common_tags;
 use function Piwigo\inc\get_name_from_file;
 use function Piwigo\inc\get_privacy_level_options;
@@ -38,8 +35,6 @@ use function Piwigo\inc\l10n_dec;
 use function Piwigo\inc\pwg_activity;
 use function Piwigo\inc\redirect;
 use function Piwigo\inc\render_element_name;
-use function Piwigo\inc\trigger_change;
-use function Piwigo\inc\trigger_notify;
 
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
@@ -65,13 +60,15 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 if ($_POST !== []) {
     check_pwg_token();
 }
 
-trigger_notify('loc_begin_element_set_global');
+FunctionsPlugins::trigger_notify('loc_begin_element_set_global');
 
 check_input_parameter('del_tags', $_POST, true, PATTERN_ID);
 check_input_parameter('associate', $_POST, false, PATTERN_ID);
@@ -125,7 +122,7 @@ DELETE
   WHERE element_id IN (' . implode(',', $collection) . ')
     AND user_id = ' . $user['id'] . '
 ;';
-        pwg_query($query);
+        Mysqli::pwg_query($query);
 
         // remove from caddie action available only in caddie so reload content
         $redirect = true;
@@ -150,7 +147,7 @@ DELETE
   WHERE image_id IN (' . implode(',', $collection) . ')
     AND tag_id IN (' . implode(',', $_POST['del_tags']) . ')
 ;';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
 
             $taglist_after = get_image_tag_ids($collection);
             $images_to_update = compare_image_tag_lists($taglist_before, $taglist_after);
@@ -179,7 +176,7 @@ DELETE
         if ($page['prefilter'] == 'no_album') {
             $redirect = true;
         } elseif ($page['prefilter'] == 'no_virtual_album') {
-            $category_info = get_cat_info($_POST['associate']);
+            $category_info = FunctionsCategory::get_cat_info($_POST['associate']);
             if (empty($category_info['dir'])) {
                 $redirect = true;
             }
@@ -195,7 +192,7 @@ DELETE
         if ($page['prefilter'] == 'no_album') {
             $redirect = true;
         } elseif ($page['prefilter'] == 'no_virtual_album') {
-            $category_info = get_cat_info($_POST['associate']);
+            $category_info = FunctionsCategory::get_cat_info($_POST['associate']);
             if (empty($category_info['dir'])) {
                 $redirect = true;
             }
@@ -216,7 +213,7 @@ SELECT id
       OR storage_category_id IS NULL
     )
 ;';
-        $dissociables = query2array($query, null, 'id');
+        $dissociables = Mysqli::query2array($query, null, 'id');
 
         if ($dissociables !== []) {
             $query = '
@@ -225,7 +222,7 @@ DELETE
   WHERE category_id = ' . $_POST['dissociate'] . '
     AND image_id IN (' . implode(',', $dissociables) . ')
 ';
-            pwg_query($query);
+            Mysqli::pwg_query($query);
 
             $_SESSION['page_infos'] = [
                 l10n('Information data registered in database'),
@@ -250,7 +247,7 @@ DELETE
             ];
         }
 
-        mass_updates(
+        Mysqli::mass_updates(
             IMAGES_TABLE,
             [
                 'primary' => ['id'],
@@ -278,7 +275,7 @@ DELETE
             ];
         }
 
-        mass_updates(
+        Mysqli::mass_updates(
             IMAGES_TABLE,
             [
                 'primary' => ['id'],
@@ -308,7 +305,7 @@ DELETE
             ];
         }
 
-        mass_updates(
+        Mysqli::mass_updates(
             IMAGES_TABLE,
             [
                 'primary' => ['id'],
@@ -332,7 +329,7 @@ DELETE
             ];
         }
 
-        mass_updates(
+        Mysqli::mass_updates(
             IMAGES_TABLE,
             [
                 'primary' => ['id'],
@@ -385,8 +382,8 @@ DELETE
     } elseif ($action == 'delete_derivatives' && ! empty($_POST['del_derivatives_type'])) {
         $query = 'SELECT path,representative_ext FROM ' . IMAGES_TABLE . '
   WHERE id IN (' . implode(',', $collection) . ')';
-        $result = pwg_query($query);
-        while ($info = pwg_db_fetch_assoc($result)) {
+        $result = Mysqli::pwg_query($query);
+        while ($info = Mysqli::pwg_db_fetch_assoc($result)) {
             foreach ($_POST['del_derivatives_type'] as $type) {
                 delete_element_derivatives($info, $type);
             }
@@ -405,7 +402,7 @@ DELETE
         invalidate_user_cache();
     }
 
-    trigger_notify('element_set_global_action', $action, $collection);
+    FunctionsPlugins::trigger_notify('element_set_global_action', $action, $collection);
 
     if ($redirect) {
         redirect($redirect_url);
@@ -468,7 +465,7 @@ function UC_name_compare(array $a, array $b): int
     return strcmp(strtolower((string) $a['NAME']), strtolower((string) $b['NAME']));
 }
 
-$prefilters = trigger_change('get_batch_manager_prefilters', $prefilters);
+$prefilters = FunctionsPlugins::trigger_change('get_batch_manager_prefilters', $prefilters);
 
 // Sort prefilters by localized name.
 usort(
@@ -559,9 +556,9 @@ SELECT category_id
   ORDER BY image_id DESC
   LIMIT 1
 ;';
-    $result = pwg_query($query);
-    if (pwg_db_num_rows($result) > 0) {
-        $row = pwg_db_fetch_assoc($result);
+    $result = Mysqli::pwg_query($query);
+    if (Mysqli::pwg_db_num_rows($result) > 0) {
+        $row = Mysqli::pwg_db_fetch_assoc($result);
         $selected_category[] = $row['category_id'];
     }
 }
@@ -586,7 +583,7 @@ SELECT
     )
 ;';
 
-    $associated_categories = query2array($query, 'id', 'id');
+    $associated_categories = Mysqli::query2array($query, 'id', 'id');
 }
 
 $template->assign('associated_categories', $associated_categories);
@@ -680,7 +677,7 @@ SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
   FROM ' . IMAGES_TABLE;
 
     if ($is_category) {
-        $category_info = get_cat_info($_SESSION['bulk_manager_filter']['category']);
+        $category_info = FunctionsCategory::get_cat_info($_SESSION['bulk_manager_filter']['category']);
 
         $conf['order_by'] = $conf['order_by_inside_category'];
         if (! empty($category_info['image_order'])) {
@@ -703,11 +700,11 @@ SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
   ' . $conf['order_by'] . '
   LIMIT ' . $page['nb_images'] . ' OFFSET ' . $page['start'] . '
 ;';
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
 
     $thumb_params = ImageStdParams::get_by_type(IMG_SQUARE);
     // template thumbnail initialization
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $nb_thumbs_page++;
         $src_image = new SrcImage($row);
 
@@ -744,7 +741,7 @@ $template->assign([
     'CACHE_KEYS' => get_admin_client_cache_keys(['tags', 'categories']),
 ]);
 
-trigger_notify('loc_end_element_set_global');
+FunctionsPlugins::trigger_notify('loc_end_element_set_global');
 
 //----------------------------------------------------------- sending html code
 $template->assign_var_from_handle(

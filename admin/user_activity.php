@@ -2,12 +2,9 @@
 
 namespace Piwigo\admin;
 
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\admin\inc\get_admin_client_cache_keys;
-use function Piwigo\inc\check_status;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_assoc;
-use function Piwigo\inc\dbLayer\pwg_db_fetch_row;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\dbLayer\query2array;
 use function Piwigo\inc\get_pwg_token;
 use function Piwigo\inc\l10n;
 
@@ -27,7 +24,9 @@ require_once(__DIR__ . '/../admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+FunctionsUser::check_status(
+    ACCESS_ADMINISTRATOR
+);
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
@@ -55,9 +54,9 @@ SELECT
   ORDER BY activity_id DESC
 ;';
 
-    $result = pwg_query($query);
+    $result = Mysqli::pwg_query($query);
     $output_lines[] = ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details'];
-    while ($row = pwg_db_fetch_assoc($result)) {
+    while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $row['details'] = str_replace('`groups`', 'groups', $row['details']);
         $row['details'] = str_replace('`rank`', 'rank', $row['details']);
 
@@ -117,7 +116,7 @@ SELECT
   GROUP BY performed_by
 ;';
 
-$nb_lines_for_user = query2array($query, 'performed_by', 'counter');
+$nb_lines_for_user = Mysqli::query2array($query, 'performed_by', 'counter');
 
 if (count($nb_lines_for_user) > 0) {
     $query = '
@@ -128,7 +127,7 @@ if (count($nb_lines_for_user) > 0) {
     WHERE ' . $conf['user_fields']['id'] . ' IN (' . implode(',', array_keys($nb_lines_for_user)) . ');';
 }
 
-$username_of = query2array($query, 'id', 'username');
+$username_of = Mysqli::query2array($query, 'id', 'username');
 
 $filterable_users = [];
 
@@ -147,7 +146,7 @@ SELECT COUNT(*)
   FROM ' . USERS_TABLE . '
 ;';
 
-[$nb_users] = pwg_db_fetch_row(pwg_query($query));
+[$nb_users] = Mysqli::pwg_db_fetch_row(Mysqli::pwg_query($query));
 $template->assign('nb_users', $nb_users);
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'user_activity');

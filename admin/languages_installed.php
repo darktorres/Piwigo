@@ -3,12 +3,11 @@
 namespace Piwigo\admin;
 
 use Piwigo\admin\inc\Languages;
+use Piwigo\inc\dblayer\Mysqli;
+use Piwigo\inc\FunctionsUser;
 use function Piwigo\inc\add_url_params;
 use function Piwigo\inc\check_input_parameter;
-use function Piwigo\inc\dbLayer\pwg_query;
-use function Piwigo\inc\get_default_language;
 use function Piwigo\inc\get_root_url;
-use function Piwigo\inc\is_webmaster;
 use function Piwigo\inc\l10n;
 use function Piwigo\inc\redirect;
 
@@ -23,7 +22,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-if (! is_webmaster()) {
+if (! FunctionsUser::is_webmaster()) {
     $page['warnings'][] = str_replace(
         '%s',
         l10n('user_status_webmaster'),
@@ -49,7 +48,7 @@ check_input_parameter(
 );
 check_input_parameter('language', $_GET, false, '/^(' . implode('|', array_keys($languages->fs_languages)) . ')$/');
 
-if (isset($_GET['action']) && isset($_GET['language']) && is_webmaster()) {
+if (isset($_GET['action']) && isset($_GET['language']) && FunctionsUser::is_webmaster()) {
     $page['errors'] = $languages->perform_action($_GET['action'], $_GET['language']);
 
     if (empty($page['errors'])) {
@@ -60,7 +59,7 @@ if (isset($_GET['action']) && isset($_GET['language']) && is_webmaster()) {
 // +-----------------------------------------------------------------------+
 // |                     start template output                             |
 // +-----------------------------------------------------------------------+
-$default_language = get_default_language();
+$default_language = FunctionsUser::get_default_language();
 
 $tpl_languages = [];
 
@@ -115,20 +114,20 @@ $missing_language_ids = array_diff(
 foreach ($missing_language_ids as $language_id) {
     $query = '
 UPDATE ' . USER_INFOS_TABLE . '
-  SET language = \'' . get_default_language() . '\'
+  SET language = \'' . FunctionsUser::get_default_language() . '\'
   WHERE language = \'' . $language_id . '\'
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 
     $query = '
 DELETE
   FROM ' . LANGUAGES_TABLE . '
   WHERE id= \'' . $language_id . '\'
 ;';
-    pwg_query($query);
+    Mysqli::pwg_query($query);
 }
 
-$template->assign('isWebmaster', (is_webmaster()) ? 1 : 0);
+$template->assign('isWebmaster', (FunctionsUser::is_webmaster()) ? 1 : 0);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Languages'));
 $template->assign('CONF_ENABLE_EXTENSIONS_INSTALL', $conf['enable_extensions_install']);
 
