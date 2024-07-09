@@ -177,7 +177,7 @@ SELECT
   FROM ' . HISTORY_TABLE . '
 ;';
         $history_lines = Mysqli::query2array($query);
-        if (count($history_lines) > 0) {
+        if ($history_lines !== []) {
             $history_min_id = $history_lines[0]['min_id'] - 1;
         }
     }

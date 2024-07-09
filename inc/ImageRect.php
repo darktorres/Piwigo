@@ -14,19 +14,13 @@ namespace Piwigo\inc;
  */
 final class ImageRect
 {
-    /**
-     * @var int
-     * @var int
-     * @var int
-     * @var int
-     */
-    public $l = 0;
+    public int $l = 0;
 
-    public $t = 0;
+    public int $t = 0;
 
-    public $r;
+    public int $r;
 
-    public $b;
+    public int $b;
 
     /**
      * @param int[] $l width and height

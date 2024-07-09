@@ -16,15 +16,9 @@ require_once __DIR__ . '/derivative_std_params.inc.php';
  */
 final class ImageStdParams
 {
-    /**
-     * @var array
-     */
-    public static $custom = [];
+    public static array $custom = [];
 
-    /**
-     * @var int
-     */
-    public static $quality = 95;
+    public static int $quality = 95;
 
     /**
      * @var string[]

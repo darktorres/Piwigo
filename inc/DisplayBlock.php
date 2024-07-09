@@ -14,30 +14,15 @@ namespace Piwigo\inc;
  */
 class DisplayBlock
 {
-    /**
-     * @var mixed
-     */
-    public $data;
+    public mixed $data;
 
-    /**
-     * @var string
-     */
-    public $template;
+    public string $template;
 
-    /**
-     * @var string
-     */
-    public $raw_content;
+    public string $raw_content;
 
-    /**
-     * @var int
-     */
-    protected $_position;
+    protected int $_position;
 
-    /**
-     * @var string
-     */
-    protected $_title;
+    protected string $_title;
 
     /**
      * @param RegisteredBlock $_registeredBlock
@@ -55,18 +40,12 @@ class DisplayBlock
         return $this->_registeredBlock;
     }
 
-    /**
-     * @return int
-     */
-    public function get_position()
+    public function get_position(): int
     {
         return $this->_position;
     }
 
-    /**
-     * @param int $position
-     */
-    public function set_position($position): void
+    public function set_position(int $position): void
     {
         $this->_position = $position;
     }
@@ -80,10 +59,7 @@ class DisplayBlock
 
     }
 
-    /**
-     * @param string $title
-     */
-    public function set_title($title): void
+    public function set_title(string $title): void
     {
         $this->_title = $title;
     }

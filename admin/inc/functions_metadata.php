@@ -18,7 +18,7 @@ require_once(__DIR__ . '/../../inc/functions_metadata.inc.php');
 
 /**
  * Returns IPTC metadata to sync from a file, depending on IPTC mapping.
- * @toto : clean code (factorize foreach)
+ * @todo : clean code (factorize foreach)
  *
  * @param string $file
  * @return array

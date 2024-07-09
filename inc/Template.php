@@ -1133,7 +1133,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
     }
 
     /**
-     * @toto : description of Template::prefilter_white_space
+     * @todo : description of Template::prefilter_white_space
      *
      * @param string $source
      * @param \Smarty $smarty

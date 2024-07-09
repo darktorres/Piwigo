@@ -14,15 +14,9 @@ namespace Piwigo\inc;
  */
 class Combinable
 {
-    /**
-     * @var string
-     */
-    public $path;
+    public string $path;
 
-    /**
-     * @var bool
-     */
-    public $is_template = false;
+    public bool $is_template = false;
 
     /**
      * @param string $id

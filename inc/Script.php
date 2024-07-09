@@ -14,10 +14,7 @@ namespace Piwigo\inc;
  */
 final class Script extends Combinable
 {
-    /**
-     * @var array
-     */
-    public $extra = [];
+    public array $extra = [];
 
     /**
      * @param int $load_mode 0,1,2

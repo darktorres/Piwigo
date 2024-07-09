@@ -17,24 +17,21 @@ require_once __DIR__ . '/derivative_std_params.inc.php';
 final class DerivativeParams
 {
     /**
-     * @var string among IMG_*
+     * among IMG_*
      */
-    public $type = IMG_CUSTOM;
+    public string $type = IMG_CUSTOM;
 
     /**
-     * @var int used for non-custom images to regenerate the cached files
+     * used for non-custom images to regenerate the cached files
      */
-    public $last_mod_time = 0;
+    public int $last_mod_time = 0;
+
+    public bool $use_watermark = false;
 
     /**
-     * @var bool
+     * from 0=no sharpening to 1=max sharpening
      */
-    public $use_watermark = false;
-
-    /**
-     * @var float from 0=no sharpening to 1=max sharpening
-     */
-    public $sharpen = 0;
+    public float $sharpen = 0;
 
     /**
      * @param SizingParams $sizing

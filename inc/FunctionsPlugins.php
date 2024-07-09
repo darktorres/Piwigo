@@ -200,7 +200,7 @@ class FunctionsPlugins
     /**
      * Saves some data with the associated plugin id, data are only available
      * during script lifetime.
-     * @depracted 2.6
+     * @deprecated 2.6
      *
      * @param string $plugin_id
      */
@@ -220,7 +220,7 @@ class FunctionsPlugins
     /**
      * Retrieves plugin data saved previously with set_plugin_data.
      * @see set_plugin_data()
-     * @depracted 2.6
+     * @deprecated 2.6
      *
      * @param string $plugin_id
      * @return mixed

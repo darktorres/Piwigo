@@ -275,7 +275,7 @@ class ScriptLoader
         $id,
         \Piwigo\inc\Script $script
     ): void {
-        if (empty($script->path) && isset(self::$known_paths[$id])) {
+        if (($script->path === '' || $script->path === '0') && isset(self::$known_paths[$id])) {
             $script->path = self::$known_paths[$id];
         }
 
@@ -285,7 +285,7 @@ class ScriptLoader
             if (str_starts_with($id, 'jquery.ui.effect-')) {
                 $required_ids = ['jquery', 'jquery.ui.effect'];
 
-                if (empty($script->path)) {
+                if ($script->path === '' || $script->path === '0') {
                     $script->path = dirname((string) self::$known_paths['jquery.ui.effect']) . sprintf(
                         '/%s.min.js',
                         $id
@@ -296,7 +296,7 @@ class ScriptLoader
                     $required_ids = array_merge(['jquery', 'jquery.ui'], array_keys(self::$ui_core_dependencies));
                 }
 
-                if (empty($script->path)) {
+                if ($script->path === '' || $script->path === '0') {
                     $script->path = dirname((string) self::$known_paths['jquery.ui']) . sprintf('/%s.min.js', $id);
                 }
             }
