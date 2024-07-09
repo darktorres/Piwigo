@@ -387,7 +387,7 @@ UPDATE ' . CATEGORIES_TABLE . '
                             'comment_id' => $_GET['comment_to_edit'],
                             'image_id' => $page['image_id'],
                             'content' => $_POST['content'],
-                            'website_url' => @$_POST['website_url'],
+                            'website_url' => $_POST['website_url'],
                         ],
                         $_POST['key']
                     );
@@ -1026,7 +1026,7 @@ $template->assign('ELEMENT_CONTENT', $element_content);
 if (isset($picture['next']) && $picture['next']['src_image']->is_original() && $template->get_template_vars(
     'U_PREFETCH'
 ) == null && ! str_contains(
-    (string) @$_SERVER['HTTP_USER_AGENT'],
+    (string) $_SERVER['HTTP_USER_AGENT'],
     'Chrome/'
 )) {
     $template->assign(

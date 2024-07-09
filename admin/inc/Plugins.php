@@ -355,7 +355,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
 
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php?category_id=' . $conf['pem_plugins_category'] . '&format=php';
-        if (fetchRemote($url, $result) && ($pem_versions = @unserialize($result))) {
+        if (fetchRemote($url, $result) && ($pem_versions = unserialize($result))) {
             $i = 0;
 
             // If the actual version exist, put the PEM id in $versions_to_check
@@ -449,7 +449,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
         }
 
         if (fetchRemote($url, $result, $get_data)) {
-            $pem_plugins = @unserialize($result);
+            $pem_plugins = unserialize($result);
             if (! is_array($pem_plugins)) {
                 return false;
             }
@@ -499,7 +499,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
         ];
 
         if (fetchRemote($url, $result, $get_data)) {
-            $pem_plugins = @unserialize($result);
+            $pem_plugins = unserialize($result);
             if (! is_array($pem_plugins)) {
                 return false;
             }
@@ -576,7 +576,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if (($handle = @fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
+            if (($handle = fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 $zip = new \PclZip($archive);
                 if ($list = $zip->listContent()) {
@@ -652,7 +652,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
                                     $logger->debug(__FUNCTION__ . ', to delete = ' . $path);
 
                                     if (is_file($path)) {
-                                        @unlink($path);
+                                        unlink($path);
                                     } elseif (is_dir($path)) {
                                         deltree($path, PHPWG_PLUGINS_PATH . 'trash');
                                     }
@@ -674,7 +674,7 @@ DELETE FROM ' . PLUGINS_TABLE . '
             $status = 'temp_path_error';
         }
 
-        @unlink($archive);
+        unlink($archive);
         return $status;
     }
 

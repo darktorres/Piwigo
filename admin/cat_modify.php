@@ -187,8 +187,8 @@ $template->assign(
         ),
         'PARENT_CAT_ID' => empty($category['id_uppercat']) ? 0 : $category['id_uppercat'],
         'CAT_ID' => $category['id'],
-        'CAT_NAME' => @htmlspecialchars((string) $category['name']),
-        'CAT_COMMENT' => @htmlspecialchars((string) $category['comment']),
+        'CAT_NAME' => htmlspecialchars((string) $category['name']),
+        'CAT_COMMENT' => htmlspecialchars((string) $category['comment']),
         'IS_VISIBLE' => Mysqli::boolean_to_string($category['visible']),
 
         'U_DELETE' => $base_url . 'albums',

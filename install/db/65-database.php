@@ -270,10 +270,10 @@ define(\'DB_COLLATE\',  \'\');';
     }
 
     echo $upgrade_log;
-    $fp = @fopen(PHPWG_ROOT_PATH . 'upgrade65.log', 'w');
+    $fp = fopen(PHPWG_ROOT_PATH . 'upgrade65.log', 'w');
     if ($fp) {
-        @fwrite($fp, $upgrade_log, strlen($upgrade_log));
-        @fclose($fp);
+        fwrite($fp, $upgrade_log, strlen($upgrade_log));
+        fclose($fp);
     }
 
     echo "\n"

@@ -133,12 +133,12 @@ final class ImageStdParams
         $arr = $conf['derivatives'] ?? false;
         if ($arr !== false) {
             self::$type_map = $arr['d'];
-            self::$watermark = @$arr['w'];
+            self::$watermark = $arr['w'];
             if (! self::$watermark) {
                 self::$watermark = new WatermarkParams();
             }
 
-            self::$custom = @$arr['c'];
+            self::$custom = $arr['c'];
             if (! self::$custom) {
                 self::$custom = [];
             }

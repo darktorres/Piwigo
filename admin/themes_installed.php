@@ -76,11 +76,11 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
         'VERSION' => $fs_theme['version'],
         'DESC' => $fs_theme['description'],
         'AUTHOR' => $fs_theme['author'],
-        'AUTHOR_URL' => @$fs_theme['author uri'],
+        'AUTHOR_URL' => $fs_theme['author uri'],
         'PARENT' => ($fs_theme['parent'] ?? null),
         'SCREENSHOT' => $fs_theme['screenshot'],
         'IS_MOBILE' => $fs_theme['mobile'],
-        'ADMIN_URI' => @$fs_theme['admin_uri'],
+        'ADMIN_URI' => $fs_theme['admin_uri'],
     ];
 
     if (in_array($theme_id, $db_theme_ids)) {
@@ -125,7 +125,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
 
         $tpl_theme['DELETABLE'] = true;
 
-        if (count($children) > 0) {
+        if ($children !== []) {
             $tpl_theme['DELETABLE'] = false;
 
             $tpl_theme['DELETE_TOOLTIP'] = l10n(

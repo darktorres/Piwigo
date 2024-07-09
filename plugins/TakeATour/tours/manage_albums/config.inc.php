@@ -24,8 +24,8 @@ function TAT_FC_23(): void
 
 function TAT_FC_23_prefilter($content): array|string
 {
-    $search = "<strong>{'Lock'|@translate}</strong>";
-    $replacement = '<span id="TAT_FC_23"><strong>{\'Lock\'|@translate}</strong></span>';
+    $search = "<strong>{'Lock'|translate}</strong>";
+    $replacement = '<span id="TAT_FC_23"><strong>{\'Lock\'|translate}</strong></span>';
     return str_replace($search, $replacement, $content);
 }
 

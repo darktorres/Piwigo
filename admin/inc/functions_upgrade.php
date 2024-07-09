@@ -215,7 +215,7 @@ SELECT status
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
+    if (function_exists('get_magic_quotes_gpc') && ! get_magic_quotes_gpc()) {
         $username = Mysqli::pwg_db_real_escape_string($username);
     }
 

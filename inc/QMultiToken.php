@@ -96,7 +96,7 @@ class QMultiToken implements \Stringable
 
                         break;
                     case ':':
-                        $scope = @$root->scopes[strtolower((string) $crt_token)];
+                        $scope = $root->scopes[strtolower((string) $crt_token)];
                         if (! isset($scope) || isset($crt_scope)) { // white space
                             $this->push($crt_token, $crt_modifier, $crt_scope);
                         } else {

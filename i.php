@@ -485,7 +485,7 @@ if (! mkgetdir(dirname($page['derivative_path']))) {
 }
 
 ignore_user_abort(true);
-@set_time_limit(0);
+set_time_limit(0);
 
 $image = new Image($page['src_path']);
 $timing['load'] = time_step($step);
@@ -579,7 +579,7 @@ if ($conf['derivatives_strip_metadata_threshold'] > $d_size[0] * $d_size[1]) {//
 $image->set_compression_quality(ImageStdParams::$quality);
 $image->write($page['derivative_path']);
 $image->destroy();
-@chmod($page['derivative_path'], 0644);
+chmod($page['derivative_path'], 0644);
 $timing['save'] = time_step($step);
 
 send_derivative($expires);

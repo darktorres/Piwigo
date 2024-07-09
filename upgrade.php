@@ -39,7 +39,7 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
 }
 
 $config_file = PHPWG_ROOT_PATH . 'local/config/database.inc.php';
-$config_file_contents = @file_get_contents($config_file);
+$config_file_contents = file_get_contents($config_file);
 if ($config_file_contents === false) {
     die('Cannot load ' . $config_file);
 }
@@ -148,7 +148,7 @@ if (isset($_GET['language'])) {
     $language = 'en_UK';
     // Try to get browser language
     foreach ($languages->fs_languages as $language_code => $fs_language) {
-        if (substr((string) $language_code, 0, 2) === @substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
+        if (substr((string) $language_code, 0, 2) === substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
             $language = $language_code;
             break;
         }
@@ -377,7 +377,7 @@ if ((isset($_POST['submit']) || isset($_GET['now'])) && check_upgrade()) {
               . implode("\r\n", $mysql_changes) . "\r\n"
               . substr($config_file_contents, $php_end_tag);
 
-            if (! @file_put_contents($config_file, $config_file_contents)) {
+            if (! file_put_contents($config_file, $config_file_contents)) {
                 $page['infos'][] = l10n(
                     'In <i>%s</i>, before <b>?></b>, insert:',
                     'local/config/database.inc.php'

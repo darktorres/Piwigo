@@ -191,7 +191,7 @@ UPDATE ' . USER_INFOS_TABLE . '
         }
 
         closedir($dir);
-        @uasort($this->fs_languages, \Piwigo\inc\name_compare(...));
+        uasort($this->fs_languages, \Piwigo\inc\name_compare(...));
     }
 
     public function get_db_languages(): void
@@ -225,7 +225,7 @@ UPDATE ' . USER_INFOS_TABLE . '
         $version = PHPWG_VERSION;
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) && ($pem_versions = @unserialize($result))) {
+        if (fetchRemote($url, $result, $get_data) && ($pem_versions = unserialize($result))) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
@@ -270,7 +270,7 @@ UPDATE ' . USER_INFOS_TABLE . '
         }
 
         if (fetchRemote($url, $result, $get_data)) {
-            $pem_languages = @unserialize($result);
+            $pem_languages = unserialize($result);
             if (! is_array($pem_languages)) {
                 return false;
             }
@@ -281,7 +281,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 }
             }
 
-            @uasort($this->server_languages, $this->extension_name_compare(...));
+            uasort($this->server_languages, $this->extension_name_compare(...));
             return true;
         }
 
@@ -309,7 +309,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if (($handle = @fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
+            if (($handle = fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 $zip = new \PclZip($archive);
                 if ($list = $zip->listContent()) {
@@ -399,7 +399,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                                         $logger->debug(__FUNCTION__ . ', to delete = ' . $path);
 
                                         if (is_file($path)) {
-                                            @unlink($path);
+                                            unlink($path);
                                         } elseif (is_dir($path)) {
                                             deltree($path, PHPWG_ROOT_PATH . 'language/trash');
                                         }
@@ -424,7 +424,7 @@ UPDATE ' . USER_INFOS_TABLE . '
             $status = 'temp_path_error';
         }
 
-        @unlink($archive);
+        unlink($archive);
         return $status;
     }
 

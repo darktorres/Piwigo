@@ -148,7 +148,7 @@ if (isset($_GET['cat']) && $_GET['cat'] != 0) {
     check_input_parameter('cat', $_GET, false, PATTERN_ID);
 
     $category_ids = FunctionsCategory::get_subcat_ids([$_GET['cat']]);
-    if (empty($category_ids)) {
+    if ($category_ids === []) {
         $category_ids = [-1];
     }
 
@@ -254,7 +254,7 @@ if (isset($action)) {
                         'comment_id' => $_GET['edit'],
                         'image_id' => $_POST['image_id'],
                         'content' => $_POST['content'],
-                        'website_url' => @$_POST['website_url'],
+                        'website_url' => $_POST['website_url'],
                     ],
                     $_POST['key']
                 );
@@ -325,7 +325,7 @@ SELECT id, name, uppercats, global_rank
     'WHERE'
 ) . '
 ;';
-FunctionsCategory::display_select_cat_wrapper($query, [@$_GET['cat']], $blockname, true);
+FunctionsCategory::display_select_cat_wrapper($query, [$_GET['cat']], $blockname, true);
 
 // Filter on recent comments...
 $tpl_var = [];

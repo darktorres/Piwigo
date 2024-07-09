@@ -624,7 +624,7 @@ SELECT
         $update_status = $params['status'];
     }
 
-    if (! empty($params['level']) || @$params['level'] === 0) {
+    if (! empty($params['level']) || $params['level'] === 0) {
         if (! in_array($params['level'], $conf['available_permission_levels'])) {
             return new Error(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
@@ -652,23 +652,23 @@ SELECT
         $updates_infos['nb_image_page'] = $params['nb_image_page'];
     }
 
-    if (! empty($params['recent_period']) || @$params['recent_period'] === 0) {
+    if (! empty($params['recent_period']) || $params['recent_period'] === 0) {
         $updates_infos['recent_period'] = $params['recent_period'];
     }
 
-    if (! empty($params['expand']) || @$params['expand'] === false) {
+    if (! empty($params['expand']) || $params['expand'] === false) {
         $updates_infos['expand'] = Mysqli::boolean_to_string($params['expand']);
     }
 
-    if (! empty($params['show_nb_comments']) || @$params['show_nb_comments'] === false) {
+    if (! empty($params['show_nb_comments']) || $params['show_nb_comments'] === false) {
         $updates_infos['show_nb_comments'] = Mysqli::boolean_to_string($params['show_nb_comments']);
     }
 
-    if (! empty($params['show_nb_hits']) || @$params['show_nb_hits'] === false) {
+    if (! empty($params['show_nb_hits']) || $params['show_nb_hits'] === false) {
         $updates_infos['show_nb_hits'] = Mysqli::boolean_to_string($params['show_nb_hits']);
     }
 
-    if (! empty($params['enabled_high']) || @$params['enabled_high'] === false) {
+    if (! empty($params['enabled_high']) || $params['enabled_high'] === false) {
         $updates_infos['enabled_high'] = Mysqli::boolean_to_string($params['enabled_high']);
     }
 

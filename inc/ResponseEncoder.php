@@ -56,7 +56,7 @@ abstract class ResponseEncoder
     private static function flatten(&$value): void
     {
         if (is_object($value)) {
-            $class = strtolower(@$value::class);
+            $class = strtolower($value::class);
             if ($class === 'piwigo\inc\namedarray') {
                 $value = $value->_content;
             }

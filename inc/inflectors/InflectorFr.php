@@ -58,7 +58,7 @@ class InflectorFr
 
         $word = strtolower((string) $word);
 
-        $rc = @$this->exceptions[$word];
+        $rc = $this->exceptions[$word];
         if (isset($rc)) {
             if (! empty($rc)) {
                 $res[] = $rc;

@@ -172,7 +172,7 @@ SELECT
             $result = Mysqli::pwg_query($query);
             while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
                 $category_ids[] = $row['category_id'];
-                @$categories_of_image[$row['image_id']][] = $row['category_id'];
+                $categories_of_image[$row['image_id']][] = $row['category_id'];
             }
 
             if ($category_ids !== []) {
@@ -824,7 +824,7 @@ SELECT *
 
     if (isset($params['commentable']) && isset($params['apply_commentable_to_subalbums']) && $params['apply_commentable_to_subalbums']) {
         $subcats = FunctionsCategory::get_subcat_ids([$params['category_id']]);
-        if (count($subcats) > 0) {
+        if ($subcats !== []) {
             $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET commentable = \'' . $params['commentable'] . '\'

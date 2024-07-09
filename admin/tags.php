@@ -139,9 +139,9 @@ $all_tags = [];
 while ($tag = Mysqli::pwg_db_fetch_assoc($result)) {
     $raw_name = $tag['name'];
     $tag['name'] = FunctionsPlugins::trigger_change('render_tag_name', $raw_name, $tag);
-    $counter = intval(@$tag_counters[$tag['id']]);
+    $counter = intval($tag_counters[$tag['id']]);
     if ($counter > 0) {
-        $tag['counter'] = intval(@$tag_counters[$tag['id']]);
+        $tag['counter'] = intval($tag_counters[$tag['id']]);
     }
 
     $alt_names = FunctionsPlugins::trigger_change('get_tag_alt_names', [], $raw_name);

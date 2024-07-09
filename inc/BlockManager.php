@@ -83,7 +83,7 @@ class BlockManager
         $conf_id = 'blk_' . $this->id;
         $mb_conf = $conf[$conf_id] ?? [];
         if (! is_array($mb_conf)) {
-            $mb_conf = @unserialize($mb_conf);
+            $mb_conf = unserialize($mb_conf);
         }
 
         $idx = 1;
@@ -140,11 +140,10 @@ class BlockManager
      * Changes the position of a block.
      *
      * @param string $block_id
-     * @param int $position
      */
     public function set_block_position(
         $block_id,
-        $position
+        int $position
     ): void {
         if (isset($this->display_blocks[$block_id])) {
             $this->display_blocks[$block_id]->set_position($position);

@@ -112,7 +112,7 @@ WHERE ' . $where . '
         $cats = [];
         $selected_category = $page['category'] ?? null;
         while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
-            $child_date_last = @$row['max_date_last'] > @$row['date_last'];
+            $child_date_last = $row['max_date_last'] > $row['date_last'];
             $row = array_merge(
                 $row,
                 [
@@ -750,7 +750,7 @@ SELECT
         // now we add the upper categories and useful values such as depth level and url
         foreach ($common_cats as $cat) {
             foreach (explode(',', (string) $cat['uppercats']) as $uppercat) {
-                @$cat_ids[$uppercat]++;
+                $cat_ids[$uppercat]++;
             }
         }
 
@@ -800,9 +800,9 @@ SELECT
             // 3. number of sub-albums containing photos
             //
             // Option 3 seems more appropriate here.
-            if (! empty($cat['id_uppercat']) && @$cats[$idx]['count_images'] > 0) {
+            if (! empty($cat['id_uppercat']) && $cats[$idx]['count_images'] > 0) {
                 foreach (array_slice(explode(',', (string) $cat['uppercats']), 0, -1) as $uppercat_id) {
-                    @$cats[$index_of_cat[$uppercat_id]]['count_categories']++;
+                    $cats[$index_of_cat[$uppercat_id]]['count_categories']++;
                 }
             }
         }

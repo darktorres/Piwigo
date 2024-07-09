@@ -73,7 +73,7 @@ SELECT *
 
     $tags = [];
     while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
-        $counter = intval(@$tag_counters[$row['id']]);
+        $counter = intval($tag_counters[$row['id']]);
         if ($counter !== 0) {
             $row['counter'] = $counter;
             $row['name'] = FunctionsPlugins::trigger_change('render_tag_name', $row['name'], $row);

@@ -28,10 +28,10 @@ class QDateRangeScope extends QSearchScope
         $strict = [0, 0];
         if (($pos = strpos($str, '..')) !== false) {
             $range = [substr($str, 0, $pos), substr($str, $pos + 2)];
-        } elseif (@$str[0] == '>') {
+        } elseif ($str[0] == '>') {
             $range = [substr($str, 1), ''];
             $strict[0] = 1;
-        } elseif (@$str[0] == '<') {
+        } elseif ($str[0] == '<') {
             $range = ['', substr($str, 1)];
             $strict[1] = 1;
         } elseif ((($token->modifier & QST_WILDCARD_BEGIN) !== 0)) {

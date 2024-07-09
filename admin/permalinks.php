@@ -58,7 +58,7 @@ function parse_sort_variables(
         $url = $base_url;
         $disp = '↓'; // TODO: an small image is better
 
-        if ($field !== @$_GET[$get_param]) {
+        if ($field !== $_GET[$get_param]) {
             if (! isset($default_field) || $default_field != $field) { // the first should be the default
                 $url = add_url_params($url, [
                     $get_param => $field,

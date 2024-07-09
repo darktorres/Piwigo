@@ -29,12 +29,12 @@ class ImageExtImagick implements imageInterface
         global $conf;
         $this->imagickdir = $conf['ext_imagick_dir'];
 
-        if (str_starts_with((string) @$_SERVER['SCRIPT_FILENAME'], '/kunden/')) {  // 1and1
-            @putenv('MAGICK_THREAD_LIMIT=1');
+        if (str_starts_with((string) $_SERVER['SCRIPT_FILENAME'], '/kunden/')) {  // 1and1
+            putenv('MAGICK_THREAD_LIMIT=1');
         }
 
         $command = $this->imagickdir . 'identify -format "%wx%h" "' . realpath($this->source_filepath) . '"';
-        @exec($command, $returnarray);
+        exec($command, $returnarray);
         if (! is_array($returnarray) || empty($returnarray[0]) || ! preg_match(
             '/^(\d+)x(\d+)$/',
             $returnarray[0],
@@ -174,7 +174,7 @@ class ImageExtImagick implements imageInterface
         $dest = pathinfo((string) $destination_filepath);
         $exec .= ' "' . realpath($dest['dirname']) . '/' . $dest['basename'] . '" 2>&1';
         $logger->debug($exec);
-        @exec($exec, $returnarray);
+        exec($exec, $returnarray);
 
         if (is_array($returnarray) && ($returnarray !== [])) {
             $logger->error('', $returnarray);

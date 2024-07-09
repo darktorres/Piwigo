@@ -125,7 +125,7 @@ class RestEncoder extends ResponseEncoder
 
                 break;
             case 'object':
-                match (strtolower(@$data::class)) {
+                match (strtolower($data::class)) {
                     'piwigo\inc\namedarray' => $this->encode_array(
                         $data->_content,
                         $data->_itemName,
@@ -136,7 +136,7 @@ class RestEncoder extends ResponseEncoder
                 };
                 break;
             default:
-                trigger_error('Invalid type ' . gettype($data) . ' ' . @$data::class, E_USER_WARNING);
+                trigger_error('Invalid type ' . gettype($data) . ' ' . $data::class, E_USER_WARNING);
         }
     }
 }

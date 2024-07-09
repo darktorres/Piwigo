@@ -119,7 +119,7 @@ function mkgetdir(
         }
 
         $umask = umask(0);
-        $mkd = @mkdir($dir, $conf['chmod_value'], $flags & MKGETDIR_RECURSIVE);
+        $mkd = mkdir($dir, $conf['chmod_value'], $flags & MKGETDIR_RECURSIVE);
         umask($umask);
         if ($mkd == false) {
             if (($flags & MKGETDIR_DIE_ON_ERROR) !== 0) {
@@ -132,14 +132,14 @@ function mkgetdir(
         if (($flags & MKGETDIR_PROTECT_HTACCESS) !== 0) {
             $file = $dir . '/.htaccess';
             if (! file_exists($file)) {
-                @file_put_contents($file, 'deny from all');
+                file_put_contents($file, 'deny from all');
             }
         }
 
         if (($flags & MKGETDIR_PROTECT_INDEX) !== 0) {
             $file = $dir . '/index.htm';
             if (! file_exists($file)) {
-                @file_put_contents($file, 'Not allowed!');
+                file_put_contents($file, 'Not allowed!');
             }
         }
     }
@@ -563,7 +563,7 @@ UPDATE ' . USER_INFOS_TABLE . '
     }
 
     $tags_string = null;
-    if (@$page['section'] == 'tags') {
+    if ($page['section'] == 'tags') {
         $tags_string = implode(',', $page['tag_ids']);
     }
 
@@ -1886,7 +1886,7 @@ function load_language(
                 require($source_file);
             }
 
-            $load_lang = @$lang;
+            $load_lang = $lang;
             $load_lang_info = ($lang_info ?? null);
 
             // access already existing values
@@ -1922,7 +1922,7 @@ function load_language(
         }
 
         //Note: target charset is always utf-8 $content = convert_charset($content, 'utf-8', $target_charset);
-        return @file_get_contents(
+        return file_get_contents(
             $source_file
         );
 
@@ -1973,7 +1973,7 @@ function secure_directory(
 ): void {
     $file = $dir . '/index.htm';
     if (! file_exists($file)) {
-        @file_put_contents($file, 'Not allowed!');
+        file_put_contents($file, 'Not allowed!');
     }
 }
 
@@ -2007,7 +2007,7 @@ function verify_ephemeral_key(
 ): bool {
     global $conf;
     $time = microtime(true);
-    $key = explode(':', @$key);
+    $key = explode(':', $key);
     if (count($key) != 3 || $key[0] > $time - (float) $key[1] || $key[0] < $time - 3600 || hash_hmac(
         'md5',
         $key[0] . substr((string) $_SERVER['REMOTE_ADDR'], 0, 5) . $key[1] . $aditionnal_data_to_hash,

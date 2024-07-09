@@ -163,8 +163,8 @@ while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
       [
           'NAME' => $row['galleries_url'],
           'TYPE' => l10n($is_remote ? 'Remote' : 'Local'),
-          'CATEGORIES' => (int) @$sites_detail[$row['id']]['nb_categories'],
-          'IMAGES' => (int) @$sites_detail[$row['id']]['nb_images'],
+          'CATEGORIES' => (int) $sites_detail[$row['id']]['nb_categories'],
+          'IMAGES' => (int) $sites_detail[$row['id']]['nb_images'],
           'U_SYNCHRONIZE' => $update_url,
       ];
 

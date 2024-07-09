@@ -235,7 +235,7 @@ class Image
 
         $rotation = 0;
 
-        $exif = @exif_read_data($source_filepath);
+        $exif = exif_read_data($source_filepath);
 
         if (isset($exif['Orientation']) && preg_match('/^\s*(\d)/', (string) $exif['Orientation'], $matches)) {
             $orientation = $matches[1];
@@ -316,7 +316,7 @@ class Image
             return false;
         }
 
-        @exec($conf['ext_imagick_dir'] . 'convert -version', $returnarray);
+        exec($conf['ext_imagick_dir'] . 'convert -version', $returnarray);
         if (is_array($returnarray) && ! empty($returnarray[0]) && preg_match('/ImageMagick/i', $returnarray[0])) {
             if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match)) {
                 self::$ext_imagick_version = $match[1];

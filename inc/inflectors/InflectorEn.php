@@ -118,7 +118,7 @@ class InflectorEn
 
         $lword = strtolower((string) $word);
 
-        $rc = @$this->exceptions[$lword];
+        $rc = $this->exceptions[$lword];
         if (isset($rc)) {
             if (! empty($rc)) {
                 $res[] = $rc;

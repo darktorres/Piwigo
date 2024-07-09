@@ -186,7 +186,7 @@ foreach ($allAlbum as $album) {
 // you open the gallery. As this situation doesn't occur each time you use the
 // administration, it's quite reliable but not as much as on gallery side.
 $is_forbidden = array_fill_keys(
-    @explode(',', (string) $user['forbidden_categories']),
+    explode(',', (string) $user['forbidden_categories']),
     1
 );
 
@@ -251,7 +251,7 @@ $subcats_of = [];
 
 foreach ($all_categories as $id => $uppercats) {
     foreach (array_slice(explode(',', (string) $uppercats), 0, -1) as $uppercat_id) {
-        @$subcats_of[$uppercat_id][] = $id;
+        $subcats_of[$uppercat_id][] = $id;
     }
 }
 

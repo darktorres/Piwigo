@@ -44,13 +44,13 @@ if (is_array($_POST)) {
                 $_POST[$k][$k2] = addslashes((string) $v2);
             }
 
-            @reset($_POST[$k]);
+            reset($_POST[$k]);
         } else {
             $_POST[$k] = addslashes((string) $v);
         }
     }
 
-    @reset($_POST);
+    reset($_POST);
 }
 
 if (is_array($_GET)) {
@@ -60,13 +60,13 @@ if (is_array($_GET)) {
                 $_GET[$k][$k2] = addslashes((string) $v2);
             }
 
-            @reset($_GET[$k]);
+            reset($_GET[$k]);
         } else {
             $_GET[$k] = addslashes((string) $v);
         }
     }
 
-    @reset($_GET);
+    reset($_GET);
 }
 
 if (is_array($_COOKIE)) {
@@ -76,13 +76,13 @@ if (is_array($_COOKIE)) {
                 $_COOKIE[$k][$k2] = addslashes((string) $v2);
             }
 
-            @reset($_COOKIE[$k]);
+            reset($_COOKIE[$k]);
         } else {
             $_COOKIE[$k] = addslashes((string) $v);
         }
     }
 
-    @reset($_COOKIE);
+    reset($_COOKIE);
 }
 
 //----------------------------------------------------- variable initialization
@@ -143,7 +143,7 @@ $infos = [];
 $errors = [];
 
 $config_file = PHPWG_ROOT_PATH . 'local/config/database.inc.php';
-if (@file_exists($config_file)) {
+if (file_exists($config_file)) {
     require($config_file);
     // Is Piwigo already installed ?
     if (defined('PHPWG_INSTALLED')) {
@@ -166,7 +166,7 @@ if (isset($_GET['language'])) {
     $language = 'en_UK';
     // Try to get browser language
     foreach ($languages->fs_languages as $language_code => $fs_language) {
-        if (substr((string) $language_code, 0, 2) === @substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
+        if (substr((string) $language_code, 0, 2) === substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
             $language = $language_code;
             break;
         }

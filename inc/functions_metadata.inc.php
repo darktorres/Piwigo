@@ -26,7 +26,7 @@ function get_iptc_data(
     $result = [];
 
     $imginfo = [];
-    if (@getimagesize($filename, $imginfo) == false) {
+    if (getimagesize($filename, $imginfo) == false) {
         return $result;
     }
 
@@ -127,7 +127,7 @@ function get_exif_data(
     }
 
     // Read EXIF data
-    if (($exif = @exif_read_data($filename)) || ($exif2 = FunctionsPlugins::trigger_change(
+    if (($exif = exif_read_data($filename)) || ($exif2 = FunctionsPlugins::trigger_change(
         'format_exif_data',
         $exif = null,
         $filename,

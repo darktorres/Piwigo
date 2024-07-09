@@ -231,7 +231,7 @@ function ws_getCacheSize(
     $path_cache = $conf['data_location'];
     $infos['cache_size'] = null;
     if (function_exists('exec')) {
-        @exec('du -sk ' . $path_cache, $return_array_cache);
+        exec('du -sk ' . $path_cache, $return_array_cache);
         if (
             is_array($return_array_cache) && ! empty($return_array_cache[0]) && preg_match(
                 '/^(\d+)\s/',
@@ -253,7 +253,7 @@ function ws_getCacheSize(
     $all = 0;
 
     foreach (array_keys($infos['msizes']) as $size_type) {
-        $infos['msizes'][$size_type] += @$msizes[derivative_to_url($size_type)];
+        $infos['msizes'][$size_type] += $msizes[derivative_to_url($size_type)];
         $all += $infos['msizes'][$size_type];
     }
 
@@ -263,7 +263,7 @@ function ws_getCacheSize(
     $path_template_c = $conf['data_location'] . 'templates_c';
     $infos['tsizes'] = null;
     if (function_exists('exec')) {
-        @exec('du -sk ' . $path_template_c, $return_array_template_c);
+        exec('du -sk ' . $path_template_c, $return_array_template_c);
         if (
             is_array($return_array_template_c) && ! empty($return_array_template_c[0]) && preg_match(
                 '/^(\d+)\s/',
@@ -501,7 +501,7 @@ SELECT
     while ($row = Mysqli::pwg_db_fetch_assoc($result)) {
         $row['details'] = str_replace('`groups`', 'groups', $row['details']);
         $row['details'] = str_replace('`rank`', 'rank', $row['details']);
-        $details = @unserialize($row['details']);
+        $details = unserialize($row['details']);
 
         if (isset($row['user_agent'])) {
             $details['agent'] = $row['user_agent'];
@@ -564,7 +564,7 @@ SELECT
     foreach ($output_lines as $idx => $output_line) {
         if ($output_line['object'] == 'user') {
             foreach ($output_line['object_id'] as $user_id) {
-                @$output_lines[$idx]['details']['users'][] = $username_of[$user_id] ?? 'user#' . $user_id;
+                $output_lines[$idx]['details']['users'][] = $username_of[$user_id] ?? 'user#' . $user_id;
             }
 
             if (isset($output_lines[$idx]['details']['users'])) {
@@ -885,7 +885,7 @@ SELECT
 
     foreach ($history_lines as $line) {
         if (isset($line['image_type']) && $line['image_type'] == 'high') {
-            $summary['total_filesize'] += @intval($image_infos[$line['image_id']]['filesize']);
+            $summary['total_filesize'] += intval($image_infos[$line['image_id']]['filesize']);
         }
 
         if ($line['user_id'] == $conf['guest_id']) {
@@ -968,11 +968,11 @@ SELECT
             $image_id = $line['image_id'];
 
             $image_string =
-            '<span><img src="' . @DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
+            '<span><img src="' . DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
             . '" alt="' . $image_title . '" title="' . $image_title . '">';
         }
 
-        @++$sorted_members[$user_name];
+        ++$sorted_members[$user_name];
 
         $result[] = [
             'DATE' => format_date($line['date']),

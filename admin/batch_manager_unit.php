@@ -77,9 +77,9 @@ SELECT id, date_creation
         $data['level'] = $_POST['level-' . $row['id']];
 
         if ($conf['allow_html_descriptions']) {
-            $data['comment'] = @$_POST['description-' . $row['id']];
+            $data['comment'] = $_POST['description-' . $row['id']];
         } else {
-            $data['comment'] = strip_tags((string) @$_POST['description-' . $row['id']]);
+            $data['comment'] = strip_tags((string) $_POST['description-' . $row['id']]);
         }
 
         $data['date_creation'] = empty($_POST['date_creation-' . $row['id']]) ? null : $_POST['date_creation-' . $row['id']];

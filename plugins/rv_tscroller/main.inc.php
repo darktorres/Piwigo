@@ -32,7 +32,7 @@ class RVTS
         $page['nb_image_page'] *= FunctionsSession::pwg_get_session_var('rvts_mult', 1);
         if (count(
             $page['items']
-        ) < $page['nb_image_page'] + 3 && (! @$page['start'] || script_basename() === 'picture')) {
+        ) < $page['nb_image_page'] + 3 && (! $page['start'] || script_basename() === 'picture')) {
             $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
         }
 
@@ -59,7 +59,7 @@ class RVTS
                 );
             }
         } else {
-            $adj = (int) @$_GET['adj'];
+            $adj = (int) $_GET['adj'];
             if ($adj !== 0) {
                 $mult = FunctionsSession::pwg_get_session_var('rvts_mult', 1);
                 if ($adj > 0 && $mult < 5) {
