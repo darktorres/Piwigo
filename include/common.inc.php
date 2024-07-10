@@ -30,7 +30,7 @@ $t2 = microtime(true);
 if (! function_exists(
     'get_magic_quotes_gpc'
 ) || ! @get_magic_quotes_gpc()) {
-    function sanitize_mysql_kv(&$v, $k)
+    function sanitize_mysql_kv(&$v, $k): void
     {
         $v = addslashes((string) $v);
     }
@@ -231,7 +231,7 @@ if (defined('IN_ADMIN') && IN_ADMIN) {// Admin template
     ));
 } else { // Classic template
     $theme = $user['theme'];
-    if (script_basename() != 'ws' && mobile_theme()) {
+    if (script_basename() !== 'ws' && mobile_theme()) {
         $theme = $conf['mobile_theme'];
     }
 
@@ -249,7 +249,7 @@ if (isset($user['internal_status']['guest_must_be_guest']) && $user['internal_st
 if ($conf['gallery_locked']) {
     $header_msgs[] = l10n('The gallery is locked for maintenance. Please, come back later.');
 
-    if (script_basename() != 'identification' && ! is_admin()) {
+    if (script_basename() !== 'identification' && ! is_admin()) {
         set_status_header(503, 'Service Unavailable');
         @header('Retry-After: 900');
         header('Content-Type: text/html; charset=' . get_pwg_charset());

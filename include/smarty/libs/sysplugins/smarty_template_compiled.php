@@ -25,7 +25,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
      */
     public static function load(
         $_template
-    ) {
+    ): self {
         $compiled = new self();
         if ($_template->source->handler->hasCompiledHandler) {
             $_template->source->handler->populateCompiledFilepath($compiled, $_template);
@@ -43,7 +43,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
      **/
     public function populateCompiledFilepath(
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         $source = &$_template->source;
         $smarty = &$_template->smarty;
         $this->filepath = $smarty->getCompileDir();
@@ -94,7 +94,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
      */
     public function render(
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         // checks if template exists
         if (! $_template->source->exists) {
             $type = $_template->source->isConfig ? 'config' : 'template';
@@ -143,7 +143,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
     #[\Override]
     public function process(
         Smarty_Internal_Template $_smarty_tpl
-    ) {
+    ): void {
         $source = &$_smarty_tpl->source;
         $smarty = &$_smarty_tpl->smarty;
         if ($source->handler->recompiled) {
@@ -179,7 +179,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
      */
     public function compileTemplateSource(
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         $this->file_dependency = [];
         $this->includes = [];
         $this->nocache_hash = null;
@@ -222,7 +222,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
     public function write(
         Smarty_Internal_Template $_template,
         $code
-    ) {
+    ): bool {
         if (! $_template->source->handler->recompiled) {
             if ($_template->smarty->ext->_writeFile->writeFile($this->filepath, $code, $_template->smarty) === true) {
                 $this->timestamp = is_file($this->filepath);
@@ -264,7 +264,7 @@ class Smarty_Template_Compiled extends Smarty_Template_Resource_Base
      */
     private function loadCompiledTemplate(
         Smarty_Internal_Template $_smarty_tpl
-    ) {
+    ): void {
         if (function_exists('opcache_invalidate')
             && (! function_exists('ini_get') || strlen(ini_get('opcache.restrict_api')) < 1)
         ) {

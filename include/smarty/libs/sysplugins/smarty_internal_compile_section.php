@@ -106,7 +106,7 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_Compile_Private_Fo
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         $compiler->loopNesting++;
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
@@ -517,7 +517,7 @@ class Smarty_Internal_Compile_Sectionelse extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         [$openTag, $nocache, $local, $sectionVar] = $this->closeTag($compiler, ['section']);
@@ -544,7 +544,7 @@ class Smarty_Internal_Compile_Sectionclose extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         $compiler->loopNesting--;
         // must endblock be nocache?
         if ($compiler->nocache) {

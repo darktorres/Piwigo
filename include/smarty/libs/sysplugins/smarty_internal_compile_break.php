@@ -51,7 +51,7 @@ class Smarty_Internal_Compile_Break extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         [$levels, $foreachLevels] = $this->checkLevels($args, $compiler);
         $output = '<?php ';
         if ($foreachLevels > 0 && $this->tag === 'continue') {
@@ -74,13 +74,11 @@ class Smarty_Internal_Compile_Break extends Smarty_Internal_CompileBase
      *
      * @param array                                 $args     array with attributes from parser
      * @param \Smarty_Internal_TemplateCompilerBase $compiler compiler object
-     *
-     * @return array
      */
     public function checkLevels(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): array {
         static $_is_loopy = [
             'for' => true,
             'foreach' => true,

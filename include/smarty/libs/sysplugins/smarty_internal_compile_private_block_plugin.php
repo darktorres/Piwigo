@@ -36,15 +36,13 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
      * @param array                                 $_attr attributes
      * @param string                                $tag
      * @param string                                $function
-     *
-     * @return array
      */
     public function setup(
         Smarty_Internal_TemplateCompilerBase $compiler,
         $_attr,
         $tag,
         $function
-    ) {
+    ): array {
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             $_paramsArray[] = is_int($_key) ? sprintf('%d=>%s', $_key, $_value) : sprintf("'%s'=>%s", $_key, $_value);
@@ -67,10 +65,10 @@ class Smarty_Internal_Compile_Private_Block_Plugin extends Smarty_Internal_Compi
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $parameter,
+        array $parameter,
         $tag,
         $function = null
-    ) {
+    ): string {
         if (! isset($tag[5]) || ! str_ends_with($tag, 'close')) {
             // opening tag of block plugin
             // check and get attributes

@@ -247,10 +247,8 @@ class Smarty_Security
 
     /**
      * current template nesting level
-     *
-     * @var int
      */
-    private $_current_template_nesting = 0;
+    private int $_current_template_nesting = 0;
 
     /**
      * @param Smarty $smarty
@@ -271,7 +269,7 @@ class Smarty_Security
     public function isTrustedPhpFunction(
         $function_name,
         $compiler
-    ) {
+    ): bool {
         if ($this->php_functions !== null
             && ($this->php_functions === [] || in_array($function_name, $this->php_functions))
         ) {
@@ -295,7 +293,7 @@ class Smarty_Security
     public function isTrustedStaticClass(
         $class_name,
         $compiler
-    ) {
+    ): bool {
         if ($this->static_classes !== null
             && ($this->static_classes === [] || in_array($class_name, $this->static_classes))
         ) {
@@ -321,7 +319,7 @@ class Smarty_Security
         $class_name,
         $params,
         $compiler
-    ) {
+    ): bool {
         if (! isset($params[2])) {
             // fall back
             return $this->isTrustedStaticClass($class_name, $compiler);
@@ -371,7 +369,7 @@ class Smarty_Security
     public function isTrustedPhpModifier(
         $modifier_name,
         $compiler
-    ) {
+    ): bool {
         if ($this->php_modifiers !== null
             && ($this->php_modifiers === [] || in_array($modifier_name, $this->php_modifiers))
         ) {
@@ -393,7 +391,7 @@ class Smarty_Security
     public function isTrustedTag(
         $tag_name,
         $compiler
-    ) {
+    ): bool {
         // check for internal always required tags
         if (in_array(
             $tag_name,
@@ -444,7 +442,7 @@ class Smarty_Security
     public function isTrustedSpecialSmartyVar(
         $var_name,
         $compiler
-    ) {
+    ): bool {
         if (! in_array($var_name, $this->disabled_special_smarty_vars)) {
             return true;
         }
@@ -469,7 +467,7 @@ class Smarty_Security
     public function isTrustedModifier(
         $modifier_name,
         $compiler
-    ) {
+    ): bool {
         // check for internal always allowed modifier
         if ($modifier_name == 'default') {
             return true;
@@ -507,13 +505,11 @@ class Smarty_Security
      *
      * @param string $const    constant name
      * @param object $compiler compiler object
-     *
-     * @return bool
      */
     public function isTrustedConstant(
         $const,
         $compiler
-    ) {
+    ): bool {
         if (in_array($const, ['true', 'false', 'null'])) {
             return true;
         }
@@ -563,7 +559,7 @@ class Smarty_Security
     public function isTrustedResourceDir(
         $filepath,
         $isConfig = null
-    ) {
+    ): bool {
         if ($this->_include_path_status !== $this->smarty->use_include_path) {
             $_dir =
                 $this->smarty->use_include_path ? $this->smarty->ext->_getIncludePath->getIncludePathDirs(
@@ -644,7 +640,7 @@ class Smarty_Security
     public static function enableSecurity(
         Smarty $smarty,
         $security_class
-    ) {
+    ): Smarty {
         if ($security_class instanceof self) {
             $smarty->security_policy = $security_class;
             return $smarty;
@@ -670,7 +666,7 @@ class Smarty_Security
     /**
      * Start template processing
      */
-    public function startTemplate($template)
+    public function startTemplate($template): void
     {
         if ($this->max_template_nesting > 0 && $this->_current_template_nesting++ >= $this->max_template_nesting) {
             throw new SmartyException(
@@ -686,7 +682,7 @@ class Smarty_Security
     /**
      * Exit template processing
      */
-    public function endTemplate()
+    public function endTemplate(): void
     {
         if ($this->max_template_nesting > 0) {
             $this->_current_template_nesting--;
@@ -698,7 +694,7 @@ class Smarty_Security
      */
     public function registerCallBacks(
         Smarty_Internal_Template $template
-    ) {
+    ): void {
         $template->startRenderCallbacks[] = $this->startTemplate(...);
         $template->endRenderCallbacks[] = $this->endTemplate(...);
     }
@@ -712,7 +708,7 @@ class Smarty_Security
     private function _updateResourceDir(
         $oldDir,
         $newDir
-    ) {
+    ): void {
         foreach ($oldDir as $directory) {
             //           $directory = $this->smarty->_realpath($directory, true);
             $length = strlen((string) $directory);
@@ -739,8 +735,8 @@ class Smarty_Security
      */
     private function _checkDir(
         $filepath,
-        $dirs
-    ) {
+        array $dirs
+    ): array {
         $directory = dirname((string) $this->smarty->_realpath($filepath, true)) . DIRECTORY_SEPARATOR;
         $_directory = [];
         if (! preg_match('#[\\\\/][.][.][\\\\/]#', $directory)) {

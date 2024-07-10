@@ -58,7 +58,7 @@ SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter
 ;';
     $tag_counters = query2array($query, 'tag_id', 'counter');
 
-    if (empty($tag_counters)) {
+    if ($tag_counters === []) {
         return [];
     }
 
@@ -85,7 +85,7 @@ SELECT *
  *
  * @return array [id, name, url_name]
  */
-function get_all_tags()
+function get_all_tags(): array
 {
     $query = '
 SELECT *
@@ -167,15 +167,14 @@ function add_level_to_tags(
  * @param string $mode
  * @param string $extra_images_where_sql - optionally apply a sql where filter to retrieved images
  * @param string $order_by - optionally overwrite default photo order
- * @return array
  */
 function get_image_ids_for_tags(
     $tag_ids,
     $mode = 'AND',
-    $extra_images_where_sql = '',
+    ?string $extra_images_where_sql = '',
     $order_by = '',
     $use_permissions = true
-) {
+): array {
     global $conf;
     if (empty($tag_ids)) {
         return [];
@@ -205,7 +204,7 @@ SELECT id
         );
     }
 
-    $query .= (empty($extra_images_where_sql) ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
+    $query .= ($extra_images_where_sql === null || $extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
   GROUP BY id';
 
     if ($mode == 'AND' && count($tag_ids) > 1) {
@@ -280,7 +279,7 @@ function find_tags(
     $url_names = [],
     $names = [
     ]
-) {
+): array {
     $where_clauses = [];
     if (! empty($ids)) {
         $where_clauses[] = 'id IN (' . implode(',', $ids) . ')';
@@ -309,12 +308,12 @@ SELECT *
     return query2array($query);
 }
 
-function tags_id_compare($a, $b)
+function tags_id_compare(array $a, array $b): int
 {
     return ($a['id'] < $b['id']) ? -1 : 1;
 }
 
-function tags_counter_compare($a, $b)
+function tags_counter_compare(array $a, array $b): int
 {
     if ($a['counter'] == $b['counter']) {
         return tags_id_compare($a, $b);

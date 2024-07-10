@@ -218,7 +218,7 @@ abstract class Smarty_Resource
      */
     public function populateTimestamp(
         Smarty_Template_Source $source
-    ) {
+    ): void {
         // intentionally left blank
     }
 
@@ -233,7 +233,7 @@ abstract class Smarty_Resource
      */
     public function buildUniqueResourceName(
         Smarty $smarty,
-        $resource_name,
+        string $resource_name,
         $isConfig = false
     ) {
         if ($isConfig) {

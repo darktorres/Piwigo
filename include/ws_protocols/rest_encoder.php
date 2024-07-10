@@ -30,7 +30,7 @@ class PwgXmlWriter
         return $this->_encodedXml;
     }
 
-    public function start_element($name)
+    public function start_element($name): void
     {
         $this->_end_prev(false);
         if (! empty($this->_elementStack)) {
@@ -49,7 +49,7 @@ class PwgXmlWriter
         $this->_elementStack[] = $name;
     }
 
-    public function end_element($x)
+    public function end_element($x): void
     {
         $close_tag = $this->_end_prev(true);
         $name = array_pop($this->_elementStack);
@@ -61,14 +61,14 @@ class PwgXmlWriter
         }
     }
 
-    public function write_content($value)
+    public function write_content($value): void
     {
         $this->_end_prev(false);
         $value = (string) $value;
         $this->_output(htmlspecialchars($value));
     }
 
-    public function write_cdata($value)
+    public function write_cdata($value): void
     {
         $this->_end_prev(false);
         $value = (string) $value;
@@ -79,17 +79,17 @@ class PwgXmlWriter
         );
     }
 
-    public function write_attribute($name, $value)
+    public function write_attribute(string $name, $value): void
     {
         $this->_output(' ' . $name . '="' . $this->encode_attribute($value) . '"');
     }
 
-    public function encode_attribute($value)
+    public function encode_attribute($value): string
     {
         return htmlspecialchars((string) $value);
     }
 
-    public function _end_prev($done)
+    public function _end_prev($done): bool
     {
         $ret = true;
         if ($this->_lastTagOpen) {
@@ -108,14 +108,14 @@ class PwgXmlWriter
         return $ret;
     }
 
-    public function _eol_indent()
+    public function _eol_indent(): void
     {
         if ($this->_indent) {
             $this->_output("\n");
         }
     }
 
-    public function _indent()
+    public function _indent(): void
     {
         if ($this->_indent && $this->_indentLevel > count($this->_elementStack)) {
             $this->_output(
@@ -124,7 +124,7 @@ class PwgXmlWriter
         }
     }
 
-    public function _output($raw_content)
+    public function _output(string $raw_content): void
     {
         $this->_encodedXml .= $raw_content;
     }
@@ -135,7 +135,7 @@ class PwgRestEncoder extends PwgResponseEncoder
     public $_writer;
 
     #[\Override]
-    public function encodeResponse($response)
+    public function encodeResponse($response): string
     {
         if ($response instanceof PwgError) {
             return '<?xml version="1.0"?>
@@ -155,12 +155,12 @@ class PwgRestEncoder extends PwgResponseEncoder
     }
 
     #[\Override]
-    public function getContentType()
+    public function getContentType(): string
     {
         return 'text/xml';
     }
 
-    public function encode_array($data, $itemName, $xml_attributes = [])
+    public function encode_array($data, $itemName, $xml_attributes = []): void
     {
         foreach ($data as $item) {
             $this->_writer->start_element($itemName);
@@ -169,14 +169,14 @@ class PwgRestEncoder extends PwgResponseEncoder
         }
     }
 
-    public function encode_struct($data, $skip_underscore, $xml_attributes = [])
+    public function encode_struct(array $data, $skip_underscore, array $xml_attributes = []): void
     {
         foreach ($data as $name => $value) {
             if (is_numeric($name)) {
                 continue;
             }
 
-            if ($skip_underscore && $name[0] == '_') {
+            if ($skip_underscore && $name[0] === '_') {
                 continue;
             }
 
@@ -185,7 +185,7 @@ class PwgRestEncoder extends PwgResponseEncoder
             }
 
             // null means we dont put it
-            if ($name == WS_XML_ATTRIBUTES) {
+            if ($name === WS_XML_ATTRIBUTES) {
                 foreach ($value as $attr_name => $attr_value) {
                     $this->_writer->write_attribute($attr_name, $attr_value);
                 }
@@ -202,7 +202,7 @@ class PwgRestEncoder extends PwgResponseEncoder
                 continue;
             }
 
-            if ($skip_underscore && $name[0] == '_') {
+            if ($skip_underscore && $name[0] === '_') {
                 continue;
             }
 
@@ -217,7 +217,7 @@ class PwgRestEncoder extends PwgResponseEncoder
         }
     }
 
-    public function encode($data, $xml_attributes = [])
+    public function encode($data, $xml_attributes = []): void
     {
         switch (gettype($data)) {
             case 'null':

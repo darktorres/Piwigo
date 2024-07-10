@@ -48,34 +48,26 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
 
     /**
      * Preg search pattern
-     *
-     * @var string
      */
-    private $propertyPreg = '';
+    private string $propertyPreg = '';
 
     /**
      * Offsets in preg match result
-     *
-     * @var array
      */
-    private $resultOffsets = [];
+    private array $resultOffsets = [];
 
     /**
      * Start offset
-     *
-     * @var int
      */
-    private $startOffset = 0;
+    private int $startOffset = 0;
 
     /**
      * Scan sources for used tag attributes
-     *
-     * @param array                                 $attributes
      */
     public function scanForProperties(
-        $attributes,
+        array $attributes,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): void {
         $this->propertyPreg = '~(';
         $this->startOffset = 1;
         $this->resultOffsets = [];
@@ -108,12 +100,11 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
      * Build property preg string
      *
      * @param bool  $named
-     * @param array $attributes
      */
     public function buildPropertyPreg(
         $named,
-        $attributes
-    ) {
+        array $attributes
+    ): void {
         if ($named) {
             $this->resultOffsets['named'] = $this->startOffset += 3;
             $this->propertyPreg .= sprintf('(([$]smarty[.]%s[.]', $this->tagName) .
@@ -145,7 +136,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
      */
     public function matchProperty(
         $source
-    ) {
+    ): void {
         preg_match_all($this->propertyPreg, $source, $match);
         foreach ($this->resultOffsets as $key => $offset) {
             foreach ($match[$offset] as $m) {
@@ -161,7 +152,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
      */
     public function matchTemplateSource(
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): void {
         $this->matchProperty($compiler->parser->lex->data);
     }
 
@@ -170,7 +161,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
      */
     public function matchParentTemplateSource(
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): void {
         // search parent compiler template source
         $nextCompiler = $compiler;
         while ($nextCompiler !== $nextCompiler->parent_compiler) {
@@ -216,8 +207,8 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
     public function compileSpecialVariable(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $parameter
-    ) {
+        array $parameter
+    ): string {
         $tag = smarty_strtolower_ascii(trim((string) $parameter[0], '"\''));
         $name = isset($parameter[1]) ? $compiler->getId($parameter[1]) : false;
         if (! $name) {

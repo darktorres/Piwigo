@@ -185,7 +185,7 @@ abstract class Smarty_Internal_CompileBase
         $compiler,
         $openTag,
         mixed $data = null
-    ) {
+    ): void {
         $compiler->_tag_stack[] = [$openTag, $data];
     }
 

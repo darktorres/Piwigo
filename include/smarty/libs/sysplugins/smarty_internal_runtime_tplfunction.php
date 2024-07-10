@@ -20,7 +20,7 @@ class Smarty_Internal_Runtime_TplFunction
         $name,
         $params,
         $nocache
-    ) {
+    ): void {
         $funcParam = $tpl->tplFunctions[$name] ?? $tpl->smarty->tplFunctions[$name] ?? null;
         if (isset($funcParam)) {
             if (! $tpl->caching || ($tpl->caching && $nocache)) {
@@ -64,7 +64,7 @@ class Smarty_Internal_Runtime_TplFunction
         Smarty_Internal_TemplateBase $obj,
         $tplFunctions,
         $override = true
-    ) {
+    ): void {
         $obj->tplFunctions =
             $override ? array_merge($obj->tplFunctions, $tplFunctions) : array_merge(
                 $tplFunctions,
@@ -104,14 +104,12 @@ class Smarty_Internal_Runtime_TplFunction
      *
      * @param string                   $_name     template function name
      * @param string                   $_function PHP function name
-     *
-     * @return bool
      */
     public function addTplFuncToCache(
         Smarty_Internal_Template $tpl,
         $_name,
         $_function
-    ) {
+    ): bool {
         $funcParam = $tpl->tplFunctions[$_name];
         if (is_file($funcParam['compiled_filepath'])) {
             // read compiled file
@@ -181,8 +179,8 @@ class Smarty_Internal_Runtime_TplFunction
      */
     public function saveTemplateVariables(
         Smarty_Internal_Template $tpl,
-        $name
-    ) {
+        string $name
+    ): void {
         $tpl->_cache['varStack'][] =
             [
                 'tpl' => $tpl->tpl_vars,
@@ -199,7 +197,7 @@ class Smarty_Internal_Runtime_TplFunction
     public function restoreTemplateVariables(
         Smarty_Internal_Template $tpl,
         $name
-    ) {
+    ): void {
         if (isset($tpl->_cache['varStack'])) {
             $vars = array_pop($tpl->_cache['varStack']);
             $tpl->tpl_vars = $vars['tpl'];

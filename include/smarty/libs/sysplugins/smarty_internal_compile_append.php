@@ -27,7 +27,7 @@ class Smarty_Internal_Compile_Append extends Smarty_Internal_Compile_Assign
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
-    ) {
+    ): string {
         // the following must be assigned at runtime because it will be overwritten in parent class
         $this->required_attributes = [
             'var',

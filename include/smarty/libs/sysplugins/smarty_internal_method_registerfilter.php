@@ -18,10 +18,8 @@ class Smarty_Internal_Method_RegisterFilter
 
     /**
      * Valid filter types
-     *
-     * @var array
      */
-    private $filterTypes = [
+    private array $filterTypes = [
         'pre' => true,
         'post' => true,
         'output' => true,
@@ -47,7 +45,7 @@ class Smarty_Internal_Method_RegisterFilter
         $type,
         $callback,
         $name = null
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         $this->_checkFilterType($type);
         $name ??= $this->_getFilterName($callback);
@@ -68,7 +66,7 @@ class Smarty_Internal_Method_RegisterFilter
      */
     public function _getFilterName(
         $function_name
-    ) {
+    ): string {
         if (is_array($function_name)) {
             $_class_name = (is_object($function_name[0]) ? $function_name[0]::class : $function_name[0]);
             return $_class_name . '_' . $function_name[1];
@@ -87,7 +85,7 @@ class Smarty_Internal_Method_RegisterFilter
      */
     public function _checkFilterType(
         $type
-    ) {
+    ): void {
         if (! isset($this->filterTypes[$type])) {
             throw new SmartyException(sprintf("Illegal filter type '%s'", $type));
         }

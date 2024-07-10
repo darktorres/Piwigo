@@ -11,11 +11,10 @@
  * Formats a size name into a 2 chars identifier usable in filename.
  *
  * @param string $t one of IMG_*
- * @return string
  */
 function derivative_to_url(
     $t
-) {
+): string {
     return substr($t, 0, 2);
 }
 
@@ -26,7 +25,7 @@ function derivative_to_url(
  * @return string
  */
 function size_to_url(
-    $s
+    array $s
 ) {
     if ($s[0] == $s[1]) {
         return $s[0];
@@ -38,9 +37,8 @@ function size_to_url(
 /**
  * @param int[] $s1
  * @param int[] $s2
- * @return bool
  */
-function size_equals($s1, $s2)
+function size_equals(array $s1, array $s2): bool
 {
     return $s1[0] == $s2[0] && $s1[1] == $s2[1];
 }
@@ -58,10 +56,8 @@ function char_to_fraction($c)
 
 /**
  * Converts a float into a char a-z.
- *
- * @return string
  */
-function fraction_to_char($f)
+function fraction_to_char($f): string
 {
     return chr(ord('a') + round($f * 25));
 }
@@ -89,7 +85,7 @@ final class ImageRect
      * @param int[] $l width and height
      */
     public function __construct(
-        $l
+        array $l
     ) {
         $this->r = $l[0];
         $this->b = $l[1];
@@ -98,7 +94,7 @@ final class ImageRect
     /**
      * @return int
      */
-    public function width()
+    public function width(): int|float
     {
         return $this->r - $this->l;
     }
@@ -106,7 +102,7 @@ final class ImageRect
     /**
      * @return int
      */
-    public function height()
+    public function height(): int|float
     {
         return $this->b - $this->t;
     }
@@ -120,7 +116,7 @@ final class ImageRect
     public function crop_h(
         $pixels,
         $coi
-    ) {
+    ): void {
         if ($this->width() <= $pixels) {
             return;
         }
@@ -154,7 +150,7 @@ final class ImageRect
     public function crop_v(
         $pixels,
         $coi
-    ) {
+    ): void {
         if ($this->height() <= $pixels) {
             return;
         }
@@ -204,23 +200,20 @@ final class SizingParams
      *
      * @param int $w
      * @param int $h
-     * @return SizingParams
      */
     public static function classic(
         $w,
         $h
-    ) {
+    ): self {
         return new self([$w, $h]);
     }
 
     /**
      * Returns a square SizingParams object.
-     *
-     * @return SizingParams
      */
     public static function square(
         $w
-    ) {
+    ): self {
         return new self([$w, $w], 1, [$w, $w]);
     }
 
@@ -231,7 +224,7 @@ final class SizingParams
      */
     public function add_url_tokens(
         &$tokens
-    ) {
+    ): void {
         if ($this->max_crop == 0) {
             $tokens[] = 's' . size_to_url($this->ideal_size);
         } elseif ($this->max_crop == 1 && size_equals($this->ideal_size, $this->min_size)) {
@@ -252,11 +245,11 @@ final class SizingParams
      * @param int[] $scale_size - two element array containing width and height of the scaled image
      */
     public function compute(
-        $in_size,
+        array $in_size,
         $coi,
         &$crop_rect,
-        &$scale_size
-    ) {
+        array &$scale_size
+    ): void {
         $destCrop = new ImageRect($in_size);
 
         if ($this->max_crop > 0) {
@@ -356,7 +349,7 @@ final class DerivativeParams
      */
     public function add_url_tokens(
         &$tokens
-    ) {
+    ): void {
         $this->sizing->add_url_tokens($tokens);
     }
 
@@ -387,19 +380,14 @@ final class DerivativeParams
 
     /**
      * @todo : description of DerivativeParams::is_identity
-     *
-     * @return bool
      */
     public function is_identity(
         $in_size
-    ) {
+    ): bool {
         return $in_size[0] <= $this->sizing->ideal_size[0] && $in_size[1] <= $this->sizing->ideal_size[1];
     }
 
-    /**
-     * @return bool
-     */
-    public function will_watermark($out_size)
+    public function will_watermark($out_size): bool
     {
         if ($this->use_watermark) {
             $min_size = ImageStdParams::get_watermark()->min_size;

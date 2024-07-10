@@ -33,7 +33,7 @@ class Smarty_Internal_Method_ClearCompiledTemplate
         $resource_name = null,
         $compile_id = null,
         $exp_time = null
-    ) {
+    ): int {
         // clear template objects cache
         $smarty->_clearTemplateCache();
         $_compile_dir = $smarty->getCompileDir();

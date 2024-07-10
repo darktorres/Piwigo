@@ -18,7 +18,7 @@ class Smarty_Internal_Runtime_UpdateScope
         Smarty_Internal_Template $tpl,
         $varName,
         $tagScope = 0
-    ) {
+    ): void {
         if ($tagScope) {
             $this->_updateVarStack($tpl, $varName);
             $tagScope &= ~Smarty::SCOPE_LOCAL;
@@ -47,13 +47,11 @@ class Smarty_Internal_Runtime_UpdateScope
      * Get array of objects which needs to be updated  by given scope value
      *
      * @param int                      $mergedScope merged tag and template scope to which bubble up variable value
-     *
-     * @return array
      */
     public function _getAffectedScopes(
         Smarty_Internal_Template $tpl,
         $mergedScope
-    ) {
+    ): array {
         $_stack = [];
         $ptr = $tpl->parent;
         if ($mergedScope && isset($ptr) && $ptr->_isTplObj()) {
@@ -97,10 +95,10 @@ class Smarty_Internal_Runtime_UpdateScope
      * @param string                    $varName  variable name
      */
     public function _updateVariableInOtherScope(
-        &$tpl_vars,
+        array &$tpl_vars,
         Smarty_Internal_Template $from,
         $varName
-    ) {
+    ): void {
         if (! isset($tpl_vars[$varName])) {
             $tpl_vars[$varName] = clone $from->tpl_vars[$varName];
         } else {
@@ -117,7 +115,7 @@ class Smarty_Internal_Runtime_UpdateScope
     public function _updateVarStack(
         Smarty_Internal_Template $tpl,
         $varName
-    ) {
+    ): void {
         $i = 0;
         while (isset($tpl->_cache['varStack'][$i])) {
             $this->_updateVariableInOtherScope($tpl->_cache['varStack'][$i]['tpl'], $tpl, $varName);

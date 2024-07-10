@@ -14,13 +14,11 @@
  *
  * @param string $string       input string
  * @param string $spacify_char string to insert between characters.
- *
- * @return string
  */
 function smarty_modifier_spacify(
     $string,
     $spacify_char = ' '
-) {
+): string {
     // well… what about charsets besides latin and UTF-8?
     return implode(
         $spacify_char,

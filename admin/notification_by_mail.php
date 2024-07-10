@@ -49,7 +49,7 @@ $must_repost = false;
 function do_timeout_treatment(
     $post_keyname,
     $check_key_treated = []
-) {
+): void {
     global $env_nbm, $base_url, $page, $must_repost;
 
     if ($env_nbm['is_sendmail_timeout'] && isset($_POST[$post_keyname])) {
@@ -73,7 +73,7 @@ function do_timeout_treatment(
  * Get the authorized_status for each tab
  * return corresponding status
  */
-function get_tab_status($mode)
+function get_tab_status($mode): int
 {
     $result = ACCESS_WEBMASTER;
     return match ($mode) {
@@ -86,7 +86,7 @@ function get_tab_status($mode)
 /*
  * Inserting News users
  */
-function insert_new_data_user_mail_notification()
+function insert_new_data_user_mail_notification(): void
 {
     global $conf, $page, $env_nbm;
 
@@ -199,11 +199,14 @@ function render_global_customize_mail_content(
  * Return list of "selected" users for 'list_to_send'
  * Return list of "treated" check_key for 'send'
  */
+/**
+ * @return mixed[]
+ */
 function do_action_send_mail_notification(
     $action = 'list_to_send',
     $check_key_list = [],
     $customize_mail_content = ''
-) {
+): array {
     global $conf, $page, $user, $lang_info, $lang, $env_nbm;
     $return_list = [];
 
@@ -223,7 +226,7 @@ function do_action_send_mail_notification(
 
         // Check if exist news to list user or send mails
         if (! $is_list_all_without_test || $is_action_send) {
-            if (count($data_users) > 0) {
+            if ($data_users !== []) {
                 $datas = [];
                 if (! isset($customize_mail_content)) {
                     $customize_mail_content = $conf['nbm_complementary_mail_content'];
@@ -620,7 +623,7 @@ switch ($page['mode']) {
             ? stripslashes((string) $_POST['send_customize_mail_content'])
             : $conf['nbm_complementary_mail_content'];
 
-        if (count($data_users) > 0) {
+        if ($data_users !== []) {
             foreach ($data_users as $nbm_user) {
                 if (
                     ! $must_repost || $must_repost && in_array(

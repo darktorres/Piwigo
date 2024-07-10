@@ -296,7 +296,7 @@ class uagent_info
 
     //**************************
     //The object initializer. Initializes several default variables.
-    public function uagent_info()
+    public function uagent_info(): void
     {
         $this->useragent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower((string) $_SERVER['HTTP_USER_AGENT']) : '';
         $this->httpaccept = isset($_SERVER['HTTP_ACCEPT']) ? strtolower((string) $_SERVER['HTTP_ACCEPT']) : '';
@@ -307,7 +307,7 @@ class uagent_info
 
     //**************************
     // Initialize Key Stored Values.
-    public function InitDeviceScan()
+    public function InitDeviceScan(): void
     {
         //Save these properties to speed processing
         global $isWebkit, $isIphone, $isAndroid, $isAndroidPhone;

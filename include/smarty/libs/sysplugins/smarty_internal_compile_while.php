@@ -26,7 +26,7 @@ class Smarty_Internal_Compile_While extends Smarty_Internal_CompileBase
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
-    ) {
+    ): string {
         $compiler->loopNesting++;
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
@@ -97,7 +97,7 @@ class Smarty_Internal_Compile_Whileclose extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         $compiler->loopNesting--;
         // must endblock be nocache?
         if ($compiler->nocache) {

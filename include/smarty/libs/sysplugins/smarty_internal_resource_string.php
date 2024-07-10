@@ -21,7 +21,7 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
      * @param Smarty_Internal_Template $_template template object
      */
     #[\Override]
-    public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null)
+    public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null): void
     {
         $source->uid = sha1($source->name . $source->smarty->_joined_template_dir);
         $source->filepath = $source->uid;
@@ -59,7 +59,7 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
         Smarty $smarty,
         $resource_name,
         $isConfig = false
-    ) {
+    ): string {
         return static::class . '#' . $this->decode($resource_name);
     }
 
@@ -74,7 +74,7 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
     #[\Override]
     public function getBasename(
         Smarty_Template_Source $source
-    ) {
+    ): string {
         return '';
     }
 
@@ -83,11 +83,8 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
         *
         * @return bool
         */
-    /**
-     * @return bool
-     */
     #[\Override]
-    public function checkTimestamps()
+    public function checkTimestamps(): bool
     {
         return false;
     }

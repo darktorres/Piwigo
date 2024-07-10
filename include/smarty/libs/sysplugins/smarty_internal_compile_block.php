@@ -65,7 +65,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_Compile_Shared_Inher
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
-    ) {
+    ): void {
         if (! isset($compiler->_cache['blockNesting'])) {
             $compiler->_cache['blockNesting'] = 0;
         }
@@ -121,7 +121,7 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_Compile_Shared_
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
-    ) {
+    ): string {
         [$_attr, $_nocache, $_buffer, $_has_nocache_code, $_caching] = $this->closeTag($compiler, ['block']);
         // init block parameter
         $_block = $compiler->_cache['blockParams'][$compiler->_cache['blockNesting']];

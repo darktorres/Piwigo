@@ -71,7 +71,7 @@ class PluginMaintain
     /**
      * @removed 2.7
      */
-    public function autoUpdate()
+    public function autoUpdate(): void
     {
         if (is_admin() && ! defined('IN_WS')) {
             trigger_error('Function PluginMaintain::autoUpdate deprecated', E_USER_WARNING);
@@ -126,7 +126,7 @@ function add_event_handler(
     $func,
     $priority = EVENT_HANDLER_PRIORITY_NEUTRAL,
     $include_path = null
-) {
+): bool {
     global $pwg_event_handlers;
 
     if (isset($pwg_event_handlers[$event][$priority])) {
@@ -158,7 +158,7 @@ function remove_event_handler(
     $event,
     $func,
     $priority = EVENT_HANDLER_PRIORITY_NEUTRAL
-) {
+): bool {
     global $pwg_event_handlers;
 
     if (! isset($pwg_event_handlers[$event][$priority])) {
@@ -259,7 +259,7 @@ function trigger_change(
  */
 function trigger_notify(
     $event
-) {
+): void {
     global $pwg_event_handlers;
 
     if (isset($pwg_event_handlers['trigger']) && $event != 'trigger') {// debugging - avoid recursive calls
@@ -297,12 +297,11 @@ function trigger_notify(
  * @depracted 2.6
  *
  * @param string $plugin_id
- * @return bool
  */
 function set_plugin_data(
     $plugin_id,
     mixed &$data
-) {
+): bool {
     global $pwg_loaded_plugins;
     if (isset($pwg_loaded_plugins[$plugin_id])) {
         $pwg_loaded_plugins[$plugin_id]['plugin_data'] = &$data;
@@ -332,20 +331,19 @@ function &get_plugin_data(
  *
  * @param string $state optional filter
  * @param string $id returns only data about given plugin
- * @return array
  */
 function get_db_plugins(
-    $state = '',
-    $id = ''
-) {
+    ?string $state = '',
+    ?string $id = ''
+): array {
     $query = '
 SELECT * FROM ' . PLUGINS_TABLE;
     $clauses = [];
-    if (! empty($state)) {
+    if ($state !== null && $state !== '' && $state !== '0') {
         $clauses[] = "state='" . $state . "'";
     }
 
-    if (! empty($id)) {
+    if ($id !== null && $id !== '' && $id !== '0') {
         $clauses[] = 'id="' . $id . '"';
     }
 
@@ -365,7 +363,7 @@ SELECT * FROM ' . PLUGINS_TABLE;
  */
 function load_plugin(
     $plugin
-) {
+): void {
     $file_name = PHPWG_PLUGINS_PATH . $plugin['id'] . '/main.inc.php';
     if (file_exists($file_name)) {
         autoupdate_plugin($plugin);
@@ -384,8 +382,8 @@ function load_plugin(
  * @param array $plugin (id, version, state) will be updated if version changes
  */
 function autoupdate_plugin(
-    &$plugin
-) {
+    array &$plugin
+): void {
     // try to find the filesystem version in lines 2 to 10 of main.inc.php
     $fh = fopen(
         PHPWG_PLUGINS_PATH . $plugin['id'] . '/main.inc.php',
@@ -463,7 +461,7 @@ UPDATE ' . PLUGINS_TABLE . '
 /**
  * Loads all the registered plugins.
  */
-function load_plugins()
+function load_plugins(): void
 {
     global $conf, $pwg_loaded_plugins;
     $pwg_loaded_plugins = [];

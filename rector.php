@@ -23,5 +23,5 @@ return RectorConfig::configure()
         instanceOf: false,
         naming: false,
         privatization: false,
-        typeDeclarations: false
+        typeDeclarations: true
     );

@@ -30,7 +30,7 @@ class Smarty_Internal_Method_AddDefaultModifiers
     public function addDefaultModifiers(
         Smarty_Internal_TemplateBase $obj,
         $modifiers
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         if (is_array($modifiers)) {
             $smarty->default_modifiers = array_merge($smarty->default_modifiers, $modifiers);

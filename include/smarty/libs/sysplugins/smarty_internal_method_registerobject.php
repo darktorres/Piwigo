@@ -55,7 +55,7 @@ class Smarty_Internal_Method_RegisterObject
         $allowed_methods_properties = [],
         $format = true,
         $block_methods = []
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         // test if allowed methods callable
         if (! empty($allowed_methods_properties)) {

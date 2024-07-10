@@ -8,16 +8,15 @@
 // +-----------------------------------------------------------------------+
 
 /** returns a category id that corresponds to the given permalink (or null)
- * @param string $permalink
  */
 function get_cat_id_from_permalink(
-    $permalink
+    string $permalink
 ) {
     $query = '
 SELECT id FROM ' . CATEGORIES_TABLE . '
   WHERE permalink=\'' . $permalink . "'";
     $ids = array_from_query($query, 'id');
-    if (! empty($ids)) {
+    if ($ids !== []) {
         return $ids[0];
     }
 
@@ -25,11 +24,10 @@ SELECT id FROM ' . CATEGORIES_TABLE . '
 }
 
 /** returns a category id that has used before this permalink (or null)
- * @param string $permalink
- * @param boolean is_hit if true update the usage counters on the old permalinks
+ * @param boolean $permalink is_hit if true update the usage counters on the old permalinks
  */
 function get_cat_id_from_old_permalink(
-    $permalink
+    string $permalink
 ) {
     $query = '
 SELECT c.id
@@ -55,7 +53,7 @@ SELECT c.id
 function delete_cat_permalink(
     $cat_id,
     $save
-) {
+): bool {
     global $page, $cache;
     $query = '
 SELECT permalink
@@ -123,7 +121,7 @@ function set_cat_permalink(
     $cat_id,
     $permalink,
     $save
-) {
+): bool {
     global $page, $cache;
 
     $sanitized_permalink = preg_replace('#[^a-zA-Z0-9_/-]#', '', $permalink);

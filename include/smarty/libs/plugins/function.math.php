@@ -20,7 +20,7 @@
  * @return string|null
  */
 function smarty_function_math(
-    $params,
+    array $params,
     $template
 ) {
     static $_allowed_funcs =

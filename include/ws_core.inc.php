@@ -76,6 +76,9 @@ class PwgError
 class PwgNamedArray
 {
     /*private*/
+    /**
+     * @var mixed[]
+     */
     public $_xmlAttributes;
 
     /**
@@ -185,11 +188,11 @@ abstract class PwgResponseEncoder
      */
     public static function flattenResponse(
         &$value
-    ) {
+    ): void {
         self::flatten($value);
     }
 
-    private static function flatten(&$value)
+    private static function flatten(&$value): void
     {
         if (is_object($value)) {
             $class = strtolower(@$value::class);
@@ -236,8 +239,10 @@ class PwgServer
     /**
      *  Initializes the request handler.
      */
-    public function setHandler($requestFormat, &$requestHandler)
-    {
+    public function setHandler(
+        $requestFormat,
+        &$requestHandler
+    ): void {
         $this->_requestHandler = &$requestHandler;
         $this->_requestFormat = $requestFormat;
     }
@@ -245,7 +250,7 @@ class PwgServer
     /**
      *  Initializes the request handler.
      */
-    public function setEncoder($responseFormat, &$encoder)
+    public function setEncoder($responseFormat, &$encoder): void
     {
         $this->_responseEncoder = &$encoder;
         $this->_responseFormat = $responseFormat;
@@ -255,7 +260,7 @@ class PwgServer
      * Runs the web service call (handler and response encoder should have been
      * created)
      */
-    public function run()
+    public function run(): void
     {
         if ($this->_responseEncoder === null) {
             set_status_header(400);
@@ -290,8 +295,9 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     /**
      * Encodes a response and sends it back to the browser.
      */
-    public function sendResponse($response)
-    {
+    public function sendResponse(
+        $response
+    ): void {
         $encodedResponse = $this->_responseEncoder->encodeResponse($response);
         $contentType = $this->_responseEncoder->getContentType();
 
@@ -327,7 +333,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         $include_file = '',
         $options = [
         ]
-    ) {
+    ): void {
         if (! is_array($params)) {
             $params = [];
         }
@@ -368,7 +374,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         ];
     }
 
-    public function hasMethod($methodName)
+    public function hasMethod($methodName): bool
     {
         return isset($this->_methods[$methodName]);
     }
@@ -394,12 +400,12 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         return $options ?? [];
     }
 
-    public static function isPost()
+    public static function isPost(): bool
     {
         return isset($HTTP_RAW_POST_DATA) || $_POST !== [];
     }
 
-    public static function makeArrayParam(&$param)
+    public static function makeArrayParam(&$param): void
     {
         if ($param == null) {
             $param = [];
@@ -408,7 +414,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         }
     }
 
-    public static function checkType(&$param, $type, $name)
+    public static function checkType(&$param, $type, string $name): ?\PwgError
     {
         $opts = [];
         $msg = '';
@@ -475,7 +481,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         return null;
     }
 
-    public static function hasFlag($val, $flag)
+    public static function hasFlag($val, $flag): bool
     {
         return ($val & $flag) == $flag;
     }
@@ -488,7 +494,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
      */
     public function invoke(
         $methodName,
-        $params
+        array $params
     ) {
         $method = @$this->_methods[$methodName];
 
@@ -541,7 +547,11 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                     self::makeArrayParam($the_param);
                 }
 
-                if ($options['type'] > 0 && ($ret = self::checkType($the_param, $options['type'], $name)) !== null) {
+                if ($options['type'] > 0 && ($ret = self::checkType(
+                    $the_param,
+                    $options['type'],
+                    $name
+                )) instanceof \PwgError) {
                     return $ret;
                 }
 
@@ -581,10 +591,10 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     public static function ws_getMethodList(
         $params,
         &$service
-    ) {
+    ): array {
         $methods = array_filter(
             $service->_methods,
-            fn ($m) => empty($m['options']['hidden']) || ! $m['options']['hidden']
+            fn ($m): bool => empty($m['options']['hidden']) || ! $m['options']['hidden']
         );
         return [
             'methods' => new PwgNamedArray(array_keys($methods), 'method'),
@@ -595,9 +605,9 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
      * WS reflection method implementation: gets information about a given method
      */
     public static function ws_getMethodDetails(
-        $params,
+        array $params,
         &$service
-    ) {
+    ): \PwgError|array {
         $methodName = $params['methodName'];
 
         if (! $service->hasMethod($methodName)) {

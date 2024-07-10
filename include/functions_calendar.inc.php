@@ -15,7 +15,7 @@ define('CAL_VIEW_CALENDAR', 'calendar');
 /**
  * Initialize _$page_ and _$template_ vars for calendar view.
  */
-function initialize_calendar()
+function initialize_calendar(): void
 {
     global $page, $conf, $user, $template, $persistent_cache, $filter;
 
@@ -168,7 +168,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
     //echo ('<pre>'. var_export($calendar, true) . '</pre>');
 
     $must_show_list = true; // true until calendar generates its own display
-    if (script_basename() != 'picture') { // basename without file extention
+    if (script_basename() !== 'picture') { // basename without file extention
         if ($calendar->generate_category_content()) {
             $page['items'] = [];
             $must_show_list = false;

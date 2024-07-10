@@ -37,6 +37,9 @@ class PasswordHash
 
     public $iteration_count_log2;
 
+    /**
+     * @var string
+     */
     public $random_state;
 
     public function __construct(
@@ -55,12 +58,12 @@ class PasswordHash
         ); // removed getmypid() for compatibility reasons
     }
 
-    public function PasswordHash($iteration_count_log2, $portable_hashes)
+    public function PasswordHash($iteration_count_log2, $portable_hashes): void
     {
         self::__construct($iteration_count_log2, $portable_hashes);
     }
 
-    public function get_random_bytes($count)
+    public function get_random_bytes($count): string|false
     {
         $output = '';
         if (@is_readable('/dev/urandom') &&
@@ -84,7 +87,7 @@ class PasswordHash
         return $output;
     }
 
-    public function encode64($input, $count)
+    public function encode64($input, $count): string
     {
         $output = '';
         $i = 0;
@@ -115,7 +118,7 @@ class PasswordHash
         return $output;
     }
 
-    public function gensalt_private($input)
+    public function gensalt_private($input): string
     {
         $output = '$P$';
         $output .= $this->itoa64[min($this->iteration_count_log2 +
@@ -124,7 +127,7 @@ class PasswordHash
         return $output . $this->encode64($input, 6);
     }
 
-    public function crypt_private($password, $setting)
+    public function crypt_private(string $password, $setting): string
     {
         $output = '*0';
         if (substr((string) $setting, 0, 2) === $output) {
@@ -172,7 +175,7 @@ class PasswordHash
         return $output . $this->encode64($hash, 16);
     }
 
-    public function gensalt_extended($input)
+    public function gensalt_extended($input): string
     {
         $count_log2 = min($this->iteration_count_log2 + 8, 24);
         # This should be odd to not reveal weak DES keys, and the
@@ -188,7 +191,7 @@ class PasswordHash
         return $output . $this->encode64($input, 3);
     }
 
-    public function gensalt_blowfish($input)
+    public function gensalt_blowfish($input): string
     {
         # This one needs to use a different order of characters and a
         # different encoding scheme from the one in encode64() above.
@@ -229,7 +232,7 @@ class PasswordHash
         return $output;
     }
 
-    public function HashPassword($password)
+    public function HashPassword($password): string
     {
         if (strlen((string) $password) > 4096) {
             return '*';
@@ -277,14 +280,14 @@ class PasswordHash
         return '*';
     }
 
-    public function CheckPassword($password, $stored_hash)
+    public function CheckPassword($password, $stored_hash): bool
     {
         if (strlen((string) $password) > 4096) {
             return false;
         }
 
         $hash = $this->crypt_private($password, $stored_hash);
-        if ($hash[0] == '*') {
+        if ($hash[0] === '*') {
             $hash = crypt((string) $password, (string) $stored_hash);
         }
 

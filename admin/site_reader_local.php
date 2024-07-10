@@ -28,7 +28,7 @@ class LocalSiteReader
      *
      * @return true on success, false otherwise
      */
-    public function open()
+    public function open(): bool
     {
         global $errors;
 
@@ -45,7 +45,7 @@ class LocalSiteReader
     }
 
     // retrieve file system sub-directories fulldirs
-    public function get_full_directories($basedir)
+    public function get_full_directories($basedir): array
     {
         return get_fs_directories($basedir);
     }
@@ -57,8 +57,8 @@ class LocalSiteReader
      * @return array like "pic.jpg"=>array('representative_ext'=>'jpg' ... )
      */
     public function get_elements(
-        $path
-    ) {
+        string $path
+    ): array {
         global $conf;
 
         $subdirs = [];
@@ -111,12 +111,12 @@ class LocalSiteReader
 
     // returns the name of the attributes that are supported for
     // files update/synchronization
-    public function get_update_attributes()
+    public function get_update_attributes(): array
     {
         return ['representative_ext'];
     }
 
-    public function get_element_update_attributes($file)
+    public function get_element_update_attributes($file): array
     {
         global $conf;
         $data = [];
@@ -137,7 +137,7 @@ class LocalSiteReader
 
     // returns the name of the attributes that are supported for
     // metadata update/synchronization according to configuration
-    public function get_metadata_attributes()
+    public function get_metadata_attributes(): array
     {
         return get_sync_metadata_attributes();
     }
@@ -150,8 +150,8 @@ class LocalSiteReader
 
     //-------------------------------------------------- private functions --------
     public function get_representative_ext(
-        $path,
-        $filename_wo_ext
+        string $path,
+        string $filename_wo_ext
     ) {
         global $conf;
         $base_test = $path . '/pwg_representative/' . $filename_wo_ext . '.';
@@ -165,7 +165,10 @@ class LocalSiteReader
         return null;
     }
 
-    public function get_formats($path, $filename_wo_ext)
+    /**
+     * @return float[]
+     */
+    public function get_formats(string $path, string $filename_wo_ext): array
     {
         global $conf;
 

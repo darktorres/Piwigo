@@ -125,7 +125,7 @@ add_event_handler(
  */
 function pwg_nl2br(
     $string
-) {
+): string {
     return nl2br((string) $string);
 }
 
@@ -134,7 +134,7 @@ trigger_notify('loc_begin_picture');
 // this is the default handler that generates the display for the element
 function default_picture_content(
     $content,
-    $element_info
+    array $element_info
 ) {
     global $conf;
 

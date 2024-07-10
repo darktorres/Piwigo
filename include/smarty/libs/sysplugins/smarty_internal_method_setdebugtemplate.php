@@ -29,7 +29,7 @@ class Smarty_Internal_Method_SetDebugTemplate
     public function setDebugTemplate(
         Smarty_Internal_TemplateBase $obj,
         $tpl_name
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         if (! is_readable($tpl_name)) {
             throw new SmartyException(sprintf("Unknown file '%s'", $tpl_name));

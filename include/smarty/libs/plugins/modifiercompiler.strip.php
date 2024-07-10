@@ -20,8 +20,8 @@
  * @return string with compiled code
  */
 function smarty_modifiercompiler_strip(
-    $params
-) {
+    array $params
+): string {
     if (! isset($params[1])) {
         $params[1] = "' '";
     }

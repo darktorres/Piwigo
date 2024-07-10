@@ -15,6 +15,9 @@ if (! defined(
 
 class updates
 {
+    /**
+     * @var mixed[]
+     */
     public $types = ['plugins', 'themes', 'languages'];
 
     public $plugins;
@@ -25,8 +28,14 @@ class updates
 
     public $missing = [];
 
+    /**
+     * @var 'AdminTools'[]|'language_switch'[]|'LocalFilesEditor'[]|'TakeATour'[]
+     */
     public $default_plugins = [];
 
+    /**
+     * @var 'elegant'[]|'modus'[]|'smartpocket'[]
+     */
     public $default_themes = [];
 
     public $default_languages = [];
@@ -50,7 +59,7 @@ class updates
         }
     }
 
-    public static function check_piwigo_upgrade()
+    public static function check_piwigo_upgrade(): void
     {
         $_SESSION['need_update' . PHPWG_VERSION] = null;
 
@@ -75,7 +84,7 @@ class updates
      *   'major_version' => new major version available,
      * )
      */
-    public function get_piwigo_new_versions()
+    public function get_piwigo_new_versions(): array
     {
         $new_versions = [
             'piwigo.org-checked' => false,
@@ -100,7 +109,7 @@ class updates
                 if (version_compare(PHPWG_VERSION, $last_version_number, '<')) {
                     $last_branch = get_branch_from_version($last_version_number);
 
-                    if ($last_branch == $actual_branch) {
+                    if ($last_branch === $actual_branch) {
                         $new_versions['minor'] = $last_version_number;
                         $new_versions['minor_php'] = $last_version_php;
                     } else {
@@ -112,7 +121,7 @@ class updates
                             [$version_number, $version_php] = explode('/', trim($version));
                             $branch = get_branch_from_version($version_number);
 
-                            if ($branch == $actual_branch) {
+                            if ($branch === $actual_branch) {
                                 if (version_compare(PHPWG_VERSION, $version_number, '<')) {
                                     $new_versions['minor'] = $version_number;
                                     $new_versions['minor_php'] = $version_php;
@@ -135,7 +144,7 @@ class updates
      *
      * @since 2.9
      */
-    public function notify_piwigo_new_versions()
+    public function notify_piwigo_new_versions(): void
     {
         global $conf;
 
@@ -222,7 +231,7 @@ class updates
         }
     }
 
-    public function get_server_extensions($version = PHPWG_VERSION)
+    public function get_server_extensions($version = PHPWG_VERSION): bool
     {
         global $user;
 
@@ -314,7 +323,7 @@ class updates
     }
 
     // Check all extensions upgrades
-    public function check_extensions()
+    public function check_extensions(): ?bool
     {
         global $conf;
 
@@ -355,7 +364,7 @@ class updates
     }
 
     // Check if extension have been upgraded since last check
-    public function check_updated_extensions()
+    public function check_updated_extensions(): void
     {
         foreach ($this->types as $type) {
             if (! empty($_SESSION['extensions_need_update'][$type])) {
@@ -375,7 +384,7 @@ class updates
         }
     }
 
-    public function check_missing_extensions($missing)
+    public function check_missing_extensions($missing): void
     {
         foreach ($missing as $id => $type) {
             $fs = 'fs_' . $type;
@@ -395,7 +404,7 @@ class updates
         }
     }
 
-    public function get_merged_extensions($version)
+    public function get_merged_extensions($version): void
     {
         if (fetchRemote($this->merged_extension_url, $result)) {
             $rows = explode("\n", (string) $result);
@@ -408,7 +417,7 @@ class updates
         }
     }
 
-    public static function process_obsolete_list($file)
+    public static function process_obsolete_list(string $file): void
     {
         if (file_exists(PHPWG_ROOT_PATH . $file) && ($old_files = file(
             PHPWG_ROOT_PATH . $file,
@@ -426,7 +435,7 @@ class updates
         }
     }
 
-    public static function upgrade_to($upgrade_to, &$step, $check_current_version = true)
+    public static function upgrade_to(string $upgrade_to, &$step, $check_current_version = true): void
     {
         global $page, $conf, $template;
 

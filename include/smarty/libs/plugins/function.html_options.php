@@ -25,13 +25,12 @@
  *
  * @param array                     $params parameters
  *
- * @return string
  * @uses   smarty_function_escape_special_chars()
  */
 function smarty_function_html_options(
-    $params,
+    array $params,
     Smarty_Internal_Template $template
-) {
+): string {
     $template->_checkPlugins(
         [
             [
@@ -165,17 +164,14 @@ function smarty_function_html_options(
     return $_html_result;
 }
 
-/**
- * @return string
- */
 function smarty_function_html_options_optoutput(
     $key,
     $value,
     $selected,
-    $id,
-    $class,
-    &$idx
-) {
+    ?string $id,
+    ?string $class,
+    string &$idx
+): string {
     if (! is_array($value)) {
         $_key = smarty_function_escape_special_chars($key);
         $_html_result = '<option value="' . $_key . '"';
@@ -187,8 +183,8 @@ function smarty_function_html_options_optoutput(
             $_html_result .= ' selected="selected"';
         }
 
-        $_html_class = empty($class) ? '' : ' class="' . $class . ' option"';
-        $_html_id = empty($id) ? '' : ' id="' . $id . '-' . $idx . '"';
+        $_html_class = $class === null || $class === '' || $class === '0' ? '' : ' class="' . $class . ' option"';
+        $_html_id = $id === null || $id === '' || $id === '0' ? '' : ' id="' . $id . '-' . $idx . '"';
         if (is_object($value)) {
             if (method_exists($value, '__toString')) {
                 $value = smarty_function_escape_special_chars((string) $value->__toString());
@@ -213,7 +209,7 @@ function smarty_function_html_options_optoutput(
                 $key,
                 $value,
                 $selected,
-                empty($id) ? (null) : $id . '-' . $idx,
+                $id === null || $id === '' || $id === '0' ? (null) : $id . '-' . $idx,
                 $class,
                 $_idx
             );
@@ -223,9 +219,6 @@ function smarty_function_html_options_optoutput(
     return $_html_result;
 }
 
-/**
- * @return string
- */
 function smarty_function_html_options_optgroup(
     $key,
     $values,
@@ -233,7 +226,7 @@ function smarty_function_html_options_optgroup(
     $id,
     $class,
     &$idx
-) {
+): string {
     $optgroup_html = '<optgroup label="' . smarty_function_escape_special_chars($key) . '">' . "\n";
     foreach ($values as $key => $value) {
         $optgroup_html .= smarty_function_html_options_optoutput($key, $value, $selected, $id, $class, $idx);

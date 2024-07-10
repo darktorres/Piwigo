@@ -15,7 +15,7 @@
  *    @option string name (optional)
  */
 function ws_groups_getList(
-    $params,
+    array $params,
     &$service
 ) {
     if (! preg_match(PATTERN_ORDER, (string) $params['order'])) {
@@ -65,7 +65,7 @@ SELECT
  *    @option bool is_default
  */
 function ws_groups_add(
-    $params,
+    array $params,
     &$service
 ) {
     $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes((string) $params['name'])));
@@ -110,9 +110,9 @@ SELECT COUNT(*)
  *    @option string pwg_token
  */
 function ws_groups_delete(
-    $params,
+    array $params,
     &$service
-) {
+): \PwgError|\PwgNamedArray {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -134,7 +134,7 @@ function ws_groups_delete(
  *    @option bool is_default (optional)
  */
 function ws_groups_setInfo(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -203,7 +203,7 @@ SELECT COUNT(*)
  *    @option int[] user_id
  */
 function ws_groups_addUser(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -254,7 +254,7 @@ SELECT COUNT(*)
  *    @option int[] merge_group_id
  */
 function ws_groups_merge(
-    $params,
+    array $params,
     &$service
 ) {
 
@@ -350,7 +350,7 @@ SELECT user_id
  *    @option string copy_name
  */
 function ws_groups_duplicate(
-    $params,
+    array $params,
     &$service
 ) {
 
@@ -445,7 +445,7 @@ SELECT is_default
  *    @option int[] user_id
  */
 function ws_groups_deleteUser(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {

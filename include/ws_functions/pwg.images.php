@@ -19,7 +19,7 @@
  */
 function ws_add_image_category_relations(
     $image_id,
-    $categories_string,
+    string $categories_string,
     $replace_mode = false
 ) {
     // let's add links between the image and the categories
@@ -157,15 +157,12 @@ SELECT category_id, MAX(`rank`) AS max_rank
 
 /**
  * Merge chunks added by pwg.images.addChunk
- * @param string $output_filepath
- * @param string $original_sum
- * @param string $type
  */
 function merge_chunks(
-    $output_filepath,
-    $original_sum,
-    $type
-) {
+    string $output_filepath,
+    string $original_sum,
+    string $type
+): \PwgError {
     global $conf, $logger;
 
     $logger->debug('[merge_chunks] input parameter $output_filepath : ' . $output_filepath, 'WS');
@@ -222,7 +219,6 @@ function merge_chunks(
 
 /**
  * Deletes chunks added with pwg.images.addChunk
- * @param string $original_sum
  * @param string $type
  *
  * Function introduced for Piwigo 2.4 and the new "multiple size"
@@ -233,9 +229,9 @@ function merge_chunks(
  * algorithm)
  */
 function remove_chunks(
-    $original_sum,
-    $type
-) {
+    string $original_sum,
+    string $type
+): void {
     global $conf;
 
     $upload_dir = $conf['upload_dir'] . '/buffer';
@@ -271,7 +267,7 @@ function remove_chunks(
  *    @option string key
  */
 function ws_images_addComment(
-    $params,
+    array $params,
     $service
 ) {
     $query = '
@@ -333,7 +329,7 @@ SELECT DISTINCT image_id
  *    @option int comments_per_page
  */
 function ws_images_getInfo(
-    $params,
+    array $params,
     $service
 ) {
     global $user, $conf;
@@ -555,7 +551,7 @@ SELECT id, date, author, content
  *    @option float rate
  */
 function ws_images_rate(
-    $params,
+    array $params,
     $service
 ) {
     $query = '
@@ -597,7 +593,7 @@ SELECT DISTINCT id
  *    @option string order (optional)
  */
 function ws_images_search(
-    $params,
+    array $params,
     $service
 ) {
     include_once(PHPWG_ROOT_PATH . 'include/functions_search.inc.php');
@@ -607,7 +603,7 @@ function ws_images_search(
     $order_by = ws_std_image_sql_order($params, 'i.');
 
     $super_order_by = false;
-    if (! empty($order_by)) {
+    if ($order_by !== '' && $order_by !== '0') {
         global $conf;
         $conf['order_by'] = 'ORDER BY ' . $order_by;
         $super_order_by = true; // quick_search_result might be faster
@@ -683,7 +679,7 @@ SELECT *
  *    @option int level
  */
 function ws_images_setPrivacyLevel(
-    $params,
+    array $params,
     $service
 ) {
     global $conf;
@@ -719,7 +715,7 @@ UPDATE ' . IMAGES_TABLE . '
  *    @option int rank
  */
 function ws_images_setRank(
-    $params,
+    array $params,
     $service
 ) {
     if (count($params['image_id']) > 1) {
@@ -829,9 +825,9 @@ UPDATE ' . IMAGE_CATEGORY_TABLE . '
  *    @option int position
  */
 function ws_images_add_chunk(
-    $params,
+    array $params,
     $service
-) {
+): \PwgError {
     global $conf, $logger;
 
     foreach ($params as $param_key => $param_value) {
@@ -887,7 +883,7 @@ function ws_images_add_chunk(
  *    @option string sum
  */
 function ws_images_addFile(
-    $params,
+    array $params,
     $service
 ) {
     global $conf, $logger;
@@ -1258,7 +1254,7 @@ SELECT id, name, permalink
  *    @option int image_id (optional)
  */
 function ws_images_upload(
-    $params,
+    array $params,
     $service
 ) {
     global $conf;
@@ -1465,7 +1461,7 @@ SELECT
  *    @option int image_id (optional)
  */
 function ws_images_uploadAsync(
-    $params,
+    array $params,
     &$service
 ) {
     global $conf, $user, $logger;
@@ -1723,11 +1719,12 @@ SELECT COUNT(*)
  * @param mixed[] $params
  *    @option string md5sum_list (optional)
  *    @option string filename_list (optional)
+ * @return mixed[]
  */
 function ws_images_exist(
-    $params,
+    array $params,
     $service
-) {
+): array {
     global $conf, $logger;
 
     $logger->debug(__FUNCTION__, 'WS', $params);
@@ -1795,7 +1792,7 @@ SELECT id, file
  *    @option string filename_list
  */
 function ws_images_formats_searchImage(
-    $params,
+    array $params,
     $service
 ) {
     global $conf, $logger;
@@ -1821,7 +1818,7 @@ SELECT
     // we want "long" format extensions first to match "cmyk.jpg" before "jpg" for example
     usort(
         $conf['format_ext'],
-        fn ($a, $b) => strlen((string) $b) - strlen((string) $a)
+        fn ($a, $b): int => strlen((string) $b) - strlen((string) $a)
     );
 
     $result = [];
@@ -1984,7 +1981,7 @@ DELETE FROM ' . IMAGE_FORMAT_TABLE . '
  *    @option string file_sum
  */
 function ws_images_checkFiles(
-    $params,
+    array $params,
     $service
 ) {
     global $logger;
@@ -2047,9 +2044,9 @@ SELECT path
  *    @option string multiple_value_mode
  */
 function ws_images_setInfo(
-    $params,
+    array $params,
     $service
-) {
+): \PwgError {
     global $conf;
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
@@ -2326,7 +2323,7 @@ SELECT
  *    @option int block_size
  */
 function ws_images_setMd5sum(
-    $params,
+    array $params,
     $service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -2351,7 +2348,7 @@ function ws_images_setMd5sum(
  *    @option int image_id
  */
 function ws_images_syncMetadata(
-    $params,
+    array $params,
     $service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -2385,7 +2382,7 @@ SELECT id
  *    @option int block_size
  */
 function ws_images_deleteOrphans(
-    $params,
+    array $params,
     $service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {

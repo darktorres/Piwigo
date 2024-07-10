@@ -37,7 +37,7 @@ class Smarty_Internal_Method_Append
         mixed $value = null,
         $merge = false,
         $nocache = false
-    ) {
+    ): Smarty_Internal_Data {
         if (is_array($tpl_var)) {
             // $tpl_var is an array, ignore $value
             foreach ($tpl_var as $_key => $_val) {

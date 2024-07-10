@@ -371,7 +371,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         $forceTplCache,
         $uid = null,
         $content_func = null
-    ) {
+    ): void {
         $tpl = clone $this;
         $tpl->parent = $this;
         $smarty = &$this->smarty;
@@ -479,7 +479,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     /**
      * Get called sub-templates and save call count
      */
-    public function _subTemplateRegister()
+    public function _subTemplateRegister(): void
     {
         foreach ($this->compiled->includes as $name => $count) {
             if (isset(self::$subTplInfo[$name])) {
@@ -495,7 +495,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      *
      * @return bool true is sub template
      */
-    public function _isSubTpl()
+    public function _isSubTpl(): bool
     {
         return $this->parent !== null && $this->parent->_isTplObj();
     }
@@ -513,7 +513,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         mixed $value,
         $nocache = false,
         $scope = 0
-    ) {
+    ): void {
         if (isset($this->tpl_vars[$varName])) {
             $this->tpl_vars[$varName] = clone $this->tpl_vars[$varName];
             $this->tpl_vars[$varName]->value = $value;
@@ -536,7 +536,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function _checkPlugins(
         $plugins
-    ) {
+    ): void {
         static $checked = [];
         foreach ($plugins as $plugin) {
             $name = implode('::', (array) $plugin['function']);
@@ -577,7 +577,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         self $tpl,
         $properties,
         $cache = false
-    ) {
+    ): bool {
         // on cache resources other than file check version stored in cache code
         if (! isset($properties['version']) || $properties['version'] !== Smarty::SMARTY_VERSION) {
             if ($cache) {
@@ -701,7 +701,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function loadCompiled(
         $force = false
-    ) {
+    ): void {
         if ($force || $this->compiled === null) {
             $this->compiled = Smarty_Template_Compiled::load($this);
         }
@@ -714,7 +714,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function loadCached(
         $force = false
-    ) {
+    ): void {
         if ($force || $this->cached === null) {
             $this->cached = Smarty_Template_Cached::load($this);
         }
@@ -723,7 +723,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     /**
      * Load inheritance object
      */
-    public function _loadInheritance()
+    public function _loadInheritance(): void
     {
         if ($this->inheritance === null) {
             $this->inheritance = new Smarty_Internal_Runtime_Inheritance();
@@ -733,7 +733,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     /**
      * Unload inheritance object
      */
-    public function _cleanUp()
+    public function _cleanUp(): void
     {
         $this->startRenderCallbacks = [];
         $this->endRenderCallbacks = [];
@@ -743,7 +743,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     /**
      * Load compiler object
      */
-    public function loadCompiler()
+    public function loadCompiler(): void
     {
         if (! class_exists($this->source->compiler_class)) {
             $this->smarty->loadPlugin($this->source->compiler_class);

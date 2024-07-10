@@ -33,7 +33,7 @@ class Smarty_Internal_Method_RegisterClass
         Smarty_Internal_TemplateBase $obj,
         $class_name,
         $class_impl
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         // test if exists
         if (! class_exists($class_impl)) {

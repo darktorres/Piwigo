@@ -16,12 +16,11 @@
  *
  * @param array $cat_informations
  * @param string|null $url
- * @return string
  */
 function get_cat_display_name(
     $cat_informations,
     $url = ''
-) {
+): string {
     global $conf;
 
     //$output = '<a href="'.get_absolute_root_url().$conf['home_page'].'">'.l10n('Home').'</a>';
@@ -73,7 +72,6 @@ function get_cat_display_name(
  * @param string|null $url
  * @param bool $single_link
  * @param string|null $link_class
- * @return string
  */
 function get_cat_display_name_cache(
     $uppercats,
@@ -81,7 +79,7 @@ function get_cat_display_name_cache(
     $single_link = false,
     $link_class = null,
     $auth_key = null
-) {
+): string {
     global $cache, $conf;
 
     $add_url_params = [];
@@ -157,12 +155,11 @@ SELECT id, name, permalink
  *
  * @param int $cat_id
  * @param string|null $url
- * @return string
  */
 function get_cat_display_name_from_id(
     $cat_id,
     $url = ''
-) {
+): string {
     $cat_info = get_cat_info($cat_id);
     return get_cat_display_name($cat_info['upper_names'], $url);
 }
@@ -176,11 +173,10 @@ function get_cat_display_name_from_id(
  * urls becomes a tags
  *
  * @param string $content
- * @return string
  */
 function render_comment_content(
     $content
-) {
+): ?string {
     $content = htmlspecialchars($content);
     $pattern = '/(https?:\/\/\S*)/';
     $replacement = '<a href="$1" rel="nofollow">$1</a>';
@@ -210,7 +206,7 @@ function render_comment_content(
 /**
  * Callback used for sorting by name.
  */
-function name_compare($a, $b)
+function name_compare(array $a, array $b): int
 {
     return strcmp(strtolower((string) $a['name']), strtolower((string) $b['name']));
 }
@@ -218,7 +214,7 @@ function name_compare($a, $b)
 /**
  * Callback used for sorting by name (slug) with cache.
  */
-function tag_alpha_compare($a, $b)
+function tag_alpha_compare(array $a, array $b): int
 {
     global $cache;
 
@@ -234,7 +230,7 @@ function tag_alpha_compare($a, $b)
 /**
  * Exits the current script (or redirect to login page if not logged).
  */
-function access_denied()
+function access_denied(): void
 {
     global $user, $conf;
 
@@ -264,13 +260,12 @@ function access_denied()
  * Exits the current script with 403 code.
  * @todo nice display if $template loaded
  *
- * @param string $msg
  * @param string|null $alternate_url redirect to this url
  */
 function page_forbidden(
-    $msg,
+    string $msg,
     $alternate_url = null
-) {
+): void {
     set_status_header(403);
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
@@ -289,13 +284,12 @@ function page_forbidden(
  * Exits the current script with 400 code.
  * @todo nice display if $template loaded
  *
- * @param string $msg
  * @param string|null $alternate_url redirect to this url
  */
 function bad_request(
-    $msg,
+    string $msg,
     $alternate_url = null
-) {
+): void {
     set_status_header(400);
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
@@ -314,13 +308,12 @@ function bad_request(
  * Exits the current script with 404 code.
  * @todo nice display if $template loaded
  *
- * @param string $msg
  * @param string|null $alternate_url redirect to this url
  */
 function page_not_found(
-    $msg,
+    string $msg,
     $alternate_url = null
-) {
+): void {
     set_status_header(404);
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
@@ -339,15 +332,14 @@ function page_not_found(
  * Exits the current script with 500 code.
  * @todo nice display if $template loaded
  *
- * @param string $msg
  * @param string|null $title
  * @param bool $show_trace
  */
 function fatal_error(
-    $msg,
+    string $msg,
     $title = null,
     $show_trace = true
-) {
+): void {
     if (empty($title)) {
         $title = l10n('Piwigo encountered a non recoverable error');
     }
@@ -391,10 +383,8 @@ function fatal_error(
 
 /**
  * Returns the breadcrumb to be displayed above thumbnails on tag page.
- *
- * @return string
  */
-function get_tags_content_title()
+function get_tags_content_title(): string
 {
     global $page;
     $title = '<a href="' . get_root_url() . 'tags.php" title="' . l10n('display available tags') . '">'
@@ -444,10 +434,8 @@ function get_tags_content_title()
 
 /**
  * Returns the breadcrumb to be displayed above thumbnails on combined categories page.
- *
- * @return string
  */
-function get_combined_categories_content_title()
+function get_combined_categories_content_title(): string
 {
     global $page;
 
@@ -497,7 +485,7 @@ function get_combined_categories_content_title()
 function set_status_header(
     $code,
     $text = ''
-) {
+): void {
     if (empty($text)) {
         switch ($code) {
             case 200: $text = 'OK';
@@ -539,11 +527,10 @@ function set_status_header(
  * This method is called by a trigger_notify()
  *
  * @param string $desc
- * @return string
  */
 function render_category_literal_description(
     $desc
-) {
+): string {
     if (! isset($desc)) {
         $desc = '';
     }
@@ -558,8 +545,8 @@ function render_category_literal_description(
  * @param BlockManager[] $menu_ref_arr
  */
 function register_default_menubar_blocks(
-    $menu_ref_arr
-) {
+    array $menu_ref_arr
+): void {
     $menu = &$menu_ref_arr[0];
     if ($menu->get_id() != 'menubar') {
         return;
@@ -574,7 +561,7 @@ function register_default_menubar_blocks(
 
     // We hide the quick identification menu on the identification page. It
     // would be confusing.
-    if (script_basename() != 'identification') {
+    if (script_basename() !== 'identification') {
         $menu->register_block(new RegisteredBlock('mbIdentification', 'Identification', 'piwigo'));
     }
 }
@@ -587,7 +574,7 @@ function register_default_menubar_blocks(
  * @return string
  */
 function render_element_name(
-    $info
+    array $info
 ) {
     if (! empty($info['name'])) {
         return trigger_change('render_element_name', $info['name']);
@@ -604,7 +591,7 @@ function render_element_name(
  * @return string
  */
 function render_element_description(
-    $info,
+    array $info,
     $param = ''
 ) {
     if (! empty($info['comment'])) {
@@ -623,7 +610,7 @@ function render_element_description(
  * @return string
  */
 function get_thumbnail_title(
-    $info,
+    array $info,
     $title,
     $comment = ''
 ) {
@@ -680,7 +667,7 @@ function get_src_image_url_protection_handler(
  */
 function get_element_url_protection_handler(
     $url,
-    $infos
+    array $infos
 ) {
     global $conf;
     if ($conf['original_url_protection'] == 'images') {// protect only images and not other file types (for example large movies that we don't want to send through our file proxy)
@@ -698,7 +685,7 @@ function get_element_url_protection_handler(
 /**
  * Sends to the template all messages stored in $page and in the session.
  */
-function flush_page_messages()
+function flush_page_messages(): void
 {
     global $template, $page;
     if ($template->get_template_vars('page_refresh') === null) {

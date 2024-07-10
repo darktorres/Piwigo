@@ -60,10 +60,7 @@ class SmartyCompilerException extends SmartyException
         return ' --> Smarty Compiler: ' . $this->message . ' <-- ';
     }
 
-    /**
-     * @param int $line
-     */
-    public function setLine($line)
+    public function setLine(int $line): void
     {
         $this->line = $line;
     }

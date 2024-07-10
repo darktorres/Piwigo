@@ -108,12 +108,11 @@ function clean_iptc_value($value)
  *
  * @param string $filename
  * @param array $map
- * @return array
  */
 function get_exif_data(
     $filename,
     $map
-) {
+): array {
     global $conf;
 
     $result = [];
@@ -186,7 +185,7 @@ function get_exif_data(
  * @return float eg: 41.905468
  */
 function parse_exif_gps_data(
-    $raw,
+    array $raw,
     $ref
 ) {
     foreach ($raw as &$i) {

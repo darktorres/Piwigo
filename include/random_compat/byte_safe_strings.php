@@ -40,12 +40,10 @@ if (! function_exists(
          * binary rather than UTF-8, ISO-8859-1, etc
          *
          * @param string $binary_string
-         *
-         * @return int
          */
         function RandomCompat_strlen(
             $binary_string
-        ) {
+        ): int {
             if (! is_string($binary_string)) {
                 throw new TypeError(
                     'RandomCompat_strlen() expects a string'
@@ -62,12 +60,10 @@ if (! function_exists(
          * This version just used the default strlen()
          *
          * @param string $binary_string
-         *
-         * @return int
          */
         function RandomCompat_strlen(
             $binary_string
-        ) {
+        ): int {
             if (! is_string($binary_string)) {
                 throw new TypeError(
                     'RandomCompat_strlen() expects a string'
@@ -149,14 +145,12 @@ if (! function_exists('RandomCompat_substr')) {
          * @param string $binary_string
          * @param int $start
          * @param int $length (optional)
-         *
-         * @return string
          */
         function RandomCompat_substr(
             $binary_string,
             $start,
             $length = null
-        ) {
+        ): string {
             if (! is_string($binary_string)) {
                 throw new TypeError(
                     'RandomCompat_substr(): First argument should be a string'

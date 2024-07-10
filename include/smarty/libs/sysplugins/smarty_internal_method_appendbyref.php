@@ -27,7 +27,7 @@ class Smarty_Internal_Method_AppendByRef
         $tpl_var,
         mixed &$value,
         $merge = false
-    ) {
+    ): Smarty_Internal_Data {
         if ($tpl_var !== '' && isset($value)) {
             if (! isset($data->tpl_vars[$tpl_var])) {
                 $data->tpl_vars[$tpl_var] = new Smarty_Variable();

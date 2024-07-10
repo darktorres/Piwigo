@@ -49,8 +49,8 @@ class Smarty_Internal_Compile_Child extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $parameter
-    ) {
+        array $parameter
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         $tag = isset($parameter[0]) ? sprintf("'%s'", $parameter[0]) : sprintf("'{%s}'", $this->tag);

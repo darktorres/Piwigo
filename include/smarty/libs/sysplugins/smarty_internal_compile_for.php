@@ -33,7 +33,7 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
         $args,
         $compiler,
         $parameter
-    ) {
+    ): string {
         $compiler->loopNesting++;
         if ($parameter === 0) {
             $this->required_attributes = ['start', 'to'];
@@ -140,7 +140,7 @@ class Smarty_Internal_Compile_Forelse extends Smarty_Internal_CompileBase
         $args,
         $compiler,
         $parameter
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         [$openTag, $nocache] = $this->closeTag($compiler, ['for']);
@@ -169,7 +169,7 @@ class Smarty_Internal_Compile_Forclose extends Smarty_Internal_CompileBase
         $args,
         $compiler,
         $parameter
-    ) {
+    ): string {
         $compiler->loopNesting--;
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);

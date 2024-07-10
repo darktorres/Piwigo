@@ -54,7 +54,7 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         $nocacheParam = $compiler->template->caching && ($compiler->tag_nocache || $compiler->nocache);

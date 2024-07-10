@@ -16,7 +16,7 @@ class Smarty_Internal_Runtime_CacheModify
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template,
         $content
-    ) {
+    ): void {
         $_isCached = $_template->isCached() && ! $_template->compiled->has_nocache_code;
         $_last_modified_date =
             @substr(

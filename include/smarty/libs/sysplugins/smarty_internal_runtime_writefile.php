@@ -22,10 +22,10 @@ class Smarty_Internal_Runtime_WriteFile
      * @return boolean true
      */
     public function writeFile(
-        $_filepath,
+        string $_filepath,
         $_contents,
         Smarty $smarty
-    ) {
+    ): bool {
         $_error_reporting = error_reporting();
         error_reporting($_error_reporting & ~E_NOTICE & ~E_WARNING);
         $_dirpath = dirname($_filepath);

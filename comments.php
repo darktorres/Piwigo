@@ -159,7 +159,7 @@ if (! empty($_GET['keyword'])) {
       implode(
           ' AND ',
           array_map(
-              fn ($s) => sprintf("content LIKE '%%%s%%'", $s),
+              fn ($s): string => sprintf("content LIKE '%%%s%%'", $s),
               preg_split('/[\s,;]+/', (string) $_GET['keyword'])
           )
       ) .

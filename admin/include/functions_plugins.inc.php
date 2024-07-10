@@ -13,7 +13,7 @@
  */
 function get_admin_plugin_menu_link(
     $file
-) {
+): string {
     global $page;
     $real_file = realpath($file);
     $url = get_root_url() . 'admin.php?page=plugin';

@@ -14,7 +14,7 @@ initialize_menu();
 /**
  * Setups each block the main menubar.
  */
-function initialize_menu()
+function initialize_menu(): void
 {
     global $page, $conf, $user, $template, $filter;
 
@@ -135,7 +135,7 @@ function initialize_menu()
 
     //------------------------------------------------------------------------ tags
     $block = $menu->get_block('mbTags');
-    if ($block != null && script_basename() != 'picture') {
+    if ($block != null && script_basename() !== 'picture') {
         if (@$page['section'] == 'tags') {
             $tags = get_common_tags(
                 $page['items'],

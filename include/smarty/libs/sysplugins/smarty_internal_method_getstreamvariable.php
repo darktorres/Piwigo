@@ -28,8 +28,8 @@ class Smarty_Internal_Method_GetStreamVariable
      */
     public function getStreamVariable(
         Smarty_Internal_Data $data,
-        $variable
-    ) {
+        string $variable
+    ): ?string {
         $_result = '';
         $fp = fopen($variable, 'r+');
         if ($fp) {

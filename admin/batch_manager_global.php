@@ -422,7 +422,7 @@ if ($conf['enable_synchronization']) {
     ];
 }
 
-function UC_name_compare($a, $b)
+function UC_name_compare(array $a, array $b): int
 {
     return strcmp(strtolower((string) $a['NAME']), strtolower((string) $b['NAME']));
 }
@@ -432,7 +432,7 @@ $prefilters = trigger_change('get_batch_manager_prefilters', $prefilters);
 // Sort prefilters by localized name.
 usort(
     $prefilters,
-    fn ($a, $b) => strcmp(strtolower((string) $a['NAME']), strtolower((string) $b['NAME']))
+    fn ($a, $b): int => strcmp(strtolower((string) $a['NAME']), strtolower((string) $b['NAME']))
 );
 
 $template->assign(

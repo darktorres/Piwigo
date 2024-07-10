@@ -36,11 +36,10 @@ if (isset($conf['session_save_handler']) && $conf['session_save_handler'] == 'db
  * Characters used are a-z A-Z and numerical values.
  *
  * @param int $size
- * @return string
  */
 function generate_key(
     $size
-) {
+): string {
     include_once(PHPWG_ROOT_PATH . 'include/random_compat/random.php');
 
     try {
@@ -71,7 +70,7 @@ function generate_key(
 function pwg_session_open(
     $path,
     $name
-) {
+): bool {
     return true;
 }
 
@@ -80,17 +79,15 @@ function pwg_session_open(
  *
  * @return true
  */
-function pwg_session_close()
+function pwg_session_close(): bool
 {
     return true;
 }
 
 /**
  * Returns a hash from current user IP
- *
- * @return string
  */
-function get_remote_addr_session_hash()
+function get_remote_addr_session_hash(): string
 {
     global $conf;
 
@@ -111,11 +108,10 @@ function get_remote_addr_session_hash()
 /**
  * Called by PHP session manager, retrieves data stored in the sessions table.
  *
- * @param string $session_id
  * @return string
  */
 function pwg_session_read(
-    $session_id
+    string $session_id
 ) {
     $query = '
 SELECT data
@@ -133,14 +129,13 @@ SELECT data
 /**
  * Called by PHP session manager, writes data in the sessions table.
  *
- * @param string $session_id
  * @param sring $data
  * @return true
  */
 function pwg_session_write(
-    $session_id,
+    string $session_id,
     $data
-) {
+): bool {
     $query = '
 REPLACE INTO ' . SESSIONS_TABLE . '
   (id,data,expiration)
@@ -153,12 +148,11 @@ REPLACE INTO ' . SESSIONS_TABLE . '
 /**
  * Called by PHP session manager, deletes data in the sessions table.
  *
- * @param string $session_id
  * @return true
  */
 function pwg_session_destroy(
-    $session_id
-) {
+    string $session_id
+): bool {
     $query = '
 DELETE
   FROM ' . SESSIONS_TABLE . '
@@ -173,7 +167,7 @@ DELETE
  *
  * @return true
  */
-function pwg_session_gc()
+function pwg_session_gc(): bool
 {
     global $conf;
 
@@ -189,14 +183,11 @@ DELETE
 
 /**
  * Persistently stores a variable for the current session.
- *
- * @param string $var
- * @return bool
  */
 function pwg_set_session_var(
-    $var,
+    string $var,
     mixed $value
-) {
+): bool {
     if (! isset($_SESSION)) {
         return false;
     }
@@ -208,11 +199,10 @@ function pwg_set_session_var(
 /**
  * Retrieves the value of a persistent variable for the current session.
  *
- * @param string $var
  * @return mixed
  */
 function pwg_get_session_var(
-    $var,
+    string $var,
     mixed $default = null
 ) {
     return $_SESSION['pwg_' . $var] ?? $default;
@@ -220,13 +210,10 @@ function pwg_get_session_var(
 
 /**
  * Deletes a persistent variable for the current session.
- *
- * @param string $var
- * @return bool
  */
 function pwg_unset_session_var(
-    $var
-) {
+    string $var
+): bool {
     if (! isset($_SESSION)) {
         return false;
     }
@@ -243,7 +230,7 @@ function pwg_unset_session_var(
  */
 function delete_user_sessions(
     $user_id
-) {
+): void {
     $query = '
 DELETE
   FROM ' . SESSIONS_TABLE . '

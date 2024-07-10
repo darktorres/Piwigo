@@ -109,7 +109,10 @@ foreach ($languages as $language) {
     }
 }
 
-function load_metalang($language, $file_list)
+/**
+ * @return never[][]
+ */
+function load_metalang($language, $file_list): array
 {
     global $lang, $user;
 
@@ -128,7 +131,7 @@ function load_metalang($language, $file_list)
     return $metalang;
 }
 
-function get_line_to_translate($file, $key)
+function get_line_to_translate($file, $key): string
 {
     global $metalang, $page;
 

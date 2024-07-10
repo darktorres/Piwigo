@@ -78,9 +78,9 @@ SELECT ' . implode(',', $fields) . '
 
 //------------------------------------------------------ update & customization
 function save_profile_from_post(
-    $userdata,
+    array $userdata,
     &$errors
-) {
+): bool {
     global $conf, $page;
     $errors = [];
 
@@ -286,14 +286,13 @@ function save_profile_from_post(
  *
  * @param string $url_action
  * @param string $url_redirect
- * @param array $userdata
  */
 function load_profile_in_template(
     $url_action,
     $url_redirect,
-    $userdata,
+    array $userdata,
     $template_prefixe = null
-) {
+): void {
     global $template, $conf;
 
     $template->assign(

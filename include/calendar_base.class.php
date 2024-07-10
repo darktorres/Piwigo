@@ -60,7 +60,7 @@ abstract class CalendarBase
      */
     public function initialize(
         $inner_sql
-    ) {
+    ): void {
         global $page;
         $this->date_field = $page['chronology_field'] == 'posted' ? 'date_available' : 'date_creation';
 
@@ -159,7 +159,7 @@ abstract class CalendarBase
      */
     protected function get_nav_bar_from_items(
         $date_components,
-        $items,
+        array $items,
         $show_any,
         $show_empty = false,
         $labels = null

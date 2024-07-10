@@ -6,15 +6,17 @@
 // | For copyright and license information, please view the COPYING.txt    |
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
-
+/**
+ * @return mixed[]
+ */
 function parse_sort_variables(
     $sortable_by,
     $default_field,
     $get_param,
     $get_rejects,
-    $template_var,
-    $anchor = ''
-) {
+    ?string $template_var,
+    string $anchor = ''
+): array {
     global $template;
 
     $url_components = parse_url((string) $_SERVER['REQUEST_URI']);
@@ -161,7 +163,7 @@ $sort_by = parse_sort_variables(
 
 $url_del_base = get_root_url() . 'admin.php?page=permalinks';
 $query = 'SELECT * FROM ' . OLD_PERMALINKS_TABLE;
-if (count($sort_by) > 0) {
+if ($sort_by !== []) {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
 

@@ -29,11 +29,10 @@ function get_default_slideshow_params()
 /**
  * Checks and corrects slideshow params
  *
- * @param array $params
  * @return array
  */
 function correct_slideshow_params(
-    $params = [
+    array $params = [
     ]
 ) {
     global $conf;
@@ -86,12 +85,11 @@ function decode_slideshow_params(
  * Encodes slideshow array params into a string
  *
  * @param array $decode_params
- * @return string
  */
 function encode_slideshow_params(
     $decode_params = [
     ]
-) {
+): string {
     global $conf;
 
     $params = array_diff_assoc(correct_slideshow_params($decode_params), get_default_slideshow_params());

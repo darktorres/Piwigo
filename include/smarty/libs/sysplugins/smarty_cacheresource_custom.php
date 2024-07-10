@@ -22,7 +22,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
     public function populate(
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         $_cache_id = $cached->cache_id !== null ? preg_replace('![^\w\|]+!', '_', $cached->cache_id) : null;
         $_compile_id = $cached->compile_id !== null ? preg_replace('![^\w]+!', '_', $cached->compile_id) : null;
         $path = $cached->source->uid . $_cache_id . $_compile_id;
@@ -40,7 +40,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
     #[\Override]
     public function populateTimestamp(
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $mtime =
             $this->fetchTimestamp($cached->filepath, $cached->source->name, $cached->cache_id, $cached->compile_id);
         if ($mtime !== null) {
@@ -237,7 +237,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
     public function acquireLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $cached->is_locked = true;
         $id = $cached->lock_id;
         $name = $cached->source->name . '.lock';
@@ -256,7 +256,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
     public function releaseLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $cached->is_locked = false;
         $name = $cached->source->name . '.lock';
         $this->delete($name, $cached->cache_id, $cached->compile_id, null);

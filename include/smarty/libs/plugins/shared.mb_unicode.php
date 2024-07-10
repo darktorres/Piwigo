@@ -17,7 +17,7 @@
 function smarty_mb_to_unicode(
     $string,
     $encoding = null
-) {
+): array|false {
     $expanded = $encoding ? mb_convert_encoding($string, 'UTF-32BE', $encoding) : mb_convert_encoding(
         $string,
         'UTF-32BE'

@@ -50,7 +50,7 @@ class Smarty_Internal_Compile_Make_Nocache extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string|true {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         if ($compiler->template->caching) {

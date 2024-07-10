@@ -30,7 +30,7 @@ class Smarty_Internal_Nocache_Insert
         $_template,
         $_script,
         $_assign = null
-    ) {
+    ): string {
         $_output = '<?php ';
         if ($_script !== 'null') {
             // script which must be included

@@ -18,7 +18,7 @@
  *    @option string order (optional)
  */
 function ws_categories_getImages(
-    $params,
+    array $params,
     &$service
 ) {
     global $user, $conf;
@@ -76,7 +76,9 @@ SELECT
         );
 
         $order_by = ws_std_image_sql_order($params, 'i.');
-        if (empty($order_by) && count($params['cat_id']) == 1 && isset($cats[$params['cat_id'][0]]['image_order'])
+        if (($order_by === '' || $order_by === '0') && count(
+            $params['cat_id']
+        ) == 1 && isset($cats[$params['cat_id'][0]]['image_order'])
         ) {
             $order_by = $cats[$params['cat_id'][0]]['image_order'];
         }
@@ -217,7 +219,7 @@ SELECT
  *    @option bool fullname
  */
 function ws_categories_getList(
-    $params,
+    array $params,
     &$service
 ) {
     global $user, $conf;
@@ -498,7 +500,7 @@ SELECT id, path, representative_ext
  * account.
  */
 function ws_categories_getAdminList(
-    $params,
+    array $params,
     &$service
 ) {
 
@@ -598,7 +600,7 @@ SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, statu
  *    @option bool commentable
  */
 function ws_categories_add(
-    $params,
+    array $params,
     &$service
 ) {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
@@ -645,9 +647,9 @@ function ws_categories_add(
  *    @option int rank
  */
 function ws_categories_setRank(
-    $params,
+    array $params,
     &$service
-) {
+): \PwgError {
     // does the category really exist?
     $query = '
 SELECT id, id_uppercat, `rank`
@@ -731,9 +733,9 @@ SELECT id
  *    @option bool apply_commentable_to_subalbums (optional)
  */
 function ws_categories_setInfo(
-    $params,
+    array $params,
     &$service
-) {
+): \PwgError {
     // does the category really exist?
     $query = '
 SELECT *
@@ -788,7 +790,7 @@ SELECT *
 
     if (isset($params['commentable']) && isset($params['apply_commentable_to_subalbums']) && $params['apply_commentable_to_subalbums']) {
         $subcats = get_subcat_ids([$params['category_id']]);
-        if (count($subcats) > 0) {
+        if ($subcats !== []) {
             $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET commentable = \'' . $params['commentable'] . '\'
@@ -821,9 +823,9 @@ UPDATE ' . CATEGORIES_TABLE . '
  *    @option int image_id
  */
 function ws_categories_setRepresentative(
-    $params,
+    array $params,
     &$service
-) {
+): \PwgError {
     // does the category really exist?
     $query = '
 SELECT COUNT(*)
@@ -876,9 +878,9 @@ UPDATE ' . USER_CACHE_CATEGORIES_TABLE . '
  *    @option int category_id
  */
 function ws_categories_deleteRepresentative(
-    $params,
+    array $params,
     &$service
-) {
+): \PwgError {
     global $conf;
 
     // does the category really exist?
@@ -922,7 +924,7 @@ UPDATE ' . CATEGORIES_TABLE . '
  *    @option int category_id
  */
 function ws_categories_refreshRepresentative(
-    $params,
+    array $params,
     &$service
 ) {
     global $conf;
@@ -1163,7 +1165,7 @@ SELECT id, name, dir
  * @since 12
  */
 function ws_categories_calculateOrphans(
-    $param,
+    array $param,
     &$service
 ) {
     global $conf;

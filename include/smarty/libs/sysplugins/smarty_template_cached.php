@@ -88,12 +88,9 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
         $this->handler = Smarty_CacheResource::load($_template->smarty);
     }
 
-    /**
-     * @return Smarty_Template_Cached
-     */
     public static function load(
         Smarty_Internal_Template $_template
-    ) {
+    ): self {
         $_template->cached = new self($_template);
         $_template->cached->handler->populate($_template->cached, $_template);
         // caching enabled ?
@@ -113,7 +110,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
     public function render(
         Smarty_Internal_Template $_template,
         $no_output_filter = true
-    ) {
+    ): void {
         if ($this->isCached($_template)) {
             if ($_template->smarty->debugging) {
                 if ($_template->smarty->_debug === null) {
@@ -242,7 +239,7 @@ class Smarty_Template_Cached extends Smarty_Template_Resource_Base
     public function process(
         Smarty_Internal_Template $_template,
         $update = false
-    ) {
+    ): void {
         if ($this->handler->process($_template, $this, $update) === false) {
             $this->valid = false;
         }

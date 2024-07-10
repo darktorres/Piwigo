@@ -32,13 +32,11 @@
  * @version 2.0
  *
  * @param array                     $params parameters
- *
- * @return string
  */
 function smarty_function_html_select_date(
     $params,
     Smarty_Internal_Template $template
-) {
+): string {
     $template->_checkPlugins(
         [
             [

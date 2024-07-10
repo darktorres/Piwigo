@@ -23,7 +23,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
     public function populate(
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template = null
-    ) {
+    ): void {
         $source->filepath = $source->type . ':' . $this->generateSafeName($source->name);
         $source->uid = sha1($source->type . ':' . $source->name);
         $mtime = $this->fetchTimestamp($source->name);

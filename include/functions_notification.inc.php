@@ -14,13 +14,12 @@
  * @param string $prefix_condition
  * @param string $img_field
  * @param bool $force_one_condition
- * @return string
  */
 function get_std_sql_where_restrict_filter(
     $prefix_condition,
     $img_field = 'ic.image_id',
     $force_one_condition = false
-) {
+): string {
     return get_sql_condition_FandF(
         [
             'forbidden_categories' => 'ic.category_id',
@@ -344,7 +343,7 @@ function new_users(
 function news_exists(
     $start = null,
     $end = null
-) {
+): bool {
     return nb_new_comments($start, $end) > 0 || nb_new_elements($start, $end) > 0 || nb_updated_categories(
         $start,
         $end
@@ -364,7 +363,6 @@ function news_exists(
  * @param int $count
  * @param string $singular_key
  * @param string $plural_key
- * @param string $url
  * @param bool $add_url
  */
 function add_news_line(
@@ -372,12 +370,12 @@ function add_news_line(
     $count,
     $singular_key,
     $plural_key,
-    $url = '',
+    ?string $url = '',
     $add_url = false
-) {
+): void {
     if ($count > 0) {
         $line = l10n_dec($singular_key, $plural_key, $count);
-        if ($add_url && ! empty($url)) {
+        if ($add_url && ($url !== null && $url !== '' && $url !== '0')) {
             $line = '<a href="' . $url . '">' . $line . '</a>';
         }
 
@@ -548,11 +546,10 @@ SELECT
  * Same as get_recent_post_dates() but parameters as an indexed array.
  * @see get_recent_post_dates()
  *
- * @param array $args
  * @return array
  */
 function get_recent_post_dates_array(
-    $args
+    array $args
 ) {
     return get_recent_post_dates(
         (empty($args['max_dates']) ? 3 : $args['max_dates']),
@@ -566,12 +563,11 @@ function get_recent_post_dates_array(
  * @todo clean up HTML output, currently messy and invalid !
  *
  * @param array $date_detail returned value of get_recent_post_dates()
- * @return string
  */
 function get_html_description_recent_post_date(
-    $date_detail,
+    array $date_detail,
     $auth_key = null
-) {
+): string {
     global $conf;
 
     $add_url_params = [];
@@ -633,11 +629,10 @@ function get_html_description_recent_post_date(
  * Returns title about recently published elements grouped by post date.
  *
  * @param array $date_detail returned value of get_recent_post_dates()
- * @return string
  */
 function get_title_recent_post_date(
-    $date_detail
-) {
+    array $date_detail
+): string {
     global $lang;
 
     $date = $date_detail['date_available'];
@@ -649,9 +644,9 @@ function get_title_recent_post_date(
 }
 
 if (! function_exists('strptime')) {
-    function strptime($date, $fmt)
+    function strptime($date, string $fmt): array
     {
-        if ($fmt != '%Y-%m-%d %H:%M:%S') {
+        if ($fmt !== '%Y-%m-%d %H:%M:%S') {
             die('Invalid strptime format ' . $fmt);
         }
 

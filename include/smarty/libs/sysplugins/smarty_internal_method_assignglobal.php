@@ -32,7 +32,7 @@ class Smarty_Internal_Method_AssignGlobal
         $varName,
         mixed $value = null,
         $nocache = false
-    ) {
+    ): Smarty_Internal_Data {
         if ($varName !== '') {
             Smarty::$global_tpl_vars[$varName] = new Smarty_Variable($value, $nocache);
             $ptr = $data;

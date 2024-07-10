@@ -28,7 +28,7 @@ class Smarty_Internal_Runtime_CacheResourceFile
         $cache_id,
         $compile_id,
         $exp_time
-    ) {
+    ): int {
         $_cache_id = isset($cache_id) ? preg_replace('![^\w\|]+!', '_', $cache_id) : null;
         $_compile_id = isset($compile_id) ? preg_replace('![^\w]+!', '_', $compile_id) : null;
         $_dir_sep = $smarty->use_sub_dirs ? '/' : '^';

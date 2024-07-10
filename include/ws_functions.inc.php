@@ -34,9 +34,9 @@ function ws_isInvokeAllowed(
  * filters the images (images table only)
  */
 function ws_std_image_sql_filter(
-    $params,
-    $tbl_name = ''
-) {
+    array $params,
+    string $tbl_name = ''
+): array {
     $clauses = [];
     if (is_numeric($params['f_min_rate'])) {
         $clauses[] = $tbl_name . 'rating_score>=' . $params['f_min_rate'];
@@ -89,9 +89,9 @@ function ws_std_image_sql_filter(
  * returns a "standard" (for our web service) ORDER BY sql clause for images
  */
 function ws_std_image_sql_order(
-    $params,
-    $tbl_name = ''
-) {
+    array $params,
+    string $tbl_name = ''
+): string {
     $ret = '';
     if (empty($params['order'])) {
         return $ret;
@@ -141,8 +141,8 @@ function ws_std_image_sql_order(
  * in a standard way by different web service methods
  */
 function ws_std_get_urls(
-    $image_row
-) {
+    array $image_row
+): array {
     $ret = [];
 
     $ret['page_url'] = make_picture_url(
@@ -154,7 +154,7 @@ function ws_std_get_urls(
 
     $src_image = new SrcImage($image_row);
 
-    if ($src_image->is_original()) {// we have a photo
+    if ($src_image->is_original() !== 0) {// we have a photo
         global $user;
         if ($user['enabled_high']) {
             $ret['element_url'] = $src_image->get_url();
@@ -209,10 +209,11 @@ function ws_std_get_tag_xml_attributes()
 
 /**
  * create a tree from a flat list of categories, no recursivity for high speed
+ * @return mixed[]
  */
 function categories_flatlist_to_tree(
-    $categories
-) {
+    array $categories
+): array {
     $tree = [];
     $key_of_cat = [];
 

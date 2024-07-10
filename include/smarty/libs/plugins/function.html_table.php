@@ -42,7 +42,7 @@
  * @return string
  */
 function smarty_function_html_table(
-    $params
+    array $params
 ) {
     $table_attr = 'border="1"';
     $tr_attr = '';
@@ -157,10 +157,7 @@ function smarty_function_html_table(
     return $output . "</table>\n";
 }
 
-/**
- * @return string
- */
-function smarty_function_html_table_cycle($name, $var, $no)
+function smarty_function_html_table_cycle($name, $var, $no): string
 {
     $ret = is_array($var) ? $var[$no % count($var)] : $var;
 

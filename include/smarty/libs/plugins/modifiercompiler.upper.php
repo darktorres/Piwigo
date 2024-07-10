@@ -17,8 +17,8 @@
  * @return string with compiled code
  */
 function smarty_modifiercompiler_upper(
-    $params
-) {
+    array $params
+): string {
     if (Smarty::$_MBSTRING) {
         return 'mb_strtoupper((string) ' . $params[0] . " ?? '', '" . addslashes(
             (string) Smarty::$_CHARSET

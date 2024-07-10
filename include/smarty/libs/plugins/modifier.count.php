@@ -15,13 +15,11 @@
  *
  * @param mixed $arrayOrObject  input array/object
  * @param int $mode       count mode
- *
- * @return int
  */
 function smarty_modifier_count(
     mixed $arrayOrObject,
     $mode = 0
-) {
+): int {
     /*
      * @see https://www.php.net/count
      * > Prior to PHP 8.0.0, if the parameter was neither an array nor an object that implements the Countable interface,

@@ -54,9 +54,8 @@ class Logger
 
     /**
      * Standard messages produced by the class.
-     * @var array
      */
-    private static $_messages = [
+    private static array $_messages = [
         'writefail' => 'The file could not be written to. Check that appropriate permissions have been set.',
         'opensuccess' => 'The log file was opened successfully.',
         'openfail' => 'The file could not be opened. Check permissions.',
@@ -64,9 +63,8 @@ class Logger
 
     /**
      * Instance options.
-     * @var array
      */
-    private $options = [
+    private array $options = [
         'directory' => null, // Log files directory
         'filename' => null, // Path to the log file
         'globPattern' => 'log_*.txt', // Pattern to select all log files with glob()
@@ -77,9 +75,8 @@ class Logger
 
     /**
      * Current status of the logger.
-     * @var integer
      */
-    private $_logStatus = self::STATUS_LOG_CLOSED;
+    private int $_logStatus = self::STATUS_LOG_CLOSED;
 
     /**
      * File handle for this instance's log file.
@@ -126,10 +123,8 @@ class Logger
 
     /**
      * Returns logger status.
-     *
-     * @return int
      */
-    public function status()
+    public function status(): int
     {
         return $this->_logStatus;
     }
@@ -147,120 +142,112 @@ class Logger
     /**
      * Writes a $line to the log with a severity level of DEBUG.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function debug(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::DEBUG, $line, $cat, $args);
     }
 
     /**
      * Writes a $line to the log with a severity level of INFO.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function info(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::INFO, $line, $cat, $args);
     }
 
     /**
      * Writes a $line to the log with a severity level of NOTICE.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function notice(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::NOTICE, $line, $cat, $args);
     }
 
     /**
      * Writes a $line to the log with a severity level of WARNING.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function warn(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::WARNING, $line, $cat, $args);
     }
 
     /**
      * Writes a $line to the log with a severity level of ERROR.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function error(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::ERROR, $line, $cat, $args);
     }
 
     /**
      * Writes a $line to the log with a severity level of ALERT.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function alert(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::ALERT, $line, $cat, $args);
     }
 
     /**
      * Writes a $line to the log with a severity level of CRITICAL.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function critical(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::CRITICAL, $line, $cat, $args);
     }
 
     /**
      * Writes a $line to the log with a severity level of EMERGENCY.
      *
-     * @param string $line
      * @param string $cat
      * @param array $args
      */
     public function emergency(
-        $line,
+        string $line,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         $this->log(self::EMERGENCY, $line, $cat, $args);
     }
 
@@ -273,10 +260,10 @@ class Logger
      */
     public function log(
         $severity,
-        $message,
+        string $message,
         $cat = null,
         $args = []
-    ) {
+    ): void {
         if ($this->severity() >= $severity) {
             if (is_array($cat)) {
                 $args = $cat;
@@ -295,7 +282,7 @@ class Logger
      */
     public function write(
         $line
-    ) {
+    ): void {
         $this->open();
         if ($this->status() == self::STATUS_LOG_OPEN && fwrite($this->_fileHandle, $line) === false) {
             throw new RuntimeException(self::$_messages['writefail']);
@@ -305,7 +292,7 @@ class Logger
     /**
      * Purges files matching 'globPattern' older than 'archiveDays'.
      */
-    public function purge()
+    public function purge(): void
     {
         $files = glob($this->options['directory'] . $this->options['globPattern']);
         $limit = time() - $this->options['archiveDays'] * 86400;
@@ -321,11 +308,10 @@ class Logger
      * Converts level constants to string name.
      *
      * @param int $level
-     * @return string
      */
     public static function levelToCode(
         $level
-    ) {
+    ): string {
         return match ($level) {
             self::EMERGENCY => 'EMERGENCY',
             self::ALERT => 'ALERT',
@@ -341,13 +327,10 @@ class Logger
 
     /**
      * Converts level names to constant.
-     *
-     * @param string $code
-     * @return int
      */
     public static function codeToLevel(
-        $code
-    ) {
+        string $code
+    ): int {
         return match (strtoupper($code)) {
             'EMERGENCY' => self::EMERGENCY,
             'ALERT' => self::ALERT,
@@ -364,7 +347,7 @@ class Logger
     /**
      * Open the log file if not already oppenned
      */
-    private function open()
+    private function open(): void
     {
         if ($this->status() == self::STATUS_LOG_CLOSED) {
             if (! file_exists($this->options['directory'])) {
@@ -390,16 +373,14 @@ class Logger
      * Formats the message for logging.
      *
      * @param  string $level
-     * @param  string $message
      * @param  array  $context
-     * @return string
      */
     private function formatMessage(
         $level,
-        $message,
-        $cat,
+        string $message,
+        ?string $cat,
         $context
-    ) {
+    ): string {
         if (! empty($context)) {
             $message .= "\n" . $this->indent($this->contextToString($context));
         }
@@ -417,10 +398,8 @@ class Logger
      *
      * PHP DateTime is dumb, and you have to resort to trickery to get microseconds
      * to work correctly, so here it is.
-     *
-     * @return string
      */
-    private function getTimestamp()
+    private function getTimestamp(): string
     {
         $originalTime = microtime(true);
         $micro = sprintf('%06d', ($originalTime - floor($originalTime)) * 1000000);
@@ -432,11 +411,10 @@ class Logger
      * Takes the given context and converts it to a string.
      *
      * @param  array $context
-     * @return string
      */
     private function contextToString(
         $context
-    ) {
+    ): string {
         $export = '';
         foreach ($context as $key => $value) {
             $export .= $key . ': ';
@@ -460,12 +438,11 @@ class Logger
      *
      * @param  string $string The string to indent
      * @param  string $indent What to use as the indent.
-     * @return string
      */
     private function indent(
-        $string,
-        $indent = '  '
-    ) {
+        string $string,
+        string $indent = '  '
+    ): string {
         return $indent . str_replace("\n", "\n" . $indent, $string);
     }
 }

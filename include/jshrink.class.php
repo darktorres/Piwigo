@@ -567,11 +567,10 @@ class Minifier
      * Checks to see if a character is alphanumeric.
      *
      * @param  string $char Just one character
-     * @return bool
      */
     protected static function isAlphaNumeric(
         $char
-    ) {
+    ): bool {
         return preg_match('/^[\w\$\pL]$/', $char) === 1 || $char == '/';
     }
 

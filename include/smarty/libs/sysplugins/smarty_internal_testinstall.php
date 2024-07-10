@@ -24,7 +24,7 @@ class Smarty_Internal_TestInstall
     public static function testInstall(
         Smarty $smarty,
         &$errors = null
-    ) {
+    ): bool {
         $status = true;
         if ($errors === null) {
             echo "<PRE>\n";

@@ -40,14 +40,12 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
      * @param array                                 $args      array with attributes from parser
      * @param \Smarty_Internal_TemplateCompilerBase $compiler  compiler object
      * @param array                                 $parameter array with compilation parameter
-     *
-     * @return string
      */
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $parameter
-    ) {
+        array $parameter
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         $output = $parameter['value'];
@@ -176,9 +174,9 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
      */
     private function compile_variable_filter(
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $name,
+        string $name,
         $output
-    ) {
+    ): string|false {
         $function = $compiler->getPlugin($name, 'variablefilter');
         if ($function) {
             return sprintf('%s(%s,$_smarty_tpl)', $function, $output);

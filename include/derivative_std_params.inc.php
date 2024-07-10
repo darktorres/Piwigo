@@ -77,7 +77,7 @@ final class ImageStdParams
     /**
      * @var string[]
      */
-    private static $all_types = [
+    private static array $all_types = [
         IMG_SQUARE, IMG_THUMB, IMG_XXSMALL, IMG_XSMALL, IMG_SMALL,
         IMG_MEDIUM, IMG_LARGE, IMG_XLARGE, IMG_XXLARGE,
     ];
@@ -85,17 +85,17 @@ final class ImageStdParams
     /**
      * @var DerivativeParams[]
      */
-    private static $all_type_map = [];
+    private static array $all_type_map = [];
 
     /**
      * @var DerivativeParams[]
      */
-    private static $type_map = [];
+    private static array $type_map = [];
 
     /**
      * @var DerivativeParams[]
      */
-    private static $undefined_type_map = [];
+    private static array $undefined_type_map = [];
 
     /**
      * @var WatermarkParams
@@ -105,7 +105,7 @@ final class ImageStdParams
     /**
      * @return string[]
      */
-    public static function get_all_types()
+    public static function get_all_types(): array
     {
         return self::$all_types;
     }
@@ -113,7 +113,7 @@ final class ImageStdParams
     /**
      * @return DerivativeParams[]
      */
-    public static function get_all_type_map()
+    public static function get_all_type_map(): array
     {
         return self::$all_type_map;
     }
@@ -121,7 +121,7 @@ final class ImageStdParams
     /**
      * @return DerivativeParams[]
      */
-    public static function get_defined_type_map()
+    public static function get_defined_type_map(): array
     {
         return self::$type_map;
     }
@@ -129,7 +129,7 @@ final class ImageStdParams
     /**
      * @return DerivativeParams[]
      */
-    public static function get_undefined_type_map()
+    public static function get_undefined_type_map(): array
     {
         return self::$undefined_type_map;
     }
@@ -148,7 +148,6 @@ final class ImageStdParams
      * @param float $crop
      * @param int $minw
      * @param int $minh
-     * @return DerivativeParams
      */
     public static function get_custom(
         $w,
@@ -156,7 +155,7 @@ final class ImageStdParams
         $crop = 0,
         $minw = null,
         $minh = null
-    ) {
+    ): \DerivativeParams {
         $params = new DerivativeParams(new SizingParams([$w, $h], $crop, [$minw, $minh]));
         self::apply_global($params);
 
@@ -182,7 +181,7 @@ final class ImageStdParams
     /**
      * Loads derivative configuration from database or initializes it.
      */
-    public static function load_from_db()
+    public static function load_from_db(): void
     {
         global $conf;
         $arr = @unserialize($conf['derivatives']);
@@ -213,7 +212,7 @@ final class ImageStdParams
     /**
      * @param WatermarkParams $watermark
      */
-    public static function set_watermark($watermark)
+    public static function set_watermark($watermark): void
     {
         self::$watermark = $watermark;
     }
@@ -224,8 +223,8 @@ final class ImageStdParams
      * @param DerivativeParams[] $map
      */
     public static function set_and_save(
-        $map
-    ) {
+        array $map
+    ): void {
         self::$type_map = $map;
         self::save();
         self::build_maps();
@@ -234,7 +233,7 @@ final class ImageStdParams
     /**
      * Saves the configuration in database.
      */
-    public static function save()
+    public static function save(): void
     {
         $ser = serialize([
             'd' => self::$type_map,
@@ -248,7 +247,7 @@ final class ImageStdParams
     /**
      * @return DerivativeParams[]
      */
-    public static function get_default_sizes()
+    public static function get_default_sizes(): array
     {
         $arr = [
             IMG_SQUARE => new DerivativeParams(SizingParams::square(120)),
@@ -276,7 +275,7 @@ final class ImageStdParams
      */
     public static function apply_global(
         $params
-    ) {
+    ): void {
         $params->use_watermark = ! empty(self::$watermark->file) &&
             (self::$watermark->min_size[0] <= $params->sizing->ideal_size[0] || self::$watermark->min_size[1] <= $params->sizing->ideal_size[1]);
     }
@@ -284,7 +283,7 @@ final class ImageStdParams
     /**
      * Build 'type_map', 'all_type_map' and 'undefined_type_map'.
      */
-    private static function build_maps()
+    private static function build_maps(): void
     {
         foreach (self::$type_map as $type => $params) {
             $params->type = $type;

@@ -65,7 +65,7 @@ class Smarty_Internal_Runtime_Inheritance
         Smarty_Internal_Template $tpl,
         $initChild,
         $blockNames = []
-    ) {
+    ): void {
         // if called while executing parent template it must be a sub-template with new inheritance root
         if ($initChild && $this->state === 3 && (! str_contains(
             $tpl->template_resource,
@@ -110,7 +110,7 @@ class Smarty_Internal_Runtime_Inheritance
         $template = null,
         $uid = null,
         $func = null
-    ) {
+    ): void {
         --$this->inheritanceLevel;
         if ($this->inheritanceLevel === 0) {
             ob_end_clean();
@@ -148,7 +148,7 @@ class Smarty_Internal_Runtime_Inheritance
         $className,
         $name,
         $tplIndex = null
-    ) {
+    ): void {
         $block = new $className($name, $tplIndex ?? $this->tplIndex);
         if (isset($this->childRoot[$name])) {
             $block->child = $this->childRoot[$name];
@@ -174,7 +174,7 @@ class Smarty_Internal_Runtime_Inheritance
         Smarty_Internal_Template $tpl,
         Smarty_Internal_Block $block,
         Smarty_Internal_Block $parent = null
-    ) {
+    ): void {
         if ($block->hide && $block->child === null) {
             return;
         }
@@ -218,7 +218,7 @@ class Smarty_Internal_Runtime_Inheritance
     public function callChild(
         Smarty_Internal_Template $tpl,
         Smarty_Internal_Block $block
-    ) {
+    ): void {
         if ($block->child !== null) {
             $this->process($tpl, $block->child, $block);
         }
@@ -235,7 +235,7 @@ class Smarty_Internal_Runtime_Inheritance
         Smarty_Internal_Template $tpl,
         Smarty_Internal_Block $block,
         $tag
-    ) {
+    ): void {
         if ($block->parent !== null) {
             $this->callBlock($block->parent, $tpl);
         } else {
@@ -256,7 +256,7 @@ class Smarty_Internal_Runtime_Inheritance
     public function callBlock(
         Smarty_Internal_Block $block,
         Smarty_Internal_Template $tpl
-    ) {
+    ): void {
         $this->sourceStack[] = $tpl->source;
         $tpl->source = $this->sources[$block->tplIndex];
         $block->callBlock($tpl);

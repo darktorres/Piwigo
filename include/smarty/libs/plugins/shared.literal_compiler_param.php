@@ -14,7 +14,7 @@
  * @return mixed evaluated value of parameter or $default
  */
 function smarty_literal_compiler_param(
-    $params,
+    array $params,
     $index,
     mixed $default = null
 ) {

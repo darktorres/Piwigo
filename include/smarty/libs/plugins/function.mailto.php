@@ -44,7 +44,7 @@
  * @return string
  */
 function smarty_function_mailto(
-    $params
+    array $params
 ) {
     static $_allowed_encoding = [
         'javascript' => true,

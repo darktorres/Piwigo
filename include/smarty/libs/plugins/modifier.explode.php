@@ -13,14 +13,12 @@
  *
  * @param string   $separator
  * @param string   $string
- *
- * @return array
  */
 function smarty_modifier_explode(
     $separator,
     $string,
     ?int $limit = null
-) {
+): array {
     // provide $string default to prevent deprecation errors in PHP >=8.1
     return explode(
         $separator,

@@ -17,8 +17,8 @@
  * @return string with compiled code
  */
 function smarty_modifiercompiler_strip_tags(
-    $params
-) {
+    array $params
+): string {
     if (! isset($params[1]) || $params[1] === true || trim((string) $params[1], '"') === 'true') {
         return sprintf("preg_replace('!<[^>]*?>!', ' ', %s ?: '')", $params[0]);
     }

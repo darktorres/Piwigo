@@ -78,13 +78,11 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
      *
      * @param array                                  $args     array with attributes from parser
      * @param Smarty_Internal_SmartyTemplateCompiler $compiler compiler object
-     *
-     * @return string
      */
     public function compile(
         $args,
         Smarty_Internal_SmartyTemplateCompiler $compiler
-    ) {
+    ): string {
         $uid = null;
         $t_hash = null;
         // check and get attributes
@@ -325,14 +323,12 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
      * Compile inline sub template
      *
      * @param string                                  $t_hash
-     *
-     * @return bool
      */
     public function compileInlineTemplate(
         Smarty_Internal_SmartyTemplateCompiler $compiler,
         Smarty_Internal_Template $tpl,
         $t_hash
-    ) {
+    ): bool {
         $uid = $tpl->source->type . $tpl->source->uid;
         if (! ($tpl->source->handler->uncompiled) && $tpl->source->exists) {
             $compiler->parent_compiler->mergedSubTemplatesData[$uid][$t_hash]['uid'] = $tpl->source->uid;

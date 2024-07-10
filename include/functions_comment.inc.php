@@ -17,12 +17,11 @@ add_event_handler(
  * This method is called by a trigger_change()
  *
  * @param string $action before check
- * @param array $comment
  * @return string validate, moderate, reject
  */
 function user_comment_check(
     $action,
-    $comment
+    array $comment
 ) {
     global $conf,$user;
 
@@ -256,7 +255,7 @@ INSERT INTO ' . COMMENTS_TABLE . '
  */
 function delete_user_comment(
     $comment_id
-) {
+): bool {
     $user_where_clause = '';
     if (! is_admin()) {
         $user_where_clause = "   AND author_id = '" . $GLOBALS['user']['id'] . "'";
@@ -293,13 +292,12 @@ $user_where_clause . '
  *    only admin can update all comments
  *    users can edit their own comments if admin allow them
  *
- * @param array $comment
  * @param string $post_key secret key sent back to the browser
  * @return string validate, moderate, reject
  */
 
 function update_user_comment(
-    $comment,
+    array $comment,
     $post_key
 ) {
     global $conf, $page;
@@ -394,12 +392,11 @@ $user_where_clause . '
  * Only used when no validation is needed, otherwise pwg_mail_notification_admins() is used.
  *
  * @param string $action edit, delete
- * @param array $comment
  */
 function email_admin(
     $action,
-    $comment
-) {
+    array $comment
+): void {
     global $conf;
 
     if (! in_array(
@@ -466,7 +463,7 @@ SELECT
  */
 function validate_user_comment(
     $comment_id
-) {
+): void {
     $where_clause = is_array($comment_id) ? 'id IN(' . implode(',', $comment_id) . ')' : 'id = ' . $comment_id;
 
     $query = '
@@ -484,7 +481,7 @@ UPDATE ' . COMMENTS_TABLE . '
 /**
  * Clears cache of nb comments for all users
  */
-function invalidate_user_cache_nb_comments()
+function invalidate_user_cache_nb_comments(): void
 {
     global $user;
 

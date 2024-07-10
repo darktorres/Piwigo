@@ -15,13 +15,12 @@
  *
  * @param array                     $params parameters
  *
- * @return string
  * @uses   smarty_make_timestamp()
  */
 function smarty_function_html_select_time(
     $params,
     Smarty_Internal_Template $template
-) {
+): string {
     $template->_checkPlugins(
         [
             [

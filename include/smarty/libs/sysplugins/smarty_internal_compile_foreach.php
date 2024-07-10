@@ -110,7 +110,7 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         $compiler->loopNesting++;
         // init
         $this->isNamed = false;
@@ -344,7 +344,7 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_Compile_Private_Fo
      */
     public function compileRestore(
         $levels
-    ) {
+    ): string {
         return sprintf('$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, %d);', $levels);
     }
 }
@@ -367,7 +367,7 @@ class Smarty_Internal_Compile_Foreachelse extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         [$openTag, $nocache, $local, $itemVar, $restore] = $this->closeTag($compiler, ['foreach']);
@@ -399,7 +399,7 @@ class Smarty_Internal_Compile_Foreachclose extends Smarty_Internal_CompileBase
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         $compiler->loopNesting--;
         // must endblock be nocache?
         if ($compiler->nocache) {

@@ -25,7 +25,7 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $parameter
+        array $parameter
     ) {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);

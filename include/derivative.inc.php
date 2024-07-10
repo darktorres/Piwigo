@@ -38,18 +38,15 @@ final class SrcImage
     /**
      * @var int[]
      */
-    private $size = null;
+    private ?array $size = null;
 
-    /**
-     * @var int
-     */
-    private $flags = 0;
+    private int $flags = 0;
 
     /**
      * @param array $infos assoc array of data from images table
      */
     public function __construct(
-        $infos
+        array $infos
     ) {
         global $conf;
 
@@ -100,7 +97,7 @@ final class SrcImage
     /**
      * @return bool
      */
-    public function is_original()
+    public function is_original(): int
     {
         return $this->flags & self::IS_ORIGINAL;
     }
@@ -108,15 +105,12 @@ final class SrcImage
     /**
      * @return bool
      */
-    public function is_mimetype()
+    public function is_mimetype(): int
     {
         return $this->flags & self::IS_MIMETYPE;
     }
 
-    /**
-     * @return string
-     */
-    public function get_path()
+    public function get_path(): string
     {
         return PHPWG_ROOT_PATH . $this->rel_path;
     }
@@ -134,10 +128,7 @@ final class SrcImage
         return embellish_url($url);
     }
 
-    /**
-     * @return bool
-     */
-    public function has_size()
+    public function has_size(): bool
     {
         return $this->size != null;
     }
@@ -145,7 +136,7 @@ final class SrcImage
     /**
      * @return int[]|null 0=width, 1=height or null if fail to compute size
      */
-    public function get_size()
+    public function get_size(): ?array
     {
         if ($this->size == null) {
             if (($this->flags & self::DIM_NOT_GIVEN) !== 0) {
@@ -187,10 +178,7 @@ final class DerivativeImage
      */
     private $rel_url;
 
-    /**
-     * @var bool
-     */
-    private $is_cached = true;
+    private bool $is_cached = true;
 
     /**
      * @param string|DerivativeParams $type standard derivative param type (e.g. IMG_*)
@@ -260,7 +248,7 @@ final class DerivativeImage
      */
     public static function get_all(
         $src_image
-    ) {
+    ): array {
         if (! is_object($src_image)) {
             $src_image = new SrcImage($src_image);
         }
@@ -291,7 +279,7 @@ final class DerivativeImage
     public static function get_one(
         $type,
         $src_image
-    ) {
+    ): ?self {
         if (! is_object($src_image)) {
             $src_image = new SrcImage($src_image);
         }
@@ -309,10 +297,7 @@ final class DerivativeImage
         return null;
     }
 
-    /**
-     * @return string
-     */
-    public function get_path()
+    public function get_path(): string
     {
         return PHPWG_ROOT_PATH . $this->rel_path;
     }
@@ -337,10 +322,7 @@ final class DerivativeImage
         );
     }
 
-    /**
-     * @return bool
-     */
-    public function same_as_source()
+    public function same_as_source(): bool
     {
         return $this->params == null;
     }
@@ -371,10 +353,8 @@ final class DerivativeImage
 
     /**
      * Returns the size as CSS rule.
-     *
-     * @return string
      */
-    public function get_size_css()
+    public function get_size_css(): ?string
     {
         $size = $this->get_size();
         if ($size) {
@@ -386,10 +366,8 @@ final class DerivativeImage
 
     /**
      * Returns the size as HTML attributes.
-     *
-     * @return string
      */
-    public function get_size_htm()
+    public function get_size_htm(): ?string
     {
         $size = $this->get_size();
         if ($size) {
@@ -401,10 +379,8 @@ final class DerivativeImage
 
     /**
      * Returns literal size: $widthx$height.
-     *
-     * @return string
      */
-    public function get_size_hr()
+    public function get_size_hr(): ?string
     {
         $size = $this->get_size();
         if ($size) {
@@ -442,12 +418,11 @@ final class DerivativeImage
      * Returns the scaled size as HTML attributes.
      *
      * @param int $maxw
-     * @return string
      */
     public function get_scaled_size_htm(
         $maxw = 9999,
         $maxh = 9999
-    ) {
+    ): ?string {
         $size = $this->get_scaled_size($maxw, $maxh);
         if ($size) {
             return 'width="' . $size[0] . '" height="' . $size[1] . '"';
@@ -456,10 +431,7 @@ final class DerivativeImage
         return null;
     }
 
-    /**
-     * @return bool
-     */
-    public function is_cached()
+    public function is_cached(): bool
     {
         return $this->is_cached;
     }
@@ -473,7 +445,7 @@ final class DerivativeImage
         &$rel_path,
         &$rel_url,
         &$is_cached = null
-    ) {
+    ): void {
         if ($src->has_size() && $params->is_identity(
             $src->get_size()
         )) {// the source image is smaller than what we should do - we do not upsample

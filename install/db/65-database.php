@@ -11,7 +11,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-function upgrade65_change_table_to_blob($table, $field_definitions)
+function upgrade65_change_table_to_blob(string $table, $field_definitions): void
 {
     $types = [
         'varchar' => 'varbinary',
@@ -42,7 +42,7 @@ function upgrade65_change_table_to_blob($table, $field_definitions)
     }
 }
 
-function upgrade65_change_table_to_charset($table, $field_definitions, $db_charset)
+function upgrade65_change_table_to_charset(string $table, $field_definitions, string $db_charset): void
 {
     $changes = [];
     foreach ($field_definitions as $row) {

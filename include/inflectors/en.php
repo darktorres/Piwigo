@@ -9,15 +9,21 @@
 
 class Inflector_en
 {
+    /**
+     * @var mixed[]
+     */
     public $er2ing;
 
+    /**
+     * @var mixed[]
+     */
     public $ing2er;
 
-    private $exceptions;
+    private array $exceptions;
 
-    private $pluralizers;
+    private readonly array $pluralizers;
 
-    private $singularizers;
+    private readonly array $singularizers;
 
     public function __construct()
     {
@@ -135,7 +141,7 @@ class Inflector_en
         return $res;
     }
 
-    private function run($rules, $word, &$res)
+    private function run($rules, $word, &$res): string|array|null|false
     {
         foreach ($rules as $rule => $replacement) {
             $rc = preg_replace($rule . 'i', $replacement, $word, -1, $count);

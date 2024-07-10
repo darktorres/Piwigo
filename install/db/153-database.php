@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $upgrade_description = 'Show date period of an album';
 
-function value_display_fromto()
+function value_display_fromto(): string
 {
     $file = PHPWG_ROOT_PATH . 'local/config/config.inc.php';
     if (file_exists($file)) {

@@ -16,7 +16,7 @@ class Smarty_Internal_Runtime_Make_Nocache
     public function save(
         Smarty_Internal_Template $tpl,
         $var
-    ) {
+    ): void {
         if (isset($tpl->tpl_vars[$var])) {
             $export =
                 preg_replace(
@@ -48,13 +48,12 @@ class Smarty_Internal_Runtime_Make_Nocache
      * Store variable value saved while rendering compiled template in cached template context
      *
      * @param string                    $var variable name
-     * @param array                     $properties
      */
     public function store(
         Smarty_Internal_Template $tpl,
         $var,
-        $properties
-    ) {
+        array $properties
+    ): void {
         // do not overwrite existing nocache variables
         if (! isset($tpl->tpl_vars[$var]) || ! $tpl->tpl_vars[$var]->nocache) {
             $newVar = new Smarty_Variable();

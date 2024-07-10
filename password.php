@@ -35,7 +35,7 @@ check_input_parameter('action', $_GET, false, '/^(lost|reset|none)$/');
  *
  * @return bool (true if email was sent, false otherwise)
  */
-function process_password_request()
+function process_password_request(): bool
 {
     global $page, $conf;
 
@@ -200,7 +200,7 @@ SELECT
  *
  * @return bool (true if password was reset, false otherwise)
  */
-function reset_password()
+function reset_password(): bool
 {
     global $page, $conf;
 

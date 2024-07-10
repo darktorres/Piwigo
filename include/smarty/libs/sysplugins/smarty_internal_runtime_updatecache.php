@@ -26,7 +26,7 @@ class Smarty_Internal_Runtime_UpdateCache
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template,
         $no_output_filter
-    ) {
+    ): void {
         ob_start();
         if ($_template->compiled === null) {
             $_template->loadCompiled();
@@ -64,7 +64,7 @@ class Smarty_Internal_Runtime_UpdateCache
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template,
         $no_output_filter
-    ) {
+    ): void {
         $php_pattern = '/(<%|%>|<\?php|<\?|\?>|<script\s+language\s*=\s*[\"\']?\s*php\s*[\"\']?\s*>)/';
         $content = ob_get_clean();
         $hash_array = $cached->hashes;
@@ -137,13 +137,11 @@ class Smarty_Internal_Runtime_UpdateCache
      * Writes the content to cache resource
      *
      * @param string                   $content
-     *
-     * @return bool
      */
     public function writeCachedContent(
         Smarty_Internal_Template $_template,
         $content
-    ) {
+    ): bool {
         if ($_template->source->handler->recompiled || ! $_template->caching
         ) {
             // don't write cache file
@@ -169,7 +167,7 @@ class Smarty_Internal_Runtime_UpdateCache
     public function write(
         Smarty_Internal_Template $_template,
         $content
-    ) {
+    ): bool {
         if (! $_template->source->handler->recompiled) {
             $cached = $_template->cached;
             if ($cached->handler->writeCachedContent($_template, $content)) {

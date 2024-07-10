@@ -15,16 +15,14 @@
  * @param int          $length  maximum string length if $var is a string
  * @param int          $depth   actual recursion depth
  * @param array        $objects processed objects in actual depth to prevent recursive object processing
- *
- * @return string
  */
 function smarty_modifier_debug_print_var(
-    $var,
+    array $var,
     $max = 10,
     $length = 40,
     $depth = 0,
     $objects = []
-) {
+): string {
     $_replace = [
         "\n" => '\n',
         "\r" => '\r',

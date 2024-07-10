@@ -54,7 +54,7 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         if ($_attr['nocache'] === true) {
@@ -96,12 +96,10 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
 
     /**
      * Create source code for {extends} from source components array
-     *
-     * @return string
      */
     public static function extendsSourceArrayCode(
         Smarty_Internal_Template $template
-    ) {
+    ): string {
         $resources = [];
         foreach ($template->source->components as $source) {
             $resources[] = $source->resource;
@@ -119,7 +117,7 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
     private function compileEndChild(
         Smarty_Internal_TemplateCompilerBase $compiler,
         $template = null
-    ) {
+    ): void {
         $inlineUids = '';
         if (isset($template) && $compiler->smarty->merge_compiled_includes) {
             $code = $compiler->compileTag('include', [
@@ -147,8 +145,8 @@ class Smarty_Internal_Compile_Extends extends Smarty_Internal_Compile_Shared_Inh
      */
     private function compileInclude(
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $template
-    ) {
+        string $template
+    ): void {
         $compiler->parser->template_postfix[] = new Smarty_Internal_ParseTree_Tag(
             $compiler->parser,
             $compiler->compileTag(

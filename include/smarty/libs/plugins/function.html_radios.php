@@ -35,13 +35,12 @@
  * @param array                    $params   parameters
  * @param Smarty_Internal_Template $template template object
  *
- * @return string
  * @uses    smarty_function_escape_special_chars()
  */
 function smarty_function_html_radios(
-    $params,
+    array $params,
     Smarty_Internal_Template $template
-) {
+): string {
     $template->_checkPlugins(
         [
             [
@@ -190,20 +189,17 @@ function smarty_function_html_radios(
     }
 }
 
-/**
- * @return string
- */
 function smarty_function_html_radios_output(
     $name,
     $value,
     $output,
     $selected,
-    $extra,
-    $separator,
+    string $extra,
+    string $separator,
     $labels,
     $label_ids,
     $escape
-) {
+): string {
     $_output = '';
     if (is_object($value)) {
         if (method_exists($value, '__toString')) {

@@ -70,7 +70,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
         Smarty_Internal_Template $_template = null,
         Smarty $smarty = null,
         $template_resource = null
-    ) {
+    ): self {
         static $_incompatible_resources = [
             'extends' => true,
             'php' => true,

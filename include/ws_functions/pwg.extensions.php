@@ -6,16 +6,16 @@
 // | For copyright and license information, please view the COPYING.txt    |
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
-
 /**
  * API method
  * Returns the list of all plugins
  * @param mixed[] $params
+ * @return array<mixed, array<'description'|'id'|'name'|'state'|'version', mixed>>
  */
 function ws_plugins_getList(
     $params,
     $service
-) {
+): array {
     include_once(PHPWG_ROOT_PATH . 'admin/include/plugins.class.php');
 
     $plugins = new plugins();
@@ -47,7 +47,7 @@ function ws_plugins_getList(
  *    @option string pwg_token
  */
 function ws_plugins_performAction(
-    $params,
+    array $params,
     $service
 ) {
     global $template, $conf;
@@ -91,7 +91,7 @@ function ws_plugins_performAction(
  *    @option string pwg_token
  */
 function ws_themes_performAction(
-    $params,
+    array $params,
     $service
 ) {
     global $template, $conf;
@@ -133,7 +133,7 @@ function ws_themes_performAction(
  *    @option bool reactivate (optional - undocumented)
  */
 function ws_extensions_update(
-    $params,
+    array $params,
     $service
 ) {
     global $conf;
@@ -234,7 +234,7 @@ function ws_extensions_update(
  *    @option string pwg_token
  */
 function ws_extensions_ignoreupdate(
-    $params,
+    array $params,
     $service
 ) {
     global $conf;
@@ -297,7 +297,7 @@ function ws_extensions_ignoreupdate(
 function ws_extensions_checkupdates(
     $params,
     $service
-) {
+): array {
     global $conf;
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');

@@ -27,7 +27,7 @@
  *    @option string max_register
  */
 function ws_users_getList(
-    $params,
+    array $params,
     &$service
 ) {
     global $conf;
@@ -212,7 +212,7 @@ SELECT DISTINCT ';
   WHERE
     ' . implode(' AND ', $where_clauses) . '
   ORDER BY ' . $params['order'];
-    if ($params['per_page'] != 0 || ! empty($params['display'])) {
+    if ($params['per_page'] != 0 || isset($params['display']) && $params['display'] !== []) {
         $query .= '
     LIMIT ' . $params['per_page'] . '
     OFFSET ' . ($params['per_page'] * $params['page']) . ';
@@ -360,7 +360,7 @@ SELECT DISTINCT ';
  *    @option string email (optional)
  */
 function ws_users_add(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -403,7 +403,7 @@ function ws_users_add(
  *    @option string pwg_token
  */
 function ws_users_getAuthKey(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -427,7 +427,7 @@ function ws_users_getAuthKey(
  *    @option string pwg_token
  */
 function ws_users_delete(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -493,7 +493,7 @@ SELECT
  *    @option bool enabled_high (optional)
  */
 function ws_users_setInfo(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -724,7 +724,7 @@ SELECT
         // if only -1 (a group id that can't exist) is in the list, then no
         // group is associated
 
-        if (count($group_ids) > 0) {
+        if ($group_ids !== []) {
             $inserts = [];
 
             foreach ($group_ids as $group_id) {
@@ -759,7 +759,7 @@ SELECT
  *    @option string|mixed value
  */
 function ws_users_preferences_set(
-    $params,
+    array $params,
     &$service
 ) {
     global $user;
@@ -785,7 +785,7 @@ function ws_users_preferences_set(
  *    @option int image_id
  */
 function ws_users_favorites_add(
-    $params,
+    array $params,
     &$service
 ) {
     global $user;
@@ -823,7 +823,7 @@ SELECT COUNT(*)
  *    @option int image_id
  */
 function ws_users_favorites_remove(
-    $params,
+    array $params,
     &$service
 ) {
     global $user;
@@ -864,7 +864,7 @@ DELETE
  *    @option string order
  */
 function ws_users_favorites_getList(
-    $params,
+    array $params,
     &$service
 ) {
     global $conf, $user;
@@ -876,7 +876,7 @@ function ws_users_favorites_getList(
     check_user_favorites();
 
     $order_by = ws_std_image_sql_order($params, 'i.');
-    $order_by = empty($order_by) ? $conf['order_by'] : 'ORDER BY ' . $order_by;
+    $order_by = $order_by === '' || $order_by === '0' ? $conf['order_by'] : 'ORDER BY ' . $order_by;
 
     $query = '
 SELECT

@@ -35,7 +35,7 @@ include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 
 // end fast bootstrap
 
-function ierror($msg, $code)
+function ierror(string $msg, string $code): void
 {
     global $logger;
     if ($code == 301 || $code == 302) {
@@ -71,7 +71,7 @@ function ierror($msg, $code)
     exit;
 }
 
-function time_step(&$step)
+function time_step(&$step): int
 {
     $tmp = $step;
     $step = microtime(true);
@@ -88,7 +88,7 @@ function url_to_size($s)
     return [(int) substr((string) $s, 0, $pos), (int) substr((string) $s, $pos + 1)];
 }
 
-function parse_custom_params($tokens)
+function parse_custom_params($tokens): \DerivativeParams
 {
     if (count($tokens) < 1) {
         ierror('Empty array while parsing Sizing', 400);
@@ -120,7 +120,7 @@ function parse_custom_params($tokens)
     return new DerivativeParams(new SizingParams($size, $crop, $min_size));
 }
 
-function parse_request()
+function parse_request(): void
 {
     global $conf, $page;
 
@@ -171,7 +171,7 @@ function parse_request()
 
     $deriv = explode('_', $deriv);
     foreach (ImageStdParams::get_defined_type_map() as $type => $params) {
-        if (derivative_to_url($type) == $deriv[0]) {
+        if (derivative_to_url($type) === $deriv[0]) {
             $page['derivative_type'] = $type;
             $page['derivative_params'] = $params;
             break;
@@ -179,7 +179,7 @@ function parse_request()
     }
 
     if (! isset($page['derivative_type'])) {
-        if (derivative_to_url(IMG_CUSTOM) == $deriv[0]) {
+        if (derivative_to_url(IMG_CUSTOM) === $deriv[0]) {
             $page['derivative_type'] = IMG_CUSTOM;
         } else {
             ierror('Unknown parsing type', 400);
@@ -221,7 +221,7 @@ function parse_request()
     $page['src_url'] = $page['root_path'] . $page['src_location'];
 }
 
-function try_switch_source(DerivativeParams $params, $original_mtime)
+function try_switch_source(DerivativeParams $params, $original_mtime): bool
 {
     global $page;
     if (! isset($page['original_size'])) {
@@ -309,7 +309,7 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
     return false;
 }
 
-function send_derivative($expires)
+function send_derivative($expires): void
 {
     global $page;
 

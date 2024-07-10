@@ -24,7 +24,7 @@ class Smarty_Internal_Method_AssignByRef
         $tpl_var,
         &$value,
         $nocache
-    ) {
+    ): Smarty_Internal_Data {
         if ($tpl_var !== '') {
             $data->tpl_vars[$tpl_var] = new Smarty_Variable(null, $nocache);
             $data->tpl_vars[$tpl_var]->value = &$value;

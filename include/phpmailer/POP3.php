@@ -157,8 +157,6 @@ class POP3
      * @param string   $username
      * @param string   $password
      * @param int      $debug_level
-     *
-     * @return bool
      */
     public static function popBeforeSmtp(
         $host,
@@ -167,7 +165,7 @@ class POP3
         $username = '',
         $password = '',
         $debug_level = 0
-    ) {
+    ): bool {
         $pop = new self();
 
         return $pop->authorise($host, $port, $timeout, $username, $password, $debug_level);
@@ -184,8 +182,6 @@ class POP3
      * @param string   $username
      * @param string   $password
      * @param int      $debug_level
-     *
-     * @return bool
      */
     public function authorise(
         $host,
@@ -194,7 +190,7 @@ class POP3
         $username = '',
         $password = '',
         $debug_level = 0
-    ) {
+    ): bool {
         $this->host = $host;
         //If no port value provided, use default
         $this->port = $port === false ? static::DEFAULT_PORT : (int) $port;
@@ -230,14 +226,12 @@ class POP3
      * @param string   $host
      * @param int|bool $port
      * @param int      $tval
-     *
-     * @return bool
      */
     public function connect(
         $host,
         $port = false,
         $tval = 30
-    ) {
+    ): bool {
         //Are we already connected?
         if ($this->connected) {
             return true;
@@ -305,13 +299,11 @@ class POP3
      *
      * @param string $username
      * @param string $password
-     *
-     * @return bool
      */
     public function login(
         $username = '',
         $password = ''
-    ) {
+    ): bool {
         if (! $this->connected) {
             $this->setError('Not connected to POP3 server');
         }
@@ -342,7 +334,7 @@ class POP3
     /**
      * Disconnect from the POP3 server.
      */
-    public function disconnect()
+    public function disconnect(): void
     {
         $this->sendString('QUIT');
         //The QUIT command may cause the daemon to exit, which will kill our connection
@@ -373,7 +365,7 @@ class POP3
      */
     protected function getResponse(
         $size = 128
-    ) {
+    ): string|false {
         $response = fgets($this->pop_conn, $size);
         if ($this->do_debug >= self::DEBUG_SERVER) {
             echo 'Server -> Client: ', $response;
@@ -391,7 +383,7 @@ class POP3
      */
     protected function sendString(
         $string
-    ) {
+    ): int|false {
         if ($this->pop_conn) {
             if ($this->do_debug >= self::DEBUG_CLIENT) { //Show client messages when debug >= 2
                 echo 'Client -> Server: ', $string;
@@ -406,14 +398,10 @@ class POP3
     /**
      * Checks the POP3 server response.
      * Looks for for +OK or -ERR.
-     *
-     * @param string $string
-     *
-     * @return bool
      */
     protected function checkResponse(
-        $string
-    ) {
+        string $string
+    ): bool {
         if (! str_starts_with($string, '+OK')) {
             $this->setError('Server reported an error: ' . $string);
 

@@ -75,7 +75,7 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         $parameter = [],
         $key = null,
         $replace = false
-    ) {
+    ): void {
         array_unshift($parameter, $callback);
         if (isset($key)) {
             if ($replace || ! isset($this->postCompileCallbacks[$key])) {
@@ -93,7 +93,7 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
      */
     public function unregisterPostCompileCallback(
         $key
-    ) {
+    ): void {
         unset($this->postCompileCallbacks[$key]);
     }
 
@@ -109,7 +109,7 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
     protected function doCompile(
         $_content,
         $isTemplateSource = false
-    ) {
+    ): string {
         /* here is where the compiling takes place. Smarty
           tags in the templates are replaces with PHP code,
           then written to compiled files. */

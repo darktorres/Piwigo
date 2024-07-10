@@ -35,7 +35,7 @@ class Smarty_Internal_Method_CompileAllTemplates
         $force_compile = false,
         $time_limit = 0,
         $max_errors = null
-    ) {
+    ): int {
         return $this->compileAll($smarty, $extension, $force_compile, $time_limit, $max_errors);
     }
 
@@ -57,7 +57,7 @@ class Smarty_Internal_Method_CompileAllTemplates
         $time_limit,
         $max_errors,
         $isConfig = false
-    ) {
+    ): int {
         // switch off time limit
         if (function_exists('set_time_limit')) {
             @set_time_limit($time_limit);

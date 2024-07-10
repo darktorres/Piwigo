@@ -19,7 +19,7 @@
  * @return string|null if the assign parameter is passed, Smarty assigns the result to a template variable
  */
 function smarty_function_fetch(
-    $params,
+    array $params,
     $template
 ) {
     if (empty($params['file'])) {

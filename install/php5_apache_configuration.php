@@ -13,11 +13,11 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 $script = script_basename();
 
-if ($script != 'install' && $script != 'upgrade' || version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '>=')) {
+if ($script !== 'install' && $script !== 'upgrade' || version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '>=')) {
     die('Nothing to do here...');
 }
 
-function initPHP5()
+function initPHP5(): bool
 {
     include(PHPWG_ROOT_PATH . 'install/hosting.php');
     $htaccess = PHPWG_ROOT_PATH . '.htaccess';
@@ -44,7 +44,7 @@ function initPHP5()
     return false;
 }
 
-function openPage()
+function openPage(): void
 {
     global $script;
 
@@ -119,7 +119,7 @@ h1 { text-align: left; }
 <h2>' . $title . '</h2>';
 }
 
-function closePage()
+function closePage(): void
 {
     echo '
 </div>

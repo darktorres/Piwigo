@@ -23,7 +23,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
     public function populate(
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template = null
-    ) {
+    ): void {
         $source->filepath = $this->buildFilepath($source, $_template);
         if ($source->filepath !== false) {
             if ($source->smarty->security_policy !== null && is_object($source->smarty->security_policy)) {
@@ -50,7 +50,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
     #[\Override]
     public function populateTimestamp(
         Smarty_Template_Source $source
-    ) {
+    ): void {
         if (! $source->exists) {
             $source->timestamp = is_file($source->filepath);
             $source->exists = $source->timestamp;
@@ -71,7 +71,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
     #[\Override]
     public function getContent(
         Smarty_Template_Source $source
-    ) {
+    ): string|false {
         if ($source->exists) {
             return file_get_contents($source->filepath);
         }
@@ -92,7 +92,7 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
     #[\Override]
     public function getBasename(
         Smarty_Template_Source $source
-    ) {
+    ): string {
         return basename($source->filepath);
     }
 

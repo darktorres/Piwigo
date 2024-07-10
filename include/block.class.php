@@ -33,7 +33,7 @@ class BlockManager
     /**
      * Triggers a notice that allows plugins of menu blocks to register the blocks.
      */
-    public function load_registered_blocks()
+    public function load_registered_blocks(): void
     {
         trigger_notify('blockmanager_register_blocks', [$this]);
     }
@@ -61,7 +61,7 @@ class BlockManager
      */
     public function register_block(
         $block
-    ) {
+    ): bool {
         if (isset($this->registered_blocks[$block->get_id()])) {
             return false;
         }
@@ -75,7 +75,7 @@ class BlockManager
      * Triggers 'blockmanager_prepare_display' event where plugins can
      * reposition or hide blocks
      */
-    public function prepare_display()
+    public function prepare_display(): void
     {
         global $conf;
         $conf_id = 'blk_' . $this->id;
@@ -104,11 +104,10 @@ class BlockManager
      * Returns true if the block is hidden.
      *
      * @param string $block_id
-     * @return bool
      */
     public function is_hidden(
         $block_id
-    ) {
+    ): bool {
         return ! isset($this->display_blocks[$block_id]);
     }
 
@@ -119,7 +118,7 @@ class BlockManager
      */
     public function hide_block(
         $block_id
-    ) {
+    ): void {
         unset($this->display_blocks[$block_id]);
     }
 
@@ -144,7 +143,7 @@ class BlockManager
     public function set_block_position(
         $block_id,
         $position
-    ) {
+    ): void {
         if (isset($this->display_blocks[$block_id])) {
             $this->display_blocks[$block_id]->set_position($position);
         }
@@ -159,7 +158,7 @@ class BlockManager
     public function apply(
         $var,
         $file
-    ) {
+    ): void {
         global $template;
 
         $template->set_filename('menubar', $file);
@@ -187,7 +186,7 @@ class BlockManager
     /**
      * Callback for blocks sorting.
      */
-    protected static function cmp_by_position($a, $b)
+    protected static function cmp_by_position($a, $b): int|float
     {
         return $a->get_position() - $b->get_position();
     }
@@ -292,7 +291,7 @@ class DisplayBlock
     /**
      * @param int $position
      */
-    public function set_position($position)
+    public function set_position($position): void
     {
         $this->_position = $position;
     }
@@ -310,7 +309,7 @@ class DisplayBlock
      * @param string
  $title
      */
-    public function set_title($title)
+    public function set_title($title): void
     {
         $this->_title = $title;
     }

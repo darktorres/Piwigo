@@ -32,7 +32,7 @@ class PwgJsonEncoder extends PwgResponseEncoder
     }
 
     #[\Override]
-    public function getContentType()
+    public function getContentType(): string
     {
         return 'text/plain';
     }

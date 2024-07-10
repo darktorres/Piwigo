@@ -17,8 +17,8 @@
  * @return string with compiled code
  */
 function smarty_modifiercompiler_indent(
-    $params
-) {
+    array $params
+): string {
     if (! isset($params[1])) {
         $params[1] = 4;
     }

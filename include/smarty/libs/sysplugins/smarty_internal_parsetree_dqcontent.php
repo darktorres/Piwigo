@@ -32,7 +32,7 @@ class Smarty_Internal_ParseTree_DqContent extends Smarty_Internal_ParseTree
     #[\Override]
     public function to_smarty_php(
         Smarty_Internal_Templateparser $parser
-    ) {
+    ): string {
         return '"' . $this->data . '"';
     }
 }

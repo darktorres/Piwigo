@@ -175,13 +175,17 @@ $is_forbidden = array_fill_keys(
 );
 
 //Make an ordered tree
-function cmpCat($a, $b)
+function cmpCat(array $a, array $b): int
 {
     return $a['rank'] <=> $b['rank'];
 }
 
-function assocToOrderedTree($assocT)
-{
+/**
+ * @return array<'children'|'has_not_access'|'id'|'last_updates'|'name'|'nb_images'|'nb_sub_photos'|'nb_subcats'|'rank'|'status', mixed>[]|array<'has_not_access'|'id'|'last_updates'|'name'|'nb_images'|'nb_sub_photos'|'rank'|'status', mixed>[]
+ */
+function assocToOrderedTree(
+    $assocT
+): array {
     global $nb_photos_in, $nb_sub_photos, $is_forbidden;
 
     $orderedTree = [];
@@ -269,11 +273,14 @@ $template->assign_var_from_handle(
 // +-----------------------------------------------------------------------+
 // |                              functions                                |
 // +-----------------------------------------------------------------------+
+/**
+ * @return mixed[]
+ */
 function get_categories_ref_date(
     $ids,
-    $field = 'date_available',
-    $minmax = 'max'
-) {
+    string $field = 'date_available',
+    string $minmax = 'max'
+): array {
     // we need to work on the whole tree under each category, even if we don't
     // want to sort sub categories
     $category_ids = get_subcat_ids($ids);
@@ -319,7 +326,7 @@ SELECT
         }
 
         if ($to_compare !== []) {
-            $ref_dates[$cat_id] = $minmax == 'max' ? max($to_compare) : min($to_compare);
+            $ref_dates[$cat_id] = $minmax === 'max' ? max($to_compare) : min($to_compare);
         } else {
             $ref_dates[$cat_id] = null;
         }

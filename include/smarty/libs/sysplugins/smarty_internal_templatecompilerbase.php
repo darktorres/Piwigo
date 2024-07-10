@@ -322,38 +322,28 @@ abstract class Smarty_Internal_TemplateCompilerBase
 
     /**
      * Lexer preg pattern for left delimiter
-     *
-     * @var string
      */
-    private $ldelPreg = '[{]';
+    private string $ldelPreg = '[{]';
 
     /**
      * Lexer preg pattern for right delimiter
-     *
-     * @var string
      */
-    private $rdelPreg = '[}]';
+    private string $rdelPreg = '[}]';
 
     /**
      * Length of right delimiter
-     *
-     * @var int
      */
-    private $rdelLength = 0;
+    private int $rdelLength = 0;
 
     /**
      * Length of left delimiter
-     *
-     * @var int
      */
-    private $ldelLength = 0;
+    private int $ldelLength = 0;
 
     /**
      * Lexer preg pattern for user literals
-     *
-     * @var string
      */
-    private $literalPreg = '';
+    private string $literalPreg = '';
 
     /**
      * Initialize compiler
@@ -561,12 +551,10 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * compile variable
      *
-     * @param string $variable
-     *
      * @return string
      */
     public function compileVariable(
-        $variable
+        string $variable
     ) {
         if (! strpos($variable, '(')) {
             // not a variable variable
@@ -587,12 +575,10 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * compile config variable
      *
-     * @param string $variable
-     *
      * @return string
      */
     public function compileConfigVariable(
-        $variable
+        string $variable
     ) {
         // return '$_smarty_tpl->config_vars[' . $variable . ']';
         return '$_smarty_tpl->smarty->ext->configLoad->_getConfigVariable($_smarty_tpl, ' . $variable . ')';
@@ -601,14 +587,11 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * compile PHP function call
      *
-     * @param string $name
-     * @param array  $parameter
-     *
      * @return string
      */
     public function compilePHPFunctionCall(
-        $name,
-        $parameter
+        string $name,
+        array $parameter
     ) {
         if (! $this->smarty->security_policy || $this->smarty->security_policy->isTrustedPhpFunction($name, $this)) {
             if (strcasecmp($name, 'isset') === 0 || strcasecmp($name, 'empty') === 0
@@ -617,7 +600,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                 $func_name = smarty_strtolower_ascii($name);
 
                 if ($func_name === 'isset') {
-                    if (count($parameter) === 0) {
+                    if ($parameter === []) {
                         $this->trigger_template_error('Illegal number of parameter in "isset()"');
                     }
 
@@ -809,8 +792,8 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * @return string call name of function
      */
     public function getPlugin(
-        $plugin_name,
-        $plugin_type
+        string $plugin_name,
+        string $plugin_type
     ) {
         $function = null;
         if ($this->caching && ($this->nocache || $this->tag_nocache)) {
@@ -944,13 +927,12 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * Append code segments and remove unneeded ?> <?php transitions
      *
      * @param string $left
-     * @param string $right
      *
      * @return string
      */
     public function appendCode(
         $left,
-        $right
+        string $right
     ) {
         if (preg_match('/\s*\?>\s?$/D', $left) && preg_match('/^<\?php\s+/', $right)) {
             $left = preg_replace('/\s*\?>\s?$/D', "\n", $left);
@@ -1051,7 +1033,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      */
     public function setNocacheInVariable(
         $varName
-    ) {
+    ): void {
         // create nocache var to make it know for further compiling
         if ($_var = $this->getId($varName)) {
             if (isset($this->template->tpl_vars[$_var])) {
@@ -1070,7 +1052,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * @return int|string
      */
     public function convertScope(
-        $_attr,
+        array $_attr,
         $validScopes
     ) {
         $_scope = 0;
@@ -1127,7 +1109,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         $args = null,
         $line = null,
         $tagline = null
-    ) {
+    ): void {
         $lex = $this->parser->lex;
         if ($tagline === true) {
             // get line number of Tag
@@ -1222,7 +1204,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      *  enter double quoted string
      *  - save tag stack count
      */
-    public function enterDoubleQuote()
+    public function enterDoubleQuote(): void
     {
         $this->_tag_stack_count[] = $this->getTagStackCount();
     }
@@ -1256,7 +1238,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * Build lexer regular expressions for left and right delimiter and user defined literals
      */
-    public function initDelimiterPreg()
+    public function initDelimiterPreg(): void
     {
         $ldel = $this->smarty->getLeftDelimiter();
         $this->ldelLength = strlen($ldel);
@@ -1293,7 +1275,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      *  leave double quoted string
      *  - throw exception if block in string was not closed
      */
-    public function leaveDoubleQuote()
+    public function leaveDoubleQuote(): void
     {
         if (array_pop($this->_tag_stack_count) !== $this->getTagStackCount()) {
             $tag = $this->getOpenBlockTag();
@@ -1418,7 +1400,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      */
     public function appendPrefixCode(
         $code
-    ) {
+    ): void {
         $this->prefix_code[] = $code;
     }
 
@@ -1447,7 +1429,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      */
     public function saveRequiredPlugins(
         $init = false
-    ) {
+    ): void {
         $this->required_plugins_stack[] = $this->required_plugins;
         if ($init) {
             $this->required_plugins = [
@@ -1460,7 +1442,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * Restore required plugins
      */
-    public function restoreRequiredPlugins()
+    public function restoreRequiredPlugins(): void
     {
         $this->required_plugins = array_pop($this->required_plugins_stack);
     }
@@ -1527,11 +1509,10 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * Determines whether the passed string represents a valid (PHP) variable.
      * This is important, because `isset()` only works on variables and `empty()` can only be passed
      * a variable prior to php5.5
-     * @return bool
      */
     private function syntaxMatchesVariable(
         $string
-    ) {
+    ): bool {
         static $regex_pattern = '/^\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*((->)[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*|\[.*]*\])*$/';
         return preg_match($regex_pattern, trim((string) $string)) === 1;
     }
@@ -1548,7 +1529,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
     private function compileTag2(
         $tag,
         $args,
-        $parameter
+        array $parameter
     ) {
         $plugin_type = '';
         // $args contains the attributes parsed and compiled by the lexer/parser

@@ -31,7 +31,7 @@ function get_root_url()
  */
 function get_absolute_root_url(
     $with_scheme = true
-) {
+): string {
     global $conf;
     // TODO - add HERE the possibility to call PWG functions from external scripts
 
@@ -89,7 +89,7 @@ function get_absolute_root_url(
 function add_url_params(
     $url,
     $params,
-    $arg_separator = '&amp;'
+    string $arg_separator = '&amp;'
 ) {
     if (! empty($params)) {
         assert(is_array($params));
@@ -117,11 +117,10 @@ function add_url_params(
  *
  * @param array
  $params
- * @return string
  */
 function make_index_url(
     $params = []
-) {
+): string {
     global $conf;
     $url = get_root_url() . 'index';
     if ($conf['php_extension_in_urls']) {
@@ -137,7 +136,7 @@ function make_index_url(
     $url .= make_section_in_url($params);
     $url = add_well_known_params_in_url($url, $params);
 
-    if ($url == $url_before_params) {
+    if ($url === $url_before_params) {
         $url = get_absolute_root_url(url_is_remote($url));
     }
 
@@ -156,12 +155,11 @@ function make_index_url(
  *
  * @param array $redefined keys
  * @param array $removed keys
- * @return string
  */
 function duplicate_index_url(
     $redefined = [],
     $removed = []
-) {
+): string {
     return make_index_url(
         params_for_duplication($redefined, $removed)
     );
@@ -199,12 +197,11 @@ function params_for_duplication(
  *
  * @param array $redefined keys
  * @param array $removed keys
- * @return string
  */
 function duplicate_picture_url(
     $redefined = [],
     $removed = []
-) {
+): string {
     return make_picture_url(
         params_for_duplication($redefined, $removed)
     );
@@ -215,11 +212,10 @@ function duplicate_picture_url(
  *
  * @param array
  $params
- * @return string
  */
 function make_picture_url(
-    $params
-) {
+    array $params
+): string {
     global $conf;
 
     $url = get_root_url() . 'picture';
@@ -264,8 +260,10 @@ function make_picture_url(
 /**
  *adds to the url the chronology and start parameters
  */
-function add_well_known_params_in_url($url, $params)
-{
+function add_well_known_params_in_url(
+    string $url,
+    array $params
+): string {
     if (isset($params['chronology_field'])) {
         $url .= '/' . $params['chronology_field'];
         $url .= '-' . $params['chronology_style'];
@@ -297,11 +295,10 @@ function add_well_known_params_in_url($url, $params)
  *
  * @param array
  $params
- * @return string
  */
 function make_section_in_url(
-    $params
-) {
+    array $params
+): string {
     global $conf;
     $section_string = '';
     $section = @$params['section'];
@@ -422,12 +419,11 @@ function make_section_in_url(
  *
  * @param array $tokens of url tokens to parse
  * @param int $next_token the index in the array of url tokens; in/out
- * @return array
  */
 function parse_section_url(
-    $tokens,
+    array $tokens,
     &$next_token
-) {
+): array {
     $page = [];
     if (str_starts_with((string) @$tokens[$next_token], 'categor')) {
         $page['section'] = 'categories';
@@ -641,9 +637,9 @@ function parse_section_url(
  * parses start, flat and chronology from url tokens
  */
 function parse_well_known_params_url(
-    $tokens,
+    array $tokens,
     &$i
-) {
+): array {
     $page = [];
     while (isset($tokens[$i])) {
         if ($tokens[$i] == 'flat') {
@@ -720,7 +716,7 @@ function get_action_url(
  * at least 'id', 'path' should be present
  */
 function get_element_url(
-    $element_info
+    array $element_info
 ) {
     $url = $element_info['path'];
     if (! url_is_remote($url)) {
@@ -735,7 +731,7 @@ function get_element_url(
  *
  * @param null
  */
-function set_make_full_url()
+function set_make_full_url(): void
 {
     global $page;
 
@@ -756,7 +752,7 @@ function set_make_full_url()
  *
  * @param null
  */
-function unset_make_full_url()
+function unset_make_full_url(): void
 {
     global $page;
 
@@ -823,7 +819,7 @@ function get_gallery_home_url()
 function get_query_string_diff(
     $rejects = [],
     $escape = true
-) {
+): string {
     if (empty($_SERVER['QUERY_STRING'])) {
         return '';
     }
@@ -843,7 +839,7 @@ function get_query_string_diff(
  */
 function url_is_remote(
     $url
-) {
+): bool {
     return str_starts_with($url, 'http://') || str_starts_with($url, 'https://');
 }
 
@@ -851,7 +847,7 @@ function url_is_remote(
  * List favorite image_ids of the current user.
  * @since 13
  */
-function get_user_favorites()
+function get_user_favorites(): array
 {
     global $user;
 

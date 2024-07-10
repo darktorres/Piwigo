@@ -34,7 +34,7 @@ abstract class Smarty_Resource_Recompiled extends Smarty_Resource
      */
     public function process(
         Smarty_Internal_Template $_smarty_tpl
-    ) {
+    ): void {
         $compiled = &$_smarty_tpl->compiled;
         $compiled->file_dependency = [];
         $compiled->includes = [];
@@ -71,7 +71,7 @@ abstract class Smarty_Resource_Recompiled extends Smarty_Resource
     public function populateCompiledFilepath(
         Smarty_Template_Compiled $compiled,
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         $compiled->filepath = false;
         $compiled->timestamp = false;
         $compiled->exists = false;

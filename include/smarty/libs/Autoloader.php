@@ -42,7 +42,7 @@ class Smarty_Autoloader
      */
     public static function registerBC(
         $prepend = false
-    ) {
+    ): void {
         /**
          * register the class autoloader
          */
@@ -71,7 +71,7 @@ class Smarty_Autoloader
      */
     public static function register(
         $prepend = false
-    ) {
+    ): void {
         self::$SMARTY_DIR = defined('SMARTY_DIR') ? SMARTY_DIR : __DIR__ . DIRECTORY_SEPARATOR;
         self::$SMARTY_SYSPLUGINS_DIR = defined('SMARTY_SYSPLUGINS_DIR') ? SMARTY_SYSPLUGINS_DIR :
             self::$SMARTY_DIR . 'sysplugins' . DIRECTORY_SEPARATOR;
@@ -85,7 +85,7 @@ class Smarty_Autoloader
      */
     public static function autoload(
         $class
-    ) {
+    ): void {
         if ($class[0] !== 'S' || ! str_starts_with($class, 'Smarty')) {
             return;
         }

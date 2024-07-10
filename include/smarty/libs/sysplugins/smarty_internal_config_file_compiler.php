@@ -86,7 +86,7 @@ class Smarty_Internal_Config_File_Compiler
      */
     public function compileTemplate(
         Smarty_Internal_Template $template
-    ) {
+    ): string {
         $this->template = $template;
         $this->template->compiled->file_dependency[$this->template->source->uid] =
             [
@@ -175,7 +175,7 @@ class Smarty_Internal_Config_File_Compiler
      */
     public function trigger_config_file_error(
         $args = null
-    ) {
+    ): void {
         // get config source line which has error
         $line = $this->lex->line;
         if (isset($args)) {

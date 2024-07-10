@@ -48,7 +48,7 @@ class Smarty_Internal_Compile_Capture extends Smarty_Internal_CompileBase
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter = null
-    ) {
+    ): string {
         return '$_smarty_tpl->smarty->ext->_capture->getBuffer($_smarty_tpl' .
                (isset($parameter[1]) ? sprintf(', %s)', $parameter[1]) : ')');
     }
@@ -66,7 +66,7 @@ class Smarty_Internal_Compile_Capture extends Smarty_Internal_CompileBase
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter = null
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         $buffer = $_attr['name'] ?? "'default'";
@@ -104,7 +104,7 @@ class Smarty_Internal_Compile_CaptureClose extends Smarty_Internal_CompileBase
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
         $parameter
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         // must endblock be nocache?

@@ -26,7 +26,7 @@ class Smarty_Internal_Method_UnregisterFilter extends Smarty_Internal_Method_Reg
         Smarty_Internal_TemplateBase $obj,
         $type,
         $callback
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         $this->_checkFilterType($type);
         if (isset($smarty->registered_filters[$type])) {

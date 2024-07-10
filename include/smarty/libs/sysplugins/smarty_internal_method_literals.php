@@ -27,7 +27,7 @@ class Smarty_Internal_Method_Literals
      */
     public function getLiterals(
         Smarty_Internal_TemplateBase $obj
-    ) {
+    ): array {
         $smarty = $obj->_getSmartyObj();
         return (array) $smarty->literals;
     }
@@ -46,7 +46,7 @@ class Smarty_Internal_Method_Literals
     public function addLiterals(
         Smarty_Internal_TemplateBase $obj,
         $literals = null
-    ) {
+    ): Smarty_Internal_TemplateBase {
         if (isset($literals)) {
             $this->set($obj->_getSmartyObj(), (array) $literals);
         }
@@ -68,7 +68,7 @@ class Smarty_Internal_Method_Literals
     public function setLiterals(
         Smarty_Internal_TemplateBase $obj,
         $literals = null
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         $smarty->literals = [];
         if (! empty($literals)) {
@@ -81,13 +81,11 @@ class Smarty_Internal_Method_Literals
     /**
      * common setter for literals for easier handling of duplicates the
      * Smarty::$literals array gets filled with identical key values
-     *
-     * @param array   $literals
      */
     private function set(
         Smarty $smarty,
-        $literals
-    ) {
+        array $literals
+    ): void {
         $literals = array_combine($literals, $literals);
         $error = isset($literals[$smarty->left_delimiter]) ? [$smarty->left_delimiter] : [];
         $error = isset($literals[$smarty->right_delimiter]) ? $error[] = $smarty->right_delimiter : $error;

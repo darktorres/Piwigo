@@ -15,7 +15,7 @@
  * @return string with compiled code
  */
 function smarty_modifiercompiler_unescape(
-    $params,
+    array $params,
     Smarty_Internal_TemplateCompilerBase $compiler
 ) {
     $compiler->template->_checkPlugins(

@@ -22,7 +22,7 @@ function execute_sqlfile(
     $replaced,
     $replacing,
     $dblayer
-) {
+): void {
     $sql_lines = file($filepath);
     $query = '';
     foreach ($sql_lines as $sql_line) {
@@ -54,7 +54,7 @@ function execute_sqlfile(
 /**
  * Automatically activate all core themes in the "themes" directory.
  */
-function activate_core_themes()
+function activate_core_themes(): void
 {
     include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
     $themes = new themes();
@@ -68,7 +68,7 @@ function activate_core_themes()
 /**
  * Automatically activate some core plugins
  */
-function activate_core_plugins()
+function activate_core_plugins(): void
 {
     include_once(PHPWG_ROOT_PATH . 'admin/include/plugins.class.php');
 
@@ -90,7 +90,7 @@ function activate_core_plugins()
 function install_db_connect(
     &$infos,
     &$errors
-) {
+): void {
     try {
         pwg_db_connect(
             $_POST['dbhost'],

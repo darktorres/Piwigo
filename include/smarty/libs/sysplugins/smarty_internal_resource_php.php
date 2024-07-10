@@ -47,7 +47,7 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
     #[\Override]
     public function getContent(
         Smarty_Template_Source $source
-    ) {
+    ): string|false {
         if ($source->exists) {
             return '';
         }
@@ -64,7 +64,7 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
     public function populateCompiledFilepath(
         Smarty_Template_Compiled $compiled,
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         $compiled->filepath = $_template->source->filepath;
         $compiled->timestamp = $_template->source->timestamp;
         $compiled->exists = $_template->source->exists;
@@ -85,7 +85,7 @@ class Smarty_Internal_Resource_Php extends Smarty_Internal_Resource_File
     public function renderUncompiled(
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         if (! $source->smarty->allow_php_templates) {
             throw new SmartyException('PHP templates are disabled');
         }

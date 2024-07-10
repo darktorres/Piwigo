@@ -132,7 +132,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
 }
 
 // sort themes by state then by name
-function cmp($a, $b)
+function cmp(array $a, array $b): int
 {
     $s = [
         'active' => 0,

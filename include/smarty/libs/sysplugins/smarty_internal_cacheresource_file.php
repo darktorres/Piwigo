@@ -23,7 +23,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     public function populate(
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         $source = &$_template->source;
         $smarty = &$_template->smarty;
         $_compile_dir_sep = $smarty->use_sub_dirs ? DIRECTORY_SEPARATOR : '^';
@@ -81,7 +81,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     #[\Override]
     public function populateTimestamp(
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $cached->timestamp = is_file($cached->filepath);
         $cached->exists = $cached->timestamp;
         if ($cached->exists) {
@@ -126,7 +126,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     public function writeCachedContent(
         Smarty_Internal_Template $_template,
         $content
-    ) {
+    ): bool {
         if ($_template->smarty->ext->_writeFile->writeFile(
             $_template->cached->filepath,
             $content,
@@ -163,7 +163,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     #[\Override]
     public function readCachedContent(
         Smarty_Internal_Template $_template
-    ) {
+    ): string|false {
         if (is_file($_template->cached->filepath)) {
             return file_get_contents($_template->cached->filepath);
         }
@@ -182,7 +182,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     public function clearAll(
         Smarty $smarty,
         $exp_time = null
-    ) {
+    ): int {
         return $smarty->ext->_cacheResourceFile->clear($smarty, null, null, null, $exp_time);
     }
 
@@ -203,7 +203,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
         $cache_id,
         $compile_id,
         $exp_time
-    ) {
+    ): int {
         return $smarty->ext->_cacheResourceFile->clear($smarty, $resource_name, $cache_id, $compile_id, $exp_time);
     }
 
@@ -219,7 +219,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     public function hasLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
-    ) {
+    ): bool {
         clearstatcache(true, $cached->lock_id ?? '');
         if ($cached->lock_id !== null && is_file($cached->lock_id)) {
             $t = filemtime($cached->lock_id);
@@ -242,7 +242,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     public function acquireLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $cached->is_locked = true;
         touch($cached->lock_id);
     }
@@ -259,7 +259,7 @@ class Smarty_Internal_CacheResource_File extends Smarty_CacheResource
     public function releaseLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $cached->is_locked = false;
         @unlink($cached->lock_id);
     }

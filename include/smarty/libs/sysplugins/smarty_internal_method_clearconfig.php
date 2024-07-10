@@ -30,7 +30,7 @@ class Smarty_Internal_Method_ClearConfig
     public function clearConfig(
         Smarty_Internal_Data $data,
         $name = null
-    ) {
+    ): Smarty_Internal_Data {
         if (isset($name)) {
             unset($data->config_vars[$name]);
         } else {

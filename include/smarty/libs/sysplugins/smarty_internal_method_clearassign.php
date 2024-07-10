@@ -30,7 +30,7 @@ class Smarty_Internal_Method_ClearAssign
     public function clearAssign(
         Smarty_Internal_Data $data,
         $tpl_var
-    ) {
+    ): Smarty_Internal_Data {
         if (is_array($tpl_var)) {
             foreach ($tpl_var as $curr_var) {
                 unset($data->tpl_vars[$curr_var]);

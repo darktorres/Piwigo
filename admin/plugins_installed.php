@@ -160,7 +160,7 @@ if ($missing_plugin_ids !== []) {
 }
 
 // sort plugins by state then by name
-function cmp($a, $b)
+function cmp(array $a, array $b)
 {
     $s = [
         'merged' => 0,

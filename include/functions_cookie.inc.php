@@ -68,13 +68,12 @@ function cookie_path()
  * Set $value to null to delete the cookie.
  *
  * @param int|null $expire
- * @return bool
  */
 function pwg_set_cookie_var(
-    $var,
+    string $var,
     mixed $value,
     $expire = null
-) {
+): bool {
     if ($value == null || $expire === 0) {
         unset($_COOKIE['pwg_' . $var]);
         return setcookie('pwg_' . $var, false, [
@@ -97,11 +96,10 @@ function pwg_set_cookie_var(
  * Retrieves the value of a persistent variable in pwg cookie
  * @see pwg_set_cookie_var
  *
- * @param string $var
  * @return mixed
  */
 function pwg_get_cookie_var(
-    $var,
+    string $var,
     mixed $default = null
 ) {
     return $_COOKIE['pwg_' . $var] ?? $default;

@@ -31,13 +31,11 @@
  *
  * @param int $min
  * @param int $max
- *
- * @return int
  */
 function random_int(
     $min,
     $max
-) {
+): int {
     /**
      * Type and input logic checks
      *

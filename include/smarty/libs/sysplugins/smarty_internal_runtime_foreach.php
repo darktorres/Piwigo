@@ -9,10 +9,8 @@ class Smarty_Internal_Runtime_Foreach
 {
     /**
      * Stack of saved variables
-     *
-     * @var array
      */
-    private $stack = [];
+    private array $stack = [];
 
     /**
      * Init foreach loop
@@ -36,8 +34,8 @@ class Smarty_Internal_Runtime_Foreach
         $needTotal = false,
         $key = null,
         $name = null,
-        $properties = []
-    ) {
+        array $properties = []
+    ): object|array|null {
         $needTotal = $needTotal || isset($properties['total']);
         $saveVars = [];
         $total = null;
@@ -149,7 +147,7 @@ class Smarty_Internal_Runtime_Foreach
     public function restore(
         Smarty_Internal_Template $tpl,
         $levels = 1
-    ) {
+    ): void {
         while ($levels) {
             $saveVars = array_pop($this->stack);
             if (! empty($saveVars)) {

@@ -256,7 +256,7 @@ class FeedHtmlField
     /**
      * Creates a new instance of FeedHtmlField.
      */
-    public function FeedHtmlField($parFieldContent)
+    public function FeedHtmlField($parFieldContent): void
     {
         if ($parFieldContent) {
             $this->rawFieldContent = $parFieldContent;
@@ -301,7 +301,7 @@ class UniversalFeedCreator extends FeedCreator
 {
     public $_feed;
 
-    public function _setMIME()
+    public function _setMIME(): void
     {
         //switch (strtoupper($format)) {
 
@@ -312,7 +312,7 @@ class UniversalFeedCreator extends FeedCreator
 
     }
 
-    public function _setFormat($format)
+    public function _setFormat($format): void
     {
         $this->_feed = match (strtoupper((string) $format)) {
             '2.0', 'RSS', 'RSS2.0' => new RSSCreator20(),
@@ -371,7 +371,7 @@ class UniversalFeedCreator extends FeedCreator
         $format = 'RSS0.91',
         $filename = '',
         $displayContents = true
-    ) {
+    ): void {
         $this->_setFormat($format);
         $this->_feed->saveFeed($filename, $displayContents);
     }
@@ -393,7 +393,7 @@ class UniversalFeedCreator extends FeedCreator
         $format = 'RSS0.91',
         $filename = '',
         $timeout = 3600
-    ) {
+    ): void {
         $this->_setFormat($format);
         $this->_feed->useCached($filename, $timeout);
     }
@@ -407,7 +407,7 @@ class UniversalFeedCreator extends FeedCreator
     #[\Override]
     public function outputFeed(
         $format = 'RSS0.91'
-    ) {
+    ): void {
         $this->_setFormat($format);
         $this->_setMIME();
         $this->_feed->outputFeed();
@@ -524,11 +524,11 @@ class FeedCreator extends HtmlDescribable
      */
     public function addItem(
         $item
-    ) {
+    ): void {
         $this->items[] = $item;
     }
 
-    public function version()
+    public function version(): string
     {
 
         return FEEDCREATOR_VERSION . ' (' . $this->generator . ')';
@@ -583,7 +583,7 @@ class FeedCreator extends HtmlDescribable
      * The format of this comment seems to be recognized by
      * Syndic8.com.
      */
-    public function _createGeneratorComment()
+    public function _createGeneratorComment(): string
     {
         return '<!-- generator="' . $this->version() . "\" -->\n";
     }
@@ -597,8 +597,8 @@ class FeedCreator extends HtmlDescribable
      */
     public function _createAdditionalElements(
         $elements,
-        $indentString = ''
-    ) {
+        string $indentString = ''
+    ): string {
         $ae = '';
         if (is_array($elements)) {
             foreach ($elements as $key => $value) {
@@ -609,7 +609,7 @@ class FeedCreator extends HtmlDescribable
         return $ae;
     }
 
-    public function _createStylesheetReferences()
+    public function _createStylesheetReferences(): string
     {
         $xml = '';
         if ($this->cssStyleSheet) {
@@ -648,7 +648,7 @@ class FeedCreator extends HtmlDescribable
      * @since 1.4
      * @access private
      */
-    public function _generateFilename()
+    public function _generateFilename(): string
     {
         $fileInfo = pathinfo((string) $_SERVER['PHP_SELF']);
         return substr($fileInfo['basename'], 0, -(strlen($fileInfo['extension']) + 1)) . '.xml';
@@ -694,7 +694,7 @@ class FeedCreator extends HtmlDescribable
     public function useCached(
         $filename = '',
         $timeout = 3600
-    ) {
+    ): void {
         $this->_timeout = $timeout;
         if ($filename == '') {
             $filename = $this->_generateFilename();
@@ -716,7 +716,7 @@ class FeedCreator extends HtmlDescribable
     public function saveFeed(
         $filename = '',
         $displayContents = true
-    ) {
+    ): void {
         if ($filename == '') {
             $filename = $this->_generateFilename();
         }
@@ -739,12 +739,12 @@ class FeedCreator extends HtmlDescribable
      *
      * still missing: proper header output - currently you have to add it manually
      */
-    public function outputFeed()
+    public function outputFeed(): void
     {
         echo $this->createFeed();
     }
 
-    public function setEncoding($encoding = 'utf-8')
+    public function setEncoding($encoding = 'utf-8'): void
     {
         $this->encoding = 'utf-8';
 
@@ -774,7 +774,7 @@ class FeedDate
      */
     public function FeedDate(
         mixed $dateString = ''
-    ) {
+    ): void {
         if ($dateString == '') {
             $dateString = date('r');
         }
@@ -860,7 +860,7 @@ class FeedDate
      *
      * @return a date in RFC 822 format
      */
-    public function rfc822()
+    public function rfc822(): string
     {
         //return gmdate("r",$this->unix);
         $date = gmdate('D, d M Y H:i:s', $this->unix);
@@ -879,7 +879,7 @@ class FeedDate
      *
      * @return a date in ISO 8601 (RFC 3339) format
      */
-    public function iso8601()
+    public function iso8601(): string
     {
         $date = gmdate("Y-m-d\TH:i:sO", $this->unix);
         $date = substr($date, 0, 22) . ':' . substr($date, -2);
@@ -915,7 +915,7 @@ class RSSCreator10 extends FeedCreator
      * @return    string    the feed's complete text
      */
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $feed = '<?xml version="1.0" encoding="' . $this->encoding . "\"?>\n";
         $feed .= $this->_createGeneratorComment();
@@ -1012,7 +1012,7 @@ class RSSCreator091 extends FeedCreator
         $this->RSSCreator091();
     }
 
-    public function RSSCreator091()
+    public function RSSCreator091(): void
     {
         $this->_setRSSVersion('0.91');
         $this->contentType = 'application/rss+xml';
@@ -1024,7 +1024,7 @@ class RSSCreator091 extends FeedCreator
      */
     public function _setRSSVersion(
         $version
-    ) {
+    ): void {
         $this->RSSVersion = $version;
     }
 
@@ -1034,7 +1034,7 @@ class RSSCreator091 extends FeedCreator
      * @return    string    the feed's complete text
      */
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $feed = '<?xml version="1.0" encoding="' . $this->encoding . "\"?>\n";
         $feed .= $this->_createGeneratorComment();
@@ -1222,7 +1222,7 @@ class RSSCreator20 extends RSSCreator091
         $this->RSSCreator20();
     }
 
-    public function RSSCreator20()
+    public function RSSCreator20(): void
     {
         parent::_setRSSVersion('2.0');
     }
@@ -1250,13 +1250,13 @@ class PIECreator01 extends FeedCreator
         $this->PIECreator01();
     }
 
-    public function PIECreator01()
+    public function PIECreator01(): void
     {
         $this->encoding = 'utf-8';
     }
 
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $feed = '<?xml version="1.0" encoding="' . $this->encoding . "\"?>\n";
         $feed .= $this->_createStylesheetReferences();
@@ -1323,7 +1323,7 @@ class AtomCreator10 extends FeedCreator
         $this->AtomCreator10();
     }
 
-    public function AtomCreator10()
+    public function AtomCreator10(): void
     {
         $this->contentType = 'application/atom+xml';
         $this->encoding = 'utf-8';
@@ -1331,7 +1331,7 @@ class AtomCreator10 extends FeedCreator
     }
 
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $feed = '<?xml version="1.0" encoding="' . $this->encoding . "\"?>\n";
         $feed .= $this->_createGeneratorComment();
@@ -1491,14 +1491,14 @@ class AtomCreator03 extends FeedCreator
         $this->AtomCreator03();
     }
 
-    public function AtomCreator03()
+    public function AtomCreator03(): void
     {
         $this->contentType = 'application/atom+xml';
         $this->encoding = 'utf-8';
     }
 
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $feed = '<?xml version="1.0" encoding="' . $this->encoding . "\"?>\n";
         $feed .= $this->_createGeneratorComment();
@@ -1582,13 +1582,13 @@ class MBOXCreator extends FeedCreator
         $this->MBOXCreator();
     }
 
-    public function MBOXCreator()
+    public function MBOXCreator(): void
     {
         $this->contentType = 'text/plain';
         $this->encoding = 'ISO-8859-15';
     }
 
-    public function qp_enc($input = '', $line_max = 76)
+    public function qp_enc($input = '', $line_max = 76): string
     {
         $hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
         $lines = preg_split("/(?:\r\n|\r|\n)/", (string) $input);
@@ -1630,7 +1630,7 @@ class MBOXCreator extends FeedCreator
      * @return    string    the feed's complete text
      */
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $counter = count($this->items);
         for ($i = 0; $i < $counter; $i++) {
@@ -1665,7 +1665,7 @@ class MBOXCreator extends FeedCreator
      * @access private
      */
     #[\Override]
-    public function _generateFilename()
+    public function _generateFilename(): string
     {
         $fileInfo = pathinfo((string) $_SERVER['PHP_SELF']);
         return substr($fileInfo['basename'], 0, -(strlen($fileInfo['extension']) + 1)) . '.mbox';
@@ -1688,13 +1688,13 @@ class OPMLCreator extends FeedCreator
         $this->OPMLCreator();
     }
 
-    public function OPMLCreator()
+    public function OPMLCreator(): void
     {
         $this->encoding = 'utf-8';
     }
 
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $feed = '<?xml version="1.0" encoding="' . $this->encoding . "\"?>\n";
         $feed .= $this->_createGeneratorComment();
@@ -1900,7 +1900,7 @@ class HTMLCreator extends FeedCreator
      * @access private
      */
     #[\Override]
-    public function _generateFilename()
+    public function _generateFilename(): string
     {
         $fileInfo = pathinfo((string) $_SERVER['PHP_SELF']);
         return substr($fileInfo['basename'], 0, -(strlen($fileInfo['extension']) + 1)) . '.html';
@@ -1920,7 +1920,7 @@ class JSCreator extends HTMLCreator
      * @return    string    the scripts's complete text
      */
     #[\Override]
-    public function createFeed()
+    public function createFeed(): string
     {
         $feed = parent::createFeed();
         $feedArray = explode("\n", $feed);
@@ -1941,7 +1941,7 @@ class JSCreator extends HTMLCreator
      * @access private
      */
     #[\Override]
-    public function _generateFilename()
+    public function _generateFilename(): string
     {
         $fileInfo = pathinfo((string) $_SERVER['PHP_SELF']);
         return substr($fileInfo['basename'], 0, -(strlen($fileInfo['extension']) + 1)) . '.js';

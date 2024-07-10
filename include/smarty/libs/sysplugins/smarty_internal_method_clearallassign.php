@@ -28,7 +28,7 @@ class Smarty_Internal_Method_ClearAllAssign
      */
     public function clearAllAssign(
         Smarty_Internal_Data $data
-    ) {
+    ): Smarty_Internal_Data {
         $data->tpl_vars = [];
         return $data;
     }

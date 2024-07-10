@@ -19,8 +19,6 @@ class Smarty_Internal_Compile_Private_Registered_Block extends Smarty_Internal_C
      * @param array                                 $_attr attributes
      * @param string                                $tag
      * @param null                                  $function
-     *
-     * @return array
      */
     #[\Override]
     public function setup(
@@ -28,7 +26,7 @@ class Smarty_Internal_Compile_Private_Registered_Block extends Smarty_Internal_C
         $_attr,
         $tag,
         $function
-    ) {
+    ): array {
         if (isset($compiler->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$tag])) {
             $tag_info = $compiler->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$tag];
             $callback = $tag_info[0];

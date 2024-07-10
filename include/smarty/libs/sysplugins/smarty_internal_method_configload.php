@@ -33,7 +33,7 @@ class Smarty_Internal_Method_ConfigLoad
         Smarty_Internal_Data $data,
         $config_file,
         mixed $sections = null
-    ) {
+    ): Smarty_Internal_Data {
         $this->_loadConfigFile($data, $config_file, $sections, null);
         return $data;
     }
@@ -56,7 +56,7 @@ class Smarty_Internal_Method_ConfigLoad
         $config_file,
         mixed $sections = null,
         $scope = 0
-    ) {
+    ): void {
         /** @var \Smarty $smarty */
         $smarty = $data->_getSmartyObj();
         /** @var \Smarty_Internal_Template $confObj */
@@ -83,13 +83,11 @@ class Smarty_Internal_Method_ConfigLoad
 
     /**
      * load config variables into template object
-     *
-     * @param array                     $new_config_vars
      */
     public function _loadConfigVars(
         Smarty_Internal_Template $tpl,
-        $new_config_vars
-    ) {
+        array $new_config_vars
+    ): void {
         $this->_assignConfigVars($tpl->parent->config_vars, $tpl, $new_config_vars);
         $tagScope = $tpl->source->scope;
         if ($tagScope >= 0) {
@@ -124,10 +122,10 @@ class Smarty_Internal_Method_ConfigLoad
      * @param array                     $new_config_vars loaded config variables
      */
     public function _assignConfigVars(
-        &$config_vars,
+        array &$config_vars,
         Smarty_Internal_Template $tpl,
-        $new_config_vars
-    ) {
+        array $new_config_vars
+    ): void {
         // copy global config vars
         foreach ($new_config_vars['vars'] as $variable => $value) {
             if ($tpl->smarty->config_overwrite || ! isset($config_vars[$variable])) {
@@ -156,13 +154,11 @@ class Smarty_Internal_Method_ConfigLoad
 
     /**
      * Update config variables in template local variable stack
-     *
-     * @param array                     $config_vars
      */
     public function _updateVarStack(
         Smarty_Internal_Template $tpl,
-        $config_vars
-    ) {
+        array $config_vars
+    ): void {
         $i = 0;
         while (isset($tpl->_cache['varStack'][$i])) {
             $this->_assignConfigVars($tpl->_cache['varStack'][$i]['config'], $tpl, $config_vars);

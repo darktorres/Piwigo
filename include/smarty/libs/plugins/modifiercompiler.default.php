@@ -17,7 +17,7 @@
  * @return string with compiled code
  */
 function smarty_modifiercompiler_default(
-    $params
+    array $params
 ) {
     $output = $params[0];
     if (! isset($params[1])) {

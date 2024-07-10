@@ -36,12 +36,14 @@ $sort_orders = [
 // +-----------------------------------------------------------------------+
 // |                               functions                               |
 // +-----------------------------------------------------------------------+
-
+/**
+ * @return mixed[]
+ */
 function get_categories_ref_date(
     $ids,
-    $field = 'date_available',
-    $minmax = 'max'
-) {
+    string $field = 'date_available',
+    string $minmax = 'max'
+): array {
     // we need to work on the whole tree under each category, even if we don't
     // want to sort sub categories
     $category_ids = get_subcat_ids($ids);
@@ -87,7 +89,7 @@ SELECT
         }
 
         if ($to_compare !== []) {
-            $ref_dates[$cat_id] = $minmax == 'max' ? max($to_compare) : min($to_compare);
+            $ref_dates[$cat_id] = $minmax === 'max' ? max($to_compare) : min($to_compare);
         } else {
             $ref_dates[$cat_id] = null;
         }
@@ -229,7 +231,7 @@ $categories = hash_from_query($query, 'id');
 
 // get the categories containing images directly
 $categories_with_images = [];
-if (count($categories)) {
+if ($categories !== []) {
     $query = '
 SELECT
     category_id,

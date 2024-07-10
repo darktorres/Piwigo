@@ -32,7 +32,7 @@ class Smarty_Internal_Undefined
      */
     public function __call(
         $name,
-        $args
+        array $args
     ) {
         if ($this->class !== null) {
             throw new SmartyException(sprintf("undefined extension class '%s'", $this->class));
@@ -53,7 +53,7 @@ class Smarty_Internal_Undefined
         Smarty_Internal_Template $tpl,
         $properties,
         $cache = false
-    ) {
+    ): bool {
         if ($cache) {
             $tpl->cached->valid = false;
         } else {

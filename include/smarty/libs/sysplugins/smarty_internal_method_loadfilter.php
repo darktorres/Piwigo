@@ -18,10 +18,8 @@ class Smarty_Internal_Method_LoadFilter
 
     /**
      * Valid filter types
-     *
-     * @var array
      */
-    private $filterTypes = [
+    private array $filterTypes = [
         'pre' => true,
         'post' => true,
         'output' => true,
@@ -76,7 +74,7 @@ class Smarty_Internal_Method_LoadFilter
      */
     public function _checkFilterType(
         $type
-    ) {
+    ): void {
         if (! isset($this->filterTypes[$type])) {
             throw new SmartyException(sprintf("Illegal filter type '%s'", $type));
         }

@@ -14,12 +14,12 @@
  *    @option bool sort_by_counter
  */
 function ws_tags_getList(
-    $params,
+    array $params,
     &$service
 ) {
     $tags = get_available_tags();
     if ($params['sort_by_counter']) {
-        usort($tags, fn ($a, $b) => -$a['counter'] + $b['counter']);
+        usort($tags, fn ($a, $b): int|float => -$a['counter'] + $b['counter']);
     } else {
         usort($tags, tag_alpha_compare(...));
     }
@@ -80,7 +80,7 @@ function ws_tags_getAdminList(
  *    @option string order
  */
 function ws_tags_getImages(
-    $params,
+    array $params,
     &$service
 ) {
     // first build all the tag_ids we are interested in
@@ -99,12 +99,12 @@ function ws_tags_getImages(
     $tag_ids = array_keys($tags_by_id);
 
     $where_clauses = ws_std_image_sql_filter($params);
-    if (! empty($where_clauses)) {
+    if ($where_clauses !== []) {
         $where_clauses = implode(' AND ', $where_clauses);
     }
 
     $order_by = ws_std_image_sql_order($params, 'i.');
-    if (! empty($order_by)) {
+    if ($order_by !== '' && $order_by !== '0') {
         $order_by = 'ORDER BY ' . $order_by;
     }
 
@@ -221,7 +221,7 @@ SELECT *
  *    @option string name
  */
 function ws_tags_add(
-    $params,
+    array $params,
     &$service
 ) {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
@@ -249,7 +249,7 @@ WHERE id = ' . $creation_output['id'] . ';';
     ];
 }
 
-function ws_tags_delete($params, &$service)
+function ws_tags_delete(array $params, &$service)
 {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
@@ -282,7 +282,7 @@ SELECT COUNT(*)
 
 }
 
-function ws_tags_rename($params, &$service)
+function ws_tags_rename(array $params, &$service)
 {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
@@ -340,7 +340,7 @@ SELECT name
     ];
 }
 
-function ws_tags_duplicate($params, &$service)
+function ws_tags_duplicate(array $params, &$service)
 {
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
@@ -422,7 +422,7 @@ SELECT image_id
     ];
 }
 
-function ws_tags_merge($params, &$service)
+function ws_tags_merge(array $params, &$service)
 {
 
     if (get_pwg_token() != $params['pwg_token']) {

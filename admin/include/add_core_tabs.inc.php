@@ -13,7 +13,7 @@ add_event_handler(
     0
 );
 
-function add_core_tabs($sheets, $tab_id)
+function add_core_tabs(array $sheets, $tab_id)
 {
     global $conf;
 

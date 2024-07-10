@@ -146,7 +146,7 @@ class Smarty_Template_Source
         Smarty_Internal_Template $_template = null,
         Smarty $smarty = null,
         $template_resource = null
-    ) {
+    ): self {
         if ($_template instanceof \Smarty_Internal_Template) {
             $smarty = $_template->smarty;
             $template_resource = $_template->template_resource;

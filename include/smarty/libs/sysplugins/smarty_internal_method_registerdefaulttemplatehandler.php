@@ -29,7 +29,7 @@ class Smarty_Internal_Method_RegisterDefaultTemplateHandler
     public function registerDefaultTemplateHandler(
         Smarty_Internal_TemplateBase $obj,
         $callback
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         if (is_callable($callback)) {
             $smarty->default_template_handler_func = $callback;
@@ -45,7 +45,7 @@ class Smarty_Internal_Method_RegisterDefaultTemplateHandler
      */
     public static function _getDefaultTemplate(
         Smarty_Template_Source $source
-    ) {
+    ): void {
         if ($source->isConfig) {
             $default_handler = $source->smarty->default_config_handler_func;
         } else {

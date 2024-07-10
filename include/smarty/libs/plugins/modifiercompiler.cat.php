@@ -22,6 +22,6 @@
  */
 function smarty_modifiercompiler_cat(
     $params
-) {
+): string {
     return '(' . implode(').(', $params) . ')';
 }

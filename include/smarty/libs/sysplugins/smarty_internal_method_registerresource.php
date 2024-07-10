@@ -32,7 +32,7 @@ class Smarty_Internal_Method_RegisterResource
         Smarty_Internal_TemplateBase $obj,
         $name,
         Smarty_Resource $resource_handler
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         $smarty->registered_resources[$name] = $resource_handler;
         return $obj;

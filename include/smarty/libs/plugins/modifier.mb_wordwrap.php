@@ -22,9 +22,9 @@
 function smarty_modifier_mb_wordwrap(
     $str,
     $width = 75,
-    $break = "\n",
+    string $break = "\n",
     $cut = false
-) {
+): string {
     // break words into tokens using white space as a delimiter
     $tokens = preg_split(
         '!(\s)!S' . Smarty::$_UTF8_MODIFIER,

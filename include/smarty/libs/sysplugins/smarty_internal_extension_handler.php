@@ -119,7 +119,7 @@ class Smarty_Internal_Extension_Handler
     public function _callExternalMethod(
         Smarty_Internal_Data $data,
         $name,
-        $args
+        array $args
     ) {
         /** @var Smarty $data ->smarty */
         $smarty = $data->smarty ?? $data;
@@ -196,12 +196,10 @@ class Smarty_Internal_Extension_Handler
      * Make first character of name parts upper case
      *
      * @param string $name
-     *
-     * @return string
      */
     public function upperCase(
         $name
-    ) {
+    ): string {
         $_name = explode('_', $name);
         $_name = array_map(smarty_ucfirst_ascii(...), $_name);
         return implode('_', $_name);

@@ -128,8 +128,9 @@ echo "\n" . $upgrade_description . "\n";
 // | Functions                                                             |
 // +-----------------------------------------------------------------------+
 
-function replace_hotlinks($string)
-{
+function replace_hotlinks(
+    $string
+): string|array|null {
     global $conf;
 
     // websize 2.3 = medium 2.4

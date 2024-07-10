@@ -93,7 +93,7 @@ abstract class Smarty_Internal_Data
      */
     public function __call(
         $name,
-        $args
+        array $args
     ) {
         return $this->ext->_callExternalMethod($this, $name, $args);
     }
@@ -227,7 +227,7 @@ abstract class Smarty_Internal_Data
      */
     public function _mergeVars(
         self $data = null
-    ) {
+    ): void {
         if (isset($data)) {
             if (! empty($this->tpl_vars)) {
                 $data->tpl_vars = array_merge($this->tpl_vars, $data->tpl_vars);

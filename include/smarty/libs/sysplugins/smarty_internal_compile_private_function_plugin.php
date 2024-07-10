@@ -45,10 +45,10 @@ class Smarty_Internal_Compile_Private_Function_Plugin extends Smarty_Internal_Co
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler,
-        $parameter,
+        array $parameter,
         $tag,
         $function
-    ) {
+    ): string {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         unset($_attr['nocache']);

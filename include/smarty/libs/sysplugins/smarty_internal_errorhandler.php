@@ -30,7 +30,7 @@ class Smarty_Internal_ErrorHandler
     /**
      * Enable error handler to intercept errors
      */
-    public function activate()
+    public function activate(): void
     {
         /*
             Error muting is done because some people implemented custom error_handlers using
@@ -51,7 +51,7 @@ class Smarty_Internal_ErrorHandler
     /**
      * Disable error handler
      */
-    public function deactivate()
+    public function deactivate(): void
     {
         restore_error_handler();
         $this->previousErrorHandler = null;

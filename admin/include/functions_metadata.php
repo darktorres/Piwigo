@@ -59,11 +59,10 @@ function get_sync_iptc_data(
  * Returns EXIF metadata to sync from a file, depending on EXIF mapping.
  *
  * @param string $file
- * @return array
  */
 function get_sync_exif_data(
     $file
-) {
+): array {
     global $conf;
 
     $exif = get_exif_data($file, $conf['use_exif_mapping']);
@@ -98,7 +97,7 @@ function get_sync_exif_data(
  *
  * @return string[]
  */
-function get_sync_metadata_attributes()
+function get_sync_metadata_attributes(): array
 {
     global $conf;
 
@@ -213,7 +212,7 @@ function get_sync_metadata(
  */
 function sync_metadata(
     $ids
-) {
+): void {
     global $conf;
 
     if (! defined('CURRENT_DATE')) {
@@ -288,14 +287,13 @@ SELECT id, path, representative_ext
  * @param int $site_id
  * @param boolean $recursive
  * @param boolean $only_new
- * @return array
  */
 function get_filelist(
     $category_id = '',
     $site_id = 1,
     $recursive = false,
     $only_new = false
-) {
+): array {
     // filling $cat_ids : all categories required
     $cat_ids = [];
 
@@ -347,11 +345,10 @@ SELECT id, path, representative_ext
  * commas. Other separators are converted into commas.
  *
  * @param string $keywords_string
- * @return string
  */
 function metadata_normalize_keywords_string(
     $keywords_string
-) {
+): string {
     global $conf;
 
     $keywords_string = preg_replace($conf['metadata_keyword_separator_regex'], ',', $keywords_string);

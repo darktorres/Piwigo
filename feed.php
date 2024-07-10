@@ -24,7 +24,7 @@ include_once(PHPWG_ROOT_PATH . 'include/functions_notification.inc.php');
  */
 function datetime_to_ts(
     $datetime
-) {
+): int|false {
     return strtotime($datetime);
 }
 
@@ -39,7 +39,7 @@ function datetime_to_ts(
  */
 function ts_to_iso8601(
     $ts
-) {
+): string {
     $tz = date('O', $ts);
     $tz = substr($tz, 0, -2) . ':' . substr($tz, -2);
     return date('Y-m-d\\TH:i:s', $ts) . $tz;

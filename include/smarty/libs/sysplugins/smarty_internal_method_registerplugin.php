@@ -39,7 +39,7 @@ class Smarty_Internal_Method_RegisterPlugin
         $callback,
         $cacheable = true,
         mixed $cache_attr = null
-    ) {
+    ): Smarty_Internal_TemplateBase {
         $smarty = $obj->_getSmartyObj();
         if (isset($smarty->registered_plugins[$type][$name])) {
             throw new SmartyException(sprintf("Plugin tag '%s' already registered", $name));

@@ -243,15 +243,13 @@ class SMTP
      * @param int    $port    The port number to connect to
      * @param int    $timeout How long to wait for the connection to open
      * @param array  $options An array of options for stream_context_create()
-     *
-     * @return bool
      */
     public function connect(
-        $host,
+        string $host,
         $port = null,
         $timeout = 30,
         $options = []
-    ) {
+    ): bool {
         //Clear errors to avoid confusion
         $this->setError('');
         //Make sure we are __not__ connected
@@ -308,10 +306,8 @@ class SMTP
 
     /**
      * Initiate a TLS (encrypted) session.
-     *
-     * @return bool
      */
-    public function startTLS()
+    public function startTLS(): bool
     {
         if (! $this->sendCommand('STARTTLS', 'STARTTLS', 220)) {
             return false;
@@ -353,11 +349,11 @@ class SMTP
      * @return bool True if successfully authenticated
      */
     public function authenticate(
-        $username,
-        $password,
+        string $username,
+        string $password,
         $authtype = null,
         $OAuth = null
-    ) {
+    ): bool {
         if (! $this->server_caps) {
             $this->setError('Authentication is not allowed before HELO/EHLO');
 
@@ -506,7 +502,7 @@ class SMTP
      *
      * @return bool True if connected
      */
-    public function connected()
+    public function connected(): bool
     {
         if (is_resource($this->smtp_conn)) {
             $sock_status = stream_get_meta_data($this->smtp_conn);
@@ -533,7 +529,7 @@ class SMTP
      *
      * @see quit()
      */
-    public function close()
+    public function close(): void
     {
         $this->setError('');
         $this->server_caps = null;
@@ -556,12 +552,10 @@ class SMTP
      * Implements RFC 821: DATA <CRLF>.
      *
      * @param string $msg_data Message data to send
-     *
-     * @return bool
      */
     public function data(
         $msg_data
-    ) {
+    ): bool {
         //This will use the standard timelimit
         if (! $this->sendCommand('DATA', 'DATA', 354)) {
             return false;
@@ -661,12 +655,10 @@ class SMTP
      * and RFC 2821 EHLO.
      *
      * @param string $host The host name or IP to connect to
-     *
-     * @return bool
      */
     public function hello(
         $host = ''
-    ) {
+    ): bool {
         //Try extended hello first (RFC 2821)
         if ($this->sendHello('EHLO', $host)) {
             return true;
@@ -692,12 +684,10 @@ class SMTP
      * Implements RFC 821: MAIL <SP> FROM:<reverse-path> <CRLF>.
      *
      * @param string $from Source address of this message
-     *
-     * @return bool
      */
     public function mail(
-        $from
-    ) {
+        string $from
+    ): bool {
         $useVerp = ($this->do_verp ? ' XVERP' : '');
 
         return $this->sendCommand(
@@ -713,12 +703,10 @@ class SMTP
      * Implements from RFC 821: QUIT <CRLF>.
      *
      * @param bool $close_on_error Should the connection close if an error occurs?
-     *
-     * @return bool
      */
     public function quit(
         $close_on_error = true
-    ) {
+    ): bool {
         $noerror = $this->sendCommand('QUIT', 'QUIT', 221);
         $err = $this->error; //Save any error
         if ($noerror || $close_on_error) {
@@ -738,13 +726,11 @@ class SMTP
      * @param string $address The address the message is being sent to
      * @param string $dsn     Comma separated list of DSN notifications. NEVER, SUCCESS, FAILURE
      *                        or DELAY. If you specify NEVER all other notifications are ignored.
-     *
-     * @return bool
      */
     public function recipient(
-        $address,
+        string $address,
         $dsn = ''
-    ) {
+    ): bool {
         if (empty($dsn)) {
             $rcpt = 'RCPT TO:<' . $address . '>';
         } else {
@@ -778,7 +764,7 @@ class SMTP
      *
      * @return bool True on success
      */
-    public function reset()
+    public function reset(): bool
     {
         return $this->sendCommand('RSET', 'RSET', 250);
     }
@@ -794,12 +780,10 @@ class SMTP
      * Implements RFC 821: SAML <SP> FROM:<reverse-path> <CRLF>.
      *
      * @param string $from The address the message is from
-     *
-     * @return bool
      */
     public function sendAndMail(
-        $from
-    ) {
+        string $from
+    ): bool {
         return $this->sendCommand('SAML', 'SAML FROM:' . $from, 250);
     }
 
@@ -807,22 +791,18 @@ class SMTP
      * Send an SMTP VRFY command.
      *
      * @param string $name The name to verify
-     *
-     * @return bool
      */
     public function verify(
-        $name
-    ) {
+        string $name
+    ): bool {
         return $this->sendCommand('VRFY', 'VRFY ' . $name, [250, 251]);
     }
 
     /**
      * Send an SMTP NOOP command.
      * Used to keep keep-alives alive, doesn't actually do anything.
-     *
-     * @return bool
      */
-    public function noop()
+    public function noop(): bool
     {
         return $this->sendCommand('NOOP', 'NOOP', 250);
     }
@@ -833,10 +813,8 @@ class SMTP
      * This method is here to make the RFC821 Definition complete for this class
      * and _may_ be implemented in future.
      * Implements from RFC 821: TURN <CRLF>.
-     *
-     * @return bool
      */
-    public function turn()
+    public function turn(): bool
     {
         $this->setError('The SMTP TURN command is not implemented');
         $this->edebug('SMTP NOTICE: ' . $this->error['error'], self::DEBUG_CLIENT);
@@ -850,12 +828,12 @@ class SMTP
      * @param string $data    The data to send
      * @param string $command Optionally, the command this is part of, used only for controlling debug output
      *
-     * @return int|bool The number of bytes sent to the server or false on error
+     * @return int|false The number of bytes sent to the server or false on error
      */
     public function client_send(
-        $data,
+        string $data,
         $command = ''
-    ) {
+    ): int|false {
         //If SMTP transcripts are left enabled, or debug output is posted online
         //it can leak credentials, so hide credentials in all but lowest level
         if (
@@ -954,7 +932,7 @@ class SMTP
      */
     public function setVerp(
         $enabled = false
-    ) {
+    ): void {
         $this->do_verp = $enabled;
     }
 
@@ -975,7 +953,7 @@ class SMTP
      */
     public function setDebugOutput(
         $method = 'echo'
-    ) {
+    ): void {
         $this->Debugoutput = $method;
     }
 
@@ -994,8 +972,9 @@ class SMTP
      *
      * @param int $level
      */
-    public function setDebugLevel($level = 0)
-    {
+    public function setDebugLevel(
+        $level = 0
+    ): void {
         $this->do_debug = $level;
     }
 
@@ -1016,7 +995,7 @@ class SMTP
      */
     public function setTimeout(
         $timeout = 0
-    ) {
+    ): void {
         $this->Timeout = $timeout;
     }
 
@@ -1123,7 +1102,7 @@ class SMTP
      * @return false|resource
      */
     protected function getSMTPConnection(
-        $host,
+        string $host,
         $port = null,
         $timeout = 30,
         $options = []
@@ -1208,13 +1187,11 @@ class SMTP
      *
      * @param string $data The data to hash
      * @param string $key  The key to hash with
-     *
-     * @return string
      */
     protected function hmac(
-        $data,
+        string $data,
         $key
-    ) {
+    ): string {
         if (function_exists('hash_hmac')) {
             return hash_hmac('md5', $data, $key);
         }
@@ -1248,14 +1225,12 @@ class SMTP
      * @param string $hello The HELO string
      * @param string $host  The hostname to say we are
      *
-     * @return bool
-     *
      * @see hello()
      */
     protected function sendHello(
-        $hello,
-        $host
-    ) {
+        string $hello,
+        string $host
+    ): bool {
         $noerror = $this->sendCommand($hello, $hello . ' ' . $host, 250);
         $this->helo_rply = $this->last_reply;
         if ($noerror) {
@@ -1323,10 +1298,10 @@ class SMTP
      * @return bool True on success
      */
     protected function sendCommand(
-        $command,
-        $commandstring,
+        string $command,
+        string $commandstring,
         $expect
-    ) {
+    ): bool {
         if (! $this->connected()) {
             $this->setError(sprintf('Called %s without being connected', $command));
 
@@ -1393,10 +1368,8 @@ class SMTP
      * With SMTP we can tell if we have more lines to read if the
      * 4th character is '-' symbol. If it is a space then we don't
      * need to read anything else.
-     *
-     * @return string
      */
-    protected function get_lines()
+    protected function get_lines(): string
     {
         //If the connection is bad, give up straight away
         if (! is_resource($this->smtp_conn)) {
@@ -1547,10 +1520,8 @@ class SMTP
      * Relies on the host providing the ID in response to a DATA command.
      * If no reply has been received yet, it will return null.
      * If no pattern was matched, it will return false.
-     *
-     * @return bool|string|null
      */
-    protected function recordLastTransactionID()
+    protected function recordLastTransactionID(): string|false|null
     {
         $reply = $this->getLastReply();
 

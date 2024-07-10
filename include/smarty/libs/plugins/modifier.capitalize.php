@@ -21,7 +21,7 @@ function smarty_modifier_capitalize(
     $string,
     $uc_digits = false,
     $lc_rest = false
-) {
+): ?string {
     $string = (string) $string;
 
     if (Smarty::$_MBSTRING) {
@@ -103,11 +103,9 @@ function smarty_modifier_capitalize(
  * Fix: use declared functions for callbacks instead of using create_function()
  * Note: This can be fixed using anonymous functions instead, but that requires PHP >= 5.3
  */
-/**
- * @return string
- */
-function smarty_mod_cap_mbconvert_cb($matches)
-{
+function smarty_mod_cap_mbconvert_cb(
+    $matches
+): string {
     return stripslashes((string) $matches[1]) . mb_convert_case(
         stripslashes((string) $matches[2]),
         MB_CASE_UPPER,
@@ -115,10 +113,7 @@ function smarty_mod_cap_mbconvert_cb($matches)
     );
 }
 
-/**
- * @return string
- */
-function smarty_mod_cap_mbconvert2_cb($matches)
+function smarty_mod_cap_mbconvert2_cb($matches): string
 {
     return stripslashes((string) $matches[1]) . mb_convert_case(
         stripslashes((string) $matches[3]),
@@ -127,18 +122,12 @@ function smarty_mod_cap_mbconvert2_cb($matches)
     );
 }
 
-/**
- * @return string
- */
-function smarty_mod_cap_ucfirst_cb($matches)
+function smarty_mod_cap_ucfirst_cb($matches): string
 {
     return stripslashes((string) $matches[1]) . ucfirst(stripslashes((string) $matches[2]));
 }
 
-/**
- * @return string
- */
-function smarty_mod_cap_ucfirst2_cb($matches)
+function smarty_mod_cap_ucfirst2_cb($matches): string
 {
     return stripslashes((string) $matches[1]) . ucfirst(stripslashes((string) $matches[3]));
 }

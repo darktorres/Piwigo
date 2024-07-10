@@ -19,8 +19,6 @@ class Smarty_Internal_Compile_Private_Object_Block_Function extends Smarty_Inter
      * @param array                                 $_attr attributes
      * @param string                                $tag
      * @param string                                $method
-     *
-     * @return array
      */
     #[\Override]
     public function setup(
@@ -28,7 +26,7 @@ class Smarty_Internal_Compile_Private_Object_Block_Function extends Smarty_Inter
         $_attr,
         $tag,
         $method
-    ) {
+    ): array {
         $_paramsArray = [];
         foreach ($_attr as $_key => $_value) {
             $_paramsArray[] = is_int($_key) ? sprintf('%d=>%s', $_key, $_value) : sprintf("'%s'=>%s", $_key, $_value);

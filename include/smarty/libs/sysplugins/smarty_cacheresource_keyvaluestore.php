@@ -51,7 +51,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     public function populate(
         Smarty_Template_Cached $cached,
         Smarty_Internal_Template $_template
-    ) {
+    ): void {
         $cached->filepath = $_template->source->uid . '#' . $this->sanitize($cached->source->resource) . '#' .
                             $this->sanitize($cached->cache_id) . '#' . $this->sanitize($cached->compile_id);
         $this->populateTimestamp($cached);
@@ -65,7 +65,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     #[\Override]
     public function populateTimestamp(
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         if (! $this->fetch(
             $cached->filepath,
             $cached->source->name,
@@ -256,7 +256,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     public function acquireLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $cached->is_locked = true;
         $key = 'LOCK#' . $cached->filepath;
         $this->write([
@@ -276,7 +276,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     public function releaseLock(
         Smarty $smarty,
         Smarty_Template_Cached $cached
-    ) {
+    ): void {
         $cached->is_locked = false;
         $key = 'LOCK#' . $cached->filepath;
         $this->delete([$key]);

@@ -17,7 +17,7 @@
  *    @option int prev_page (optional)
  */
 function ws_getMissingDerivatives(
-    $params,
+    array $params,
     &$service
 ) {
     global $conf;
@@ -73,7 +73,7 @@ SELECT id, path, representative_ext, width, height, rotation
         while ($row = pwg_db_fetch_assoc($result)) {
             $start_id = $row['id'];
             $src_image = new SrcImage($row);
-            if ($src_image->is_mimetype()) {
+            if ($src_image->is_mimetype() !== 0) {
                 continue;
             }
 
@@ -270,9 +270,9 @@ function ws_getCacheSize(
  *    @option int[] image_id
  */
 function ws_caddie_add(
-    $params,
+    array $params,
     &$service
-) {
+): int {
     global $user;
 
     $query = '
@@ -308,7 +308,7 @@ SELECT id
  *    @option string anonymous_id (optional)
  */
 function ws_rates_delete(
-    $params,
+    array $params,
     &$service
 ) {
     $query = '
@@ -340,7 +340,7 @@ DELETE FROM ' . RATE_TABLE . '
  *    @option string password
  */
 function ws_session_login(
-    $params,
+    array $params,
     &$service
 ) {
     if (try_log_user($params['username'], $params['password'], false)) {
@@ -355,8 +355,10 @@ function ws_session_login(
  * Performs a logout
  * @param mixed[] $params
  */
-function ws_session_logout($params, &$service)
-{
+function ws_session_logout(
+    $params,
+    &$service
+): bool {
     if (! is_a_guest()) {
         logout_user();
     }
@@ -418,8 +420,10 @@ function ws_session_getStatus(
  * Returns lines of users activity
  *  @since 12
  */
-function ws_getActivityList($param, &$service)
-{
+function ws_getActivityList(
+    array $param,
+    &$service
+) {
     global $conf;
 
     /* Test Lantency */
@@ -578,8 +582,10 @@ SELECT
  * Log a new line in visit history
  * @since 13
  */
-function ws_history_log($params, &$service)
-{
+function ws_history_log(
+    array $params,
+    &$service
+): void {
     global $logger, $page;
 
     if (! empty($params['section']) && in_array($params['section'], get_enums(HISTORY_TABLE, 'section'))) {
@@ -604,8 +610,10 @@ function ws_history_log($params, &$service)
  * Returns lines of an history search
  * @since 13
  */
-function ws_history_search($param, &$service)
-{
+function ws_history_search(
+    array $param,
+    &$service
+) {
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');

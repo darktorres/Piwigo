@@ -14,6 +14,6 @@
 function smarty_variablefilter_htmlspecialchars(
     $source,
     Smarty_Internal_Template $template
-) {
+): string {
     return htmlspecialchars((string) $source, ENT_QUOTES, Smarty::$_CHARSET);
 }

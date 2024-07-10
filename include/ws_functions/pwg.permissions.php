@@ -16,7 +16,7 @@
  *    @option int[] user_id (optional)
  */
 function ws_permissions_getList(
-    $params,
+    array $params,
     &$service
 ) {
     $my_params = array_intersect(array_keys($params), ['cat_id', 'group_id', 'user_id']);
@@ -125,7 +125,7 @@ SELECT group_id, cat_id
  *    @option bool recursive
  */
 function ws_permissions_add(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {
@@ -190,7 +190,7 @@ SELECT id
  *    @option int[] user_id (optional)
  */
 function ws_permissions_remove(
-    $params,
+    array $params,
     &$service
 ) {
     if (get_pwg_token() != $params['pwg_token']) {

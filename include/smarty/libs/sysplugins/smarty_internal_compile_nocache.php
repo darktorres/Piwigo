@@ -26,13 +26,11 @@ class Smarty_Internal_Compile_Nocache extends Smarty_Internal_CompileBase
      *
      * @param array                                 $args     array with attributes from parser
      * @param \Smarty_Internal_TemplateCompilerBase $compiler compiler object
-     *
-     * @return bool
      */
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): bool {
         $_attr = $this->getAttributes($compiler, $args);
         $this->openTag($compiler, 'nocache', [$compiler->nocache]);
         // enter nocache mode
@@ -56,13 +54,11 @@ class Smarty_Internal_Compile_Nocacheclose extends Smarty_Internal_CompileBase
      *
      * @param array                                 $args     array with attributes from parser
      * @param \Smarty_Internal_TemplateCompilerBase $compiler compiler object
-     *
-     * @return bool
      */
     public function compile(
         $args,
         Smarty_Internal_TemplateCompilerBase $compiler
-    ) {
+    ): bool {
         $_attr = $this->getAttributes($compiler, $args);
         // leave nocache mode
         [$compiler->nocache] = $this->closeTag($compiler, ['nocache']);

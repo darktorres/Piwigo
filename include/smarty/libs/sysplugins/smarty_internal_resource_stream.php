@@ -25,7 +25,7 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
     public function populate(
         Smarty_Template_Source $source,
         Smarty_Internal_Template $_template = null
-    ) {
+    ): void {
         if (str_contains($source->resource, '://')) {
             $source->filepath = $source->resource;
         } else {
@@ -48,7 +48,7 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
     #[\Override]
     public function getContent(
         Smarty_Template_Source $source
-    ) {
+    ): string|false {
         $t = '';
         // the availability of the stream has already been checked in Smarty_Resource::fetch()
         $fp = fopen(
@@ -82,7 +82,7 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
         Smarty $smarty,
         $resource_name,
         $isConfig = false
-    ) {
+    ): string {
         return static::class . '#' . $resource_name;
     }
 }

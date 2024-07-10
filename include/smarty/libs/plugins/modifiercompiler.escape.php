@@ -17,9 +17,9 @@
  * @return string with compiled code
  */
 function smarty_modifiercompiler_escape(
-    $params,
+    array $params,
     Smarty_Internal_TemplateCompilerBase $compiler
-) {
+): string {
     $compiler->template->_checkPlugins(
         [
             [

@@ -56,7 +56,7 @@ where
  *
  * @return true, if it's timeout
  */
-function check_sendmail_timeout()
+function check_sendmail_timeout(): bool
 {
     global $env_nbm;
 
@@ -72,8 +72,8 @@ function check_sendmail_timeout()
  */
 function quote_check_key_list(
     $check_key_list = []
-) {
-    return array_map(fn ($s) => "'" . $s . "'", $check_key_list);
+): array {
+    return array_map(fn ($s): string => "'" . $s . "'", $check_key_list);
 }
 
 /*
@@ -83,11 +83,14 @@ function quote_check_key_list(
  *
  * return array of users
  */
+/**
+ * @return mixed[]
+ */
 function get_user_notifications(
     $action,
     $check_key_list = [],
     $enabled_filter_value = ''
-) {
+): array {
     global $conf;
 
     $data_users = [];
@@ -161,7 +164,7 @@ order by';
  */
 function begin_users_env_nbm(
     $is_to_send_mail = false
-) {
+): void {
     global $user, $lang, $lang_info, $conf, $env_nbm;
 
     // Save $user, $lang_info and $lang arrays (include/user.inc.php has been executed)
@@ -194,7 +197,7 @@ function begin_users_env_nbm(
  *
  * Return none
  */
-function end_users_env_nbm()
+function end_users_env_nbm(): void
 {
     global $user, $lang, $lang_info, $env_nbm;
 
@@ -224,8 +227,10 @@ function end_users_env_nbm()
  *
  * Return none
  */
-function set_user_on_env_nbm(&$nbm_user, $is_action_send)
-{
+function set_user_on_env_nbm(
+    array &$nbm_user,
+    $is_action_send
+): void {
     global $user, $lang, $lang_info, $env_nbm;
 
     $user = build_user($nbm_user['user_id'], true);
@@ -243,7 +248,7 @@ function set_user_on_env_nbm(&$nbm_user, $is_action_send)
  *
  * Return none
  */
-function unset_user_on_env_nbm()
+function unset_user_on_env_nbm(): void
 {
     global $env_nbm;
 
@@ -256,7 +261,7 @@ function unset_user_on_env_nbm()
  *
  * Return none
  */
-function inc_mail_sent_success($nbm_user)
+function inc_mail_sent_success(array $nbm_user): void
 {
     global $page, $env_nbm;
 
@@ -273,7 +278,7 @@ function inc_mail_sent_success($nbm_user)
  *
  * Return none
  */
-function inc_mail_sent_failed($nbm_user)
+function inc_mail_sent_failed(array $nbm_user): void
 {
     global $page, $env_nbm;
 
@@ -290,7 +295,7 @@ function inc_mail_sent_failed($nbm_user)
  *
  * Return none
  */
-function display_counter_info()
+function display_counter_info(): void
 {
     global $page, $env_nbm;
 
@@ -318,7 +323,7 @@ function display_counter_info()
     }
 }
 
-function assign_vars_nbm_mail_content($nbm_user)
+function assign_vars_nbm_mail_content(array $nbm_user): void
 {
     global $env_nbm;
 
@@ -351,11 +356,14 @@ function assign_vars_nbm_mail_content($nbm_user)
  *
  * @return check_key list treated
  */
+/**
+ * @return mixed[]
+ */
 function do_subscribe_unsubscribe_notification_by_mail(
     $is_admin_request,
     $is_subscribe = false,
     $check_key_list = []
-) {
+): array {
     global $conf, $page, $env_nbm, $conf;
 
     set_make_full_url();
@@ -512,7 +520,7 @@ function do_subscribe_unsubscribe_notification_by_mail(
 function unsubscribe_notification_by_mail(
     $is_admin_request,
     $check_key_list = []
-) {
+): array {
     return do_subscribe_unsubscribe_notification_by_mail($is_admin_request, false, $check_key_list);
 }
 
@@ -526,6 +534,6 @@ function unsubscribe_notification_by_mail(
 function subscribe_notification_by_mail(
     $is_admin_request,
     $check_key_list = []
-) {
+): array {
     return do_subscribe_unsubscribe_notification_by_mail($is_admin_request, true, $check_key_list);
 }

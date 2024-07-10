@@ -10,7 +10,7 @@
 /**
  * Callback used for sorting by global_rank
  */
-function global_rank_compare($a, $b)
+function global_rank_compare(array $a, array $b): int
 {
     return strnatcasecmp((string) $a['global_rank'], (string) $b['global_rank']);
 }
@@ -18,7 +18,7 @@ function global_rank_compare($a, $b)
 /**
  * Callback used for sorting by rank
  */
-function rank_compare($a, $b)
+function rank_compare(array $a, array $b)
 {
     return $a['rank'] - $b['rank'];
 }
@@ -31,7 +31,7 @@ function rank_compare($a, $b)
  */
 function check_restrictions(
     $category_id
-) {
+): void {
     global $user;
 
     // $filter['visible_categories'] and $filter['visible_images']
@@ -238,9 +238,9 @@ function get_category_preferred_image_orders()
 function display_select_categories(
     $categories,
     $selecteds,
-    $blockname,
+    string $blockname,
     $fullname = true
-) {
+): void {
     global $template;
 
     $tpl_cats = [];
@@ -283,7 +283,7 @@ function display_select_cat_wrapper(
     $selecteds,
     $blockname,
     $fullname = true
-) {
+): void {
     $categories = query2array($query);
     usort($categories, global_rank_compare(...));
     display_select_categories($categories, $selecteds, $blockname, $fullname);
@@ -297,7 +297,7 @@ function display_select_cat_wrapper(
  */
 function get_subcat_ids(
     $ids
-) {
+): array {
     $query = '
 SELECT DISTINCT(id)
   FROM ' . CATEGORIES_TABLE . '
@@ -328,7 +328,7 @@ SELECT DISTINCT(id)
  * @return int|null
  */
 function get_cat_id_from_permalinks(
-    $permalinks,
+    array $permalinks,
     &$idx
 ) {
     $in = '';
@@ -351,7 +351,7 @@ SELECT id, permalink, 0 AS is_old
 ;';
     $perma_hash = query2array($query, 'permalink');
 
-    if (empty($perma_hash)) {
+    if ($perma_hash === []) {
         return null;
     }
 
@@ -381,16 +381,14 @@ UPDATE ' . OLD_PERMALINKS_TABLE . ' SET last_hit=NOW(), hit=hit+1
  * @param int $cat_count_images nb images in category (including subcats)
  * @param int $cat_count_categories nb subcats
  * @param bool $short_message if true append " in this album"
- * @param string $separator
- * @return string
  */
 function get_display_images_count(
     $cat_nb_images,
     $cat_count_images,
     $cat_count_categories,
     $short_message = true,
-    $separator = '\n'
-) {
+    string $separator = '\n'
+): string {
     $display_text = '';
 
     if ($cat_count_images > 0) {
@@ -430,7 +428,7 @@ function get_display_images_count(
  * @return int|null
  */
 function get_random_image_in_category(
-    $category,
+    array $category,
     $recursive = true
 ) {
     $image_id = null;
@@ -473,12 +471,11 @@ SELECT image_id
  * Get computed array of categories, that means cache data of all categories
  * available for the current user (count_categories, count_images, etc.).
  *
- * @param array $userdata
  * @param int $filter_days number of recent days to filter on or null
  * @return array
  */
 function get_computed_categories(
-    &$userdata,
+    array &$userdata,
     $filter_days = null
 ) {
     $query = 'SELECT c.id AS cat_id, id_uppercat';
@@ -576,13 +573,12 @@ FROM ' . CATEGORIES_TABLE . ' as c
 /**
  * Removes a category from computed array of categories and updates counters.
  *
- * @param array $cats
  * @param array $cat category to remove
  */
 function remove_computed_category(
-    &$cats,
-    $cat
-) {
+    array &$cats,
+    array $cat
+): void {
     if (isset($cats[$cat['id_uppercat']])) {
         $parent = &$cats[$cat['id_uppercat']];
         $parent['nb_categories']--;
@@ -610,15 +606,14 @@ function remove_computed_category(
  * @param string $mode
  * @param string $extra_images_where_sql - optionally apply a sql where filter to retrieved images
  * @param string $order_by - optionally overwrite default photo order
- * @return array
  */
 function get_image_ids_for_categories(
     $cat_ids,
     $mode = 'AND',
-    $extra_images_where_sql = '',
+    ?string $extra_images_where_sql = '',
     $order_by = '',
     $use_permissions = true
-) {
+): array {
     global $conf;
 
     if (empty($cat_ids)) {
@@ -642,7 +637,7 @@ SELECT id
         );
     }
 
-    $query .= (empty($extra_images_where_sql) ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
+    $query .= ($extra_images_where_sql === null || $extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
   GROUP BY id';
 
     if ($mode == 'AND' && count($cat_ids) > 1) {

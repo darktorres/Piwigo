@@ -70,12 +70,10 @@ class Smarty_Internal_Runtime_GetIncludePath
 
     /**
      * Check if include path was updated
-     *
-     * @return bool
      */
     public function isNewIncludePath(
         Smarty $smarty
-    ) {
+    ): bool {
         $_i_path = get_include_path();
         if ($this->_include_path !== $_i_path) {
             $this->_include_dirs = [];
@@ -109,13 +107,12 @@ class Smarty_Internal_Runtime_GetIncludePath
      * Return full file path from PHP include_path
      *
      * @param string[] $dirs
-     * @param string   $file
      *
      * @return bool|string full filepath or false
      */
     public function getIncludePath(
         $dirs,
-        $file,
+        ?string $file,
         Smarty $smarty
     ) {
         //if (!(isset($this->_has_stream_include) ? $this->_has_stream_include : $this->_has_stream_include = false)) {
