@@ -8,6 +8,7 @@
         "katzgrau/klogger": "^1.2.2",
         "openpsa/universalfeedcreator": "^v1.9",
         "pclzip/pclzip": "^2.8.2",
-        "pelago/emogrifier": "^7.2"
+        "pelago/emogrifier": "^7.2",
+        "phpmailer/phpmailer": "^6.9.2"
     }
 }
