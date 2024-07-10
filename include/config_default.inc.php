@@ -280,7 +280,7 @@ $conf['insensitive_case_logon'] = false;
 // 'filename'
 $conf['uniqueness_mode'] = 'md5sum';
 
-// Library used for image resizing. Value could be 'auto', 'imagick',
+// Library used for image resizing. Value could be 'auto', 'vips', 'imagick',
 // 'ext_imagick' or 'gd'. If value is 'auto', library will be chosen in this
 // order. If chosen library is not available, another one will be picked up.
 $conf['graphics_library'] = 'auto';
