@@ -393,6 +393,11 @@ class pwg_image
     return function_exists('gd_info');
   }
 
+  static function is_vips()
+  {
+    return class_exists('image_vips');
+  }
+
   static function get_library($library=null, $extension=null)
   {
     global $conf;
@@ -420,6 +425,11 @@ class pwg_image
         if (self::is_gd())
         {
           return 'gd';
+        }
+      case 'vips':
+        if (self::is_vips())
+        {
+          return 'vips';
         }
       default:
         if ($library != 'auto')
@@ -892,6 +902,102 @@ class image_gd implements imageInterface
   {
     imagedestroy($this->image);
   }
+}
+
+// +-----------------------------------------------------------------------+
+// |                       Class for libvips library                       |
+// +-----------------------------------------------------------------------+
+
+class image_vips implements imageInterface
+{
+    public Jcupitt\Vips\Image $image;
+
+    public $quality = 75;
+
+    public $source_filepath;
+
+    public function __construct(
+        $source_filepath
+    ) {
+        // putenv('VIPS_WARNING=0');
+        $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), [
+            'access' => 'sequential',
+        ]);
+        $this->source_filepath = realpath($source_filepath);
+    }
+
+    public function add_command($command, $params = null)
+    {
+
+    }
+
+    #[\Override]
+    public function get_width()
+    {
+        return $this->image->width;
+    }
+
+    #[\Override]
+    public function get_height()
+    {
+        return $this->image->height;
+    }
+
+    #[\Override]
+    public function crop($width, $height, $x, $y)
+    {
+        $this->image = $this->image->crop($x, $y, $width, $height);
+        return true;
+    }
+
+    #[\Override]
+    public function strip()
+    {
+        return true;
+    }
+
+    #[\Override]
+    public function rotate($rotation)
+    {
+        $this->image = $this->image->rotate($rotation);
+        return true;
+    }
+
+    #[\Override]
+    public function set_compression_quality($quality)
+    {
+        $this->quality = $quality;
+        return true;
+    }
+
+    #[\Override]
+    public function resize($width, $height)
+    {
+        $this->image = Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, [
+            'height' => $height,
+        ]);
+        return true;
+    }
+
+    #[\Override]
+    public function sharpen($amount)
+    {
+        return true;
+    }
+
+    #[\Override]
+    public function compose($overlay, $x, $y, $opacity)
+    {
+        return true;
+    }
+
+    #[\Override]
+    public function write($destination_filepath)
+    {
+        $dest = pathinfo((string) $destination_filepath);
+        $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);
+        return true;
+    }
 }
 
 ?>
