@@ -1,2 +1,3 @@
 # Ensure Git does not change line endings
 docker/* -text
+patches/* -text

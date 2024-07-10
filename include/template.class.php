@@ -50,8 +50,6 @@ function customErrorHandler(
 
 set_error_handler('customErrorHandler');
 
-require_once( PHPWG_ROOT_PATH .'include/smarty/libs/Smarty.class.php');
-
 /** default rank for buttons */
 define('BUTTONS_RANK_NEUTRAL', 50);
 
