@@ -17,17 +17,12 @@ defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_locati
 
 @include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR .'config/database.inc.php');
 
-include(PHPWG_ROOT_PATH . 'include/Logger.class.php');
-
-$logger = new Logger(array(
-  'directory' => PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'],
-  'severity' => $conf['log_level'],
+$logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
   // we use an hashed filename to prevent direct file access, and we salt with
   // the db_password instead of secret_key because the log must be usable in i.php
   // (secret_key is in the database)
   'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
-  ));
-
+]);
 
 // function trigger_notify() {}
 // function get_extension( $filename )
@@ -75,7 +70,7 @@ function ierror($msg, $code)
     }
     // default url is on html format
     $url = html_entity_decode($msg);
-    $logger->debug($code . ' ' . $url, 'i.php', array(
+    $logger->debug($code . ' ' . $url, array(
       'url' => $_SERVER['REQUEST_URI'],
       ));
     header('Request-URI: '.$url);
@@ -93,7 +88,7 @@ function ierror($msg, $code)
   }
   //todo improve
   echo $msg;
-  $logger->error($code . ' ' . $msg, 'i.php', array(
+  $logger->error($code . ' ' . $msg, array(
       'url' => $_SERVER['REQUEST_URI'],
       ));
   exit;
@@ -376,6 +371,7 @@ foreach( explode(',','load,rotate,crop,scale,sharpen,watermark,save,send') as $k
 include_once(PHPWG_ROOT_PATH .'include/dblayer/functions_'.$conf['dblayer'].'.inc.php');
 include_once( PHPWG_ROOT_PATH .'/include/derivative_params.inc.php');
 include_once( PHPWG_ROOT_PATH .'/include/derivative_std_params.inc.php');
+include_once(PHPWG_ROOT_PATH .'include/functions.inc.php');
 
 try
 {
@@ -384,7 +380,7 @@ try
 }
 catch (Exception $e)
 {
-  $logger->error($e->getMessage(), 'i.php');
+  $logger->error($e->getMessage());
 }
 
 list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM '.$prefixeTable.'config WHERE param=\'derivatives\''));
@@ -480,7 +476,7 @@ SELECT *
   }
   catch (Exception $e)
   {
-    $logger->error($e->getMessage(), 'i.php');
+    $logger->error($e->getMessage());
   }
 }
 else
@@ -608,9 +604,9 @@ $timing['send'] = time_step($step);
 
 $timing['total'] = time_step($begin);
 
-if ($logger->severity() >= Logger::DEBUG)
+if ($conf['log_level'] >= Psr\Log\LogLevel::DEBUG)
 {
-  $logger->debug('', 'i.php', array(
+  $logger->debug('', array(
     'src_path' => basename($page['src_path']),
     'derivative_path' => basename($page['derivative_path']),
     'o_size' => $o_size[0] . ' ' . $o_size[1] . ' ' . ($o_size[0]*$o_size[1]),
