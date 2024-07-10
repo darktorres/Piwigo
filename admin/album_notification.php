@@ -161,7 +161,7 @@ SELECT
     $query = '
 SELECT
     name
-  FROM `'.GROUPS_TABLE.'`
+  FROM '.GROUPS_TABLE.'
   WHERE id = '.$_POST['group'].'
 ;';
     list($group_name) = pwg_db_fetch_row(pwg_query($query));
@@ -212,7 +212,7 @@ if ($conf['auth_key_duration'] > 0)
 $query = '
 SELECT
     id AS group_id
-  FROM `'.GROUPS_TABLE.'`
+  FROM '.GROUPS_TABLE.'
 ;';
 $all_group_ids = array_from_query($query, 'group_id');
 
@@ -248,7 +248,7 @@ SELECT
 SELECT
     id,
     name
-  FROM `'.GROUPS_TABLE.'`
+  FROM '.GROUPS_TABLE.'
   WHERE id IN ('.implode(',', $group_ids).')
   ORDER BY name ASC
 ;';
