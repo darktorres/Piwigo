@@ -93,7 +93,7 @@ function search_case_username($username)
 
   $q = pwg_query("
     SELECT ".$conf['user_fields']['username']." AS username
-    FROM `".USERS_TABLE."`;
+    FROM ".USERS_TABLE.";
   ");
   while ($r = pwg_db_fetch_assoc($q))
    $SCU_users[$r['username']] = strtolower($r['username']);
@@ -184,7 +184,7 @@ function register_user($login, $password, $mail_address, $notify_admin=true, &$e
     // Assign by default groups
     $query = '
 SELECT id
-  FROM `'.GROUPS_TABLE.'`
+  FROM '.GROUPS_TABLE.'
   WHERE is_default = \''.boolean_to_string(true).'\'
   ORDER BY id ASC
 ;';
