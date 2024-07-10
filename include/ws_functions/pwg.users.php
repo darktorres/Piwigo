@@ -49,7 +49,7 @@ function ws_users_getList($params, &$service)
   $filtered_groups = array();
   if (!empty($params['filter']))
   {
-    $filter_query = 'SELECT id FROM `'. GROUPS_TABLE .'` WHERE name LIKE \'%'. $params['filter'] . '%\';';
+    $filter_query = 'SELECT id FROM '. GROUPS_TABLE .' WHERE name LIKE \'%'. $params['filter'] . '%\';';
     $filtered_groups_res = pwg_query($filter_query);
     while ($row = pwg_db_fetch_assoc($filtered_groups_res))
     {
@@ -736,7 +736,7 @@ DELETE
     $query = '
 SELECT
     id
-  FROM `'.GROUPS_TABLE.'`
+  FROM '.GROUPS_TABLE.'
   WHERE id IN ('.implode(',', $params['group_id']).')
 ;';
     $group_ids = array_from_query($query, 'id');
