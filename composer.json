@@ -4,6 +4,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.3",
-        "ahand/mobileesp": "dev-master"
+        "ahand/mobileesp": "dev-master",
+        "katzgrau/klogger": "^1.2.2"
     }
 }
