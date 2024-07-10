@@ -148,8 +148,8 @@ if ($conf['display_fromto'])
     $query = '
 SELECT
     category_id,
-    MIN(date_creation) AS `from`,
-    MAX(date_creation) AS `to`
+    MIN(date_creation) AS from,
+    MAX(date_creation) AS to
   FROM '.IMAGE_CATEGORY_TABLE.'
     INNER JOIN '.IMAGES_TABLE.' ON image_id = id
   WHERE category_id IN ('.implode(',', $category_ids).')
