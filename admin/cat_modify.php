@@ -272,7 +272,7 @@ SELECT DISTINCT
 // date creation
 $query = '
 SELECT occured_on
-  FROM `'.ACTIVITY_TABLE.'`
+  FROM '.ACTIVITY_TABLE.'
   WHERE object_id = '.$category['id'].' 
     AND object = "album"
     AND action = "add"
@@ -291,7 +291,7 @@ if (count($result) > 0) {
 // Sub Albums
 $query = '
 SELECT COUNT(*)
-  FROM `'.CATEGORIES_TABLE.'`
+  FROM '.CATEGORIES_TABLE.'
   WHERE id_uppercat = '.$category['id'].'
 ';
 $result = query2array($query);

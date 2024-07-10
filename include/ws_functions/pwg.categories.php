@@ -743,7 +743,7 @@ SELECT id, id_uppercat, rank_column
 SELECT id
   FROM '.CATEGORIES_TABLE.'
   WHERE id_uppercat '.(empty($category['id_uppercat']) ? "IS NULL" : "= ".$category['id_uppercat']).'
-  ORDER BY `id` ASC
+  ORDER BY id ASC
 ;';
 
     $cat_asc = query2array($query, null, 'id');

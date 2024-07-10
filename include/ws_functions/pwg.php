@@ -160,7 +160,7 @@ function ws_getInfos($params, &$service)
   $query = 'SELECT COUNT(*) FROM '.USERS_TABLE.';';
   list($infos['nb_users']) = pwg_db_fetch_row(pwg_query($query));
 
-  $query = 'SELECT COUNT(*) FROM `'.GROUPS_TABLE.'`;';
+  $query = 'SELECT COUNT(*) FROM '.GROUPS_TABLE.';';
   list($infos['nb_groups']) = pwg_db_fetch_row(pwg_query($query));
 
   $query = 'SELECT COUNT(*) FROM '.COMMENTS_TABLE.';';
@@ -541,10 +541,10 @@ SELECT
   {
     $query = '
 SELECT
-    `'.$conf['user_fields']['id'].'` AS user_id,
-    `'.$conf['user_fields']['username'].'` AS username
+    '.$conf['user_fields']['id'].' AS user_id,
+    '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.'
-  WHERE `'.$conf['user_fields']['id'].'` IN ('.implode(',', array_keys($user_ids)).')
+  WHERE '.$conf['user_fields']['id'].' IN ('.implode(',', array_keys($user_ids)).')
 ;';
     $username_of = query2array($query, 'user_id', 'username');
   }
