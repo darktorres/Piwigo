@@ -6,6 +6,7 @@
         "php": "^8.3",
         "ahand/mobileesp": "dev-master",
         "katzgrau/klogger": "^1.2.2",
-        "openpsa/universalfeedcreator": "^v1.9"
+        "openpsa/universalfeedcreator": "^v1.9",
+        "pclzip/pclzip": "^2.8.2"
     }
 }
