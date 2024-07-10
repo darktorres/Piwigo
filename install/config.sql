@@ -620,3 +620,10 @@ VALUES
         'a:13:{s:6:\"height\";s:3:\"600\";s:6:\"margin\";s:2:\"10\";s:13:\"nb_image_page\";s:2:\"80\";s:9:\"big_thumb\";b:0;s:16:\"big_thumb_noinpw\";b:0;s:15:\"cache_big_thumb\";b:1;s:15:\"normalize_title\";s:3:\"off\";s:6:\"method\";s:6:\"resize\";s:16:\"thumb_mode_album\";s:13:\"bottom_static\";s:16:\"thumb_mode_photo\";s:4:\"hide\";s:14:\"thumb_metamode\";s:6:\"merged\";s:11:\"no_wordwrap\";b:0;s:13:\"thumb_animate\";b:0;}',
         NULL
     );
+
+-- Plugin 'RV Thumb Scroller'
+
+INSERT INTO
+    piwigo_plugins (id, state, version)
+VALUES
+    ('rv_tscroller', 'active', '12.a');
