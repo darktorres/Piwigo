@@ -270,7 +270,7 @@ function mass_updates($tablename, $dbfields, $datas, $flags=0)
       $is_first = true;
 
       $query = '
-UPDATE '.protect_column_name($tablename).'
+UPDATE '.$tablename.'
   SET ';
 
       foreach ($dbfields['update'] as $key)
@@ -279,7 +279,7 @@ UPDATE '.protect_column_name($tablename).'
 
         if (isset($data[$key]) and $data[$key] != '')
         {
-          $query.= $separator.protect_column_name($key).' = \''.$data[$key].'\'';
+          $query.= $separator.$key.' = \''.$data[$key].'\'';
         }
         else
         {
@@ -287,7 +287,7 @@ UPDATE '.protect_column_name($tablename).'
           {
             continue; // next field
           }
-          $query.= $separator.protect_column_name($key).' = NULL';
+          $query.= $separator.$key.' = NULL';
         }
         $is_first = false;
       }
@@ -306,11 +306,11 @@ UPDATE '.protect_column_name($tablename).'
           }
           if (isset($data[$key]))
           {
-            $query.= protect_column_name($key).' = \''.$data[$key].'\'';
+            $query.= $key.' = \''.$data[$key].'\'';
           }
           else
           {
-            $query.= protect_column_name($key).' IS NULL';
+            $query.= $key.' IS NULL';
           }
           $is_first = false;
         }
@@ -322,7 +322,7 @@ UPDATE '.protect_column_name($tablename).'
   else
   {
     // creation of the temporary table
-    $result = pwg_query('SHOW FULL COLUMNS FROM '.protect_column_name($tablename));
+    $result = pwg_query('SHOW FULL COLUMNS FROM '.$tablename);
     $columns = array();
     $all_fields = array_merge($dbfields['primary'], $dbfields['update']);
 
@@ -330,7 +330,7 @@ UPDATE '.protect_column_name($tablename).'
     {
       if (in_array($row['Field'], $all_fields))
       {
-        $column = '`'.$row['Field'].'`';
+        $column = $row['Field'];
         $column.= ' '.$row['Type'];
 
         $nullable = true;
@@ -374,7 +374,7 @@ CREATE TABLE '.$temporary_tablename.'
 
     // update of table by joining with temporary table
     $query = '
-UPDATE '.protect_column_name($tablename).' AS t1, '.$temporary_tablename.' AS t2
+UPDATE '.$tablename.' AS t1, '.$temporary_tablename.' AS t2
   SET '.
       implode(
         "\n    , ",
@@ -412,7 +412,7 @@ function single_update($tablename, $datas, $where, $flags=0)
   $is_first = true;
 
   $query = '
-UPDATE '.protect_column_name($tablename).'
+UPDATE '.$tablename.'
   SET ';
 
   foreach ($datas as $key => $value)
@@ -421,7 +421,7 @@ UPDATE '.protect_column_name($tablename).'
 
     if (isset($value) and $value !== '')
     {
-      $query.= $separator.protect_column_name($key).' = \''.$value.'\'';
+      $query.= $separator.$key.' = \''.$value.'\'';
     }
     else
     {
@@ -429,7 +429,7 @@ UPDATE '.protect_column_name($tablename).'
       {
         continue; // next field
       }
-      $query.= $separator.protect_column_name($key).' = NULL';
+      $query.= $separator.$key.' = NULL';
     }
     $is_first = false;
   }
@@ -449,11 +449,11 @@ UPDATE '.protect_column_name($tablename).'
       }
       if (isset($value))
       {
-        $query.= protect_column_name($key).' = \''.$value.'\'';
+        $query.= $key.' = \''.$value.'\'';
       }
       else
       {
-        $query.= protect_column_name($key).' IS NULL';
+        $query.= $key.' IS NULL';
       }
       $is_first = false;
     }
@@ -499,8 +499,8 @@ function mass_inserts($table_name, $dbfields, $datas, $options=array())
       if ($first)
       {
         $query = '
-INSERT '.$ignore.' INTO '.protect_column_name($table_name).'
-  ('.implode(',', array_map('protect_column_name', $dbfields)).')
+INSERT '.$ignore.' INTO '.$table_name.'
+  ('.implode(',', $dbfields).')
   VALUES';
         $first = false;
       }
@@ -553,8 +553,8 @@ function single_insert($table_name, $data, $options=array())
   if (count($data) != 0)
   {
     $query = '
-INSERT '.$ignore.' INTO '.protect_column_name($table_name).'
-  ('.implode(',', array_map('protect_column_name', array_keys($data))).')
+INSERT '.$ignore.' INTO '.$table_name.'
+  ('.implode(',', array_keys($data)).')
   VALUES';
 
     $query .= '(';
@@ -583,16 +583,6 @@ INSERT '.$ignore.' INTO '.protect_column_name($table_name).'
     
     pwg_query($query);
   }
-}
-
-function protect_column_name($column_name)
-{
-  if ('`' != $column_name[0])
-  {
-    $column_name = '`'.$column_name.'`';
-  }
-
-  return $column_name;
 }
 
 /**
