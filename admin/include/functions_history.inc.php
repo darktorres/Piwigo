@@ -491,10 +491,10 @@ SELECT
     return;
   }
 
-  $result = pwg_query('SHOW COLUMNS FROM `'.HISTORY_TABLE.'` LIKE "summarized";');
+  $result = pwg_query('SHOW COLUMNS FROM '.HISTORY_TABLE.' LIKE "summarized";');
   if (pwg_db_num_rows($result))
   {
-    pwg_query('ALTER TABLE `'.HISTORY_TABLE.'` DROP COLUMN `summarized`;');
+    pwg_query('ALTER TABLE '.HISTORY_TABLE.' DROP COLUMN summarized;');
   }
 
   conf_update_param('history_summarized_dropped', true);

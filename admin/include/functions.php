@@ -2609,7 +2609,7 @@ function get_groupname($group_id)
 {
   $query = '
 SELECT name
-  FROM `'.GROUPS_TABLE.'`
+  FROM '.GROUPS_TABLE.'
   WHERE id = '.intval($group_id).'
 ;';
   $result = pwg_query($query);
@@ -2665,7 +2665,7 @@ DELETE
 
   $query = '
 SELECT id, name
-  FROM `'. GROUPS_TABLE .'`
+  FROM '. GROUPS_TABLE .'
   WHERE id IN ('. $group_id_string  .')
 ;';
 
@@ -2675,7 +2675,7 @@ SELECT id, name
   // destruction of the group
   $query = '
 DELETE
-  FROM `'. GROUPS_TABLE .'`
+  FROM '. GROUPS_TABLE .'
   WHERE id IN ('. $group_id_string  .')
 ;';
   pwg_query($query);
@@ -3253,7 +3253,7 @@ SELECT CONCAT(
     "_",
     COUNT(*)
   )
-  FROM `'. $tables[$item] .'`
+  FROM '. $tables[$item] .'
 ;';
     list($keys[$item]) = pwg_db_fetch_row(pwg_query($query));
   }
