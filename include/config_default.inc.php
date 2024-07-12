@@ -34,6 +34,8 @@ if (!extension_loaded('openssl')) {
   die('PHP extension "openssl" is not loaded');
 }
 
+require_once PHPWG_ROOT_PATH . 'vendor/autoload.php';
+
 /**
  *                           configuration page
  *
