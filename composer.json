@@ -1,0 +1,7 @@
+{
+    "minimum-stability": "beta",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.3"
+    }
+}
