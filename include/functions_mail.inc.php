@@ -417,7 +417,7 @@ function pwg_mail_admins(
     }
 
     $query .= ' ORDER BY name;';
-    $admins = array_from_query($query);
+    $admins = query2array($query);
 
     if ($admins === []) {
         return $return;
@@ -461,7 +461,7 @@ function pwg_mail_group(
     }
 
     $query .= ';';
-    $languages = array_from_query($query, 'language');
+    $languages = query2array($query, null, 'language');
 
     if ($languages === []) {
         return $return;
@@ -473,7 +473,7 @@ function pwg_mail_group(
         "SELECT ui.user_id, ui.status, u.{$conf['user_fields']['username']} AS name, u.{$conf['user_fields']['email']} AS email FROM user_group AS ug
          INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id WHERE group_id = {$group_id}
          AND {$conf['user_fields']['email']} <> '' AND language = '{$language}';";
-        $users = array_from_query($query);
+        $users = query2array($query);
 
         if ($users === []) {
             continue;

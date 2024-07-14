@@ -121,7 +121,7 @@ if (count($page['cat_elements_id']) > 0) {
     $nav_bar = create_navigation_bar(
         $base_url . get_query_string_diff(['start']),
         count($page['cat_elements_id']),
-        $page['start'],
+        (int) $page['start'],
         $page['nb_images']
     );
     $template->assign([

@@ -66,6 +66,6 @@
     </form>
 </div>
 
-<script type="text/javascript"><!--
+<script>
     document.getElementById('login').focus();
-//--></script>
+</script>

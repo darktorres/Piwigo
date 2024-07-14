@@ -203,7 +203,7 @@ if (! isset($_GET['parent_id'])) {
 }
 
 $query .= ' ORDER BY rank_column ASC;';
-$categories = hash_from_query($query, 'id');
+$categories = query2array($query, 'id');
 
 // get the categories containing images directly
 $categories_with_images = [];

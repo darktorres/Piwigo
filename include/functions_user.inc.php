@@ -142,7 +142,7 @@ function register_user(
 
     if ($conf['insensitive_case_logon'] == true) {
         $login_error = validate_login_case($login);
-        if ($login_error != '') {
+        if ($login_error !== '') {
             $errors[] = $login_error;
         }
     }
@@ -1437,9 +1437,9 @@ function userprefs_update_param(
     global $user;
 
     // If the field is true or false, the variable is transformed into a boolean value.
-    if ($value == 'true') {
+    if ($value === 'true') {
         $value = true;
-    } elseif ($value == 'false') {
+    } elseif ($value === 'false') {
         $value = false;
     }
 

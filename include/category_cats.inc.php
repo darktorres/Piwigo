@@ -289,8 +289,8 @@ if ($categories !== []) {
     if ($page['total_categories'] > $conf['nb_categories_page']) {
         $page['cats_navigation_bar'] = create_navigation_bar(
             duplicate_index_url([], ['startcat']),
-            $page['total_categories'],
-            $page['startcat'],
+            (int) $page['total_categories'],
+            (int) $page['startcat'],
             $conf['nb_categories_page'],
             true,
             'startcat'

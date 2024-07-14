@@ -29,7 +29,7 @@ include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
 
 $this->assign(
     [
-        'MODUS_CSS_VERSION' => crc32(implode(',', [
+        'MODUS_CSS_VERSION' => (string) crc32(implode(',', [
             'a' . $conf['modus_theme']['skin'],
             $conf['modus_theme']['album_thumb_size'],
             ImageStdParams::get_by_type(IMG_SQUARE)->max_width(),
@@ -53,7 +53,7 @@ if (! $conf['compiled_template_cache_language']) {
 }
 
 if (isset($_COOKIE['caps'])) {
-    setcookie('caps', false, [
+    setcookie('caps', '', [
         'expires' => 0,
         'path' => cookie_path(),
     ]);
@@ -79,7 +79,7 @@ function modus_smarty_prefilter_wrap(
 
 if (! defined('IN_ADMIN') && defined('RVCDN')) {
     $this->smarty->registerFilter('pre', 'rv_cdn_prefilter');
-    add_event_handler('combined_script', rv_cdn_combined_script(...), EVENT_HANDLER_PRIORITY_NEUTRAL, 2);
+    add_event_handler('combined_script', rv_cdn_combined_script(...));
 }
 
 function rv_cdn_prefilter(
@@ -452,7 +452,7 @@ function modus_loc_begin_picture(): void
     ");
 }
 
-add_event_handler('render_element_content', modus_picture_content(...), EVENT_HANDLER_PRIORITY_NEUTRAL - 1, 2);
+add_event_handler('render_element_content', modus_picture_content(...), EVENT_HANDLER_PRIORITY_NEUTRAL - 1);
 function modus_picture_content(
     string $content,
     array $element_info

@@ -108,7 +108,7 @@ $template->assign(
 $query =
 'SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_images FROM categories AS c LEFT JOIN images AS i
  ON c.id = i.storage_category_id WHERE c.site_id IS NOT NULL GROUP BY c.site_id;';
-$sites_detail = hash_from_query($query, 'site_id');
+$sites_detail = query2array($query, 'site_id');
 
 $query = 'SELECT * FROM sites;';
 $result = pwg_query($query);
@@ -129,8 +129,8 @@ while ($row = pwg_db_fetch_assoc($result)) {
       [
           'NAME' => $row['galleries_url'],
           'TYPE' => l10n($is_remote ? 'Remote' : 'Local'),
-          'CATEGORIES' => (int) $sites_detail[$row['id']]['nb_categories'],
-          'IMAGES' => (int) $sites_detail[$row['id']]['nb_images'],
+          'CATEGORIES' => $sites_detail[$row['id']]['nb_categories'] ?? 0,
+          'IMAGES' => $sites_detail[$row['id']]['nb_images'] ?? 0,
           'U_SYNCHRONIZE' => $update_url,
       ];
 
