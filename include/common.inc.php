@@ -98,16 +98,12 @@ include(PHPWG_ROOT_PATH . 'include/cache.class.php');
 $persistent_cache = new PersistentFileCache();
 
 // Database connection
-try {
-    pwg_db_connect(
-        $conf['db_host'],
-        $conf['db_user'],
-        $conf['db_password'],
-        $conf['db_base']
-    );
-} catch (Exception $exception) {
-    my_error(l10n($exception->getMessage()), true);
-}
+pwg_db_connect(
+    $conf['db_host'],
+    $conf['db_user'],
+    $conf['db_password'],
+    $conf['db_base']
+);
 
 load_conf_from_db();
 
