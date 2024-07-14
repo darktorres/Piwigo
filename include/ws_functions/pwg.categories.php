@@ -933,7 +933,7 @@ function ws_categories_delete(
 
     $category_ids_ = implode(',', $category_ids);
     $query = "SELECT id FROM categories WHERE id IN ({$category_ids_});";
-    $category_ids = array_from_query($query, 'id');
+    $category_ids = query2array($query, null, 'id');
 
     if (count($category_ids) == 0) {
         return null;

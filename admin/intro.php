@@ -355,8 +355,8 @@ foreach ($file_extensions as $ext => $ext_details) {
         $type = 'Other';
     }
 
-    $data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
-    $data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
+    $data_storage[$type]['total']['filesize'] = ($data_storage[$type]['total']['filesize'] ?? null) + $ext_details['filesize'];
+    $data_storage[$type]['total']['nb_files'] = ($data_storage[$type]['total']['nb_files'] ?? null) + $ext_details['ext_counter'];
 
     $data_storage[$type]['details'][strtoupper($ext)] = [
         'filesize' => $ext_details['filesize'],

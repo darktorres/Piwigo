@@ -289,7 +289,7 @@ function ws_tags_rename(
     }
 
     $query = "SELECT name FROM tags WHERE id != {$tag_id};";
-    $existing_names = array_from_query($query, 'name');
+    $existing_names = query2array($query, null, 'name');
 
     $update = [];
 
@@ -360,7 +360,7 @@ function ws_tags_duplicate(
     ]);
 
     $query = "SELECT image_id FROM image_tag WHERE tag_id = {$tag_id};";
-    $destination_tag_image_ids = array_from_query($query, 'image_id');
+    $destination_tag_image_ids = query2array($query, null, 'image_id');
 
     $inserts = [];
 

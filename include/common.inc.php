@@ -24,19 +24,17 @@ $t2 = microtime(true);
 // but function get_magic_quotes_gpc was always replying false.
 // Since php 8 the function get_magic_quotes_gpc is also removed
 // but we stil want to sanitize user input variables.
-if (! function_exists('get_magic_quotes_gpc') || ! get_magic_quotes_gpc()) {
-    function sanitize_mysql_kv(
-        string &$v
-    ): void {
-        $v = addslashes($v);
-    }
-
-    array_walk_recursive($_GET, sanitize_mysql_kv(...));
-
-    array_walk_recursive($_POST, sanitize_mysql_kv(...));
-
-    array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
+function sanitize_mysql_kv(
+    string &$v
+): void {
+    $v = addslashes($v);
 }
+
+array_walk_recursive($_GET, sanitize_mysql_kv(...));
+
+array_walk_recursive($_POST, sanitize_mysql_kv(...));
+
+array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
 
 if (! empty($_SERVER['PATH_INFO'])) {
     $_SERVER['PATH_INFO'] = addslashes((string) $_SERVER['PATH_INFO']);

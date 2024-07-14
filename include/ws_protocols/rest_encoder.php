@@ -68,17 +68,6 @@ class PwgXmlWriter
         $this->_output(htmlspecialchars($value));
     }
 
-    public function write_cdata(
-        string $value
-    ): void {
-        $this->_end_prev(false);
-        $this->_output(
-            '<![CDATA['
-      . str_replace(']]>', ']]&gt;', $value)
-      . ']]>'
-        );
-    }
-
     public function write_attribute(
         string $name,
         string $value

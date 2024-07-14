@@ -161,7 +161,7 @@ if (isset($_POST['submit'])) {
                         $page['errors'][] = l10n('No order field selected');
                     } else {
                         // limit to the number of available parameters
-                        $order_by = array_slice($_POST['order_by'], 0, ceil(count($sort_fields) / 2));
+                        $order_by = array_slice($_POST['order_by'], 0, (int) ceil(count($sort_fields) / 2));
                         $order_by_inside_category = $order_by;
                         // there is no rank outside categories
                         if (($i = array_search('rank_column ASC', $order_by, true)) !== false) {
@@ -318,7 +318,9 @@ switch ($page['section']) {
                 include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
             }
 
-            if (isset($conf['local_dir_site'])) {
+            if (isset($conf['local_dir_site']) && file_exists(
+                PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php'
+            )) {
                 include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
             }
 
@@ -476,7 +478,7 @@ switch ($page['section']) {
 
             // derivatives = multiple size
             $enabled = ImageStdParams::get_defined_type_map();
-            $disabled = unserialize($conf['disabled_derivatives']);
+            $disabled = unserialize($conf['disabled_derivatives'] ?? '');
             if ($disabled === false) {
                 $disabled = [];
             }

@@ -21,7 +21,7 @@
 {/if}
 {/if}
 
-<title>{if $PAGE_TITLE!=l10n('Home') && $PAGE_TITLE!=$GALLERY_TITLE}{$PAGE_TITLE} | {/if}{$GALLERY_TITLE}</title>
+<title>{if $PAGE_TITLE!='Home'|@translate && $PAGE_TITLE!=$GALLERY_TITLE}{$PAGE_TITLE} | {/if}{$GALLERY_TITLE}</title>
 <link rel="shortcut icon" type="image/x-icon" href="{$ROOT_URL}{$themeconf.icon_dir}/favicon.ico">
 
 <link rel="start" title="{'Home'|translate}" href="{$U_HOME}" >
@@ -58,7 +58,7 @@
 <!-- END get_combined -->
 
 <!--[if lt IE 7]>
-<script type="text/javascript" src="{$ROOT_URL}themes/default/js/pngfix.js"></script>
+<script src="{$ROOT_URL}themes/default/js/pngfix.js"></script>
 <![endif]-->
 
 {if not empty($head_elements)}

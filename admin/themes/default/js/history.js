@@ -14,7 +14,7 @@ $(document).ready(() => {
   }
 
   $(".elem-type-select").on("change", function (e) {
-    console.log($(".elem-type-select option:selected").attr("value"));
+    // console.log($(".elem-type-select option:selected").attr("value"));
 
     if ($(".elem-type-select option:selected").attr("value") == "visited") {
       current_param.types = {
@@ -61,7 +61,7 @@ $(document).ready(() => {
   });
 
   $("#start_unset").on("click", function () {
-    console.log("here" + current_param.start);
+    // console.log("here" + current_param.start);
     if (!current_param.start == "") {
       
       current_param.pageNumber = 0;
@@ -184,7 +184,7 @@ function fillSummaryResult(summary) {
 }
 
 function showResults(doShow) {
-  console.log("EMPTY");
+  // console.log("EMPTY");
   if (doShow) {
     $(".search-summary").show();
     $(".container").show();
