@@ -43,16 +43,12 @@ define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 // +-----------------------------------------------------------------------+
 // |                         Database connection                           |
 // +-----------------------------------------------------------------------+
-try {
-    pwg_db_connect(
-        $conf['db_host'],
-        $conf['db_user'],
-        $conf['db_password'],
-        $conf['db_base']
-    );
-} catch (Exception $exception) {
-    my_error(l10n($exception->getMessage()), true);
-}
+pwg_db_connect(
+    $conf['db_host'],
+    $conf['db_user'],
+    $conf['db_password'],
+    $conf['db_base']
+);
 
 // +-----------------------------------------------------------------------+
 // |                              Upgrades                                 |

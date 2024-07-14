@@ -99,7 +99,21 @@ function pwg_query(
     global $mysqli, $conf, $page, $debug, $t2;
 
     $start = microtime(true);
-    ($result = $mysqli->query($query)) || my_error($query, $conf['die_on_sql_error']);
+
+    try {
+        $result = $mysqli->query($query);
+    } catch (Throwable) {
+        $error = '[mysql error ' . $mysqli->errno . '] ' . $mysqli->error . "\n";
+        $error .= $query;
+
+        if ($conf['die_on_sql_error']) {
+            fatal_error($error);
+        }
+
+        echo '<pre>';
+        trigger_error($error, E_USER_WARNING);
+        echo '</pre>';
+    }
 
     $time = microtime(true) - $start;
 
@@ -676,28 +690,6 @@ function pwg_db_date_to_ts(
     string $date
 ): string {
     return "UNIX_TIMESTAMP({$date})";
-}
-
-/**
- * Returns (or send to standard output) the message concerning the
- * error occured for the last mysql query.
- */
-function my_error(
-    string $header,
-    bool $die
-): void {
-    global $mysqli;
-
-    $error = '[mysql error ' . $mysqli->errno . '] ' . $mysqli->error . "\n";
-    $error .= $header;
-
-    if ($die) {
-        fatal_error($error);
-    }
-
-    echo '<pre>';
-    trigger_error($error, E_USER_WARNING);
-    echo '</pre>';
 }
 
 /**
