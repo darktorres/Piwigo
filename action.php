@@ -122,7 +122,7 @@ if ($file === '' || $file === '0') {
 
 if ($_GET['part'] == 'e') {
     pwg_log($_GET['id'], 'high');
-} elseif ($_GET['part'] == 'e') {
+} elseif ($_GET['part'] == 'r') {
     pwg_log($_GET['id'], 'other');
 } elseif ($_GET['part'] == 'f') {
     pwg_log($_GET['id'], 'high', $format['format_id']);

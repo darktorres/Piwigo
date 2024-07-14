@@ -112,7 +112,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 $query = "SELECT id FROM images ORDER by rating_score DESC LIMIT {$consensus_top_number}";
-$best_rated = array_flip(array_from_query($query, 'id'));
+$best_rated = array_flip(query2array($query, null, 'id'));
 
 // by user stats
 foreach ($by_user_ratings as $id => &$rating) {

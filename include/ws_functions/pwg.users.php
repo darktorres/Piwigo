@@ -671,7 +671,7 @@ function ws_users_setInfo(
         // we remove all provided groups that do not really exist
         $group_id_ = implode(',', $params['group_id']);
         $query = "SELECT id FROM groups_table WHERE id IN ({$group_id_});";
-        $group_ids = array_from_query($query, 'id');
+        $group_ids = query2array($query, null, 'id');
 
         // if only -1 (a group id that can't exist) is in the list, then no
         // group is associated
@@ -725,7 +725,7 @@ function ws_users_preferences_set(
         $value = json_decode($value, true);
     }
 
-    userprefs_update_param($params['param'], $value, true);
+    userprefs_update_param($params['param'], $value);
 
     return $user['preferences'];
 }

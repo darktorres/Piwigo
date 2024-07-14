@@ -90,7 +90,7 @@ $template->assign(
     [
         'navbar' => create_navigation_bar(
             PHPWG_ROOT_PATH . 'admin.php' . get_query_string_diff(['start', 'del']),
-            $nb_images,
+            (int) $nb_images,
             $start,
             $elements_per_page
         ),
@@ -130,7 +130,7 @@ $user_options = [
 ];
 
 $template->assign('user_options', $user_options);
-$template->assign('user_options_selected', [$_GET['users']]);
+$template->assign('user_options_selected', [$_GET['users'] ?? null]);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Rating'));
 
 $query =

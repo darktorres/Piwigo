@@ -778,7 +778,7 @@ function ws_images_setPrivacyLevel(
 
     pwg_activity('photo', $params['image_id'], 'edit');
 
-    $affected_rows = pwg_db_changes($result);
+    $affected_rows = pwg_db_changes();
     if ($affected_rows) {
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
         invalidate_user_cache();
@@ -2220,7 +2220,7 @@ function ws_images_uploadCompleted(
     }
 
     // the list of images moved from the lounge might not be the same than
-    // $image_ids (canbe a subset or more image_ids from another upload too)
+    // $image_ids (can be a subset or more image_ids from another upload too)
     $moved_from_lounge = empty_lounge();
 
     $query = "SELECT COUNT(*) AS nb_photos FROM image_category WHERE category_id = {$params['category_id']};";
