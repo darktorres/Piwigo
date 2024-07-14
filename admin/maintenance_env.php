@@ -101,7 +101,7 @@ switch ($action) {
         $sessions = query2array($query);
 
         $query = "SELECT {$conf['user_fields']['id']} AS id FROM users;";
-        $all_user_ids = query2array($query, 'id', null);
+        $all_user_ids = query2array($query, 'id');
 
         $sessions_to_delete = [];
 

@@ -20,7 +20,7 @@ function rate_picture(
 ): array|bool {
     global $conf, $user;
 
-    if (! isset($rate) || ! $conf['rate'] || ! preg_match('/^\d+$/', $rate) || ! in_array($rate, $conf['rate_items'])) {
+    if (! isset($rate) || ! $conf['rate'] || ! preg_match('/^\d+$/', (string) $rate) || ! in_array($rate, $conf['rate_items'])) {
         return false;
     }
 
@@ -42,7 +42,7 @@ function rate_picture(
 
         if ($anonymous_id != $save_anonymous_id) { // client has changed his IP adress or he's trying to fool us
             $query = "SELECT element_id FROM rate WHERE user_id = {$user['id']} AND anonymous_id = '{$anonymous_id}';";
-            $already_there = array_from_query($query, 'element_id');
+            $already_there = query2array($query, null, 'element_id');
 
             if ($already_there !== []) {
                 $already_there_ = implode(',', $already_there);
@@ -135,7 +135,7 @@ function update_rating_score(
     if (! isset($by_item[$element_id])) {
         $query = 'SELECT id FROM images LEFT JOIN rate ON id = element_id WHERE element_id IS NULL AND rating_score IS NOT NULL';
 
-        $to_update = array_from_query($query, 'id');
+        $to_update = query2array($query, null, 'id');
 
         if ($to_update !== []) {
             $to_update_ = implode(',', $to_update);
