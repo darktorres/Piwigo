@@ -114,8 +114,15 @@ function get_exif_data(
         die('Exif extension not available, admin should disable exif use');
     }
 
+    getimagesize($filename, $info);
+
+    // Check if the APP1 segment exists in the info array
+    if (! isset($info['APP1']) || ! str_starts_with((string) $info['APP1'], 'Exif')) {
+        return [];
+    }
+
     // Read EXIF data
-    if (($exif = @exif_read_data($filename)) || ($exif2 = trigger_change('format_exif_data', $exif = null, $filename, $map))) {
+    if (($exif = exif_read_data($filename)) || ($exif2 = trigger_change('format_exif_data', $exif = null, $filename, $map))) {
         $exif = empty($exif2) ? trigger_change('format_exif_data', $exif, $filename, $map) : $exif2;
         // configured fields
         foreach ($map as $key => $field) {

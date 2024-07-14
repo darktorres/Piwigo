@@ -335,11 +335,11 @@ class updates
             $ignore_list = [];
             $need_upgrade = [];
 
-            foreach ($fs_ext as $ext_id => $fs_ext) {
-                if (isset($fs_ext['extension']) && isset($server_ext[$fs_ext['extension']])) {
-                    $ext_info = $server_ext[$fs_ext['extension']];
+            foreach ($fs_ext as $ext_id => $ext) {
+                if (isset($ext['extension']) && isset($server_ext[$ext['extension']])) {
+                    $ext_info = $server_ext[$ext['extension']];
 
-                    if (! safe_version_compare($fs_ext['version'], $ext_info['revision_name'], '>=')) {
+                    if (! safe_version_compare($ext['version'], $ext_info['revision_name'], '>=')) {
                         if (in_array($ext_id, $conf['updates_ignored'][$type])) {
                             $ignore_list[] = $ext_id;
                         } else {
