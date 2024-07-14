@@ -64,7 +64,7 @@ if (! is_array($mb_conf)) {
     $mb_conf = [];
 }
 
-foreach ($mb_conf as $id => $pos) {
+foreach (array_keys($mb_conf) as $id) {
     if (! isset($reg_blocks[$id])) {
         unset($mb_conf[$id]);
     }
