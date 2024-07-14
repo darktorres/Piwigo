@@ -137,11 +137,11 @@ function cmp(
         'inactive' => 1,
     ];
 
-    if ($a['IS_DEFAULT']) {
+    if (($a['IS_DEFAULT'] ?? null)) {
         return -1;
     }
 
-    if ($b['IS_DEFAULT']) {
+    if (($b['IS_DEFAULT'] ?? null)) {
         return 1;
     }
 

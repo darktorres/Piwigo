@@ -48,7 +48,7 @@ if ($_POST !== []) {
         // manage groups
         //
         $query = "SELECT group_id FROM group_access WHERE cat_id = {$page['cat']};";
-        $groups_granted = array_from_query($query, 'group_id');
+        $groups_granted = query2array($query, null, 'group_id');
 
         if (! isset($_POST['groups'])) {
             $_POST['groups'] = [];
@@ -79,7 +79,7 @@ if ($_POST !== []) {
 
             $cat_ids_ = implode(',', $cat_ids);
             $query = "SELECT id FROM categories WHERE id IN ({$cat_ids_}) AND status = 'private';";
-            $private_cats = array_from_query($query, 'id');
+            $private_cats = query2array($query, null, 'id');
 
             $inserts = [];
             foreach ($private_cats as $cat_id) {
@@ -105,7 +105,7 @@ if ($_POST !== []) {
         // users
         //
         $query = "SELECT user_id FROM user_access WHERE cat_id = {$page['cat']};";
-        $users_granted = array_from_query($query, 'user_id');
+        $users_granted = query2array($query, null, 'user_id');
 
         if (! isset($_POST['users'])) {
             $_POST['users'] = [];
@@ -165,23 +165,23 @@ $template->assign(
 $groups = [];
 
 $query = 'SELECT id, name FROM groups_table ORDER BY name ASC;';
-$groups = simple_hash_from_query($query, 'id', 'name');
+$groups = query2array($query, 'id', 'name');
 $template->assign('groups', $groups);
 
 // groups granted to access the category
 $query = "SELECT group_id FROM group_access WHERE cat_id = {$page['cat']};";
-$group_granted_ids = array_from_query($query, 'group_id');
+$group_granted_ids = query2array($query, null, 'group_id');
 $template->assign('groups_selected', $group_granted_ids);
 
 // users...
 $users = [];
 
 $query = "SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username FROM users;";
-$users = simple_hash_from_query($query, 'id', 'username');
+$users = query2array($query, 'id', 'username');
 $template->assign('users', $users);
 
 $query = "SELECT user_id FROM user_access WHERE cat_id = {$page['cat']};";
-$user_granted_direct_ids = array_from_query($query, 'user_id');
+$user_granted_direct_ids = query2array($query, null, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 $user_granted_indirect_ids = [];

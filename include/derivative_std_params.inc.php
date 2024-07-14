@@ -211,7 +211,7 @@ final class ImageStdParams
     public static function get_default_sizes(): array
     {
         $arr = [
-            IMG_SQUARE => new DerivativeParams(SizingParams::square(120, 120)),
+            IMG_SQUARE => new DerivativeParams(SizingParams::square(120)),
             IMG_THUMB => new DerivativeParams(SizingParams::classic(144, 144)),
             IMG_XXSMALL => new DerivativeParams(SizingParams::classic(240, 240)),
             IMG_XSMALL => new DerivativeParams(SizingParams::classic(432, 324)),

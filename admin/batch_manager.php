@@ -411,8 +411,8 @@ if (! empty($_SESSION['bulk_manager_filter']['tags'])) {
     $filter_sets[] = get_image_ids_for_tags(
         $_SESSION['bulk_manager_filter']['tags'],
         $_SESSION['bulk_manager_filter']['tag_mode'],
-        null,
-        null,
+        '',
+        '',
         false // we don't apply permissions in administration screens
     );
 }

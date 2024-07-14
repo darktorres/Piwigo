@@ -59,8 +59,8 @@
 
 </form>
 
-<script type="text/javascript"><!--
+<script>
 document.login_form.username.focus();
-//--></script>
+</script>
 
 </div> <!-- content -->

@@ -20,7 +20,9 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
-include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+if (file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php')) {
+    include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+}
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     // we use an hashed filename to prevent direct file access, and we salt with
@@ -393,8 +395,8 @@ foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $
 }
 
 include_once(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
-include_once(PHPWG_ROOT_PATH . '/include/derivative_params.inc.php');
-include_once(PHPWG_ROOT_PATH . '/include/derivative_std_params.inc.php');
+include_once(PHPWG_ROOT_PATH . 'include/derivative_params.inc.php');
+include_once(PHPWG_ROOT_PATH . 'include/derivative_std_params.inc.php');
 include_once(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 include_once(PHPWG_ROOT_PATH . 'include/constants.php');
 
@@ -417,7 +419,7 @@ parse_request();
 
 $params = $page['derivative_params'];
 
-$src_mtime = filemtime($page['src_path']);
+$src_mtime = file_exists($page['src_path']) ? filemtime($page['src_path']) : false;
 if ($src_mtime === false) {
     ierror('Source not found', 404);
 }
