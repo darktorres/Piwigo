@@ -32,7 +32,7 @@ static function on_index_begin()
 		if (empty($page['items']))
 			add_event_handler('loc_end_index', array('RVTS','on_end_index'));
 		else
-			add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails'), EVENT_HANDLER_PRIORITY_NEUTRAL, 1);
+			add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails'));
 	}
 	else
 	{
@@ -46,7 +46,7 @@ static function on_index_begin()
 				pwg_set_session_var('rvts_mult', --$mult);
 		}
 		$page['nb_image_page']=(int)$_GET['rvts'];
-		add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails_ajax'), EVENT_HANDLER_PRIORITY_NEUTRAL+5, 1);
+		add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails_ajax'), EVENT_HANDLER_PRIORITY_NEUTRAL+5);
 		$page['root_path'] = get_absolute_root_url(false);
 		$page['body_id'] = 'scroll';
 		global $user, $template, $conf;
@@ -113,7 +113,7 @@ static function on_index_thumbnails_ajax($thumbs)
 {
 	global $template;
 	$template->assign('thumbnails', $thumbs);
-	header('Content-Type: text/html; charset='.get_pwg_charset());
+	header('Content-Type: text/html; charset=utf-8');
 	$template->pparse('index_thumbnails');
 	exit;
 }
@@ -136,7 +136,7 @@ static function on_end_index()
 			'path'=> 'plugins/'.$my_base_name.'/rv_tscroller.min.js',
 			'require' => $req,
 			'version' => RVTS_VERSION,
-		), $template->smarty);
+		));
 	}
 	//var_export($template->scriptLoader);
 }
