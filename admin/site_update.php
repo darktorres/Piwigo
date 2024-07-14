@@ -186,7 +186,7 @@ if (isset($_POST['submit']) && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'f
     $inserts = [];
     // new categories are the directories not present yet in the database
     foreach (array_diff($fs_fulldirs, array_keys($db_fulldirs)) as $fulldir) {
-        $dir = basename((string) $fulldir);
+        $dir = $mysqli->real_escape_string(basename((string) $fulldir));
         $insert = [
             'id' => $next_id++,
             'dir' => $dir,
