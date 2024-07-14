@@ -114,7 +114,7 @@ $per_page = 100;
 
 // tag counters
 $query = 'SELECT tag_id, COUNT(image_id) AS counter FROM image_tag GROUP BY tag_id;';
-$tag_counters = simple_hash_from_query($query, 'tag_id', 'counter');
+$tag_counters = query2array($query, 'tag_id', 'counter');
 
 // all tags
 $query = 'SELECT name, id, url_name FROM tags;';

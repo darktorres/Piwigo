@@ -61,9 +61,9 @@
 
 </form>
 
-<script type="text/javascript"><!--
+<script>
 document.register_form.login.focus();
-//--></script>
+</script>
 
 </div> <!-- content -->
 </div> <!-- registerPage -->

@@ -45,7 +45,7 @@ function parse_sort_variables(
         $url = $base_url;
         $disp = '↓'; // TODO: an small image is better
 
-        if ($field !== $_GET[$get_param]) {
+        if ($field !== ($_GET[$get_param] ?? null)) {
             if (! isset($default_field) || $default_field != $field) { // the first should be the default
                 $url = add_url_params($url, [
                     $get_param => $field,
@@ -94,7 +94,7 @@ if (isset($_POST['set_permalink']) && $_POST['cat_id'] > 0) {
     $delete_permanent_ = pwg_db_real_escape_string($_GET['delete_permanent']);
     $query = "DELETE FROM old_permalinks WHERE permalink = '{$delete_permanent_}' LIMIT 1;";
     $result = pwg_query($query);
-    if (pwg_db_changes($result) == 0) {
+    if (pwg_db_changes() == 0) {
         $page['errors'][] = l10n('Cannot delete the old permalink !');
     }
 }

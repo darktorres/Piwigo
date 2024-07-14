@@ -49,7 +49,7 @@ function get_history(
 ): array {
     if (isset($search['fields']['filename'])) {
         $query = "SELECT id FROM images WHERE file LIKE '{$search['fields']['filename']}';";
-        $search['image_ids'] = array_from_query($query, 'id');
+        $search['image_ids'] = query2array($query, null, 'id');
     }
 
     // echo '<pre>'; print_r($search); echo '</pre>';
@@ -245,7 +245,7 @@ function history_summarize(
     }
 
     foreach ($need_update as $time_key => $summary) {
-        $time_tokens = explode('-', $time_key);
+        $time_tokens = explode('-', (string) $time_key);
 
         $inserts[] = [
             'year' => $time_tokens[0],

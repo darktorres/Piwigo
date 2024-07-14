@@ -124,7 +124,7 @@ function ws_permissions_add(
 
         $cat_ids_ = implode(',', $cat_ids);
         $query = "SELECT id FROM categories WHERE id IN ({$cat_ids_}) AND status = 'private';";
-        $private_cats = array_from_query($query, 'id');
+        $private_cats = query2array($query, null, 'id');
 
         $inserts = [];
         foreach ($private_cats as $cat_id) {
