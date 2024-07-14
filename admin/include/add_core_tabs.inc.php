@@ -127,14 +127,6 @@ function add_core_tabs(
             ];
             break;
 
-        case 'users':
-            global $my_base_url;
-            $sheets[''] = [
-                'caption' => '<span class="icon-users"> </span>' . l10n('User list'),
-                'url' => $my_base_url . 'user_list',
-            ];
-            break;
-
         case 'groups':
             global $my_base_url;
             $sheets[''] = [

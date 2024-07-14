@@ -182,6 +182,14 @@ class Template
         $this->smarty->registerPlugin('modifier', 'count', count(...));
         $this->smarty->registerPlugin('modifier', 'strpos', strpos(...));
         $this->smarty->registerPlugin('modifier', 'is_admin', is_admin(...));
+        $this->smarty->registerPlugin('modifier', 'is_null', is_null(...));
+        $this->smarty->registerPlugin('modifier', 'get_device', get_device(...));
+        $this->smarty->registerPlugin('modifier', 'str_replace', str_replace(...));
+        $this->smarty->registerPlugin('modifier', 'preg_match', preg_match(...));
+        $this->smarty->registerPlugin('modifier', 'url_is_remote', url_is_remote(...));
+        require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+        $this->smarty->registerPlugin('modifier', 'cat_admin_access', cat_admin_access(...));
+        $this->smarty->registerPlugin('modifier', 'array_key_exists', array_key_exists(...));
         $this->smarty->registerPlugin('block', 'html_head', $this->block_html_head(...));
         $this->smarty->registerPlugin('block', 'html_style', $this->block_html_style(...));
         $this->smarty->registerPlugin('function', 'combine_script', $this->func_combine_script(...));
@@ -550,7 +558,7 @@ class Template
                 $content = [];
                 foreach ($scripts as $script) {
                     $content[] =
-                        '<script type="text/javascript" src="'
+                        '<script src="'
                         . $this->make_script_src($script)
                         . '"></script>';
                 }
@@ -890,20 +898,19 @@ class Template
         $scripts = $this->scriptLoader->get_footer_scripts();
         foreach ($scripts[0] as $script) {
             $content[] =
-              '<script type="text/javascript" src="'
+              '<script src="'
               . $this->make_script_src($script)
               . '"></script>';
         }
 
         if ($this->scriptLoader->inline_scripts !== []) {
-            $content[] = '<script type="text/javascript">//<![CDATA[
-';
+            $content[] = '<script>';
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
-            $content[] = '//]]></script>';
+            $content[] = '</script>';
         }
 
         if (count($scripts[1]) > 0) {
-            $content[] = '<script type="text/javascript">';
+            $content[] = '<script>';
             $content[] = '(function() {
 var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTagName(\'script\').length-1];';
             foreach ($scripts[1] as $script) {
@@ -1302,7 +1309,7 @@ class PwgTemplateAdapter
  */
 class Combinable
 {
-    public string $path;
+    public string $path = '';
 
     public bool|null $is_template = false;
 
@@ -1570,7 +1577,7 @@ class ScriptLoader
             }
 
             $script->set_path($path);
-            if ($version && version_compare($script->version, $version) < 0) {
+            if ($version && version_compare((string) $script->version, (string) $version) < 0) {
                 $script->version = $version;
             }
 

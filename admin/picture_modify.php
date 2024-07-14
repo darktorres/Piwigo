@@ -63,7 +63,7 @@ if (isset($_GET['delete'])) {
     $query = "SELECT category_id FROM image_category WHERE image_id = {$_GET['image_id']};";
 
     $authorizeds = array_diff(
-        array_from_query($query, 'category_id'),
+        query2array($query, null, 'category_id'),
         explode(',', calculate_permissions($user['id'], $user['status']))
     );
 
@@ -337,7 +337,7 @@ $template->assign('related_categories_ids', $related_categories_ids);
 $query = "SELECT category_id FROM image_category WHERE image_id = {$_GET['image_id']};";
 
 $authorizeds = array_diff(
-    array_from_query($query, 'category_id'),
+    query2array($query, null, 'category_id'),
     explode(
         ',',
         calculate_permissions($user['id'], $user['status'])

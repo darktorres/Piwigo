@@ -188,14 +188,14 @@ if ($conf['auth_key_duration'] > 0) {
 // +-----------------------------------------------------------------------+
 
 $query = 'SELECT id AS group_id FROM groups_table;';
-$all_group_ids = array_from_query($query, 'group_id');
+$all_group_ids = query2array($query, null, 'group_id');
 
 if (count($all_group_ids) == 0) {
     $template->assign('no_group_in_gallery', true);
 } else {
     if ($category['status'] == 'private') {
         $query = "SELECT group_id FROM group_access WHERE cat_id = {$category['id']};";
-        $group_ids = array_from_query($query, 'group_id');
+        $group_ids = query2array($query, null, 'group_id');
 
         if (count($group_ids) == 0) {
             $template->assign('permission_url', $admin_album_base_url . '-permissions');
@@ -209,7 +209,7 @@ if (count($all_group_ids) == 0) {
         $query = "SELECT id, name FROM groups_table WHERE id IN ({$group_ids_}) ORDER BY name ASC;";
         $template->assign(
             'group_mail_options',
-            simple_hash_from_query($query, 'id', 'name')
+            query2array($query, 'id', 'name')
         );
     }
 }

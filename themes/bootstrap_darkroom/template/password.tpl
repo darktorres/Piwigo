@@ -62,7 +62,7 @@
 </div>
 {/if}
 
-<script type="text/javascript">
+<script>
 {if $action eq 'lost'}
 {literal}try{document.getElementById('username_or_email').focus();}catch(e){}{/literal}
 {elseif $action eq 'reset'}

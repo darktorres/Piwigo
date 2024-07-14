@@ -411,7 +411,7 @@ $filters_and_forbidden = get_sql_condition_FandF(
 $query =
 "SELECT id, uppercats, commentable, visible, status, global_rank FROM image_category INNER JOIN categories ON category_id = id
  WHERE image_id = {$page['image_id']} {$filters_and_forbidden};";
-$related_categories = array_from_query($query);
+$related_categories = query2array($query);
 usort($related_categories, global_rank_compare(...));
 //-------------------------first, prev, current, next & last picture management
 $picture = [];
@@ -880,7 +880,7 @@ if (count($related_categories) == 1 && isset($page['category']) && $related_cate
     $ids = array_unique($ids);
     $ids_ = implode(',', $ids);
     $query = "SELECT id, name, permalink FROM categories WHERE id IN ({$ids_});";
-    $cat_map = hash_from_query($query, 'id');
+    $cat_map = query2array($query, 'id');
     foreach ($related_categories as $category) {
         $cats = [];
         foreach (explode(',', (string) $category['uppercats']) as $id) {

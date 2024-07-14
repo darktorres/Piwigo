@@ -9,7 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . '/include/functions_metadata.inc.php');
+include_once(PHPWG_ROOT_PATH . 'include/functions_metadata.inc.php');
 
 /**
  * Returns IPTC metadata to sync from a file, depending on IPTC mapping.
@@ -314,7 +314,7 @@ function get_filelist(
     }
 
     $query .= ';';
-    return hash_from_query($query, 'id');
+    return query2array($query, 'id');
 }
 
 /**
