@@ -1739,7 +1739,7 @@ function dissociate_images_from_category($images, string $category): int
     $query =
     "SELECT id FROM image_category INNER JOIN images ON image_id = id WHERE category_id = {$category} AND id IN ({$images_})
      AND (category_id != storage_category_id OR storage_category_id IS NULL);";
-    $dissociables = array_from_query($query, 'id');
+    $dissociables = query2array($query, null, 'id');
 
     if ($dissociables !== []) {
         $dissociables_ = implode(',', $dissociables);
@@ -1955,7 +1955,7 @@ function cat_admin_access(
     global $user;
     // $filter['visible_categories'] and $filter['visible_images']
     // are not used because it's not necessary (filter <> restriction)
-    return ! in_array($category_id, explode(',', (string) $user['forbidden_categories']));
+    return ! in_array($category_id, explode(',', $user['forbidden_categories'] ?? ''));
 }
 
 /**
@@ -2639,7 +2639,7 @@ function deltree(
                 mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
             }
 
-            while ($r = $trash_path . '/' . md5(uniqid(mt_rand(), true))) {
+            while ($r = $trash_path . '/' . md5(uniqid((string) mt_rand(), true))) {
                 if (! is_dir($r)) {
                     rename($path, $r);
                     break;
@@ -2904,12 +2904,12 @@ function get_cache_size_derivatives(
                 if (is_file($path . '/' . $node)) {
                     if ($split = explode('-', $node)) {
                         $size_code = substr(end($split), 0, 2);
-                        $msizes[$size_code] += filesize($path . '/' . $node);
+                        $msizes[$size_code] = ($msizes[$size_code] ?? null) + filesize($path . '/' . $node);
                     }
                 } elseif (is_dir($path . '/' . $node)) {
                     $tmp_msizes = get_cache_size_derivatives($path . '/' . $node);
                     foreach ($tmp_msizes as $size_key => $value) {
-                        $msizes[$size_key] += $value;
+                        $msizes[$size_key] = ($msizes[$size_key] ?? null) + $value;
                     }
                 }
             }

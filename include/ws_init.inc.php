@@ -15,7 +15,7 @@ include_once(PHPWG_ROOT_PATH . 'include/ws_core.inc.php');
 include_once(PHPWG_ROOT_PATH . 'include/ws_functions.inc.php');
 
 add_event_handler('ws_add_methods', ws_addDefaultMethods(...));
-add_event_handler('ws_invoke_allowed', ws_isInvokeAllowed(...), EVENT_HANDLER_PRIORITY_NEUTRAL, 3);
+add_event_handler('ws_invoke_allowed', ws_isInvokeAllowed(...));
 
 $requestFormat = 'rest';
 $responseFormat = null;

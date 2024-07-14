@@ -80,7 +80,9 @@ function ws_getMissingDerivatives(
                     continue;
                 }
 
-                if (filemtime($derivative->get_path()) === false) {
+                $mtime = file_exists($derivative->get_path()) ? filemtime($derivative->get_path()) : false;
+
+                if ($mtime === false) {
                     $urls[] = $derivative->get_url() . $uid;
                 }
             }
@@ -220,7 +222,7 @@ function ws_getCacheSize(
     $all = 0;
 
     foreach (array_keys($infos['msizes']) as $size_type) {
-        $infos['msizes'][$size_type] += $msizes[derivative_to_url($size_type)];
+        $infos['msizes'][$size_type] = ($infos['msizes'][$size_type] ?? null) + ($msizes[derivative_to_url($size_type)] ?? null);
         $all += $infos['msizes'][$size_type];
     }
 
@@ -268,7 +270,7 @@ function ws_caddie_add(
 
     $image_id_ = implode(',', $params['image_id']);
     $query = "SELECT id FROM images LEFT JOIN caddie ON id = element_id AND user_id = {$user['id']} WHERE id IN ({$image_id_}) AND element_id IS NULL;";
-    $result = array_from_query($query, 'id');
+    $result = query2array($query, null, 'id');
 
     $datas = [];
     foreach ($result as $id) {
@@ -310,7 +312,8 @@ function ws_rates_delete(
         $query .= " AND element_id = {$params['image_id']}";
     }
 
-    $changes = pwg_db_changes(pwg_query($query));
+    pwg_query($query);
+    $changes = pwg_db_changes();
     if ($changes) {
         include_once(PHPWG_ROOT_PATH . 'include/functions_rate.inc.php');
         update_rating_score();
@@ -733,7 +736,10 @@ function ws_history_search(
         $search_details = query2array($query, 'id', 'rules');
 
         foreach ($search_details as $id_search => $rules_search) {
-            $rules_search = safe_unserialize($rules_search)['fields'];
+            if (is_serialized($rules_search)) {
+                $rules_search = unserialize($rules_search)['fields'];
+            }
+
             if (! empty($rules_search['tags']['words'])) {
                 $has_tags = true;
             }

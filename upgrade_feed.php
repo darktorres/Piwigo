@@ -17,7 +17,10 @@ if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
 define('PHPWG_ROOT_PATH', './');
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
+    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+}
+
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
@@ -48,7 +51,7 @@ try {
         $conf['db_base']
     );
 } catch (Exception $exception) {
-    my_error(l10n($exception->getMessage(), true));
+    my_error(l10n($exception->getMessage()), true);
 }
 
 // +-----------------------------------------------------------------------+
@@ -57,7 +60,7 @@ try {
 
 // retrieve already applied upgrades
 $query = 'SELECT id FROM upgrade;';
-$applied = array_from_query($query, 'id');
+$applied = query2array($query, null, 'id');
 
 // retrieve existing upgrades
 $existing = get_available_upgrade_ids();
