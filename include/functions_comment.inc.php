@@ -246,8 +246,9 @@ function delete_user_comment(
     $where_clause = is_array($comment_id) ? ' id IN (' . implode(',', $comment_id) . ') ' : " id = {$comment_id} ";
 
     $query = "DELETE FROM comments WHERE {$where_clause} {$user_where_clause};";
+    pwg_query($query);
 
-    if (pwg_db_changes(pwg_query($query))) {
+    if (pwg_db_changes()) {
         invalidate_user_cache_nb_comments();
 
         email_admin(

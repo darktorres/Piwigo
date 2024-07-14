@@ -105,8 +105,8 @@ jQuery(document).ready(function() {
 
 </form>
 
-<script type="text/javascript"><!--
+<script>
 document.search.search_allwords.focus();
-//--></script>
+</script>
 
 </div> <!-- content -->

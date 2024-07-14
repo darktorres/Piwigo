@@ -39,7 +39,7 @@ function ws_groups_getList(
     $query =
     "SELECT g.*, COUNT(user_id) AS nb_users FROM groups_table AS g LEFT JOIN user_group AS ug ON ug.group_id = g.id
      WHERE {$where_clauses_} GROUP BY id ORDER BY {$params['order']} LIMIT {$params['per_page']} OFFSET {$offset_};";
-    $groups = array_from_query($query);
+    $groups = query2array($query);
 
     return [
         'paging' => new PwgNamedStruct([
