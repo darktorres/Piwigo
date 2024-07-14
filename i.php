@@ -177,11 +177,6 @@ function parse_request(): void
     }
 
     $req = ltrim($req, '/');
-
-    foreach (preg_split('#/+#', $req) as $token) {
-        preg_match($conf['sync_chars_regex'], $token) || ierror('Invalid chars in request', 400);
-    }
-
     $page['derivative_path'] = PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $req;
 
     $pos = strrpos($req, '.');
