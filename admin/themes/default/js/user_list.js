@@ -1212,14 +1212,14 @@ function fill_ajax_data_from_properties(ajax_data, pop_in) {
     let groups_selected = pop_in.find('.user-property-group .selectize-input .item').map(function () {
         return parseInt($(this).attr('data-value'));
     } ).get();
-    console.log(groups_selected);
+    // console.log(groups_selected);
     ajax_data['email'] = pop_in.find('.user-property-email input').val();
     if (connected_user_status == "admin" && pop_in.find('.user-property-status select').val() != "webmaster" && pop_in.find('.user-property-status select').val() != "admin") {
       ajax_data['status'] = pop_in.find('.user-property-status select').val();
     } else if (connected_user_status == "webmaster"){
       ajax_data['status'] = pop_in.find('.user-property-status select').val();
     }
-    console.log(ajax_data['status']);
+    // console.log(ajax_data['status']);
     ajax_data['level'] = pop_in.find('.user-property-level select').val();
     ajax_data['group_id'] = groups_selected.length == 0 ? -1 : groups_selected;
     ajax_data['enabled_high'] = pop_in.find('.user-list-checkbox[name="hd_enabled"]').attr('data-selected') == '1' ? true : false ;

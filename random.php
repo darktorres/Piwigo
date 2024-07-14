@@ -41,5 +41,5 @@ $query = "SELECT id FROM images INNER JOIN image_category AS ic ON id = ic.image
 // +-----------------------------------------------------------------------+
 
 redirect(make_index_url([
-    'list' => array_from_query($query, 'id'),
+    'list' => query2array($query, null, 'id'),
 ]));

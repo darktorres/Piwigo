@@ -1,6 +1,6 @@
-<script type="text/javascript" src="template-common/lib/jquery.packed.js"></script>
+<script src="template-common/lib/jquery.packed.js"></script>
 {literal}
-<script type="text/javascript">
+<script>
 $(function() {
     $option_selected = $('#dblayer option:selected').attr('value');
     if ($option_selected=='sqlite' || $option_selected=='pdo-sqlite') {

@@ -134,9 +134,7 @@ function check_upgrade_access_rights(): void
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    if (function_exists('get_magic_quotes_gpc') && ! get_magic_quotes_gpc()) {
-        $username = pwg_db_real_escape_string($username);
-    }
+    $username = pwg_db_real_escape_string($username);
 
     if (version_compare($current_release, '2.0', '<')) {
         $username = mb_convert_encoding($username, 'ISO-8859-1');
@@ -195,7 +193,7 @@ function check_upgrade_feed(): bool
 {
     // retrieve already applied upgrades
     $query = 'SELECT id FROM upgrade;';
-    $applied = array_from_query($query, 'id');
+    $applied = query2array($query, null, 'id');
 
     // retrieve existing upgrades
     $existing = get_available_upgrade_ids();

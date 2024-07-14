@@ -105,7 +105,7 @@ function mkgetdir(
         }
 
         $umask = umask(0);
-        $mkd = mkdir($dir, $conf['chmod_value'], $flags & MKGETDIR_RECURSIVE);
+        $mkd = mkdir($dir, $conf['chmod_value'], (bool) ($flags & MKGETDIR_RECURSIVE));
         umask($umask);
         if ($mkd == false) {
             if (($flags & MKGETDIR_DIE_ON_ERROR) !== 0) {
@@ -1614,49 +1614,6 @@ function prepend_append_array_items(
 }
 
 /**
- * creates an simple hashmap based on a SQL query.
- * choose one to be the key, another one to be the value.
- * @deprecated 2.6
- */
-function simple_hash_from_query(
-    $query,
-    $keyname,
-    $valuename
-): array {
-    return query2array($query, $keyname, $valuename);
-}
-
-/**
- * creates an associative array based on a SQL query.
- * choose one to be the key
- * @deprecated 2.6
- */
-function hash_from_query(
-    string $query,
-    string $keyname
-): array {
-    return query2array($query, $keyname);
-}
-
-/**
- * creates a numeric array based on a SQL query.
- * if _$fieldname_ is empty the returned value will be an array of arrays
- * if _$fieldname_ is provided the returned value will be a one dimension array
- * @deprecated 2.6
- */
-function array_from_query(
-    string $query,
-    bool|string $fieldname = false
-): array {
-    if ($fieldname === false) {
-        return query2array($query);
-    }
-
-    return query2array($query, null, $fieldname);
-
-}
-
-/**
  * Return the basename of the current script.
  * The lowercase case filename of the current script without extension
  */
@@ -1814,12 +1771,18 @@ function load_language(
         if (! ($options['return'] ?? null)) {
             // load forced fallback
             if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language) {
-                include(str_replace($selected_language, $options['force_fallback'], $source_file));
+                $tmp = str_replace($selected_language, $options['force_fallback'], $source_file);
+                if (file_exists($tmp)) {
+                    include($tmp);
+                }
             }
 
             // load language content
-            @include($source_file);
-            $load_lang = @$lang;
+            if (file_exists($source_file)) {
+                include($source_file);
+            }
+
+            $load_lang = $lang;
             $load_lang_info = $lang_info ?? null;
 
             // access already existing values
@@ -1842,7 +1805,10 @@ function load_language(
             }
 
             if (! empty($parent_language) && $parent_language != $selected_language) {
-                include(str_replace($selected_language, $parent_language, $source_file));
+                $tmp = str_replace($selected_language, $parent_language, $source_file);
+                if (file_exists($tmp)) {
+                    include($tmp);
+                }
             }
 
             // merge contents
@@ -2103,7 +2069,7 @@ function check_input_parameter(
         }
 
         foreach ($param_value as $key => $item_to_check) {
-            if (! preg_match(PATTERN_ID, $key) || ! preg_match($pattern, (string) $item_to_check)) {
+            if (! preg_match(PATTERN_ID, (string) $key) || ! preg_match($pattern, (string) $item_to_check)) {
                 fatal_error('[Hacking attempt] an item is not valid in input parameter "' . $param_name . '"');
             }
         }

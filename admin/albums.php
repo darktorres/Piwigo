@@ -59,7 +59,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
 
     $id_uppercat_ = ($_POST['id'] === '-1') ? 'IS NULL' : "= {$_POST['id']}";
     $query = "SELECT id FROM categories WHERE id_uppercat {$id_uppercat_};";
-    $category_ids = array_from_query($query, 'id');
+    $category_ids = query2array($query, null, 'id');
 
     if (isset($_POST['recursiveAutoOrder'])) {
         $category_ids = get_subcat_ids($category_ids);
@@ -155,7 +155,7 @@ foreach ($allAlbum as $album) {
 // of an album or change permissions, this variable is reset and not recalculated until
 // you open the gallery. As this situation doesn't occur each time you use the
 // administration, it's quite reliable but not as much as on gallery side.
-$is_forbidden = array_fill_keys(explode(',', (string) $user['forbidden_categories']), 1);
+$is_forbidden = array_fill_keys(explode(',', $user['forbidden_categories'] ?? ''), 1);
 
 //Make an ordered tree
 function cmpCat(

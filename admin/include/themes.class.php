@@ -37,7 +37,7 @@ class DummyTheme_maintain extends ThemeMaintain
     public function delete(): void
     {
         if (is_callable('theme_delete')) {
-            theme_delete($this->theme_id);
+            theme_delete();
         }
     }
 }
@@ -251,7 +251,7 @@ class themes
         $query = "SELECT user_id FROM user_infos WHERE theme = '{$default_theme}';";
         $user_ids = array_unique(
             array_merge(
-                array_from_query($query, 'user_id'),
+                query2array($query, null, 'user_id'),
                 [$conf['guest_id'], $conf['default_user_id']]
             )
         );
