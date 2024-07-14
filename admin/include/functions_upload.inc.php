@@ -745,21 +745,7 @@ function upload_file_video($representative_ext, $file_path)
     $logger->debug($FO[0]);
   }
 
-  // Did we generate the file?
-  if (!file_exists($representative_file_path))
-  {
-    // Let's try with avconv if ffmpeg unavailable
-    $avconv = str_replace('ffmpeg', 'avconv', $ffmpeg);
-    @exec($avconv.' 2>&1', $AO, $AS);
-
-    if (!empty($AO[0]))
-    {
-      $logger->debug(__FUNCTION__.', Tried '.$avconv);
-      $logger->debug($AO[0]);
-    }
-  }
-
-  // Did we finally generate the file?
+  // Did we generate the file ?
   if (!file_exists($representative_file_path))
   {
     return null;
