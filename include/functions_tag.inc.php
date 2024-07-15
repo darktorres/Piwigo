@@ -68,7 +68,7 @@ function get_available_tags(array $tag_ids = []): array
 
     $tags = [];
     while ($row = pwg_db_fetch_assoc($result)) {
-        $counter = intval(@$tag_counters[$row['id']]);
+        $counter = intval($tag_counters[$row['id']]);
         if ($counter !== 0) {
             $row['counter'] = $counter;
             $row['name'] = trigger_change('render_tag_name', $row['name'], $row);

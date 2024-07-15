@@ -29,7 +29,7 @@ function initialize_menu(): void
 
     $menu->prepare_display();
 
-    if (@$page['section'] == 'search' && isset($page['qsearch_details'])) {
+    if ($page['section'] == 'search' && isset($page['qsearch_details'])) {
         $template->assign('QUERY_SEARCH', htmlspecialchars((string) $page['qsearch_details']['q']));
     }
 
@@ -128,7 +128,7 @@ function initialize_menu(): void
     //------------------------------------------------------------------------ tags
     $block = $menu->get_block('mbTags');
     if ($block != null && script_basename() !== 'picture') {
-        if (@$page['section'] == 'tags') {
+        if ($page['section'] == 'tags') {
             $tags = get_common_tags(
                 $page['items'],
                 $conf['menubar_tag_cloud_items_number'],

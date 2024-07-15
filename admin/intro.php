@@ -355,10 +355,10 @@ foreach ($file_extensions as $ext => $ext_details) {
         $type = 'Other';
     }
 
-    @$data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
-    @$data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
+    $data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
+    $data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
 
-    @$data_storage[$type]['details'][strtoupper($ext)] = [
+    $data_storage[$type]['details'][strtoupper($ext)] = [
         'filesize' => $ext_details['filesize'],
         'nb_files' => $ext_details['ext_counter'],
     ];
