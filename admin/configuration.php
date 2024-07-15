@@ -449,7 +449,7 @@ switch ($page['section']) {
         $template->append(
             'display',
             [
-                'picture_information' => unserialize($conf['picture_information']),
+                'picture_information' => $conf['picture_information'],
                 'NB_CATEGORIES_PAGE' => $conf['nb_categories_page'],
             ],
             true
@@ -482,10 +482,7 @@ switch ($page['section']) {
 
             // derivatives = multiple size
             $enabled = ImageStdParams::get_defined_type_map();
-            $disabled = is_serialized($conf['disabled_derivatives'] ?? null) ? unserialize($conf['disabled_derivatives']) : false;
-            if ($disabled === false) {
-                $disabled = [];
-            }
+            $disabled = $conf['disabled_derivatives'] ?? [];
 
             $tpl_vars = [];
             foreach (ImageStdParams::get_all_types() as $type) {
