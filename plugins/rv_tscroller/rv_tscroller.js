@@ -43,8 +43,6 @@ loadUp: function() {
 			RVTS.loadingUp = 0;
 			RVTS.loading || $('#ajaxLoader').hide();
 			$(window).trigger('RVTS_loaded', 0);
-			if (typeof pwg_ajax_thumbnails_loader != 'undefined')
-				pwg_ajax_thumbnails_loader();
 			}
 		});
 },
@@ -80,8 +78,6 @@ doAutoScroll: function() {
 			RVTS.loading = 0;
 			RVTS.loadingUp || $('#ajaxLoader').hide();
 			$(window).trigger('RVTS_loaded', 1);
-			if (typeof pwg_ajax_thumbnails_loader != 'undefined')
-				pwg_ajax_thumbnails_loader();
 			}
 		});
 },
