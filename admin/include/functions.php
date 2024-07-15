@@ -9,7 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_metadata.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions_metadata.php';
 
 /**
  * Deletes a site and call delete_categories for each primary category of the site

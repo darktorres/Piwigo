@@ -89,7 +89,7 @@ function deactivate_non_standard_themes(): void
             [$counter] = pwg_db_fetch_row(pwg_query($query));
             if ($counter < 1) {
                 // we need to activate theme first
-                include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
+                require_once PHPWG_ROOT_PATH . 'admin/include/themes.class.php';
                 $themes = new themes();
                 $themes->perform_action('activate', PHPWG_DEFAULT_TEMPLATE);
             }

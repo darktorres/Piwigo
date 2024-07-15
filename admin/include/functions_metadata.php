@@ -9,7 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'include/functions_metadata.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/functions_metadata.inc.php';
 
 /**
  * Returns IPTC metadata to sync from a file, depending on IPTC mapping.

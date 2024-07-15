@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 defined('PHPWG_ROOT_PATH') || trigger_error('Hacking attempt!', E_USER_ERROR);
 
-include_once(PHPWG_ROOT_PATH . 'include/ws_core.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/ws_functions.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/ws_core.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/ws_functions.inc.php';
 
 add_event_handler('ws_add_methods', ws_addDefaultMethods(...));
 add_event_handler('ws_invoke_allowed', ws_isInvokeAllowed(...));
@@ -33,7 +33,7 @@ $service = new PwgServer();
 if ($requestFormat !== null) {
     $handler = null;
     if ($requestFormat === 'rest') {
-        include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php');
+        require_once PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php';
         $handler = new PwgRestRequestHandler();
     }
 
@@ -44,19 +44,19 @@ if ($responseFormat !== null) {
     $encoder = null;
     switch ($responseFormat) {
         case 'rest':
-            include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/rest_encoder.php');
+            require_once PHPWG_ROOT_PATH . 'include/ws_protocols/rest_encoder.php';
             $encoder = new PwgRestEncoder();
             break;
         case 'php':
-            include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/php_encoder.php');
+            require_once PHPWG_ROOT_PATH . 'include/ws_protocols/php_encoder.php';
             $encoder = new PwgSerialPhpEncoder();
             break;
         case 'json':
-            include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/json_encoder.php');
+            require_once PHPWG_ROOT_PATH . 'include/ws_protocols/json_encoder.php';
             $encoder = new PwgJsonEncoder();
             break;
         case 'xmlrpc':
-            include_once(PHPWG_ROOT_PATH . 'include/ws_protocols/xmlrpc_encoder.php');
+            require_once PHPWG_ROOT_PATH . 'include/ws_protocols/xmlrpc_encoder.php';
             $encoder = new PwgXmlRpcEncoder();
             break;
     }
