@@ -94,8 +94,8 @@ async function runPuppeteerScript(): Promise<void> {
   await page.waitForSelector("#deactivate > a");
   await page.click("#deactivate > a");
   // admin button
-  await page.waitForSelector("#menubar > dl:nth-child(6) > dt > a:nth-child(4)");
-  await page.click("#menubar > dl:nth-child(6) > dt > a:nth-child(4)");
+  await page.waitForSelector("#menubar > dl:nth-child(7) > dt > a:nth-child(4)");
+  await page.click("#menubar > dl:nth-child(7) > dt > a:nth-child(4)");
   // hide subscribe to newsletter button
   await page.waitForSelector("#content > p > span > a.newsletter-hide");
   await page.click("#content > p > span > a.newsletter-hide");

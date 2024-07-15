@@ -22,7 +22,7 @@ INSERT INTO
 VALUES
     (
         'allow_user_registration',
-        'true',
+        'false',
         'allow visitors to register?'
     );
 
@@ -355,7 +355,7 @@ INSERT INTO
 VALUES
     (
         'order_by',
-        'ORDER BY date_available DESC, file ASC, id ASC',
+        'ORDER BY date_creation DESC',
         'default photo order'
     );
 
@@ -364,7 +364,7 @@ INSERT INTO
 VALUES
     (
         'order_by_inside_category',
-        'ORDER BY date_available DESC, file ASC, id ASC',
+        'ORDER BY date_creation DESC',
         'default photo order inside category'
     );
 
@@ -494,7 +494,7 @@ INSERT INTO
 VALUES
     (
         'rate',
-        'false',
+        'true',
         'Rating pictures feature is enabled'
     );
 
