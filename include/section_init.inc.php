@@ -288,7 +288,7 @@ if ($page['section'] == 'categories') {
 } elseif ($page['section'] == 'search') {
     include_once(PHPWG_ROOT_PATH . 'include/functions_search.inc.php');
 
-    $search_result = get_search_results($page['search'], @$page['super_order_by']);
+    $search_result = get_search_results($page['search'], $page['super_order_by']);
 
     //save the details of the query search
     if (isset($search_result['qs'])) {
@@ -483,10 +483,10 @@ if ($filter['enabled']) {
 if ($page['section'] == 'categories' && isset($page['category']) && ! isset($page['combined_categories'])) {
     $need_redirect = false;
     if (empty($page['category']['permalink'])) {
-        if ($conf['category_url_style'] == 'id-name' && @$page['hit_by']['cat_url_name'] !== str2url($page['category']['name'])) {
+        if ($conf['category_url_style'] == 'id-name' && $page['hit_by']['cat_url_name'] !== str2url($page['category']['name'])) {
             $need_redirect = true;
         }
-    } elseif ($page['category']['permalink'] !== @$page['hit_by']['cat_permalink']) {
+    } elseif ($page['category']['permalink'] !== $page['hit_by']['cat_permalink']) {
         $need_redirect = true;
     }
 
