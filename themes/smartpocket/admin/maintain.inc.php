@@ -20,8 +20,8 @@ class smartpocket_maintain extends ThemeMaintain
 
         if (empty($conf['smartpocket'])) {
             conf_update_param('smartpocket', $this->default_conf, true);
-        } elseif (count(safe_unserialize($conf['smartpocket'])) != 2) {
-            $conff = safe_unserialize($conf['smartpocket']);
+        } elseif (count($conf['smartpocket']) != 2) {
+            $conff = $conf['smartpocket'];
 
             $config = [
                 'loop' => (empty($conff['loop'])) ? true : $conff['loop'],
