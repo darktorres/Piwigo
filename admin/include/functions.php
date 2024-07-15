@@ -1955,7 +1955,7 @@ function cat_admin_access(
     global $user;
     // $filter['visible_categories'] and $filter['visible_images']
     // are not used because it's not necessary (filter <> restriction)
-    return ! in_array($category_id, @explode(',', (string) $user['forbidden_categories']));
+    return ! in_array($category_id, explode(',', (string) $user['forbidden_categories']));
 }
 
 /**
@@ -1978,9 +1978,9 @@ function fetchRemote(
 
     // Try to retrieve data from local file?
     if (! url_is_remote($src)) {
-        $content = @file_get_contents($src);
+        $content = file_get_contents($src);
         if ($content !== false) {
-            is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
+            is_resource($dest) ? fwrite($dest, $content) : $dest = $content;
             return true;
         }
 
@@ -2007,38 +2007,37 @@ function fetchRemote(
     }
 
     // Try curl to read remote file
-    // TODO : remove all these @
     if (function_exists('curl_init') && function_exists('curl_exec')) {
-        $ch = @curl_init();
+        $ch = curl_init();
 
         if (isset($conf['use_proxy']) && $conf['use_proxy']) {
-            @curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
-            @curl_setopt($ch, CURLOPT_PROXY, $conf['proxy_server']);
+            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+            curl_setopt($ch, CURLOPT_PROXY, $conf['proxy_server']);
             if (isset($conf['proxy_auth']) && ! empty($conf['proxy_auth'])) {
-                @curl_setopt($ch, CURLOPT_PROXYUSERPWD, $conf['proxy_auth']);
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $conf['proxy_auth']);
             }
         }
 
-        @curl_setopt($ch, CURLOPT_URL, $src);
-        @curl_setopt($ch, CURLOPT_HEADER, 1);
-        @curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $src);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if ($method === 'POST') {
-            @curl_setopt($ch, CURLOPT_POST, 1);
-            @curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         }
 
-        $content = @curl_exec($ch);
-        $header_length = @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $status = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        @curl_close($ch);
+        $content = curl_exec($ch);
+        $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
         if ($content !== false && $status >= 200 && $status < 400) {
             if (preg_match('/Location:\s+?(.+)/', substr($content, 0, $header_length), $m)) {
                 return fetchRemote($m[1], $dest, [], [], $user_agent, $step + 1);
             }
 
             $content = substr($content, $header_length);
-            is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
+            is_resource($dest) ? fwrite($dest, $content) : $dest = $content;
             return true;
         }
     }
@@ -2056,10 +2055,10 @@ function fetchRemote(
             $opts['http']['content'] = $request;
         }
 
-        $context = @stream_context_create($opts);
-        $content = @file_get_contents($src, false, $context);
+        $context = stream_context_create($opts);
+        $content = file_get_contents($src, false, $context);
         if ($content !== false) {
-            is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
+            is_resource($dest) ? fwrite($dest, $content) : $dest = $content;
             return true;
         }
     }
@@ -2070,7 +2069,7 @@ function fetchRemote(
     $path = $src['path'] ?? '/';
     $path .= isset($src['query']) ? '?' . $src['query'] : '';
 
-    if (($s = @fsockopen($host, 80, $errno, $errstr, 5)) === false) {
+    if (($s = fsockopen($host, 80, $errno, $errstr, 5)) === false) {
         return false;
     }
 
@@ -2122,7 +2121,7 @@ function fetchRemote(
             continue;
         }
 
-        is_resource($dest) ? @fwrite($dest, $line) : $dest .= $line;
+        is_resource($dest) ? fwrite($dest, $line) : $dest .= $line;
         $i++;
     }
 
@@ -2501,7 +2500,7 @@ function clear_derivative_cache(
 
     $pattern .= '\.[a-zA-Z0-9]{3,4}$#';
 
-    if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
+    if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
         while (($node = readdir($contents)) !== false) {
             if ($node !== '.' && $node !== '..' && is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)) {
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
@@ -2548,7 +2547,7 @@ function clear_derivative_cache_rec(
             }
 
             clearstatcache();
-            @rmdir($path);
+            rmdir($path);
         }
 
         return $rmdir;
@@ -2582,7 +2581,7 @@ function delete_element_derivatives(
     $path = substr_replace($path, $pattern, $dot, 0);
     if (($glob = glob(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $path)) !== false) {
         foreach ($glob as $file) {
-            @unlink($file);
+            unlink($file);
         }
     }
 }
@@ -2626,23 +2625,23 @@ function deltree(
                 if (is_dir($pathfile)) {
                     deltree($pathfile, $trash_path);
                 } else {
-                    @unlink($pathfile);
+                    unlink($pathfile);
                 }
             }
         }
 
         closedir($fh);
 
-        if (@rmdir($path)) {
+        if (rmdir($path)) {
             return true;
         } elseif ($trash_path !== null && $trash_path !== '' && $trash_path !== '0') {
             if (! is_dir($trash_path)) {
-                @mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
+                mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
             }
 
             while ($r = $trash_path . '/' . md5(uniqid(mt_rand(), true))) {
                 if (! is_dir($r)) {
-                    @rename($path, $r);
+                    rename($path, $r);
                     break;
                 }
             }
@@ -2905,12 +2904,12 @@ function get_cache_size_derivatives(
                 if (is_file($path . '/' . $node)) {
                     if ($split = explode('-', $node)) {
                         $size_code = substr(end($split), 0, 2);
-                        @$msizes[$size_code] += filesize($path . '/' . $node);
+                        $msizes[$size_code] += filesize($path . '/' . $node);
                     }
                 } elseif (is_dir($path . '/' . $node)) {
                     $tmp_msizes = get_cache_size_derivatives($path . '/' . $node);
                     foreach ($tmp_msizes as $size_key => $value) {
-                        @$msizes[$size_key] += $value;
+                        $msizes[$size_key] += $value;
                     }
                 }
             }
