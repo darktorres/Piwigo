@@ -319,7 +319,7 @@ switch ($page['section']) {
             }
 
             if (isset($conf['local_dir_site'])) {
-                @include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
+                include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
             }
 
             return isset($conf['order_by']) || isset($conf['order_by_inside_category']);
@@ -476,7 +476,7 @@ switch ($page['section']) {
 
             // derivatives = multiple size
             $enabled = ImageStdParams::get_defined_type_map();
-            $disabled = @unserialize(@$conf['disabled_derivatives']);
+            $disabled = unserialize($conf['disabled_derivatives']);
             if ($disabled === false) {
                 $disabled = [];
             }
@@ -488,11 +488,11 @@ switch ($page['section']) {
                 $tpl_var['must_square'] = ($type == IMG_SQUARE);
                 $tpl_var['must_enable'] = $type == IMG_SQUARE || $type == IMG_THUMB || $type == $conf['derivative_default_size'];
 
-                if ($params = @$enabled[$type]) {
+                if ($params = $enabled[$type]) {
                     $tpl_var['enabled'] = true;
                 } else {
                     $tpl_var['enabled'] = false;
-                    $params = @$disabled[$type];
+                    $params = $disabled[$type];
                 }
 
                 if ($params) {

@@ -112,7 +112,7 @@ function admintools_add_public_controller(): void
         ];
     }
     // album page (admin only)
-    elseif ($MultiView->is_admin() && @$page['section'] == 'categories' && isset($page['category'])) {
+    elseif ($MultiView->is_admin() && $page['section'] == 'categories' && isset($page['category'])) {
         $url_self = duplicate_index_url();
 
         $tpl_vars['IS_CATEGORY'] = true;
@@ -157,7 +157,7 @@ function admintools_add_public_controller(): void
     $template->set_filename('ato_public_controller', realpath(ADMINTOOLS_PATH . 'template/public_controller.tpl'));
     $template->parse('ato_public_controller');
 
-    if ($MultiView->is_admin() && @$admin_lang !== false) {
+    if ($MultiView->is_admin() && $admin_lang !== false) {
         switch_lang_back();
     }
 }
@@ -190,7 +190,7 @@ function admintools_add_admin_controller(): void
     $template->set_filename('ato_admin_controller', realpath(ADMINTOOLS_PATH . 'template/admin_controller.tpl'));
     $template->parse('ato_admin_controller');
 
-    if ($MultiView->is_admin() && @$admin_lang !== false) {
+    if ($MultiView->is_admin() && $admin_lang !== false) {
         switch_lang_back();
     }
 }
@@ -249,7 +249,7 @@ function admintools_save_picture(): void
         return;
     }
 
-    if (isset($_GET['delete']) && get_pwg_token() == @$_GET['pwg_token']) {
+    if (isset($_GET['delete']) && get_pwg_token() == $_GET['pwg_token']) {
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
         delete_elements([$page['image_id']], true);
@@ -285,9 +285,9 @@ function admintools_save_picture(): void
         }
 
         if (is_admin() && $conf['allow_html_descriptions']) {
-            $data['comment'] = @$_POST['comment'];
+            $data['comment'] = $_POST['comment'];
         } else {
-            $data['comment'] = strip_tags((string) @$_POST['comment']);
+            $data['comment'] = strip_tags((string) $_POST['comment']);
         }
 
         if (! empty($_POST['date_creation']) && strtotime((string) $_POST['date_creation']) !== false) {
@@ -331,9 +331,9 @@ function admintools_save_category(): void
         ];
 
         if (is_admin() && $conf['allow_html_descriptions']) {
-            $data['comment'] = @$_POST['comment'];
+            $data['comment'] = $_POST['comment'];
         } else {
-            $data['comment'] = strip_tags((string) @$_POST['comment']);
+            $data['comment'] = strip_tags((string) $_POST['comment']);
         }
 
         single_update(

@@ -127,7 +127,7 @@ function get_sync_metadata(
 ): array|bool {
     global $conf;
     $file = PHPWG_ROOT_PATH . $infos['path'];
-    $fs = @filesize($file);
+    $fs = filesize($file);
 
     if ($fs === false) {
         return false;
@@ -138,7 +138,7 @@ function get_sync_metadata(
     $is_tiff = false;
 
     if (isset($infos['representative_ext'])) {
-        if ($image_size = @getimagesize($file)) {
+        if ($image_size = getimagesize($file)) {
             $type = $image_size[2];
 
             if ($type == IMAGETYPE_TIFF_MM || $type == IMAGETYPE_TIFF_II) {
@@ -174,7 +174,7 @@ function get_sync_metadata(
         }
     }
 
-    if ($image_size = @getimagesize($file)) {
+    if ($image_size = getimagesize($file)) {
         $infos['width'] = $image_size[0];
         $infos['height'] = $image_size[1];
     }

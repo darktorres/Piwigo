@@ -233,7 +233,7 @@ function add_uploaded_file(
         rename($source_filepath, $file_path);
     }
 
-    @chmod($file_path, 0644);
+    chmod($file_path, 0644);
 
     // handle the uploaded file type by potentially making a
     // pwg_representative file.
@@ -422,7 +422,7 @@ function add_format(
         rename($source_filepath, $format_path);
     }
 
-    @chmod($format_path, 0644);
+    chmod($format_path, 0644);
 
     $file_infos = pwg_image_infos($format_path);
 
@@ -594,7 +594,7 @@ function upload_file_tiff(
     // $exec .= ' "'.realpath($dest['dirname']).'/'.$dest['basename'].'"';
 
     // $exec .= ' 2>&1';
-    // @exec($exec, $returnarray);
+    // exec($exec, $returnarray);
 
     // // sometimes ImageMagick creates file-0.jpg (full size) + file-1.jpg
     // // (thumbnail). I don't know how to avoid it.
@@ -664,7 +664,7 @@ function upload_file_video(
     $ffmpeg .= ' -frames:v 1';  // Extract one frame
     $ffmpeg .= ' "' . $representative_file_path . '"'; // Output file
 
-    @exec($ffmpeg . ' 2>&1', $FO, $FS);
+    exec($ffmpeg . ' 2>&1', $FO, $FS);
     if (isset($FO[0]) && ($FO[0] !== '' && $FO[0] !== '0')) {
         $logger->debug(__FUNCTION__ . ', Tried ' . $ffmpeg);
         $logger->debug($FO[0]);
@@ -790,14 +790,14 @@ function prepare_directory(
 
         umask(0000);
         $recursive = true;
-        if (! @mkdir($directory, 0777, $recursive)) {
+        if (! mkdir($directory, 0777, $recursive)) {
             die('[prepare_directory] cannot create directory "' . $directory . '"');
         }
     }
 
     if (! is_writable($directory)) {
         // last chance to make the directory writable
-        @chmod($directory, 0777);
+        chmod($directory, 0777);
 
         if (! is_writable($directory)) {
             die('[prepare_directory] directory "' . $directory . '" has no write access');
@@ -920,7 +920,7 @@ function ready_for_upload_message(): string|null
             );
         }
     } elseif (! is_writable($conf['upload_dir'])) {
-        @chmod($conf['upload_dir'], 0777);
+        chmod($conf['upload_dir'], 0777);
         if (! is_writable($conf['upload_dir'])) {
             return sprintf(
                 l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
