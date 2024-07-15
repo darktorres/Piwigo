@@ -165,7 +165,7 @@ class languages
         }
 
         closedir($dir);
-        @uasort($this->fs_languages, name_compare(...));
+        uasort($this->fs_languages, name_compare(...));
     }
 
     public function get_db_languages(): void
@@ -195,7 +195,7 @@ class languages
         $version = PHPWG_VERSION;
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) && ($pem_versions = @unserialize($result))) {
+        if (fetchRemote($url, $result, $get_data) && ($pem_versions = unserialize($result))) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
@@ -240,7 +240,7 @@ class languages
         }
 
         if (fetchRemote($url, $result, $get_data)) {
-            $pem_languages = @unserialize($result);
+            $pem_languages = unserialize($result);
             if (! is_array($pem_languages)) {
                 return false;
             }
@@ -251,7 +251,7 @@ class languages
                 }
             }
 
-            @uasort($this->server_languages, $this->extension_name_compare(...));
+            uasort($this->server_languages, $this->extension_name_compare(...));
             return true;
         }
 
@@ -279,7 +279,7 @@ class languages
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if (($handle = @fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
+            if (($handle = fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 $zip = new PclZip($archive);
                 if ($list = $zip->listContent()) {
@@ -351,7 +351,7 @@ class languages
                                         $logger->debug(__FUNCTION__ . ', to delete = ' . $path);
 
                                         if (is_file($path)) {
-                                            @unlink($path);
+                                            unlink($path);
                                         } elseif (is_dir($path)) {
                                             deltree($path, PHPWG_ROOT_PATH . 'language/trash');
                                         }
@@ -376,7 +376,7 @@ class languages
             $status = 'temp_path_error';
         }
 
-        @unlink($archive);
+        unlink($archive);
         return $status;
     }
 
