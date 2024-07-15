@@ -218,6 +218,7 @@ function get_category_preferred_image_orders(): array
         [l10n('Visits, high &rarr; low'),        'hit DESC',             true],
         [l10n('Visits, low &rarr; high'),        'hit ASC',              true],
         [l10n('Permissions'),                    'level DESC',           is_admin()],
+        [l10n('Filesize'),                       'filesize DESC',        true],
     ]);
 }
 
