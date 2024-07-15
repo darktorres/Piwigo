@@ -24,6 +24,6 @@ $template->set_filenames([
     'theme_admin_content' => dirname(__FILE__) . '/admin.tpl',
 ]);
 
-$template->assign('options', safe_unserialize($conf['elegant']));
+$template->assign('options', $conf['elegant']);
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'theme_admin_content');
