@@ -21,7 +21,7 @@ if ($_POST !== []) {
     check_pwg_token();
 }
 
-include_once(PHPWG_ROOT_PATH . 'profile.php');
+require_once PHPWG_ROOT_PATH . 'profile.php';
 
 $errors = [];
 save_profile_from_post($edit_user, $errors);

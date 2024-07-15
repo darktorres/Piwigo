@@ -12,14 +12,14 @@ declare(strict_types=1);
 define('PHPWG_ROOT_PATH', './');
 define('IN_WS', true);
 
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/common.inc.php';
 check_status(ACCESS_FREE);
 
 if (! $conf['allow_web_services']) {
     page_forbidden('Web services are disabled');
 }
 
-include_once(PHPWG_ROOT_PATH . 'include/ws_init.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/ws_init.inc.php';
 
 $service->run();
 
@@ -32,7 +32,7 @@ function ws_addDefaultMethods(
     global $conf, $user;
     $service = &$arr[0];
 
-    include_once(PHPWG_ROOT_PATH . 'include/ws_functions.inc.php');
+    require_once PHPWG_ROOT_PATH . 'include/ws_functions.inc.php';
     $ws_functions_root = PHPWG_ROOT_PATH . 'include/ws_functions/';
 
     $f_params = [
