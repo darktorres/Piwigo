@@ -140,7 +140,7 @@ add_event_handler('init', mobile_link(...));
 function mobile_link(): void
 {
     global $template, $conf;
-    $config = safe_unserialize($conf['smartpocket']);
+    $config = $conf['smartpocket'];
     $template->assign('smartpocket', $config);
     if (! empty($conf['mobile_theme']) && (get_device() !== 'desktop' || mobile_theme())) {
         $template->assign([
