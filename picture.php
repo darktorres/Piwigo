@@ -866,7 +866,7 @@ $infos['INFO_VISITS'] = $picture['current']['hit'];
 $infos['INFO_FILE'] = $picture['current']['file'];
 
 $template->assign($infos);
-$template->assign('display_info', unserialize($conf['picture_information']));
+$template->assign('display_info', $conf['picture_information']);
 
 // related tags
 $tags = get_common_tags([$page['image_id']], -1);

@@ -17,8 +17,8 @@ if (! isset($conf['smartpocket'])) {
     ];
 
     conf_update_param('smartpocket', $config, true);
-} elseif (count(safe_unserialize($conf['smartpocket'])) != 2) {
-    $conff = safe_unserialize($conf['smartpocket']);
+} elseif (count($conf['smartpocket']) != 2) {
+    $conff = $conf['smartpocket'];
     $config = [
         'loop' => (! empty($conff['loop'])) ? $conff['loop'] : true,
         'autohide' => (! empty($conff['autohide'])) ? $conff['autohide'] : 5000,
