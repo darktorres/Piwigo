@@ -12,16 +12,16 @@ declare(strict_types=1);
 define('PHPWG_ROOT_PATH', './');
 
 // fast bootstrap - no db connection
-include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
+require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 }
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
 if (file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php')) {
-    include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+    require PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
 }
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
@@ -344,8 +344,8 @@ function send_derivative(
     global $page;
 
     if (isset($_GET['ajaxload']) && $_GET['ajaxload'] == 'true') {
-        include_once(PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php');
-        include_once(PHPWG_ROOT_PATH . 'include/functions_url.inc.php');
+        require_once PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php';
+        require_once PHPWG_ROOT_PATH . 'include/functions_url.inc.php';
 
         echo json_encode([
             'url' => embellish_url(get_absolute_root_url() . $page['derivative_path']),
@@ -389,11 +389,11 @@ foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $
     $timing[$k] = '';
 }
 
-include_once(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative_params.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative_std_params.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+require_once PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/derivative_params.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/derivative_std_params.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/constants.php';
 
 try {
     pwg_db_connect(
@@ -446,7 +446,7 @@ if (! $need_generate) {
     exit;
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/image.class.php';
 $page['coi'] = null;
 if (! str_contains($page['src_location'], '/pwg_representative/')
     && ! str_contains($page['src_location'], 'themes/')

@@ -9,8 +9,8 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
