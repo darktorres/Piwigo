@@ -272,10 +272,10 @@ if (! isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity
         }
         $day_nb = $day_date->format('N');
 
-        @$activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst($action['action'])] = $action['activity_counter'];
+        $activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst($action['action'])] = $action['activity_counter'];
         $activity_last_weeks[$week][$day_nb]['number'] ??= 0;
         $activity_last_weeks[$week][$day_nb]['number'] += $action['activity_counter'];
-        @$activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
+        $activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
     }
 
     $logger->debug('[admin/intro::' . __LINE__ . '] recent activity calculated in ' . get_elapsed_time($start_time, get_moment()));
@@ -401,7 +401,7 @@ foreach ($file_extensions as $ext => $ext_details) {
     $data_storage[$type]['total']['nb_files'] ??= 0;
     $data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
 
-    @$data_storage[$type]['details'][strtoupper($ext)] = [
+    $data_storage[$type]['details'][strtoupper($ext)] = [
         'filesize' => $ext_details['filesize'],
         'nb_files' => $ext_details['ext_counter'],
     ];
@@ -418,10 +418,10 @@ $file_extensions = query2array($query, 'ext');
 foreach ($file_extensions as $ext => $ext_details) {
     $type = 'Formats';
 
-    @$data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
-    @$data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
+    $data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
+    $data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
 
-    @$data_storage[$type]['details'][strtoupper($ext)] = [
+    $data_storage[$type]['details'][strtoupper($ext)] = [
         'filesize' => $ext_details['filesize'],
         'nb_files' => $ext_details['ext_counter'],
     ];
@@ -432,7 +432,7 @@ if ($conf['add_cache_to_storage_chart'] && isset($conf['cache_sizes'])) {
     $cache_sizes = unserialize($conf['cache_sizes']);
     if (isset($cache_sizes)) {
         if (isset($cache_sizes[0]) && isset($cache_sizes[0]['value'])) {
-            @$data_storage['Cache']['total']['filesize'] = $cache_sizes[0]['value'] / 1024;
+            $data_storage['Cache']['total']['filesize'] = $cache_sizes[0]['value'] / 1024;
         }
     }
 }

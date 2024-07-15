@@ -239,7 +239,7 @@ function add_uploaded_file($source_filepath, $original_filename = null, $categor
     } else {
         rename($source_filepath, $file_path);
     }
-    @chmod($file_path, 0644);
+    chmod($file_path, 0644);
 
     // handle the uploaded file type by potentially making a
     // pwg_representative file.
@@ -431,7 +431,7 @@ function add_format($source_filepath, $format_ext, $format_of)
     } else {
         rename($source_filepath, $format_path);
     }
-    @chmod($format_path, 0644);
+    chmod($format_path, 0644);
 
     $file_infos = pwg_image_infos($format_path);
 
@@ -497,7 +497,7 @@ function upload_file_pdf($representative_ext, $file_path)
     // $exec.= ' "'.realpath($file_path).'"[0]';
     // $exec.= ' "'.$representative_file_path.'"';
     // $exec.= ' 2>&1';
-    // @exec($exec, $returnarray);
+    // exec($exec, $returnarray);
 
     // // Return the extension (if successful) or false (if failed)
     // if (file_exists($representative_file_path))
@@ -543,7 +543,7 @@ function upload_file_heic($representative_ext, $file_path)
 
     $logger->info(__FUNCTION__ . ', exec = ' . $exec);
 
-    @exec($exec, $returnarray);
+    exec($exec, $returnarray);
 
     // Return the extension (if successful) or false (if failed)
     if (file_exists($representative_file_path)) {
@@ -599,7 +599,7 @@ function upload_file_tiff($representative_ext, $file_path)
     // $exec .= ' "'.realpath($dest['dirname']).'/'.$dest['basename'].'"';
 
     // $exec .= ' 2>&1';
-    // @exec($exec, $returnarray);
+    // exec($exec, $returnarray);
 
     // // sometimes ImageMagick creates file-0.jpg (full size) + file-1.jpg
     // // (thumbnail). I don't know how to avoid it.
@@ -667,7 +667,7 @@ function upload_file_video($representative_ext, $file_path)
     $ffmpeg .= ' -frames:v 1';  // Extract one frame
     $ffmpeg .= ' "' . $representative_file_path . '"'; // Output file
 
-    @exec($ffmpeg . ' 2>&1', $FO, $FS);
+    exec($ffmpeg . ' 2>&1', $FO, $FS);
     if (! empty($FO[0])) {
         $logger->debug(__FUNCTION__ . ', Tried ' . $ffmpeg);
         $logger->debug($FO[0]);
@@ -718,7 +718,7 @@ function upload_file_psd($representative_ext, $file_path)
 
     $exec .= ' 2>&1';
     $logger->info(__FUNCTION__ . ', exec = ' . $exec);
-    @exec($exec, $returnarray);
+    exec($exec, $returnarray);
 
     // sometimes ImageMagick creates file-0.png + file-1.png + file-2.png...
     // It seems we can't avoid it.
@@ -773,7 +773,7 @@ function upload_file_eps($representative_ext, $file_path)
     $exec .= ' "' . $representative_file_path . '"';
     $exec .= ' 2>&1';
     $logger->info(__FUNCTION__ . ', $exec = ' . $exec);
-    @exec($exec, $returnarray);
+    exec($exec, $returnarray);
 
     // Return the extension (if successful) or false (if failed)
     if (file_exists($representative_file_path)) {
@@ -791,14 +791,14 @@ function prepare_directory($directory)
         }
         umask(0000);
         $recursive = true;
-        if (! @mkdir($directory, 0777, $recursive)) {
+        if (! mkdir($directory, 0777, $recursive)) {
             die('[prepare_directory] cannot create directory "' . $directory . '"');
         }
     }
 
     if (! is_writable($directory)) {
         // last chance to make the directory writable
-        @chmod($directory, 0777);
+        chmod($directory, 0777);
 
         if (! is_writable($directory)) {
             die('[prepare_directory] directory "' . $directory . '" has no write access');
@@ -924,7 +924,7 @@ function ready_for_upload_message()
         }
     } else {
         if (! is_writable($conf['upload_dir'])) {
-            @chmod($conf['upload_dir'], 0777);
+            chmod($conf['upload_dir'], 0777);
 
             if (! is_writable($conf['upload_dir'])) {
                 return sprintf(
@@ -951,7 +951,7 @@ function get_optimal_dimensions_for_representative()
     global $conf;
 
     $enabled = ImageStdParams::get_defined_type_map();
-    $disabled = @unserialize(@$conf['disabled_derivatives']);
+    $disabled = unserialize($conf['disabled_derivatives']);
     if ($disabled === false) {
         $disabled = [];
     }
@@ -959,7 +959,7 @@ function get_optimal_dimensions_for_representative()
     $w = $h = 2000; // safe default values
 
     foreach (ImageStdParams::get_all_types() as $type) {
-        $params = $enabled[$type] ?? @$disabled[$type];
+        $params = $enabled[$type] ?? $disabled[$type];
 
         if ($params) {
             list($w, $h) = $params->sizing->ideal_size;
