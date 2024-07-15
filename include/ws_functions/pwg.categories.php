@@ -153,7 +153,7 @@ function ws_categories_getImages($params, &$service)
             $result = pwg_query($query);
             while ($row = pwg_db_fetch_assoc($result)) {
                 $category_ids[] = $row['category_id'];
-                @$categories_of_image[$row['image_id']][] = $row['category_id'];
+                $categories_of_image[$row['image_id']][] = $row['category_id'];
             }
 
             if (count($category_ids) > 0) {

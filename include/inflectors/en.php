@@ -105,7 +105,7 @@ class Inflector_en
 
         $lword = strtolower($word);
 
-        $rc = @$this->exceptions[$lword];
+        $rc = $this->exceptions[$lword];
         if (isset($rc)) {
             if (! empty($rc)) {
                 $res[] = $rc;

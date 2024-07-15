@@ -569,7 +569,7 @@ function ws_users_setInfo($params, &$service)
         $update_status = $params['status'];
     }
 
-    if (! empty($params['level']) or @$params['level'] === 0) {
+    if (! empty($params['level']) or $params['level'] === 0) {
         if (! in_array($params['level'], $conf['available_permission_levels'])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
@@ -594,23 +594,23 @@ function ws_users_setInfo($params, &$service)
         $updates_infos['nb_image_page'] = $params['nb_image_page'];
     }
 
-    if (! empty($params['recent_period']) or @$params['recent_period'] === 0) {
+    if (! empty($params['recent_period']) or $params['recent_period'] === 0) {
         $updates_infos['recent_period'] = $params['recent_period'];
     }
 
-    if (! empty($params['expand']) or @$params['expand'] === false) {
+    if (! empty($params['expand']) or $params['expand'] === false) {
         $updates_infos['expand'] = boolean_to_string($params['expand']);
     }
 
-    if (! empty($params['show_nb_comments']) or @$params['show_nb_comments'] === false) {
+    if (! empty($params['show_nb_comments']) or $params['show_nb_comments'] === false) {
         $updates_infos['show_nb_comments'] = boolean_to_string($params['show_nb_comments']);
     }
 
-    if (! empty($params['show_nb_hits']) or @$params['show_nb_hits'] === false) {
+    if (! empty($params['show_nb_hits']) or $params['show_nb_hits'] === false) {
         $updates_infos['show_nb_hits'] = boolean_to_string($params['show_nb_hits']);
     }
 
-    if (! empty($params['enabled_high']) or @$params['enabled_high'] === false) {
+    if (! empty($params['enabled_high']) or $params['enabled_high'] === false) {
         $updates_infos['enabled_high'] = boolean_to_string($params['enabled_high']);
     }
 

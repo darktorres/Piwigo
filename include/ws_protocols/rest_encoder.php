@@ -240,7 +240,7 @@ class PwgRestEncoder extends PwgResponseEncoder
                 }
                 break;
             case 'object':
-                switch (strtolower(@get_class($data))) {
+                switch (strtolower(get_class($data))) {
                     case 'pwgnamedarray':
                         $this->encode_array($data->_content, $data->_itemName, $data->_xmlAttributes);
                         break;
@@ -253,7 +253,7 @@ class PwgRestEncoder extends PwgResponseEncoder
                 }
                 break;
             default:
-                trigger_error('Invalid type ' . gettype($data) . ' ' . @get_class($data), E_USER_WARNING);
+                trigger_error('Invalid type ' . gettype($data) . ' ' . get_class($data), E_USER_WARNING);
         }
     }
 }

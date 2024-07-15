@@ -498,10 +498,10 @@ class QNumericRangeScope extends QSearchScope
         $range_requested = true;
         if (($pos = strpos($str, '..')) !== false) {
             $range = [substr($str, 0, $pos), substr($str, $pos + 2)];
-        } elseif (@$str[0] == '>') {// ratio:>1
+        } elseif ($str[0] == '>') {// ratio:>1
             $range = [substr($str, 1), ''];
             $strict[0] = 1;
-        } elseif (@$str[0] == '<') { // size:<5mp
+        } elseif ($str[0] == '<') { // size:<5mp
             $range = ['', substr($str, 1)];
             $strict[1] = 1;
         } elseif (($token->modifier & QST_WILDCARD_BEGIN)) {
@@ -592,10 +592,10 @@ class QDateRangeScope extends QSearchScope
         $strict = [0, 0];
         if (($pos = strpos($str, '..')) !== false) {
             $range = [substr($str, 0, $pos), substr($str, $pos + 2)];
-        } elseif (@$str[0] == '>') {
+        } elseif ($str[0] == '>') {
             $range = [substr($str, 1), ''];
             $strict[0] = 1;
-        } elseif (@$str[0] == '<') {
+        } elseif ($str[0] == '<') {
             $range = ['', substr($str, 1)];
             $strict[1] = 1;
         } elseif (($token->modifier & QST_WILDCARD_BEGIN)) {
@@ -781,7 +781,7 @@ class QMultiToken
                         }
                         break;
                     case ':':
-                        $scope = @$root->scopes[strtolower($crt_token)];
+                        $scope = $root->scopes[strtolower($crt_token)];
                         if (! isset($scope) || isset($crt_scope)) { // white space
                             $this->push($crt_token, $crt_modifier, $crt_scope);
                         } else {

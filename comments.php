@@ -227,7 +227,7 @@ if (isset($action)) {
                         'comment_id' => $_GET['edit'],
                         'image_id' => $_POST['image_id'],
                         'content' => $_POST['content'],
-                        'website_url' => @$_POST['website_url'],
+                        'website_url' => $_POST['website_url'],
                     ],
                     $_POST['key']
                 );
@@ -296,7 +296,7 @@ $query = <<<SQL
     FROM categories
     {$sql_condition};
     SQL;
-display_select_cat_wrapper($query, [@$_GET['cat']], $blockname, true);
+display_select_cat_wrapper($query, [$_GET['cat']], $blockname, true);
 
 // Filter on recent comments...
 $tpl_var = [];

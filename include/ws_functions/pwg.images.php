@@ -34,7 +34,7 @@ function ws_add_image_category_relations($image_id, $categories_string, $replace
 
     $tokens = explode(';', $categories_string);
     foreach ($tokens as $token) {
-        @list($cat_id, $rank) = explode(',', $token);
+        list($cat_id, $rank) = explode(',', $token);
 
         if (! preg_match('/^\d+$/', $cat_id)) {
             continue;
@@ -1442,7 +1442,7 @@ function ws_images_upload($params, $service)
     // file_put_contents('/tmp/plupload.log', "[".date('c')."] ".__FUNCTION__.', '.$fileName.' '.($chunk+1).'/'.$chunks."\n", FILE_APPEND);
 
     // Open temp file
-    if (! $out = @fopen("{$filePath}.part", $chunks ? 'ab' : 'wb')) {
+    if (! $out = fopen("{$filePath}.part", $chunks ? 'ab' : 'wb')) {
         die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
     }
 
@@ -1452,11 +1452,11 @@ function ws_images_upload($params, $service)
         }
 
         // Read binary input stream and append it to temp file
-        if (! $in = @fopen($_FILES['file']['tmp_name'], 'rb')) {
+        if (! $in = fopen($_FILES['file']['tmp_name'], 'rb')) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
         }
     } else {
-        if (! $in = @fopen('php://input', 'rb')) {
+        if (! $in = fopen('php://input', 'rb')) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
         }
     }
@@ -1465,8 +1465,8 @@ function ws_images_upload($params, $service)
         fwrite($out, $buff);
     }
 
-    @fclose($out);
-    @fclose($in);
+    fclose($out);
+    fclose($in);
 
     // Check if file has been uploaded
     if (! $chunks || $chunk == $chunks - 1) {
@@ -1687,7 +1687,7 @@ function ws_images_uploadAsync($params, &$service)
             fclose($fp);
 
             // delete merge file without returning an error
-            @unlink($output_filepath);
+            unlink($output_filepath);
             return new PwgError(500, 'error while merging chunk ' . $chunk_id);
         }
 
@@ -1897,7 +1897,7 @@ function ws_images_formats_searchImage($params, $service)
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $filename_wo_ext = get_filename_wo_extension($row['file']);
-        @$unique_filenames_db[$filename_wo_ext][] = $row['id'];
+        $unique_filenames_db[$filename_wo_ext][] = $row['id'];
     }
 
     // we want "long" format extensions first to match "cmyk.jpg" before "jpg" for example

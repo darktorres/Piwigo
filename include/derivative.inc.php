@@ -56,7 +56,7 @@ final class SrcImage
 
         $this->id = $infos['id'];
         $ext = strtolower(get_extension($infos['path']));
-        // $infos['file_ext'] = @strtolower(get_extension($infos['file']));
+        // $infos['file_ext'] = strtolower(get_extension($infos['file']));
         $infos['path_ext'] = $ext;
         if (in_array($ext, $conf['picture_ext'])) {
             $this->rel_path = $infos['path'];
@@ -75,7 +75,7 @@ final class SrcImage
                 }
                 $size = getimagesize(PHPWG_ROOT_PATH . $this->rel_path);
             }
-            $this->size = @[$size[0], $size[1]];
+            $this->size = [$size[0], $size[1]];
         }
 
         if (! $this->size) {
