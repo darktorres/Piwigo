@@ -117,7 +117,7 @@ function insert_user_comment(&$comm, $key, &$infos)
         $comment_action = 'reject';
     }
 
-    if (! verify_ephemeral_key(@$key, $comm['image_id'])) {
+    if (! verify_ephemeral_key($key, $comm['image_id'])) {
         $comment_action = 'reject';
         $_POST['cr'][] = 'key'; // rvelices: I use this outside to see how spam robots work
     }

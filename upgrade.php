@@ -14,7 +14,7 @@ declare(strict_types=1);
 // We do not want to use the cache and force reload of all application files.
 // Thus, we disable opcache.
 if (function_exists('ini_set')) {
-    @ini_set('opcache.enable', 0);
+    ini_set('opcache.enable', 0);
 }
 
 define('PHPWG_ROOT_PATH', './');
@@ -25,7 +25,7 @@ file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && include(PHPWG_RO
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 
 $config_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
-$config_file_contents = @file_get_contents($config_file);
+$config_file_contents = file_get_contents($config_file);
 if ($config_file_contents === false) {
     die('Cannot load ' . $config_file);
 }
@@ -132,7 +132,7 @@ if (isset($_GET['language'])) {
     $language = 'en_UK';
     // Try to get browser language
     foreach ($languages->fs_languages as $language_code => $fs_language) {
-        if (substr($language_code, 0, 2) == @substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
+        if (substr($language_code, 0, 2) == substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
             $language = $language_code;
             break;
         }
@@ -355,7 +355,7 @@ if ((isset($_POST['submit']) or isset($_GET['now']))
               . implode("\r\n", $mysql_changes) . "\r\n"
               . substr($config_file_contents, $php_end_tag);
 
-            if (! @file_put_contents($config_file, $config_file_contents)) {
+            if (! file_put_contents($config_file, $config_file_contents)) {
                 $page['infos'][] = l10n(
                     'In <i>%s</i>, before <b>?></b>, insert:',
                     PWG_LOCAL_DIR . 'config/database.inc.php'

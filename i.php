@@ -43,7 +43,7 @@ $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] .
 //       $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
 //     }
 //     $umask = umask(0);
-//     $mkd = @mkdir($dir, $conf['chmod_value'], true);
+//     $mkd = mkdir($dir, $conf['chmod_value'], true);
 //     umask($umask);
 //     if ($mkd==false && !is_dir($dir) /* retest existence because of potential concurrent i.php with slow file systems*/)
 //     {
@@ -51,7 +51,7 @@ $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] .
 //     }
 
 //     $file = $dir.'/index.htm';
-//     file_exists($file) or @file_put_contents( $file, 'Not allowed!' );
+//     file_exists($file) or file_put_contents( $file, 'Not allowed!' );
 //   }
 //   if ( !is_writable($dir) )
 //   {
@@ -473,7 +473,7 @@ if (! mkgetdir(dirname($page['derivative_path']))) {
 }
 
 ignore_user_abort(true);
-@set_time_limit(0);
+set_time_limit(0);
 
 $image = new pwg_image($page['src_path']);
 $timing['load'] = time_step($step);
@@ -560,7 +560,7 @@ if ($conf['derivatives_strip_metadata_threshold'] > $d_size[0] * $d_size[1]) {//
 $image->set_compression_quality(ImageStdParams::$quality);
 $image->write($page['derivative_path']);
 $image->destroy();
-@chmod($page['derivative_path'], 0644);
+chmod($page['derivative_path'], 0644);
 $timing['save'] = time_step($step);
 
 send_derivative($expires);
