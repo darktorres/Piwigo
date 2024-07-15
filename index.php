@@ -269,10 +269,10 @@ if (empty($page['is_external'])) {
             $pre_counters = array_fill_keys(array_keys($thresholds), []);
             foreach ($dates as $date_row) {
                 $year = date('Y', strtotime($date_row['date_available']));
-                @$pre_counters['y' . $year][$date_row['image_id']] = 1;
+                $pre_counters['y' . $year][$date_row['image_id']] = 1;
                 foreach ($thresholds as $threshold => $date_limit) {
                     if ($date_row['date_available'] > $date_limit) {
-                        @$pre_counters[$threshold][$date_row['image_id']] = 1;
+                        $pre_counters[$threshold][$date_row['image_id']] = 1;
                     }
                 }
             }
@@ -526,7 +526,7 @@ if (empty($page['is_external'])) {
             $template->assign('category_search_results', $hints);
         }
 
-        $tags = (array) @$page['qsearch_details']['matching_tags'];
+        $tags = (array) $page['qsearch_details']['matching_tags'];
         foreach ($tags as $tag) {
             $tag['URL'] = make_index_url([
                 'tags' => [$tag],

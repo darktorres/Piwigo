@@ -93,7 +93,7 @@ function get_categories_menu()
     $cats = [];
     $selected_category = isset($page['category']) ? $page['category'] : null;
     while ($row = pwg_db_fetch_assoc($result)) {
-        $child_date_last = @$row['max_date_last'] > @$row['date_last'];
+        $child_date_last = $row['max_date_last'] > $row['date_last'];
         $row = array_merge(
             $row,
             [
@@ -761,9 +761,9 @@ function get_related_categories_menu($items, $excluded_cat_ids = [])
         // 3. number of sub-albums containing photos
         //
         // Option 3 seems more appropriate here.
-        if (! empty($cat['id_uppercat']) and @$cats[$idx]['count_images'] > 0) {
+        if (! empty($cat['id_uppercat']) and $cats[$idx]['count_images'] > 0) {
             foreach (array_slice(explode(',', $cat['uppercats']), 0, -1) as $uppercat_id) {
-                @$cats[$index_of_cat[$uppercat_id]]['count_categories']++;
+                $cats[$index_of_cat[$uppercat_id]]['count_categories']++;
             }
         }
     }
