@@ -132,7 +132,7 @@ while ($tag = pwg_db_fetch_assoc($result)) {
     $tag['name'] = trigger_change('render_tag_name', $raw_name, $tag);
     $counter = intval(($tag_counters[$tag['id']] ?? null));
     if ($counter > 0) {
-        $tag['counter'] = intval(@$tag_counters[$tag['id']]);
+        $tag['counter'] = intval($tag_counters[$tag['id']]);
     }
 
     $alt_names = trigger_change('get_tag_alt_names', [], $raw_name);

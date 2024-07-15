@@ -223,7 +223,7 @@ function ws_getCacheSize($params, &$service)
     $path_cache = $conf['data_location'];
     $infos['cache_size'] = null;
     if (function_exists('exec')) {
-        @exec('du -sk ' . $path_cache, $return_array_cache); // TODO: don't work on Windows
+        exec('du -sk ' . $path_cache, $return_array_cache); // TODO: don't work on Windows
         if (
             is_array($return_array_cache)
             and ! empty($return_array_cache[0])
@@ -253,7 +253,7 @@ function ws_getCacheSize($params, &$service)
     $path_template_c = $conf['data_location'] . 'templates_c';
     $infos['tsizes'] = null;
     if (function_exists('exec')) {
-        @exec('du -sk ' . $path_template_c, $return_array_template_c); // TODO: don't work on Windows
+        exec('du -sk ' . $path_template_c, $return_array_template_c); // TODO: don't work on Windows
         if (
             is_array($return_array_template_c)
             and ! empty($return_array_template_c[0])
@@ -486,7 +486,7 @@ function ws_getActivityList($param, &$service)
     $line_id = 0;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
-        $details = @unserialize($row['details']);
+        $details = unserialize($row['details']);
 
         if (isset($row['user_agent'])) {
             $details['agent'] = $row['user_agent'];
@@ -547,7 +547,7 @@ function ws_getActivityList($param, &$service)
     foreach ($output_lines as $idx => $output_line) {
         if ($output_line['object'] == 'user') {
             foreach ($output_line['object_id'] as $user_id) {
-                @$output_lines[$idx]['details']['users'][] = isset($username_of[$user_id]) ? $username_of[$user_id] : 'user#' . $user_id;
+                $output_lines[$idx]['details']['users'][] = isset($username_of[$user_id]) ? $username_of[$user_id] : 'user#' . $user_id;
             }
 
             if (isset($output_lines[$idx]['details']['users'])) {
@@ -896,7 +896,7 @@ function ws_history_search($param, &$service)
 
     foreach ($history_lines as $line) {
         if (isset($line['image_type']) and $line['image_type'] == 'high') {
-            $summary['total_filesize'] += @intval($image_infos[$line['image_id']]['filesize']);
+            $summary['total_filesize'] += intval($image_infos[$line['image_id']]['filesize']);
         }
 
         if ($line['user_id'] == $conf['guest_id']) {
@@ -976,7 +976,7 @@ function ws_history_search($param, &$service)
             $image_id = $line['image_id'];
 
             $image_string =
-            '<span><img src="' . @DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
+            '<span><img src="' . DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
             . '" alt="' . $image_title . '" title="' . $image_title . '">';
         }
 

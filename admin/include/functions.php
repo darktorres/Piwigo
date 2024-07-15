@@ -2264,9 +2264,9 @@ function fetchRemote($src, &$dest, $get_data = [], $post_data = [], $user_agent 
 
     // Try to retrieve data from local file?
     if (! url_is_remote($src)) {
-        $content = @file_get_contents($src);
+        $content = file_get_contents($src);
         if ($content !== false) {
-            is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
+            is_resource($dest) ? fwrite($dest, $content) : $dest = $content;
             return true;
         }
 
@@ -2291,36 +2291,35 @@ function fetchRemote($src, &$dest, $get_data = [], $post_data = [], $user_agent 
     is_resource($dest) or $dest = '';
 
     // Try curl to read remote file
-    // TODO : remove all these @
     if (function_exists('curl_init') && function_exists('curl_exec')) {
-        $ch = @curl_init();
+        $ch = curl_init();
 
         if (isset($conf['use_proxy']) && $conf['use_proxy']) {
-            @curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
-            @curl_setopt($ch, CURLOPT_PROXY, $conf['proxy_server']);
+            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+            curl_setopt($ch, CURLOPT_PROXY, $conf['proxy_server']);
             if (isset($conf['proxy_auth']) && ! empty($conf['proxy_auth'])) {
-                @curl_setopt($ch, CURLOPT_PROXYUSERPWD, $conf['proxy_auth']);
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $conf['proxy_auth']);
             }
         }
 
-        @curl_setopt($ch, CURLOPT_URL, $src);
-        @curl_setopt($ch, CURLOPT_HEADER, 1);
-        @curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $src);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if ($method == 'POST') {
-            @curl_setopt($ch, CURLOPT_POST, 1);
-            @curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         }
-        $content = @curl_exec($ch);
-        $header_length = @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $status = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        @curl_close($ch);
+        $content = curl_exec($ch);
+        $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
         if ($content !== false and $status >= 200 and $status < 400) {
             if (preg_match('/Location:\s+?(.+)/', substr($content, 0, $header_length), $m)) {
                 return fetchRemote($m[1], $dest, [], [], $user_agent, $step + 1);
             }
             $content = substr($content, $header_length);
-            is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
+            is_resource($dest) ? fwrite($dest, $content) : $dest = $content;
             return true;
         }
     }
@@ -2337,10 +2336,10 @@ function fetchRemote($src, &$dest, $get_data = [], $post_data = [], $user_agent 
         if ($method == 'POST') {
             $opts['http']['content'] = $request;
         }
-        $context = @stream_context_create($opts);
-        $content = @file_get_contents($src, false, $context);
+        $context = stream_context_create($opts);
+        $content = file_get_contents($src, false, $context);
         if ($content !== false) {
-            is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
+            is_resource($dest) ? fwrite($dest, $content) : $dest = $content;
             return true;
         }
     }
@@ -2351,7 +2350,7 @@ function fetchRemote($src, &$dest, $get_data = [], $post_data = [], $user_agent 
     $path = isset($src['path']) ? $src['path'] : '/';
     $path .= isset($src['query']) ? '?' . $src['query'] : '';
 
-    if (($s = @fsockopen($host, 80, $errno, $errstr, 5)) === false) {
+    if (($s = fsockopen($host, 80, $errno, $errstr, 5)) === false) {
         return false;
     }
 
@@ -2397,7 +2396,7 @@ function fetchRemote($src, &$dest, $get_data = [], $post_data = [], $user_agent 
             $i++;
             continue;
         }
-        is_resource($dest) ? @fwrite($dest, $line) : $dest .= $line;
+        is_resource($dest) ? fwrite($dest, $line) : $dest .= $line;
         $i++;
     }
     fclose($s);
@@ -2791,7 +2790,7 @@ function clear_derivative_cache($types = 'all')
     }
     $pattern .= '\.[a-zA-Z0-9]{3,4}$#';
 
-    if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
+    if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
         while (($node = readdir($contents)) !== false) {
             if ($node != '.'
                 and $node != '..'
@@ -2836,7 +2835,7 @@ function clear_derivative_cache_rec($path, $pattern)
                 unlink($path . '/index.htm');
             }
             clearstatcache();
-            @rmdir($path);
+            rmdir($path);
         }
         return $rmdir;
     }
@@ -2866,7 +2865,7 @@ function delete_element_derivatives($infos, $type = 'all')
     $path = substr_replace($path, $pattern, $dot, 0);
     if (($glob = glob(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $path)) !== false) {
         foreach ($glob as $file) {
-            @unlink($file);
+            unlink($file);
         }
     }
 }
@@ -2910,21 +2909,21 @@ function deltree($path, $trash_path = null)
                 if (is_dir($pathfile)) {
                     deltree($pathfile, $trash_path);
                 } else {
-                    @unlink($pathfile);
+                    unlink($pathfile);
                 }
             }
         }
         closedir($fh);
 
-        if (@rmdir($path)) {
+        if (rmdir($path)) {
             return true;
         } elseif (! empty($trash_path)) {
             if (! is_dir($trash_path)) {
-                @mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
+                mkgetdir($trash_path, MKGETDIR_RECURSIVE | MKGETDIR_DIE_ON_ERROR | MKGETDIR_PROTECT_HTACCESS);
             }
             while ($r = $trash_path . '/' . md5(uniqid((string) mt_rand(), true))) {
                 if (! is_dir($r)) {
-                    @rename($path, $r);
+                    rename($path, $r);
                     break;
                 }
             }

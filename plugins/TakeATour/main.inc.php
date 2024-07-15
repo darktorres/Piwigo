@@ -99,8 +99,8 @@ function TAT_help_prefilter($content)
     $search = '<div id="helpContent">';
     $replacement = '<div id="helpContent">
 <fieldset>
-<legend>{\'Visit your Piwigo!\'|@translate}</legend>
-<p class="nextStepLink"><a href="admin.php?page=plugin-TakeATour">{\'Take a tour and discover the features of your Piwigo gallery » Go to the available tours\'|@translate}</a></p>
+<legend>{\'Visit your Piwigo!\'|translate}</legend>
+<p class="nextStepLink"><a href="admin.php?page=plugin-TakeATour">{\'Take a tour and discover the features of your Piwigo gallery » Go to the available tours\'|translate}</a></p>
 </fieldset>';
     return str_replace($search, $replacement, $content);
 
@@ -122,7 +122,7 @@ function TAT_no_photo_yet()
 }
 function TAT_no_photo_yet_prefilter($content)
 {
-    $search = '<div class="bigButton"><a href="{$next_step_url}">{\'I want to add photos\'|@translate}</a></div>';
-    $replacement = '<div class="bigButton"><a href="{$F_ACTION}?submited_tour_path=tours/first_contact&pwg_token={$pwg_token}">{\'Start the Tour\'|@translate}</a></div>';
+    $search = '<div class="bigButton"><a href="{$next_step_url}">{\'I want to add photos\'|translate}</a></div>';
+    $replacement = '<div class="bigButton"><a href="{$F_ACTION}?submited_tour_path=tours/first_contact&pwg_token={$pwg_token}">{\'Start the Tour\'|translate}</a></div>';
     return str_replace($search, $replacement, $content);
 }

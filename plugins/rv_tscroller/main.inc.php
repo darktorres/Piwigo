@@ -20,7 +20,7 @@ class RVTS
         // global $page;
         // $page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
         // if (count($page['items']) < $page['nb_image_page'] + 3) {
-        //     if (! @$page['start'] || script_basename() == 'picture') {
+        //     if (! $page['start'] || script_basename() == 'picture') {
         //         $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
         //     }
         // }

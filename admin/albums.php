@@ -227,7 +227,7 @@ $subcats_of = [];
 
 foreach ($all_categories as $id => $uppercats) {
     foreach (array_slice(explode(',', $uppercats), 0, -1) as $uppercat_id) {
-        @$subcats_of[$uppercat_id][] = $id;
+        $subcats_of[$uppercat_id][] = $id;
     }
 }
 

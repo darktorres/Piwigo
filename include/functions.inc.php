@@ -120,11 +120,11 @@ function mkgetdir($dir, $flags = MKGETDIR_DEFAULT)
         }
         if ($flags & MKGETDIR_PROTECT_HTACCESS) {
             $file = $dir . '/.htaccess';
-            file_exists($file) or @file_put_contents($file, 'deny from all');
+            file_exists($file) or file_put_contents($file, 'deny from all');
         }
         if ($flags & MKGETDIR_PROTECT_INDEX) {
             $file = $dir . '/index.htm';
-            file_exists($file) or @file_put_contents($file, 'Not allowed!');
+            file_exists($file) or file_put_contents($file, 'Not allowed!');
         }
     }
     if (! is_writable($dir)) {
@@ -1934,7 +1934,7 @@ function secure_directory($dir)
 {
     $file = $dir . '/index.htm';
     if (! file_exists($file)) {
-        @file_put_contents($file, 'Not allowed!');
+        file_put_contents($file, 'Not allowed!');
     }
 }
 

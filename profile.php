@@ -295,7 +295,7 @@ function load_profile_in_template($url_action, $url_redirect, $userdata, $templa
     $template->assign(
         [
             $template_prefix . 'USERNAME' => stripslashes($userdata['username']),
-            $template_prefix . 'EMAIL' => @$userdata['email'],
+            $template_prefix . 'EMAIL' => $userdata['email'],
             $template_prefix . 'ALLOW_USER_CUSTOMIZATION' => $conf['allow_user_customization'],
             $template_prefix . 'ACTIVATE_COMMENTS' => $conf['activate_comments'],
             $template_prefix . 'NB_IMAGE_PAGE' => $userdata['nb_image_page'],

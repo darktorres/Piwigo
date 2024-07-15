@@ -51,7 +51,7 @@ $menu = new BlockManager('menubar');
 $menu->load_registered_blocks();
 $reg_blocks = $menu->get_registered_blocks();
 
-$mb_conf = @$conf['blk_' . $menu->get_id()];
+$mb_conf = $conf['blk_' . $menu->get_id()];
 if (is_string($mb_conf)) {
     $mb_conf = unserialize($mb_conf);
 }
@@ -78,7 +78,7 @@ if (isset($_POST['submit']) and is_webmaster()) {
         $hide = isset($_POST['hide_' . $id]);
         $mb_conf[$id] = ($hide ? -1 : +1) * abs($pos);
 
-        $pos = (int) @$_POST['pos_' . $id];
+        $pos = (int) $_POST['pos_' . $id];
         if ($pos > 0) {
             $mb_conf[$id] = $mb_conf[$id] > 0 ? $pos : -$pos;
         }
