@@ -17,7 +17,7 @@ if (! $conf['enable_core_update']) {
     die('Piwigo core update system is disabled');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/updates.class.php';
 
 /*
 STEP:

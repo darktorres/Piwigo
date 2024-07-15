@@ -21,7 +21,7 @@ if (! empty($_GET['skin']) && ! preg_match('/[^a-zA-Z0-9_-]/', (string) $_GET['s
 }
 
 // we're mainly interested in an override of the colorscheme
-include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
+require __DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php';
 
 $this->assign(
     [
@@ -69,7 +69,7 @@ $this->smarty->registerFilter('pre', 'modus_smarty_prefilter_wrap');
 function modus_smarty_prefilter_wrap(
     string $source
 ): array|string|null {
-    include_once(__DIR__ . '/functions.inc.php');
+    require_once __DIR__ . '/functions.inc.php';
     return modus_smarty_prefilter($source);
 }
 
@@ -142,13 +142,13 @@ function modus_combinable_preparse(
     Template $template
 ): void {
     global $conf, $template;
-    include_once(__DIR__ . '/functions.inc.php');
+    require_once __DIR__ . '/functions.inc.php';
 
     if (! isset($template->smarty->registered_plugins['modifier']['cssGradient'])) {
         $template->smarty->registerPlugin('modifier', 'cssGradient', modus_css_gradient(...));
     }
 
-    include(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
+    require __DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php';
 
     $template->assign([
         'conf' => $conf,

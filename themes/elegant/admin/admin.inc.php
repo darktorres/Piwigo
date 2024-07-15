@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 // Need upgrade?
 global $conf;
-include(PHPWG_THEMES_PATH . 'elegant/admin/upgrade.inc.php');
+require PHPWG_THEMES_PATH . 'elegant/admin/upgrade.inc.php';
 
 load_language('theme.lang', PHPWG_THEMES_PATH . 'elegant/');
 
