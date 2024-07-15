@@ -80,7 +80,7 @@ function ws_getMissingDerivatives(
                     continue;
                 }
 
-                if (@filemtime($derivative->get_path()) === false) {
+                if (filemtime($derivative->get_path()) === false) {
                     $urls[] = $derivative->get_url() . $uid;
                 }
             }
@@ -202,7 +202,7 @@ function ws_getCacheSize(
     $path_cache = $conf['data_location'];
     $infos['cache_size'] = null;
     if (function_exists('exec')) {
-        @exec('du -sk ' . $path_cache, $return_array_cache);
+        exec('du -sk ' . $path_cache, $return_array_cache);
         if (
             is_array($return_array_cache) && (isset($return_array_cache[0]) && ($return_array_cache[0] !== '' && $return_array_cache[0] !== '0')) && preg_match('/^(\d+)\s/', $return_array_cache[0], $matches_cache)
         ) {
@@ -220,7 +220,7 @@ function ws_getCacheSize(
     $all = 0;
 
     foreach (array_keys($infos['msizes']) as $size_type) {
-        $infos['msizes'][$size_type] += @$msizes[derivative_to_url($size_type)];
+        $infos['msizes'][$size_type] += $msizes[derivative_to_url($size_type)];
         $all += $infos['msizes'][$size_type];
     }
 
@@ -230,7 +230,7 @@ function ws_getCacheSize(
     $path_template_c = $conf['data_location'] . 'templates_c';
     $infos['tsizes'] = null;
     if (function_exists('exec')) {
-        @exec('du -sk ' . $path_template_c, $return_array_template_c);
+        exec('du -sk ' . $path_template_c, $return_array_template_c);
         if (
             is_array($return_array_template_c) && (isset($return_array_template_c[0]) && ($return_array_template_c[0] !== '' && $return_array_template_c[0] !== '0')) && preg_match('/^(\d+)\s/', $return_array_template_c[0], $matches_template_c)
         ) {
@@ -443,7 +443,7 @@ function ws_getActivityList(
     $line_id = 0;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
-        $details = @unserialize($row['details']);
+        $details = unserialize($row['details']);
 
         if (isset($row['user_agent'])) {
             $details['agent'] = $row['user_agent'];
@@ -501,7 +501,7 @@ function ws_getActivityList(
     foreach ($output_lines as $idx => $output_line) {
         if ($output_line['object'] == 'user') {
             foreach ($output_line['object_id'] as $user_id) {
-                @$output_lines[$idx]['details']['users'][] = $username_of[$user_id] ?? 'user#' . $user_id;
+                $output_lines[$idx]['details']['users'][] = $username_of[$user_id] ?? 'user#' . $user_id;
             }
 
             if (isset($output_lines[$idx]['details']['users'])) {
@@ -814,7 +814,7 @@ function ws_history_search(
 
     foreach ($history_lines as $line) {
         if (isset($line['image_type']) && $line['image_type'] == 'high') {
-            $summary['total_filesize'] += @intval($image_infos[$line['image_id']]['filesize']);
+            $summary['total_filesize'] += intval($image_infos[$line['image_id']]['filesize']);
         }
 
         if ($line['user_id'] == $conf['guest_id']) {
@@ -895,7 +895,7 @@ function ws_history_search(
             $image_id = $line['image_id'];
 
             $image_string =
-            '<span><img src="' . @DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
+            '<span><img src="' . DerivativeImage::url(ImageStdParams::get_by_type(IMG_SQUARE), $element)
             . '" alt="' . $image_title . '" title="' . $image_title . '">';
         }
 
@@ -913,7 +913,7 @@ function ws_history_search(
             $search_detail = null;
         }
 
-        @++$sorted_members[$user_name];
+        ++$sorted_members[$user_name];
 
         $result[] = [
             'DATE' => format_date($line['date']),

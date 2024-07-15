@@ -312,7 +312,7 @@ if (isset($_GET['action'])) {
                             'comment_id' => $_GET['comment_to_edit'],
                             'image_id' => $page['image_id'],
                             'content' => $_POST['content'],
-                            'website_url' => @$_POST['website_url'],
+                            'website_url' => $_POST['website_url'],
                         ],
                         $_POST['key']
                     );
@@ -900,7 +900,7 @@ $element_content = trigger_change(
 );
 $template->assign('ELEMENT_CONTENT', $element_content);
 
-if (isset($picture['next']) && $picture['next']['src_image']->is_original() && $template->get_template_vars('U_PREFETCH') == null && ! str_contains((string) @$_SERVER['HTTP_USER_AGENT'], 'Chrome/')) {
+if (isset($picture['next']) && $picture['next']['src_image']->is_original() && $template->get_template_vars('U_PREFETCH') == null && ! str_contains((string) $_SERVER['HTTP_USER_AGENT'], 'Chrome/')) {
     $template->assign(
         'U_PREFETCH',
         $picture['next']['derivatives'][pwg_get_session_var('picture_deriv', $conf['derivative_default_size'])]->get_url()

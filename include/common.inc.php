@@ -14,7 +14,7 @@ defined('PHPWG_ROOT_PATH') || trigger_error('Hacking attempt!', E_USER_ERROR);
 // determine the initial instant to indicate the generation time of this page
 $t2 = microtime(true);
 
-// @set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+// set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
 //
 // addslashes to vars if magic_quotes_gpc is off this is a security
@@ -24,7 +24,7 @@ $t2 = microtime(true);
 // but function get_magic_quotes_gpc was always replying false.
 // Since php 8 the function get_magic_quotes_gpc is also removed
 // but we stil want to sanitize user input variables.
-if (! function_exists('get_magic_quotes_gpc') || ! @get_magic_quotes_gpc()) {
+if (! function_exists('get_magic_quotes_gpc') || ! get_magic_quotes_gpc()) {
     function sanitize_mysql_kv(
         string &$v
     ): void {
@@ -80,15 +80,15 @@ if (! defined('PHPWG_INSTALLED')) {
 include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
 
 if (isset($conf['show_php_errors']) && ! empty($conf['show_php_errors'])) {
-    @ini_set('error_reporting', $conf['show_php_errors']);
+    ini_set('error_reporting', $conf['show_php_errors']);
     if ($conf['show_php_errors_on_frontend']) {
-        @ini_set('display_errors', true);
+        ini_set('display_errors', true);
     }
 }
 
 if ($conf['session_gc_probability'] > 0) {
-    @ini_set('session.gc_divisor', 100);
-    @ini_set('session.gc_probability', min((int) $conf['session_gc_probability'], 100));
+    ini_set('session.gc_divisor', 100);
+    ini_set('session.gc_probability', min((int) $conf['session_gc_probability'], 100));
 }
 
 include(PHPWG_ROOT_PATH . 'include/constants.php');
@@ -221,7 +221,7 @@ if ($conf['gallery_locked']) {
 
     if (script_basename() !== 'identification' && ! is_admin()) {
         set_status_header(503, 'Service Unavailable');
-        @header('Retry-After: 900');
+        header('Retry-After: 900');
         header('Content-Type: text/html; charset=utf-8');
         echo '<a href="' . get_absolute_root_url(false) . 'identification.php">' . l10n('The gallery is locked for maintenance. Please, come back later.') . '</a>';
         echo str_repeat(' ', 512); //IE6 doesn't error output if below a size
