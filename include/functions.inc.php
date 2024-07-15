@@ -539,8 +539,6 @@ function pwg_log(
             conf_update_param('history_sections_cache', get_enums('history', 'section'), true);
         }
 
-        $conf['history_sections_cache'] = safe_unserialize($conf['history_sections_cache']);
-
         if (
             in_array($page['section'], $conf['history_sections_cache'])
             or in_array(strtolower($page['section']), array_map('strtolower', $conf['history_sections_cache']))
@@ -1461,11 +1459,15 @@ function load_conf_from_db(
 
     while ($row = pwg_db_fetch_assoc($result)) {
         $val = isset($row['value']) ? $row['value'] : '';
-        // If the field is true or false, the variable is transformed into a boolean value.
-        if ($val == 'true') {
+
+        if ($val === 'true') {
             $val = true;
-        } elseif ($val == 'false') {
+        } elseif ($val === 'false') {
             $val = false;
+        } elseif (is_serialized($val)) {
+            $val = unserialize($val);
+        } elseif (is_numeric($val)) {
+            $val = str_contains($val, '.') ? (float) $val : (int) $val;
         }
         $conf[$row['param']] = $val;
     }
@@ -1583,19 +1585,6 @@ function conf_get_param(
         return $conf[$param];
     }
     return $default_value;
-}
-
-/**
- * Apply *unserialize* on a value only if it is a string
- * @since 2.7
- */
-function safe_unserialize(
-    array|string $value
-): array {
-    if (is_string($value)) {
-        return unserialize($value);
-    }
-    return $value;
 }
 
 /**
