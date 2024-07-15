@@ -27,7 +27,7 @@ if (! $conf['allow_user_registration']) {
 trigger_notify('loc_begin_register');
 
 if (isset($_POST['submit'])) {
-    if (! verify_ephemeral_key(@$_POST['key'])) {
+    if (! verify_ephemeral_key($_POST['key'])) {
         set_status_header(403);
         $page['errors'][] = l10n('Invalid/expired form key');
     }

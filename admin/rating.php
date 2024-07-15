@@ -130,7 +130,7 @@ $user_options = [
 ];
 
 $template->assign('user_options', $user_options);
-$template->assign('user_options_selected', [@$_GET['users']]);
+$template->assign('user_options_selected', [$_GET['users']]);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Rating'));
 
 $query =
