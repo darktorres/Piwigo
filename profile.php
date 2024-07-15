@@ -290,7 +290,7 @@ function load_profile_in_template(
     $template->assign(
         [
             $template_prefixe . 'USERNAME' => stripslashes((string) $userdata['username']),
-            $template_prefixe . 'EMAIL' => @$userdata['email'],
+            $template_prefixe . 'EMAIL' => $userdata['email'],
             $template_prefixe . 'ALLOW_USER_CUSTOMIZATION' => $conf['allow_user_customization'],
             $template_prefixe . 'ACTIVATE_COMMENTS' => $conf['activate_comments'],
             $template_prefixe . 'NB_IMAGE_PAGE' => $userdata['nb_image_page'],

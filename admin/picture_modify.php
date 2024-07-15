@@ -99,7 +99,7 @@ if (isset($_POST['submit'])) {
     $data['author'] = $_POST['author'];
     $data['level'] = $_POST['level'];
 
-    $data['comment'] = $conf['allow_html_descriptions'] ? @$_POST['description'] : strip_tags((string) @$_POST['description']);
+    $data['comment'] = $conf['allow_html_descriptions'] ? $_POST['description'] : strip_tags((string) $_POST['description']);
 
     $data['date_creation'] = empty($_POST['date_creation']) ? null : $_POST['date_creation'];
 
@@ -211,15 +211,15 @@ $template->assign(
 
         'NAME' =>
           isset($_POST['name']) ?
-            stripslashes((string) $_POST['name']) : @$row['name'],
+            stripslashes((string) $_POST['name']) : $row['name'],
 
         'TITLE' => render_element_name($row),
 
-        'DIMENSIONS' => @$row['width'] . ' * ' . @$row['height'],
+        'DIMENSIONS' => $row['width'] . ' * ' . $row['height'],
 
         'FORMAT' => ($row['width'] >= $row['height']) ? 1 : 0, //0:horizontal, 1:vertical
 
-        'FILESIZE' => @$row['filesize'] . ' KB',
+        'FILESIZE' => $row['filesize'] . ' KB',
 
         'REGISTRATION_DATE' => format_date($row['date_available']),
 

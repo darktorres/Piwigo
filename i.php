@@ -20,7 +20,7 @@ if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
-@include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     // we use an hashed filename to prevent direct file access, and we salt with
@@ -417,7 +417,7 @@ parse_request();
 
 $params = $page['derivative_params'];
 
-$src_mtime = @filemtime($page['src_path']);
+$src_mtime = filemtime($page['src_path']);
 if ($src_mtime === false) {
     ierror('Source not found', 404);
 }
@@ -507,7 +507,7 @@ if (! mkgetdir(dirname($page['derivative_path']))) {
 }
 
 ignore_user_abort(true);
-@set_time_limit(0);
+set_time_limit(0);
 
 $image = new pwg_image($page['src_path']);
 $timing['load'] = time_step($step);
@@ -596,7 +596,7 @@ if ($conf['derivatives_strip_metadata_threshold'] > $d_size[0] * $d_size[1]) {//
 $image->set_compression_quality(ImageStdParams::$quality);
 $image->write($page['derivative_path']);
 $image->destroy();
-@chmod($page['derivative_path'], 0644);
+chmod($page['derivative_path'], 0644);
 $timing['save'] = time_step($step);
 
 send_derivative($expires);

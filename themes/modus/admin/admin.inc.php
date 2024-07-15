@@ -15,7 +15,7 @@ $default_conf = modus_get_default_config();
 
 load_language('theme.lang', __DIR__ . '/../');
 
-$my_conf = @$conf['modus_theme'];
+$my_conf = $conf['modus_theme'];
 if (! isset($my_conf)) {
     $my_conf = $default_conf;
 } elseif (! is_array($my_conf)) {
