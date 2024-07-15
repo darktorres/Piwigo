@@ -134,7 +134,7 @@ function check_upgrade_access_rights(): void
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
+    if (function_exists('get_magic_quotes_gpc') && ! get_magic_quotes_gpc()) {
         $username = pwg_db_real_escape_string($username);
     }
 

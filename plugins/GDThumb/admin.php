@@ -9,7 +9,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 function int_delete_gdthumb_cache(
     string $pattern
 ): void {
-    if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
+    if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
         while (($node = readdir($contents)) !== false) {
             if ($node !== '.' && $node !== '..' && is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)) {
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
@@ -67,7 +67,7 @@ if (isset($_GET['getMissingDerivative'])) {
                 $derivative = new DerivativeImage(ImageStdParams::get_custom(9999, $params['height']), $src_image);
             }
 
-            if (@filemtime($derivative->get_path()) === false) {
+            if (filemtime($derivative->get_path()) === false) {
                 $urls[] = $derivative->get_url() . $uid;
             }
 
@@ -176,7 +176,7 @@ if (isset($_POST['submit'])) {
 
 // Try to find GreyDragon Theme and use Theme's styles for admin area
 $css_file = str_replace('/./', '/', dirname(__FILE__, 3) . '/' . GDTHEME_PATH . 'admin/css/styles.css');
-$custom_css = @file_exists($css_file) ? 'yes' : 'no';
+$custom_css = file_exists($css_file) ? 'yes' : 'no';
 
 if (! isset($params['normalize_title'])) {
     $params['normalize_title'] = 'off';
