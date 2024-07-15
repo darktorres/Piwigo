@@ -18,8 +18,8 @@ define('ADMINTOOLS_ID', basename(__DIR__));
 define('ADMINTOOLS_PATH', PHPWG_PLUGINS_PATH . ADMINTOOLS_ID . '/');
 define('ADMINTOOLS_ADMIN', get_root_url() . 'admin.php?page=plugin-' . ADMINTOOLS_ID);
 
-include_once(ADMINTOOLS_PATH . 'include/events.inc.php');
-include_once(ADMINTOOLS_PATH . 'include/MultiView.class.php');
+require_once ADMINTOOLS_PATH . 'include/events.inc.php';
+require_once ADMINTOOLS_PATH . 'include/MultiView.class.php';
 
 global $MultiView;
 $MultiView = new MultiView();
