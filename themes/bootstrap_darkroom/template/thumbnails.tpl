@@ -1,7 +1,4 @@
 {if !empty($thumbnails)}
-{footer_script}
-  var error_icon = "{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png"{if isset($maxRequests)}, max_requests = {$maxRequests}{/if};
-{/footer_script}
 {if $derivative_params->type == "thumb"}
 {assign var=width value=520}
 {assign var=height value=360}
@@ -17,16 +14,12 @@
 {assign var=idx value=0+$START_ID}
 {foreach from=$thumbnails item=thumbnail}
 {assign var=derivative value=$pwg->derivative($derivative_params, $thumbnail.src_image)}
-{if !$derivative->is_cached()}
-{combine_script id='jquery.ajaxmanager' path='themes/default/js/plugins/jquery.ajaxmanager.js' load='footer'}
-{combine_script id='thumbnails.loader' path='themes/default/js/thumbnails.loader.js' require='jquery.ajaxmanager' load='footer'}
-{/if}
 {include file="grid_classes.tpl" width=$rwidth height=$rheight}
 <div class="col-outer {if isset($smarty.cookies.view) and $smarty.cookies.view == 'list'}col-12{else}{$col_class}{/if}" data-grid-classes="{$col_class}">
     <div class="card card-thumbnail {if isset($thumbnail.path_ext)}path-ext-{$thumbnail.path_ext}{/if} {if isset($thumbnail.file_ext)}file-ext-{$thumbnail.file_ext}{/if}">
       <div class="h-100">
         <a href="{$thumbnail.URL}" data-index="{$idx}" class="ripple{if isset($smarty.cookies.view) and $smarty.cookies.view != 'list'} d-block{/if}">
-            <img class="{if isset($smarty.cookies.view) and $smarty.cookies.view == 'list'}card-img-left{else}card-img-top{/if} thumb-img" {if $derivative->is_cached()}src="{$derivative->get_url()}"{else}src="{$ROOT_URL}themes/bootstrap_darkroom/img/transparent.png" data-src="{$derivative->get_url()}"{/if} alt="{$thumbnail.TN_ALT}" title="{$thumbnail.TN_TITLE}">
+            <img class="{if isset($smarty.cookies.view) and $smarty.cookies.view == 'list'}card-img-left{else}card-img-top{/if} thumb-img" src="{$derivative->get_url()}" {$derivative->get_size_htm()} loading="lazy" decoding="async" alt="{$thumbnail.TN_ALT}" title="{$thumbnail.TN_TITLE}">
         </a>
 {assign var=idx value=$idx+1}
 {if $SHOW_THUMBNAIL_CAPTION}
