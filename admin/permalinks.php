@@ -74,7 +74,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_permalinks.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions_permalinks.php';
 
 check_input_parameter('cat_id', $_POST, false, PATTERN_ID);
 
@@ -106,7 +106,7 @@ $template->set_filename('permalinks', 'permalinks.tpl');
 // +-----------------------------------------------------------------------+
 
 $page['tab'] = 'permalinks';
-include(PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php');
+require PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php';
 
 $query = "SELECT id, permalink, CONCAT(id, ' - ', name, IF(permalink IS NULL, '', ' &radic;')) AS name, uppercats, global_rank FROM categories";
 display_select_cat_wrapper($query, $selected_cat, 'categories', false);
