@@ -97,7 +97,7 @@ if ($filter['enabled']) {
         );
     }
 
-    include_once(PHPWG_ROOT_PATH . 'include/functions_filter.inc.php');
+    require_once PHPWG_ROOT_PATH . 'include/functions_filter.inc.php';
 } elseif (pwg_get_session_var('filter_enabled', false)) {
     pwg_unset_session_var('filter_enabled');
     pwg_unset_session_var('filter_check_key');

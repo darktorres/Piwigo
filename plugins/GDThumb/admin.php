@@ -30,7 +30,7 @@ function delete_gdthumb_cache(
 global $template, $conf, $page;
 
 load_language('plugin.lang', GDTHUMB_PATH);
-include(__DIR__ . '/config_default.inc.php');
+require __DIR__ . '/config_default.inc.php';
 $params = $conf['gdThumb'];
 
 if (isset($_GET['getMissingDerivative'])) {
