@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 check_status(ACCESS_ADMINISTRATOR);
 
 $sections = explode('/', (string) $_GET['section']);
@@ -46,7 +46,7 @@ if (! isset($pwg_loaded_plugins[$plugin_id])) {
 
 $filename = PHPWG_PLUGINS_PATH . implode('/', $sections);
 if (is_file($filename)) {
-    include_once($filename);
+    require_once $filename;
 } else {
     die('Missing file ' . htmlentities($filename));
 }

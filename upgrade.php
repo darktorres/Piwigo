@@ -19,9 +19,9 @@ if (function_exists('ini_set')) {
 define('PHPWG_ROOT_PATH', './');
 
 // load config file
-include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
+require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 }
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
@@ -37,14 +37,14 @@ if ($php_end_tag === false) {
     die('Cannot find php end tag in ' . $config_file);
 }
 
-include($config_file);
+require $config_file;
 
-include_once(PHPWG_ROOT_PATH . 'include/constants.php');
+require_once PHPWG_ROOT_PATH . 'include/constants.php';
 define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 
-include_once(PHPWG_ROOT_PATH . 'include/functions.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'include/template.class.php');
+require_once PHPWG_ROOT_PATH . 'include/functions.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+require_once PHPWG_ROOT_PATH . 'include/template.class.php';
 
 // +-----------------------------------------------------------------------+
 // |                              functions                                |
@@ -119,7 +119,7 @@ function print_time(
 // +-----------------------------------------------------------------------+
 // |                             language                                  |
 // +-----------------------------------------------------------------------+
-include(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+require PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
 $languages = new languages('utf-8');
 if (isset($_GET['language'])) {
     $language = strip_tags((string) $_GET['language']);
@@ -190,8 +190,8 @@ load_language('upgrade.lang', '', [
 // +-----------------------------------------------------------------------+
 // |                          database connection                          |
 // +-----------------------------------------------------------------------+
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
-include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
+require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
 
 upgrade_db_connect();
 
@@ -228,7 +228,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 if ($has_remote_site) {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/updates.class.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/updates.class.php';
 
     $page['errors'] = [];
     $step = 3;
@@ -332,7 +332,7 @@ if ((isset($_POST['submit']) || isset($_GET['now'])) && check_upgrade()) {
 
         $page['upgrade_start'] = get_moment();
         $conf['die_on_sql_error'] = false;
-        include($upgrade_file);
+        require $upgrade_file;
         conf_update_param('piwigo_db_version', get_branch_from_version(PHPWG_VERSION));
 
         // Something to add in database.inc.php?
@@ -425,7 +425,7 @@ if ((isset($_POST['submit']) || isset($_GET['now'])) && check_upgrade()) {
 // |                          start template output                        |
 // +-----------------------------------------------------------------------+
 else {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
     $languages = new languages();
 
     foreach ($languages->fs_languages as $language_code => $fs_language) {

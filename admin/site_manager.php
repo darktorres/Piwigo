@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -40,7 +40,7 @@ $template->set_filenames([
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 $my_base_url = get_root_url() . 'admin.php?page=';
 
 $tabsheet = new tabsheet();
