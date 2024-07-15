@@ -55,8 +55,8 @@ class updates
     {
         $_SESSION['need_update' . PHPWG_VERSION] = null;
 
-        if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches) && @fetchRemote(PHPWG_URL . '/download/all_versions.php?rand=' . md5(uniqid((string) mt_rand(), true)), $result)) {
-            $all_versions = @explode("\n", (string) $result);
+        if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches) && fetchRemote(PHPWG_URL . '/download/all_versions.php?rand=' . md5(uniqid((string) mt_rand(), true)), $result)) {
+            $all_versions = explode("\n", (string) $result);
             $new_version = trim($all_versions[0]);
             $_SESSION['need_update' . PHPWG_VERSION] = version_compare(PHPWG_VERSION, $new_version, '<');
         }
@@ -91,7 +91,7 @@ class updates
             $url .= '&show_requirements';
             $url .= '&origin_hash=' . sha1($conf['secret_key'] . get_absolute_root_url());
 
-            if (@fetchRemote($url, $result) && ($all_versions = @explode("\n", (string) $result)) && is_array($all_versions)) {
+            if (fetchRemote($url, $result) && ($all_versions = explode("\n", (string) $result)) && is_array($all_versions)) {
                 $new_versions['piwigo.org-checked'] = true;
                 $last_version = trim($all_versions[0]);
                 [$last_version_number, $last_version_php] = explode('/', trim($all_versions[0]));
@@ -235,7 +235,7 @@ class updates
         // Retrieve PEM versions
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) && ($pem_versions = @unserialize($result))) {
+        if (fetchRemote($url, $result, $get_data) && ($pem_versions = unserialize($result))) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
@@ -281,7 +281,7 @@ class updates
         }
 
         if (fetchRemote($url, $result, $get_data, $post_data)) {
-            $pem_exts = @unserialize($result);
+            $pem_exts = unserialize($result);
             if (! is_array($pem_exts)) {
                 return false;
             }
@@ -411,7 +411,7 @@ class updates
             foreach ($old_files as $old_file) {
                 $path = PHPWG_ROOT_PATH . $old_file;
                 if (is_file($path)) {
-                    @unlink($path);
+                    unlink($path);
                 } elseif (is_dir($path)) {
                     deltree($path, PHPWG_ROOT_PATH . '_trash');
                 }
@@ -450,28 +450,28 @@ class updates
         if (empty($page['errors'])) {
             $path = PHPWG_ROOT_PATH . $conf['data_location'] . 'update';
             $filename = $path . '/' . $code . '.zip';
-            @mkgetdir($path);
+            mkgetdir($path);
 
             $chunk_num = 0;
             $end = false;
-            $zip = @fopen($filename, 'w');
+            $zip = fopen($filename, 'w');
 
             while (! $end) {
                 $chunk_num++;
-                if (@fetchRemote(PHPWG_URL . '/download/dlcounter.php?code=' . $dl_code . '&chunk_num=' . $chunk_num, $result) && ($input = @unserialize($result))) {
+                if (fetchRemote(PHPWG_URL . '/download/dlcounter.php?code=' . $dl_code . '&chunk_num=' . $chunk_num, $result) && ($input = unserialize($result))) {
                     if ($input['remaining'] == 0) {
                         $end = true;
                     }
 
-                    @fwrite($zip, base64_decode((string) $input['data']));
+                    fwrite($zip, base64_decode((string) $input['data']));
                 } else {
                     $end = true;
                 }
             }
 
-            @fclose($zip);
+            fclose($zip);
 
-            if (@filesize($filename)) {
+            if (filesize($filename)) {
                 $zip = new PclZip($filename);
                 if ($result = $zip->extract(
                     PCLZIP_OPT_PATH,
@@ -487,7 +487,7 @@ class updates
                     foreach ($result as $extract) {
                         if (! in_array($extract['status'], ['ok', 'filtered', 'already_a_directory'])) {
                             // Try to change chmod and extract
-                            if (@chmod(PHPWG_ROOT_PATH . $extract['filename'], 0777) && ($res = $zip->extract(
+                            if (chmod(PHPWG_ROOT_PATH . $extract['filename'], 0777) && ($res = $zip->extract(
                                 PCLZIP_OPT_BY_NAME,
                                 $remove_path . '/' . $extract['filename'],
                                 PCLZIP_OPT_PATH,

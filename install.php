@@ -89,7 +89,7 @@ $infos = [];
 $errors = [];
 
 $config_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
-if (@file_exists($config_file)) {
+if (file_exists($config_file)) {
     include($config_file);
     // Is Piwigo already installed ?
     if (defined('PHPWG_INSTALLED')) {
@@ -118,7 +118,7 @@ $language = 'en_UK';
 //   // Try to get browser language
 //   foreach ($languages->fs_languages as $language_code => $fs_language)
 //   {
-//     if (substr($language_code,0,2) == @substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,2))
+//     if (substr($language_code,0,2) == substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,2))
 //     {
 //       $language = $language_code;
 //       break;

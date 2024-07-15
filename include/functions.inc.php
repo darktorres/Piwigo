@@ -105,7 +105,7 @@ function mkgetdir(
         }
 
         $umask = umask(0);
-        $mkd = @mkdir($dir, $conf['chmod_value'], $flags & MKGETDIR_RECURSIVE);
+        $mkd = mkdir($dir, $conf['chmod_value'], $flags & MKGETDIR_RECURSIVE);
         umask($umask);
         if ($mkd == false) {
             if (($flags & MKGETDIR_DIE_ON_ERROR) !== 0) {
@@ -118,14 +118,14 @@ function mkgetdir(
         if (($flags & MKGETDIR_PROTECT_HTACCESS) !== 0) {
             $file = $dir . '/.htaccess';
             if (! file_exists($file)) {
-                @file_put_contents($file, 'deny from all');
+                file_put_contents($file, 'deny from all');
             }
         }
 
         if (($flags & MKGETDIR_PROTECT_INDEX) !== 0) {
             $file = $dir . '/index.htm';
             if (! file_exists($file)) {
-                @file_put_contents($file, 'Not allowed!');
+                file_put_contents($file, 'Not allowed!');
             }
         }
     }
@@ -532,7 +532,7 @@ function pwg_log(
     }
 
     $tags_string = null;
-    if (@$page['section'] == 'tags') {
+    if ($page['section'] == 'tags') {
         $tags_string = implode(',', $page['tag_ids']);
 
         if (strlen($tags_string) > 50) {
@@ -1814,7 +1814,7 @@ function load_language(
         if (! ($options['return'] ?? null)) {
             // load forced fallback
             if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language) {
-                @include(str_replace($selected_language, $options['force_fallback'], $source_file));
+                include(str_replace($selected_language, $options['force_fallback'], $source_file));
             }
 
             // load language content
@@ -1842,7 +1842,7 @@ function load_language(
             }
 
             if (! empty($parent_language) && $parent_language != $selected_language) {
-                @include(str_replace($selected_language, $parent_language, $source_file));
+                include(str_replace($selected_language, $parent_language, $source_file));
             }
 
             // merge contents
@@ -1852,7 +1852,7 @@ function load_language(
         }
 
         //Note: target charset is always utf-8 $content = convert_charset($content, 'utf-8', $target_charset);
-        return @file_get_contents($source_file);
+        return file_get_contents($source_file);
 
     }
 
@@ -1898,7 +1898,7 @@ function secure_directory(
 ): void {
     $file = $dir . '/index.htm';
     if (! file_exists($file)) {
-        @file_put_contents($file, 'Not allowed!');
+        file_put_contents($file, 'Not allowed!');
     }
 }
 
@@ -1930,7 +1930,7 @@ function verify_ephemeral_key(
 ): bool {
     global $conf;
     $time = microtime(true);
-    $key = explode(':', @$key);
+    $key = explode(':', $key);
     if (count($key) != 3 || $key[0] > $time - (float) $key[1] || $key[0] < $time - 3600 || hash_hmac(
         'md5',
         $key[0] . substr((string) $_SERVER['REMOTE_ADDR'], 0, 5) . $key[1] . $aditionnal_data_to_hash,

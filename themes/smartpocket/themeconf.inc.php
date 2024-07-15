@@ -127,8 +127,8 @@ function sp_end_section_init(): void
     $template->assign(
         'smartpocket_log_history',
         [
-            'cat_id' => @$page['category']['id'],
-            'section' => @$page['section'],
+            'cat_id' => $page['category']['id'],
+            'section' => $page['section'],
             'tags_string' => (isset($page['tag_ids']) ? implode(',', $page['tag_ids']) : ''),
         ]
     );
