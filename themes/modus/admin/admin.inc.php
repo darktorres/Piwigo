@@ -8,8 +8,8 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 global $template;
 
-include_once(dirname(__FILE__, 2) . '/functions.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once dirname(__FILE__, 2) . '/functions.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 $default_conf = modus_get_default_config();
 
