@@ -641,7 +641,7 @@ function get_default_language(): string
  */
 function get_browser_language(): string|bool
 {
-    $language_header = @$_SERVER['HTTP_ACCEPT_LANGUAGE'];
+    $language_header = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     if ($language_header == '') {
         return false;
     }
@@ -845,7 +845,7 @@ function auto_login(): bool
 
     if (isset($_COOKIE[$conf['remember_me_name']])) {
         $cookie = explode('-', stripslashes((string) $_COOKIE[$conf['remember_me_name']]));
-        if (count($cookie) === 3 && is_numeric(@$cookie[0]) && is_numeric(@$cookie[1]) && time() - $conf['remember_me_length'] <= @$cookie[1] && time() >= @$cookie[1] /*cookie generated in the past*/) {
+        if (count($cookie) === 3 && is_numeric($cookie[0]) && is_numeric($cookie[1]) && time() - $conf['remember_me_length'] <= $cookie[1] && time() >= $cookie[1] /*cookie generated in the past*/) {
             $key = calculate_auto_login_key($cookie[0], $cookie[1], $username);
             if ($key !== false && $key === $cookie[2]) {
                 log_user($cookie[0], true);
@@ -974,8 +974,8 @@ function logout_user(): void
 {
     global $conf;
 
-    trigger_notify('user_logout', @$_SESSION['pwg_uid']);
-    pwg_activity('user', @$_SESSION['pwg_uid'], 'logout');
+    trigger_notify('user_logout', $_SESSION['pwg_uid']);
+    pwg_activity('user', $_SESSION['pwg_uid'], 'logout');
 
     $_SESSION = [];
     session_unset();

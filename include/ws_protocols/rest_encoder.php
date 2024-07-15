@@ -262,14 +262,14 @@ class PwgRestEncoder extends PwgResponseEncoder
 
                 break;
             case 'object':
-                match (strtolower(@$data::class)) {
+                match (strtolower($data::class)) {
                     'pwgnamedarray' => $this->encode_array($data->_content, $data->_itemName, $data->_xmlAttributes),
                     'pwgnamedstruct' => $this->encode_struct($data->_content, false, $data->_xmlAttributes),
                     default => $this->encode_struct(get_object_vars($data), true),
                 };
                 break;
             default:
-                trigger_error('Invalid type ' . gettype($data) . ' ' . @$data::class, E_USER_WARNING);
+                trigger_error('Invalid type ' . gettype($data) . ' ' . $data::class, E_USER_WARNING);
         }
     }
 }

@@ -184,7 +184,7 @@ abstract class PwgResponseEncoder
         PwgNamedArray|PwgNamedStruct|array|string|int|float|bool|null &$value
     ): void {
         if (is_object($value)) {
-            $class = strtolower(@$value::class);
+            $class = strtolower($value::class);
             if ($class === 'pwgnamedarray') {
                 $value = $value->_content;
             }
@@ -253,9 +253,9 @@ class PwgServer
     {
         if (! $this->_responseEncoder instanceof \PwgResponseEncoder) {
             set_status_header(400);
-            @header('Content-Type: text/plain');
+            header('Content-Type: text/plain');
             echo 'Cannot process your request. Unknown response format.
-Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_responseFormat . "\n";
+Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_responseFormat . "\n";
             var_export($this);
             die(0);
         }
@@ -290,7 +290,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         $encodedResponse = $this->_responseEncoder->encodeResponse($response);
         $contentType = $this->_responseEncoder->getContentType();
 
-        @header('Content-Type: ' . $contentType . '; charset=utf-8');
+        header('Content-Type: ' . $contentType . '; charset=utf-8');
         print_r($encodedResponse);
         trigger_notify('sendResponse', $encodedResponse);
     }
@@ -370,14 +370,14 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     public function getMethodDescription(
         string $methodName
     ): string {
-        $desc = @$this->_methods[$methodName]['description'];
+        $desc = $this->_methods[$methodName]['description'];
         return $desc ?? '';
     }
 
     public function getMethodSignature(
         string $methodName
     ): array {
-        $signature = @$this->_methods[$methodName]['signature'];
+        $signature = $this->_methods[$methodName]['signature'];
         return $signature ?? [];
     }
 
@@ -387,7 +387,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     public function getMethodOptions(
         string $methodName
     ): string {
-        $options = @$this->_methods[$methodName]['options'];
+        $options = $this->_methods[$methodName]['options'];
         return $options ?? [];
     }
 
@@ -487,7 +487,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         string $methodName,
         array $params
     ): PwgError|array|bool|string|null {
-        $method = @$this->_methods[$methodName];
+        $method = $this->_methods[$methodName];
 
         if ($method == null) {
             return new PwgError(WS_ERR_INVALID_METHOD, 'Method name is not valid');
