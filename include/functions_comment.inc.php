@@ -201,7 +201,7 @@ function insert_user_comment(
         invalidate_user_cache_nb_comments();
 
         if ($conf['email_admin_on_comment'] && $comment_action == 'validate' || $conf['email_admin_on_comment_validation'] && $comment_action == 'moderate') {
-            include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+            require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
 
             $comment_url = get_absolute_root_url() . 'comments.php?comment_id=' . $comm['id'];
 
@@ -333,7 +333,7 @@ function update_user_comment(
 
         // mail admin and ask to validate the comment
         if ($result && $conf['email_admin_on_comment_validation'] && $comment_action == 'moderate') {
-            include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+            require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
 
             $comment_url = get_absolute_root_url() . 'comments.php?comment_id=' . $comment['comment_id'];
 
@@ -378,7 +378,7 @@ function email_admin(
         return;
     }
 
-    include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+    require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
 
     $keyargs_content = [
         get_l10n_args('Author: %s', $comment['author']),

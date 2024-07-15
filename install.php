@@ -34,15 +34,15 @@ if (! empty($_SERVER['PATH_INFO'])) {
 
 //----------------------------------------------------- variable initialization
 
-include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
+require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
-    include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+    require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 }
 
 defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
-include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
-include(PHPWG_ROOT_PATH . 'include/template.class.php');
+require PHPWG_ROOT_PATH . 'include/functions.inc.php';
+require PHPWG_ROOT_PATH . 'include/template.class.php';
 
 // download database config file if exists
 check_input_parameter('dl', $_GET, false, '/^[a-f0-9]{32}$/');
@@ -83,17 +83,17 @@ $errors = [];
 
 $config_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
 if (file_exists($config_file)) {
-    include($config_file);
+    require $config_file;
     // Is Piwigo already installed ?
     if (defined('PHPWG_INSTALLED')) {
         die('Piwigo is already installed');
     }
 }
 
-include(PHPWG_ROOT_PATH . 'include/constants.php');
-include(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require PHPWG_ROOT_PATH . 'include/constants.php';
+require PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
-include(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+require PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
 $languages = new languages('utf-8');
 
 // if (isset($_GET['language']))
@@ -176,9 +176,9 @@ if (! isset($step)) {
 }
 
 //---------------------------------------------------------------- form analyze
-include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $dblayer . '.inc.php');
-include(PHPWG_ROOT_PATH . 'admin/include/functions_install.inc.php');
-include(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
+require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $dblayer . '.inc.php';
+require PHPWG_ROOT_PATH . 'admin/include/functions_install.inc.php';
+require PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
 
 if (isset($_POST['install'])) {
     $webmaster = trim((string) preg_replace('/\s{2,}/', ' ', (string) $admin_name));
@@ -400,7 +400,7 @@ if ($step == 1) {
 
         // email notification
         if (isset($_POST['send_credentials_by_mail'])) {
-            include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+            require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
 
             $keyargs_content = [
                 get_l10n_args('Hello %s,', $admin_name),
