@@ -68,7 +68,7 @@ class Template
      */
     public const string COMBINED_CSS_TAG = '<!-- COMBINED_CSS -->';
 
-    public Smarty $smarty;
+    public Smarty\Smarty $smarty;
 
     public string $output = '';
 
@@ -118,11 +118,9 @@ class Template
     ) {
         global $conf, $lang_info;
 
-        SmartyException::$escape = false;
-
         $this->scriptLoader = new ScriptLoader();
         $this->cssLoader = new CssLoader();
-        $this->smarty = new Smarty();
+        $this->smarty = new Smarty\Smarty();
         $this->smarty->debugging = $conf['debug_template'];
         if (! $this->smarty->debugging) {
             $this->smarty->error_reporting = error_reporting() & ~E_NOTICE;
@@ -627,7 +625,7 @@ class Template
                     'AAAA_DEBUG_TOTAL_TIME__' => get_elapsed_time($t2, get_moment()),
                 ]
             );
-            $this->smarty->display(__DIR__ . '/../vendor/smarty/smarty/libs/debug.tpl');
+            $this->smarty->display(__DIR__ . '/../vendor/smarty/smarty/src/debug.tpl');
         }
     }
 
@@ -784,7 +782,7 @@ class Template
      */
     public function func_define_derivative(
         array $params,
-        Smarty_Internal_Template $smarty
+        Smarty\Template $smarty
     ): void {
         if (empty($params['name'])) {
             fatal_error('define_derivative missing name');
@@ -1078,10 +1076,10 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public static function prefilter_white_space(
         string $source,
-        Smarty_Internal_Template $smarty
+        Smarty\Template $smarty
     ): string {
-        $ld = $smarty->left_delimiter;
-        $rd = $smarty->right_delimiter;
+        $ld = $smarty->getLeftDelimiter();
+        $rd = $smarty->getRightDelimiter();
         $ldq = preg_quote($ld, '#');
         $rdq = preg_quote($rd, '#');
 
@@ -1105,7 +1103,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public static function postfilter_language(
         string $source,
-        Smarty $smarty
+        Smarty\Template $smarty
     ): string {
         // replaces echo PHP_STRING_LITERAL; with the string literal value
         $source = preg_replace_callback(
@@ -1124,7 +1122,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
      */
     public static function prefilter_local_css(
         string $source,
-        Smarty_Internal_Template $smarty
+        Smarty\Template $smarty
     ): string {
         $css = [];
         foreach ($smarty->getTemplateVars('themes') as $theme) {
