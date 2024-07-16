@@ -197,7 +197,7 @@ function modus_css_resolution(
 $this->smarty->registerPlugin('function', 'modus_thumbs', modus_thumbs(...));
 function modus_thumbs(
     array $x,
-    Smarty_Internal_Template $smarty
+    Smarty\Template $smarty
 ): void {
     global $template, $page, $conf;
 
