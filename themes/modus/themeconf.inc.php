@@ -80,7 +80,7 @@ if (! defined('IN_ADMIN') && defined('RVCDN')) {
 
 function rv_cdn_prefilter(
     string $source,
-    Smarty &$smarty
+    \Smarty\Template &$smarty
 ): string {
     $source = str_replace('src="{$ROOT_URL}{$themeconf.icon_dir}/', 'src="' . RVCDN_ROOT_URL . '{$themeconf.icon_dir}/', $source);
     return str_replace('url({$ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
@@ -197,7 +197,7 @@ function modus_css_resolution(
 $this->smarty->registerPlugin('function', 'modus_thumbs', modus_thumbs(...));
 function modus_thumbs(
     array $x,
-    Smarty_Internal_Template $smarty
+    \Smarty\Template $smarty
 ): void {
     global $template, $page, $conf;
 
