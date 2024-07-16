@@ -3,16 +3,16 @@
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
 function int_delete_gdthumb_cache($pattern) {
-  if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)):
-    while (($node = readdir($contents)) !== false):
+  if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
+    while (($node = readdir($contents)) !== false) {
       if ($node != '.'
           and $node != '..'
-          and is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)):
+          and is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)) {
         clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
-      endif;
-    endwhile;
+      }
+    }
     closedir($contents);
-  endif;
+  }
 }
 
 function delete_gdthumb_cache($height) {
@@ -52,11 +52,11 @@ if (isset($_GET['getMissingDerivative'])) {
       $src_image = new SrcImage($row);
       if ($src_image->is_mimetype())
         continue;
-      if (($params['method'] == "slide") || ($params['method'] == "square")):
+      if (($params['method'] == "slide") || ($params['method'] == "square")) {
         $derivative = new DerivativeImage(ImageStdParams::get_custom($params['height'], 9999), $src_image);
-      else:
+      } else {
         $derivative = new DerivativeImage(ImageStdParams::get_custom(9999, $params['height']), $src_image);
-      endif;
+      }
       if (@filemtime($derivative->get_path())===false) {
         $urls[] = $derivative->get_url().$uid;
       }
@@ -88,16 +88,16 @@ if (isset($_POST['cachedelete'])) {
 // Save configuration
 if (isset($_POST['submit'])) {
 
-  if (empty($_POST['method'])):
+  if (empty($_POST['method'])) {
     $method = "resize";
-  else:
+  } else {
     $method = $_POST['method'];
-  endif;
-  if (empty($_POST['normalize_title'])):
+  }
+  if (empty($_POST['normalize_title'])) {
     $normalize = "off";
-  else:
+  } else {
     $normalize = $_POST['normalize_title'];
-  endif;
+  }
 
   $big_thumb        = !empty($_POST['big_thumb']);
   $big_thumb_noinpw = !empty($_POST['big_thumb_noinpw']);
@@ -105,30 +105,30 @@ if (isset($_POST['submit'])) {
   $thumb_mode_album = $_POST['thumb_mode_album'];
   $thumb_mode_photo = $_POST['thumb_mode_photo'];
 
-  if ($method == "slide"):
-    if ($big_thumb):
+  if ($method == "slide") {
+    if ($big_thumb) {
       $big_thumb = false;
       array_push($page['warnings'], l10n('Big thumb cannot be used in Slide mode. Disabled'));
-    endif;
-    if ($thumb_animate):
+    }
+    if ($thumb_animate) {
       $thumb_animate = false;
       array_push($page['warnings'], l10n('Thumb animation cannot be used in Slide mode. Disabled'));
-    endif;
+    }
 
-    if (($thumb_mode_album == "overlay-ex") || ($thumb_mode_album == "overlay") || ($thumb_mode_album == "top") || ($thumb_mode_album == "bottom")):
+    if (($thumb_mode_album == "overlay-ex") || ($thumb_mode_album == "overlay") || ($thumb_mode_album == "top") || ($thumb_mode_album == "bottom")) {
       $thumb_mode_album = "bottom_static";
       array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
-    endif;
+    }
 
-    if (($thumb_mode_photo == "overlay-ex") || ($thumb_mode_photo == "overlay") || ($thumb_mode_photo == "top") || ($thumb_mode_photo == "bottom")):
+    if (($thumb_mode_photo == "overlay-ex") || ($thumb_mode_photo == "overlay") || ($thumb_mode_photo == "top") || ($thumb_mode_photo == "bottom")) {
       $thumb_mode_photo = "bottom_static";
       array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
-    endif;
-  endif;
+    }
+  }
 
-  if (($big_thumb_noinpw) && (!$big_thumb)):
+  if (($big_thumb_noinpw) && (!$big_thumb)) {
     $big_thumb_noinpw = false;
-  endif;
+  }
 
   $params  = array(
       'height'          => $_POST['height']
@@ -171,17 +171,17 @@ if (isset($_POST['submit'])) {
 
 // Try to find GreyDragon Theme and use Theme's styles for admin area
 $css_file = str_replace('/./', '/', dirname(dirname(dirname(__FILE__))) . '/' . GDTHEME_PATH . "admin/css/styles.css");
-if (@file_exists($css_file)):
+if (@file_exists($css_file)) {
   $custom_css = "yes";
-else:
+} else {
   $custom_css = "no";
-endif;
+}
 
-if (!isset($params['normalize_title'])):
+if (!isset($params['normalize_title'])) {
   $params['normalize_title'] = "off";
-elseif ($params['normalize_title'] == "1"):
+} elseif ($params['normalize_title'] == "1") {
   $params['normalize_title'] = "on";
-endif;
+}
 
 // Configuration du template
 $template->assign(
