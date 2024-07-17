@@ -204,7 +204,7 @@ function ws_getCacheSize(
     $path_cache = $conf['data_location'];
     $infos['cache_size'] = null;
     if (function_exists('exec')) {
-        exec('du -sk ' . $path_cache, $return_array_cache);
+        exec('du -sk ' . $path_cache, $return_array_cache); // TODO: don't work on Windows
         if (
             is_array($return_array_cache) && (isset($return_array_cache[0]) && ($return_array_cache[0] !== '' && $return_array_cache[0] !== '0')) && preg_match('/^(\d+)\s/', $return_array_cache[0], $matches_cache)
         ) {
@@ -232,7 +232,7 @@ function ws_getCacheSize(
     $path_template_c = $conf['data_location'] . 'templates_c';
     $infos['tsizes'] = null;
     if (function_exists('exec')) {
-        exec('du -sk ' . $path_template_c, $return_array_template_c);
+        exec('du -sk ' . $path_template_c, $return_array_template_c); // TODO: don't work on Windows
         if (
             is_array($return_array_template_c) && (isset($return_array_template_c[0]) && ($return_array_template_c[0] !== '' && $return_array_template_c[0] !== '0')) && preg_match('/^(\d+)\s/', $return_array_template_c[0], $matches_template_c)
         ) {
