@@ -280,14 +280,10 @@ $conf['insensitive_case_logon'] = false;
 // 'filename'
 $conf['uniqueness_mode'] = 'md5sum';
 
-// Library used for image resizing. Value could be 'auto', 'vips', 'imagick',
-// 'ext_imagick' or 'gd'. If value is 'auto', library will be chosen in this
+// Library used for image resizing. Value could be 'auto', 'vips' or 'gd'.
+// If value is 'auto', library will be chosen in this
 // order. If chosen library is not available, another one will be picked up.
 $conf['graphics_library'] = 'auto';
-
-// If library used is external installation of ImageMagick ('ext_imagick'),
-// you can define imagemagick directory.
-$conf['ext_imagick_dir'] = '';
 
 // how many user comments to display by default on comments.php. Use 'all'
 // to display all user comments without pagination. Default available values
