@@ -303,11 +303,6 @@ $template->assign(
 // graphics library
 switch (pwg_image::get_library())
 {
-  case 'gd':
-    $gd_info = gd_info();
-    $template->assign('GRAPHICS_LIBRARY', 'GD '.@$gd_info['GD Version']);
-    break;
-
   case 'vips':
     $library = 'image_vips';
     $template->assign('GRAPHICS_LIBRARY', $library);

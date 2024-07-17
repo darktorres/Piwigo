@@ -296,27 +296,24 @@ SELECT
     $representative_ext = null;
   }
   
-  if (pwg_image::get_library() != 'gd')
+  if ($conf['original_resize'])
   {
-    if ($conf['original_resize'])
+    $need_resize = need_resize($file_path, $conf['original_resize_maxwidth'], $conf['original_resize_maxheight']);
+
+    if ($need_resize)
     {
-      $need_resize = need_resize($file_path, $conf['original_resize_maxwidth'], $conf['original_resize_maxheight']);
+      $img = new pwg_image($file_path);
 
-      if ($need_resize)
-      {
-        $img = new pwg_image($file_path);
+      $img->pwg_resize(
+        $file_path,
+        $conf['original_resize_maxwidth'],
+        $conf['original_resize_maxheight'],
+        $conf['original_resize_quality'],
+        $conf['upload_form_automatic_rotation'],
+        false
+        );
 
-        $img->pwg_resize(
-          $file_path,
-          $conf['original_resize_maxwidth'],
-          $conf['original_resize_maxheight'],
-          $conf['original_resize_quality'],
-          $conf['upload_form_automatic_rotation'],
-          false
-          );
-
-        $img->destroy();
-      }
+      $img->destroy();
     }
   }
 
