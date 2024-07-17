@@ -530,45 +530,47 @@ function upload_file_pdf($representative_ext, $file_path)
 
   $logger->info(__FUNCTION__.', $file_path = '.$file_path.', $representative_ext = '.$representative_ext);
 
-  if (isset($representative_ext))
-  {
-    return $representative_ext;
-  }
+  return $representative_ext ?? null;
 
-  if (pwg_image::get_library() != 'ext_imagick')
-  {
-    return $representative_ext;
-  }
+  // if (isset($representative_ext))
+  // {
+  //   return $representative_ext;
+  // }
 
-  if (!in_array(strtolower(get_extension($file_path)), array('pdf')))
-  {
-    return $representative_ext;
-  }
+  // if (pwg_image::get_library() != 'ext_imagick')
+  // {
+  //   return $representative_ext;
+  // }
 
-  $ext = conf_get_param('pdf_representative_ext', 'jpg');
-  $jpg_quality = conf_get_param('pdf_jpg_quality', 90);
+  // if (!in_array(strtolower(get_extension($file_path)), array('pdf')))
+  // {
+  //   return $representative_ext;
+  // }
 
-  // move the uploaded file to pwg_representative sub-directory
-  $representative_file_path = original_to_representative($file_path, $ext);
-  prepare_directory(dirname($representative_file_path));
+  // $ext = conf_get_param('pdf_representative_ext', 'jpg');
+  // $jpg_quality = conf_get_param('pdf_jpg_quality', 90);
 
-  $exec = $conf['ext_imagick_dir'].'convert';
-  if ('jpg' == $ext)
-  {
-    $exec.= ' -quality '.$jpg_quality;
-  }
-  $exec.= ' "'.realpath($file_path).'"[0]';
-  $exec.= ' "'.$representative_file_path.'"';
-  $exec.= ' 2>&1';
-  @exec($exec, $returnarray);
+  // // move the uploaded file to pwg_representative sub-directory
+  // $representative_file_path = original_to_representative($file_path, $ext);
+  // prepare_directory(dirname($representative_file_path));
 
-  // Return the extension (if successful) or false (if failed)
-  if (file_exists($representative_file_path))
-  {
-    $representative_ext = $ext;
-  }
+  // $exec = $conf['ext_imagick_dir'].'convert';
+  // if ('jpg' == $ext)
+  // {
+  //   $exec.= ' -quality '.$jpg_quality;
+  // }
+  // $exec.= ' "'.realpath($file_path).'"[0]';
+  // $exec.= ' "'.$representative_file_path.'"';
+  // $exec.= ' 2>&1';
+  // @exec($exec, $returnarray);
 
-  return $representative_ext;
+  // // Return the extension (if successful) or false (if failed)
+  // if (file_exists($representative_file_path))
+  // {
+  //   $representative_ext = $ext;
+  // }
+
+  // return $representative_ext;
 }
 
 add_event_handler('upload_file', 'upload_file_heic');
@@ -627,63 +629,65 @@ function upload_file_tiff($representative_ext, $file_path)
 
   $logger->info(__FUNCTION__.', $file_path = '.$file_path.', $representative_ext = '.$representative_ext);
 
-  if (isset($representative_ext))
-  {
-    return $representative_ext;
-  }
+  return $representative_ext ?? null;
 
-  if (pwg_image::get_library() != 'ext_imagick')
-  {
-    return $representative_ext;
-  }
+  // if (isset($representative_ext))
+  // {
+  //   return $representative_ext;
+  // }
 
-  if (!in_array(strtolower(get_extension($file_path)), array('tif', 'tiff')))
-  {
-    return $representative_ext;
-  }
+  // if (pwg_image::get_library() != 'ext_imagick')
+  // {
+  //   return $representative_ext;
+  // }
 
-  // move the uploaded file to pwg_representative sub-directory
-  $representative_file_path = dirname($file_path).'/pwg_representative/';
-  $representative_file_path.= get_filename_wo_extension(basename($file_path)).'.';
+  // if (!in_array(strtolower(get_extension($file_path)), array('tif', 'tiff')))
+  // {
+  //   return $representative_ext;
+  // }
 
-  $representative_ext = $conf['tiff_representative_ext'];
-  $representative_file_path.= $representative_ext;
+  // // move the uploaded file to pwg_representative sub-directory
+  // $representative_file_path = dirname($file_path).'/pwg_representative/';
+  // $representative_file_path.= get_filename_wo_extension(basename($file_path)).'.';
 
-  prepare_directory(dirname($representative_file_path));
+  // $representative_ext = $conf['tiff_representative_ext'];
+  // $representative_file_path.= $representative_ext;
 
-  $exec = $conf['ext_imagick_dir'].'convert';
+  // prepare_directory(dirname($representative_file_path));
 
-  if ('jpg' == $conf['tiff_representative_ext'])
-  {
-    $exec .= ' -quality 98';
-  }
+  // $exec = $conf['ext_imagick_dir'].'convert';
 
-  $exec .= ' "'.realpath($file_path).'"';
+  // if ('jpg' == $conf['tiff_representative_ext'])
+  // {
+  //   $exec .= ' -quality 98';
+  // }
 
-  $dest = pathinfo($representative_file_path);
-  $exec .= ' "'.realpath($dest['dirname']).'/'.$dest['basename'].'"';
+  // $exec .= ' "'.realpath($file_path).'"';
 
-  $exec .= ' 2>&1';
-  @exec($exec, $returnarray);
+  // $dest = pathinfo($representative_file_path);
+  // $exec .= ' "'.realpath($dest['dirname']).'/'.$dest['basename'].'"';
 
-  // sometimes ImageMagick creates file-0.jpg (full size) + file-1.jpg
-  // (thumbnail). I don't know how to avoid it.
-  $representative_file_abspath = realpath($dest['dirname']).'/'.$dest['basename'];
-  if (!file_exists($representative_file_abspath))
-  {
-    $first_file_abspath = preg_replace(
-      '/\.'.$representative_ext.'$/',
-      '-0.'.$representative_ext,
-      $representative_file_abspath
-      );
+  // $exec .= ' 2>&1';
+  // @exec($exec, $returnarray);
 
-    if (file_exists($first_file_abspath))
-    {
-      rename($first_file_abspath, $representative_file_abspath);
-    }
-  }
+  // // sometimes ImageMagick creates file-0.jpg (full size) + file-1.jpg
+  // // (thumbnail). I don't know how to avoid it.
+  // $representative_file_abspath = realpath($dest['dirname']).'/'.$dest['basename'];
+  // if (!file_exists($representative_file_abspath))
+  // {
+  //   $first_file_abspath = preg_replace(
+  //     '/\.'.$representative_ext.'$/',
+  //     '-0.'.$representative_ext,
+  //     $representative_file_abspath
+  //     );
 
-  return get_extension($representative_file_abspath);
+  //   if (file_exists($first_file_abspath))
+  //   {
+  //     rename($first_file_abspath, $representative_file_abspath);
+  //   }
+  // }
+
+  // return get_extension($representative_file_abspath);
 }
 
 add_event_handler('upload_file', 'upload_file_video');
