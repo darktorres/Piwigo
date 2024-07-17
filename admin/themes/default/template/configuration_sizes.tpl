@@ -85,15 +85,6 @@ $(".restore-settings-button").each(function() {
 
   <fieldset id="sizesConf">
     <legend><span class="icon-picture icon-red"></span>{'Original Size'|translate}</legend>
-  {if (isset($is_gd) and $is_gd)}
-    <div>
-      {'Resize after upload disabled due to the use of GD as graphic library'|translate}
-      <input type="checkbox" name="original_resize"disabled="disabled" style="visibility: hidden">
-      <input type="hidden" name="original_resize_maxwidth" value="{$sizes.original_resize_maxwidth}">
-      <input type="hidden" name="original_resize_maxheight" value="{$sizes.original_resize_maxheight}">
-      <input type="hidden" name="original_resize_quality" value="{$sizes.original_resize_quality}">
-    </div>
-  {else}
     <div>
       <label class="font-checkbox">
         <span class="icon-check"></span>
@@ -125,7 +116,6 @@ $(".restore-settings-button").each(function() {
         </td>
       </tr>
     </table>
-  {/if}
   </fieldset>
 
   <fieldset id="multiSizesConf">
