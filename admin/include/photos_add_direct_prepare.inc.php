@@ -19,33 +19,6 @@ $template->assign(
     )
   );
 
-// what is the maximum number of pixels permitted by the memory_limit?
-if (pwg_image::get_library() == 'gd')
-{
-  $fudge_factor = 1.7;
-  $available_memory = get_ini_size('memory_limit') - memory_get_usage();
-  $max_upload_width = round(sqrt($available_memory/(2 * $fudge_factor)));
-  $max_upload_height = round(2 * $max_upload_width / 3);
-  
-  // we don't want dimensions like 2995x1992 but 3000x2000
-  $max_upload_width = round($max_upload_width/100)*100;
-  $max_upload_height = round($max_upload_height/100)*100;
-  
-  $max_upload_resolution = floor($max_upload_width * $max_upload_height / (1000000));
-
-  // no need to display a limitation warning if the limitation is huge like 20MP
-  if ($max_upload_resolution < 25)
-  {
-    $template->assign(
-      array(
-        'max_upload_width' => $max_upload_width,
-        'max_upload_height' => $max_upload_height,
-        'max_upload_resolution' => $max_upload_resolution,
-        )
-      );
-  }
-}
-
 //warn the user if the picture will be resized after upload
 if ($conf['original_resize'])
 {
@@ -163,11 +136,6 @@ $error_message = ready_for_upload_message();
 if (!empty($error_message))
 {
   $setup_errors[] = $error_message;
-}
-
-if (!function_exists('gd_info'))
-{
-  $setup_errors[] = l10n('GD library is missing');
 }
 
 $template->assign(array(
