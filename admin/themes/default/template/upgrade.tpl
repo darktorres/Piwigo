@@ -21,7 +21,6 @@
 {get_combined_scripts load='header'}
 <!-- END get_combined_scripts -->
 
-{literal}
 <style type="text/css">
 body {
   font-size:12px;
@@ -128,7 +127,6 @@ input[type="text"]:focus, input[type="password"]:focus, select:focus {
 }
 
 </style>
-{/literal}
 <title>Piwigo {$RELEASE} - {'Upgrade'|@translate}</title>
 </head>
 
