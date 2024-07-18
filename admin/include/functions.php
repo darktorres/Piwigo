@@ -1043,82 +1043,6 @@ function get_fulldirs($cat_ids)
 }
 
 /**
- * Returns an array with all file system files according to $conf['file_ext']
- *
- * @deprecated 2.4
- *
- * @param string $path
- * @param bool $recursive
- * @return array
- */
-function get_fs($path, $recursive = true)
-{
-    global $conf;
-
-    // because isset is faster than in_array...
-    if (! isset($conf['flip_picture_ext'])) {
-        $conf['flip_picture_ext'] = array_flip($conf['picture_ext']);
-    }
-    if (! isset($conf['flip_file_ext'])) {
-        $conf['flip_file_ext'] = array_flip($conf['file_ext']);
-    }
-
-    $fs['elements'] = [];
-    $fs['thumbnails'] = [];
-    $fs['representatives'] = [];
-    $subdirs = [];
-
-    if (is_dir($path)) {
-        if ($contents = opendir($path)) {
-            while (($node = readdir($contents)) !== false) {
-                if ($node == '.' or $node == '..') {
-                    continue;
-                }
-
-                if (is_file($path . '/' . $node)) {
-                    $extension = get_extension($node);
-
-                    if (isset($conf['flip_picture_ext'][$extension])) {
-                        if (basename($path) == 'thumbnail') {
-                            $fs['thumbnails'][] = $path . '/' . $node;
-                        } elseif (basename($path) == 'pwg_representative') {
-                            $fs['representatives'][] = $path . '/' . $node;
-                        } else {
-                            $fs['elements'][] = $path . '/' . $node;
-                        }
-                    } elseif (isset($conf['flip_file_ext'][$extension])) {
-                        $fs['elements'][] = $path . '/' . $node;
-                    }
-                } elseif (is_dir($path . '/' . $node) and $node != 'pwg_high' and $recursive) {
-                    $subdirs[] = $node;
-                }
-            }
-        }
-        closedir($contents);
-
-        foreach ($subdirs as $subdir) {
-            $tmp_fs = get_fs($path . '/' . $subdir);
-
-            $fs['elements'] = array_merge(
-                $fs['elements'],
-                $tmp_fs['elements']
-            );
-
-            $fs['thumbnails'] = array_merge(
-                $fs['thumbnails'],
-                $tmp_fs['thumbnails']
-            );
-
-            $fs['representatives'] = array_merge(
-                $fs['representatives'],
-                $tmp_fs['representatives']
-            );
-        }
-    }
-    return $fs;
-}
-
-/**
  * Synchronize base users list and related users list.
  *
  * Compares and synchronizes base users table (users) with its child
@@ -2000,7 +1924,7 @@ function dissociate_images_from_category($images, $category)
             AND id IN ({$image_ids})
             AND (category_id != storage_category_id OR storage_category_id IS NULL);
         SQL;
-    $dissociables = array_from_query($query, 'id');
+    $dissociables = query2array($query, null, 'id');
 
     if (! empty($dissociables)) {
         $dissociable_ids = implode(',', $dissociables);

@@ -128,7 +128,7 @@ $query = <<<SQL
     WHERE c.site_id IS NOT NULL
     GROUP BY c.site_id;
     SQL;
-$sites_detail = hash_from_query($query, 'site_id');
+$sites_detail = query2array($query, 'site_id');
 
 $query = <<<SQL
     SELECT *

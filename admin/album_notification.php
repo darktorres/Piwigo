@@ -203,7 +203,7 @@ $query = <<<SQL
     SELECT id AS group_id
     FROM groups_table;
     SQL;
-$all_group_ids = array_from_query($query, 'group_id');
+$all_group_ids = query2array($query, null, 'group_id');
 
 if (count($all_group_ids) == 0) {
     $template->assign('no_group_in_gallery', true);
@@ -214,7 +214,7 @@ if (count($all_group_ids) == 0) {
             FROM group_access
             WHERE cat_id = {$category['id']};
             SQL;
-        $group_ids = array_from_query($query, 'group_id');
+        $group_ids = query2array($query, null, 'group_id');
 
         if (count($group_ids) == 0) {
             $template->assign('permission_url', $admin_album_base_url . '-permissions');
@@ -233,7 +233,7 @@ if (count($all_group_ids) == 0) {
             SQL;
         $template->assign(
             'group_mail_options',
-            simple_hash_from_query($query, 'id', 'name')
+            query2array($query, 'id', 'name')
         );
     }
 }

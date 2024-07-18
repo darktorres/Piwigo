@@ -51,7 +51,7 @@ if (! empty($_POST)) {
             FROM group_access
             WHERE cat_id = {$page['cat']};
             SQL;
-        $groups_granted = array_from_query($query, 'group_id');
+        $groups_granted = query2array($query, null, 'group_id');
 
         if (! isset($_POST['groups'])) {
             $_POST['groups'] = [];
@@ -91,7 +91,7 @@ if (! empty($_POST)) {
                 WHERE id IN ({$imploded_cat_ids})
                     AND status = 'private';
                 SQL;
-            $private_cats = array_from_query($query, 'id');
+            $private_cats = query2array($query, null, 'id');
 
             $inserts = [];
             foreach ($private_cats as $cat_id) {
@@ -121,7 +121,7 @@ if (! empty($_POST)) {
             FROM user_access
             WHERE cat_id = {$page['cat']};
             SQL;
-        $users_granted = array_from_query($query, 'user_id');
+        $users_granted = query2array($query, null, 'user_id');
 
         if (! isset($_POST['users'])) {
             $_POST['users'] = [];
@@ -189,7 +189,7 @@ $query = <<<SQL
     FROM groups_table
     ORDER BY name ASC;
     SQL;
-$groups = simple_hash_from_query($query, 'id', 'name');
+$groups = query2array($query, 'id', 'name');
 $template->assign('groups', $groups);
 
 // groups granted to access the category
@@ -198,7 +198,7 @@ $query = <<<SQL
     FROM group_access
     WHERE cat_id = {$page['cat']};
     SQL;
-$group_granted_ids = array_from_query($query, 'group_id');
+$group_granted_ids = query2array($query, null, 'group_id');
 $template->assign('groups_selected', $group_granted_ids);
 
 // users...
@@ -208,7 +208,7 @@ $query = <<<SQL
     SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username
     FROM users;
     SQL;
-$users = simple_hash_from_query($query, 'id', 'username');
+$users = query2array($query, 'id', 'username');
 $template->assign('users', $users);
 
 $query = <<<SQL
@@ -216,7 +216,7 @@ $query = <<<SQL
     FROM user_access
     WHERE cat_id = {$page['cat']};
     SQL;
-$user_granted_direct_ids = array_from_query($query, 'user_id');
+$user_granted_direct_ids = query2array($query, null, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 $user_granted_indirect_ids = [];

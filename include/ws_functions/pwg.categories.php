@@ -1029,7 +1029,7 @@ function ws_categories_delete($params, &$service)
         FROM categories
         WHERE id IN ({$category_ids_imploded});
         SQL;
-    $category_ids = array_from_query($query, 'id');
+    $category_ids = query2array($query, null, 'id');
 
     if (count($category_ids) == 0) {
         return;

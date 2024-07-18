@@ -44,7 +44,7 @@ function ws_groups_getList($params, &$service)
         LIMIT {$params['per_page']} OFFSET {$offset};
         SQL;
 
-    $groups = array_from_query($query);
+    $groups = query2array($query);
 
     return [
         'paging' => new PwgNamedStruct([

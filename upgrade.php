@@ -300,7 +300,7 @@ if (! in_array('param', $columns_of['config'])) {
         SELECT id
         FROM upgrade;
         SQL;
-    $applied_upgrades = array_from_query($query, 'id');
+    $applied_upgrades = query2array($query, null, 'id');
 
     if (! in_array(159, $applied_upgrades)) {
         $current_release = '2.10.0';

@@ -179,28 +179,6 @@ function get_clean_recipients_list($data)
 }
 
 /**
- * Returns an email address list with minimal email string.
- * @deprecated 2.6
- *
- * @param string $email_list - comma separated
- * @return string
- */
-function get_strict_email_list($email_list)
-{
-    $result = [];
-    $list = explode(',', $email_list);
-
-    foreach ($list as $email) {
-        if (strpos($email, '<') !== false) {
-            $email = preg_replace('/.*<(.*)>.*/i', '$1', $email);
-        }
-        $result[] = trim($email);
-    }
-
-    return implode(',', array_unique($result));
-}
-
-/**
  * Return a new mail template.
  *
  * @param string $email_format - text/html or text/plain
@@ -437,7 +415,7 @@ function pwg_mail_admins($args = [], $tpl = [], $exclude_current_user = true, $o
     $query .= <<<SQL
         ORDER BY name;
         SQL;
-    $admins = array_from_query($query);
+    $admins = query2array($query);
 
     if (empty($admins)) {
         return $return;
@@ -490,7 +468,7 @@ function pwg_mail_group($group_id, $args = [], $tpl = [])
     }
 
     $query .= ';';
-    $languages = array_from_query($query, 'language');
+    $languages = query2array($query, null, 'language');
 
     if (empty($languages)) {
         return $return;
@@ -507,7 +485,7 @@ function pwg_mail_group($group_id, $args = [], $tpl = [])
                 AND {$conf['user_fields']['email']} <> ""
                 AND language = '{$language}';
             SQL;
-        $users = array_from_query($query);
+        $users = query2array($query);
 
         if (empty($users)) {
             continue;
@@ -832,26 +810,6 @@ function pwg_mail($to, $args = [], $tpl = [])
     }
 
     return $ret;
-}
-
-/**
- * @deprecated 2.6
- */
-function pwg_send_mail($result, $to, $subject, $content, $headers)
-{
-    if (is_admin()) {
-        trigger_error('pwg_send_mail function is deprecated', E_USER_NOTICE);
-    }
-
-    if (! $result) {
-        return pwg_mail($to, [
-            'content' => $content,
-            'subject' => $subject,
-        ]);
-    }
-
-    return $result;
-
 }
 
 /**
