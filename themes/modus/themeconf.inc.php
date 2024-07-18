@@ -300,12 +300,12 @@ function modus_thumbs(
     );
     $template->block_footer_script(
         null,
-        '
+        '<script>
             rvgtProcessor = new RVGThumbs({
                 hMargin: ' . $horizontal_margin . ',
                 rowHeight: ' . $row_height . '
             });
-        '
+        </script>'
     );
 
     $my_base_name = basename(__DIR__);
@@ -320,7 +320,7 @@ function modus_on_end_index(): void
     if (! pwg_get_session_var('caps')) {
         $template->block_footer_script(
             null,
-            '
+            '<script>
                 try {
                     document.cookie = "caps=" +
                         (window.devicePixelRatio ? window.devicePixelRatio : 1) + "x" +
@@ -330,7 +330,7 @@ function modus_on_end_index(): void
                 } catch (er) {
                     document.cookie = "caps=1x1x1x" + er.message;
                 }
-            '
+            </script>'
         );
     }
 
