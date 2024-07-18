@@ -44,6 +44,7 @@
   {get_combined_scripts load='header'}
 
   {combine_script id='jquery' path='themes/smartpocket/js/jquery.js'}
+  {combine_script id='jquery-migrate' path='themes/smartpocket/js/jquery-migrate.js'}
   {combine_script id='config' path='themes/smartpocket/js/config.js' require='jquery'}
   {combine_script id='jquery.mobile' path='themes/smartpocket/js/jquery.mobile.js' require='jquery,config'}
 
