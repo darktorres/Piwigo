@@ -372,7 +372,7 @@ function get_filelist(
     }
 
     $query .= ';';
-    return hash_from_query($query, 'id');
+    return query2array($query, 'id');
 }
 
 /**

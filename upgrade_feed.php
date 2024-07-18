@@ -56,7 +56,7 @@ $query = <<<SQL
     SELECT id
     FROM upgrade;
     SQL;
-$applied = array_from_query($query, 'id');
+$applied = query2array($query, null, 'id');
 
 // retrieve existing upgrades
 $existing = get_available_upgrade_ids();
