@@ -19,7 +19,7 @@ function get_cat_id_from_permalink(
         SELECT id FROM categories
         WHERE permalink = '{$permalink}';
         SQL;
-    $ids = array_from_query($query, 'id');
+    $ids = query2array($query, null, 'id');
     if (! empty($ids)) {
         return $ids[0];
     }

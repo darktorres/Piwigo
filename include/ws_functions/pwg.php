@@ -297,7 +297,7 @@ function ws_caddie_add($params, &$service)
         WHERE id IN ({$imageIdsList})
             AND element_id IS NULL;
         SQL;
-    $result = array_from_query($query, 'id');
+    $result = query2array($query, null, 'id');
 
     $datas = [];
     foreach ($result as $id) {

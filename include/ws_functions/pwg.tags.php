@@ -296,7 +296,7 @@ function ws_tags_rename($params, &$service)
         FROM tags
         WHERE id != {$tag_id};
         SQL;
-    $existing_names = array_from_query($query, 'name');
+    $existing_names = query2array($query, null, 'name');
 
     $update = [];
 
@@ -381,7 +381,7 @@ function ws_tags_duplicate($params, &$service)
         FROM image_tag
         WHERE tag_id = {$tag_id};
         SQL;
-    $destination_tag_image_ids = array_from_query($query, 'image_id');
+    $destination_tag_image_ids = query2array($query, null, 'image_id');
 
     $inserts = [];
 

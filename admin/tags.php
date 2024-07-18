@@ -117,7 +117,7 @@ $query = <<<SQL
     FROM image_tag
     GROUP BY tag_id;
     SQL;
-$tag_counters = simple_hash_from_query($query, 'tag_id', 'counter');
+$tag_counters = query2array($query, 'tag_id', 'counter');
 
 // all tags
 $query = <<<SQL

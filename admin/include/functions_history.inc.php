@@ -50,7 +50,7 @@ function get_history($data, $search, $types)
             FROM images
             WHERE file LIKE '{$search['fields']['filename']}';
             SQL;
-        $search['image_ids'] = array_from_query($query, 'id');
+        $search['image_ids'] = query2array($query, null, 'id');
     }
 
     // echo '<pre>'; print_r($search); echo '</pre>';

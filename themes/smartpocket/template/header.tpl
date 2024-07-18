@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html lang="{$lang_info.code}" dir="{$lang_info.direction}">
 
 <head>
@@ -22,7 +22,7 @@
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
 
-  {if (isset($REVERSE) and $REVERSE and $PAGE_TITLE == l10n('Home'))}
+  {if (isset($REVERSE) and $REVERSE and $PAGE_TITLE == 'Home'|@translate)}
   <title>{$GALLERY_TITLE} | {$PAGE_TITLE}</title>{else}
   <title>{$PAGE_TITLE} | {$GALLERY_TITLE}</title>{/if}
   <link rel="start" title="{'Home'|@translate}" href="{$U_HOME}">

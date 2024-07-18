@@ -146,7 +146,7 @@ function ws_permissions_add($params, &$service)
                 AND status = 'private';
             SQL;
 
-        $private_cats = array_from_query($query, 'id');
+        $private_cats = query2array($query, null, 'id');
 
         $inserts = [];
         foreach ($private_cats as $cat_id) {
