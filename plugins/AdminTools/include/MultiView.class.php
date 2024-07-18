@@ -286,7 +286,7 @@ class MultiView
             INNER JOIN user_infos AS i ON {$conf['user_fields']['id']} = user_id
             ORDER BY CONVERT({$conf['user_fields']['username']}, CHAR);
             SQL;
-        $out['users'] = array_from_query($query);
+        $out['users'] = query2array($query);
 
         // get themes
         include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');

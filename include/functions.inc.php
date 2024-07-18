@@ -1650,55 +1650,6 @@ function prepend_append_array_items($array, $prepend_str, $append_str)
 }
 
 /**
- * creates a simple hashmap based on a SQL query.
- * choose one to be the key, another one to be the value.
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $keyname
- * @param string $valuename
- * @return array
- */
-function simple_hash_from_query($query, $keyname, $valuename)
-{
-    return query2array($query, $keyname, $valuename);
-}
-
-/**
- * creates an associative array based on a SQL query.
- * choose one to be the key
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $keyname
- * @return array
- */
-function hash_from_query($query, $keyname)
-{
-    return query2array($query, $keyname);
-}
-
-/**
- * creates a numeric array based on a SQL query.
- * if _$fieldname_ is empty the returned value will be an array of arrays
- * if _$fieldname_ is provided the returned value will be a one-dimension array
- * @deprecated 2.6
- *
- * @param string $query
- * @param string $fieldname
- * @return array
- */
-function array_from_query($query, $fieldname = false)
-{
-    if ($fieldname === false) {
-        return query2array($query);
-    }
-
-    return query2array($query, null, $fieldname);
-
-}
-
-/**
  * Return the basename of the current script.
  * The lowercase case filename of the current script without extension
  *

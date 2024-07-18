@@ -190,7 +190,6 @@ class Template
         $this->smarty->registerPlugin('modifier', 'explode', ['Template', 'mod_explode']);
         $this->smarty->registerPlugin('modifier', 'ternary', ['Template', 'mod_ternary']);
         $this->smarty->registerPlugin('modifier', 'get_extent', [$this, 'get_extent']);
-        $this->smarty->registerPlugin('modifier', 'l10n', 'l10n');
         $this->smarty->registerPlugin('modifier', 'count', count(...));
         $this->smarty->registerPlugin('modifier', 'strpos', strpos(...));
         $this->smarty->registerPlugin('modifier', 'is_admin', is_admin(...));
@@ -575,7 +574,7 @@ class Template
                 $content = [];
                 foreach ($scripts as $script) {
                     $content[] =
-                        '<script type="text/javascript" src="'
+                        '<script src="'
                         . self::make_script_src($script)
                         . '"></script>';
                 }
@@ -594,7 +593,7 @@ class Template
             }
             // trigger the event for eventual use of a cdn
             $href = trigger_change('combined_css', $href, $combi);
-            $content[] = '<link rel="stylesheet" type="text/css" href="' . $href . '">';
+            $content[] = '<link rel="stylesheet" href="' . $href . '">';
         }
         $this->output = str_replace(
             self::COMBINED_CSS_TAG,
@@ -896,7 +895,7 @@ class Template
         $scripts = $this->scriptLoader->get_footer_scripts();
         foreach ($scripts[0] as $script) {
             $content[] =
-              '<script type="text/javascript" src="'
+              '<script src="'
               . self::make_script_src($script)
               . '"></script>';
         }
@@ -905,13 +904,13 @@ class Template
         }
 
         if (count($scripts[1])) {
-            $content[] = '<script type="text/javascript">';
+            $content[] = '<script>';
             $content[] =
               "(function() {\n"
               . "var s, after = document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1];\n";
             foreach ($scripts[1] as $id => $script) {
                 $content[] =
-                  "s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = '"
+                  "s = document.createElement('script'); s.async = true; s.src = '"
                   . self::make_script_src($script)
                   . "';\n";
                 $content[] = "after = after.parentNode.insertBefore(s, after);\n";
@@ -1254,36 +1253,6 @@ class Template
  */
 class PwgTemplateAdapter
 {
-    /**
-     * @deprecated use "translate" modifier
-     */
-    public function l10n($text)
-    {
-        return l10n($text);
-    }
-
-    /**
-     * @deprecated use "translate_dec" modifier
-     */
-    public function l10n_dec($s, $p, $v)
-    {
-        return l10n_dec($s, $p, $v);
-    }
-
-    /**
-     * @deprecated use "translate" or "sprintf" modifier
-     */
-    public function sprintf()
-    {
-        $args = func_get_args();
-        return call_user_func_array('sprintf', $args);
-    }
-
-    /**
-     * @param string $type
-     * @param array $img
-     * @return DerivativeImage
-     */
     public function derivative($type, $img)
     {
         return new DerivativeImage($type, $img);

@@ -250,7 +250,7 @@ function initialize_calendar()
                 {$order_by};
                 SQL;
 
-            $page['items'] = array_from_query($query, 'id');
+            $page['items'] = query2array($query, null, 'id');
             if (isset($cache_key)) {
                 $persistent_cache->set($cache_key, $page['items']);
             }
