@@ -1446,6 +1446,7 @@ class ScriptLoader
     private static array $known_paths = [
         'core.scripts' => 'themes/default/js/scripts.js',
         'jquery' => 'themes/default/js/jquery.js',
+        'jquery-migrate' => 'themes/default/js/jquery-migrate.js',
         'jquery.ui' => 'themes/default/js/ui/jquery.ui.core.js',
         'jquery.ui.effect' => 'themes/default/js/ui/jquery.ui.effect.js',
     ];
@@ -1724,6 +1725,11 @@ class ScriptLoader
     ): bool {
         if (isset(self::$known_paths[$id]) || str_starts_with($id, 'jquery.ui.')) {
             $this->add($id, $load_mode, [], null);
+
+            if ($id === 'jquery') {
+                $this->add('jquery-migrate', $load_mode, [], null);
+            }
+
             return true;
         }
 
