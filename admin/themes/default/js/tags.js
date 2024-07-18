@@ -422,7 +422,7 @@ function duplicateTag(id, name) {
 var selected = [];
 maxItemDisplayed = 5;
 
-$("#toggleSelectionMode").attr("checked", false);
+$("#toggleSelectionMode").prop("checked", false);
 $("#toggleSelectionMode").click(function () {
   selectionMode($(this).is(":checked"));
   $(".tag-info").hide();

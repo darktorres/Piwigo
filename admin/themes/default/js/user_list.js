@@ -115,7 +115,7 @@ $(document).ready(function () {
   $("#UserList .close-update-button").click(close_user_list);
   $(".CloseUserList").click(close_user_list);
 
-  $("#toggleSelectionMode").attr("checked", false);
+  $("#toggleSelectionMode").prop("checked", false);
   $("#toggleSelectionMode").click(function () {
     let isSelection = $(this).is(":checked");
     selectionMode(isSelection);
