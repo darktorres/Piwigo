@@ -10,6 +10,7 @@
 	{if !empty($SEARCH_ID)}
 		{include file='themes/default/template/include/search_filters.inc.tpl'}
 		{combine_script id='jquery' path='themes/smartpocket/js/jquery.js'}
+		{combine_script id='jquery-migrate' path='themes/smartpocket/js/jquery-migrate.js'}
 		{combine_script id='mcs_sp' path='themes/smartpocket/js/mcs_sp.js' require='jquery'}
 	{/if}
 	{if !empty($THUMBNAILS)}
