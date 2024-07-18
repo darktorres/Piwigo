@@ -264,7 +264,7 @@ function modus_thumbs(
         '#thumbnails{text-align:justify;overflow:hidden;margin-left:' . ($container_margin - $horizontal_margin) . 'px;margin-right:' . $container_margin . 'px}
 #thumbnails>li{float:left;overflow:hidden;position:relative;margin-bottom:' . $vertical_margin . 'px;margin-left:' . $horizontal_margin . 'px}#thumbnails>li>a{position:absolute;border:0}'
     );
-    $template->block_footer_script(null, 'rvgtProcessor=new RVGThumbs({hMargin:' . $horizontal_margin . ',rowHeight:' . $row_height . '});');
+    $template->block_footer_script(null, '<script>rvgtProcessor=new RVGThumbs({hMargin:' . $horizontal_margin . ',rowHeight:' . $row_height . '});</script>');
 
     $my_base_name = basename(__DIR__);
     // not async to avoid visible flickering reflow
@@ -276,7 +276,7 @@ function modus_on_end_index(): void
 {
     global $template;
     if (! pwg_get_session_var('caps')) {
-        $template->block_footer_script(null, 'try{document.cookie="caps="+(window.devicePixelRatio?window.devicePixelRatio:1)+"x"+document.documentElement.clientWidth+"x"+document.documentElement.clientHeight+";path=' . cookie_path() . '"}catch(er){document.cookie="caps=1x1x1x"+err.message;}');
+        $template->block_footer_script(null, '<script>try{document.cookie="caps="+(window.devicePixelRatio?window.devicePixelRatio:1)+"x"+document.documentElement.clientWidth+"x"+document.documentElement.clientHeight+";path=' . cookie_path() . '"}catch(er){document.cookie="caps=1x1x1x"+err.message;}</script>');
     }
 
 }
