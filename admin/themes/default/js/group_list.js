@@ -500,7 +500,7 @@ var duplicateAction = function (id) {
  -------*/
 
 $(function () {
-  $("#toggleSelectionMode").attr("checked", false);
+  $("#toggleSelectionMode").prop("checked", false);
   $("#toggleSelectionMode").click(function () {
     if ($(this).is(":checked")) {
       $(".in-selection-mode").show();
