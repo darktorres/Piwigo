@@ -3,13 +3,13 @@
 {combine_script id='alternativeView' load='footer' path='admin/themes/default/js/cat_list.js'}
 {combine_script id='jquery.cookie' path='themes/default/js/jquery.cookie.js' load='footer'}
 
-{footer_script require='jquery.ui.sortable'}{literal}
+{footer_script require='jquery.ui.sortable'}
 jQuery(document).ready(function(){
   $(".addAlbumHead").click(function () {
     $(".addAlbum input[name=virtual_name]").focus();
   })
 });
-{/literal}{/footer_script}
+{/footer_script}
 
 <div class="selectedAlbum cat-list-album-path">
   <span class="icon-sitemap selectedAlbum-first">{$CATEGORIES_NAV}</span>

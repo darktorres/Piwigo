@@ -54,7 +54,6 @@
         </table>
 
         <p>
-			{literal}
 			<script>
 			jQuery(document).ready(function(){
 
@@ -79,7 +78,6 @@
 				}
 			}
 			</script>
-			{/literal}
           {if $c13y_show_submit_ignore}
               <a href="#" id="checkAllLink">{'Check all'|@translate}</a>
             / <a href="#" id="uncheckAllLink">{'Uncheck all'|@translate}</a>
