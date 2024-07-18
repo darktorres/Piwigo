@@ -13,12 +13,12 @@
 {combine_css path="plugins/LocalFilesEditor/codemirror/mode/clike/clike.css"}
 {combine_css path="plugins/LocalFilesEditor/template/locfiledit.css"}
 
-{footer_script}
+{footer_script}<script>
 var editor = CodeMirror.fromTextArea(document.getElementById("text"), {
   readOnly: true,
   mode: "application/x-httpd-php"
 });
-{/footer_script}
+</script>{/footer_script}
 
 {html_head}
 <style type="text/css">
