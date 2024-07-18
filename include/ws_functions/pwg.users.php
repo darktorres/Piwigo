@@ -687,7 +687,7 @@ function ws_users_setInfo($params, &$service)
             FROM groups_table
             WHERE id IN ({$groupIds});
             SQL;
-        $group_ids = array_from_query($query, 'id');
+        $group_ids = query2array($query, null, 'id');
 
         // if only -1 (a group id that can't exist) is in the list, then no
         // group is associated
