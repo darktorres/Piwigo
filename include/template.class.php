@@ -902,9 +902,9 @@ class Template
         }
 
         if ($this->scriptLoader->inline_scripts !== []) {
-            $content[] = '<script>';
+            // $content[] = '<script>';
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
-            $content[] = '</script>';
+            // $content[] = '</script>';
         }
 
         if (count($scripts[1]) > 0) {
