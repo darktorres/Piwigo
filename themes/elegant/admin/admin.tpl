@@ -1,11 +1,9 @@
 {combine_css path="themes/default/js/ui/theme/jquery.ui.button.css"}
 {combine_css path="themes/elegant/admin/jquery.ui.button.css"}
 {footer_script require='jquery.ui.button'}
-{literal}
 jQuery(document).ready(function(){
   jQuery( ".radio" ).buttonset();
 });
-{/literal}
 {/footer_script}
 
 <div class="titrePage">
