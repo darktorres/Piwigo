@@ -3203,9 +3203,9 @@ if ( eventCaptureSupported ) {
 		};
 
 		// jQuery < 1.8
-		if ( $.attrFn ) {
-			$.attrFn[ name ] = true;
-		}
+		// if ( $.attrFn ) {
+		// 	$.attrFn[ name ] = true;
+		// }
 	});
 
 	var supportTouch = $.mobile.support.touch,
@@ -3571,9 +3571,9 @@ if ( eventCaptureSupported ) {
 	};
 
 	// jQuery < 1.8
-	if ( $.attrFn ) {
-		$.attrFn[ event_name ] = true;
-	}
+	// if ( $.attrFn ) {
+	// 	$.attrFn[ event_name ] = true;
+	// }
 
 }( jQuery, this ));
 
@@ -11170,7 +11170,9 @@ $.mobile.document.delegate( ":jqmData(role='table')", "tablecreate refresh", fun
 
 		// window load event
 		// hide iOS browser chrome on load
-		$window.load( $.mobile.silentScroll );
+		window.addEventListener("load", function () {
+			$.mobile.silentScroll();
+		});
 
 		if ( !$.support.cssPointerEvents ) {
 			// IE and Opera don't support CSS pointer-events: none that we use to disable link-based buttons
