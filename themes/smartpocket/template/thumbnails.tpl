@@ -5,6 +5,7 @@
 	{$container_margin=-10}
 
 	{combine_script id='jquery' path='themes/smartpocket/js/jquery.js'}
+	{combine_script id='jquery-migrate' path='themes/smartpocket/js/jquery-migrate.js'}
 	{combine_script id='klass' path='themes/smartpocket/js/klass.js'}
 	{combine_script id='photoswipe' path='themes/smartpocket/js/code.photoswipe.jquery.min.js' require='klass,jquery.mobile'}
 	{combine_script id='smartpocket' path='themes/smartpocket/js/smartpocket.js' require='photoswipe' load='footer'}
