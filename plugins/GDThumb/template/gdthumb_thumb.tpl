@@ -41,13 +41,13 @@
       </span>
     {elseif $GDThumb.thumb_metamode !== "hide"}
       {if isset($thumbnail.NB_COMMENTS)}
-      <span class="{if 0==$thumbnail.NB_COMMENTS}zero {/if}nb-comments">{$pwg->l10n_dec('%d comment', '%d comments',$thumbnail.NB_COMMENTS)}</span>
+      <span class="{if 0==$thumbnail.NB_COMMENTS}zero {/if}nb-comments">{$thumbnail.NB_COMMENTS|translate_dec:'%d comment':'%d comments'}</span>
       {/if}
       {if isset($thumbnail.NB_COMMENTS) && isset($thumbnail.NB_HITS)} - {/if}
       {if isset($thumbnail.NB_HITS)}
-      <span class="{if 0==$thumbnail.NB_HITS}zero {/if}nb-hits">{$pwg->l10n_dec('%d visit', '%d visits',$thumbnail.NB_HITS)}</span>
+      <span class="{if 0==$thumbnail.NB_HITS}zero {/if}nb-hits">{$thumbnail.NB_HITS|translate_dec:'%d visit':'%d visits'}</span>
       {elseif isset($thumbnail.hit)}
-      <span class="{if 0==$thumbnail.hit}zero {/if}nb-hits">{$pwg->l10n_dec('%d visit', '%d visits',$thumbnail.hit)}</span>
+      <span class="{if 0==$thumbnail.hit}zero {/if}nb-hits">{$thumbnail.hit|translate_dec:'%d visit':'%d visits'}</span>
       {/if}
       {if isset($thumbnail.rating_score)}
       <span class="{if 0==$thumbnail.rating_score}zero {/if}rating">, {'Rating:'|@translate} {$thumbnail.rating_score}</span>
