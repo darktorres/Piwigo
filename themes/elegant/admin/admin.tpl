@@ -1,8 +1,8 @@
-{combine_css path="themes/default/js/ui/theme/jquery.ui.button.css"}
-{combine_css path="themes/elegant/admin/jquery.ui.button.css"}
-{footer_script require='jquery.ui.button'}<script>
+{* {combine_css path="themes/default/js/jquery-ui/jquery-ui.css"} *}
+{* {combine_css path="themes/elegant/admin/jquery.ui.button.css"} *}
+{footer_script require='jquery-ui'}<script>
   jQuery(document).ready(function() {
-    jQuery(".radio").buttonset();
+    jQuery(".radio").controlgroup();
   });
 </script>{/footer_script}
 
