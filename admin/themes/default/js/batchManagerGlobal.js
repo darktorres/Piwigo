@@ -37,7 +37,7 @@ function filter_disable(filter) {
 
 $(".removeFilter").addClass("icon-cancel-circled");
 
-$(".removeFilter").click(function () {
+$(".removeFilter").on("click", function () {
   var filter = $(this).parent("li").attr("id");
   filter_disable(filter);
 
@@ -49,7 +49,7 @@ $("#addFilter a").on("click", function () {
   filter_enable(filter);
 });
 
-$("#removeFilters").click(function () {
+$("#removeFilters").on("click", function () {
   $("#filterList li").each(function () {
     var filter = $(this).attr("id");
     filter_disable(filter);
@@ -62,7 +62,7 @@ $("[data-slider=heights]").pwgDoubleSlider(sliders.heights);
 $("[data-slider=ratios]").pwgDoubleSlider(sliders.ratios);
 $("[data-slider=filesizes]").pwgDoubleSlider(sliders.filesizes);
 
-$(document).mouseup(function (e) {
+$(document).on("mouseup", function (e) {
   e.stopPropagation();
   if (!$(event.target).hasClass("addFilter-button")) {
     $(".addFilter-dropdown").slideUp();
@@ -81,7 +81,7 @@ jQuery(document).ready(function () {
     this.find("input[type=checkbox]").each(function () {
       var pos = count;
       inputs[count++] = this;
-      $(this).bind("shclick", function (dummy, event) {
+      $(this).on("shclick", function (dummy, event) {
         if (event.shiftKey) {
           var first = last_clicked;
           var last = pos;
@@ -105,7 +105,7 @@ jQuery(document).ready(function () {
         }
         return true;
       });
-      $(this).click(function (event) {
+      $(this).on("click", function (event) {
         $(this).triggerHandler("shclick", event);
       });
     });
@@ -130,7 +130,7 @@ jQuery("[data-datepicker]").pwgDatepicker({
 
 jQuery("[data-add-album]").pwgAddAlbum();
 
-$("input[name=remove_author]").click(function () {
+$("input[name=remove_author]").on("click", function () {
   if ($(this).is(":checked")) {
     $("input[name=author]").hide();
   } else {
@@ -138,7 +138,7 @@ $("input[name=remove_author]").click(function () {
   }
 });
 
-$("input[name=remove_title]").click(function () {
+$("input[name=remove_title]").on("click", function () {
   if ($(this).is(":checked")) {
     $("input[name=title]").hide();
   } else {
@@ -146,7 +146,7 @@ $("input[name=remove_title]").click(function () {
   }
 });
 
-$("input[name=remove_date_creation]").click(function () {
+$("input[name=remove_date_creation]").on("click", function () {
   if ($(this).is(":checked")) {
     $("#set_date_creation").hide();
   } else {
@@ -249,7 +249,7 @@ function selectDelDerivNone() {
 }
 
 /* sync metadatas or delete photos by blocks, with progress bar */
-jQuery("#applyAction").click(function (e) {
+jQuery("#applyAction").on("click", function (e) {
   if (typeof elements != "undefined") {
     return true;
   }
@@ -418,14 +418,14 @@ function progress_bar_end() {
 function progress_bar(val, max, success) {
   percent = parseInt((val / max) * 100);
   jQuery("#uploadingActions .progressbar").width(percent.toString() + "%");
-  if (val == max) jQuery("#applyAction").click();
+  if (val == max) jQuery("#applyAction").trigger("click");
 }
 
-jQuery("#confirmDel input[name=confirm_deletion]").change(function () {
+jQuery("#confirmDel input[name=confirm_deletion]").on("change", function () {
   jQuery("#confirmDel span.errors").css("visibility", "hidden");
 });
 
-jQuery("#sync_md5sum").click(function (e) {
+jQuery("#sync_md5sum").on("click", function (e) {
   jQuery(this).hide();
   jQuery("#add_md5sum").show();
 
@@ -470,7 +470,7 @@ function add_md5sum_block(blockSize) {
   });
 }
 
-jQuery("#delete_orphans").click(function (e) {
+jQuery("#delete_orphans").on("click", function (e) {
   jQuery(this).hide();
   jQuery("#orphans_deletion").show();
 
