@@ -325,7 +325,7 @@
 	};
 	
 	$.each($.manageAjax._manager.prototype, function(n, fn){
-		if(n.indexOf('_') === 0 || !$.isFunction(fn)){return;}
+		if(n.indexOf('_') === 0 || typeof fn !== "function"){return;}
 		$.manageAjax[n] =  function(name, o){
 			if(!managed[name]){
 				if(n === 'add'){
