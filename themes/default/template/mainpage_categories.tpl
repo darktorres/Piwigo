@@ -1,4 +1,4 @@
-{html_style}
+{html_style}<style type="text/css">
 .thumbnailCategory .illustration {
 	width: {$derivative_params->max_width()+5}px;
 }
@@ -6,7 +6,7 @@
 .content .thumbnailCategory .description {
 	height: {$derivative_params->max_height()+5}px;
 }
-{/html_style}
+</style>{/html_style}
 <div class="loader"><img src="{$ROOT_URL}{$themeconf.img_dir}/ajax_loader.gif"></div>
 <ul class="thumbnailCategories">
 {foreach from=$category_thumbnails item=cat name=cat_loop}
