@@ -1,5 +1,5 @@
 {combine_script id='jquery.dataTables' load='footer' path='themes/default/js/plugins/jquery.dataTables.js'}
-{html_style}
+{html_style}<style type="text/css">
 .sorting { background: url({$ROOT_URL}themes/default/js/plugins/datatables/images/sort_both.png) no-repeat center right; cursor:pointer; }
 .sorting_asc { background: url({$ROOT_URL}themes/default/js/plugins/datatables/images/sort_asc.png) no-repeat center right; }
 .sorting_desc { background: url({$ROOT_URL}themes/default/js/plugins/datatables/images/sort_desc.png) no-repeat center right; }
@@ -35,7 +35,7 @@ body .ui-tooltip {
 	border-width: 2px;
 }
 
-{/html_style}
+</style>{/html_style}
 {footer_script}<script>
 $(document).ready(function() {
   $('h1').append("<span class='badge-number'>{$NB_ELEMENTS}</span>")
