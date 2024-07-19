@@ -18,7 +18,7 @@
 {else}
 <img class="{if isset($current.path_ext)}path-ext-{$current.path_ext}{/if} {if isset($current.file_ext)}file-ext-{$current.file_ext}{/if}" src="{$current.selected_derivative->get_url()}" {$current.selected_derivative->get_size_htm()} loading="lazy" decoding="async" alt="{$ALT_IMG}" id="theMainImage" usemap="#map{$current.selected_derivative->get_type()}" title="{if isset($COMMENT_IMG)}{$COMMENT_IMG|@strip_tags:false|@replace:'"':' '}{else}{$current.TITLE_ESC} - {$ALT_IMG}{/if}">
 
-{foreach $current.unique_derivatives as $derivative_type => $derivative}{strip}
+{foreach $current.unique_derivatives as $derivative_type => $derivative}
     <map name="map{$derivative->get_type()}">
         {assign var='size' value=$derivative->get_size()}
         {if isset($previous)}
@@ -29,5 +29,5 @@
             <area shape=rect coords="{($size[0]/1.33)|@intval},0,{$size[0]},{$size[1]}" href="{$next.U_IMG}" title="{'Next'|@translate} : {$next.TITLE_ESC}" alt="{$next.TITLE_ESC}">
         {/if}
     </map>
-{/strip}{/foreach}
+{/foreach}
 {/if}
