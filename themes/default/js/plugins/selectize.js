@@ -420,7 +420,7 @@
 		return (str + '').replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
 	};
 
-	var is_array = Array.isArray || ($ && $.isArray) || function(object) {
+	var is_array = Array.isArray || function(object) {
 		return Object.prototype.toString.call(object) === '[object Array]';
 	};
 
@@ -802,7 +802,7 @@
 	 * @param {mixed} objects
 	 */
 	var build_hash_table = function(key, objects) {
-		if (!$.isArray(objects)) return objects;
+		if (!Array.isArray(objects)) return objects;
 		var i, n, table = {};
 		for (i = 0, n = objects.length; i < n; i++) {
 			if (objects[i].hasOwnProperty(key)) {
@@ -1267,7 +1267,7 @@
 	
 			$input.attr('tabindex', -1).hide().after(self.$wrapper);
 	
-			if ($.isArray(settings.items)) {
+			if (Array.isArray(settings.items)) {
 				self.setValue(settings.items);
 				delete settings.items;
 			}
@@ -2022,7 +2022,7 @@
 			}
 	
 			var self              = this;
-			var query             = $.trim(self.$control_input.val());
+			var query             = self.$control_input.val().trim();
 			var results           = self.search(query);
 			var $dropdown_content = self.$dropdown_content;
 			var active_before     = self.$activeOption && hash_key(self.$activeOption.attr('data-value'));
@@ -2049,7 +2049,7 @@
 				option      = self.options[results.items[i].id];
 				option_html = self.render('option', option);
 				optgroup    = option[self.settings.optgroupField] || '';
-				optgroups   = $.isArray(optgroup) ? optgroup : [optgroup];
+				optgroups   = Array.isArray(optgroup) ? optgroup : [optgroup];
 	
 				for (j = 0, k = optgroups && optgroups.length; j < k; j++) {
 					optgroup = optgroups[j];
@@ -2147,7 +2147,7 @@
 		addOption: function(data) {
 			var i, n, optgroup, value, self = this;
 	
-			if ($.isArray(data)) {
+			if (Array.isArray(data)) {
 				for (i = 0, n = data.length; i < n; i++) {
 					self.addOption(data[i]);
 				}
@@ -2338,7 +2338,7 @@
 		 * @param {string} value
 		 */
 		addItems: function(values) {
-			var items = $.isArray(values) ? values : [values];
+			var items = Array.isArray(values) ? values : [values];
 			for (var i = 0, n = items.length; i < n; i++) {
 				this.isPending = (i < n - 1);
 				this.addItem(items[i]);
@@ -3152,7 +3152,7 @@
 					if (group) {
 						if (!options[value].optgroup) {
 							options[value].optgroup = group;
-						} else if (!$.isArray(options[value].optgroup)) {
+						} else if (!Array.isArray(options[value].optgroup)) {
 							options[value].optgroup = [options[value].optgroup, group];
 						} else {
 							options[value].optgroup.push(group);

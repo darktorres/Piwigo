@@ -90,7 +90,7 @@ $(document).ready(function () {
     };
   }
 
-  $(window).resize(function () {
+  $(window).on("resize", function () {
     var w = $("body").width(),
       de = $(document.documentElement);
     if (document.location.search.indexOf("slideshow") == -1) {
@@ -102,7 +102,7 @@ $(document).ready(function () {
     else rvas_choose();
   });
 
-  $("#theMainImage").click(function (e) {
+  $("#theMainImage").on("click", function (e) {
     if (!$(this).attr("usemap") && e.clientY) {
       var pct = (e.pageX - $(this).offset().left) / $(this).width(),
         clientY = e.pageY - $(this).offset().top;

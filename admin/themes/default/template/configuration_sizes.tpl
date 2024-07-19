@@ -32,18 +32,18 @@
     }
 
     toggleResizeFields("original");
-    jQuery("[name=original_resize]").click(function() {
+    jQuery("[name=original_resize]").on("click", function() {
       toggleResizeFields("original");
     });
 
-    jQuery("a[id^='sizeEditOpen-']").click(function() {
+    jQuery("a[id^='sizeEditOpen-']").on("click", function() {
       var sizeName = jQuery(this).attr("id").split("-")[1];
       jQuery("#sizeEdit-" + sizeName).toggle();
       jQuery(this).hide();
       return false;
     });
 
-    jQuery(".cropToggle").click(function() {
+    jQuery(".cropToggle").on("click", function() {
       var labelBoxWidth = jQuery(this).parents('table.sizeEditForm').find('td.sizeEditWidth');
       var labelBoxHeight = jQuery(this).parents('table.sizeEditForm').find('td.sizeEditHeight');
 
@@ -56,7 +56,7 @@
       }
     });
 
-    jQuery("#showDetails").click(function() {
+    jQuery("#showDetails").on("click", function() {
       jQuery(".sizeDetails").show();
       jQuery(this).css("visibility", "hidden");
       return false;

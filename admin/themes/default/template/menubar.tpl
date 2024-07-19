@@ -9,7 +9,7 @@
       axis: "y",
       opacity: 0.8
     });
-    jQuery("input[name^='hide_']").click(function() {
+    jQuery("input[name^='hide_']").on("click", function() {
       men = this.name.split('hide_');
       if (this.checked) {
         jQuery("#menu_" + men[1]).addClass('menuLi_hidden');
@@ -17,7 +17,7 @@
         jQuery("#menu_" + men[1]).removeClass('menuLi_hidden');
       }
     });
-    jQuery("#menuOrdering").submit(function() {
+    jQuery("#menuOrdering").on("submit", function() {
       ar = jQuery('.menuUl').sortable('toArray');
       for (i = 0; i < ar.length; i++) {
         men = ar[i].split('menu_');

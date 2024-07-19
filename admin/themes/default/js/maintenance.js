@@ -24,7 +24,7 @@ $(document).ready(function () {
           service: "test_service",
         },
         success: function (raw_data) {
-          data = jQuery.parseJSON(raw_data);
+          data = JSON.parse(raw_data);
           if (data.stat === "ok") {
             res();
 

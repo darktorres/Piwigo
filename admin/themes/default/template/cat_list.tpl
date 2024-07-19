@@ -5,7 +5,7 @@
 
 {footer_script require='jquery-ui'}<script>
   jQuery(document).ready(function() {
-    $(".addAlbumHead").click(function() {
+    $(".addAlbumHead").on("click", function() {
       $(".addAlbum input[name=virtual_name]").focus();
     })
   });

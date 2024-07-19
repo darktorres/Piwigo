@@ -275,7 +275,7 @@ $.TokenList = function (input, url_or_data, settings) {
             $(this).val("");
             token_list.removeClass($(input).data("settings").classes.focused);
         })
-        .bind("keyup keydown blur update", resize_input)
+        .on("keyup keydown blur update", resize_input)
         .keydown(function (event) {
             var previous_token;
             var next_token;
@@ -433,7 +433,7 @@ $.TokenList = function (input, url_or_data, settings) {
     // The list to store the token items in
     var token_list = $("<ul />")
         .addClass($(input).data("settings").classes.tokenList)
-        .click(function (event) {
+        .on("click", function (event) {
             var li = $(event.target).closest("li");
             if(li && li.get(0) && $.data(li.get(0), "tokeninput")) {
                 toggle_select_token(li);
@@ -640,7 +640,7 @@ $.TokenList = function (input, url_or_data, settings) {
           $("<span>" + $(input).data("settings").deleteText + "</span>")
               .addClass($(input).data("settings").classes.tokenDelete)
               .appendTo($this_token)
-              .click(function () {
+              .on("click", function () {
                   if (!$(input).data("settings").disabled) {
                       delete_token($(this).parent());
                       hidden_input.change();
