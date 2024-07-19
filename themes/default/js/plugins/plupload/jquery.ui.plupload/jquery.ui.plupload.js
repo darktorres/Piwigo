@@ -1221,7 +1221,7 @@ $.widget("ui.plupload", {
 
 			switcher
 				.show()
-				.buttonset()
+				.controlgroup()
 				.find('.ui-button')
 					.click(function(e) {
 						view = $(this).data('view');

@@ -2,7 +2,7 @@
 {combine_script id='jquery.jgrowl' load='footer' require='jquery' path='themes/default/js/plugins/jquery.jgrowl.js'}
 {combine_css path="themes/default/js/plugins/jquery.jgrowl.css"}
 
-{footer_script require='jquery.ui.effect-blind,jquery.ajaxmanager,jquery.jgrowl'}<script>
+{footer_script require='jquery-ui,jquery.ajaxmanager,jquery.jgrowl'}<script>
   var pwg_token = '{$PWG_TOKEN}';
   var extType = '{$EXT_TYPE}';
   var confirmMsg  = '{'Are you sure?'|@translate|@escape:'javascript'}';
