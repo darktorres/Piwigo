@@ -3,8 +3,8 @@
 {combine_script id='jquery.selectize' load='header' path='themes/default/js/plugins/selectize.js'}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
-{combine_script id='jquery.ui.slider' require='jquery.ui' load='header' path='themes/default/js/ui/jquery.ui.slider.js'}
-{combine_css path="themes/default/js/ui/theme/jquery.ui.slider.css"}
+{combine_script id='jquery-ui' require='jquery' load='header' path='themes/default/js/jquery-ui/jquery-ui.js'}
+{combine_css path="themes/default/js/jquery-ui/jquery-ui.css"}
 
 {combine_script id='jquery.confirm' load='header' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
 {combine_css path="themes/default/js/plugins/jquery-confirm.css"}
