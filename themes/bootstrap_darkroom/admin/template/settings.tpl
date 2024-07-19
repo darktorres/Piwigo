@@ -540,7 +540,7 @@
     }());
 
     $(document).ready(function() {
-        $('ul.tabs li').click(function() {
+        $('ul.tabs li').on("click", function() {
             var tab_id = $(this).attr('data-tab');
 
             $('ul.tabs li').removeClass('current');
@@ -612,7 +612,7 @@
         }
     });
 
-    $('select[name=page_header]').change(function() {
+    $('select[name=page_header]').on("change", function() {
         if ($(this).val() == 'fancy') {
             $('#page_header_image').show();
             $('#page_header_navbars').show();
@@ -624,7 +624,7 @@
         }
     });
 
-    $('select[name=bootstrap_theme]').change(function() {
+    $('select[name=bootstrap_theme]').on("change", function() {
         var navbar_main_style = 'navbar-dark',
             navbar_main_bg = 'bg-dark',
             navbar_contextual_style = 'navbar-dark',
@@ -678,12 +678,12 @@
         $('input[name=navbar_contextual_style]').attr('value', navbar_contextual_style);
         $('input[name=navbar_contextual_bg]').attr('value', navbar_contextual_bg);
     });
-    $(select_bootswatch).change(function() {
+    $(select_bootswatch).on("change", function() {
         preview.html('<img src="themes/bootstrap_darkroom/components/bootswatch/' + select_bootswatch.val() +
             '/thumbnail.png" width="50%" style="padding: 10px 0;"/>');
     });
 
-    $('input[name=photoswipe]').change(function() {
+    $('input[name=photoswipe]').on("change", function() {
         curr = $('select[name=thumbnail_linkto]').val();
         if (!$(this).is(':checked') && curr !== 'picture') {
             $('select[name=thumbnail_linkto]').val('picture');

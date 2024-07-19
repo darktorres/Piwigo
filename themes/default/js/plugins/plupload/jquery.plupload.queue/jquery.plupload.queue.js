@@ -310,7 +310,7 @@ used as it is.
 
 					$('#' + id + '_container').attr('title', 'Using runtime: ' + res.runtime);
 
-					$('a.plupload_start', target).click(function(e) {
+					$('a.plupload_start', target).on("click", function(e) {
 						if (!$(this).hasClass('plupload_disabled')) {
 							uploader.start();
 						}
@@ -318,7 +318,7 @@ used as it is.
 						e.preventDefault();
 					});
 
-					$('a.plupload_stop', target).click(function(e) {
+					$('a.plupload_stop', target).on("click", function(e) {
 						e.preventDefault();
 						uploader.stop();
 					});

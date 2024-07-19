@@ -147,7 +147,7 @@
   const are_you_sure_msg  = '{'Are you sure?'|@translate|@escape:'javascript'}';
   const confirm_msg = '{"Yes, I am sure"|@translate}';
   const cancel_msg = "{"No, I have changed my mind"|@translate}";
-  $("#update_all").click(function() {
+  $("#update_all").on("click", function() {
     const title_msg = "{'Are you sure you want to update all extensions?'|@translate}";
     $.confirm({
       title: title_msg,
