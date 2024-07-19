@@ -90,41 +90,41 @@ $(document).ready(function () {
     fadeOut: 200,
   });
   $(".advanced-filter-level select option").eq(1).remove();
-  $(".edit-password").click(function () {
+  $(".edit-password").on("click", function () {
     $(".user-property-password").hide();
     $(".user-property-password-change").show().css("display", "flex");
   });
 
-  $(".edit-password-cancel").click(function () {
+  $(".edit-password-cancel").on("click", function () {
     //possibly reset input value
     $(".user-property-password").show();
     $(".user-property-password-change").hide();
   });
 
-  $(".edit-username").click(function () {
+  $(".edit-username").on("click", function () {
     $(".user-property-username").hide();
     $(".user-property-username-change").show().css("display", "flex");
   });
 
-  $(".edit-username-cancel").click(function () {
+  $(".edit-username-cancel").on("click", function () {
     //possibly reset input value
     $(".user-property-username").show();
     $(".user-property-username-change").hide();
   });
 
-  $("#UserList .close-update-button").click(close_user_list);
-  $(".CloseUserList").click(close_user_list);
+  $("#UserList .close-update-button").on("click", close_user_list);
+  $(".CloseUserList").on("click", close_user_list);
 
   $("#toggleSelectionMode").prop("checked", false);
-  $("#toggleSelectionMode").click(function () {
+  $("#toggleSelectionMode").on("click", function () {
     let isSelection = $(this).is(":checked");
     selectionMode(isSelection);
   });
-  $(".edit-guest-user-button").click(open_guest_user_list);
-  $(".CloseGuestUserList").click(close_guest_user_list);
-  $("#GuestUserList .close-update-button").click(close_guest_user_list);
+  $(".edit-guest-user-button").on("click", open_guest_user_list);
+  $(".CloseGuestUserList").on("click", close_guest_user_list);
+  $("#GuestUserList .close-update-button").on("click", close_guest_user_list);
 
-  $("#show_password").click(function () {
+  $("#show_password").on("click", function () {
     if ($(this).hasClass("icon-eye")) {
       $(this).removeClass("icon-eye");
       $(this).addClass("icon-eye-off");
@@ -138,7 +138,7 @@ $(document).ready(function () {
   /* Action */
   jQuery("[id^=action_]").hide();
 
-  jQuery("select[name=selectAction]").change(function () {
+  jQuery("select[name=selectAction]").on("change", function () {
     jQuery("#applyActionBlock .infos").hide();
     jQuery("[id^=action_]").hide();
     jQuery("#action_" + $(this).prop("value")).show();
@@ -149,29 +149,29 @@ $(document).ready(function () {
     }
   });
   $(".yes_no_radio .user-list-checkbox")
-    .unbind("click")
-    .click(function () {
+    .off("click")
+    .on("click", function () {
       if ($(this).attr("data-selected") !== "1") {
         $(this).attr("data-selected", "1");
         $(this).siblings().attr("data-selected", "0");
       }
     });
-  $(".AddUserGenPassword").click(gen_password);
-  $(".AddUserSubmit").click(add_user);
-  $(".AddUserCancel").click(add_user_close);
-  $(".CloseAddUser").click(add_user_close);
+  $(".AddUserGenPassword").on("click", gen_password);
+  $(".AddUserSubmit").on("click", add_user);
+  $(".AddUserCancel").on("click", add_user_close);
+  $(".CloseAddUser").on("click", add_user_close);
 
   //open add user pop in
-  $(".add-user-button").click(add_user_open);
+  $(".add-user-button").on("click", add_user_open);
 
   /* Select */
 
-  jQuery("#selectSet").click(function () {
+  jQuery("#selectSet").on("click", function () {
     select_whole_set();
     return false;
   });
 
-  jQuery("#selectAllPage").click(function () {
+  jQuery("#selectAllPage").on("click", function () {
     let selection_ids = selection.map((x) => x.id);
     for (let i = 0; i < current_users.length; i++) {
       if (!selection_ids.includes(current_users[i].id)) {
@@ -182,13 +182,13 @@ $(document).ready(function () {
     return false;
   });
 
-  jQuery("#selectNone").click(function () {
+  jQuery("#selectNone").on("click", function () {
     selection = [];
     update_selection_content();
     return false;
   });
 
-  jQuery("#selectInvert").click(function () {
+  jQuery("#selectInvert").on("click", function () {
     let selection_ids = selection.map((x) => x.id);
     for (let i = 0; i < current_users.length; i++) {
       if (selection_ids.includes(current_users[i].id)) {
@@ -206,9 +206,9 @@ $(document).ready(function () {
 
   $("#permitActionUserList select[name=selectAction]").val("-1");
 
-  $(".advanced-filter-btn").click(advanced_filter_button_click);
-  $(".advanced-filter span.icon-cancel").click(advanced_filter_hide);
-  $(".advanced-filter-select").change(update_user_list);
+  $(".advanced-filter-btn").on("click", advanced_filter_button_click);
+  $(".advanced-filter span.icon-cancel").on("click", advanced_filter_hide);
+  $(".advanced-filter-select").on("change", update_user_list);
   $("#user_search").on("input", update_user_list);
 
   /*View manager*/
@@ -225,7 +225,7 @@ $(document).ready(function () {
     setDisplayTile();
   }
 
-  $("#displayCompact").change(function () {
+  $("#displayCompact").on("change", function () {
     setDisplayCompact();
 
     if ($(".addAlbum").hasClass("input-mode")) {
@@ -234,7 +234,7 @@ $(document).ready(function () {
     set_view_selector("compact");
   });
 
-  $("#displayLine").change(function () {
+  $("#displayLine").on("change", function () {
     setDisplayLine();
 
     if ($(".addAlbum").hasClass("input-mode")) {
@@ -243,7 +243,7 @@ $(document).ready(function () {
     set_view_selector("line");
   });
 
-  $("#displayTile").change(function () {
+  $("#displayTile").on("change", function () {
     setDisplayTile();
 
     if ($(".addAlbum").hasClass("input-mode")) {
@@ -367,8 +367,8 @@ function checkbox_click() {
   }
 }
 
-$(".user-list-checkbox").unbind("change").change(checkbox_change);
-$(".user-list-checkbox").unbind("click").click(checkbox_click);
+$(".user-list-checkbox").off("change").on("change", checkbox_change);
+$(".user-list-checkbox").off("click").on("click", checkbox_click);
 
 /* ---------------
 User edit sliders 
@@ -734,7 +734,7 @@ function create_user_selected_item(user) {
   let new_elem = $("#template .user-selected-item").clone();
   new_elem.attr("data-id", user.id.toString());
   new_elem.find("p").html(user.username);
-  new_elem.find("a").click(() => {
+  new_elem.find("a").on("click", () => {
     selection.splice(
       selection.findIndex((i) => i.id == user.id),
       1
@@ -969,9 +969,9 @@ function generate_user_list() {
     fill_container_user_info(new_container, i);
     $("#user-table-content .user-container-wrapper").append(new_container);
   }
-  $(".user-container .user-list-checkbox").unbind("change").change(checkbox_change);
-  $(".user-container .user-list-checkbox").unbind("click");
-  $(".user-container").click(user_container_click);
+  $(".user-container .user-list-checkbox").off("change").on("change", checkbox_change);
+  $(".user-container .user-list-checkbox").off("click");
+  $(".user-container").on("click", user_container_click);
 }
 
 /*---------------------
@@ -1092,14 +1092,14 @@ function fill_user_edit_preferences(user_to_edit, pop_in) {
 function fill_user_edit_update(user_to_edit, pop_in) {
   pop_in
     .find(".update-user-button")
-    .unbind("click")
-    .click(user_to_edit.id === guest_id ? update_guest_info : update_user_info);
-  pop_in.find(".edit-username-validate").unbind("click").click(update_user_username);
-  pop_in.find(".edit-password-validate").unbind("click").click(update_user_password);
+    .off("click")
+    .on("click", user_to_edit.id === guest_id ? update_guest_info : update_user_info);
+  pop_in.find(".edit-username-validate").off("click").on("click", update_user_username);
+  pop_in.find(".edit-password-validate").off("click").on("click", update_user_password);
   pop_in
     .find(".delete-user-button")
-    .unbind("click")
-    .click(function () {
+    .off("click")
+    .on("click", function () {
       $.confirm({
         title: title_msg.replace("%s", user_to_edit.username),
         content: "",
@@ -1271,7 +1271,7 @@ function get_first_selection_usernames(callback) {
       exclude: [guest_id],
     },
     success: function (data) {
-      data = jQuery.parseJSON(data);
+      data = JSON.parse(data);
       let result = data.result.users;
       for (let i = 0; i < result.length; i++) {
         let index = selection.findIndex((x) => x.id === result[i].id);
@@ -1305,7 +1305,7 @@ function select_whole_set() {
       $("#checkActions .loading").show();
     },
     success: function (data) {
-      data = jQuery.parseJSON(data);
+      data = JSON.parse(data);
       selection = data.result.map((x) => {
         return { id: x };
       });
@@ -1334,7 +1334,7 @@ function update_user_username() {
     type: "POST",
     data: ajax_data,
     success: (raw_data) => {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat == "ok") {
         if (last_user_index != -1) {
           current_users[last_user_index].username = data.result.users[0].username;
@@ -1362,7 +1362,7 @@ function update_user_password() {
     type: "POST",
     data: ajax_data,
     success: (raw_data) => {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat == "ok") {
         $("#UserList .update-user-success").fadeIn().delay(1500).fadeOut(2500);
         $(".user-property-password").show();
@@ -1392,7 +1392,7 @@ function update_user_info() {
       $("#UserList .update-user-success").fadeOut();
     },
     success: function (raw_data) {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat === "ok") {
         let result_user = data.result.users[0];
         if (last_user_index != -1) {
@@ -1437,7 +1437,7 @@ function get_guest_info() {
       user_id: guest_id,
     },
     success: (raw_data) => {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat == "ok") {
         guest_user = data.result.users[0];
         fill_guest_edit();
@@ -1455,7 +1455,7 @@ function get_user_info(uid, callback = None) {
       user_id: uid,
     },
     success: (raw_data) => {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat == "ok") {
         let result_user = data.result.users[0];
         fill_user_edit(result_user);
@@ -1483,7 +1483,7 @@ function update_guest_info() {
     type: "POST",
     data: ajax_data,
     success: function (raw_data) {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat == "ok") {
         $("#GuestUserList .update-user-success").fadeIn().delay(1500).fadeOut(2500);
       }
@@ -1521,7 +1521,7 @@ function update_user_list() {
       $(".user-update-spinner").show();
     },
     success: function (raw_data) {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat === "fail") {
         console.log(data.message);
         return;
@@ -1535,7 +1535,7 @@ function update_user_list() {
       update_pagination_menu();
       current_users = data.result.users;
       generate_user_list();
-      $(".user-col.user-first-col.user-container-edit").click(function () {
+      $(".user-col.user-first-col.user-container-edit").on("click", function () {
         let uid_index = $(this).closest(".user-container").attr("key");
         last_user_id = current_users[uid_index].id;
         last_user_index = uid_index;
@@ -1582,15 +1582,15 @@ function add_user() {
       }
     },
     success: (raw_data) => {
-      let data = jQuery.parseJSON(raw_data);
+      let data = JSON.parse(raw_data);
       if (data.stat == "ok") {
         let new_user_id = data.result.users[0].id;
         update_user_list();
         add_user_close();
         $("#AddUser .user-property-input").val("");
         $("#AddUserSuccess .edit-now")
-          .unbind("click")
-          .click(() => {
+          .off("click")
+          .on("click", () => {
             last_user_id = new_user_id;
             last_user_index = get_container_index_from_uid(new_user_id);
             if (last_user_index != -1) {

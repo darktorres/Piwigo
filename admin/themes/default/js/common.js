@@ -315,7 +315,7 @@ const jConfirm_confirm_with_content_options = {
 jQuery.fn.pwg_jconfirm_follow_href = function ({ alert_title = "TITLE", alert_confirm = "CONFIRM", alert_cancel = "CANCEL", alert_content = "" } = {}) {
   let button_href = $(this).attr("href");
   const options = alert_content === "" ? jConfirm_confirm_options : jConfirm_confirm_with_content_options;
-  $(this).click(function () {
+  $(this).on("click", function () {
     $.confirm({
       content: alert_content,
       title: alert_title,

@@ -1,12 +1,12 @@
 {footer_script}<script>
   jQuery(document).ready(function() {
-    jQuery('input[name="submit"]').click(function() {
+    jQuery('input[name="submit"]').on("click", function() {
       if(!confirm('{'Are you sure?'|@translate}'))
       return false;
       jQuery(this).hide();
       jQuery('.autoupdate_bar').show();
     });
-    jQuery('[name="understand"]').click(function() {
+    jQuery('[name="understand"]').on("click", function() {
       jQuery('[name="submit"]').attr('disabled', !this.checked);
     });
   });

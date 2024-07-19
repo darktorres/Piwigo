@@ -142,7 +142,7 @@ $(".TagSubmit").on("click", function () {
  Add a tag
 -------*/
 
-$("#add-tag").submit(function (e) {
+$("#add-tag").on("submit", function (e) {
   e.preventDefault();
   if ($("#add-tag-input").val() != "") {
     loadState = new TemporaryState();
@@ -179,7 +179,7 @@ function addTag(name) {
         name: name,
       },
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         if (data.stat === "ok") {
           newTag = createTagBox(data.result.id, data.result.name, data.result.url_name, 0);
           $(".tag-container").prepend(newTag);
@@ -215,7 +215,7 @@ function setupTagbox(tagBox) {
     tagBox.find(".tag-dropdown-block").css("display", "grid");
   });
 
-  $(document).mouseup(function (e) {
+  $(document).on("mouseup", function (e) {
     e.stopPropagation();
     let option_is_clicked = false;
     tagBox.find(".dropdown-option").each(function () {
@@ -308,7 +308,7 @@ function removeTag(id, name) {
           pwg_token: pwg_token,
         },
         success: function (raw_data) {
-          data = jQuery.parseJSON(raw_data);
+          data = JSON.parse(raw_data);
 
           if (data.stat === "ok") {
             $(".tag-box[data-id=" + id + "]").remove();
@@ -339,7 +339,7 @@ function renameTag(id, new_name) {
         pwg_token: pwg_token,
       },
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         console.log(data);
         if (data.stat === "ok") {
           $(".tag-box[data-id=" + id + "] p, .tag-box[data-id=" + id + "] .tag-dropdown-header b").html(data.result.name);
@@ -390,7 +390,7 @@ function duplicateTag(id, name) {
         pwg_token: pwg_token,
       },
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         if (data.stat === "ok") {
           newTag = createTagBox(data.result.id, data.result.name, data.result.url_name, data.result.count);
           newTag.insertAfter($(".tag-box[data-id=" + id + "]"));
@@ -423,7 +423,7 @@ var selected = [];
 maxItemDisplayed = 5;
 
 $("#toggleSelectionMode").prop("checked", false);
-$("#toggleSelectionMode").click(function () {
+$("#toggleSelectionMode").on("click", function () {
   selectionMode($(this).is(":checked"));
   $(".tag-info").hide();
 });
@@ -738,7 +738,7 @@ function mergeGroups(destination_id, merge_ids) {
         },
         success: function (raw_data) {
           raw_data = raw_data.slice(raw_data.search("{"));
-          data = jQuery.parseJSON(raw_data);
+          data = JSON.parse(raw_data);
           if (data.stat === "ok") {
             data.result.deleted_tag.forEach((id) => {
               if (data.result.destination_tag != id) {
