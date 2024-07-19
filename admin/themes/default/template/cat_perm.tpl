@@ -35,12 +35,12 @@
     }
 
     checkStatusOptions();
-    jQuery("#selectStatus").change(function() {
+    jQuery("#selectStatus").on("change", function() {
       checkStatusOptions();
     });
 
     {if isset($nb_users_granted_indirect) && $nb_users_granted_indirect>0}
-      jQuery(".toggle-indirectPermissions").click(function(e) {
+      jQuery(".toggle-indirectPermissions").on("click", function(e) {
         jQuery(".toggle-indirectPermissions").toggle();
         jQuery("#indirectPermissionsDetails").toggle();
         e.preventDefault();

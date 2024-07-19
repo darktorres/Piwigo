@@ -63,15 +63,15 @@
 				var timeout = false;
 				
 				if(opts.activation == "hover"){
-					org_elem.hover(function(){
+					org_elem.on("mouseenter", function(){
 						active_tiptip();
-					}, function(){
+					}).on("mouseleave", function(){
 						if(!opts.keepAlive){
 							deactive_tiptip();
 						}
 					});
 					if(opts.keepAlive){
-						tiptip_holder.hover(function(){}, function(){
+						tiptip_holder.on("mouseenter", function(){}).on("mouseleave", function(){
 							deactive_tiptip();
 						});
 					}

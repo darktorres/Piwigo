@@ -1,12 +1,12 @@
 {footer_script require='jquery-ui'}<script>
   jQuery(document).ready(function() {
     $("h1").append("<span class='badge-number'>{$nb_cats}</span>")
-    jQuery("#addPermalinkOpen").click(function() {
+    jQuery("#addPermalinkOpen").on("click", function() {
       jQuery("#addPermalink").show();
       jQuery("#showAddPermalink").hide();
     });
 
-    jQuery("#addPermalinkClose").click(function() {
+    jQuery("#addPermalinkClose").on("click", function() {
       jQuery("#addPermalink").hide();
       jQuery("#showAddPermalink").show();
     });
