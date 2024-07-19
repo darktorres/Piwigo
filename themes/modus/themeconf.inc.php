@@ -259,7 +259,7 @@ function modus_thumbs($x, $smarty)
 
     $template->block_html_style(
         null,
-        '
+        '<style type="text/css">
             #thumbnails {
                 text-align: justify;
                 overflow: hidden;
@@ -279,7 +279,7 @@ function modus_thumbs($x, $smarty)
                 position: absolute;
                 border: 0;
             }
-        '
+        </style>'
     );
     $template->block_footer_script(null, '
         <script>
