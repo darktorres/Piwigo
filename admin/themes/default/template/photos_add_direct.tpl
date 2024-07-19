@@ -23,9 +23,9 @@
 
 {combine_script id='piecon' load='footer' path='themes/default/js/plugins/piecon.js'}
 
-{html_style}
+{html_style}<style type="text/css">
 .addAlbumFormParent { display: none; } /* specific to this page, do not move in theme.css */
-{/html_style}
+</style>{/html_style}
 
 {footer_script}<script>
 
