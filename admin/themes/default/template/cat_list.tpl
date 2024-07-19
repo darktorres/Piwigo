@@ -3,7 +3,7 @@
 {combine_script id='alternativeView' load='footer' path='admin/themes/default/js/cat_list.js'}
 {combine_script id='jquery.cookie' path='themes/default/js/jquery.cookie.js' load='footer'}
 
-{footer_script require='jquery.ui.sortable'}<script>
+{footer_script require='jquery-ui'}<script>
   jQuery(document).ready(function() {
     $(".addAlbumHead").click(function() {
       $(".addAlbum input[name=virtual_name]").focus();
