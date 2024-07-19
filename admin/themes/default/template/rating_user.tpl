@@ -227,8 +227,8 @@
 	{/foreach}
 </table>
 
-{combine_script id='jquery.ui.tooltip' load='footer'}
-{footer_script require='jquery.ui.tooltip'}<script>
+{combine_script id='jquery-ui' load='footer'}
+{footer_script require='jquery-ui'}<script>
 	jQuery(document).ready(function() {
 		jQuery("#rateTable").tooltip({
 			items: ".usr,[title]",

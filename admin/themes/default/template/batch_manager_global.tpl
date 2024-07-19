@@ -4,9 +4,9 @@
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
-{combine_script id='jquery.ui.slider' require='jquery.ui' load='async' path='themes/default/js/ui/jquery.ui.slider.js'}
-{combine_css path="themes/default/js/ui/theme/jquery.ui.slider.css"}
-{combine_script id='doubleSlider' load='async' require='jquery.ui.slider' path='admin/themes/default/js/doubleSlider.js'}
+{combine_script id='jquery-ui' require='jquery' load='async' path='themes/default/js/jquery-ui/jquery-ui.js'}
+{combine_css path="themes/default/js/jquery-ui/jquery-ui.css"}
+{combine_script id='doubleSlider' load='async' require='jquery-ui' path='admin/themes/default/js/doubleSlider.js'}
 
 {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
 
