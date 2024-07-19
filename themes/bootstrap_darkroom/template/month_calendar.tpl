@@ -70,14 +70,14 @@
  {/foreach}
             </tr>
         </thead>
-{html_style}
+{html_style}<style type="text/css">
 #calMonth .calImg{
     width:{$chronology_calendar.month_view.CELL_WIDTH}px;height:{$chronology_calendar.month_view.CELL_HEIGHT}px
 }
 #calMonth td{
     width:{$chronology_calendar.month_view.CELL_WIDTH}px;height:{$chronology_calendar.month_view.CELL_HEIGHT + 29}px
 }
-{/html_style}
+</style>{/html_style}
  {foreach $chronology_calendar.month_view.weeks as $week}
         <tr>
         {foreach $week as $day}

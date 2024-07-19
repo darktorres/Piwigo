@@ -276,7 +276,7 @@ function modus_thumbs(
 
     $template->block_html_style(
         null,
-        '
+        '<style type="text/css">
             #thumbnails {
                 text-align: justify;
                 overflow: hidden;
@@ -296,7 +296,7 @@ function modus_thumbs(
                 position: absolute;
                 border: 0;
             }
-        '
+        </style>'
     );
     $template->block_footer_script(
         null,
