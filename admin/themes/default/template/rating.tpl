@@ -14,7 +14,7 @@
 
   categoriesCache.selectize(jQuery('[data-selectize=categories]'));
 
-  jQuery("#removeAlbumFilter").click(function() {
+  jQuery("#removeAlbumFilter").on("click", function() {
     jQuery("select[name=cat]")[0].selectize.setValue(null);
     return false;
   });
@@ -28,7 +28,7 @@
   }
 
   checkCatFilter();
-  jQuery("select[name=cat]").change(function() {
+  jQuery("select[name=cat]").on("change", function() {
     checkCatFilter();
   });
 

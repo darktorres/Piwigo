@@ -276,7 +276,7 @@
             <div id="thumbnails" class="row">{$THUMBNAILS}</div>
             {footer_script require='jquery'}<script>
                 $(document).ready(function() {
-                    $('#content img').load(function() {
+                    $('#content img').on("load", function() {
                         $('#content .col-inner')
                             .equalHeights()
                     })

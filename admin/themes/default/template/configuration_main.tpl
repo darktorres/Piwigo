@@ -39,7 +39,7 @@
         jQuery('#order_filters .addFilter').toggle($selects.length <= max_fields);
         jQuery('#order_filters .removeFilter').css('display', '').filter(':first').css('display', 'none');
 
-        $selects.find('option').removeAttr('disabled');
+        $selects.find('option').prop('disabled', false);
         $selects.each(function() {
           $selects.not(this).find('option[value="' + jQuery(this).val() + '"]').attr('disabled', 'disabled');
         });
@@ -52,7 +52,7 @@
 
       jQuery('#order_filters').on('change', 'select', updateFilters);
 
-      jQuery('#order_filters .addFilter').click(function() {
+      jQuery('#order_filters .addFilter').on("click", function() {
         jQuery(this).prev('span.filter').clone().insertBefore(jQuery(this));
         jQuery(this).prev('span.filter').children('select').val('');
         updateFilters();
@@ -64,12 +64,12 @@
 
   jQuery(".themeBoxes a").colorbox();
 
-  jQuery("input[name='mail_theme']").change(function() {
+  jQuery("input[name='mail_theme']").on("change", function() {
     jQuery("input[name='mail_theme']").parents(".themeSelect").removeClass("themeDefault");
     jQuery(this).parents(".themeSelect").addClass("themeDefault");
   });
 
-  jQuery("input[name='email_admin_on_new_user_filter']").change(function() {
+  jQuery("input[name='email_admin_on_new_user_filter']").on("change", function() {
     var val = jQuery("input[name='email_admin_on_new_user_filter']:checked").val();
 
     jQuery('#email_admin_on_new_user_filter_group_options').toggle('group' == val);

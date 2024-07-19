@@ -1,4 +1,4 @@
-$("#albumActionsSwitcher").click(function () {
+$("#albumActionsSwitcher").on("click", function () {
   var box = $(this).siblings(".categoryActions");
   if (box.is(":visible")) {
     box.css("display", ""); // remove inline css in case browser resizes larger
@@ -16,7 +16,7 @@ if (!("ontouchstart" in document))
     if ($("#albumActionsSwitcher").is(":visible")) $(this).css("display", ""); // remove inline css in case browser resizes larger
   });
 
-$("#imageActionsSwitch").click(function () {
+$("#imageActionsSwitch").on("click", function () {
   var box = $(".actionButtons");
   if (box.is(":visible")) {
     box.css("display", ""); // remove inline css in case browser resizes larger
