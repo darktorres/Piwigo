@@ -1281,8 +1281,8 @@ var JqTreeWidget = /** @class */ (function (_super) {
             this.keyHandler = new key_handler_1["default"](this);
         }
         this._initData();
-        this.element.click(this._handleClick);
-        this.element.dblclick(this._handleDblclick);
+        this.element.on("click", this._handleClick);
+        this.element.on("dblclick", this._handleDblclick);
         if (this.options.useContextMenu) {
             this.element.on("contextmenu", this._handleContextmenu);
         }
@@ -2528,7 +2528,7 @@ var DataLoader = /** @class */ (function () {
     };
     DataLoader.prototype.parseData = function (data) {
         var dataFilter = this.treeWidget.options.dataFilter;
-        var parsedData = data instanceof Array || typeof data === "object" ? data : data != null ? jQuery.parseJSON(data) : [];
+        var parsedData = data instanceof Array || typeof data === "object" ? data : data != null ? JSON.parse(data) : [];
         return dataFilter ? dataFilter(parsedData) : parsedData;
     };
     return DataLoader;
@@ -2908,7 +2908,7 @@ var SaveStateHandler = /** @class */ (function () {
         }
     };
     SaveStateHandler.prototype._parseState = function (jsonData) {
-        var state = jQuery.parseJSON(jsonData);
+        var state = JSON.parse(jsonData);
         // Check if selected_node is an int (instead of an array)
         if (state && state.selected_node && util_1.isInt(state.selected_node)) {
             // Convert to array

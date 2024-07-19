@@ -195,7 +195,7 @@
 
 		this.get = function(key) {
 			var value = this.value(key);
-			return $.isFunction(value) ? value.call(this.el, this) : value;
+			return typeof value === "function" ? value.call(this.el, this) : value;
 		};
 	}
 
@@ -500,23 +500,23 @@
 				init = true;
 
 				// Anonymous functions here keep the public method from being cached, thereby allowing them to be redefined on the fly.
-				$next.click(function () {
+				$next.on("click", function () {
 					publicMethod.next();
 				});
-				$prev.click(function () {
+				$prev.on("click", function () {
 					publicMethod.prev();
 				});
-				$close.click(function () {
+				$close.on("click", function () {
 					publicMethod.close();
 				});
-				$overlay.click(function () {
+				$overlay.on("click", function () {
 					if (settings.get('overlayClose')) {
 						publicMethod.close();
 					}
 				});
 				
 				// Key Bindings
-				$(document).bind('keydown.' + prefix, function (e) {
+				$(document).on('keydown.' + prefix, function (e) {
 					var key = e.keyCode;
 					if (open && settings.get('escKey') && key === 27) {
 						e.preventDefault();
@@ -533,7 +533,7 @@
 					}
 				});
 
-				if ($.isFunction($.fn.on)) {
+				if (typeof $.fn.on === "function") {
 					// For jQuery 1.7+
 					$(document).on('click.'+prefix, '.'+boxElement, clickHandler);
 				} else {
@@ -569,7 +569,7 @@
 
 		options = options || {};
 
-		if ($.isFunction($obj)) { // assume a call to $.colorbox
+		if (typeof $obj === "function") { // assume a call to $.colorbox
 			$obj = $('<a/>');
 			options.open = true;
 		} else if (!$obj[0]) { // colorbox being applied to empty collection

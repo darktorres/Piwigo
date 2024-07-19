@@ -58,7 +58,7 @@
     });
   });
 
-  $(".delete-size-check").click(function() {
+  $(".delete-size-check").on("click", function() {
     if ($(this).attr('data-selected') == '1') {
       $(this).attr('data-selected', '0');
       $(this).find("i").hide();
@@ -68,7 +68,7 @@
     }
     $(this).trigger("change");
   });
-  $(".delete-size-check:first").change(function() {
+  $(".delete-size-check:first").on("change", function() {
     if ($(this).attr('data-selected') == '1') {
       $(".delete-size-check").hide();
       $(".delete-size-check").attr("data-selected", "1");
@@ -79,7 +79,7 @@
     }
   })
   const delete_deriv_URL = "admin.php?page=maintenance&action=derivatives&";
-  $(".delete-size-check").change(function() {
+  $(".delete-size-check").on("change", function() {
     let delete_deriv_with_token = delete_deriv_URL + "pwg_token=" + "{$pwg_token}&";
     let types_str = '';
     let selected = []
@@ -102,7 +102,7 @@
   })
 
   $(".delete-sizes").hide();
-  $(".delete-size-check").click(function() {
+  $(".delete-size-check").on("click", function() {
     let displayDeleteSizes = false;
     $(".delete-size-check").each(function() {
       if ($(this).attr("data-selected") == 1) {

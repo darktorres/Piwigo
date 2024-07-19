@@ -22,7 +22,7 @@
   jQuery(document).ready(function() {
     $("a.preview-box").colorbox();
 
-    $(document).mouseup(function(e) {
+    $(document).on("mouseup", function(e) {
       e.stopPropagation();
       if (!$(event.target).hasClass('showInfo')) {
         $('.showInfo-dropdown').fadeOut();
@@ -31,7 +31,7 @@
 
   });
 
-  $(window).bind("load", function() {
+  $(window).on("load", function() {
     $('.themeBox').each(function() {
 
       let box = $(this);

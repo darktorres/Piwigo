@@ -103,7 +103,7 @@ function activateLineOptions() {
 
   /* Hide img options and rename field on click on the screen */
 
-  $(document).mouseup(function (e) {
+  $(document).on("mouseup", function (e) {
     e.stopPropagation();
     let option_is_clicked = false;
     $(".img-option span").each(function () {
@@ -135,7 +135,7 @@ function fillSummaryResult(summary) {
           fillHistoryResult(current_param);
         }
       })
-      .hover(function () {
+      .on("mouseenter", function () {
         $(this).css({
           cursor: "pointer",
         });

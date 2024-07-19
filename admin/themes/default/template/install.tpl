@@ -25,7 +25,7 @@
   {combine_script id='jquery'}
   <script>
     $(document).ready(function() {
-      $("a.externalLink").click(function() {
+      $("a.externalLink").on("click", function() {
         window.open($(this).attr("href"));
         return false;
       });
