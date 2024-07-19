@@ -42,7 +42,7 @@
       });
     {/if}
 
-    jQuery('.newsletter-subscription a').click(function() {
+    jQuery('.newsletter-subscription a').on("click", function() {
       jQuery('.newsletter-subscription').hide();
 
       jQuery.ajax({
@@ -144,7 +144,7 @@
       tooltip.css('bottom', 'calc(100% + ' + str_chart_height + 'px)');
       arrow.addClass('bottom');
     }
-    $(this).hover(function() {
+    $(this).on("mouseenter mouseleave", function() {
       tooltip.toggle();
     });
   });
