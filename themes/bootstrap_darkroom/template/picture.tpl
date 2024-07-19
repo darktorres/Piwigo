@@ -15,7 +15,7 @@
   </div>
   {if get_device() != 'desktop' }
     {footer_script require="jquery"}<script>
-      $('#theImage img').bind('swipeleft swiperight', function(event) {
+      $('#theImage img').on('swipeleft swiperight', function(event) {
         if (event.type == 'swipeleft') {
           $('#navigationButtons a#navNextPicture i').click();
         } else if (event.type == 'swiperight') {

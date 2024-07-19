@@ -103,7 +103,7 @@
       }
     });
 
-    jQuery("#addAlbumForm form").submit(function() {
+    jQuery("#addAlbumForm form").on("submit", function() {
       jQuery("#categoryNameError").text("");
 
       jQuery.ajax({
@@ -119,7 +119,7 @@
         success: function(html) {
           jQuery("#albumCreationLoading").hide();
 
-          var newAlbum = jQuery.parseJSON(html).result.id;
+          var newAlbum = JSON.parse(html).result.id;
           jQuery(".addAlbumOpen").colorbox.close();
 
           jQuery("#albumSelect").find("option").remove();
@@ -142,17 +142,17 @@
       return false;
     });
 
-    jQuery("#hideErrors").click(function() {
+    jQuery("#hideErrors").on("click", function() {
       jQuery("#formErrors").hide();
       return false;
     });
 
-    jQuery("#uploadWarningsSummary a.showInfo").click(function() {
+    jQuery("#uploadWarningsSummary a.showInfo").on("click", function() {
       jQuery("#uploadWarningsSummary").hide();
       jQuery("#uploadWarnings").show();
     });
 
-    jQuery("#showPhotoProperties").click(function() {
+    jQuery("#showPhotoProperties").on("click", function() {
       jQuery(this).parent(".showFieldset").hide();
       jQuery("#photoProperties").show();
       jQuery("input[name=set_photo_properties]").prop('checked', true);
@@ -243,7 +243,7 @@
           jQuery('#uploadingActions').show();
 
           // warn user if she wants to leave page while upload is running
-          jQuery(window).bind('beforeunload', function() {
+          jQuery(window).on('beforeunload', function() {
             return "{'Upload in progress'|translate|escape}";
           });
 
@@ -268,7 +268,7 @@
           // hide item line
           jQuery('#' + file.id).hide();
 
-          var data = jQuery.parseJSON(info.response);
+          var data = JSON.parse(info.response);
           console.log(data);
 
           jQuery("#uploadedPhotos").parent("fieldset").show();
@@ -303,7 +303,7 @@
         Error: function(up, error) {
           // Called when file has finished uploading
           //console.log('[Error] error: ', error);
-          var piwigoApiResponse = jQuery.parseJSON(error.response);
+          var piwigoApiResponse = JSON.parse(error.response);
 
           jQuery(".errors ul").append('<li>' + piwigoApiResponse.message + '</li>');
           jQuery(".errors").show();
@@ -354,12 +354,12 @@
           jQuery('#uploadingActions').hide();
 
           // user can safely leave page without warning
-          jQuery(window).unbind('beforeunload');
+          jQuery(window).off('beforeunload');
         }
       }
     });
 
-    jQuery("input[type=button]").click(function() {
+    jQuery("input[type=button]").on("click", function() {
       if (!checkUploadStart()) {
         return false;
       }
@@ -765,7 +765,7 @@
   jQuery(document).ready(function() {
     jQuery("a.colorboxThumb").colorbox({ rel: "colorboxThumb" });
 
-    jQuery("a.externalLink").click(function() {
+    jQuery("a.externalLink").on("click", function() {
       window.open($(this).attr("href"));
       return false;
     });
