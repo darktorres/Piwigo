@@ -41,7 +41,7 @@
     </div>
 {else}
 {combine_script id='jquery.awesomeCloud' load='footer' path="themes/bootstrap_darkroom/js/jquery.awesomeCloud.js"}
-{footer_script require='jquery.awesomeCloud'}{strip}
+{footer_script require='jquery.awesomeCloud'}
     $(document).ready(function(){
         $("#tagCloudCanvas").awesomeCloud({
             "size" : {
@@ -61,7 +61,7 @@
             "shape": "circle"
         });
     });
-{/strip}{/footer_script}
+{/footer_script}
     <div id="tagCloudCanvas">
 {foreach $tags as $tag}
         <span data-weight="{$tag.counter}"><a href="{$tag.URL}">{$tag.name}</a></span>
