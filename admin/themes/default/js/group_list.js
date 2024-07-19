@@ -3,11 +3,11 @@ const DELAY_FEEDBACK = 3000;
 Group Popin
 -------*/
 
-$(".group_details_popup_trigger").click(function () {
+$(".group_details_popup_trigger").on("click", function () {
   $(".Group_details-popup-container").show();
 });
 
-$(".CloseGroupPopup").click(function () {
+$(".CloseGroupPopup").on("click", function () {
   $(".Group_details-popup-container").hide();
 });
 
@@ -20,7 +20,7 @@ function updateBadge() {
  Add User toggle and reduces height of user list when add user form is visible
  -------*/
 
-$("#form-btn").click(function () {
+$("#form-btn").on("click", function () {
   $("#cancel").show();
   $("#addUserLabel").show();
   $(".UserSearch").show();
@@ -29,7 +29,7 @@ $("#form-btn").click(function () {
   $(".groups .list_user").css("max-height", "100px");
 });
 
-$("#cancel").click(function () {
+$("#cancel").on("click", function () {
   $("#cancel").hide();
   $("#addUserLabel").hide();
   $(".UserSearch").hide();
@@ -101,7 +101,7 @@ jQuery(document).ready(function () {
         },
         success: function (raw_data) {
           loadState.reverse();
-          data = jQuery.parseJSON(raw_data);
+          data = JSON.parse(raw_data);
           if (data.stat === "ok") {
             $(".addGroupFormLabelAndInput input").val("");
             group = data.result.groups[0];
@@ -166,13 +166,13 @@ var setupGroupBox = function (groupBox) {
   var id = groupBox.data("id");
 
   /* Change background color of group block if checked in selection mode */
-  groupBox.find(".Group-checkbox input[type='checkbox']").change(function () {
+  groupBox.find(".Group-checkbox input[type='checkbox']").on("change", function () {
     toogleSelection(id, groupBox.find(".Group-checkbox input[type='checkbox']").is(":checked"));
   });
   groupBox.find(".Group-checkbox input[type='checkbox']").attr("checked", false);
 
   /* Display the option on the click on "..." */
-  groupBox.find(".group-dropdown-options").click(function GroupOptions() {
+  groupBox.find(".group-dropdown-options").on("click", function GroupOptions() {
     $(this).find("#GroupOptions").toggle();
   });
 
@@ -205,7 +205,7 @@ var setupGroupBox = function (groupBox) {
 
   /* Hide group options and rename field on click on the screen */
 
-  $(document).mouseup(function (e) {
+  $(document).on("mouseup", function (e) {
     e.stopPropagation();
     let option_is_clicked = false;
     $("#GroupOptions div").each(function () {
@@ -306,7 +306,7 @@ var deleteGroup = function (id) {
                   type: "POST",
                   data: `group_id=${id}&pwg_token=${pwg_token}`,
                   success: function (raw_data) {
-                    data = jQuery.parseJSON(raw_data);
+                    data = JSON.parse(raw_data);
                     if (data.stat === "ok") {
                       $(`#group-${id}`).remove();
                       $(`.DeleteGroupList div[data-id=${id}]`).remove();
@@ -343,7 +343,7 @@ var renameGroup = function (id, newName) {
       type: "POST",
       data: `group_id=${id}&pwg_token=${pwg_token}&name=${newName}`,
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         loadState.reverse();
         if (data.stat === "ok") {
           newName = data.result.groups[0].name;
@@ -398,7 +398,7 @@ var setDefaultGroup = function (id, is_default) {
     type: "POST",
     data: `group_id=${id}&pwg_token=${pwg_token}&is_default=${is_default}`,
     success: function (raw_data) {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       $(`#group-${id} #GroupOptions`).hide();
       if (data.stat === "ok") {
         if (is_default) {
@@ -421,7 +421,7 @@ var setupDefaultActions = function (id, is_default) {
   if (is_default) {
     $(`#group-${id}`).find("#GroupDefault").html(str_unset_default);
     $(`#group-${id}`).find(".is-default-token").attr("title", str_unset_default);
-    $(`#group-${id}`).find("#GroupDefault").unbind("click");
+    $(`#group-${id}`).find("#GroupDefault").off("click");
     $(`#group-${id}`).find(".is-default-token").removeClass("deactivate");
     $(`#group-${id}`)
       .find("#GroupDefault")
@@ -442,7 +442,7 @@ var setupDefaultActions = function (id, is_default) {
       .on("click", function () {
         setDefaultGroup(id, true);
       });
-    $(`#group-${id}`).find(".is-default-token").unbind("click");
+    $(`#group-${id}`).find(".is-default-token").off("click");
   }
 };
 
@@ -471,7 +471,7 @@ var duplicateAction = function (id) {
     type: "POST",
     data: `group_id=${id}&pwg_token=${pwg_token}&copy_name=${copy_name}`,
     success: function (raw_data) {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       loadState.reverse();
       if (data.stat === "ok") {
         $(`#group-${id} #GroupOptions`).hide();
@@ -501,7 +501,7 @@ var duplicateAction = function (id) {
 
 $(function () {
   $("#toggleSelectionMode").prop("checked", false);
-  $("#toggleSelectionMode").click(function () {
+  $("#toggleSelectionMode").on("click", function () {
     if ($(this).is(":checked")) {
       $(".in-selection-mode").show();
       $(".not-in-selection-mode").hide();
@@ -627,7 +627,7 @@ $(".ConfirmMergeButton").on("click", function () {
     data: `destination_group_id=${dest_grp}${str_merge_group}&pwg_token=${pwg_token}`,
     success: function (raw_data) {
       loadState.reverse();
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat === "ok") {
         updateSelectionPanel("Selection");
         merge_group.forEach(function (id) {
@@ -652,7 +652,7 @@ $(".ConfirmMergeButton").on("click", function () {
           type: "POST",
           data: `group_id=${dest_grp}`,
           success: function (raw_data) {
-            data = jQuery.parseJSON(raw_data);
+            data = JSON.parse(raw_data);
             let number = data.result.users.length;
             $(`#group-${dest_grp} .group_number_users`).html(number + " " + (number > 1 ? str_members_default : str_member_default));
             updateBadge();
@@ -691,7 +691,7 @@ $(".ConfirmDeleteButton").on("click", function () {
     type: "POST",
     data: `${str_id}pwg_token=${pwg_token}`,
     success: function (raw_data) {
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat === "ok") {
         $(".DeleteGroupList div").each(function () {
           $(this).remove();
@@ -796,7 +796,7 @@ var openUserManager = function (grp_id) {
     data: `group_id=${grp_id}`,
     success: function (raw_data) {
       loadState.reverse();
-      data = jQuery.parseJSON(raw_data);
+      data = JSON.parse(raw_data);
       if (data.stat === "ok") {
         //Set the popin name
         $(".group-name-block p").html($(`#group-${grp_id} #group_name`).html() + " / " + str_user_list);
@@ -862,7 +862,7 @@ var getUserDisplay = function (username, user_id, grp_id) {
       type: "POST",
       data: `group_id=${grp_id}&user_id=${user_id}&pwg_token=${pwg_token}`,
       success: function (raw_data) {
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
         if (data.stat === "ok") {
           let str = str_user_dissociated.replace("%s", username);
           associateUserInfo.fadeOut();
@@ -921,7 +921,7 @@ $(".AddUserBlock button").on("click", function () {
       data: `group_id=${grp_id}&user_id=${id}&pwg_token=${pwg_token}`,
       success: function (raw_data) {
         loadState.reverse();
-        data = jQuery.parseJSON(raw_data);
+        data = JSON.parse(raw_data);
 
         if (data.stat === "ok") {
           // Get the username

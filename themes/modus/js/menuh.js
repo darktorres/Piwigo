@@ -1,4 +1,4 @@
-$("#menuSwitcher").click(function () {
+$("#menuSwitcher").on("click", function () {
   var mb = $("#menubar");
   if (mb.is(":visible")) {
     mb.css("display", ""); // remove inline css in case browser resizes larger
@@ -8,7 +8,7 @@ $("#menuSwitcher").click(function () {
   }
 });
 
-$("#menubar DT").click(function () {
+$("#menubar DT").on("click", function () {
   var $this = $(this);
   if ($this.css("display") != "block") return; // menu is horizontal
   var dd = $this.siblings("DD");

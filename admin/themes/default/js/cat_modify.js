@@ -243,7 +243,7 @@ jQuery(document).ready(function () {
         category_id: album_id,
       },
       success: function (data) {
-        var data = jQuery.parseJSON(data);
+        var data = JSON.parse(data);
         if (data.stat == "ok") {
           jQuery("#deleteRepresentative").show();
 
@@ -274,7 +274,7 @@ jQuery(document).ready(function () {
         category_id: album_id,
       },
       success: function (data) {
-        var data = jQuery.parseJSON(data);
+        var data = JSON.parse(data);
         if (data.stat == "ok") {
           jQuery("#deleteRepresentative").hide();
           jQuery(".cat-modify-representative").attr("style", ``).addClass("icon-dice-solid");
@@ -301,7 +301,7 @@ jQuery(document).ready(function () {
 
       if (parent_album != 0) {
         $(".put-to-root").removeClass("notClickable");
-        $(".put-to-root").click(function () {
+        $(".put-to-root").on("click", function () {
           add_related_category(0, str_root);
         });
       } else {
@@ -500,7 +500,7 @@ function activateCommentDropdown() {
 
   /* Hide img options and rename field on click on the screen */
 
-  $(document).mouseup(function (e) {
+  $(document).on("mouseup", function (e) {
     e.stopPropagation();
     let option_is_clicked = false;
     $(".comment-option span").each(function () {

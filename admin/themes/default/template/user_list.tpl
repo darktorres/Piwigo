@@ -101,7 +101,7 @@
     // We set the applyAction btn click event here so plugins can add cases to the list 
     // which is not possible if this JS part is in a JS file
     // see #1571 on Github
-    jQuery("#applyAction").click(function() {
+    jQuery("#applyAction").on("click", function() {
       let action = jQuery("select[name=selectAction]").prop("value");
       let method = 'pwg.users.setInfo';
       let data = {
