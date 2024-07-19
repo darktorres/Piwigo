@@ -16,16 +16,8 @@
     {combine_css path='themes/default/js/plugins/jquery.tokeninput.css'}
 
     {*<!-- datepicker -->*}
-    {combine_script id='jquery.ui.datepicker' load='footer' path='themes/default/js/ui/jquery.ui.datepicker.js'}
-
-    {assign var=datepicker_language value='themes/default/js/ui/i18n/jquery.ui.datepicker-'|cat:$lang_info.code|cat:'.js'}
-    {if 'PHPWG_ROOT_PATH'|constant|cat:$datepicker_language|file_exists}
-      {combine_script id='jquery.ui.datepicker-'|cat:$lang_info.code load='footer' path=$datepicker_language}
-    {/if}
-
-    {combine_css path='themes/default/js/ui/theme/jquery.ui.core.css'}
-    {combine_css path='themes/default/js/ui/theme/jquery.ui.theme.css'}
-    {combine_css path='themes/default/js/ui/theme/jquery.ui.datepicker.css'}
+    {combine_script id='jquery-ui' load='footer' path='themes/default/js/jquery-ui/jquery-ui.js'}
+    {combine_css path='themes/default/js/jquery-ui/jquery-ui.css'}
   {/if}
 {/if}
 
