@@ -1447,14 +1447,7 @@ class ScriptLoader
         'core.scripts' => 'themes/default/js/scripts.js',
         'jquery' => 'themes/default/js/jquery.js',
         'jquery-migrate' => 'themes/default/js/jquery-migrate.js',
-        'jquery.ui' => 'themes/default/js/ui/jquery.ui.core.js',
-        'jquery.ui.effect' => 'themes/default/js/ui/jquery.ui.effect.js',
-    ];
-
-    private static array $ui_core_dependencies = [
-        'jquery.ui.widget' => ['jquery'],
-        'jquery.ui.position' => ['jquery'],
-        'jquery.ui.mouse' => ['jquery', 'jquery.ui', 'jquery.ui.widget'],
+        'jquery-ui' => 'themes/default/js/jquery-ui/jquery-ui.js',
     ];
 
     public function __construct()
@@ -1533,13 +1526,6 @@ class ScriptLoader
             $script->is_template = $is_template;
             $this->fill_well_known($id, $script);
             $this->registered_scripts[$id] = $script;
-
-            // Load or modify all UI core files
-            if ($id === 'jquery.ui' && $script->path == self::$known_paths['jquery.ui']) {
-                foreach (self::$ui_core_dependencies as $script_id => $required_ids) {
-                    $this->add($script_id, $load_mode, $required_ids, null, $version);
-                }
-            }
 
             // Try to load undefined required script
             foreach ($script->precedents as $script_id) {
@@ -1697,10 +1683,6 @@ class ScriptLoader
                     $script->path = dirname((string) self::$known_paths['jquery.ui.effect']) . "/{$id}.js";
                 }
             } elseif (str_starts_with($id, 'jquery.ui.')) {
-                if (! isset(self::$ui_core_dependencies[$id])) {
-                    $required_ids = array_merge(['jquery', 'jquery.ui'], array_keys(self::$ui_core_dependencies));
-                }
-
                 if ($script->path === '' || $script->path === '0') {
                     $script->path = dirname((string) self::$known_paths['jquery.ui']) . "/{$id}.js";
                 }
