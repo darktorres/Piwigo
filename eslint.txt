@@ -1,0 +1,6 @@
+
+/var/www/html/piwigo2/themes/default/js/rating.js
+  25:5  error  Parsing error: 'with' in strict mode
+
+✖ 1 problem (1 error, 0 warnings)
+

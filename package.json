@@ -26,5 +26,10 @@
     "plupload": "2.2.0",
     "selectize": "github:selectize/selectize.js#v0.11.2",
     "underscore": "1.5.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.14.0",
+    "eslint": "^9.14.0",
+    "globals": "^15.11.0"
   }
 }
