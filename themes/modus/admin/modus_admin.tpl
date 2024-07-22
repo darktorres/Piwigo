@@ -1,6 +1,6 @@
 {include file='include/colorbox.inc.tpl'}
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.ui.slider' require='jquery.ui' load='footer' path='themes/default/js/ui/minified/jquery.ui.slider.min.js'}
+{combine_script id='jquery.ui.slider' require='jquery.ui' load='footer' path='themes/default/js/ui/jquery.ui.slider.js'}
 {combine_css path="themes/default/js/ui/theme/jquery.ui.slider.css"}
 
 {html_style}<style type="text/css">
