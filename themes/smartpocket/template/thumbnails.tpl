@@ -4,8 +4,8 @@
 	{$vmargin=5}
 	{$container_margin=-10}
 
-	{combine_script id='jquery' path='themes/smartpocket/js/jquery.min.js'}
-	{combine_script id='klass' path='themes/smartpocket/js/klass.min.js'}
+	{combine_script id='jquery' path='themes/smartpocket/js/jquery.js'}
+	{combine_script id='klass' path='themes/smartpocket/js/klass.js'}
 	{combine_script id='photoswipe' path='themes/smartpocket/js/code.photoswipe.jquery.min.js' require='klass,jquery.mobile'}
 	{combine_script id='smartpocket' path='themes/smartpocket/js/smartpocket.js' require='photoswipe' load='footer'}
 	{combine_script id='sp.thumb.arrange' path='themes/smartpocket/js/thumb.arrange.js' require='jquery' load='footer'}

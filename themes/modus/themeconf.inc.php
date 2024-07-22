@@ -268,7 +268,7 @@ function modus_thumbs(
 
     $my_base_name = basename(__DIR__);
     // not async to avoid visible flickering reflow
-    $template->scriptLoader->add('modus.arange', 1, ['jquery'], 'themes/' . $my_base_name . '/js/thumb.arrange.min.js', 0);
+    $template->scriptLoader->add('modus.arange', 1, ['jquery'], 'themes/' . $my_base_name . '/js/thumb.arrange.js', 0);
 }
 
 add_event_handler('loc_end_index', modus_on_end_index(...));
