@@ -1,15 +1,15 @@
 {combine_script id='common' load='header' require='jquery' path='admin/themes/default/js/common.js'}
 
-{combine_script id='jquery.selectize' load='header' path='themes/default/js/plugins/selectize.min.js'}
+{combine_script id='jquery.selectize' load='header' path='themes/default/js/plugins/selectize.js'}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
-{combine_script id='jquery.ui.slider' require='jquery.ui' load='header' path='themes/default/js/ui/minified/jquery.ui.slider.min.js'}
+{combine_script id='jquery.ui.slider' require='jquery.ui' load='header' path='themes/default/js/ui/jquery.ui.slider.js'}
 {combine_css path="themes/default/js/ui/theme/jquery.ui.slider.css"}
 
-{combine_script id='jquery.confirm' load='header' require='jquery' path='themes/default/js/plugins/jquery-confirm.min.js'}
-{combine_css path="themes/default/js/plugins/jquery-confirm.min.css"}
+{combine_script id='jquery.confirm' load='header' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 
-{combine_script id='jquery.tipTip' load='header' path='themes/default/js/plugins/jquery.tipTip.minified.js'}
+{combine_script id='jquery.tipTip' load='header' path='themes/default/js/plugins/jquery.tipTip.js'}
 
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10} {* order 10 is required, see issue 1080 *}
 

@@ -4,11 +4,11 @@
 
 {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
 
-{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.min.js'}
+{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.min.js'}
-{combine_css path="themes/default/js/plugins/jquery-confirm.min.css"}
+{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{combine_css path="themes/default/js/plugins/jquery-confirm.css"}
 
 {footer_script}<script>
   (function() {
