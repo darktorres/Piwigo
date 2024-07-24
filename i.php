@@ -372,6 +372,7 @@ include_once(PHPWG_ROOT_PATH .'include/dblayer/functions_'.$conf['dblayer'].'.in
 include_once( PHPWG_ROOT_PATH .'/include/derivative_params.inc.php');
 include_once( PHPWG_ROOT_PATH .'/include/derivative_std_params.inc.php');
 include_once(PHPWG_ROOT_PATH .'include/functions.inc.php');
+include_once(PHPWG_ROOT_PATH .'include/constants.php');
 
 try
 {
@@ -383,7 +384,7 @@ catch (Exception $e)
   $logger->error($e->getMessage());
 }
 
-list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM '.$prefixeTable.'config WHERE param=\'derivatives\''));
+list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM '.CONFIG_TABLE.' WHERE param=\'derivatives\''));
 ImageStdParams::load_from_db();
 
 
@@ -442,7 +443,7 @@ if (strpos($page['src_location'], '/pwg_representative/')===false
   {
     $query = '
 SELECT *
-  FROM '.$prefixeTable.'images
+  FROM '.IMAGES_TABLE.'
   WHERE path=\''.addslashes($page['src_location']).'\'
 ;';
 
@@ -459,7 +460,7 @@ SELECT *
         $page['rotation_angle'] = pwg_image::get_rotation_angle($page['src_path']);
 
         single_update(
-          $prefixeTable.'images',
+          IMAGES_TABLE,
           array('rotation' => pwg_image::get_rotation_code_from_angle($page['rotation_angle'])),
           array('id' => $row['id'])
           );

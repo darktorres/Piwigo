@@ -23,8 +23,6 @@
 
 function plugin_uninstall()
 {
-  global $prefixeTable;
-
   $query = 'DELETE FROM ' . CONFIG_TABLE . ' WHERE param=\'LocalFilesEditor\' LIMIT 1;';
   pwg_query($query);
 }
