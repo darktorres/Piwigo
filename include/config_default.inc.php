@@ -554,16 +554,16 @@ $conf['apache_authentication'] = false;
 // If you decide to use another table than the default one, you need to
 // prepare your database by deleting some datas :
 //
-// delete from piwigo_user_access;
-// delete from piwigo_user_cache;
-// delete from piwigo_user_feed;
-// delete from piwigo_user_group;
-// delete from piwigo_user_infos;
-// delete from piwigo_sessions;
-// delete from piwigo_rate;
-// update piwigo_images set rating_score = null, added_by = <webmaster_id>;
-// delete from piwigo_caddie;
-// delete from piwigo_favorites;
+// delete from user_access;
+// delete from user_cache;
+// delete from user_feed;
+// delete from user_group;
+// delete from user_infos;
+// delete from sessions;
+// delete from rate;
+// update images set rating_score = null, added_by = <webmaster_id>;
+// delete from caddie;
+// delete from favorites;
 //
 // All information contained in these tables and column are related to
 // piwigo_users table.
