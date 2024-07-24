@@ -600,12 +600,12 @@ function protect_column_name($column_name)
  */
 function do_maintenance_all_tables()
 {
-  global $prefixeTable, $page;
+  global $page;
 
   $all_tables = array();
 
   // List all tables
-  $query = 'SHOW TABLES LIKE \''.$prefixeTable.'%\'';
+  $query = 'SHOW TABLES';
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_row($result))
   {
