@@ -1,7 +1,7 @@
 -- initial configuration for Piwigo
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'activate_comments',
@@ -10,7 +10,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'allow_user_customization',
@@ -19,7 +19,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'allow_user_registration',
@@ -28,17 +28,17 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('blk_menubar', '', 'Menubar options');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('c13y_ignore', NULL, 'List of ignored anomalies');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'comments_author_mandatory',
@@ -47,7 +47,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'comments_email_mandatory',
@@ -56,7 +56,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'comments_enable_website',
@@ -65,7 +65,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'comments_forall',
@@ -74,7 +74,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'comments_order',
@@ -83,7 +83,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'comments_validation',
@@ -92,12 +92,12 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('display_fromto', 'false', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'email_admin_on_comment',
@@ -106,7 +106,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'email_admin_on_comment_deletion',
@@ -115,7 +115,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'email_admin_on_comment_edition',
@@ -124,7 +124,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'email_admin_on_comment_validation',
@@ -133,7 +133,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'email_admin_on_new_user',
@@ -142,7 +142,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'extents_for_templates',
@@ -151,7 +151,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'gallery_locked',
@@ -160,7 +160,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'gallery_title',
@@ -169,7 +169,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'history_admin',
@@ -178,7 +178,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'history_guest',
@@ -187,12 +187,12 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('index_caddie_icon', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'index_created_date_icon',
@@ -201,17 +201,17 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('index_edit_icon', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('index_flat_icon', 'false', 'Display flat icon');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'index_new_icon',
@@ -220,7 +220,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'index_posted_date_icon',
@@ -229,22 +229,22 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('index_search_in_set_action', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('index_search_in_set_button', 'false', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('index_sizes_icon', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'index_slideshow_icon',
@@ -253,7 +253,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'index_sort_order_input',
@@ -262,7 +262,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'log',
@@ -271,12 +271,12 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('mail_theme', 'clear', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'menubar_filter_icon',
@@ -285,12 +285,12 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('mobile_theme', 'smartpocket', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'nb_categories_page',
@@ -299,7 +299,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'nb_comment_page',
@@ -308,7 +308,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'nbm_complementary_mail_content',
@@ -317,7 +317,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'nbm_send_detailed_content',
@@ -326,7 +326,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'nbm_send_html_mail',
@@ -335,7 +335,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'nbm_send_mail_as',
@@ -344,7 +344,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'nbm_send_recent_post_dates',
@@ -353,7 +353,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'obligatory_user_mail_address',
@@ -362,7 +362,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'order_by',
@@ -371,7 +371,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'order_by_inside_category',
@@ -380,27 +380,27 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('original_resize', 'false', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('original_resize_maxheight', '2016', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('original_resize_maxwidth', '2016', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('original_resize_quality', '95', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'page_banner',
@@ -409,12 +409,12 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('picture_caddie_icon', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_download_icon',
@@ -423,12 +423,12 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('picture_edit_icon', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_favorite_icon',
@@ -437,7 +437,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_information',
@@ -446,7 +446,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_menu',
@@ -455,7 +455,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_metadata_icon',
@@ -464,7 +464,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_navigation_icons',
@@ -473,7 +473,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_navigation_thumb',
@@ -482,17 +482,17 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('picture_representative_icon', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('picture_sizes_icon', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'picture_slideshow_icon',
@@ -501,7 +501,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'rate',
@@ -510,7 +510,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'rate_anonymous',
@@ -519,17 +519,17 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('show_mobile_app_banner_in_admin', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('show_mobile_app_banner_in_gallery', 'false', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'updates_ignored',
@@ -538,12 +538,12 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   ('upload_detect_duplicate', 'true', '');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'user_can_delete_comment',
@@ -552,7 +552,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'user_can_edit_comment',
@@ -561,7 +561,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'week_starts_on',
@@ -572,12 +572,12 @@ VALUES
 -- Plugin 'Admin Tools'
 
 INSERT INTO
-  piwigo_plugins (id, state, version)
+  plugins (id, state, version)
 VALUES
   ('AdminTools', 'active', '14.5.0');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'AdminTools',
@@ -588,33 +588,33 @@ VALUES
 -- Plugin 'Take A Tour of Your Piwigo'
 
 INSERT INTO
-  piwigo_plugins (id, state, version)
+  plugins (id, state, version)
 VALUES
   ('TakeATour', 'active', '14.5.0');
 
 -- Plugin 'Language Switch'
 
 INSERT INTO
-  piwigo_plugins (id, state, version)
+  plugins (id, state, version)
 VALUES
   ('language_switch', 'active', '14.5.0');
 
 -- Plugin 'LocalFiles Editor'
 
 INSERT INTO
-  piwigo_plugins (id, state, version)
+  plugins (id, state, version)
 VALUES
   ('LocalFilesEditor', 'active', '14.5.0');
 
 -- Plugin 'gdThumb'
 
 INSERT INTO
-  piwigo_plugins (id, state, version)
+  plugins (id, state, version)
 VALUES
   ('GDThumb', 'active', '1.0.26');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'gdThumb',
@@ -625,19 +625,19 @@ VALUES
 -- Plugin 'RV Thumb Scroller'
 
 INSERT INTO
-  piwigo_plugins (id, state, version)
+  plugins (id, state, version)
 VALUES
   ('rv_tscroller', 'active', '12.a');
 
 -- Theme 'Modus'
 
 INSERT INTO
-  piwigo_themes (id, version, name)
+  themes (id, version, name)
 VALUES
   ('modus', '14.5.0', 'modus');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'modus_theme',
@@ -648,12 +648,12 @@ VALUES
 -- Theme 'Elegant'
 
 INSERT INTO
-  piwigo_themes (id, version, name)
+  themes (id, version, name)
 VALUES
   ('elegant', '14.5.0', 'elegant');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'elegant',
@@ -664,12 +664,12 @@ VALUES
 -- Theme 'Smart Pocket'
 
 INSERT INTO
-  piwigo_themes (id, version, name)
+  themes (id, version, name)
 VALUES
   ('smartpocket', '14.5.0', 'Smart Pocket');
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'smartpocket',
@@ -680,7 +680,7 @@ VALUES
 -- Theme 'Bootstrap Darkroom'
 
 INSERT INTO
-  piwigo_themes (id, version, name)
+  themes (id, version, name)
 VALUES
   (
     'bootstrap_darkroom',
@@ -689,7 +689,7 @@ VALUES
   );
 
 INSERT INTO
-  piwigo_config (param, value, comment)
+  config (param, value, comment)
 VALUES
   (
     'bootstrap_darkroom',
