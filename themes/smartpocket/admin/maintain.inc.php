@@ -10,7 +10,7 @@ class smartpocket_maintain extends ThemeMaintain
   
   function activate($theme_version, &$errors=array())
   {
-    global $conf, $prefixeTable;
+    global $conf;
 
     if (empty($conf['smartpocket']))
     {
