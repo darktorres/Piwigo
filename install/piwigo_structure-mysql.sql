@@ -1,9 +1,9 @@
 --
--- Table structure for table `piwigo_activity`
+-- Table structure for table `activity`
 --
-DROP TABLE IF EXISTS `piwigo_activity`;
+DROP TABLE IF EXISTS `activity`;
 
-CREATE TABLE `piwigo_activity` (
+CREATE TABLE `activity` (
   `activity_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `object` VARCHAR(255) NOT NULL,
   `object_id` INT UNSIGNED NOT NULL,
@@ -18,22 +18,22 @@ CREATE TABLE `piwigo_activity` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_caddie`
+-- Table structure for table `caddie`
 --
-DROP TABLE IF EXISTS `piwigo_caddie`;
+DROP TABLE IF EXISTS `caddie`;
 
-CREATE TABLE `piwigo_caddie` (
+CREATE TABLE `caddie` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `element_id` INT NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`, `element_id`)
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_categories`
+-- Table structure for table `categories`
 --
-DROP TABLE IF EXISTS `piwigo_categories`;
+DROP TABLE IF EXISTS `categories`;
 
-CREATE TABLE `piwigo_categories` (
+CREATE TABLE `categories` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL DEFAULT '',
   `id_uppercat` INT UNSIGNED DEFAULT NULL,
@@ -58,11 +58,11 @@ CREATE TABLE `piwigo_categories` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_comments`
+-- Table structure for table `comments`
 --
-DROP TABLE IF EXISTS `piwigo_comments`;
+DROP TABLE IF EXISTS `comments`;
 
-CREATE TABLE `piwigo_comments` (
+CREATE TABLE `comments` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `date` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -80,11 +80,11 @@ CREATE TABLE `piwigo_comments` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_config`
+-- Table structure for table `config`
 --
-DROP TABLE IF EXISTS `piwigo_config`;
+DROP TABLE IF EXISTS `config`;
 
-CREATE TABLE `piwigo_config` (
+CREATE TABLE `config` (
   `param` VARCHAR(40) NOT NULL DEFAULT '',
   `value` text,
   `comment` VARCHAR(255) DEFAULT NULL,
@@ -92,33 +92,33 @@ CREATE TABLE `piwigo_config` (
 ) ENGINE = InnoDB COMMENT = 'configuration table';
 
 --
--- Table structure for table `piwigo_favorites`
+-- Table structure for table `favorites`
 --
-DROP TABLE IF EXISTS `piwigo_favorites`;
+DROP TABLE IF EXISTS `favorites`;
 
-CREATE TABLE `piwigo_favorites` (
+CREATE TABLE `favorites` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`, `image_id`)
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_group_access`
+-- Table structure for table `group_access`
 --
-DROP TABLE IF EXISTS `piwigo_group_access`;
+DROP TABLE IF EXISTS `group_access`;
 
-CREATE TABLE `piwigo_group_access` (
+CREATE TABLE `group_access` (
   `group_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`group_id`, `cat_id`)
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_groups_table`
+-- Table structure for table `groups_table`
 --
-DROP TABLE IF EXISTS `piwigo_groups_table`;
+DROP TABLE IF EXISTS `groups_table`;
 
-CREATE TABLE `piwigo_groups_table` (
+CREATE TABLE `groups_table` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL DEFAULT '',
   `is_default` enum ('true', 'false') NOT NULL DEFAULT 'false',
@@ -129,11 +129,11 @@ CREATE TABLE `piwigo_groups_table` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_history`
+-- Table structure for table `history`
 --
-DROP TABLE IF EXISTS `piwigo_history`;
+DROP TABLE IF EXISTS `history`;
 
-CREATE TABLE `piwigo_history` (
+CREATE TABLE `history` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `date` DATE NOT NULL DEFAULT '1970-01-01',
   `time` TIME NOT NULL DEFAULT '00:00:00',
@@ -161,11 +161,11 @@ CREATE TABLE `piwigo_history` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_history_summary`
+-- Table structure for table `history_summary`
 --
-DROP TABLE IF EXISTS `piwigo_history_summary`;
+DROP TABLE IF EXISTS `history_summary`;
 
-CREATE TABLE `piwigo_history_summary` (
+CREATE TABLE `history_summary` (
   `year` INT NOT NULL DEFAULT '0',
   `month` INT DEFAULT NULL,
   `day` INT DEFAULT NULL,
@@ -177,11 +177,11 @@ CREATE TABLE `piwigo_history_summary` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_image_category`
+-- Table structure for table `image_category`
 --
-DROP TABLE IF EXISTS `piwigo_image_category`;
+DROP TABLE IF EXISTS `image_category`;
 
-CREATE TABLE `piwigo_image_category` (
+CREATE TABLE `image_category` (
   `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `category_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `rank_column` INT UNSIGNED DEFAULT NULL,
@@ -190,11 +190,11 @@ CREATE TABLE `piwigo_image_category` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_image_format`
+-- Table structure for table `image_format`
 --
-DROP TABLE IF EXISTS `piwigo_image_format`;
+DROP TABLE IF EXISTS `image_format`;
 
-CREATE TABLE `piwigo_image_format` (
+CREATE TABLE `image_format` (
   `format_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `ext` VARCHAR(255) NOT NULL,
@@ -203,11 +203,11 @@ CREATE TABLE `piwigo_image_format` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_image_tag`
+-- Table structure for table `image_tag`
 --
-DROP TABLE IF EXISTS `piwigo_image_tag`;
+DROP TABLE IF EXISTS `image_tag`;
 
-CREATE TABLE `piwigo_image_tag` (
+CREATE TABLE `image_tag` (
   `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `tag_id` INT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`image_id`, `tag_id`),
@@ -215,11 +215,11 @@ CREATE TABLE `piwigo_image_tag` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_images`
+-- Table structure for table `images`
 --
-DROP TABLE IF EXISTS `piwigo_images`;
+DROP TABLE IF EXISTS `images`;
 
-CREATE TABLE `piwigo_images` (
+CREATE TABLE `images` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `file` VARCHAR(255) NOT NULL DEFAULT '',
   `date_available` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -257,11 +257,11 @@ CREATE TABLE `piwigo_images` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_languages`
+-- Table structure for table `languages`
 --
-DROP TABLE IF EXISTS `piwigo_languages`;
+DROP TABLE IF EXISTS `languages`;
 
-CREATE TABLE `piwigo_languages` (
+CREATE TABLE `languages` (
   `id` VARCHAR(64) NOT NULL DEFAULT '',
   `version` VARCHAR(64) NOT NULL DEFAULT '0',
   `name` VARCHAR(64) DEFAULT NULL,
@@ -269,22 +269,22 @@ CREATE TABLE `piwigo_languages` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_lounge`
+-- Table structure for table `lounge`
 --
-DROP TABLE IF EXISTS `piwigo_lounge`;
+DROP TABLE IF EXISTS `lounge`;
 
-CREATE TABLE `piwigo_lounge` (
+CREATE TABLE `lounge` (
   `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `category_id` INT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`image_id`, `category_id`)
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_old_permalinks`
+-- Table structure for table `old_permalinks`
 --
-DROP TABLE IF EXISTS `piwigo_old_permalinks`;
+DROP TABLE IF EXISTS `old_permalinks`;
 
-CREATE TABLE `piwigo_old_permalinks` (
+CREATE TABLE `old_permalinks` (
   `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `permalink` VARCHAR(64) NOT NULL DEFAULT '',
   `date_deleted` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -294,11 +294,11 @@ CREATE TABLE `piwigo_old_permalinks` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_plugins`
+-- Table structure for table `plugins`
 --
-DROP TABLE IF EXISTS `piwigo_plugins`;
+DROP TABLE IF EXISTS `plugins`;
 
-CREATE TABLE `piwigo_plugins` (
+CREATE TABLE `plugins` (
   `id` VARCHAR(64) NOT NULL DEFAULT '',
   `state` enum ('inactive', 'active') NOT NULL DEFAULT 'inactive',
   `version` VARCHAR(64) NOT NULL DEFAULT '0',
@@ -306,11 +306,11 @@ CREATE TABLE `piwigo_plugins` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_rate`
+-- Table structure for table `rate`
 --
-DROP TABLE IF EXISTS `piwigo_rate`;
+DROP TABLE IF EXISTS `rate`;
 
-CREATE TABLE `piwigo_rate` (
+CREATE TABLE `rate` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `element_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `anonymous_id` VARCHAR(45) NOT NULL DEFAULT '',
@@ -320,11 +320,11 @@ CREATE TABLE `piwigo_rate` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_search`
+-- Table structure for table `search`
 --
-DROP TABLE IF EXISTS `piwigo_search`;
+DROP TABLE IF EXISTS `search`;
 
-CREATE TABLE `piwigo_search` (
+CREATE TABLE `search` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `search_uuid` CHAR(23) DEFAULT NULL,
   `created_on` DATETIME DEFAULT NULL,
@@ -335,11 +335,11 @@ CREATE TABLE `piwigo_search` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_sessions`
+-- Table structure for table `sessions`
 --
-DROP TABLE IF EXISTS `piwigo_sessions`;
+DROP TABLE IF EXISTS `sessions`;
 
-CREATE TABLE `piwigo_sessions` (
+CREATE TABLE `sessions` (
   `id` VARCHAR(255) NOT NULL DEFAULT '',
   `data` mediumtext NOT NULL,
   `expiration` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -347,11 +347,11 @@ CREATE TABLE `piwigo_sessions` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_sites`
+-- Table structure for table `sites`
 --
-DROP TABLE IF EXISTS `piwigo_sites`;
+DROP TABLE IF EXISTS `sites`;
 
-CREATE TABLE `piwigo_sites` (
+CREATE TABLE `sites` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `galleries_url` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
@@ -359,11 +359,11 @@ CREATE TABLE `piwigo_sites` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_tags`
+-- Table structure for table `tags`
 --
-DROP TABLE IF EXISTS `piwigo_tags`;
+DROP TABLE IF EXISTS `tags`;
 
-CREATE TABLE `piwigo_tags` (
+CREATE TABLE `tags` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL DEFAULT '',
   `url_name` VARCHAR(255) NOT NULL DEFAULT '',
@@ -375,11 +375,11 @@ CREATE TABLE `piwigo_tags` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_themes`
+-- Table structure for table `themes`
 --
-DROP TABLE IF EXISTS `piwigo_themes`;
+DROP TABLE IF EXISTS `themes`;
 
-CREATE TABLE `piwigo_themes` (
+CREATE TABLE `themes` (
   `id` VARCHAR(64) NOT NULL DEFAULT '',
   `version` VARCHAR(64) NOT NULL DEFAULT '0',
   `name` VARCHAR(64) DEFAULT NULL,
@@ -387,11 +387,11 @@ CREATE TABLE `piwigo_themes` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_upgrade`
+-- Table structure for table `upgrade`
 --
-DROP TABLE IF EXISTS `piwigo_upgrade`;
+DROP TABLE IF EXISTS `upgrade`;
 
-CREATE TABLE `piwigo_upgrade` (
+CREATE TABLE `upgrade` (
   `id` VARCHAR(20) NOT NULL DEFAULT '',
   `applied` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `description` VARCHAR(255) DEFAULT NULL,
@@ -399,22 +399,22 @@ CREATE TABLE `piwigo_upgrade` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_access`
+-- Table structure for table `user_access`
 --
-DROP TABLE IF EXISTS `piwigo_user_access`;
+DROP TABLE IF EXISTS `user_access`;
 
-CREATE TABLE `piwigo_user_access` (
+CREATE TABLE `user_access` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`, `cat_id`)
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_auth_keys`
+-- Table structure for table `user_auth_keys`
 --
-DROP TABLE IF EXISTS `piwigo_user_auth_keys`;
+DROP TABLE IF EXISTS `user_auth_keys`;
 
-CREATE TABLE `piwigo_user_auth_keys` (
+CREATE TABLE `user_auth_keys` (
   `auth_key_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `auth_key` VARCHAR(255) NOT NULL,
   `user_id` INT UNSIGNED NOT NULL,
@@ -425,11 +425,11 @@ CREATE TABLE `piwigo_user_auth_keys` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_cache`
+-- Table structure for table `user_cache`
 --
-DROP TABLE IF EXISTS `piwigo_user_cache`;
+DROP TABLE IF EXISTS `user_cache`;
 
-CREATE TABLE `piwigo_user_cache` (
+CREATE TABLE `user_cache` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `need_update` enum ('true', 'false') NOT NULL DEFAULT 'true',
   `cache_update_time` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -444,11 +444,11 @@ CREATE TABLE `piwigo_user_cache` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_cache_categories`
+-- Table structure for table `user_cache_categories`
 --
-DROP TABLE IF EXISTS `piwigo_user_cache_categories`;
+DROP TABLE IF EXISTS `user_cache_categories`;
 
-CREATE TABLE `piwigo_user_cache_categories` (
+CREATE TABLE `user_cache_categories` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `date_last` datetime DEFAULT NULL,
@@ -462,11 +462,11 @@ CREATE TABLE `piwigo_user_cache_categories` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_feed`
+-- Table structure for table `user_feed`
 --
-DROP TABLE IF EXISTS `piwigo_user_feed`;
+DROP TABLE IF EXISTS `user_feed`;
 
-CREATE TABLE `piwigo_user_feed` (
+CREATE TABLE `user_feed` (
   `id` VARCHAR(50) NOT NULL DEFAULT '',
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `last_check` datetime DEFAULT NULL,
@@ -474,22 +474,22 @@ CREATE TABLE `piwigo_user_feed` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_group`
+-- Table structure for table `user_group`
 --
-DROP TABLE IF EXISTS `piwigo_user_group`;
+DROP TABLE IF EXISTS `user_group`;
 
-CREATE TABLE `piwigo_user_group` (
+CREATE TABLE `user_group` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `group_id` INT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`group_id`, `user_id`)
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_infos`
+-- Table structure for table `user_infos`
 --
-DROP TABLE IF EXISTS `piwigo_user_infos`;
+DROP TABLE IF EXISTS `user_infos`;
 
-CREATE TABLE `piwigo_user_infos` (
+CREATE TABLE `user_infos` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `nb_image_page` INT UNSIGNED NOT NULL DEFAULT '15',
   `status` enum (
@@ -519,11 +519,11 @@ CREATE TABLE `piwigo_user_infos` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_user_mail_notification`
+-- Table structure for table `user_mail_notification`
 --
-DROP TABLE IF EXISTS `piwigo_user_mail_notification`;
+DROP TABLE IF EXISTS `user_mail_notification`;
 
-CREATE TABLE `piwigo_user_mail_notification` (
+CREATE TABLE `user_mail_notification` (
   `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
   `check_key` VARCHAR(16) NOT NULL DEFAULT '',
   `enabled` enum ('true', 'false') NOT NULL DEFAULT 'false',
@@ -533,11 +533,11 @@ CREATE TABLE `piwigo_user_mail_notification` (
 ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_users`
+-- Table structure for table `users`
 --
-DROP TABLE IF EXISTS `piwigo_users`;
+DROP TABLE IF EXISTS `users`;
 
-CREATE TABLE `piwigo_users` (
+CREATE TABLE `users` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(100) NOT NULL DEFAULT '',
   `password` VARCHAR(255) DEFAULT NULL,
