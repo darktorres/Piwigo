@@ -42,7 +42,7 @@ CREATE TABLE
     `id_uppercat` INT UNSIGNED DEFAULT NULL,
     `comment` text,
     `dir` VARCHAR(255) DEFAULT NULL,
-    `rank` INT UNSIGNED DEFAULT NULL,
+    `rank_column` INT UNSIGNED DEFAULT NULL,
     `status` enum ('public', 'private') NOT NULL DEFAULT 'public',
     `site_id` INT UNSIGNED DEFAULT NULL,
     `visible` enum ('true', 'false') NOT NULL DEFAULT 'true',
@@ -121,12 +121,12 @@ CREATE TABLE
   ) ENGINE = InnoDB;
 
 --
--- Table structure for table `piwigo_groups`
+-- Table structure for table `piwigo_groups_table`
 --
-DROP TABLE IF EXISTS `piwigo_groups`;
+DROP TABLE IF EXISTS `piwigo_groups_table`;
 
 CREATE TABLE
-  `piwigo_groups` (
+  `piwigo_groups_table` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT '',
     `is_default` enum ('true', 'false') NOT NULL DEFAULT 'false',
@@ -195,7 +195,7 @@ CREATE TABLE
   `piwigo_image_category` (
     `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `category_id` INT UNSIGNED NOT NULL DEFAULT '0',
-    `rank` INT UNSIGNED DEFAULT NULL,
+    `rank_column` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`image_id`, `category_id`),
     KEY `image_category_i1` (`category_id`)
   ) ENGINE = InnoDB;

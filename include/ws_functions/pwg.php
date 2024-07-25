@@ -482,8 +482,6 @@ SELECT
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_assoc($result))
   {
-    $row['details'] = str_replace('`groups`', 'groups', $row['details']);
-    $row['details'] = str_replace('`rank`', 'rank', $row['details']);
     $details = @unserialize($row['details']);
 
     if (isset($row['user_agent']))

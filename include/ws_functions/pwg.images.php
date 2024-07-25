@@ -112,9 +112,9 @@ DELETE
   if ($search_current_ranks)
   {
     $query = '
-SELECT category_id, MAX(`rank`) AS max_rank
+SELECT category_id, MAX(rank_column) AS max_rank
   FROM '.IMAGE_CATEGORY_TABLE.'
-  WHERE `rank` IS NOT NULL
+  WHERE rank_column IS NOT NULL
     AND category_id IN ('.implode(',', $new_cat_ids).')
   GROUP BY category_id
 ;';
@@ -145,7 +145,7 @@ SELECT category_id, MAX(`rank`) AS max_rank
     $inserts[] = array(
       'image_id' => $image_id,
       'category_id' => $cat_id,
-      'rank' => $rank_on_category[$cat_id],
+      'rank_column' => $rank_on_category[$cat_id],
       );
   }
 
@@ -907,7 +907,7 @@ SELECT
     image_id
   FROM '.IMAGE_CATEGORY_TABLE.'
   WHERE category_id = '.$params['category_id'].'
-  ORDER BY `rank` ASC
+  ORDER BY rank_column ASC
 ;';
     $image_ids = query2array($query, null, 'image_id');
 
@@ -921,7 +921,7 @@ SELECT
   // turns image_id into a simple int instead of array
   $params['image_id'] = array_shift($params['image_id']);
 
-  if (empty($params['rank']))
+  if (empty($params['rank_column']))
   {
     return new PwgError(WS_ERR_MISSING_PARAM, 'rank is missing');
   }
@@ -953,7 +953,7 @@ SELECT COUNT(*)
 
   // what is the current higher rank for this category?
   $query = '
-SELECT MAX(`rank`) AS max_rank
+SELECT MAX(rank_column) AS max_rank
   FROM '. IMAGE_CATEGORY_TABLE .'
   WHERE category_id = '. $params['category_id'] .'
 ;';
@@ -961,30 +961,30 @@ SELECT MAX(`rank`) AS max_rank
 
   if (is_numeric($row['max_rank']))
   {
-    if ($params['rank'] > $row['max_rank'])
+    if ($params['rank_column'] > $row['max_rank'])
     {
-      $params['rank'] = $row['max_rank'] + 1;
+      $params['rank_column'] = $row['max_rank'] + 1;
     }
   }
   else
   {
-    $params['rank'] = 1;
+    $params['rank_column'] = 1;
   }
 
   // update rank for all other photos in the same category
   $query = '
 UPDATE '. IMAGE_CATEGORY_TABLE .'
-  SET `rank` = `rank` + 1
+  SET rank_column = rank_column + 1
   WHERE category_id = '. $params['category_id'] .'
-    AND `rank` IS NOT NULL
-    AND `rank` >= '. $params['rank'] .'
+    AND rank_column IS NOT NULL
+    AND rank_column >= '. $params['rank_column'] .'
 ;';
   pwg_query($query);
 
   // set the new rank for the photo
   $query = '
 UPDATE '. IMAGE_CATEGORY_TABLE .'
-  SET `rank` = '. $params['rank'] .'
+  SET rank_column = '. $params['rank_column'] .'
   WHERE image_id = '. $params['image_id'] .'
     AND category_id = '. $params['category_id'] .'
 ;';
@@ -994,7 +994,7 @@ UPDATE '. IMAGE_CATEGORY_TABLE .'
   return array(
     'image_id' => $params['image_id'],
     'category_id' => $params['category_id'],
-    'rank' => $params['rank'],
+    'rank_column' => $params['rank_column'],
     );
 }
 
