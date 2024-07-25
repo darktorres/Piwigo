@@ -51,7 +51,7 @@ if (!defined('FAVORITES_TABLE'))
 if (!defined('GROUP_ACCESS_TABLE'))
   define('GROUP_ACCESS_TABLE', $prefixeTable.'group_access');
 if (!defined('GROUPS_TABLE'))
-  define('GROUPS_TABLE', $prefixeTable.'groups');
+  define('GROUPS_TABLE', $prefixeTable.'groups_table');
 if (!defined('HISTORY_TABLE'))
   define('HISTORY_TABLE', $prefixeTable.'history');
 if (!defined('HISTORY_SUMMARY_TABLE'))
