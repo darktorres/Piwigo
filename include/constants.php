@@ -51,7 +51,7 @@ if (!defined('FAVORITES_TABLE'))
 if (!defined('GROUP_ACCESS_TABLE'))
   define('GROUP_ACCESS_TABLE', 'group_access');
 if (!defined('GROUPS_TABLE'))
-  define('GROUPS_TABLE', 'groups');
+  define('GROUPS_TABLE', 'groups_table');
 if (!defined('HISTORY_TABLE'))
   define('HISTORY_TABLE', 'history');
 if (!defined('HISTORY_SUMMARY_TABLE'))
