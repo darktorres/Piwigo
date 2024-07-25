@@ -71,7 +71,7 @@ if (isset($_POST['submit']))
   }
   elseif ($image_order_choice=='rank')
   {
-    $image_order = '`rank` ASC';
+    $image_order = 'rank_column ASC';
   }
   $query = '
 UPDATE '.CATEGORIES_TABLE.' 
@@ -109,7 +109,7 @@ SELECT *
 ;';
 $category = pwg_db_fetch_assoc(pwg_query($query));
 
-if ($category['image_order']=='rank ASC' or $category['image_order']=='`rank` ASC')
+if ($category['image_order']=='rank_column ASC' or $category['image_order']=='rank_column ASC')
 {
   $image_order_choice = 'rank';
 }
@@ -143,11 +143,11 @@ SELECT
     representative_ext,
     width, height, rotation,
     name,
-    `rank`
+    rank_column
   FROM '.IMAGES_TABLE.'
     JOIN '.IMAGE_CATEGORY_TABLE.' ON image_id = id
   WHERE category_id = '.$page['category_id'].'
-  ORDER BY `rank`
+  ORDER BY rank_column
 ;';
 $result = pwg_query($query);
 if (pwg_db_num_rows($result) > 0)
@@ -198,7 +198,7 @@ $sort_fields = array(
   'hit ASC'             => l10n('Visits, low &rarr; high'),
   'id ASC'              => l10n('Numeric identifier, 1 &rarr; 9'),
   'id DESC'             => l10n('Numeric identifier, 9 &rarr; 1'),
-  'rank ASC'            => l10n('Manual sort order'),
+  'rank_column ASC'            => l10n('Manual sort order'),
   );
 
 $template->assign('image_order_options', $sort_fields);
