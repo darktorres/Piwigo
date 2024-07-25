@@ -150,7 +150,7 @@ $template->assign("POS_PREF", $conf['newcat_default_position']); //TODO use user
 
 //Get all albums
 $query = '
-SELECT id,name,`rank`,status, visible, uppercats, lastmodified
+SELECT id,name,rank_column,status, visible, uppercats, lastmodified
   FROM '.CATEGORIES_TABLE.'
 ;';
 
@@ -183,11 +183,11 @@ $is_forbidden = array_fill_keys(@explode(',', $user['forbidden_categories']), 1)
 //Make an ordered tree
 function cmpCat($a, $b) 
 {
-  if ($a['rank'] == $b['rank']) 
+  if ($a['rank_column'] == $b['rank_column']) 
   {
     return 0;
   }
-  return ($a['rank'] < $b['rank']) ? -1 : 1;
+  return ($a['rank_column'] < $b['rank_column']) ? -1 : 1;
 }
 
 function assocToOrderedTree($assocT) 
@@ -199,7 +199,7 @@ function assocToOrderedTree($assocT)
   foreach($assocT as $cat) 
   {
     $orderedCat = array();
-    $orderedCat['rank'] = $cat['cat']['rank'];
+    $orderedCat['rank_column'] = $cat['cat']['rank_column'];
     $orderedCat['name'] = $cat['cat']['name'];
     $orderedCat['status'] = $cat['cat']['status'];
     $orderedCat['id'] = $cat['cat']['id'];

@@ -27,7 +27,7 @@ function prepare_conf_upgrade()
   define('CONFIG_TABLE', $prefixeTable.'config');
   define('FAVORITES_TABLE', $prefixeTable.'favorites');
   define('GROUP_ACCESS_TABLE', $prefixeTable.'group_access');
-  define('GROUPS_TABLE', $prefixeTable.'groups');
+  define('GROUPS_TABLE', $prefixeTable.'groups_table');
   define('HISTORY_TABLE', $prefixeTable.'history');
   define('HISTORY_SUMMARY_TABLE', $prefixeTable.'history_summary');
   define('IMAGE_CATEGORY_TABLE', $prefixeTable.'image_category');
