@@ -50,9 +50,6 @@ SELECT
   array_push($output_lines, ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details']);
   while ($row = pwg_db_fetch_assoc($result))
   {
-    $row['details'] = str_replace('`groups`', 'groups', $row['details']);
-    $row['details'] = str_replace('`rank`', 'rank', $row['details']);
-
     list($date, $hour) = explode(' ', $row['occured_on']);
 
     $output_lines[] = array(

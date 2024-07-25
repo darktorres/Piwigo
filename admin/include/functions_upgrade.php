@@ -25,7 +25,7 @@ function prepare_conf_upgrade()
   define('CONFIG_TABLE', 'config');
   define('FAVORITES_TABLE', 'favorites');
   define('GROUP_ACCESS_TABLE', 'group_access');
-  define('GROUPS_TABLE', 'groups');
+  define('GROUPS_TABLE', 'groups_table');
   define('HISTORY_TABLE', 'history');
   define('HISTORY_SUMMARY_TABLE', 'history_summary');
   define('IMAGE_CATEGORY_TABLE', 'image_category');

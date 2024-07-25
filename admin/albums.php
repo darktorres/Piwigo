@@ -150,7 +150,7 @@ $template->assign("POS_PREF", $conf['newcat_default_position']); //TODO use user
 
 //Get all albums
 $query = '
-SELECT id,name,`rank`,status, visible, uppercats, lastmodified
+SELECT id,name,rank_column,status, visible, uppercats, lastmodified
   FROM '.CATEGORIES_TABLE.'
 ;';
 
@@ -199,7 +199,7 @@ function assocToOrderedTree($assocT)
   foreach($assocT as $cat) 
   {
     $orderedCat = array();
-    $orderedCat['rank'] = $cat['cat']['rank'];
+    $orderedCat['rank'] = $cat['cat']['rank_column'];
     $orderedCat['name'] = $cat['cat']['name'];
     $orderedCat['status'] = $cat['cat']['status'];
     $orderedCat['id'] = $cat['cat']['id'];

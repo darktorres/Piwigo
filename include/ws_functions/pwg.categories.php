@@ -719,7 +719,7 @@ function ws_categories_setRank($params, &$service)
 {
   // does the category really exist?
   $query = '
-SELECT id, id_uppercat, `rank`
+SELECT id, id_uppercat, rank_column
   FROM '.CATEGORIES_TABLE.'
   WHERE id IN ('.implode(',',$params['category_id']).')
 ;';
@@ -762,7 +762,7 @@ SELECT id
   FROM '.CATEGORIES_TABLE.'
   WHERE id_uppercat '.(empty($category['id_uppercat']) ? "IS NULL" : "= ".$category['id_uppercat']).'
     AND id != '.$params['category_id'].'
-  ORDER BY `rank` ASC
+  ORDER BY rank_column ASC
 ;';
 
     $order_old = query2array($query, null, 'id');
