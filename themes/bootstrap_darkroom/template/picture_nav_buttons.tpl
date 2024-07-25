@@ -102,6 +102,12 @@
     			docElem = document.documentElement,
     			url;
     		switch (keyCode) {
+    			{* 48/96  => 0 stars *}
+    			{* 49/97  => 1 stars *}
+    			{* 50/98  => 2 stars *}
+    			{* 51/99  => 3 stars *}
+    			{* 52/100 => 4 stars *}
+    			{* 53/101 => 5 stars *}
     			{if isset($next)}
 	    			case 63235: case 39: if ((e.ctrlKey || docElem.scrollLeft==docElem.scrollWidth-docElem.clientWidth) && $('.pswp--visible').length === 0)url="{$next.U_IMG}"; break;
     			{/if}
