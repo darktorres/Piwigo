@@ -331,8 +331,7 @@ class DisplayBlock
     }
 
     /**
-     * @param string
- $title
+     * @param string $title
      */
     public function set_title($title)
     {

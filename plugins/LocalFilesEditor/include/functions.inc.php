@@ -62,8 +62,7 @@ function eval_syntax($code)
  * returns $str if $str is integer
  * else "$str"
  *
- * @param string
- $value
+ * @param string $value
  */
 function editarea_quote($value)
 {
@@ -79,8 +78,7 @@ function editarea_quote($value)
 
 /**
  * returns bak file for restore
- * @param string
- $file
+ * @param string $file
  */
 function get_bak_file($file)
 {
@@ -95,8 +93,7 @@ function get_bak_file($file)
 /**
  * returns dirs and subdirs
  * retun array
- * @param string
- $path
+ * @param string $path
  */
 function get_rec_dirs($path = '')
 {
