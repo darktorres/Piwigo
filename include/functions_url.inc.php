@@ -109,8 +109,7 @@ function add_url_params($url, $params, $arg_separator = '&amp;')
 /**
  * build an index URL for a specific section
  *
- * @param array
- $params
+ * @param array $params
  * @return string
  */
 function make_index_url($params = [])
@@ -199,8 +198,7 @@ function duplicate_picture_url($redefined = [], $removed = [])
 /**
  * create a picture URL on a specific section for a specific picture
  *
- * @param array
- $params
+ * @param array $params
  * @return string
  */
 function make_picture_url($params)
@@ -274,8 +272,7 @@ function add_well_known_params_in_url($url, $params)
  * Depending on section, other parameters are required (see function code
  * for details)
  *
- * @param array
- $params
+ * @param array $params
  * @return string
  */
 function make_section_in_url($params)
