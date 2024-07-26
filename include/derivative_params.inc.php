@@ -47,8 +47,7 @@ function size_equals($s1, $s2)
 /**
  * Converts a char a-z into a float.
  *
- * @param string
- $c
+ * @param string $c
  * @return float
  */
 function char_to_fraction($c)
