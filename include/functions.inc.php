@@ -1332,7 +1332,7 @@ function get_l10n_args($key, $args = '')
     if (is_array($args)) {
         $key_arg = array_merge([$key], $args);
     } else {
-        $key_arg = [$key,  $args];
+        $key_arg = [$key, $args];
     }
     return [
         'key_args' => $key_arg,
