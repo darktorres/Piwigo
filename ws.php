@@ -181,9 +181,9 @@ function ws_addDefaultMethods($arr)
                 'info' => 'id, file, name, hit, rating_score, date_creation, date_available, random',
             ],
         ], $f_params),
-        'Returns elements for the corresponding categories.
-<br><b>cat_id</b> can be empty if <b>recursive</b> is true.
-<br><b>order</b> comma separated fields for sorting',
+        'Returns elements for the corresponding categories. ' .
+        '<br><b>cat_id</b> can be empty if <b>recursive</b> is true. ' .
+        '<br><b>order</b> comma separated fields for sorting',
         $ws_functions_root . 'pwg.categories.php'
     );
 
@@ -364,7 +364,9 @@ function ws_addDefaultMethods($arr)
             ],
             'filename_list' => [],
         ],
-        'Search for image ids matching the provided filenames. <b>filename_list</b> must be a JSON encoded associative array of unique_id:filename.<br><br>The method returns a list of unique_id:image_id.',
+        'Search for image ids matching the provided filenames. ' .
+        '<b>filename_list</b> must be a JSON encoded associative array of unique_id:filename.<br><br>' .
+        'The method returns a list of unique_id:image_id.',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -407,12 +409,10 @@ function ws_addDefaultMethods($arr)
                 'default' => null,
             ],
         ],
-        'Sets the rank of a photo for a given album.
-<br><br>If you provide a list for image_id:
-<ul>
-<li>rank becomes useless, only the order of the image_id list matters</li>
-<li>you are supposed to provide the list of all image_ids belonging to the album.
-</ul>',
+        'Sets the rank of a photo for a given album.<br><br>If you provide a list for image_id:<ul>' .
+        '<li>rank becomes useless, only the order of the image_id list matters</li>' .
+        '<li>you are supposed to provide the list of all image_ids belonging to the album.</li>' .
+        '</ul>',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -437,7 +437,11 @@ function ws_addDefaultMethods($arr)
             ],
             'pwg_token' => [],
         ],
-        'Manage associations of images with an album. <b>action</b> can be:<ul><li><i>associate</i> : add photos to this album</li><li><i>dissociate</i> : remove photos from this album</li><li><i>move</i> : dissociate photos from any other album and adds photos to this album</li></ul>',
+        'Manage associations of images with an album. <b>action</b> can be:<ul>' .
+        '<li><i>associate</i>: add photos to this album</li>' .
+        '<li><i>dissociate</i>: remove photos from this album</li>' .
+        '<li><i>move</i>: dissociate photos from any other album and adds photos to this album</li>' .
+        '</ul>',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -585,8 +589,8 @@ function ws_addDefaultMethods($arr)
             ],
             'sum' => [],
         ],
-        'Add or update a file for an existing photo.
-<br>pwg.images.addChunk must have been called before (maybe several times).',
+        'Add or update a file for an existing photo.<br>' .
+        'pwg.images.addChunk must have been called before (maybe several times).',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -642,9 +646,8 @@ function ws_addDefaultMethods($arr)
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Add an image.
-<br>pwg.images.addChunk must have been called before (maybe several times).
-<br>Don\'t use "thumbnail_sum" and "high_sum", these parameters are here for backward compatibility.',
+        'Add an image.<br>pwg.images.addChunk must have been called before (maybe several times).<br>' .
+        'Don\'t use "thumbnail_sum" and "high_sum", these parameters are here for backward compatibility.',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -683,10 +686,9 @@ function ws_addDefaultMethods($arr)
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Add an image.
-<br>Use the <b>$_FILES[image]</b> field for uploading file.
-<br>Set the form encoding to "form-data".
-<br>You can update an existing photo if you define an existing image_id.',
+        'Add an image.<br>Use the <b>$_FILES[image]</b> field for uploading file.<br>' .
+        'Set the form encoding to "form-data".<br>' .
+        'You can update an existing photo if you define an existing image_id.',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -718,9 +720,8 @@ function ws_addDefaultMethods($arr)
             ],
             'pwg_token' => [],
         ],
-        'Add an image.
-<br>Use the <b>$_FILES[image]</b> field for uploading file.
-<br>Set the form encoding to "form-data".',
+        'Add an image.<br>Use the <b>$_FILES[image]</b> field for uploading file.<br>' .
+        'Set the form encoding to "form-data".',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -776,12 +777,12 @@ function ws_addDefaultMethods($arr)
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Upload photo by chunks in a random order.
-<br>Use the <b>$_FILES[file]</b> field for uploading file.
-<br>Start with chunk 0 (zero).
-<br>Set the form encoding to "form-data".
-<br>You can update an existing photo if you define an existing image_id.
-<br>Requires <b>admin</b> credentials.',
+        'Upload photo by chunks in a random order.<br>' .
+        'Use the <b>$_FILES[file]</b> field for uploading file.<br>' .
+        'Start with chunk 0 (zero).<br>' .
+        'Set the form encoding to "form-data".<br>' .
+        'You can update an existing photo if you define an existing image_id.<br>' .
+        'Requires <b>admin</b> credentials.',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -889,9 +890,9 @@ function ws_addDefaultMethods($arr)
                 'info' => 'Comma saparated list (see method description)',
             ],
         ],
-        'Get albums list as displayed on admin page. <br>
-      <b>additional_output</b> controls which data are returned, possible values are:<br>
-      null, full_name_with_admin_links<br>',
+        'Get albums list as displayed on admin page.<br>' .
+        '<b>additional_output</b> controls which data are returned, possible values are:<br>' .
+        'null, full_name_with_admin_links',
         $ws_functions_root . 'pwg.categories.php',
         [
             'admin_only' => true,
@@ -949,9 +950,9 @@ function ws_addDefaultMethods($arr)
             ],
             'pwg_token' => [],
         ],
-        'Deletes album(s).
-<br><b>photo_deletion_mode</b> can be "no_delete" (may create orphan photos), "delete_orphans"
-(default mode, only deletes photos linked to no other album) or "force_delete" (delete all photos, even those linked to other albums)',
+        'Deletes album(s).<br><b>photo_deletion_mode</b> can be "no_delete" (may create orphan photos), ' .
+        '"delete_orphans" (default mode, only deletes photos linked to no other album) ' .
+        'or "force_delete" (delete all photos, even those linked to other albums)',
         $ws_functions_root . 'pwg.categories.php',
         [
             'admin_only' => true,
@@ -971,8 +972,7 @@ function ws_addDefaultMethods($arr)
             ],
             'pwg_token' => [],
         ],
-        'Move album(s).
-<br>Set parent as 0 to move to gallery root. Only virtual categories can be moved.',
+        'Move album(s).<br>Set parent as 0 to move to gallery root. Only virtual categories can be moved.',
         $ws_functions_root . 'pwg.categories.php',
         [
             'admin_only' => true,
@@ -1007,7 +1007,7 @@ function ws_addDefaultMethods($arr)
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Deletes the album thumbnail. Only possible if $conf[\'allow_random_representative\']',
+        "Deletes the album thumbnail. Only possible if \$conf['allow_random_representative']",
         $ws_functions_root . 'pwg.categories.php',
         [
             'admin_only' => true,
@@ -1140,8 +1140,8 @@ function ws_addDefaultMethods($arr)
                 'default' => null,
             ],
         ],
-        'Checks existence of images.
-<br>Give <b>md5sum_list</b> if $conf[uniqueness_mode]==md5sum. Give <b>filename_list</b> if $conf[uniqueness_mode]==filename.',
+        'Checks existence of images.<br>Give <b>md5sum_list</b> if $conf[uniqueness_mode] == md5sum. ' .
+        'Give <b>filename_list</b> if $conf[uniqueness_mode] == filename.',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -1165,8 +1165,8 @@ function ws_addDefaultMethods($arr)
                 'default' => null,
             ],
         ],
-        'Checks if you have updated version of your files for a given photo, the answer can be "missing", "equals" or "differs".
-<br>Don\'t use "thumbnail_sum" and "high_sum", these parameters are here for backward compatibility.',
+        'Checks if you have updated version of your files for a given photo, the answer can be "missing", "equals" or "differs".<br>' .
+        'Don\'t use "thumbnail_sum" and "high_sum", these parameters are here for backward compatibility.',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -1260,11 +1260,11 @@ function ws_addDefaultMethods($arr)
                 'flags' => WS_PARAM_OPTIONAL,
             ],
         ],
-        'Changes properties of an image.
-<br><b>single_value_mode</b> can be "fill_if_empty" (only use the input value if the corresponding values is currently empty) or "replace"
-(overwrite any existing value) and applies to single values properties like name/author/date_creation/comment.
-<br><b>multiple_value_mode</b> can be "append" (no change on existing values, add the new values) or "replace" and applies to multiple values properties like tag_ids/categories.
-<br><b>pwg_token</b> required if you want to use HTML in name/comment/author.',
+        'Changes properties of an image.<br>' .
+        '<b>single_value_mode</b> can be "fill_if_empty" (only use the input value if the corresponding value is currently empty) or "replace" ' .
+        '(overwrite any existing value) and applies to single value properties like name/author/date_creation/comment.<br>' .
+        '<b>multiple_value_mode</b> can be "append" (no change on existing values, add the new values) or "replace" and applies to multiple value properties like tag_ids/categories.<br>' .
+        '<b>pwg_token</b> required if you want to use HTML in name/comment/author.',
         $ws_functions_root . 'pwg.images.php',
         [
             'admin_only' => true,
@@ -1331,12 +1331,10 @@ function ws_addDefaultMethods($arr)
                 'flags' => WS_PARAM_OPTIONAL,
             ],
         ],
-        'Changes the rank of an album
-        <br><br>If you provide a list for category_id:
-        <ul>
-        <li>rank becomes useless, only the order of the image_id list matters</li>
-        <li>you are supposed to provide the list of all categories_ids belonging to the album.
-        </ul>.',
+        'Changes the rank of an album<br><br>If you provide a list for category_id:<br><ul>' .
+        '<li>rank becomes useless, only the order of the image_id list matters</li>' .
+        '<li>you are supposed to provide the list of all category_ids belonging to the album.</li>' .
+        '</ul>.',
         $ws_functions_root . 'pwg.categories.php',
         [
             'admin_only' => true,
@@ -1678,15 +1676,14 @@ function ws_addDefaultMethods($arr)
                 'info' => 'See method description',
             ],
         ],
-        'Retrieves a list of all the users.<br>
-<br>
-<b>display</b> controls which data are returned, possible values are:<br>
-all, basics, none,<br>
-username, email, status, level, groups,<br>
-language, theme, nb_image_page, recent_period, expand, show_nb_comments, show_nb_hits,<br>
-enabled_high, registration_date, registration_date_string, registration_date_since, last_visit, last_visit_string, last_visit_since<br>
-<b>basics</b> stands for "username,email,status,level,groups"<br>
-<b>min_register</b> and <b>max_register</b> filter users by their registration date expecting format "YYYY" or "YYYY-mm" or "YYYY-mm-dd".',
+        'Retrieves a list of all the users.<br><br>' .
+        '<b>display</b> controls which data are returned, possible values are:<br>' .
+        'all, basics, none,<br>' .
+        'username, email, status, level, groups,<br>' .
+        'language, theme, nb_image_page, recent_period, expand, show_nb_comments, show_nb_hits,<br>' .
+        'enabled_high, registration_date, registration_date_string, registration_date_since, last_visit, last_visit_string, last_visit_since<br>' .
+        '<b>basics</b> stands for "username,email,status,level,groups"<br>' .
+        '<b>min_register</b> and <b>max_register</b> filter users by their registration date expecting format "YYYY" or "YYYY-mm" or "YYYY-mm-dd".',
         $ws_functions_root . 'pwg.users.php',
         [
             'admin_only' => true,
@@ -1819,9 +1816,9 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
             ],
             'pwg_token' => [],
         ],
-        'Updates a user. Leave a field blank to keep the current value.
-<br>"username", "password" and "email" are ignored if "user_id" is an array.
-<br>set "group_id" to -1 if you want to dissociate users from all groups',
+        'Updates a user. Leave a field blank to keep the current value.' .
+        '<br>"username", "password" and "email" are ignored if "user_id" is an array.' .
+        '<br>Set "group_id" to -1 if you want to dissociate users from all groups.',
         $ws_functions_root . 'pwg.users.php',
         [
             'admin_only' => true,
@@ -1846,8 +1843,8 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
                 'type' => WS_TYPE_ID,
             ],
         ],
-        'Returns permissions: user ids and group ids having access to each album ; this list can be filtered.
-<br>Provide only one parameter!',
+        'Returns permissions: user ids and group ids having access to each album; this list can be filtered.' .
+        '<br>Provide only one parameter!',
         $ws_functions_root . 'pwg.permissions.php',
         [
             'admin_only' => true,
@@ -2039,10 +2036,10 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
         ],
-        'Gives an history of who has visited the galery and the actions done in it. Receives parameter.
-      <br> <strong>Types </strong> can be : \'none\', \'picture\', \'high\', \'other\'
-      <br> <strong>Date format</strong> is yyyy-mm-dd
-      <br> <strong>display_thumbnail</strong> can be : \'no_display_thumbnail\', \'display_thumbnail_classic\', \'display_thumbnail_hoverbox\'',
+        'Gives an history of who has visited the gallery and the actions done in it. Receives parameter.' .
+        '<br> <strong>Types </strong> can be: "none", "picture", "high", "other"' .
+        '<br> <strong>Date format</strong> is yyyy-mm-dd' .
+        '<br> <strong>display_thumbnail</strong> can be: "no_display_thumbnail", "display_thumbnail_classic", "display_thumbnail_hoverbox"',
         $ws_functions_root . 'pwg.php'
     );
 
