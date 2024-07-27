@@ -410,7 +410,7 @@ function get_random_image_in_category(
             $query .= " c.id = {$category['id']}";
         }
 
-        $query .= " {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . '() LIMIT 1;';
+        $query .= " {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . ' LIMIT 1;';
         $result = pwg_query($query);
         if (pwg_db_num_rows($result) > 0) {
             [$image_id] = pwg_db_fetch_row($result);
