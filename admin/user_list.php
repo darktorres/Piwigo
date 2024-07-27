@@ -39,7 +39,17 @@ while ($row = pwg_db_fetch_assoc($result)) {
 // |                              Dates for filtering                      |
 // +-----------------------------------------------------------------------+
 
-$query = 'SELECT DISTINCT month(registration_date) AS registration_month, year(registration_date) AS registration_year FROM user_infos ORDER BY registration_date;';
+$query = 'SELECT DISTINCT';
+
+if (DB_ENGINE === 'MySQL') {
+    $query .= ' month(registration_date) AS registration_month, year(registration_date) AS registration_year';
+}
+
+if (DB_ENGINE === 'PostgreSQL') {
+    $query .= ' EXTRACT(MONTH FROM registration_date) AS registration_month, EXTRACT(YEAR FROM registration_date) AS registration_year';
+}
+
+$query .= ' FROM user_infos ORDER BY registration_date;';
 $result = pwg_query($query);
 
 $register_dates = [];
