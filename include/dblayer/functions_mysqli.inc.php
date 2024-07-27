@@ -27,7 +27,7 @@ function pwg_db_connect(
     string $host,
     string $user,
     string $password,
-    string $database
+    string|null $database = null
 ): void {
     global $mysqli;
 

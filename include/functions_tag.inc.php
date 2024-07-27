@@ -228,11 +228,9 @@ function get_common_tags(
         $query .= " AND tag_id NOT IN ({$excluded_tag_ids_})";
     }
 
-    $query .= ' GROUP BY t.id ORDER BY ';
+    $query .= ' GROUP BY t.id ';
     if ($max_tags > 0) { // TODO : why ORDER field is in the if ?
-        $query .= "counter DESC LIMIT {$max_tags}";
-    } else {
-        $query .= 'NULL';
+        $query .= "ORDER BY counter DESC LIMIT {$max_tags}";
     }
 
     $result = pwg_query($query);

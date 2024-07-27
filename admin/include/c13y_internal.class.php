@@ -34,11 +34,21 @@ class c13y_internal
             'required' => REQUIRED_PHP_VERSION,
         ];
 
-        $check_list[] = [
-            'type' => 'MySQL',
-            'current' => pwg_get_db_version(),
-            'required' => REQUIRED_MYSQL_VERSION,
-        ];
+        if (DB_ENGINE === 'MySQL') {
+            $check_list[] = [
+                'type' => 'MySQL',
+                'current' => pwg_get_db_version(),
+                'required' => REQUIRED_MYSQL_VERSION,
+            ];
+        }
+
+        if (DB_ENGINE === 'PostgreSQL') {
+            $check_list[] = [
+                'type' => 'PostgreSQL',
+                'current' => pwg_get_db_version(),
+                'required' => REQUIRED_POSTGRESQL_VERSION,
+            ];
+        }
 
         foreach ($check_list as $elem) {
             if (version_compare($elem['current'], $elem['required'], '<')) {
