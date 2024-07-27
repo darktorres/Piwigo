@@ -73,7 +73,7 @@ $dbpasswd = (empty($_POST['dbpasswd'])) ? '' : $_POST['dbpasswd'];
 $dbname = (empty($_POST['dbname'])) ? '' : $_POST['dbname'];
 
 // dblayer
-$dblayer = 'mysqli';
+$dblayer = (empty($_POST['dbtype'])) ? 'mysqli' : $_POST['dbtype'];
 
 $admin_name = (empty($_POST['admin_name'])) ? '' : $_POST['admin_name'];
 $admin_pass1 = (empty($_POST['admin_pass1'])) ? '' : $_POST['admin_pass1'];
@@ -219,13 +219,13 @@ if (isset($_POST['install'])) {
 
         // tables creation, based on piwigo_structure.sql
         execute_sqlfile(
-            PHPWG_ROOT_PATH . 'install/piwigo_structure-mysql.sql',
-            'mysql'
+            PHPWG_ROOT_PATH . "install/piwigo_structure-{$dblayer}.sql",
+            $dblayer
         );
         // We fill the tables with basic informations
         execute_sqlfile(
             PHPWG_ROOT_PATH . 'install/config.sql',
-            'mysql'
+            $dblayer
         );
 
         $query =
