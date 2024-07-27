@@ -53,7 +53,7 @@ foreach ($result as $cat) {
 // +-----------------------------------------------------------------------+
 
 // let's find a custom placeholder
-$query = 'SELECT name FROM categories ORDER BY RAND() LIMIT 1;';
+$query = 'SELECT name FROM categories ORDER BY ' . DB_RANDOM_FUNCTION . ' LIMIT 1;';
 $lines = query2array($query);
 $placeholder = null;
 foreach ($lines as $line) {

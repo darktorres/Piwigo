@@ -88,7 +88,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
         );
         $query =
         "SELECT representative_picture_id FROM categories INNER JOIN user_cache_categories ON id = cat_id and user_id = {$user['id']} WHERE uppercats
-         LIKE '{$row['uppercats']},%' AND representative_picture_id IS NOT NULL {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . '() LIMIT 1;';
+         LIKE '{$row['uppercats']},%' AND representative_picture_id IS NOT NULL {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . ' LIMIT 1;';
         $subresult = pwg_query($query);
         if (pwg_db_num_rows($subresult) > 0) {
             [$image_id] = pwg_db_fetch_row($subresult);
