@@ -252,7 +252,7 @@ if ($page['section'] == 'categories') {
 
         if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
             // main query
-            $query = "SELECT DISTINCT(image_id) FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
+            $query = "SELECT DISTINCT(image_id), date_creation FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
             $page['items'] = query2array($query, null, 'image_id');
 
             if (isset($cache_key)) {
