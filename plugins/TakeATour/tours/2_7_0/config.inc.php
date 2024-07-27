@@ -29,7 +29,7 @@ if (isset($_GET['image_id']) && pwg_get_session_var('TAT_image_id') == null) {
 } elseif (is_numeric(pwg_get_session_var('TAT_image_id'))) {
     $template->assign('TAT_image_id', pwg_get_session_var('TAT_image_id'));
 } else {
-    $query = 'SELECT id FROM images ORDER BY RAND() LIMIT 1;';
+    $query = 'SELECT id FROM images ORDER BY ' . DB_RANDOM_FUNCTION . ' LIMIT 1;';
     $row = pwg_db_fetch_assoc(pwg_query($query));
     $template->assign('TAT_image_id', $row['id']);
 }
