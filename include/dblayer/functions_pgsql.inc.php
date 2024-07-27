@@ -6,7 +6,7 @@ define('DB_ENGINE', 'PostgreSQL');
 define('REQUIRED_POSTGRESQL_VERSION', 'PostgreSQL 16.3');
 
 define('DB_REGEX_OPERATOR', '~');
-define('DB_RANDOM_FUNCTION', 'RANDOM');
+define('DB_RANDOM_FUNCTION', 'CAST(random() AS text)');
 
 /**
  * Connect to database and store PostgreSQL resource in __$pg__ global variable.
