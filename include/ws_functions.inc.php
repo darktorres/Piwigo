@@ -115,18 +115,18 @@ function ws_std_image_sql_order(
                 $matches[1][$i] = 'date_available';
                 break;
             case 'rand': case 'random':
-                $matches[1][$i] = DB_RANDOM_FUNCTION . '()';
+                $matches[1][$i] = DB_RANDOM_FUNCTION;
                 break;
         }
 
         $sortable_fields = ['id', 'file', 'name', 'hit', 'rating_score',
-            'date_creation', 'date_available', DB_RANDOM_FUNCTION . '()'];
+            'date_creation', 'date_available', DB_RANDOM_FUNCTION];
         if (in_array($matches[1][$i], $sortable_fields)) {
             if ($ret !== '' && $ret !== '0') {
                 $ret .= ', ';
             }
 
-            if ($matches[1][$i] !== DB_RANDOM_FUNCTION . '()') {
+            if ($matches[1][$i] !== DB_RANDOM_FUNCTION) {
                 $ret .= $tbl_name;
             }
 
