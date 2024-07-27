@@ -343,7 +343,7 @@ class CalendarMonthly extends CalendarBase
             $dayofweek_ = pwg_db_get_dayofweek($this->date_field);
             $query =
             "SELECT id, file, representative_ext, path, width, height, rotation, {$dayofweek_} - 1 AS dow {$this->inner_sql} {$this->get_date_where()}
-             ORDER BY " . DB_RANDOM_FUNCTION . '() LIMIT 1;';
+             ORDER BY " . DB_RANDOM_FUNCTION . ' LIMIT 1;';
             unset($page['chronology_date'][CDAY]);
 
             $row = pwg_db_fetch_assoc(pwg_query($query));

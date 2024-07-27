@@ -34,7 +34,7 @@ $filters_and_forbidden = get_sql_condition_FandF(
     'WHERE'
 );
 $min_ = min(50, $conf['top_number'], $user['nb_image_page']);
-$query = "SELECT id FROM images INNER JOIN image_category AS ic ON id = ic.image_id {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . "() LIMIT {$min_};";
+$query = "SELECT id FROM images INNER JOIN image_category AS ic ON id = ic.image_id {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . " LIMIT {$min_};";
 
 // +-----------------------------------------------------------------------+
 // |                                redirect                               |

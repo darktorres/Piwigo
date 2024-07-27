@@ -821,7 +821,7 @@ function set_random_representant(
 ): void {
     $datas = [];
     foreach ($categories as $category_id) {
-        $query = "SELECT image_id FROM image_category WHERE category_id = {$category_id} ORDER BY " . DB_RANDOM_FUNCTION . '() LIMIT 1;';
+        $query = "SELECT image_id FROM image_category WHERE category_id = {$category_id} ORDER BY " . DB_RANDOM_FUNCTION . ' LIMIT 1;';
         [$representative] = pwg_db_fetch_row(pwg_query($query));
 
         $datas[] = [
