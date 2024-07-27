@@ -410,6 +410,11 @@ try {
 }
 
 [$conf['derivatives']] = pwg_db_fetch_row(pwg_query("SELECT value FROM config WHERE param = 'derivatives';"));
+
+if (DB_ENGINE === 'PostgreSQL') {
+    $conf['derivatives'] = stripslashes((string) $conf['derivatives']);
+}
+
 $conf['derivatives'] = unserialize($conf['derivatives']);
 ImageStdParams::load_from_db();
 

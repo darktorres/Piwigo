@@ -157,7 +157,7 @@ function get_month_stats(): array
       year = {$date->format('Y')}
       OR (year = ({$date->format('Y')} - 1) AND month > {$date->format('n')})
      )
-     AND day IS NOT NULL AND hour IS NULL ORDER BY year DESC, month DESC;";
+     AND day IS NOT NULL AND hour IS NULL GROUP BY year, month ORDER BY year DESC, month DESC;";
 
     [$result['avg']] = pwg_db_fetch_row(pwg_query($query));
 
