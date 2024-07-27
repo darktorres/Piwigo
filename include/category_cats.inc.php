@@ -15,9 +15,26 @@ declare(strict_types=1);
  */
 
 // $user['forbidden_categories'] including with user_cache_categories
-$query =
-"SELECT SQL_CALC_FOUND_ROWS c.*, user_representative_picture_id, nb_images, date_last, max_date_last, count_images, nb_categories, count_categories
- FROM categories c INNER JOIN user_cache_categories ucc ON id = cat_id AND user_id = {$user['id']} WHERE count_images > 0";
+$query = '
+ WITH total_rows AS (
+   SELECT COUNT(*) AS total_count
+   FROM categories c
+   INNER JOIN user_cache_categories ucc ON id = cat_id AND user_id = 1
+   WHERE count_images > 0 AND id_uppercat IS NULL
+ )
+ SELECT c.*,
+        ucc.user_representative_picture_id,
+        ucc.nb_images,
+        ucc.date_last,
+        ucc.max_date_last,
+        ucc.count_images,
+        ucc.nb_categories,
+        ucc.count_categories,
+        tr.total_count
+ FROM categories c
+ INNER JOIN user_cache_categories ucc ON id = cat_id AND user_id = 1
+ CROSS JOIN total_rows tr
+ WHERE count_images > 0';
 
 if ($page['section'] == 'recent_cats') {
     $query .= ' AND ' . get_recent_photos_sql('date_last');
@@ -45,7 +62,6 @@ $query .= " LIMIT {$conf['nb_categories_page']} OFFSET {$startcat_};";
 $query = trigger_change('loc_begin_index_category_thumbnails_query', $query);
 
 $result = pwg_query($query);
-[$page['total_categories']] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
 $categories = [];
 $category_ids = [];
@@ -53,6 +69,7 @@ $image_ids = [];
 $user_representative_updates_for = [];
 
 while ($row = pwg_db_fetch_assoc($result)) {
+    [$page['total_categories']] = $row['total_count'];
     $row['is_child_date_last'] = $row['max_date_last'] > $row['date_last'];
 
     if (! empty($row['user_representative_picture_id'])) {
