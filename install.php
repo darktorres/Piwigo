@@ -229,7 +229,7 @@ if (isset($_POST['install'])) {
         );
 
         $query =
-        "INSERT INTO config (param, value, comment) VALUES ('secret_key', md5(" . DB_RANDOM_FUNCTION . "()), 'a secret key specific to the gallery for internal use');";
+        "INSERT INTO config (param, value, comment) VALUES ('secret_key', md5(" . DB_RANDOM_FUNCTION . "), 'a secret key specific to the gallery for internal use');";
         pwg_query($query);
 
         conf_update_param('piwigo_db_version', get_branch_from_version(PHPWG_VERSION));
