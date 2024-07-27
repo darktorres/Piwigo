@@ -120,9 +120,23 @@ function pwg_session_write(
     string $session_id,
     string $data
 ): bool {
+    if (DB_ENGINE === 'MySQL') {
+        $query = 'REPLACE INTO sessions';
+    }
+
+    if (DB_ENGINE === 'PostgreSQL') {
+        $query = 'INSERT INTO sessions';
+    }
+
     $ip_hash_ = get_remote_addr_session_hash();
     $data_ = pwg_db_real_escape_string($data);
-    $query = "REPLACE INTO sessions (id, data, expiration) VALUES ('{$ip_hash_}{$session_id}', '{$data_}', NOW());";
+    $query .= " (id, data, expiration) VALUES ('{$ip_hash_}{$session_id}', '{$data_}', NOW())";
+
+    if (DB_ENGINE === 'PostgreSQL') {
+        $query .= ' ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, expiration = EXCLUDED.expiration';
+    }
+
+    $query .= ';';
     pwg_query($query);
     return true;
 }

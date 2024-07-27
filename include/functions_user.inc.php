@@ -410,11 +410,25 @@ function getuserdata(
 
         // for the same reason as user_cache_categories, we ignore error on
         // this insert
+
+        if (DB_ENGINE === 'MySQL') {
+            $query = 'INSERT IGNORE INTO user_cache';
+        }
+
+        if (DB_ENGINE === 'PostgreSQL') {
+            $query = 'INSERT INTO user_cache';
+        }
+
         $need_to_update_ = boolean_to_string($userdata['need_update']);
         $last_photo_date_ = (empty($userdata['last_photo_date']) ? 'NULL' : "'{$userdata['last_photo_date']}'");
-        $query =
-        "INSERT IGNORE INTO user_cache (user_id, need_update, cache_update_time, forbidden_categories, nb_total_images, last_photo_date, image_access_type, image_access_list) VALUES ({$userdata['id']}, '{$need_to_update_}',
-            {$userdata['cache_update_time']}, '{$userdata['forbidden_categories']}', {$userdata['nb_total_images']}, {$last_photo_date_}, '{$userdata['image_access_type']}', '{$userdata['image_access_list']}')";
+        $query .=
+        " (user_id, need_update, cache_update_time, forbidden_categories, nb_total_images, last_photo_date, image_access_type, image_access_list) VALUES ({$userdata['id']}, '{$need_to_update_}',
+             {$userdata['cache_update_time']}, '{$userdata['forbidden_categories']}', {$userdata['nb_total_images']}, {$last_photo_date_}, '{$userdata['image_access_type']}', '{$userdata['image_access_list']}')";
+
+        if (DB_ENGINE === 'PostgreSQL') {
+            $query .= ' ON CONFLICT (user_id) DO NOTHING';
+        }
+
         pwg_query($query);
     }
 

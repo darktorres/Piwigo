@@ -235,13 +235,23 @@
 
             <table class="table2">
               <tr>
+                <td class="fieldname">{'Database Type'|@translate}</td>
+                <td>
+                  <select id="dbtype" name="dbtype" required>
+                    <option value="mysqli">MySQL</option>
+                    <option value="pgsql">PostgreSQL</option>
+                  </select>
+                </td>
+                <td class="fielddesc">{'Select the type of your database'|@translate}</td>
+              </tr>
+              <tr>
                 <td style="width: 30%;" class="fieldname">{'Host:Port'|@translate}</td>
-                <td><input type="text" name="dbhost" value="localhost" required></td>
+                <td><input type="text" id="dbhost" name="dbhost" value="localhost:3306" required></td>
                 <td class="fielddesc">{'localhost or other, supplied by your host provider'|@translate}</td>
               </tr>
               <tr>
                 <td class="fieldname">{'User'|@translate}</td>
-                <td><input type="text" name="dbuser" value="root" required autocomplete="username"></td>
+                <td><input type="text" id="dbuser" name="dbuser" value="root" required autocomplete="username"></td>
                 <td class="fielddesc">{'user login given by your host provider'|@translate}</td>
               </tr>
               <tr>
@@ -255,6 +265,33 @@
                 <td class="fielddesc">{'also given by your host provider'|@translate}</td>
               </tr>
             </table>
+
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                const dbtypeElement = document.getElementById('dbtype');
+
+                if (dbtypeElement) {
+                  dbtypeElement.addEventListener('change', function() {
+                    const dbType = this.value;
+                    console.log('Selected Database Type:', dbType); // Print current value to console
+
+                    const dbHostInput = document.getElementById('dbhost');
+                    const dbUserInput = document.getElementById('dbuser');
+
+                    switch (dbType) {
+                      case 'mysqli':
+                        dbHostInput.value = 'localhost:3306';
+                        dbUserInput.value = 'root';
+                        break;
+                      case 'pgsql':
+                        dbHostInput.value = 'localhost:5432';
+                        dbUserInput.value = 'postgres';
+                        break;
+                    }
+                  });
+                }
+              });
+            </script>
 
           </fieldset>
           <fieldset>
