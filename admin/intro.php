@@ -342,7 +342,17 @@ $video_format = ['webm', 'webmv', 'ogg', 'ogv', 'mp4', 'm4v', 'mov'];
 $data_storage = [];
 
 //Select files in Image_Table
-$query = "SELECT COUNT(*) AS ext_counter, SUBSTRING_INDEX(path, '.', -1) AS ext, SUM(filesize) AS filesize FROM images GROUP BY ext;";
+$query = 'SELECT COUNT(*) AS ext_counter,';
+
+if (DB_ENGINE === 'MySQL') {
+    $query .= " SUBSTRING_INDEX(path,  '.',  -1) AS ext,";
+}
+
+if (DB_ENGINE === 'PostgreSQL') {
+    $query .= " split_part(path, '.', array_length(string_to_array(path, '.'), 1)) AS ext,";
+}
+
+$query .= ' SUM(filesize) AS filesize FROM images GROUP BY ext;';
 $file_extensions = query2array($query, 'ext');
 
 foreach ($file_extensions as $ext => $ext_details) {
