@@ -453,7 +453,7 @@ function get_recent_post_dates(
         if ($max_elements > 0) { // get some thumbnails ...
             $query =
             "SELECT DISTINCT i.* FROM images i INNER JOIN image_category AS ic ON id = image_id {$where_sql} AND date_available = '{$dates[$i]['date_available']}'
-             ORDER BY " . DB_RANDOM_FUNCTION . "() LIMIT {$max_elements};";
+             ORDER BY " . DB_RANDOM_FUNCTION . " LIMIT {$max_elements};";
             $dates[$i]['elements'] = query2array($query);
         }
 
