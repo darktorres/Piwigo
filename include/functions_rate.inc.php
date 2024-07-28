@@ -52,7 +52,7 @@ function rate_picture($image_id, $rate)
     { // client has changed his IP adress or he's trying to fool us
       $query = '
 SELECT element_id
-  FROM '.RATE_TABLE.'
+  FROM rate
   WHERE user_id = '.$user['id'].'
     AND anonymous_id = \''.$anonymous_id.'\'
 ;';
@@ -62,7 +62,7 @@ SELECT element_id
       {
         $query = '
 DELETE
-  FROM '.RATE_TABLE.'
+  FROM rate
   WHERE user_id = '.$user['id'].'
     AND anonymous_id = \''.$save_anonymous_id.'\'
     AND element_id IN ('.implode(',', $already_there).')
@@ -71,7 +71,7 @@ DELETE
        }
 
        $query = '
-UPDATE '.RATE_TABLE.'
+UPDATE rate
   SET anonymous_id = \'' .$anonymous_id.'\'
   WHERE user_id = '.$user['id'].'
     AND anonymous_id = \'' . $save_anonymous_id.'\'
@@ -84,7 +84,7 @@ UPDATE '.RATE_TABLE.'
 
   $query = '
 DELETE
-  FROM '.RATE_TABLE.'
+  FROM rate
   WHERE element_id = '.$image_id.'
     AND user_id = '.$user['id'].'
 ';
@@ -95,7 +95,7 @@ DELETE
   pwg_query($query);
   $query = '
 INSERT
-  INTO '.RATE_TABLE.'
+  INTO rate
   (user_id,anonymous_id,element_id,rate,date)
   VALUES
   ('
@@ -131,7 +131,7 @@ function update_rating_score($element_id = false)
 SELECT element_id,
     COUNT(rate) AS rcount,
     SUM(rate) AS rsum
-  FROM '.RATE_TABLE.'
+  FROM rate
   GROUP by element_id';
 
   $all_rates_count = 0;
@@ -169,7 +169,7 @@ SELECT element_id,
     $updates[] = array( 'id'=>$id, 'rating_score'=>$score );
   }
   mass_updates(
-    IMAGES_TABLE,
+    'images',
     array(
       'primary' => array('id'),
       'update' => array('rating_score')
@@ -181,8 +181,8 @@ SELECT element_id,
   if ( !isset($by_item[$element_id]) )
   {
     $query='
-SELECT id FROM '.IMAGES_TABLE .'
-  LEFT JOIN '.RATE_TABLE.' ON id=element_id
+SELECT id FROM images
+  LEFT JOIN rate ON id=element_id
   WHERE element_id IS NULL AND rating_score IS NOT NULL';
 
     $to_update = array_from_query( $query, 'id');
@@ -190,7 +190,7 @@ SELECT id FROM '.IMAGES_TABLE .'
     if ( !empty($to_update) )
     {
       $query='
-UPDATE '.IMAGES_TABLE .'
+UPDATE images
   SET rating_score=NULL
   WHERE id IN (' . implode(',',$to_update) . ')';
     pwg_query($query);
