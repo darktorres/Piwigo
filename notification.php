@@ -25,7 +25,7 @@ function find_available_feed_id()
     $key = generate_key(50);
     $query = '
 SELECT COUNT(*)
-  FROM '.USER_FEED_TABLE.'
+  FROM user_feed
   WHERE id = \''.$key.'\'
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -50,7 +50,7 @@ trigger_notify('loc_begin_notification');
 $page['feed'] = find_available_feed_id();
 
 $query = '
-INSERT INTO '.USER_FEED_TABLE.'
+INSERT INTO user_feed
   (id, user_id, last_check)
   VALUES
   (\''.$page['feed'].'\', '.$user['id'].', NULL)
