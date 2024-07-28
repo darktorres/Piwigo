@@ -109,8 +109,8 @@ class c13y_internal
 
       $query = '
   select u.'.$conf['user_fields']['id'].' as id, ui.status
-  from '.USERS_TABLE.' as u
-    left join '.USER_INFOS_TABLE.' as ui
+  from users as u
+    left join user_infos as ui
         on u.'.$conf['user_fields']['id'].' = ui.user_id
   where
     u.'.$conf['user_fields']['id'].' in ('.implode(',', array_keys($c13y_users)).')
@@ -193,7 +193,7 @@ class c13y_internal
                 'password' => $password
                 ),
               );
-            mass_inserts(USERS_TABLE, array_keys($inserts[0]), $inserts);
+            mass_inserts('users', array_keys($inserts[0]), $inserts);
 
             create_user_infos($id);
 
@@ -224,7 +224,7 @@ class c13y_internal
                 'status'  => $status
                 ),
               );
-            mass_updates(USER_INFOS_TABLE,
+            mass_updates('user_infos',
               array('primary' => array('user_id'),'update' => array('status')),
               $updates);
 
