@@ -505,7 +505,7 @@ var sliders = {
           <input type="checkbox" name="filter_search_use" class="useFilterCheckbox"{if isset($filter.search)} checked="checked"{/if}>
           <p>{'Search'|@translate}</p>
           <a href="#" class="removeFilter" title="{'remove this filter'|translate}"><span>[x]</span></a>
-          <input name="q" size=40 value="{if isset($filter.search)} {$filter.search.q|stripslashes|htmlspecialchars}{/if}">
+          <input name="q" size=40 value="{$filter.search.q|default:''|stripslashes|htmlspecialchars}">
           <a href="admin/popuphelp.php?page=quick_search&amp;output=content_only" title="{'Help'|@translate}" class="help-popin-search"><span class="icon-help-circled">{'Search tips'|translate}</span></a>
           {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'}
   {if (isset($no_search_results))}
