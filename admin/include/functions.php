@@ -2467,6 +2467,7 @@ function fetchRemote($src, &$dest, $get_data=array(), $post_data=array(), $user_
       'http' => array(
         'method' => $method,
         'user_agent' => $user_agent,
+        'header' => str_contains($src, 'format=php') ? "Content-type: application/x-www-form-urlencoded\r\n" : '',
       )
     );
     if ($method == 'POST')
