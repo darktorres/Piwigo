@@ -353,7 +353,7 @@ switch ($page['section'])
     {
       $conf = array();
       include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-      @include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+      file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
       if (isset($conf['local_dir_site']))
       {
         @include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR. 'config/config.inc.php');
