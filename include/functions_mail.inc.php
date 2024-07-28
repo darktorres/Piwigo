@@ -436,14 +436,14 @@ SELECT
     i.user_id,
     u.'.$conf['user_fields']['username'].' AS name,
     u.'.$conf['user_fields']['email'].' AS email
-  FROM '.USERS_TABLE.' AS u
-    JOIN '.USER_INFOS_TABLE.' AS i
+  FROM users AS u
+    JOIN user_infos AS i
     ON i.user_id =  u.'.$conf['user_fields']['id'];
 
   if (!is_null($group_id))
   {
     $query.= '
-    JOIN '.USER_GROUP_TABLE.' AS ug
+    JOIN user_group AS ug
       ON ug.user_id = i.user_id';
   }
 
@@ -505,10 +505,10 @@ function pwg_mail_group($group_id, $args=array(), $tpl=array())
   // get distinct languages of targeted users
   $query = '
 SELECT DISTINCT language
-  FROM '.USER_GROUP_TABLE.' AS ug
-    INNER JOIN '.USERS_TABLE.' AS u
+  FROM user_group AS ug
+    INNER JOIN users AS u
     ON '.$conf['user_fields']['id'].' = ug.user_id
-    INNER JOIN '.USER_INFOS_TABLE.' AS ui
+    INNER JOIN user_infos AS ui
     ON ui.user_id = ug.user_id
   WHERE group_id = '.$group_id.'
     AND '.$conf['user_fields']['email'].' <> ""';
@@ -536,10 +536,10 @@ SELECT
     ui.status,
     u.'.$conf['user_fields']['username'].' AS name,
     u.'.$conf['user_fields']['email'].' AS email
-  FROM '.USER_GROUP_TABLE.' AS ug
-    INNER JOIN '.USERS_TABLE.' AS u
+  FROM user_group AS ug
+    INNER JOIN users AS u
     ON '.$conf['user_fields']['id'].' = ug.user_id
-    INNER JOIN '.USER_INFOS_TABLE.' AS ui
+    INNER JOIN user_infos AS ui
     ON ui.user_id = ug.user_id
   WHERE group_id = '.$group_id.'
     AND '.$conf['user_fields']['email'].' <> ""
