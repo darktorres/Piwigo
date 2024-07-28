@@ -45,7 +45,7 @@ function TAT_FC_23_prefilter ($content)
   {
     $query = '
     SELECT id
-      FROM '.IMAGES_TABLE.'
+      FROM images
       ORDER BY RAND()
       LIMIT 1  
     ;';
@@ -71,7 +71,7 @@ function TAT_FC_23_prefilter ($content)
   {
     $query = '
     SELECT id
-      FROM '.CATEGORIES_TABLE.'
+      FROM categories
       ORDER BY RAND()
       LIMIT 1  
     ;';

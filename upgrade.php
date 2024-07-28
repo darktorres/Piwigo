@@ -35,8 +35,6 @@ if ($php_end_tag === false)
 
 include($config_file);
 
-// $conf is not used for users tables - define cannot be re-defined
-define('USERS_TABLE', 'users');
 include_once(PHPWG_ROOT_PATH.'include/constants.php');
 define('UPGRADES_PATH', PHPWG_ROOT_PATH.'install/db');
 
@@ -223,7 +221,7 @@ $template->assign(array(
 
 $has_remote_site = false;
 
-$query = 'SELECT galleries_url FROM '.SITES_TABLE.';';
+$query = 'SELECT galleries_url FROM sites;';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result))
 {
@@ -262,7 +260,7 @@ $tables = get_tables();
 $columns_of = get_columns_of($tables);
 
 // find the current release
-if (!in_array('param', $columns_of[CONFIG_TABLE]))
+if (!in_array('param', $columns_of['config']))
 {
   // we're in branch 1.3, important upgrade, isn't it?
   if (in_array('user_category', $tables))
@@ -274,17 +272,17 @@ if (!in_array('param', $columns_of[CONFIG_TABLE]))
     $current_release = '1.3.0';
   }
 }
-else if (!in_array(USER_CACHE_TABLE, $tables))
+else if (!in_array('user_cache', $tables))
 {
   $current_release = '1.4.0';
 }
-else if (!in_array(TAGS_TABLE, $tables))
+else if (!in_array('tags', $tables))
 {
   $current_release = '1.5.0';
 }
-else if ( !in_array(PLUGINS_TABLE, $tables) )
+else if ( !in_array('plugins', $tables) )
 {
-  if (!in_array('auto_login_key', $columns_of[USER_INFOS_TABLE]))
+  if (!in_array('auto_login_key', $columns_of['user_infos']))
   {
     $current_release = '1.6.0';
   }
@@ -293,47 +291,47 @@ else if ( !in_array(PLUGINS_TABLE, $tables) )
     $current_release = '1.6.2';
   }
 }
-else if (!in_array('md5sum', $columns_of[IMAGES_TABLE]))
+else if (!in_array('md5sum', $columns_of['images']))
 {
   $current_release = '1.7.0';
 }
-else if (!in_array(THEMES_TABLE, $tables))
+else if (!in_array('themes', $tables))
 {
   $current_release = '2.0.0';
 }
-else if (!in_array('added_by', $columns_of[IMAGES_TABLE]))
+else if (!in_array('added_by', $columns_of['images']))
 {
   $current_release = '2.1.0';
 }
-else if (!in_array('rating_score', $columns_of[IMAGES_TABLE]))
+else if (!in_array('rating_score', $columns_of['images']))
 {
   $current_release = '2.2.0';
 }
-else if (!in_array('rotation', $columns_of[IMAGES_TABLE]))
+else if (!in_array('rotation', $columns_of['images']))
 {
   $current_release = '2.3.0';
 }
-else if (!in_array('website_url', $columns_of[COMMENTS_TABLE]))
+else if (!in_array('website_url', $columns_of['comments']))
 {
   $current_release = '2.4.0';
 }
-else if (!in_array('nb_available_tags', $columns_of[USER_CACHE_TABLE]))
+else if (!in_array('nb_available_tags', $columns_of['user_cache']))
 {
   $current_release = '2.5.0';
 }
-else if (!in_array('activation_key_expire', $columns_of[USER_INFOS_TABLE]))
+else if (!in_array('activation_key_expire', $columns_of['user_infos']))
 {
   $current_release = '2.6.0';
 }
-else if (!in_array('auth_key_id', $columns_of[HISTORY_TABLE]))
+else if (!in_array('auth_key_id', $columns_of['history']))
 {
   $current_release = '2.7.0';
 }
-else if (!in_array('history_id_to', $columns_of[HISTORY_SUMMARY_TABLE]))
+else if (!in_array('history_id_to', $columns_of['history_summary']))
 {
   $current_release = '2.8.0';
 }
-else if (!in_array(ACTIVITY_TABLE, $tables))
+else if (!in_array('activity', $tables))
 {
   $current_release = '2.9.0';
 }
@@ -342,7 +340,7 @@ else
   // retrieve already applied upgrades
   $query = '
 SELECT id
-  FROM '.UPGRADE_TABLE.'
+  FROM upgrade
 ;';
   $applied_upgrades = array_from_query($query, 'id');
 
@@ -469,7 +467,7 @@ if ((isset($_POST['submit']) or isset($_GET['now']))
       if (file_exists(PHPWG_PLUGINS_PATH .'TakeATour/tours/'.$version_.'/config.inc.php'))
       {
         $query = '
-REPLACE INTO '.PLUGINS_TABLE.'
+REPLACE INTO plugins
   (id, state)
   VALUES (\'TakeATour\', \'active\')
 ;';

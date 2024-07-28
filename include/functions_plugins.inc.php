@@ -314,7 +314,7 @@ function &get_plugin_data($plugin_id)
 function get_db_plugins($state='', $id='')
 {
   $query = '
-SELECT * FROM '.PLUGINS_TABLE;
+SELECT * FROM plugins';
   $clauses = array();
   if (!empty($state))
   {
@@ -415,7 +415,7 @@ function autoupdate_plugin(&$plugin)
     if ($new_version != $old_version)
     {
       $query = '
-UPDATE '. PLUGINS_TABLE .'
+UPDATE plugins
   SET version = "'. $plugin['version'] .'"
   WHERE id = "'. $plugin['id'] .'"
 ;';
