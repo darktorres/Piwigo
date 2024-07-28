@@ -10,6 +10,7 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 // todo: replace mixed types
+// todo: replace $conf with a class with typed getters/setters
 
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
