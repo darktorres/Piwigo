@@ -16,7 +16,7 @@ if (!isset($_SESSION['TAT_tour29_delete_cat_id']))
   $query = '
 SELECT
     category_id
-  FROM '.IMAGE_CATEGORY_TABLE.'
+  FROM image_category
   LIMIT 1
 ;';
   $rows = query2array($query);
@@ -39,7 +39,7 @@ if (!isset($_SESSION['TAT_tour29_image_id']))
   $query = '
 SELECT
     id
-  FROM '.IMAGES_TABLE.'
+  FROM images
   ORDER BY id DESC
   LIMIT 1
 ;';
@@ -64,7 +64,7 @@ $template->assign('TAT_tour29_history_url', 'admin.php?page=stats&year='.date('Y
 $query = '
 SELECT
     COUNT(*)
-  FROM '.TAGS_TABLE.'
+  FROM tags
 ;';
 list($counter) = pwg_db_fetch_row(pwg_query($query));
 if ($counter > 0)

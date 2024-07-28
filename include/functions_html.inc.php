@@ -103,7 +103,7 @@ function get_cat_display_name_cache($uppercats,
   {
     $query = '
 SELECT id, name, permalink
-  FROM '.CATEGORIES_TABLE.'
+  FROM categories
 ;';
     $cache['cat_names'] = query2array($query, 'id');
   }
