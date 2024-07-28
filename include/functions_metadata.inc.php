@@ -135,7 +135,7 @@ function get_exif_data($filename, $map)
   }
 
   // Read EXIF data
-  if ($exif = @exif_read_data($filename) or $exif2 = trigger_change('format_exif_data', $exif=null, $filename, $map))
+  if (($exif = exif_read_data($filename)) or $exif2 = trigger_change('format_exif_data', $exif=null, $filename, $map))
   {
     if (!empty($exif2))
     {

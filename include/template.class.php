@@ -872,9 +872,9 @@ class Template
 
     $this->scriptLoader->add( $params['id'], $load,
       empty($params['require']) ? array() : explode( ',', $params['require'] ),
-      @$params['path'],
+      $params['path'] ?? null,
       isset($params['version']) ? $params['version'] : 0,
-      @$params['template']);
+      $params['template'] ?? null);
   }
 
   /**
@@ -1002,7 +1002,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
       $params['id'] = md5($params['path']);
     }
 
-    $this->cssLoader->add($params['id'], $params['path'], isset($params['version']) ? $params['version'] : 0, (int)@$params['order'], (bool)@$params['template']);
+    $this->cssLoader->add($params['id'], $params['path'], isset($params['version']) ? $params['version'] : 0, (int)($params['order'] ?? null), (bool)($params['template'] ?? null));
   }
 
   /**
