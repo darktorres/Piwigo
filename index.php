@@ -9,6 +9,8 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+// todo: replace mixed types
+
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
 include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
