@@ -850,3 +850,5 @@ function query2array($query, $key_name = null, $value_name = null)
 
     return $data;
 }
+
+// todo: remove '1 = 1'
