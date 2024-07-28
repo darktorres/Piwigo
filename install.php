@@ -48,7 +48,7 @@ else
 }
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-@include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 
 include(PHPWG_ROOT_PATH . 'include/functions.inc.php');

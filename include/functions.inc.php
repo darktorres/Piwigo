@@ -1253,7 +1253,7 @@ function l10n($key)
 {
   global $lang, $conf;
 
-  if ( ($val=@$lang[$key]) === null)
+  if ( ($val=($lang[$key] ?? null)) === null)
   {
     if ($conf['debug_l10n'] and !isset($lang[$key]) and !empty($key))
     {
@@ -1387,6 +1387,78 @@ SELECT '.$conf['user_fields']['email'].'
   $email = trigger_change('get_webmaster_mail_address', $email);
 
   return $email;
+}
+
+function is_serialized(mixed $data, bool $strict = true): bool
+{
+    // If it isn't a string, it isn't serialized.
+    if (! is_string($data)) {
+        return false;
+    }
+
+    $data = trim($data);
+
+    if ($data === 'N;') {
+        return true;
+    }
+
+    if (strlen($data) < 4) {
+        return false;
+    }
+
+    if ($data[1] !== ':') {
+        return false;
+    }
+
+    if ($strict) {
+        $lastc = substr($data, -1);
+
+        if ($lastc !== ';' && $lastc !== '}') {
+            return false;
+        }
+    } else {
+        $semicolon = strpos($data, ';');
+        $brace = strpos($data, '}');
+
+        // Either ; or } must exist.
+        if ($semicolon === false && $brace === false) {
+            return false;
+        }
+
+        // But neither must be in the first X characters.
+        if ($semicolon !== false && $semicolon < 3) {
+            return false;
+        }
+
+        if ($brace !== false && $brace < 4) {
+            return false;
+        }
+    }
+
+    $token = $data[0];
+
+    switch ($token) {
+        case 's':
+            if ($strict) {
+                if (substr($data, -2, 1) !== '"') {
+                    return false;
+                }
+            } elseif (! str_contains($data, '"')) {
+                return false;
+            }
+            // no break
+        case 'a':
+        case 'O':
+        case 'E':
+            return (bool) preg_match(sprintf('/^%s:[0-9]+:/s', $token), $data);
+        case 'b':
+        case 'i':
+        case 'd':
+            $end = $strict ? '$' : '';
+            return (bool) preg_match(sprintf('/^%s:[0-9.E+-]+;%s/', $token, $end), $data);
+    }
+
+    return false;
 }
 
 /**
@@ -1743,13 +1815,13 @@ function load_language($filename, $dirname = '', $options = array())
   global $user, $language_files;
 
   // keep trace of plugins loaded files for switch_lang_to() function
-  if (!empty($dirname) && !empty($filename) && !@$options['return']
+  if (!empty($dirname) && !empty($filename) && !($options['return'] ?? null)
     && !isset($language_files[$dirname][$filename]))
   {
     $language_files[$dirname][$filename] = $options;
   }
 
-  if (!@$options['return'])
+  if (!($options['return'] ?? null))
   {
     $filename .= '.php';
   }
@@ -1786,7 +1858,7 @@ function load_language($filename, $dirname = '', $options = array())
     }
     $languages[] = $options['force_fallback'];
   }
-  if (!@$options['no_fallback'])
+  if (!($options['no_fallback'] ?? null))
   { // default language
     $languages[] = $default_language;
   }
@@ -1798,7 +1870,7 @@ function load_language($filename, $dirname = '', $options = array())
   $selected_language = '';
   foreach ($languages as $language)
   {
-    $f = @$options['local'] ?
+    $f = ($options['local'] ?? null) ?
       $dirname.$language.'.'.$filename:
       $dirname.$language.'/'.$filename;
 
@@ -1812,7 +1884,7 @@ function load_language($filename, $dirname = '', $options = array())
   
   if (!empty($source_file))
   {
-    if (!@$options['return'])
+    if (!($options['return'] ?? null))
     {
       // load forced fallback
       if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language)
@@ -1823,7 +1895,7 @@ function load_language($filename, $dirname = '', $options = array())
       // load language content
       @include($source_file);
       $load_lang = @$lang;
-      $load_lang_info = @$lang_info;
+      $load_lang_info = $lang_info ?? null;
 
       // access already existing values
       global $lang, $lang_info;
