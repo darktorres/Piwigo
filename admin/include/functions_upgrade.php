@@ -15,43 +15,6 @@ function check_upgrade()
   return false;
 }
 
-// concerning upgrade, we use the default tables
-function prepare_conf_upgrade()
-{
-  // $conf is not used for users tables
-  // define cannot be re-defined
-  define('CATEGORIES_TABLE', 'categories');
-  define('COMMENTS_TABLE', 'comments');
-  define('CONFIG_TABLE', 'config');
-  define('FAVORITES_TABLE', 'favorites');
-  define('GROUP_ACCESS_TABLE', 'group_access');
-  define('GROUPS_TABLE', 'groups_table');
-  define('HISTORY_TABLE', 'history');
-  define('HISTORY_SUMMARY_TABLE', 'history_summary');
-  define('IMAGE_CATEGORY_TABLE', 'image_category');
-  define('IMAGES_TABLE', 'images');
-  define('SESSIONS_TABLE', 'sessions');
-  define('SITES_TABLE', 'sites');
-  define('USER_ACCESS_TABLE', 'user_access');
-  define('USER_GROUP_TABLE', 'user_group');
-  define('USERS_TABLE', 'users');
-  define('USER_INFOS_TABLE', 'user_infos');
-  define('USER_FEED_TABLE', 'user_feed');
-  define('RATE_TABLE', 'rate');
-  define('USER_CACHE_TABLE', 'user_cache');
-  define('USER_CACHE_CATEGORIES_TABLE', 'user_cache_categories');
-  define('CADDIE_TABLE', 'caddie');
-  define('UPGRADE_TABLE', 'upgrade');
-  define('SEARCH_TABLE', 'search');
-  define('USER_MAIL_NOTIFICATION_TABLE', 'user_mail_notification');
-  define('TAGS_TABLE', 'tags');
-  define('IMAGE_TAG_TABLE', 'image_tag');
-  define('PLUGINS_TABLE', 'plugins');
-  define('OLD_PERMALINKS_TABLE', 'old_permalinks');
-  define('THEMES_TABLE', 'themes');
-  define('LANGUAGES_TABLE', 'languages');
-}
-
 // Deactivate all non-standard plugins
 function deactivate_non_standard_plugins()
 {
@@ -66,7 +29,7 @@ function deactivate_non_standard_plugins()
 
   $query = '
 SELECT id
-FROM '.PLUGINS_TABLE.'
+FROM plugins
 WHERE state = \'active\'
 AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
 ;';
@@ -81,7 +44,7 @@ AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
   if (!empty($plugins))
   {
     $query = '
-UPDATE '.PLUGINS_TABLE.'
+UPDATE plugins
 SET state=\'inactive\'
 WHERE id IN (\'' . implode('\',\'', $plugins) . '\')
 ;';
@@ -107,7 +70,7 @@ function deactivate_non_standard_themes()
 SELECT
     id,
     name
-  FROM '.THEMES_TABLE.'
+  FROM themes
   WHERE id NOT IN (\''.implode("','", $standard_themes).'\')
 ;';
   $result = pwg_query($query);
@@ -123,7 +86,7 @@ SELECT
   {
     $query = '
 DELETE
-  FROM '.THEMES_TABLE.'
+  FROM themes
   WHERE id IN (\''.implode("','", $theme_ids).'\')
 ;';
     pwg_query($query);
@@ -134,7 +97,7 @@ DELETE
     // what is the default theme?
     $query = '
 SELECT theme
-  FROM '.USER_INFOS_TABLE.'
+  FROM user_infos
   WHERE user_id = '.$conf['default_user_id'].'
 ;';
     list($default_theme) = pwg_db_fetch_row(pwg_query($query));
@@ -146,7 +109,7 @@ SELECT theme
       $query = '
 SELECT
     COUNT(*)
-  FROM '.THEMES_TABLE.'
+  FROM themes
   WHERE id = \''.PHPWG_DEFAULT_TEMPLATE.'\'
 ;';
       list($counter) = pwg_db_fetch_row(pwg_query($query));
@@ -160,7 +123,7 @@ SELECT
 
       // then associate it to default user
       $query = '
-UPDATE '.USER_INFOS_TABLE.'
+UPDATE user_infos
   SET theme = \''.PHPWG_DEFAULT_TEMPLATE.'\'
   WHERE user_id = '.$conf['default_user_id'].'
 ;';
@@ -188,7 +151,7 @@ function check_upgrade_access_rights()
     {
       $query = '
 SELECT status
-  FROM '.USER_INFOS_TABLE.'
+  FROM user_infos
   WHERE user_id = '.$_SESSION['pwg_uid'].'
 ;';
       pwg_query($query);
@@ -225,7 +188,7 @@ SELECT status
   {
     $query = '
 SELECT password, status
-FROM '.USERS_TABLE.'
+FROM users
 WHERE username = \''.$username.'\'
 ;';
   }
@@ -233,8 +196,8 @@ WHERE username = \''.$username.'\'
   {
     $query = '
 SELECT u.password, ui.status
-FROM '.USERS_TABLE.' AS u
-INNER JOIN '.USER_INFOS_TABLE.' AS ui
+FROM users AS u
+INNER JOIN user_infos AS ui
 ON u.'.$conf['user_fields']['id'].'=ui.user_id
 WHERE '.$conf['user_fields']['username'].'=\''.$username.'\'
 ;';
@@ -292,7 +255,7 @@ function check_upgrade_feed()
   // retrieve already applied upgrades
   $query = '
 SELECT id
-  FROM '.UPGRADE_TABLE.'
+  FROM upgrade
 ;';
   $applied = array_from_query($query, 'id');
 

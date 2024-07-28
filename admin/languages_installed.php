@@ -101,7 +101,7 @@ $missing_language_ids = array_diff(
 foreach($missing_language_ids as $language_id)
 {
   $query = '
-UPDATE '.USER_INFOS_TABLE.'
+UPDATE user_infos
   SET language = \''.get_default_language().'\'
   WHERE language = \''.$language_id.'\'
 ;';
@@ -109,7 +109,7 @@ UPDATE '.USER_INFOS_TABLE.'
 
   $query = '
 DELETE
-  FROM '.LANGUAGES_TABLE.'
+  FROM languages
   WHERE id= \''.$language_id.'\'
 ;';
   pwg_query($query);

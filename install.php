@@ -233,7 +233,7 @@ if (isset($_POST['install']))
       );
 
     $query = '
-INSERT INTO '.CONFIG_TABLE.' (param,value,comment) 
+INSERT INTO config (param,value,comment) 
    VALUES (\'secret_key\',md5('.pwg_db_cast_to_text(DB_RANDOM_FUNCTION.'()').'),
    \'a secret key specific to the gallery for internal use\');';
     pwg_query($query);
@@ -259,7 +259,7 @@ INSERT INTO '.CONFIG_TABLE.' (param,value,comment)
       'id' => 1,
       'galleries_url' => PHPWG_ROOT_PATH.'galleries/',
       );
-    mass_inserts(SITES_TABLE, array_keys($insert), array($insert));
+    mass_inserts('sites', array_keys($insert), array($insert));
 
     // webmaster admin user
     $inserts = array(
@@ -274,7 +274,7 @@ INSERT INTO '.CONFIG_TABLE.' (param,value,comment)
         'username'     => 'guest',
         ),
       );
-    mass_inserts(USERS_TABLE, array_keys($inserts[0]), $inserts);
+    mass_inserts('users', array_keys($inserts[0]), $inserts);
 
     create_user_infos(array(1,2), array('language' => $language));
 
@@ -293,7 +293,7 @@ INSERT INTO '.CONFIG_TABLE.' (param,value,comment)
     //     );
     // }
     // mass_inserts(
-    //   UPGRADE_TABLE,
+    //   'upgrade',
     //   array_keys($datas[0]),
     //   $datas
     //   );

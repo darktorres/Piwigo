@@ -57,7 +57,7 @@ if ( !empty($feed_id) )
   $query = '
 SELECT user_id,
        last_check
-  FROM '.USER_FEED_TABLE.'
+  FROM user_feed
   WHERE id = \''.$feed_id.'\'
 ;';
   $feed_row = pwg_db_fetch_assoc(pwg_query($query));
@@ -123,7 +123,7 @@ if (!$image_only)
     $rss->addItem($item);
 
     $query = '
-UPDATE '.USER_FEED_TABLE.'
+UPDATE user_feed
   SET last_check = \''.$dbnow.'\'
   WHERE id = \''.$feed_id.'\'
 ;';
@@ -137,7 +137,7 @@ if ( !empty($feed_id) and empty($news) )
     or time()-datetime_to_ts($feed_row['last_check']) > 30*24*3600 )
   {
     $query = '
-UPDATE '.USER_FEED_TABLE.'
+UPDATE user_feed
   SET last_check = '.pwg_db_get_recent_period_expression(-15, $dbnow).'
   WHERE id = \''.$feed_id.'\'
 ;';

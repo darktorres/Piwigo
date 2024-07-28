@@ -23,7 +23,7 @@ if (
   $query = '
 SELECT
     COUNT(*)
-  FROM '.IMAGES_TABLE.'
+  FROM images
 ;';
   list($nb_photos) = pwg_db_fetch_row(pwg_query($query));
   if (0 == $nb_photos)

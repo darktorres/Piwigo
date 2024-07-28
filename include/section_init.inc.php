@@ -268,7 +268,7 @@ if ('categories' == $page['section'])
       {
         $query = '
 SELECT id
-  FROM '.CATEGORIES_TABLE.'
+  FROM categories
   WHERE
     uppercats LIKE \''.$page['category']['uppercats'].',%\' '
     .get_sql_condition_FandF(
@@ -306,8 +306,8 @@ SELECT id
       // main query
       $query = '
 SELECT DISTINCT(image_id)
-  FROM '.IMAGE_CATEGORY_TABLE.'
-    INNER JOIN '.IMAGES_TABLE.' ON id = image_id
+  FROM image_category
+    INNER JOIN images ON id = image_id
   WHERE
     '.$where_sql.'
 '.$forbidden.'
@@ -400,7 +400,7 @@ else
     if (!empty($_GET['action']) && ($_GET['action'] == 'remove_all_from_favorites'))
     {
       $query = '
-DELETE FROM '.FAVORITES_TABLE.'
+DELETE FROM favorites
   WHERE user_id = '.$user['id'].'
 ;';
       pwg_query($query);
@@ -410,8 +410,8 @@ DELETE FROM '.FAVORITES_TABLE.'
     {
       $query = '
 SELECT image_id
-  FROM '.FAVORITES_TABLE.'
-    INNER JOIN '.IMAGES_TABLE.' ON image_id = id
+  FROM favorites
+    INNER JOIN images ON image_id = id
   WHERE user_id = '.$user['id'].'
 '.get_sql_condition_FandF(
       array(
@@ -458,8 +458,8 @@ SELECT image_id
 
     $query = '
 SELECT DISTINCT(id)
-  FROM '.IMAGES_TABLE.'
-    INNER JOIN '.IMAGE_CATEGORY_TABLE.' AS ic ON id = ic.image_id
+  FROM images
+    INNER JOIN image_category AS ic ON id = ic.image_id
   WHERE '
   .get_recent_photos_sql('date_available').'
   '.$forbidden
@@ -498,8 +498,8 @@ SELECT DISTINCT(id)
 
     $query = '
 SELECT DISTINCT(id)
-  FROM '.IMAGES_TABLE.'
-    INNER JOIN '.IMAGE_CATEGORY_TABLE.' AS ic ON id = ic.image_id
+  FROM images
+    INNER JOIN image_category AS ic ON id = ic.image_id
   WHERE hit > 0
     '.$forbidden.'
     '.$conf['order_by'].'
@@ -525,8 +525,8 @@ SELECT DISTINCT(id)
 
     $query ='
 SELECT DISTINCT(id)
-  FROM '.IMAGES_TABLE.'
-    INNER JOIN '.IMAGE_CATEGORY_TABLE.' AS ic ON id = ic.image_id
+  FROM images
+    INNER JOIN image_category AS ic ON id = ic.image_id
   WHERE rating_score IS NOT NULL
     '.$forbidden.'
     '.$conf['order_by'].'
@@ -548,8 +548,8 @@ SELECT DISTINCT(id)
   {
     $query ='
 SELECT DISTINCT(id)
-  FROM '.IMAGES_TABLE.'
-    INNER JOIN '.IMAGE_CATEGORY_TABLE.' AS ic ON id = ic.image_id
+  FROM images
+    INNER JOIN image_category AS ic ON id = ic.image_id
   WHERE image_id IN ('.implode(',', $page['list']).')
     '.$forbidden.'
   '.$conf['order_by'].'
