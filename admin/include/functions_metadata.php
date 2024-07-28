@@ -267,7 +267,7 @@ function sync_metadata($ids)
 
   $query = '
 SELECT id, path, representative_ext
-  FROM '.IMAGES_TABLE.'
+  FROM images
   WHERE id IN (
 '.wordwrap(implode(', ', $ids), 160, "\n").'
 )
@@ -315,7 +315,7 @@ SELECT id, path, representative_ext
             );
 
     mass_updates(
-      IMAGES_TABLE,
+      'images',
       array(
         'primary' => array('id'),
         'update'  => $update_fields
@@ -346,7 +346,7 @@ function get_filelist($category_id = '', $site_id=1, $recursive = false,
 
   $query = '
 SELECT id
-  FROM '.CATEGORIES_TABLE.'
+  FROM categories
   WHERE site_id = '.$site_id.'
     AND dir IS NOT NULL';
   if (is_numeric($category_id))
@@ -379,7 +379,7 @@ SELECT id
 
   $query = '
 SELECT id, path, representative_ext
-  FROM '.IMAGES_TABLE.'
+  FROM images
   WHERE storage_category_id IN ('.implode(',', $cat_ids).')';
   if ($only_new)
   {

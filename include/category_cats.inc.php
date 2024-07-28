@@ -13,7 +13,7 @@
  */
 
 
-// $user['forbidden_categories'] including with USER_CACHE_CATEGORIES_TABLE
+// $user['forbidden_categories'] including with user_cache_categories
 $query = '
 SELECT SQL_CALC_FOUND_ROWS
     c.*,
@@ -24,8 +24,8 @@ SELECT SQL_CALC_FOUND_ROWS
     count_images,
     nb_categories,
     count_categories
-  FROM '.CATEGORIES_TABLE.' c
-    INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.' ucc
+  FROM categories c
+    INNER JOIN user_cache_categories ucc
     ON id = cat_id
     AND user_id = '.$user['id'].'
   WHERE count_images > 0
@@ -93,7 +93,7 @@ while ($row = pwg_db_fetch_assoc($result))
   { // searching a random representant among representant of sub-categories
     $query = '
 SELECT representative_picture_id
-  FROM '.CATEGORIES_TABLE.' INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.'
+  FROM categories INNER JOIN user_cache_categories
   ON id = cat_id and user_id = '.$user['id'].'
   WHERE uppercats LIKE \''.$row['uppercats'].',%\'
     AND representative_picture_id IS NOT NULL'
@@ -150,8 +150,8 @@ SELECT
     category_id,
     MIN(date_creation) AS from,
     MAX(date_creation) AS to
-  FROM '.IMAGE_CATEGORY_TABLE.'
-    INNER JOIN '.IMAGES_TABLE.' ON image_id = id
+  FROM image_category
+    INNER JOIN images ON image_id = id
   WHERE category_id IN ('.implode(',', $category_ids).')
 '.get_sql_condition_FandF
   (
@@ -180,7 +180,7 @@ if (count($categories) > 0)
 
   $query = '
 SELECT *
-  FROM '.IMAGES_TABLE.'
+  FROM images
   WHERE id IN ('.implode(',', $image_ids).')
 ;';
   $result = pwg_query($query);
@@ -228,7 +228,7 @@ SELECT *
   {
     $query = '
 SELECT *
-  FROM '.IMAGES_TABLE.'
+  FROM images
   WHERE id IN ('.implode(',', $new_image_ids).')
 ;';
     $result = pwg_query($query);
@@ -260,7 +260,7 @@ if (count($user_representative_updates_for))
   }
 
   mass_updates(
-    USER_CACHE_CATEGORIES_TABLE,
+    'user_cache_categories',
     array(
       'primary' => array('user_id', 'cat_id'),
       'update'  => array('user_representative_picture_id')

@@ -23,7 +23,7 @@ $admin_album_base_url = get_root_url().'admin.php?page=album-'.$_GET['cat_id'];
 
 $query = '
 SELECT *
-  FROM '.CATEGORIES_TABLE.'
+  FROM categories
   WHERE id = '.$_GET['cat_id'].'
 ;';
 $category = pwg_db_fetch_assoc(pwg_query($query));
