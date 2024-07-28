@@ -103,7 +103,7 @@ if (isset($_POST['submit']))
   {
     $query = '
 DELETE
-  FROM '.CADDIE_TABLE.'
+  FROM caddie
   WHERE element_id IN ('.implode(',', $collection).')
     AND user_id = '.$user['id'].'
 ;';
@@ -139,7 +139,7 @@ DELETE
 
       $query = '
 DELETE
-  FROM '.IMAGE_TAG_TABLE.'
+  FROM image_tag
   WHERE image_id IN ('.implode(',', $collection).')
     AND tag_id IN ('.implode(',', $_POST['del_tags']).')
 ;';
@@ -251,7 +251,7 @@ DELETE
     }
 
     mass_updates(
-      IMAGES_TABLE,
+      'images',
       array('primary' => array('id'), 'update' => array('author')),
       $datas
       );
@@ -277,7 +277,7 @@ DELETE
     }
 
     mass_updates(
-      IMAGES_TABLE,
+      'images',
       array('primary' => array('id'), 'update' => array('name')),
       $datas
       );
@@ -307,7 +307,7 @@ DELETE
     }
 
     mass_updates(
-      IMAGES_TABLE,
+      'images',
       array('primary' => array('id'), 'update' => array('date_creation')),
       $datas
       );
@@ -328,7 +328,7 @@ DELETE
     }
 
     mass_updates(
-      IMAGES_TABLE,
+      'images',
       array('primary' => array('id'), 'update' => array('level')),
       $datas
       );
@@ -386,7 +386,7 @@ DELETE
 
   else if ('delete_derivatives' == $action && !empty($_POST['del_derivatives_type']))
   {
-    $query='SELECT path,representative_ext FROM '.IMAGES_TABLE.'
+    $query='SELECT path,representative_ext FROM images
   WHERE id IN ('.implode(',', $collection).')';
     $result = pwg_query($query);
     while ($info = pwg_db_fetch_assoc($result))
@@ -522,7 +522,7 @@ if (!empty($_SESSION['bulk_manager_filter']['tags']))
 SELECT
     id,
     name
-  FROM '.TAGS_TABLE.'
+  FROM tags
   WHERE id IN ('.implode(',', $_SESSION['bulk_manager_filter']['tags']).')
 ;';
 
@@ -543,7 +543,7 @@ else
   // we need to know the category in which the last photo was added
   $query = '
 SELECT category_id
-  FROM '.IMAGE_CATEGORY_TABLE.'
+  FROM image_category
   ORDER BY image_id DESC
   LIMIT 1
 ;';
@@ -567,8 +567,8 @@ if (count($page['cat_elements_id']) > 0)
   $query = '
 SELECT
     DISTINCT(category_id) AS id
-  FROM '.IMAGE_CATEGORY_TABLE.' AS ic
-    JOIN '.IMAGES_TABLE.' AS i ON i.id = ic.image_id
+  FROM image_category AS ic
+    JOIN images AS i ON i.id = ic.image_id
   WHERE ic.image_id IN ('.implode(',', $page['cat_elements_id']).')
     AND (
       ic.category_id != i.storage_category_id
@@ -683,7 +683,7 @@ if (count($page['cat_elements_id']) > 0)
 
   $query = '
 SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
-  FROM '.IMAGES_TABLE;
+  FROM images';
 
   if ($is_category)
   {
@@ -696,7 +696,7 @@ SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
     }
 
     $query.= '
-    JOIN '.IMAGE_CATEGORY_TABLE.' ON id = image_id';
+    JOIN image_category ON id = image_id';
   }
 
   $query.= '

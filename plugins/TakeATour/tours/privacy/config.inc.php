@@ -30,7 +30,7 @@ $TOUR_PATH = PHPWG_PLUGINS_PATH.'TakeATour/tours/privacy/tour.tpl';
   {
     $query = '
     SELECT id
-      FROM '.IMAGES_TABLE.'
+      FROM images
       ORDER BY RAND()
       LIMIT 1  
     ;';
@@ -56,7 +56,7 @@ $TOUR_PATH = PHPWG_PLUGINS_PATH.'TakeATour/tours/privacy/tour.tpl';
   {
     $query = '
     SELECT id
-      FROM '.CATEGORIES_TABLE.'
+      FROM categories
       ORDER BY RAND()
       LIMIT 1  
     ;';

@@ -47,7 +47,7 @@ function language_controler_switch()
       else
       {
         $query = '
-UPDATE '.USER_INFOS_TABLE.'
+UPDATE user_infos
   SET language = \''.$_GET['lang'].'\'
   WHERE user_id = '.$user['id'].'
 ;';

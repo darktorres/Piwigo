@@ -384,7 +384,7 @@ catch (Exception $e)
   $logger->error($e->getMessage());
 }
 
-list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM '.CONFIG_TABLE.' WHERE param=\'derivatives\''));
+list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM config WHERE param=\'derivatives\''));
 ImageStdParams::load_from_db();
 
 
@@ -443,7 +443,7 @@ if (strpos($page['src_location'], '/pwg_representative/')===false
   {
     $query = '
 SELECT *
-  FROM '.IMAGES_TABLE.'
+  FROM images
   WHERE path=\''.addslashes($page['src_location']).'\'
 ;';
 
@@ -460,7 +460,7 @@ SELECT *
         $page['rotation_angle'] = pwg_image::get_rotation_angle($page['src_path']);
 
         single_update(
-          IMAGES_TABLE,
+          'images',
           array('rotation' => pwg_image::get_rotation_code_from_angle($page['rotation_angle'])),
           array('id' => $row['id'])
           );
