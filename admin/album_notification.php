@@ -43,7 +43,7 @@ if (isset($_POST['submitEmail']))
   {
     $query = '
 SELECT id, file, path, representative_ext
-  FROM '.IMAGES_TABLE.'
+  FROM images
   WHERE id = '.$category['representative_picture_id'].'
 ;';
 
@@ -108,8 +108,8 @@ SELECT
     ui.language,
     u.'.$conf['user_fields']['email'].' AS email,
     u.'.$conf['user_fields']['username'].' AS username
-  FROM '.USER_INFOS_TABLE.' AS ui
-    JOIN '.USERS_TABLE.' AS u ON u.'.$conf['user_fields']['id'].' = ui.user_id
+  FROM user_infos AS ui
+    JOIN users AS u ON u.'.$conf['user_fields']['id'].' = ui.user_id
   WHERE ui.user_id IN ('.implode(',', $_POST['users']).')
 ;';
     $users = query2array($query);
@@ -161,7 +161,7 @@ SELECT
     $query = '
 SELECT
     name
-  FROM '.GROUPS_TABLE.'
+  FROM groups_table
   WHERE id = '.$_POST['group'].'
 ;';
     list($group_name) = pwg_db_fetch_row(pwg_query($query));
@@ -212,7 +212,7 @@ if ($conf['auth_key_duration'] > 0)
 $query = '
 SELECT
     id AS group_id
-  FROM '.GROUPS_TABLE.'
+  FROM groups_table
 ;';
 $all_group_ids = array_from_query($query, 'group_id');
 
@@ -227,7 +227,7 @@ else
     $query = '
 SELECT
     group_id
-  FROM '.GROUP_ACCESS_TABLE.'
+  FROM group_access
   WHERE cat_id = '.$category['id'].'
 ;';
     $group_ids = array_from_query($query, 'group_id');
@@ -248,7 +248,7 @@ SELECT
 SELECT
     id,
     name
-  FROM '.GROUPS_TABLE.'
+  FROM groups_table
   WHERE id IN ('.implode(',', $group_ids).')
   ORDER BY name ASC
 ;';
@@ -265,7 +265,7 @@ SELECT
 $query = '
 SELECT
     user_id
-  FROM '.USER_INFOS_TABLE.'
+  FROM user_infos
   WHERE status != \'guest\'
 ;';
 $all_user_ids = query2array($query, null, 'user_id');
@@ -279,7 +279,7 @@ if ('private' == $category['status'])
     $query = '
 SELECT
     user_id
-  FROM '.USER_GROUP_TABLE.'
+  FROM user_group
   WHERE group_id IN ('.implode(',', $group_ids).') 
 ';
     $user_ids_access_indirect = query2array($query, null, 'user_id');
@@ -288,7 +288,7 @@ SELECT
   $query = '
 SELECT
     user_id
-  FROM '.USER_ACCESS_TABLE.'
+  FROM user_access
   WHERE cat_id = '.$category['id'].'
 ;';
   $user_ids_access_direct = query2array($query, null, 'user_id');
@@ -308,7 +308,7 @@ if (count($user_ids) > 0)
 SELECT
     '.$conf['user_fields']['id'].' AS id,
     '.$conf['user_fields']['username'].' AS username
-  FROM '.USERS_TABLE.'
+  FROM users
   WHERE id IN ('.implode(',', $user_ids).')
 ;';
 

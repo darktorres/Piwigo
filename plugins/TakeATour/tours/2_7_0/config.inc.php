@@ -32,7 +32,7 @@ $TOUR_PATH = PHPWG_PLUGINS_PATH.'TakeATour/tours/2_7_0/tour.tpl';
   {
     $query = '
     SELECT id
-      FROM '.IMAGES_TABLE.'
+      FROM images
       ORDER BY RAND()
       LIMIT 1  
     ;';

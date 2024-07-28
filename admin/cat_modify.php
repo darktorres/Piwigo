@@ -42,7 +42,7 @@ function get_local_dir( $category_id )
   else
   {
     $query = 'SELECT uppercats';
-    $query.= ' FROM '.CATEGORIES_TABLE.' WHERE id = '.$category_id;
+    $query.= ' FROM categories WHERE id = '.$category_id;
     $query.= ';';
     $row = pwg_db_fetch_assoc( pwg_query( $query ) );
     $uppercats = $row['uppercats'];
@@ -52,7 +52,7 @@ function get_local_dir( $category_id )
 
   $database_dirs = array();
   $query = 'SELECT id,dir';
-  $query.= ' FROM '.CATEGORIES_TABLE.' WHERE id IN ('.$uppercats.')';
+  $query.= ' FROM categories WHERE id IN ('.$uppercats.')';
   $query.= ';';
   $result = pwg_query( $query );
   while( $row = pwg_db_fetch_assoc( $result ) )
@@ -75,7 +75,7 @@ function get_site_url($category_id)
 
   $query = '
 SELECT galleries_url
-  FROM '.SITES_TABLE.' AS s,'.CATEGORIES_TABLE.' AS c
+  FROM sites AS s,categories AS c
   WHERE s.id = c.site_id
     AND c.id = '.$category_id.'
 ;';
@@ -131,7 +131,7 @@ foreach (array('comment','dir','site_id', 'id_uppercat') as $nullable)
 $category['is_virtual'] = empty($category['dir']) ? true : false;
 
 $query = 'SELECT DISTINCT category_id
-  FROM '.IMAGE_CATEGORY_TABLE.'
+  FROM image_category
   WHERE category_id = '.$_GET['cat_id'].'
   LIMIT 1';
 $result = pwg_query($query);
@@ -222,8 +222,8 @@ SELECT
     COUNT(image_id),
     MIN(DATE(date_available)),
     MAX(DATE(date_available))
-  FROM '.IMAGES_TABLE.'
-    JOIN '.IMAGE_CATEGORY_TABLE.' ON image_id = id
+  FROM images
+    JOIN image_category ON image_id = id
   WHERE category_id = '.$category['id'].'
 ;';
   list($image_count, $min_date, $max_date) = pwg_db_fetch_row(pwg_query($query));
@@ -261,7 +261,7 @@ $template->assign(
 SELECT DISTINCT
     (image_id)
   FROM 
-    '.IMAGE_CATEGORY_TABLE.'
+    image_category
   WHERE 
     category_id IN ('.implode(',', $subcat_ids).')
   ;';
@@ -272,7 +272,7 @@ SELECT DISTINCT
 // date creation
 $query = '
 SELECT occured_on
-  FROM '.ACTIVITY_TABLE.'
+  FROM activity
   WHERE object_id = '.$category['id'].' 
     AND object = "album"
     AND action = "add"
@@ -291,7 +291,7 @@ if (count($result) > 0) {
 // Sub Albums
 $query = '
 SELECT COUNT(*)
-  FROM '.CATEGORIES_TABLE.'
+  FROM categories
   WHERE id_uppercat = '.$category['id'].'
 ';
 $result = query2array($query);
