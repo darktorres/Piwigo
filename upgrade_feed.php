@@ -35,8 +35,6 @@ if (!$conf['check_upgrade_feed'])
   die("upgrade feed is not active");
 }
 
-prepare_conf_upgrade();
-
 define('UPGRADES_PATH', PHPWG_ROOT_PATH.'install/db');
 
 // +-----------------------------------------------------------------------+
@@ -60,7 +58,7 @@ catch (Exception $e)
 // retrieve already applied upgrades
 $query = '
 SELECT id
-  FROM '.UPGRADE_TABLE.'
+  FROM upgrade
 ;';
 $applied = array_from_query($query, 'id');
 

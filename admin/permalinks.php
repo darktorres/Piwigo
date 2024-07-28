@@ -90,7 +90,7 @@ elseif ( isset($_GET['delete_permanent']) )
 {
   check_pwg_token();
   $query = '
-DELETE FROM '.OLD_PERMALINKS_TABLE.'
+DELETE FROM old_permalinks
   WHERE permalink=\''.pwg_db_real_escape_string($_GET['delete_permanent']).'\'
   LIMIT 1';
   $result = pwg_query($query);
@@ -116,7 +116,7 @@ SELECT
   id, permalink,
   CONCAT(id, " - ", name, IF(permalink IS NULL, "", " &radic;") ) AS name,
   uppercats, global_rank
-FROM '.CATEGORIES_TABLE;
+FROM categories';
 
 display_select_cat_wrapper( $query, $selected_cat, 'categories', false );
 
@@ -131,7 +131,7 @@ $sort_by = parse_sort_variables(
 
 $query = '
 SELECT id, permalink, uppercats, global_rank
-  FROM '.CATEGORIES_TABLE.'
+  FROM categories
   WHERE permalink IS NOT NULL
 ';
 if ( $sort_by[0]=='id' or $sort_by[0]=='permalink' )
@@ -161,7 +161,7 @@ $sort_by = parse_sort_variables(
     'SORT_OLD_', '#old_permalinks' );
 
 $url_del_base = get_root_url().'admin.php?page=permalinks';
-$query = 'SELECT * FROM '.OLD_PERMALINKS_TABLE;
+$query = 'SELECT * FROM old_permalinks';
 if ( count($sort_by) )
 {
   $query .= ' ORDER BY '.$sort_by[0];
