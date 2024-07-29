@@ -124,7 +124,7 @@ function ws_users_getList(
     ];
 
     if ($params['display'] != 'none') {
-        $params['display'] = array_map('trim', explode(',', $params['display']));
+        $params['display'] = array_map(trim(...), explode(',', $params['display']));
 
         if (in_array('all', $params['display'])) {
             $params['display'] = [
