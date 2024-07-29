@@ -466,7 +466,7 @@ if (isset($_SESSION['bulk_manager_filter']['search']) &&
         'permissions' => false,
     ]);
     if (! empty($res['items']) && ! empty($res['qs']['unmatched_terms'])) {
-        $template->assign('no_search_results', array_map('htmlspecialchars', $res['qs']['unmatched_terms']));
+        $template->assign('no_search_results', array_map(htmlspecialchars(...), $res['qs']['unmatched_terms']));
     }
     $filter_sets[] = $res['items'];
 }
