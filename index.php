@@ -483,7 +483,7 @@ if (empty($page['is_external'])) {
             (array) @$page['qsearch_details']['matching_cats']
         );
         if (count($cats)) {
-            usort($cats, 'name_compare');
+            usort($cats, name_compare(...));
             $hints = [];
             foreach ($cats as $cat) {
                 $hints[] = get_cat_display_name([$cat], '');
@@ -502,7 +502,7 @@ if (empty($page['is_external'])) {
         if (empty($page['items'])) {
             $template->append('no_search_results', htmlspecialchars($page['qsearch_details']['q']));
         } elseif (! empty($page['qsearch_details']['unmatched_terms'])) {
-            $template->assign('no_search_results', array_map('htmlspecialchars', $page['qsearch_details']['unmatched_terms']));
+            $template->assign('no_search_results', array_map(htmlspecialchars(...), $page['qsearch_details']['unmatched_terms']));
         }
     }
 

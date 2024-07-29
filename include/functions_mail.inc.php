@@ -153,11 +153,11 @@ function get_clean_recipients_list(
                 $data = [unformat_email($data)];
             }
         } else { // array of hashmaps
-            $data = array_map('unformat_email', $data);
+            $data = array_map(unformat_email(...), $data);
         }
     } else {
         $data = explode(',', $data);
-        $data = array_map('unformat_email', $data);
+        $data = array_map(unformat_email(...), $data);
     }
 
     $existing = [];

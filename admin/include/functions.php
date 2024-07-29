@@ -680,7 +680,7 @@ function set_cat_status(
         $categories_ = implode(',', $categories);
         $query = "SELECT id, name, id_uppercat, uppercats, global_rank FROM categories WHERE id IN ({$categories_});";
         $all_categories = query2array($query);
-        usort($all_categories, 'global_rank_compare');
+        usort($all_categories, global_rank_compare(...));
 
         foreach ($all_categories as $cat) {
             $is_top = true;
@@ -2302,9 +2302,9 @@ function get_taglist(
         }
     }
 
-    usort($taglist, 'tag_alpha_compare');
+    usort($taglist, tag_alpha_compare(...));
     if (count($altlist)) {
-        usort($altlist, 'tag_alpha_compare');
+        usort($altlist, tag_alpha_compare(...));
         $taglist = array_merge($taglist, $altlist);
     }
 
