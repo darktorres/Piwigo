@@ -44,14 +44,14 @@ $conf['gdThumb'] = unserialize($conf['gdThumb']);
 // RV Thumbnails Scroller
 if (isset($_GET['rvts'])) {
     $conf['gdThumb']['big_thumb'] = false;
-    add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb');
+    add_event_handler('loc_end_index_thumbnails', GDThumb_process_thumb(...));
 }
 
-add_event_handler('init', 'GDThumb_init');
-add_event_handler('loc_begin_index', 'GDThumb_index', 60);
-add_event_handler('loc_end_index_category_thumbnails', 'GDThumb_process_category');
-add_event_handler('get_admin_plugin_menu_links', 'GDThumb_admin_menu');
-add_event_handler('loc_end_index', 'GDThumb_remove_thumb_size');
+add_event_handler('init', GDThumb_init(...));
+add_event_handler('loc_begin_index', GDThumb_index(...), 60);
+add_event_handler('loc_end_index_category_thumbnails', GDThumb_process_category(...));
+add_event_handler('get_admin_plugin_menu_links', GDThumb_admin_menu(...));
+add_event_handler('loc_end_index', GDThumb_remove_thumb_size(...));
 
 function GDThumb_init(): void
 {
@@ -67,10 +67,10 @@ function GDThumb_index(): void
 {
     global $template;
 
-    $template->smarty->registerPlugin('function', 'media_type', 'GDThumb_media_type');
-    $template->set_prefilter('index', 'GDThumb_prefilter');
+    $template->smarty->registerPlugin('function', 'media_type', GDThumb_media_type(...));
+    $template->set_prefilter('index', GDThumb_prefilter(...));
 
-    add_event_handler('loc_end_index_thumbnails', 'GDThumb_process_thumb');
+    add_event_handler('loc_end_index_thumbnails', GDThumb_process_thumb(...));
 }
 
 function GDThumb_endsWith(

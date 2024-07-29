@@ -39,14 +39,14 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 define('LOCALEDIT_PATH', PHPWG_PLUGINS_PATH . basename(dirname(__FILE__)) . '/');
 
-add_event_handler('loc_end_themes_installed', 'localfiles_css_link');
+add_event_handler('loc_end_themes_installed', localfiles_css_link(...));
 function localfiles_css_link(): void
 {
     global $template;
 
     load_language('plugin.lang', LOCALEDIT_PATH);
 
-    $template->set_prefilter('themes', 'localfiles_css_link_prefilter');
+    $template->set_prefilter('themes', localfiles_css_link_prefilter(...));
 }
 
 function localfiles_css_link_prefilter(
