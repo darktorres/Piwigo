@@ -35,7 +35,7 @@ function get_iptc_data(
                     if ($iptc_key == '2#025') {
                         $value = implode(
                             $array_sep,
-                            array_map('clean_iptc_value', $iptc[$iptc_key])
+                            array_map(clean_iptc_value(...), $iptc[$iptc_key])
                         );
                     } else {
                         $value = clean_iptc_value($iptc[$iptc_key][0]);

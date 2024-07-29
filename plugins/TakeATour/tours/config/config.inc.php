@@ -10,12 +10,12 @@ $TOUR_PATH = PHPWG_PLUGINS_PATH . 'TakeATour/tours/config/tour.tpl';
 /*********************************/
 
 if (defined('IN_ADMIN') and IN_ADMIN) {
-    add_event_handler('loc_end_themes_installed', 'TAT_FC_35');
+    add_event_handler('loc_end_themes_installed', TAT_FC_35(...));
 }
 function TAT_FC_35(): void
 {
     global $template;
-    $template->set_prefilter('themes', 'TAT_FC_35_prefilter');
+    $template->set_prefilter('themes', TAT_FC_35_prefilter(...));
 }
 function TAT_FC_35_prefilter(
     string $content

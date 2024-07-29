@@ -28,7 +28,7 @@ function make_consecutive(
     array &$orders,
     int $step = 50
 ): void {
-    uasort($orders, 'abs_fn_cmp');
+    uasort($orders, abs_fn_cmp(...));
     $crt = 1;
     foreach ($orders as $id => $pos) {
         $orders[$id] = $step * ($pos < 0 ? -$crt : $crt);

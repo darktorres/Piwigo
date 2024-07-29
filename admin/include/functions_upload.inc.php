@@ -13,8 +13,8 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
 
 // add default event handler for image and thumbnail resize
-// add_event_handler('upload_image_resize', 'pwg_image_resize');
-// add_event_handler('upload_thumbnail_resize', 'pwg_image_resize');
+// add_event_handler('upload_image_resize', pwg_image_resize(...));
+// add_event_handler('upload_thumbnail_resize', pwg_image_resize(...));
 
 function get_upload_form_config(): array
 {
@@ -454,7 +454,7 @@ function add_format(
     return $format_id;
 }
 
-add_event_handler('upload_file', 'upload_file_pdf');
+add_event_handler('upload_file', upload_file_pdf(...));
 function upload_file_pdf(
     string|null $representative_ext,
     string $file_path
@@ -551,7 +551,7 @@ function upload_file_heic($representative_ext, $file_path)
     return $representative_ext;
 }
 
-add_event_handler('upload_file', 'upload_file_tiff');
+add_event_handler('upload_file', upload_file_tiff(...));
 function upload_file_tiff(
     string|null $representative_ext,
     string $file_path
@@ -621,7 +621,7 @@ function upload_file_tiff(
     // return get_extension($representative_file_abspath);
 }
 
-add_event_handler('upload_file', 'upload_file_video');
+add_event_handler('upload_file', upload_file_video(...));
 function upload_file_video(
     string|null $representative_ext,
     string $file_path
@@ -852,7 +852,7 @@ function is_valid_image_extension(
         $extensions = $conf['picture_ext'];
     }
 
-    return array_unique(array_map('strtolower', $extensions));
+    return array_unique(array_map(strtolower(...), $extensions));
 }
 
 function file_upload_error_message(
