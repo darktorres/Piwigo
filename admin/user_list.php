@@ -42,11 +42,11 @@ while ($row = pwg_db_fetch_assoc($result)) {
 $query = 'SELECT DISTINCT';
 
 if (DB_ENGINE === 'MySQL') {
-    $query .= ' month(registration_date) AS registration_month, year(registration_date) AS registration_year';
+    $query .= ' month(registration_date) AS registration_month, year(registration_date) AS registration_year, registration_date';
 }
 
 if (DB_ENGINE === 'PostgreSQL') {
-    $query .= ' EXTRACT(MONTH FROM registration_date) AS registration_month, EXTRACT(YEAR FROM registration_date) AS registration_year';
+    $query .= ' EXTRACT(MONTH FROM registration_date) AS registration_month, EXTRACT(YEAR FROM registration_date) AS registration_year, registration_date';
 }
 
 $query .= ' FROM user_infos ORDER BY registration_date;';
