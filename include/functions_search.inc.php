@@ -347,7 +347,11 @@ function get_regular_search_results(
     if ($search_clause !== '' && $search_clause !== '0') {
         $has_filters_filled = true;
 
-        $query = "SELECT DISTINCT(id) FROM images i INNER JOIN image_category AS ic ON id = ic.image_id LEFT JOIN image_tag AS it ON id = it.image_id WHERE {$search_clause}";
+        $order_by_clause = $conf['order_by'];
+        $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
+        $column_names = ', ' . $cleaned_order_by;
+
+        $query = "SELECT DISTINCT(id) {$column_names} FROM images i INNER JOIN image_category AS ic ON id = ic.image_id LEFT JOIN image_tag AS it ON id = it.image_id WHERE {$search_clause}";
         if ($images_where !== '' && $images_where !== '0') {
             $query .= "\n AND {$images_where}";
         }
