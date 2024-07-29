@@ -24,7 +24,7 @@ class RVTS
                 // $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
             // }
         // }
-        add_event_handler('loc_begin_index', ['RVTS', 'on_index_begin'], EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
+        add_event_handler('loc_begin_index', self::on_index_begin(...), EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
     }
 
     public static function on_index_begin(): void
@@ -33,9 +33,9 @@ class RVTS
         $is_ajax = isset($_GET['rvts']);
         if (! $is_ajax) {
             if (empty($page['items'])) {
-                add_event_handler('loc_end_index', ['RVTS', 'on_end_index']);
+                add_event_handler('loc_end_index', self::on_end_index(...));
             } else {
-                add_event_handler('loc_end_index_thumbnails', ['RVTS', 'on_index_thumbnails'], EVENT_HANDLER_PRIORITY_NEUTRAL, 1);
+                add_event_handler('loc_end_index_thumbnails', self::on_index_thumbnails(...), EVENT_HANDLER_PRIORITY_NEUTRAL, 1);
             }
         } else {
             $adj = (int) @$_GET['adj'];
@@ -49,7 +49,7 @@ class RVTS
                 }
             }
             // $page['nb_image_page'] = (int) $_GET['rvts'];
-            add_event_handler('loc_end_index_thumbnails', ['RVTS', 'on_index_thumbnails_ajax'], EVENT_HANDLER_PRIORITY_NEUTRAL + 5, 1);
+            add_event_handler('loc_end_index_thumbnails', self::on_index_thumbnails_ajax(...), EVENT_HANDLER_PRIORITY_NEUTRAL + 5, 1);
             $page['root_path'] = get_absolute_root_url(false);
             $page['body_id'] = 'scroll';
             global $user, $template, $conf;
@@ -63,7 +63,7 @@ class RVTS
         global $page, $template;
         $total = count($page['items']);
         if (count($thumbs) >= $total) {
-            add_event_handler('loc_end_index', ['RVTS', 'on_end_index']);
+            add_event_handler('loc_end_index', self::on_end_index(...));
             return $thumbs;
         }
         $url_model = str_replace('123456789', '%start%', duplicate_index_url([
@@ -152,4 +152,4 @@ class RVTS
     }
 }
 
-add_event_handler('loc_end_section_init', ['RVTS', 'on_end_section_init']);
+add_event_handler('loc_end_section_init', RVTS::on_end_section_init(...));

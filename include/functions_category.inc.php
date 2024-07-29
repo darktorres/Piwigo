@@ -124,7 +124,7 @@ function get_categories_menu(): array
             $page['category']['count_categories'] = $row['count_categories'];
         }
     }
-    usort($cats, 'global_rank_compare');
+    usort($cats, global_rank_compare(...));
 
     // Update filtered data
     if (function_exists('update_cats_with_filtered_data')) {
@@ -261,7 +261,7 @@ function display_select_cat_wrapper(
     bool $fullname = true
 ): void {
     $categories = query2array($query);
-    usort($categories, 'global_rank_compare');
+    usort($categories, global_rank_compare(...));
     display_select_categories($categories, $selecteds, $blockname, $fullname);
 }
 
@@ -449,7 +449,7 @@ function get_computed_categories(
     // it is important to logically sort the albums because some operations
     // (like removal) rely on this logical order. Child album doesn't always
     // have a bigger id than its parent (if it was moved afterwards).
-    uasort($cats, 'global_rank_compare');
+    uasort($cats, global_rank_compare(...));
 
     foreach ($cats as $cat) {
         if (! isset($cat['id_uppercat'])) {
@@ -643,7 +643,7 @@ function get_related_categories_menu(
     $cat_ids_ = implode(',', array_keys($cat_ids));
     $query = "SELECT id, name, permalink, id_uppercat, uppercats, global_rank FROM categories WHERE id IN ({$cat_ids_});";
     $cats = query2array($query);
-    usort($cats, 'global_rank_compare');
+    usort($cats, global_rank_compare(...));
 
     $index_of_cat = [];
 
