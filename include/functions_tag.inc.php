@@ -113,7 +113,7 @@ function get_all_tags(): array
         $tags[] = $row;
     }
 
-    usort($tags, 'tag_alpha_compare');
+    usort($tags, tag_alpha_compare(...));
 
     return $tags;
 }
@@ -294,7 +294,7 @@ function get_common_tags(
         $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
         $tags[] = $row;
     }
-    usort($tags, 'tag_alpha_compare');
+    usort($tags, tag_alpha_compare(...));
     return $tags;
 }
 

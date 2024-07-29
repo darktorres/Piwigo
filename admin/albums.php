@@ -211,7 +211,7 @@ function assocToOrderedTree(
         }
         array_push($orderedTree, $orderedCat);
     }
-    usort($orderedTree, 'cmpCat');
+    usort($orderedTree, cmpCat(...));
     return $orderedTree;
 }
 

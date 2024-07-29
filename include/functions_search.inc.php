@@ -1100,7 +1100,7 @@ function qsearch_get_text_token_search_sql(
 
         if ($use_ft) {
             $max = max(array_map(
-                'mb_strlen',
+                mb_strlen(...),
                 preg_split('/[' . preg_quote('-\'!"#$%&()*+,./:;<=>?@[\]^`{|}~', '/') . ']+/', $variant)
             ));
             if ($max < 4) {
@@ -1298,7 +1298,7 @@ function qsearch_get_tags(
     }
 
     $all_tags = array_intersect_key($all_tags, array_flip(array_diff($positive_ids, $not_ids)));
-    usort($all_tags, 'tag_alpha_compare');
+    usort($all_tags, tag_alpha_compare(...));
     foreach ($all_tags as &$tag) {
         $tag['name'] = trigger_change('render_tag_name', $tag['name'], $tag);
     }
@@ -1393,7 +1393,7 @@ function qsearch_get_categories(
     }
 
     $all_cats = array_intersect_key($all_cats, array_flip(array_diff($positive_ids, $not_ids)));
-    usort($all_cats, 'tag_alpha_compare');
+    usort($all_cats, tag_alpha_compare(...));
     foreach ($all_cats as &$cat) {
         $cat['name'] = trigger_change('render_category_name', $cat['name'], $cat);
     }

@@ -296,7 +296,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
         );
 
         trigger_notify('ws_add_methods', [&$this]);
-        uksort($this->_methods, 'strnatcmp');
+        uksort($this->_methods, strnatcmp(...));
         $this->_requestHandler->handleRequest($this);
     }
 
