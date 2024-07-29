@@ -437,7 +437,7 @@ function ws_session_getStatus(
             ',',
             array_unique(
                 array_map(
-                    'strtolower',
+                    strtolower(...),
                     $conf['upload_form_all_types'] ? $conf['file_ext'] : $conf['picture_ext']
                 )
             )
@@ -776,7 +776,7 @@ function ws_history_search(
 
     /*TODO - no need to get a huge number of rows from db (should take only what needed for display + SQL_CALC_FOUND_ROWS*/
     $data = trigger_change('get_history', [], $page['search'], $types);
-    usort($data, 'history_compare');
+    usort($data, history_compare(...));
 
     $page['nb_lines'] = count($data);
 

@@ -76,7 +76,7 @@ function modus_smarty_prefilter_wrap(
 
 if (! defined('IN_ADMIN') && defined('RVCDN')) {
     $this->smarty->registerFilter('pre', 'rv_cdn_prefilter');
-    add_event_handler('combined_script', 'rv_cdn_combined_script');
+    add_event_handler('combined_script', rv_cdn_combined_script(...));
 }
 
 function rv_cdn_prefilter(
@@ -90,12 +90,12 @@ function rv_cdn_prefilter(
 
 // Add prefilter to remove fontello loaded by piwigo 14 search,
 // this avoids conflicts of loading 2 fontellos
-add_event_handler('loc_begin_index', 'modus_loc_begin_index', 60);
+add_event_handler('loc_begin_index', modus_loc_begin_index(...), 60);
 function modus_loc_begin_index(): void
 {
     global $template;
-    $template->set_prefilter('index', 'modus_index_prefilter_1');
-    $template->set_prefilter('index', 'modus_index_prefilter_2');
+    $template->set_prefilter('index', modus_index_prefilter_1(...));
+    $template->set_prefilter('index', modus_index_prefilter_2(...));
 }
 
 function modus_index_prefilter_1(
@@ -126,7 +126,7 @@ function rv_cdn_combined_script(
 }
 
 if (defined('RVPT_JQUERY_SRC')) {
-    add_event_handler('loc_begin_page_header', 'modus_loc_begin_page_header');
+    add_event_handler('loc_begin_page_header', modus_loc_begin_page_header(...));
 }
 function modus_loc_begin_page_header(): void
 {
@@ -136,7 +136,7 @@ function modus_loc_begin_page_header(): void
     }
 }
 
-add_event_handler('combinable_preparse', 'modus_combinable_preparse');
+add_event_handler('combinable_preparse', modus_combinable_preparse(...));
 function modus_combinable_preparse(
     Template $template
 ): void {
@@ -144,7 +144,7 @@ function modus_combinable_preparse(
     include_once(dirname(__FILE__) . '/functions.inc.php');
 
     if (! isset($template->smarty->registered_plugins['modifier']['cssGradient'])) {
-        $template->smarty->registerPlugin('modifier', 'cssGradient', 'modus_css_gradient');
+        $template->smarty->registerPlugin('modifier', 'cssGradient', modus_css_gradient(...));
     }
 
     include(dirname(__FILE__) . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php');
@@ -158,7 +158,7 @@ function modus_combinable_preparse(
     ]);
 }
 
-$this->smarty->registerPlugin('function', 'cssResolution', 'modus_css_resolution');
+$this->smarty->registerPlugin('function', 'cssResolution', modus_css_resolution(...));
 function modus_css_resolution(
     array $params
 ): string {
@@ -191,7 +191,7 @@ function modus_css_resolution(
     return $res;
 }
 
-$this->smarty->registerPlugin('function', 'modus_thumbs', 'modus_thumbs');
+$this->smarty->registerPlugin('function', 'modus_thumbs', modus_thumbs(...));
 function modus_thumbs(
     array $x,
     Smarty_Internal_Template $smarty
@@ -305,7 +305,7 @@ function modus_thumbs(
     $template->scriptLoader->add('modus.arange', 1, ['jquery'], 'themes/' . $my_base_name . '/js/thumb.arrange.js', 0);
 }
 
-add_event_handler('loc_end_index', 'modus_on_end_index');
+add_event_handler('loc_end_index', modus_on_end_index(...));
 function modus_on_end_index(): void
 {
     global $template;
@@ -326,7 +326,7 @@ function modus_on_end_index(): void
 
 }
 
-add_event_handler('get_index_derivative_params', 'modus_get_index_photo_derivative_params', EVENT_HANDLER_PRIORITY_NEUTRAL + 1);
+add_event_handler('get_index_derivative_params', modus_get_index_photo_derivative_params(...), EVENT_HANDLER_PRIORITY_NEUTRAL + 1);
 function modus_get_index_photo_derivative_params(
     DerivativeParams|string $default
 ): DerivativeParams|string {
@@ -348,7 +348,7 @@ function modus_get_index_photo_derivative_params(
     return $default;
 }
 
-add_event_handler('loc_end_index_category_thumbnails', 'modus_index_category_thumbnails');
+add_event_handler('loc_end_index_category_thumbnails', modus_index_category_thumbnails(...));
 function modus_index_category_thumbnails(
     array $items
 ): array {
@@ -418,7 +418,7 @@ function modus_index_category_thumbnails(
     return $items;
 }
 
-add_event_handler('loc_begin_picture', 'modus_loc_begin_picture');
+add_event_handler('loc_begin_picture', modus_loc_begin_picture(...));
 function modus_loc_begin_picture(): void
 {
     global $conf, $template;
@@ -438,7 +438,7 @@ function modus_loc_begin_picture(): void
     </script>');
 }
 
-add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL - 1);
+add_event_handler('render_element_content', modus_picture_content(...), EVENT_HANDLER_PRIORITY_NEUTRAL - 1);
 function modus_picture_content(
     string $content,
     array $element_info

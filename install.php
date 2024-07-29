@@ -23,13 +23,13 @@ function sanitize_mysql_kv(
     $v = addslashes($v);
 }
 if (is_array($_GET)) {
-    array_walk_recursive($_GET, 'sanitize_mysql_kv');
+    array_walk_recursive($_GET, sanitize_mysql_kv(...));
 }
 if (is_array($_POST)) {
-    array_walk_recursive($_POST, 'sanitize_mysql_kv');
+    array_walk_recursive($_POST, sanitize_mysql_kv(...));
 }
 if (is_array($_COOKIE)) {
-    array_walk_recursive($_COOKIE, 'sanitize_mysql_kv');
+    array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
 }
 if (! empty($_SERVER['PATH_INFO'])) {
     $_SERVER['PATH_INFO'] = addslashes($_SERVER['PATH_INFO']);
@@ -403,7 +403,7 @@ if ($step == 1) {
         }
         session_name($conf['session_name']);
         session_set_cookie_params(0, cookie_path());
-        register_shutdown_function('session_write_close');
+        register_shutdown_function(session_write_close(...));
 
         $user = build_user(1, true);
         log_user($user['id'], false);

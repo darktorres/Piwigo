@@ -148,7 +148,7 @@ function cmp(
 
     return $s[$a['STATE']] >= $s[$b['STATE']] ? 1 : -1;
 }
-usort($tpl_themes, 'cmp');
+usort($tpl_themes, cmp(...));
 
 $template->assign(
     [
