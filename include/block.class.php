@@ -163,7 +163,7 @@ class BlockManager
      */
     protected function sort_blocks(): void
     {
-        uasort($this->display_blocks, ['BlockManager', 'cmp_by_position']);
+        uasort($this->display_blocks, self::cmp_by_position(...));
     }
 
     /**
