@@ -13,12 +13,12 @@ if (isset($conf['session_save_handler'])
   and ($conf['session_save_handler'] == 'db')
   and defined('PHPWG_INSTALLED')) {
     session_set_save_handler(
-        'pwg_session_open',
-        'pwg_session_close',
-        'pwg_session_read',
-        'pwg_session_write',
-        'pwg_session_destroy',
-        'pwg_session_gc'
+        pwg_session_open(...),
+        pwg_session_close(...),
+        pwg_session_read(...),
+        pwg_session_write(...),
+        pwg_session_destroy(...),
+        pwg_session_gc(...)
     );
 
     if (function_exists('ini_set')) {
@@ -30,7 +30,7 @@ if (isset($conf['session_save_handler'])
 
     session_name($conf['session_name']);
     session_set_cookie_params(0, cookie_path());
-    register_shutdown_function('session_write_close');
+    register_shutdown_function(session_write_close(...));
 }
 
 /**
