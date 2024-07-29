@@ -163,7 +163,7 @@ function initialize_menu(): void
         //displays all tags available for the current user
         elseif ($conf['menubar_tag_cloud_content'] == 'always_all' or ($conf['menubar_tag_cloud_content'] == 'all_or_current' and empty($page['items']))) {
             $tags = get_available_tags();
-            usort($tags, 'tags_counter_compare');
+            usort($tags, tags_counter_compare(...));
             $tags = array_slice($tags, 0, $conf['menubar_tag_cloud_items_number']);
             foreach ($tags as $tag) {
                 $block->data[] = array_merge(
