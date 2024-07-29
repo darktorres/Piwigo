@@ -402,7 +402,7 @@ function ws_images_getInfo(
         $row['id'] = (int) $row['id'];
         $related_categories[] = $row;
     }
-    usort($related_categories, 'global_rank_compare');
+    usort($related_categories, global_rank_compare(...));
 
     if (empty($related_categories) and ! is_admin()) {
         // photo might be in the lounge? or simply orphan. A standard user should not get
@@ -2006,7 +2006,7 @@ function ws_images_formats_delete(
             PREG_SPLIT_NO_EMPTY
         );
     }
-    $params['format_id'] = array_map('intval', $params['format_id']);
+    $params['format_id'] = array_map(intval(...), $params['format_id']);
 
     $format_ids = [];
     foreach ($params['format_id'] as $format_id) {
@@ -2321,7 +2321,7 @@ function ws_images_delete(
             PREG_SPLIT_NO_EMPTY
         );
     }
-    $params['image_id'] = array_map('intval', $params['image_id']);
+    $params['image_id'] = array_map(intval(...), $params['image_id']);
 
     $image_ids = [];
     foreach ($params['image_id'] as $image_id) {
@@ -2400,7 +2400,7 @@ function ws_images_uploadCompleted(
             PREG_SPLIT_NO_EMPTY
         );
     }
-    $params['image_id'] = array_map('intval', $params['image_id']);
+    $params['image_id'] = array_map(intval(...), $params['image_id']);
 
     $image_ids = [];
     foreach ($params['image_id'] as $image_id) {

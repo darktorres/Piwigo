@@ -77,7 +77,7 @@ class SPThumbPicker
 }
 
 //Retrive all pictures on thumbnails page
-add_event_handler('loc_index_thumbnails_selection', 'sp_select_all_thumbnails');
+add_event_handler('loc_index_thumbnails_selection', sp_select_all_thumbnails(...));
 
 function sp_select_all_thumbnails(
     array $selection
@@ -90,7 +90,7 @@ function sp_select_all_thumbnails(
 }
 
 // Retrive all categories on thumbnails page
-add_event_handler('loc_end_index_category_thumbnails', 'sp_select_all_categories');
+add_event_handler('loc_end_index_category_thumbnails', sp_select_all_categories(...));
 
 function sp_select_all_categories(
     array $selection
@@ -113,7 +113,7 @@ if (! empty($_COOKIE['screen_size'])) {
 $this->assign('picture_derivative_params', ImageStdParams::get_by_type($type));
 $this->assign('thumbnail_derivative_params', ImageStdParams::get_by_type(IMG_SQUARE));
 
-add_event_handler('loc_end_section_init', 'sp_end_section_init');
+add_event_handler('loc_end_section_init', sp_end_section_init(...));
 function sp_end_section_init(): void
 {
     global $page, $template;
@@ -130,7 +130,7 @@ function sp_end_section_init(): void
 }
 
 //------------------------------------------------------------- mobile version & theme config
-add_event_handler('init', 'mobile_link');
+add_event_handler('init', mobile_link(...));
 
 function mobile_link(): void
 {
@@ -168,5 +168,5 @@ if (! function_exists('add_menu_on_public_pages')) {
         return null;
     }
 
-    add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20);
+    add_event_handler('loc_after_page_header', add_menu_on_public_pages(...), 20);
 }
