@@ -251,8 +251,12 @@ if ($page['section'] == 'categories') {
         }
 
         if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
+            $order_by_clause = $conf['order_by'];
+            $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
+            $column_names = ', ' . $cleaned_order_by;
+
             // main query
-            $query = "SELECT DISTINCT(image_id), date_creation FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
+            $query = "SELECT DISTINCT(image_id) {$column_names} FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
             $page['items'] = query2array($query, null, 'image_id');
 
             if (isset($cache_key)) {

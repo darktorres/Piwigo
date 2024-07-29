@@ -52,17 +52,7 @@ function pwg_db_connect(
 
     // mysqli_options($mysqli, MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
 
-    // MySQL 5.7 default settings forbid to select a colum that is not in the
-    // group by. We've used that in Piwigo, for years. As an immediate solution
-    // we can remove this constraint in the current MySQL session.
-    [$sql_mode_current] = pwg_db_fetch_row(pwg_query('SELECT @@SESSION.sql_mode;'));
-
-    // remove ONLY_FULL_GROUP_BY from the list
-    $sql_mode_altered = implode(',', array_diff(explode(',', (string) $sql_mode_current), ['ONLY_FULL_GROUP_BY']));
-
-    if ($sql_mode_altered != $sql_mode_current) {
-        pwg_query("SET SESSION sql_mode = '{$sql_mode_altered}';");
-    }
+    pwg_query("SET SESSION sql_mode = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION'");
 }
 
 /**
