@@ -597,3 +597,10 @@ INSERT INTO
     piwigo_plugins (id, state, version)
 VALUES
     ('language_switch', 'active', '14.5.0');
+
+-- Plugin 'LocalFiles Editor'
+
+INSERT INTO
+    piwigo_plugins (id, state, version)
+VALUES
+    ('LocalFilesEditor', 'active', '14.5.0');
