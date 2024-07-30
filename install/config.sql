@@ -568,3 +568,19 @@ VALUES
     'monday',
     'Monday may not be the first day of the week'
   );
+
+-- Plugin 'Admin Tools'
+
+INSERT INTO
+  piwigo_plugins (id, state, version)
+VALUES
+  ('AdminTools', 'active', '14.5.0');
+
+INSERT INTO
+  piwigo_config (param, value, comment)
+VALUES
+  (
+    'AdminTools',
+    'a:3:{s:12:\"default_open\";b:1;s:15:\"closed_position\";s:4:\"left\";s:17:\"public_quick_edit\";b:1;}',
+    NULL
+  );
