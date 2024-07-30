@@ -591,3 +591,10 @@ INSERT INTO
   piwigo_plugins (id, state, version)
 VALUES
   ('TakeATour', 'active', '14.5.0');
+
+-- Plugin 'Language Switch'
+
+INSERT INTO
+  piwigo_plugins (id, state, version)
+VALUES
+  ('language_switch', 'active', '14.5.0');
