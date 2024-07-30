@@ -1,0 +1,4 @@
+File automatically created from SVN or Git repository.
+
+URL: https://github.com/Piwigo/piwigo-modus 
+Revision: 6e074162437ac7012de9b2744adfa3b0178c1058 (Mon Jul 1 15:53:27 2024 +0200)
