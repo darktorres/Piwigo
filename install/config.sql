@@ -583,3 +583,10 @@ VALUES
         'a:3:{s:12:\"default_open\";b:1;s:15:\"closed_position\";s:4:\"left\";s:17:\"public_quick_edit\";b:1;}',
         NULL
     );
+
+-- Plugin 'Take A Tour of Your Piwigo'
+
+INSERT INTO
+    piwigo_plugins (id, state, version)
+VALUES
+    ('TakeATour', 'active', '14.5.0');
