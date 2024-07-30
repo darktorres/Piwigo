@@ -31,6 +31,7 @@ if (!extension_loaded('openssl')) {
 }
 
 require_once PHPWG_ROOT_PATH . 'vendor/autoload.php';
+// require_once PHPWG_ROOT_PATH . 'coverage.php';
 
 /**
  *                           configuration page
