@@ -9,7 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-function check_upgrade()
+function check_upgrade(): bool
 {
     if (defined('PHPWG_IN_UPGRADE')) {
         return PHPWG_IN_UPGRADE;
@@ -18,7 +18,7 @@ function check_upgrade()
 }
 
 // Deactivate all non-standard plugins
-function deactivate_non_standard_plugins()
+function deactivate_non_standard_plugins(): void
 {
     global $page;
 
@@ -49,7 +49,7 @@ function deactivate_non_standard_plugins()
 }
 
 // Deactivate all non-standard themes
-function deactivate_non_standard_themes()
+function deactivate_non_standard_themes(): void
 {
     global $page, $conf;
 
@@ -101,13 +101,13 @@ function deactivate_non_standard_themes()
 }
 
 // Deactivate all templates
-function deactivate_templates()
+function deactivate_templates(): void
 {
     conf_update_param('extents_for_templates', []);
 }
 
 // Check access rights
-function check_upgrade_access_rights()
+function check_upgrade_access_rights(): void
 {
     global $conf, $page, $current_release;
 
@@ -162,10 +162,8 @@ function check_upgrade_access_rights()
 
 /**
  * which upgrades are available ?
- *
- * @return array
  */
-function get_available_upgrade_ids()
+function get_available_upgrade_ids(): array
 {
     // $upgrades_path = PHPWG_ROOT_PATH.'install/db';
 
@@ -191,7 +189,7 @@ function get_available_upgrade_ids()
 /**
  * returns true if there are available upgrade files
  */
-function check_upgrade_feed()
+function check_upgrade_feed(): bool
 {
     // retrieve already applied upgrades
     $query = 'SELECT id FROM upgrade;';
@@ -204,7 +202,7 @@ function check_upgrade_feed()
     return count(array_diff($existing, $applied)) > 0;
 }
 
-function upgrade_db_connect()
+function upgrade_db_connect(): void
 {
     global $conf;
 

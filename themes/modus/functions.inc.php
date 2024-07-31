@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-function modus_css_gradient($gradient)
-{
+function modus_css_gradient(
+    array $gradient
+): string|null {
     if (! empty($gradient)) {
         $std = implode(',', $gradient);
         $gs = trim($gradient[0], '#');
@@ -15,9 +16,11 @@ function modus_css_gradient($gradient)
 	background-image: -o-linear-gradient(top,{$std}); /* Opera 11 to 12 */
 	background-image: linear-gradient(to bottom,{$std}); /* Standard must be last */";
     }
+
+    return null;
 }
 
-function modus_get_default_config()
+function modus_get_default_config(): array
 {
     return [
         'skin' => 'newspaper',
@@ -28,8 +31,9 @@ function modus_get_default_config()
     ];
 }
 
-function modus_smarty_prefilter($source)
-{
+function modus_smarty_prefilter(
+    string $source
+): array|string|null {
     global $lang, $conf;
 
     $source = str_replace('<div id="imageHeaderBar">', '<div class=titrePage id=imageHeaderBar>', $source);
