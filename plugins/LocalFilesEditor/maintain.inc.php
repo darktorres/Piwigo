@@ -24,7 +24,7 @@ declare(strict_types=1);
 // | USA.                                                                  |
 // +-----------------------------------------------------------------------+
 
-function plugin_uninstall()
+function plugin_uninstall(): void
 {
     $query = "DELETE FROM config WHERE param = 'LocalFilesEditor' LIMIT 1;";
     pwg_query($query);
