@@ -313,7 +313,7 @@ $template->assign(
 switch ($page['section']) {
     case 'main':
 
-        function order_by_is_local()
+        function order_by_is_local(): bool
         {
             $conf = [];
             include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');

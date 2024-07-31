@@ -39,8 +39,9 @@ class SPThumbPicker
 
     public $height;
 
-    public function init($height)
-    {
+    public function init(
+        string $height
+    ): void {
         $this->candidates = [];
         foreach (ImageStdParams::get_defined_type_map() as $params) {
             if ($params->max_height() < $height || $params->sizing->max_crop) {
@@ -55,8 +56,10 @@ class SPThumbPicker
         $this->height = $height;
     }
 
-    public function pick($src_image, $height)
-    {
+    public function pick(
+        SrcImage $src_image,
+        string $height
+    ): DerivativeImage {
         $ok = false;
         foreach ($this->candidates as $candidate) {
             $deriv = new DerivativeImage($candidate, $src_image);
@@ -76,8 +79,9 @@ class SPThumbPicker
 //Retrive all pictures on thumbnails page
 add_event_handler('loc_index_thumbnails_selection', 'sp_select_all_thumbnails');
 
-function sp_select_all_thumbnails($selection)
-{
+function sp_select_all_thumbnails(
+    array $selection
+): array {
     global $page, $template;
 
     $template->assign('page_selection', array_flip($selection));
@@ -88,8 +92,9 @@ function sp_select_all_thumbnails($selection)
 // Retrive all categories on thumbnails page
 add_event_handler('loc_end_index_category_thumbnails', 'sp_select_all_categories');
 
-function sp_select_all_categories($selection)
-{
+function sp_select_all_categories(
+    array $selection
+): array {
     global $tpl_thumbnails_var;
     return $tpl_thumbnails_var;
 }
@@ -109,7 +114,7 @@ $this->assign('picture_derivative_params', ImageStdParams::get_by_type($type));
 $this->assign('thumbnail_derivative_params', ImageStdParams::get_by_type(IMG_SQUARE));
 
 add_event_handler('loc_end_section_init', 'sp_end_section_init');
-function sp_end_section_init()
+function sp_end_section_init(): void
 {
     global $page, $template;
 
@@ -127,7 +132,7 @@ function sp_end_section_init()
 //------------------------------------------------------------- mobile version & theme config
 add_event_handler('init', 'mobile_link');
 
-function mobile_link()
+function mobile_link(): void
 {
     global $template, $conf;
     $config = safe_unserialize($conf['smartpocket']);
@@ -147,7 +152,7 @@ if (! function_exists('add_menu_on_public_pages')) {
     }
     add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20);
 
-    function add_menu_on_public_pages()
+    function add_menu_on_public_pages(): bool|null
     {
         if (function_exists('initialize_menu')) {
             return false;
@@ -161,5 +166,6 @@ if (! function_exists('add_menu_on_public_pages')) {
             $template->parse('add_menu_on_public_pages');
         }
 
+        return null;
     }
 }
