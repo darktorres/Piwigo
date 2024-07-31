@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,8 +11,7 @@
 
 // Recursive call
 $url = '../';
-header( 'Request-URI: '.$url );
-header( 'Content-Location: '.$url );
-header( 'Location: '.$url );
+header('Request-URI: ' . $url);
+header('Content-Location: ' . $url);
+header('Location: ' . $url);
 exit();
-?>
