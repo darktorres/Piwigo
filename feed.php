@@ -22,10 +22,11 @@ include_once(PHPWG_ROOT_PATH . 'include/functions_notification.inc.php');
  * GMT) from a MySQL datetime format (2005-07-14 23:01:37)
  *
  * @param string $datetime mysql datetime format
- * @return int timestamp
+ * @return bool|int timestamp
  */
-function datetime_to_ts($datetime)
-{
+function datetime_to_ts(
+    string $datetime
+): bool|int {
     return strtotime($datetime);
 }
 
@@ -38,8 +39,9 @@ function datetime_to_ts($datetime)
  * @param int $ts timestamp
  * @return string ISO 8601 date format
  */
-function ts_to_iso8601($ts)
-{
+function ts_to_iso8601(
+    int $ts
+): string {
     $tz = date('O', $ts);
     $tz = substr($tz, 0, -2) . ':' . substr($tz, -2);
     return date('Y-m-d\\TH:i:s', $ts) . $tz;

@@ -109,16 +109,19 @@ add_event_handler('render_element_description', 'pwg_nl2br');
  * parameter on nl2br() (and anyway the second parameter of nl2br does not
  * match what Piwigo gives.
  */
-function pwg_nl2br($string)
-{
+function pwg_nl2br(
+    string $string
+): string {
     return nl2br($string);
 }
 
 trigger_notify('loc_begin_picture');
 
 // this is the default handler that generates the display for the element
-function default_picture_content($content, $element_info)
-{
+function default_picture_content(
+    string $content,
+    array $element_info
+): string {
     global $conf;
 
     if (! empty($content)) {// someone hooked us - so we skip;

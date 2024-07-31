@@ -28,10 +28,11 @@ declare(strict_types=1);
  * returns $code if php syntax is correct
  * else return false
  *
- * @param string php code
+ * @param string $code php code
  */
-function eval_syntax($code)
-{
+function eval_syntax(
+    string $code
+): bool|string {
     $code = str_replace(['<?php', '?>'], '', $code);
     if (function_exists('token_get_all')) {
         $b = 0;
@@ -61,11 +62,10 @@ function eval_syntax($code)
  * returns true or false if $str is bool
  * returns $str if $str is integer
  * else "$str"
- *
- * @param string $value
  */
-function editarea_quote($value)
-{
+function editarea_quote(
+    string $value
+): string {
     switch (gettype($value)) {
         case 'boolean':
             return $value ? 'true' : 'false';
@@ -78,10 +78,10 @@ function editarea_quote($value)
 
 /**
  * returns bak file for restore
- * @param string $file
  */
-function get_bak_file($file)
-{
+function get_bak_file(
+    string $file
+): array|string {
     if (get_extension($file) == 'php') {
         return substr_replace($file, '.bak', strrpos($file, '.'), 0);
     }
@@ -93,10 +93,10 @@ function get_bak_file($file)
 /**
  * returns dirs and subdirs
  * retun array
- * @param string $path
  */
-function get_rec_dirs($path = '')
-{
+function get_rec_dirs(
+    string $path = ''
+): array {
     $options = [];
     if (is_dir($path)) {
         $fh = opendir($path);

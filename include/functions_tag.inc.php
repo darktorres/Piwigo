@@ -11,10 +11,8 @@ declare(strict_types=1);
 
 /**
  * Returns the number of available tags for the connected user.
- *
- * @return int
  */
-function get_nb_available_tags()
+function get_nb_available_tags(): int|string
 {
     global $user;
     if (! isset($user['nb_available_tags'])) {
@@ -39,7 +37,7 @@ function get_nb_available_tags()
  *
  * @return array [id, name, counter, url_name]
  */
-function get_available_tags($tag_ids = [])
+function get_available_tags(array $tag_ids = []): array
 {
     // we can find top fatter tags among reachable images
     $filters_and_forbidden = get_sql_condition_FandF(
@@ -84,7 +82,7 @@ function get_available_tags($tag_ids = [])
  *
  * @return array [id, name, url_name]
  */
-function get_all_tags()
+function get_all_tags(): array
 {
     $query = 'SELECT * FROM tags;';
     $result = pwg_query($query);
@@ -110,8 +108,9 @@ function get_all_tags()
  * @param array $tags at least [id, counter]
  * @return array [..., level]
  */
-function add_level_to_tags($tags)
-{
+function add_level_to_tags(
+    array $tags
+): array {
     global $conf;
 
     if (count($tags) == 0) {
@@ -156,13 +155,16 @@ function add_level_to_tags($tags)
  * AND & OR mode supported.
  *
  * @param int[] $tag_ids
- * @param string $mode
  * @param string $extra_images_where_sql - optionally apply a sql where filter to retrieved images
  * @param string $order_by - optionally overwrite default photo order
- * @return array
  */
-function get_image_ids_for_tags($tag_ids, $mode = 'AND', $extra_images_where_sql = '', $order_by = '', $use_permissions = true)
-{
+function get_image_ids_for_tags(
+    array $tag_ids,
+    string $mode = 'AND',
+    string $extra_images_where_sql = '',
+    string $order_by = '',
+    bool $use_permissions = true
+): array {
     global $conf;
     if (empty($tag_ids)) {
         return [];
@@ -203,12 +205,14 @@ function get_image_ids_for_tags($tag_ids, $mode = 'AND', $extra_images_where_sql
  * Return a list of tags corresponding to given items.
  *
  * @param int[] $items
- * @param int $max_tags
  * @param int[] $excluded_tag_ids
  * @return array [id, name, counter, url_name]
  */
-function get_common_tags($items, $max_tags, $excluded_tag_ids = [])
-{
+function get_common_tags(
+    array $items,
+    int $max_tags,
+    array $excluded_tag_ids = []
+): array {
     if (empty($items)) {
         return [];
     }
@@ -243,8 +247,11 @@ function get_common_tags($items, $max_tags, $excluded_tag_ids = [])
  * @param string[] $names
  * @return array [id, name, url_name]
  */
-function find_tags($ids = [], $url_names = [], $names = [])
-{
+function find_tags(
+    array $ids = [],
+    array $url_names = [],
+    array $names = []
+): array {
     $where_clauses = [];
     if (! empty($ids)) {
         $ids_ = implode(',', $ids);
@@ -268,13 +275,17 @@ function find_tags($ids = [], $url_names = [], $names = [])
     return query2array($query);
 }
 
-function tags_id_compare($a, $b)
-{
+function tags_id_compare(
+    array $a,
+    array $b
+): int {
     return ($a['id'] < $b['id']) ? -1 : 1;
 }
 
-function tags_counter_compare($a, $b)
-{
+function tags_counter_compare(
+    array $a,
+    array $b
+): int {
     if ($a['counter'] == $b['counter']) {
         return tags_id_compare($a, $b);
     }
