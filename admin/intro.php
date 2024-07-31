@@ -267,12 +267,11 @@ foreach ($activity_last_weeks as $week => $i) {
 //  * Set the sizes according to the groups created
 
 //Function to sort days by number of activity
-function cmp_day($a, $b)
-{
-    if ($a['x'] == $b['x']) {
-        return 0;
-    }
-    return ($a['x'] < $b['x']) ? -1 : 1;
+function cmp_day(
+    array $a,
+    array $b
+): int {
+    return $a['x'] <=> $b['x'];
 }
 
 usort($temp_data, 'cmp_day');

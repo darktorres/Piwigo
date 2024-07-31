@@ -13,10 +13,10 @@ declare(strict_types=1);
  * Formats a size name into a 2 chars identifier usable in filename.
  *
  * @param string $t one of IMG_*
- * @return string
  */
-function derivative_to_url($t)
-{
+function derivative_to_url(
+    string $t
+): string {
     return substr($t, 0, 2);
 }
 
@@ -26,8 +26,9 @@ function derivative_to_url($t)
  * @param int[] $s
  * @return string
  */
-function size_to_url($s)
-{
+function size_to_url(
+    array $s
+): int|string {
     if ($s[0] == $s[1]) {
         return $s[0];
     }
@@ -37,32 +38,32 @@ function size_to_url($s)
 /**
  * @param int[] $s1
  * @param int[] $s2
- * @return bool
  */
-function size_equals($s1, $s2)
-{
+function size_equals(
+    array $s1,
+    array $s2
+): bool {
     return $s1[0] == $s2[0] && $s1[1] == $s2[1];
 }
 
 /**
  * Converts a char a-z into a float.
  *
- * @param string $c
  * @return float
  */
-function char_to_fraction($c)
-{
+function char_to_fraction(
+    string $c
+): int {
     return (ord($c) - ord('a')) / 25;
 }
 
 /**
  * Converts a float into a char a-z.
- *
- * @return string
  */
-function fraction_to_char($f)
-{
-    return chr(ord('a') + round($f * 25));
+function fraction_to_char(
+    float|int $f
+): string {
+    return chr((int) (ord('a') + round($f * 25)));
 }
 
 /**
@@ -70,42 +71,31 @@ function fraction_to_char($f)
  */
 final class ImageRect
 {
-    /**
-     * @var int
-     * @var int
-     * @var int
-     * @var int
-     */
-    public $l;
+    public int|float $l;
 
-    public $t;
+    public int|float $t;
 
-    public $r;
+    public int|float $r;
 
-    public $b;
+    public int|float $b;
 
     /**
      * @param int[] $l width and height
      */
-    public function __construct($l)
-    {
+    public function __construct(
+        array $l
+    ) {
         $this->l = $this->t = 0;
         $this->r = $l[0];
         $this->b = $l[1];
     }
 
-    /**
-     * @return int
-     */
-    public function width()
+    public function width(): int|float
     {
         return $this->r - $this->l;
     }
 
-    /**
-     * @return int
-     */
-    public function height()
+    public function height(): int|float
     {
         return $this->b - $this->t;
     }
@@ -113,11 +103,13 @@ final class ImageRect
     /**
      * Crops horizontally this rectangle by increasing left side and/or reducing the right side.
      *
-     * @param int $pixels - the amount to substract from the width
-     * @param stirng $coi - a 4 character string (or null) containing the center of interest
+     * @param int|float $pixels - the amount to substract from the width
+     * @param string $coi - a 4 character string (or null) containing the center of interest
      */
-    public function crop_h($pixels, $coi)
-    {
+    public function crop_h(
+        int|float $pixels,
+        string|null $coi
+    ): void {
         if ($this->width() <= $pixels) {
             return;
         }
@@ -143,11 +135,13 @@ final class ImageRect
     /**
      * Crops vertically this rectangle by increasing top side and/or reducing the bottom side.
      *
-     * @param int $pixels - the amount to substract from the height
+     * @param int|float $pixels - the amount to substract from the height
      * @param string $coi - a 4 character string (or null) containing the center of interest
      */
-    public function crop_v($pixels, $coi)
-    {
+    public function crop_v(
+        int|float $pixels,
+        string|null $coi
+    ): void {
         if ($this->height() <= $pixels) {
             return;
         }
@@ -180,17 +174,14 @@ final class SizingParams
     /**
      * @var int[]
      */
-    public $ideal_size;
+    public array $ideal_size;
 
-    /**
-     * @var float
-     */
-    public $max_crop;
+    public float $max_crop;
 
     /**
      * @var int[]
      */
-    public $min_size;
+    public array|null $min_size;
 
     /**
      * @param int[] $ideal_size - two element array of maximum output dimensions (width, height)
@@ -198,8 +189,11 @@ final class SizingParams
      *    expressed as a factor of the input width/height
      * @param int[] $min_size - (used only if _$max_crop_ !=0) two element array of output dimensions (width, height)
      */
-    public function __construct($ideal_size, $max_crop = 0, $min_size = null)
-    {
+    public function __construct(
+        array $ideal_size,
+        float $max_crop = 0,
+        array|null $min_size = null
+    ) {
         $this->ideal_size = $ideal_size;
         $this->max_crop = $max_crop;
         $this->min_size = $min_size;
@@ -207,33 +201,29 @@ final class SizingParams
 
     /**
      * Returns a simple SizingParams object.
-     *
-     * @param int $w
-     * @param int $h
-     * @return SizingParams
      */
-    public static function classic($w, $h)
-    {
+    public static function classic(
+        int $w,
+        int $h
+    ): self {
         return new self([$w, $h]);
     }
 
     /**
      * Returns a square SizingParams object.
-     *
-     * @return SizingParams
      */
-    public static function square($w)
-    {
+    public static function square(
+        int $w
+    ): self {
         return new self([$w, $w], 1, [$w, $w]);
     }
 
     /**
      * Adds tokens depending on sizing configuration.
-     *
-     * @param array $tokens
      */
-    public function add_url_tokens(&$tokens)
-    {
+    public function add_url_tokens(
+        array &$tokens
+    ): void {
         if ($this->max_crop == 0) {
             $tokens[] = 's' . size_to_url($this->ideal_size);
         } elseif ($this->max_crop == 1 && size_equals($this->ideal_size, $this->min_size)) {
@@ -249,12 +239,16 @@ final class SizingParams
      * Calculates the cropping rectangle and the scaled size for an input image size.
      *
      * @param int[] $in_size - two element array of input dimensions (width, height)
-     * @param string $coi - four character encoded string containing the center of interest (unused if max_crop=0)
+     * @param string|null $coi - four character encoded string containing the center of interest (unused if max_crop=0)
      * @param ImageRect $crop_rect - ImageRect containing the cropping rectangle or null if cropping is not required
      * @param int[] $scale_size - two element array containing width and height of the scaled image
      */
-    public function compute($in_size, $coi, &$crop_rect, &$scale_size)
-    {
+    public function compute(
+        array $in_size,
+        string|null $coi,
+        ImageRect|null &$crop_rect,
+        array|null &$scale_size
+    ): void {
         $destCrop = new ImageRect($in_size);
 
         if ($this->max_crop > 0) {
@@ -307,89 +301,71 @@ final class SizingParams
  */
 final class DerivativeParams
 {
-    /**
-     * @var SizingParams
-     */
-    public $sizing;
+    public SizingParams $sizing;
 
     /**
-     * @var string among IMG_*
+     * among IMG_*
      */
-    public $type = IMG_CUSTOM;
+    public string $type = IMG_CUSTOM;
 
     /**
-     * @var int used for non-custom images to regenerate the cached files
+     * used for non-custom images to regenerate the cached files
      */
-    public $last_mod_time = 0;
+    public int $last_mod_time = 0;
+
+    public bool $use_watermark = false;
 
     /**
-     * @var bool
+     * from 0=no sharpening to 1=max sharpening
      */
-    public $use_watermark = false;
+    public float $sharpen = 0;
 
-    /**
-     * @var float from 0=no sharpening to 1=max sharpening
-     */
-    public $sharpen = 0;
-
-    /**
-     * @param SizingParams $sizing
-     */
-    public function __construct($sizing)
-    {
+    public function __construct(
+        SizingParams $sizing
+    ) {
         $this->sizing = $sizing;
     }
 
-    /**
-     * @return array
-     */
-    public function __sleep()
+    public function __sleep(): array
     {
         return ['last_mod_time', 'sizing', 'sharpen'];
     }
 
     /**
      * Adds tokens depending on sizing configuration.
-     *
-     * @param array $tokens
      */
-    public function add_url_tokens(&$tokens)
-    {
+    public function add_url_tokens(
+        array &$tokens
+    ): void {
         $this->sizing->add_url_tokens($tokens);
     }
 
     /**
      * @return int[]
      */
-    public function compute_final_size($in_size)
-    {
+    public function compute_final_size(
+        array $in_size
+    ): mixed {
         $this->sizing->compute($in_size, null, $crop_rect, $scale_size);
         return $scale_size != null ? $scale_size : $in_size;
     }
 
-    /**
-     * @return int
-     */
-    public function max_width()
+    public function max_width(): int
     {
         return $this->sizing->ideal_size[0];
     }
 
-    /**
-     * @return int
-     */
-    public function max_height()
+    public function max_height(): int
     {
         return $this->sizing->ideal_size[1];
     }
 
     /**
      * @todo : description of DerivativeParams::is_identity
-     *
-     * @return bool
      */
-    public function is_identity($in_size)
-    {
+    public function is_identity(
+        array $in_size
+    ): bool {
         if ($in_size[0] > $this->sizing->ideal_size[0] or
             $in_size[1] > $this->sizing->ideal_size[1]) {
             return false;
@@ -397,11 +373,9 @@ final class DerivativeParams
         return true;
     }
 
-    /**
-     * @return bool
-     */
-    public function will_watermark($out_size)
-    {
+    public function will_watermark(
+        array $out_size
+    ): bool {
         if ($this->use_watermark) {
             $min_size = ImageStdParams::get_watermark()->min_size;
             return $min_size[0] <= $out_size[0]

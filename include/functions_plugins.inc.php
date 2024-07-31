@@ -19,46 +19,47 @@ define('EVENT_HANDLER_PRIORITY_NEUTRAL', 50);
  */
 class PluginMaintain
 {
-    /**
-     * @var string
-     */
-    protected $plugin_id;
+    protected string $plugin_id;
 
-    /**
-     * @param string $id
-     */
-    public function __construct($id)
-    {
+    public function __construct(
+        string $id
+    ) {
         $this->plugin_id = $id;
     }
 
     /**
-     * @param string $plugin_version
      * @param array $errors - used to return error messages
      */
-    public function install($plugin_version, &$errors = []) {}
+    public function install(
+        string $plugin_version,
+        array &$errors = []
+    ): void {}
 
     /**
-     * @param string $plugin_version
      * @param array $errors - used to return error messages
      */
-    public function activate($plugin_version, &$errors = []) {}
+    public function activate(
+        string $plugin_version,
+        array &$errors = []
+    ): void {}
 
-    public function deactivate() {}
+    public function deactivate(): void {}
 
-    public function uninstall() {}
+    public function uninstall(): void {}
 
     /**
-     * @param string $old_version
-     * @param string $new_version
      * @param array $errors - used to return error messages
      */
-    public function update($old_version, $new_version, &$errors = []) {}
+    public function update(
+        string $old_version,
+        string $new_version,
+        array &$errors = []
+    ): void {}
 
     /**
      * @removed 2.7
      */
-    public function autoUpdate()
+    public function autoUpdate(): void
     {
         if (is_admin() && ! defined('IN_WS')) {
             trigger_error('Function PluginMaintain::autoUpdate deprecated', E_USER_WARNING);
@@ -71,28 +72,25 @@ class PluginMaintain
  */
 class ThemeMaintain
 {
-    /**
-     * @var string
-     */
-    protected $theme_id;
+    protected string $theme_id;
 
-    /**
-     * @param string $id
-     */
-    public function __construct($id)
-    {
+    public function __construct(
+        string $id
+    ) {
         $this->theme_id = $id;
     }
 
     /**
-     * @param string $theme_version
      * @param array $errors - used to return error messages
      */
-    public function activate($theme_version, &$errors = []) {}
+    public function activate(
+        string $theme_version,
+        array &$errors = []
+    ): void {}
 
-    public function deactivate() {}
+    public function deactivate(): void {}
 
-    public function delete() {}
+    public function delete(): void {}
 }
 
 /**
@@ -105,11 +103,11 @@ class ThemeMaintain
  * @return bool false is handler already exists
  */
 function add_event_handler(
-    $event,
-    $func,
-    $priority = EVENT_HANDLER_PRIORITY_NEUTRAL,
-    $include_path = null
-) {
+    string $event,
+    callable $func,
+    int $priority = EVENT_HANDLER_PRIORITY_NEUTRAL,
+    int $include_path = null
+): bool {
     global $pwg_event_handlers;
 
     if (isset($pwg_event_handlers[$event][$priority])) {
@@ -132,16 +130,12 @@ function add_event_handler(
 /**
  * Removes an event handler.
  * @see add_event_handler()
- *
- * @param string $event
- * @param callable $func
- * @param int $priority
  */
 function remove_event_handler(
-    $event,
-    $func,
-    $priority = EVENT_HANDLER_PRIORITY_NEUTRAL
-) {
+    string $event,
+    callable $func,
+    int $priority = EVENT_HANDLER_PRIORITY_NEUTRAL
+): bool {
     global $pwg_event_handlers;
 
     if (! isset($pwg_event_handlers[$event][$priority])) {
@@ -173,12 +167,12 @@ function remove_event_handler(
  *
  * @since 2.6
  *
- * @param string $event
  * @param mixed $data data to transmit to all handlers
- * @return mixed
  */
-function trigger_change($event, $data = null)
-{
+function trigger_change(
+    string $event,
+    mixed $data = null
+): mixed {
     global $pwg_event_handlers;
 
     if (isset($pwg_event_handlers['trigger'])) {// debugging
@@ -229,11 +223,10 @@ function trigger_change($event, $data = null)
  * trigger_notify() is only used as a notifier, no modification of data is possible
  *
  * @since 2.6
- *
- * @param string $event
  */
-function trigger_notify($event)
-{
+function trigger_notify(
+    string $event
+): void {
     global $pwg_event_handlers;
 
     if (isset($pwg_event_handlers['trigger']) and $event != 'trigger') {// debugging - avoid recursive calls
@@ -268,13 +261,11 @@ function trigger_notify($event)
  * Saves some data with the associated plugin id, data are only available
  * during script lifetime.
  * @depracted 2.6
- *
- * @param string $plugin_id
- * @param mixed $data
- * @return bool
  */
-function set_plugin_data($plugin_id, &$data)
-{
+function set_plugin_data(
+    string $plugin_id,
+    mixed &$data
+): bool {
     global $pwg_loaded_plugins;
     if (isset($pwg_loaded_plugins[$plugin_id])) {
         $pwg_loaded_plugins[$plugin_id]['plugin_data'] = &$data;
@@ -287,12 +278,10 @@ function set_plugin_data($plugin_id, &$data)
  * Retrieves plugin data saved previously with set_plugin_data.
  * @see set_plugin_data()
  * @depracted 2.6
- *
- * @param string $plugin_id
- * @return mixed
  */
-function &get_plugin_data($plugin_id)
-{
+function &get_plugin_data(
+    string $plugin_id
+): mixed {
     global $pwg_loaded_plugins;
     if (isset($pwg_loaded_plugins[$plugin_id]['plugin_data'])) {
         return $pwg_loaded_plugins[$plugin_id]['plugin_data'];
@@ -303,12 +292,13 @@ function &get_plugin_data($plugin_id)
 /**
  * Returns an array of plugins defined in the database.
  *
- * @param string $state optional filter
+ * @param string|null $state optional filter
  * @param string $id returns only data about given plugin
- * @return array
  */
-function get_db_plugins($state = '', $id = '')
-{
+function get_db_plugins(
+    string|null $state = '',
+    string $id = ''
+): array {
     $query = 'SELECT * FROM plugins';
     $clauses = [];
     if (! empty($state)) {
@@ -327,11 +317,10 @@ function get_db_plugins($state = '', $id = '')
 /**
  * Loads a plugin in memory.
  * It performs autoupdate, includes the main.inc.php file and updates *$pwg_loaded_plugins*.
- *
- * @param string $plugin
  */
-function load_plugin($plugin)
-{
+function load_plugin(
+    array $plugin
+): void {
     $file_name = PHPWG_PLUGINS_PATH . $plugin['id'] . '/main.inc.php';
     if (file_exists($file_name)) {
         autoupdate_plugin($plugin);
@@ -349,8 +338,9 @@ function load_plugin($plugin)
  *
  * @param array $plugin (id, version, state) will be updated if version changes
  */
-function autoupdate_plugin(&$plugin)
-{
+function autoupdate_plugin(
+    array &$plugin
+): void {
     // try to find the filesystem version in lines 2 to 10 of main.inc.php
     $fh = fopen(PHPWG_PLUGINS_PATH . $plugin['id'] . '/main.inc.php', 'r');
     $fs_version = null;
@@ -417,7 +407,7 @@ function autoupdate_plugin(&$plugin)
 /**
  * Loads all the registered plugins.
  */
-function load_plugins()
+function load_plugins(): void
 {
     global $conf, $pwg_loaded_plugins;
     $pwg_loaded_plugins = [];

@@ -10,19 +10,20 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 /**
-  Provides a persistent cache mechanism across multiple page loads/sessions etc...
+ * Provides a persistent cache mechanism across multiple page loads/sessions etc...
  */
 abstract class PersistentCache
 {
-    public $default_lifetime = 86400;
+    public int $default_lifetime = 86400;
 
-    protected $instance_key = PHPWG_VERSION;
+    protected string $instance_key = PHPWG_VERSION;
 
     /**
-    @return a key that can be safely be used with get/set methods
+     * @return string a key that can be safely be used with get/set methods
      */
-    public function make_key($key)
-    {
+    public function make_key(
+        array|string $key
+    ): string {
         if (is_array($key)) {
             $key = implode('&', $key);
         }
@@ -31,35 +32,41 @@ abstract class PersistentCache
     }
 
     /**
-    Searches for a key in the persistent cache and fills corresponding value.
-    @param string $key
-    @param out mixed $value
-    @return false if the $key is not found in cache ($value is not modified in this case)
+     * Searches for a key in the persistent cache and fills corresponding value.
+     * @param mixed $value out
+     * @return false if the $key is not found in cache ($value is not modified in this case)
      */
-    abstract public function get($key, &$value);
+    abstract public function get(
+        string $key,
+        mixed &$value
+    );
 
     /**
-    Sets a key/value pair in the persistent cache.
-    @param string $key - it should be the return value of make_key function
-    @param mixed $value
-    @param int $lifetime
-    @return false on error
+     * Sets a key/value pair in the persistent cache.
+     * @param string $key - it should be the return value of make_key function
+     * @return false on error
      */
-    abstract public function set($key, $value, $lifetime = null);
+    abstract public function set(
+        string $key,
+        mixed $value,
+        int $lifetime = null
+    );
 
     /**
-    Purge the persistent cache.
-    @param boolean $all - if false only expired items will be purged
+     * Purge the persistent cache.
+     * @param bool $all - if false only expired items will be purged
      */
-    abstract public function purge($all);
+    abstract public function purge(
+        bool $all
+    );
 }
 
 /**
-  Implementation of a persistent cache using files.
+ * Implementation of a persistent cache using files.
  */
 class PersistentFileCache extends PersistentCache
 {
-    private $dir;
+    private string $dir;
 
     public function __construct()
     {
@@ -67,8 +74,10 @@ class PersistentFileCache extends PersistentCache
         $this->dir = PHPWG_ROOT_PATH . $conf['data_location'] . 'cache/';
     }
 
-    public function get($key, &$value)
-    {
+    public function get(
+        string $key,
+        mixed &$value
+    ): bool {
         $loaded = @file_get_contents($this->dir . $key . '.cache');
         if ($loaded !== false && ($loaded = unserialize($loaded)) !== false) {
             if ($loaded['expire'] > time()) {
@@ -79,8 +88,11 @@ class PersistentFileCache extends PersistentCache
         return false;
     }
 
-    public function set($key, $value, $lifetime = null)
-    {
+    public function set(
+        string $key,
+        mixed $value,
+        int $lifetime = null
+    ): bool {
         if ($lifetime === null) {
             $lifetime = $this->default_lifetime;
         }
@@ -103,8 +115,9 @@ class PersistentFileCache extends PersistentCache
         return true;
     }
 
-    public function purge($all)
-    {
+    public function purge(
+        bool $all
+    ): void {
         $files = glob($this->dir . '*.cache');
         if (empty($files)) {
             return;

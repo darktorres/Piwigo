@@ -14,11 +14,11 @@ declare(strict_types=1);
  * Before executing a query, $replaced is... replaced by $replacing. This is
  * useful when the SQL file contains generic words. Drop table queries are
  * not executed.
- *
- * @param string $filepath
  */
-function execute_sqlfile($filepath, $dblayer)
-{
+function execute_sqlfile(
+    string $filepath,
+    string $dblayer
+): void {
     $sql_lines = file($filepath);
     $query = '';
     foreach ($sql_lines as $sql_line) {
@@ -43,7 +43,7 @@ function execute_sqlfile($filepath, $dblayer)
 /**
  * Automatically activate all core themes in the "themes" directory.
  */
-function activate_core_themes()
+function activate_core_themes(): void
 {
     include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
     $themes = new themes();
@@ -57,7 +57,7 @@ function activate_core_themes()
 /**
  * Automatically activate some core plugins
  */
-function activate_core_plugins()
+function activate_core_plugins(): void
 {
     include_once(PHPWG_ROOT_PATH . 'admin/include/plugins.class.php');
 
@@ -76,8 +76,10 @@ function activate_core_plugins()
  * @param array $infos - populated with infos
  * @param array $errors - populated with errors
  */
-function install_db_connect(&$infos, &$errors)
-{
+function install_db_connect(
+    array &$infos,
+    array &$errors
+): void {
     try {
         pwg_db_connect(
             $_POST['dbhost'],

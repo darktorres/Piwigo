@@ -18,8 +18,10 @@ declare(strict_types=1);
  *    @option int max_urls
  *    @option int prev_page (optional)
  */
-function ws_getMissingDerivatives($params, &$service)
-{
+function ws_getMissingDerivatives(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $conf;
 
     if (empty($params['types'])) {
@@ -104,8 +106,10 @@ function ws_getMissingDerivatives($params, &$service)
  * Returns Piwigo version
  * @param mixed[] $params
  */
-function ws_getVersion($params, &$service)
-{
+function ws_getVersion(
+    array $params,
+    PwgServer &$service
+): string {
     return PHPWG_VERSION;
 }
 
@@ -114,8 +118,10 @@ function ws_getVersion($params, &$service)
  * Returns general informations about the installation
  * @param mixed[] $params
  */
-function ws_getInfos($params, &$service)
-{
+function ws_getInfos(
+    array $params,
+    PwgServer &$service
+): array {
     $infos['version'] = PHPWG_VERSION;
 
     $query = 'SELECT COUNT(*) FROM images;';
@@ -182,8 +188,10 @@ function ws_getInfos($params, &$service)
  * @since 12
  * @param mixed[] $params
  */
-function ws_getCacheSize($params, &$service)
-{
+function ws_getCacheSize(
+    array $params,
+    PwgServer &$service
+): array {
     global $conf;
 
     // Cache size
@@ -251,8 +259,10 @@ function ws_getCacheSize($params, &$service)
  * @param mixed[] $params
  *    @option int[] image_id
  */
-function ws_caddie_add($params, &$service)
-{
+function ws_caddie_add(
+    array $params,
+    PwgServer &$service
+): int {
     global $user;
 
     $image_id_ = implode(',', $params['image_id']);
@@ -283,8 +293,10 @@ function ws_caddie_add($params, &$service)
  *    @option int user_id
  *    @option string anonymous_id (optional)
  */
-function ws_rates_delete($params, &$service)
-{
+function ws_rates_delete(
+    array $params,
+    PwgServer &$service
+): int|string {
     $query = "DELETE FROM rate WHERE user_id = {$params['user_id']}";
 
     if (! empty($params['anonymous_id'])) {
@@ -309,8 +321,10 @@ function ws_rates_delete($params, &$service)
  *    @option string username
  *    @option string password
  */
-function ws_session_login($params, &$service)
-{
+function ws_session_login(
+    array $params,
+    PwgServer &$service
+): bool|PwgError {
     if (try_log_user($params['username'], $params['password'], false)) {
         return true;
     }
@@ -322,8 +336,10 @@ function ws_session_login($params, &$service)
  * Performs a logout
  * @param mixed[] $params
  */
-function ws_session_logout($params, &$service)
-{
+function ws_session_logout(
+    array $params,
+    PwgServer &$service
+): bool {
     if (! is_a_guest()) {
         logout_user();
     }
@@ -335,8 +351,10 @@ function ws_session_logout($params, &$service)
  * Returns info about the current user
  * @param mixed[] $params
  */
-function ws_session_getStatus($params, &$service)
-{
+function ws_session_getStatus(
+    array $params,
+    PwgServer &$service
+): array {
     global $user, $conf;
 
     $res['username'] = is_a_guest() ? 'guest' : stripslashes($user['username']);
@@ -384,8 +402,10 @@ function ws_session_getStatus($params, &$service)
  * Returns lines of users activity
  *  @since 12
  */
-function ws_getActivityList($param, &$service)
-{
+function ws_getActivityList(
+    array $param,
+    PwgServer &$service
+): array {
     global $conf;
 
     /* Test Lantency */
@@ -506,8 +526,10 @@ function ws_getActivityList($param, &$service)
  * Log a new line in visit history
  * @since 13
  */
-function ws_history_log($params, &$service)
-{
+function ws_history_log(
+    array $params,
+    PwgServer &$service
+): void {
     global $logger, $page;
 
     if (! empty($params['section']) and in_array($params['section'], get_enums('history', 'section'))) {
@@ -544,8 +566,10 @@ function ws_history_log($params, &$service)
  * Returns lines of an history search
  * @since 13
  */
-function ws_history_search($param, &$service)
-{
+function ws_history_search(
+    array $param,
+    PwgServer &$service
+): array {
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
@@ -822,7 +846,7 @@ function ws_history_search($param, &$service)
         if (isset($line['tag_ids'])) {
             $tag_names = preg_replace_callback(
                 '/(\d+)/',
-                function ($m) use ($name_of_tag) { return isset($name_of_tag[$m[1]]) ? $name_of_tag[$m[1]] : $m[1]; },
+                fn (array $m): mixed => $name_of_tag[$m[1]] ?? $m[1],
                 $line['tag_ids']
             );
             $tag_ids = $line['tag_ids'];

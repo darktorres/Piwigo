@@ -11,22 +11,24 @@ declare(strict_types=1);
 
 class tabsheet
 {
-    public $sheets;
+    public array $sheets;
 
-    public $uniqid;
+    public string|null $uniqid;
 
-    public $name;
+    public string $name;
 
-    public $titlename;
+    public string $titlename;
 
-    public $selected;
+    public string $selected = '';
 
-    /*
-      $name is the tabsheet's name inside the template .tpl file
-      $titlename in the template is affected by $titlename value
-    */
-    public function __construct($name = 'TABSHEET', $titlename = 'TABSHEET_TITLE')
-    {
+    /**
+     * $name is the tabsheet's name inside the template .tpl file
+     * $titlename in the template is affected by $titlename value
+     */
+    public function __construct(
+        string $name = 'TABSHEET',
+        string $titlename = 'TABSHEET_TITLE'
+    ) {
         $this->sheets = [];
         $this->uniqid = null;
         $this->name = $name;
@@ -34,16 +36,21 @@ class tabsheet
         $this->selected = '';
     }
 
-    public function set_id($id)
-    {
+    public function set_id(
+        string $id
+    ): void {
         $this->uniqid = $id;
     }
 
-    /*
-       add a tab
-    */
-    public function add($name, $caption, $url, $selected = false)
-    {
+    /**
+     *  add a tab
+     */
+    public function add(
+        string $name,
+        string $caption,
+        string $url,
+        bool $selected = false
+    ): bool {
         if (! isset($this->sheets[$name])) {
             $this->sheets[$name] = [
                 'caption' => $caption,
@@ -57,11 +64,12 @@ class tabsheet
         return false;
     }
 
-    /*
-       remove a tab
-    */
-    public function delete($name)
-    {
+    /**
+     *  remove a tab
+     */
+    public function delete(
+        string $name
+    ): bool {
         if (isset($this->sheets[$name])) {
             array_splice($this->sheets, $name, 1);
 
@@ -73,11 +81,12 @@ class tabsheet
         return false;
     }
 
-    /*
-       select a tab to be active
-    */
-    public function select($name)
-    {
+    /**
+     *  select a tab to be active
+     */
+    public function select(
+        string $name
+    ): void {
         $this->sheets = trigger_change('tabsheet_before_select', $this->sheets, $this->uniqid);
         if (! array_key_exists($name, $this->sheets)) {
             $keys = array_keys($this->sheets);
@@ -86,27 +95,28 @@ class tabsheet
         $this->selected = $name;
     }
 
-    /*
-      set $titlename value
-    */
-    public function set_titlename($titlename)
-    {
+    /**
+     * set $titlename value
+     */
+    public function set_titlename(
+        string $titlename
+    ): string {
         $this->titlename = $titlename;
         return $this->titlename;
     }
 
-    /*
-      returns $titlename value
-    */
-    public function get_titlename()
+    /**
+     * returns $titlename value
+     */
+    public function get_titlename(): string
     {
         return $this->titlename;
     }
 
-    /*
-      returns properties of selected tab
-    */
-    public function get_selected()
+    /**
+     * returns properties of selected tab
+     */
+    public function get_selected(): mixed
     {
         if (! empty($this->selected)) {
             return $this->sheets[$this->selected];
@@ -122,7 +132,7 @@ class tabsheet
      * Fill $this->$name {default value = TABSHEET} with HTML code for tabsheet
      * Fill $this->titlename {default value = TABSHEET_TITLE} with formated caption of the selected tab
      */
-    public function assign()
+    public function assign(): void
     {
         global $template;
 

@@ -10,10 +10,10 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 /** returns a category id that corresponds to the given permalink (or null)
- * @param string $permalink
  */
-function get_cat_id_from_permalink($permalink)
-{
+function get_cat_id_from_permalink(
+    string $permalink
+): mixed {
     $query = "SELECT id FROM categories WHERE permalink = '{$permalink}';";
     $ids = array_from_query($query, 'id');
     if (! empty($ids)) {
@@ -23,11 +23,10 @@ function get_cat_id_from_permalink($permalink)
 }
 
 /** returns a category id that has used before this permalink (or null)
- * @param string $permalink
- * @param boolean is_hit if true update the usage counters on the old permalinks
  */
-function get_cat_id_from_old_permalink($permalink)
-{
+function get_cat_id_from_old_permalink(
+    string $permalink
+): mixed {
     $query = "SELECT c.id FROM old_permalinks op INNER JOIN categories c ON op.cat_id = c.id WHERE op.permalink = '{$permalink}' LIMIT 1;";
     $result = pwg_query($query);
     $cat_id = null;
@@ -43,8 +42,10 @@ function get_cat_id_from_old_permalink($permalink)
  * @param boolean $save if true, the current category-permalink association
  * is saved in the old permalinks table in case external links hit it
  */
-function delete_cat_permalink($cat_id, $save)
-{
+function delete_cat_permalink(
+    int $cat_id,
+    bool $save
+): bool {
     global $page, $cache;
     $query = "SELECT permalink FROM categories WHERE id = '{$cat_id}';";
     $result = pwg_query($query);
@@ -88,8 +89,11 @@ function delete_cat_permalink($cat_id, $save)
  * @param boolean $save if true, the current category-permalink association
  * is saved in the old permalinks table in case external links hit it
  */
-function set_cat_permalink($cat_id, $permalink, $save)
-{
+function set_cat_permalink(
+    int $cat_id,
+    string $permalink,
+    bool $save
+): bool {
     global $page, $cache;
 
     $sanitized_permalink = preg_replace('#[^a-zA-Z0-9_/-]#', '', $permalink);

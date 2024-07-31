@@ -37,7 +37,7 @@ if (pwg_get_session_var('tour_to_launch') != 'tours/' . $version_ and isset($_GE
     add_event_handler('init', 'TAT_tour_setup');
 }
 
-function TAT_tour_setup()
+function TAT_tour_setup(): void
 {
     if (! is_admin()) {
         return;
@@ -87,14 +87,15 @@ function TAT_tour_setup()
 
 /** Add link in Help pages **/
 add_event_handler('loc_end_help', 'TAT_help');
-function TAT_help()
+function TAT_help(): void
 {
     global $template;
     load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/');
     $template->set_prefilter('help', 'TAT_help_prefilter');
 }
-function TAT_help_prefilter($content)
-{
+function TAT_help_prefilter(
+    string $content
+): array|string {
 
     $search = '<div id="helpContent">';
     $replacement = '<div id="helpContent">
@@ -108,7 +109,7 @@ function TAT_help_prefilter($content)
 
 /** Add link in no_photo_yet **/
 add_event_handler('loc_end_no_photo_yet', 'TAT_no_photo_yet');
-function TAT_no_photo_yet()
+function TAT_no_photo_yet(): void
 {
     global $template;
     load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/');
@@ -120,8 +121,9 @@ function TAT_no_photo_yet()
         ]
     );
 }
-function TAT_no_photo_yet_prefilter($content)
-{
+function TAT_no_photo_yet_prefilter(
+    string $content
+): array|string {
     $search = '<div class="bigButton"><a href="{$next_step_url}">{\'I want to add photos\'|@translate}</a></div>';
     $replacement = '<div class="bigButton"><a href="{$F_ACTION}?submited_tour_path=tours/first_contact&pwg_token={$pwg_token}">{\'Start the Tour\'|@translate}</a></div>';
     return str_replace($search, $replacement, $content);
