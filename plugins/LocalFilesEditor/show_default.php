@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+
@@ -24,38 +27,35 @@
 define('PHPWG_ROOT_PATH', '../../');
 define('IN_ADMIN', true);
 include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
-include_once(LOCALEDIT_PATH.'include/functions.inc.php');
+include_once(LOCALEDIT_PATH . 'include/functions.inc.php');
 load_language('plugin.lang', LOCALEDIT_PATH);
 check_status(ACCESS_WEBMASTER);
 
 check_input_parameter('file', $_GET, false, '/^(include\/config_default\.inc\.php|language\/[a-z]+_[A-Z]+\/(common|admin)\.lang\.php)$/');
 
-if (isset($_GET['file']))
-{
-  $path = $_GET['file'];
-  if (!is_admin())
-  {
-  	die('Hacking attempt!');
-  }
+if (isset($_GET['file'])) {
+    $path = $_GET['file'];
+    if (! is_admin()) {
+        die('Hacking attempt!');
+    }
 
-  $template->set_filename('show_default', dirname(__FILE__) . '/template/show_default.tpl');
-  
-  $file = file_get_contents(PHPWG_ROOT_PATH . $path);
-  $title = str_replace('/', ' / ', $path);
+    $template->set_filename('show_default', dirname(__FILE__) . '/template/show_default.tpl');
 
-  $template->assign(array(
-    'TITLE' => $title,
-    'DEFAULT_CONTENT' => $file,
-    )
-  );
+    $file = file_get_contents(PHPWG_ROOT_PATH . $path);
+    $title = str_replace('/', ' / ', $path);
 
-  $page['body_id'] = 'thePopuphelpPage';
+    $template->assign(
+        [
+            'TITLE' => $title,
+            'DEFAULT_CONTENT' => $file,
+        ]
+    );
 
-  include(PHPWG_ROOT_PATH.'include/page_header.php');
+    $page['body_id'] = 'thePopuphelpPage';
 
-  $template->pparse('show_default');
+    include(PHPWG_ROOT_PATH . 'include/page_header.php');
 
-  include(PHPWG_ROOT_PATH.'include/page_tail.php');
+    $template->pparse('show_default');
+
+    include(PHPWG_ROOT_PATH . 'include/page_tail.php');
 }
-
-?>
