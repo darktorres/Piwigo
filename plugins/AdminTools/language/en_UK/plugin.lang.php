@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $lang['Combine JS&CSS'] = 'Combine JS&amp;CSS';
 $lang['Debug languages'] = 'Debug languages';
 $lang['Debug template'] = 'Debug template';
@@ -17,5 +19,3 @@ $lang['Give access to quick edit to photo owners even if they are not admin'] = 
 $lang['Open toolbar by default'] = 'Open toolbar by default';
 $lang['left'] = 'left';
 $lang['right'] = 'right';
-
-?>

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+
@@ -30,13 +33,13 @@ Author: Piwigo team
 Author URI: http://piwigo.org
 */
 
-if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
+if (! defined('PHPWG_ROOT_PATH')) {
+    die('Hacking attempt!');
+}
 
-define('LANGUAGE_SWITCH_PATH' , PHPWG_PLUGINS_PATH.basename(dirname(__FILE__)).'/');
+define('LANGUAGE_SWITCH_PATH', PHPWG_PLUGINS_PATH . basename(dirname(__FILE__)) . '/');
 
-include_once(LANGUAGE_SWITCH_PATH.'language_switch.inc.php');
+include_once(LANGUAGE_SWITCH_PATH . 'language_switch.inc.php');
 
-add_event_handler('loading_lang', 'language_controler_switch', 5 );
-add_event_handler('loc_end_index', 'language_controler_flags', 95 );
-
-?>
+add_event_handler('loading_lang', 'language_controler_switch', 5);
+add_event_handler('loc_end_index', 'language_controler_flags', 95);
