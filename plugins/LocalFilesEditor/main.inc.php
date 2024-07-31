@@ -40,7 +40,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 define('LOCALEDIT_PATH', PHPWG_PLUGINS_PATH . basename(dirname(__FILE__)) . '/');
 
 add_event_handler('loc_end_themes_installed', 'localfiles_css_link');
-function localfiles_css_link()
+function localfiles_css_link(): void
 {
     global $template;
 
@@ -49,8 +49,9 @@ function localfiles_css_link()
     $template->set_prefilter('themes', 'localfiles_css_link_prefilter');
 }
 
-function localfiles_css_link_prefilter($content)
-{
+function localfiles_css_link_prefilter(
+    string $content
+): string|array {
     $search = '{if isset($theme.DEACTIVABLE) and $theme.DEACTIVABLE}';
     $replacement = '{if $theme.STATE eq "active"}<a href="admin.php?page=plugin-LocalFilesEditor-css&amp;theme={$theme.ID}" class="dropdown-option icon-brush">{\'Customize CSS\'|translate}</a>{/if}' . $search;
 

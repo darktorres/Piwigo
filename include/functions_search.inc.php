@@ -63,12 +63,10 @@ function get_search_info($candidate)
 /**
  * Returns search rules stored into a serialized array in "search"
  * table. Each search rules set is numericaly identified.
- *
- * @param int $search_id
- * @return array
  */
-function get_search_array($search_id)
-{
+function get_search_array(
+    string $search_id
+): array {
     global $user;
 
     $search = get_search_info($search_id);
@@ -83,12 +81,10 @@ function get_search_array($search_id)
 /**
  * Returns the SQL clause for a search.
  * Transforms the array returned by get_search_array() into SQL sub-query.
- *
- * @param array $search
- * @return string
  */
-function get_sql_search_clause($search)
-{
+function get_sql_search_clause(
+    array $search
+): array {
     // SQL where clauses are stored in $clauses array during query
     // construction
     $clauses = [];
@@ -198,7 +194,7 @@ function get_sql_search_clause($search)
         if (count($word_clauses) > 0) {
             array_walk(
                 $word_clauses,
-                function (&$s) { $s = '(' . $s . ')'; }
+                function (string &$s): void { $s = '(' . $s . ')'; }
             );
         }
 
@@ -321,12 +317,12 @@ function get_sql_search_clause($search)
 /**
  * Returns the list of items corresponding to the advanced search array.
  *
- * @param array $search
  * @param string $images_where optional additional restriction on images table
- * @return array
  */
-function get_regular_search_results($search, $images_where = '')
-{
+function get_regular_search_results(
+    array $search,
+    string $images_where = ''
+): array {
     global $conf, $logger;
 
     $logger->debug(__FUNCTION__, $search);
@@ -418,48 +414,57 @@ define('QST_BREAK', 0x20);
  */
 class QSearchScope
 {
-    public $id;
+    public string $id;
 
-    public $aliases;
+    public array $aliases;
 
-    public $is_text;
+    public bool $is_text;
 
-    public $nullable;
+    public bool $nullable;
 
-    public function __construct($id, $aliases, $nullable = false, $is_text = true)
-    {
+    public function __construct(
+        string $id,
+        array $aliases,
+        bool $nullable = false,
+        bool $is_text = true
+    ) {
         $this->id = $id;
         $this->aliases = $aliases;
         $this->is_text = $is_text;
         $this->nullable = $nullable;
     }
 
-    public function parse($token)
-    {
-        if (! $this->nullable && strlen($token->term) == 0) {
-            return false;
-        }
-        return true;
+    public function parse(
+        QSingleToken $token
+    ): bool {
+        return ! (! $this->nullable && strlen($token->term) == 0);
     }
 
-    public function process_char(&$ch, &$crt_token)
-    {
+    public function process_char(
+        string &$ch,
+        string &$crt_token
+    ): bool {
         return false;
     }
 }
 
 class QNumericRangeScope extends QSearchScope
 {
-    private $epsilon;
+    private float $epsilon;
 
-    public function __construct($id, $aliases, $nullable = false, $epsilon = 0)
-    {
+    public function __construct(
+        string $id,
+        array $aliases,
+        bool $nullable = false,
+        float $epsilon = 0
+    ) {
         parent::__construct($id, $aliases, $nullable, false);
         $this->epsilon = $epsilon;
     }
 
-    public function parse($token)
-    {
+    public function parse(
+        QSingleToken $token
+    ): bool {
         $str = $token->term;
         $strict = [0, 0];
         $range_requested = true;
@@ -525,8 +530,10 @@ class QNumericRangeScope extends QSearchScope
         return true;
     }
 
-    public function get_sql($field, $token)
-    {
+    public function get_sql(
+        string $field,
+        QSingleToken $token
+    ): string {
         $clauses = [];
         if ($token->scope_data['range'][0] !== '') {
             $clauses[] = $field . ' >' . ($token->scope_data['strict'][0] ? '' : '=') . $token->scope_data['range'][0] . ' ';
@@ -548,13 +555,17 @@ class QNumericRangeScope extends QSearchScope
 
 class QDateRangeScope extends QSearchScope
 {
-    public function __construct($id, $aliases, $nullable = false)
-    {
+    public function __construct(
+        string $id,
+        array $aliases,
+        bool $nullable = false
+    ) {
         parent::__construct($id, $aliases, $nullable, false);
     }
 
-    public function parse($token)
-    {
+    public function parse(
+        QSingleToken $token
+    ): bool {
         $str = $token->term;
         $strict = [0, 0];
         if (($pos = strpos($str, '..')) !== false) {
@@ -599,8 +610,10 @@ class QDateRangeScope extends QSearchScope
         return true;
     }
 
-    public function get_sql($field, $token)
-    {
+    public function get_sql(
+        string $field,
+        QSingleToken $token
+    ): string {
         $clauses = [];
         if ($token->scope_data[0] != '') {
             $clauses[] = $field . ' >= \'' . $token->scope_data[0] . '\'';
@@ -632,28 +645,31 @@ class QDateRangeScope extends QSearchScope
 /** Represents a single word or quoted phrase to be searched.*/
 class QSingleToken
 {
-    public $is_single = true;
+    public bool $is_single = true;
 
-    public $modifier;
+    public int $modifier;
 
-    public $term; /* the actual word/phrase string*/
+    public string $term; /* the actual word/phrase string*/
 
-    public $variants = [];
+    public array $variants = [];
 
-    public $scope;
+    public QSearchScope|null $scope;
 
-    public $scope_data;
+    public array $scope_data;
 
-    public $idx;
+    public int $idx;
 
-    public function __construct($term, $modifier, $scope)
-    {
+    public function __construct(
+        string $term,
+        int $modifier,
+        string|null $scope
+    ) {
         $this->term = $term;
         $this->modifier = $modifier;
         $this->scope = $scope;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $s = '';
         if (isset($this->scope)) {
@@ -679,13 +695,13 @@ class QSingleToken
 /** Represents an expression of several words or sub expressions to be searched.*/
 class QMultiToken
 {
-    public $is_single = false;
+    public bool $is_single = false;
 
     public $modifier;
 
     public $tokens = []; // the actual array of QSingleToken or QMultiToken
 
-    public function __toString()
+    public function __toString(): string
     {
         $s = '';
         for ($i = 0; $i < count($this->tokens); $i++) {
@@ -717,8 +733,12 @@ class QMultiToken
      * @param int $qi the character index in $q where to start parsing
      * @param int $level the depth from root in the tree (number of opened and unclosed opening brackets)
      */
-    protected function parse_expression($q, &$qi, $level, $root)
-    {
+    protected function parse_expression(
+        string $q,
+        int &$qi,
+        int $level,
+        QExpression $root
+    ): void {
         $crt_token = '';
         $crt_modifier = 0;
         $crt_scope = null;
@@ -870,7 +890,7 @@ class QMultiToken
     }
 
     /* because evaluations occur left to right, we ensure that 'a OR b c d' is interpreted as 'a OR (b c d)'*/
-    protected function check_operator_priority()
+    protected function check_operator_priority(): void
     {
         for ($i = 0; $i < count($this->tokens); $i++) {
             if (! $this->tokens[$i]->is_single) {
@@ -911,8 +931,11 @@ class QMultiToken
         }
     }
 
-    private function push(&$token, &$modifier, &$scope)
-    {
+    private function push(
+        string &$token,
+        int &$modifier,
+        QSearchScope|null &$scope
+    ): void {
         if (strlen($token) || (isset($scope) && $scope->nullable)) {
             if (isset($scope)) {
                 $modifier |= QST_BREAK;
@@ -928,8 +951,9 @@ class QMultiToken
      * Applies recursively a search scope to all sub single tokens. We allow 'tag:(John Bill)' but we cannot evaluate
      * scopes on expressions so we rewrite as '(tag:John tag:Bill)'
      */
-    private function apply_scope(QSearchScope $scope)
-    {
+    private function apply_scope(
+        QSearchScope $scope
+    ): void {
         for ($i = 0; $i < count($this->tokens); $i++) {
             if ($this->tokens[$i]->is_single) {
                 if (! isset($this->tokens[$i]->scope)) {
@@ -941,8 +965,9 @@ class QMultiToken
         }
     }
 
-    private static function priority($modifier)
-    {
+    private static function priority(
+        string $modifier
+    ): int {
         return $modifier & QST_OR ? 0 : 1;
     }
 }
@@ -955,8 +980,10 @@ class QExpression extends QMultiToken
 
     public $stoken_modifiers = [];
 
-    public function __construct($q, $scopes)
-    {
+    public function __construct(
+        string $q,
+        array $scopes
+    ) {
         foreach ($scopes as $scope) {
             $this->scopes[$scope->id] = $scope;
             foreach ($scope->aliases as $alias) {
@@ -970,8 +997,10 @@ class QExpression extends QMultiToken
         $this->build_single_tokens($this, 0);
     }
 
-    private function build_single_tokens(QMultiToken $expr, $this_is_not)
-    {
+    private function build_single_tokens(
+        QMultiToken $expr,
+        int $this_is_not
+    ): void {
         for ($i = 0; $i < count($expr->tokens); $i++) {
             $token = $expr->tokens[$i];
             $crt_is_not = ($token->modifier ^ $this_is_not) & QST_NOT; // no negation OR double negation -> no negation;
@@ -995,7 +1024,7 @@ class QExpression extends QMultiToken
 }
 
 /**
-  Structure of results being filled from different tables
+ * Structure of results being filled from different tables
  */
 class QResults
 {
@@ -1016,8 +1045,10 @@ class QResults
     public $iids;
 }
 
-function qsearch_get_text_token_search_sql($token, $fields)
-{
+function qsearch_get_text_token_search_sql(
+    QSingleToken $token,
+    array $fields
+): array {
     global $page;
 
     $clauses = [];
@@ -1079,8 +1110,10 @@ function qsearch_get_text_token_search_sql($token, $fields)
     return $clauses;
 }
 
-function qsearch_get_images(QExpression $expr, QResults $qsr)
-{
+function qsearch_get_images(
+    QExpression $expr,
+    QResults $qsr
+): void {
     $qsr->images_iids = array_fill(0, count($expr->stokens), []);
 
     $query_base = 'SELECT id from images i WHERE';
@@ -1152,8 +1185,10 @@ function qsearch_get_images(QExpression $expr, QResults $qsr)
     }
 }
 
-function qsearch_get_tags(QExpression $expr, QResults $qsr)
-{
+function qsearch_get_tags(
+    QExpression $expr,
+    QResults $qsr
+): void {
     $token_tag_ids = $qsr->tag_iids = array_fill(0, count($expr->stokens), []);
     $all_tags = [];
 
@@ -1223,8 +1258,10 @@ function qsearch_get_tags(QExpression $expr, QResults $qsr)
     $qsr->tag_ids = $token_tag_ids;
 }
 
-function qsearch_get_categories(QExpression $expr, QResults $qsr)
-{
+function qsearch_get_categories(
+    QExpression $expr,
+    QResults $qsr
+): void {
     global $user, $conf;
 
     $token_cat_ids = $qsr->cat_iids = array_fill(0, count($expr->stokens), []);
@@ -1302,8 +1339,12 @@ function qsearch_get_categories(QExpression $expr, QResults $qsr)
     $qsr->cat_ids = $token_cat_ids;
 }
 
-function qsearch_eval(QMultiToken $expr, QResults $qsr, &$qualifies, &$ignored_terms)
-{
+function qsearch_eval(
+    QMultiToken $expr,
+    QResults $qsr,
+    string|null &$qualifies,
+    string|null &$ignored_terms
+) {
     $qualifies = false; // until we find at least one positive term
     $ignored_terms = [];
 
@@ -1363,12 +1404,11 @@ function qsearch_eval(QMultiToken $expr, QResults $qsr, &$qualifies, &$ignored_t
  *      'matching_cats_no_images' =>array(99) - matching categories without images
  *      )
  *    )
- *
- * @param string $q
- * @return array
  */
-function get_quick_search_results($q, $options)
-{
+function get_quick_search_results(
+    string $q,
+    array $options
+): array {
     global $persistent_cache, $conf, $user;
 
     $cache_key = $persistent_cache->make_key([
@@ -1393,8 +1433,10 @@ function get_quick_search_results($q, $options)
 /**
  * @see get_quick_search_results but without result caching
  */
-function get_quick_search_results_no_cache($q, $options)
-{
+function get_quick_search_results_no_cache(
+    string $q,
+    array $options
+): array {
     global $conf;
 
     $q = trim(stripslashes($q));
@@ -1532,13 +1574,13 @@ function get_quick_search_results_no_cache($q, $options)
  * Returns an array of 'items' corresponding to the search id.
  * It can be either a quick search or a regular search.
  *
- * @param int $search_id
- * @param bool $super_order_by
  * @param string $images_where optional aditional restriction on images table
- * @return array
  */
-function get_search_results($search_id, $super_order_by, $images_where = '')
-{
+function get_search_results(
+    string $search_id,
+    bool|null $super_order_by,
+    string $images_where = ''
+): array {
     $search = get_search_array($search_id);
     if (! isset($search['q'])) {
         return get_regular_search_results($search, $images_where);
