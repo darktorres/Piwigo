@@ -20,21 +20,21 @@ interface imageInterface
 
     public function get_height();
 
-    public function set_compression_quality($quality);
+    public function set_compression_quality(int $quality);
 
-    public function crop($width, $height, $x, $y);
+    public function crop(int $width, int $height, int $x, int $y);
 
     public function strip();
 
-    public function rotate($rotation);
+    public function rotate(int $rotation);
 
-    public function resize($width, $height);
+    public function resize(float $width, float $height);
 
-    public function sharpen($amount);
+    public function sharpen(int $amount);
 
-    public function compose($overlay, $x, $y, $opacity);
+    public function compose(int $overlay, int $x, int $y, int $opacity);
 
-    public function write($destination_filepath);
+    public function write(string $destination_filepath);
 }
 
 // +-----------------------------------------------------------------------+
@@ -43,14 +43,16 @@ interface imageInterface
 
 class pwg_image
 {
-    public $image;
+    public imageInterface $image;
 
-    public $library = '';
+    public bool|string $library = '';
 
-    public $source_filepath = '';
+    public string $source_filepath = '';
 
-    public function __construct($source_filepath, $library = null)
-    {
+    public function __construct(
+        string $source_filepath,
+        string $library = null
+    ) {
         global $conf;
         $this->source_filepath = $source_filepath;
 
@@ -75,14 +77,27 @@ class pwg_image
     }
 
     // Unknow methods will be redirected to image object
-    public function __call($method, $arguments)
-    {
+    public function __call(
+        string $method,
+        array $arguments
+    ): mixed {
         return call_user_func_array([$this->image, $method], $arguments);
     }
 
     // Piwigo resize function
-    public function pwg_resize($destination_filepath, $max_width, $max_height, $quality, $automatic_rotation = true, $strip_metadata = false, $crop = false, $follow_orientation = true)
-    {
+    /**
+     * @return mixed[]
+     */
+    public function pwg_resize(
+        string $destination_filepath,
+        int $max_width,
+        int $max_height,
+        int $quality,
+        bool $automatic_rotation = true,
+        bool $strip_metadata = false,
+        bool $crop = false,
+        bool $follow_orientation = true
+    ): array {
         $starttime = get_moment();
 
         // width/height
@@ -126,8 +141,15 @@ class pwg_image
         return $this->get_resize_result($destination_filepath, $resize_dimensions['width'], $resize_dimensions['height'], $starttime);
     }
 
-    public static function get_resize_dimensions($width, $height, $max_width, $max_height, $rotation = null, $crop = false, $follow_orientation = true)
-    {
+    public static function get_resize_dimensions(
+        int $width,
+        int $height,
+        int $max_width,
+        int $max_height,
+        int $rotation = null,
+        bool $crop = false,
+        bool $follow_orientation = true
+    ): array {
         $rotate_for_dimensions = false;
         if (isset($rotation) and in_array(abs($rotation), [90, 270])) {
             $rotate_for_dimensions = true;
@@ -195,7 +217,7 @@ class pwg_image
         return $result;
     }
 
-    public static function webp_info($source_filepath)
+    public static function webp_info(string $source_filepath): array
     {
         // function based on https://stackoverflow.com/questions/61221874/detect-if-a-webp-image-is-transparent-in-php
         //
@@ -247,8 +269,9 @@ class pwg_image
         }
     }
 
-    public static function get_rotation_angle($source_filepath)
-    {
+    public static function get_rotation_angle(
+        string $source_filepath
+    ): int|null {
         list($width, $height, $type) = getimagesize($source_filepath);
         if ($type != IMAGETYPE_JPEG) {
             return null;
@@ -276,31 +299,36 @@ class pwg_image
         return $rotation;
     }
 
-    public static function get_rotation_code_from_angle($rotation_angle)
-    {
+    public static function get_rotation_code_from_angle(
+        int|null $rotation_angle
+    ): int {
         switch ($rotation_angle) {
             case 0:   return 0;
             case 90:  return 1;
             case 180: return 2;
             case 270: return 3;
+            default: return 0;
         }
     }
 
-    public static function get_rotation_angle_from_code($rotation_code)
-    {
+    public static function get_rotation_angle_from_code(
+        string $rotation_code
+    ): int {
         switch ($rotation_code % 4) {
             case 0: return 0;
             case 1: return 90;
             case 2: return 180;
             case 3: return 270;
+            default: return 0;
         }
     }
 
     /**
      * Returns a normalized convolution kernel for sharpening
      */
-    public static function get_sharpen_matrix($amount)
-    {
+    public static function get_sharpen_matrix(
+        int $amount
+    ): array {
         // Amount should be in the range of 48-10
         $amount = round(abs(-48 + ($amount * 0.38)), 2);
 
@@ -321,13 +349,15 @@ class pwg_image
         return $matrix;
     }
 
-    public static function is_vips()
+    public static function is_vips(): bool
     {
         return class_exists('image_vips');
     }
 
-    public static function get_library($library = null, $extension = null)
-    {
+    public static function get_library(
+        string $library = null,
+        string $extension = null
+    ): bool|string {
         global $conf;
 
         if ($library === null) {
@@ -351,7 +381,7 @@ class pwg_image
         return false;
     }
 
-    public function destroy()
+    public function destroy(): mixed
     {
         if (method_exists($this->image, 'destroy')) {
             return $this->image->destroy();
@@ -359,8 +389,12 @@ class pwg_image
         return true;
     }
 
-    private function get_resize_result($destination_filepath, $width, $height, $time = null)
-    {
+    private function get_resize_result(
+        string $destination_filepath,
+        int $width,
+        int $height,
+        int|float $time = null
+    ): array {
         return [
             'source' => $this->source_filepath,
             'destination' => $destination_filepath,
@@ -386,7 +420,7 @@ class image_vips implements imageInterface
     public $source_filepath;
 
     public function __construct(
-        $source_filepath
+        string $source_filepath
     ) {
         // putenv('VIPS_WARNING=0');
         $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), [
@@ -395,50 +429,61 @@ class image_vips implements imageInterface
         $this->source_filepath = realpath($source_filepath);
     }
 
-    public function add_command($command, $params = null) {}
+    public function add_command(
+        string $command,
+        string $params = null
+    ): void {}
 
     #[\Override]
-    public function get_width()
+    public function get_width(): int
     {
         return $this->image->width;
     }
 
     #[\Override]
-    public function get_height()
+    public function get_height(): int
     {
         return $this->image->height;
     }
 
     #[\Override]
-    public function crop($width, $height, $x, $y)
-    {
+    public function crop(
+        int|float $width,
+        int|float $height,
+        int|float $x,
+        int|float $y
+    ): bool {
         $this->image = $this->image->crop($x, $y, $width, $height);
         return true;
     }
 
     #[\Override]
-    public function strip()
+    public function strip(): bool
     {
         return true;
     }
 
     #[\Override]
-    public function rotate($rotation)
-    {
+    public function rotate(
+        int $rotation
+    ): bool {
         $this->image = $this->image->rotate($rotation);
         return true;
     }
 
     #[\Override]
-    public function set_compression_quality($quality)
-    {
+    public function set_compression_quality(
+        int $quality
+    ): bool {
         $this->quality = $quality;
         return true;
     }
 
     #[\Override]
-    public function resize($width, $height)
-    {
+    public function resize(
+        float $width,
+        float $height
+    ): bool {
         $this->image = Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, [
             'height' => $height,
         ]);
@@ -446,20 +491,26 @@ class image_vips implements imageInterface
     }
 
     #[\Override]
-    public function sharpen($amount)
-    {
+    public function sharpen(
+        int $amount
+    ): bool {
         return true;
     }
 
     #[\Override]
-    public function compose($overlay, $x, $y, $opacity)
-    {
+    public function compose(
+        int $overlay,
+        int $x,
+        int $y,
+        int $opacity
+    ): bool {
         return true;
     }
 
     #[\Override]
-    public function write($destination_filepath)
-    {
+    public function write(
+        string $destination_filepath
+    ): bool {
         $dest = pathinfo((string) $destination_filepath);
         $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);
         return true;

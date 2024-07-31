@@ -11,11 +11,15 @@ declare(strict_types=1);
 
 class Inflector_en
 {
-    private $exceptions;
+    private array $exceptions;
 
-    private $pluralizers;
+    private array $pluralizers;
 
-    private $singularizers;
+    private array $singularizers;
+
+    private array $ing2er;
+
+    private array $er2ing;
 
     public function __construct()
     {
@@ -99,8 +103,9 @@ class Inflector_en
 
     }
 
-    public function get_variants($word)
-    {
+    public function get_variants(
+        string $word
+    ): array {
         $res = [];
 
         $lword = strtolower($word);
@@ -127,8 +132,11 @@ class Inflector_en
         return $res;
     }
 
-    private static function run($rules, $word, &$res)
-    {
+    private static function run(
+        array $rules,
+        string $word,
+        array &$res
+    ): string|array|null|false {
         foreach ($rules as $rule => $replacement) {
             $rc = preg_replace($rule . 'i', $replacement, $word, -1, $count);
             if ($count) {
