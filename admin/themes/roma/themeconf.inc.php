@@ -1,7 +1,9 @@
 <?php
-$themeconf = array(
-  'name'  => 'roma',
-  'parent' => 'default',
-  'colorscheme' => 'dark',
-);
-?>
+
+declare(strict_types=1);
+
+$themeconf = [
+    'name' => 'roma',
+    'parent' => 'default',
+    'colorscheme' => 'dark',
+];
