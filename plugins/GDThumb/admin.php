@@ -6,8 +6,9 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-function int_delete_gdthumb_cache($pattern)
-{
+function int_delete_gdthumb_cache(
+    string $pattern
+): void {
     if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
         while (($node = readdir($contents)) !== false) {
             if ($node != '.'
@@ -20,8 +21,9 @@ function int_delete_gdthumb_cache($pattern)
     }
 }
 
-function delete_gdthumb_cache($height)
-{
+function delete_gdthumb_cache(
+    string|int $height
+): void {
     int_delete_gdthumb_cache('#.*-cu_s9999x' . $height . '\.[a-zA-Z0-9]{3,4}$#');
     int_delete_gdthumb_cache('#.*-cu_s' . $height . 'x9999\.[a-zA-Z0-9]{3,4}$#');
 }

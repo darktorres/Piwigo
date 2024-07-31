@@ -12,12 +12,12 @@ declare(strict_types=1);
 /**
  * Rate a picture by the current user.
  *
- * @param int $image_id
- * @param float $rate
  * @return array as return by update_rating_score()
  */
-function rate_picture($image_id, $rate)
-{
+function rate_picture(
+    int $image_id,
+    float $rate
+): array|bool {
     global $conf, $user;
 
     if (! isset($rate)
@@ -79,8 +79,9 @@ function rate_picture($image_id, $rate)
  * @param int|false $element_id if false applies to all
  * @return array (score, average, count) values are null if $element_id is false
  */
-function update_rating_score($element_id = false)
-{
+function update_rating_score(
+    int|bool $element_id = false
+): array {
     if (($alt_result = trigger_change('update_rating_score', false, $element_id)) !== false) {
         return $alt_result;
     }

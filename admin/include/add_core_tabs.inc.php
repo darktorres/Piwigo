@@ -11,8 +11,10 @@ declare(strict_types=1);
 
 add_event_handler('tabsheet_before_select', 'add_core_tabs', 0);
 
-function add_core_tabs($sheets, $tab_id)
-{
+function add_core_tabs(
+    array $sheets,
+    string|null $tab_id
+): array {
     global $conf;
 
     switch ($tab_id) {
