@@ -74,8 +74,10 @@ if (! defined('PHPWG_ROOT_PATH')) {//direct script access
 }
 
 //------------------------------------------------------ update & customization
-function save_profile_from_post($userdata, &$errors)
-{
+function save_profile_from_post(
+    array $userdata,
+    array &$errors
+): bool {
     global $conf, $page;
     $errors = [];
 
@@ -267,13 +269,13 @@ function save_profile_from_post($userdata, &$errors)
 /**
  * Assign template variables, from arguments
  * Used to build profile edition pages
- *
- * @param string $url_action
- * @param string $url_redirect
- * @param array $userdata
  */
-function load_profile_in_template($url_action, $url_redirect, $userdata, $template_prefixe = null)
-{
+function load_profile_in_template(
+    string $url_action,
+    string $url_redirect,
+    array $userdata,
+    string $template_prefixe = null
+): void {
     global $template, $conf;
 
     $template->assign(

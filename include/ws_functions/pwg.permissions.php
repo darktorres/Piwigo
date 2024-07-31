@@ -17,8 +17,10 @@ declare(strict_types=1);
  *    @option int[] group_id (optional)
  *    @option int[] user_id (optional)
  */
-function ws_permissions_getList($params, &$service)
-{
+function ws_permissions_getList(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     $my_params = array_intersect(array_keys($params), ['cat_id', 'group_id', 'user_id']);
     if (count($my_params) > 1) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Too many parameters, provide cat_id OR user_id OR group_id');
@@ -106,8 +108,10 @@ function ws_permissions_getList($params, &$service)
  *    @option int[] user_id (optional)
  *    @option bool recursive
  */
-function ws_permissions_add($params, &$service)
-{
+function ws_permissions_add(
+    array $params,
+    PwgServer &$service
+): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -164,8 +168,10 @@ function ws_permissions_add($params, &$service)
  *    @option int[] group_id (optional)
  *    @option int[] user_id (optional)
  */
-function ws_permissions_remove($params, &$service)
-{
+function ws_permissions_remove(
+    array $params,
+    PwgServer &$service
+): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }

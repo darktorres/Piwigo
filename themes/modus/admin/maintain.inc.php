@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-function theme_activate($id, $version, &$errors)
-{
+function theme_activate(
+    string $id,
+    string $version,
+    array &$errors
+): void {
     global $conf;
 
     include_once(dirname(dirname(__FILE__)) . '/functions.inc.php');
@@ -20,7 +23,7 @@ function theme_activate($id, $version, &$errors)
     conf_update_param('modus_theme', addslashes(serialize($my_conf)));
 }
 
-function theme_delete()
+function theme_delete(): void
 {
     $query = "DELETE FROM config WHERE param = 'modus_theme';";
     pwg_query($query);

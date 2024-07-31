@@ -62,8 +62,10 @@ $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] .
 
 // end fast bootstrap
 
-function ierror($msg, $code)
-{
+function ierror(
+    string $msg,
+    int $code
+): void {
     global $logger;
     if ($code == 301 || $code == 302) {
         if (ob_get_length() !== false) {
@@ -95,15 +97,17 @@ function ierror($msg, $code)
     exit;
 }
 
-function time_step(&$step)
-{
+function time_step(
+    float &$step
+): int {
     $tmp = $step;
     $step = microtime(true);
     return intval(1000 * ($step - $tmp));
 }
 
-function url_to_size($s)
-{
+function url_to_size(
+    string $s
+): array {
     $pos = strpos($s, 'x');
     if ($pos === false) {
         return [(int) $s, (int) $s];
@@ -111,8 +115,9 @@ function url_to_size($s)
     return [(int) substr($s, 0, $pos), (int) substr($s, $pos + 1)];
 }
 
-function parse_custom_params($tokens)
-{
+function parse_custom_params(
+    array $tokens
+): \DerivativeParams {
     if (count($tokens) < 1) {
         ierror('Empty array while parsing Sizing', 400);
     }
@@ -141,7 +146,7 @@ function parse_custom_params($tokens)
     return new DerivativeParams(new SizingParams($size, $crop, $min_size));
 }
 
-function parse_request()
+function parse_request(): void
 {
     global $conf, $page;
 
@@ -233,8 +238,10 @@ function parse_request()
     $page['src_url'] = $page['root_path'] . $page['src_location'];
 }
 
-function try_switch_source(DerivativeParams $params, $original_mtime)
-{
+function try_switch_source(
+    DerivativeParams $params,
+    $original_mtime
+): bool {
     global $page;
     if (! isset($page['original_size'])) {
         return false;
@@ -306,8 +313,9 @@ function try_switch_source(DerivativeParams $params, $original_mtime)
     return false;
 }
 
-function send_derivative($expires)
-{
+function send_derivative(
+    int|bool $expires
+): void {
     global $page;
 
     if (isset($_GET['ajaxload']) and $_GET['ajaxload'] == 'true') {

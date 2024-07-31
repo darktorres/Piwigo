@@ -18,10 +18,10 @@ class CalendarMonthly extends CalendarBase
 {
     /**
      * Initialize the calendar.
-     * @param string $inner_sql
      */
-    public function initialize($inner_sql)
-    {
+    public function initialize(
+        string $inner_sql
+    ): void {
         parent::initialize($inner_sql);
         global $lang;
         $this->calendar_levels = [
@@ -45,7 +45,7 @@ class CalendarMonthly extends CalendarBase
      *
      * @return boolean false indicates that thumbnails where not included
      */
-    public function generate_category_content()
+    public function generate_category_content(): bool
     {
         global $conf, $page;
 
@@ -102,10 +102,10 @@ class CalendarMonthly extends CalendarBase
      * Returns a sql WHERE subquery for the date field.
      *
      * @param int $max_levels (e.g. 2=only year and month)
-     * @return string
      */
-    public function get_date_where($max_levels = 3)
-    {
+    public function get_date_where(
+        int $max_levels = 3
+    ): string {
         global $page;
 
         $date = $page['chronology_date'];
@@ -151,13 +151,11 @@ class CalendarMonthly extends CalendarBase
 
     /**
      * Returns an array with all the days in a given month.
-     *
-     * @param int $year
-     * @param int $month
-     * @return int[]
      */
-    protected function get_all_days_in_month($year, $month)
-    {
+    protected function get_all_days_in_month(
+        int $year,
+        int $month
+    ): int {
         $md = [
             1 => 31,
             28,
@@ -188,12 +186,10 @@ class CalendarMonthly extends CalendarBase
 
     /**
      * Build global calendar and assign the result in _$tpl_var_
-     *
-     * @param array $tpl_var
-     * @return bool
      */
-    protected function build_global_calendar(&$tpl_var)
-    {
+    protected function build_global_calendar(
+        array &$tpl_var
+    ): bool {
         global $page;
 
         assert(count($page['chronology_date']) == 0);
@@ -253,12 +249,10 @@ class CalendarMonthly extends CalendarBase
 
     /**
      * Build year calendar and assign the result in _$tpl_var_
-     *
-     * @param array $tpl_var
-     * @return bool
      */
-    protected function build_year_calendar(&$tpl_var)
-    {
+    protected function build_year_calendar(
+        array &$tpl_var
+    ): bool {
         global $page;
 
         assert(count($page['chronology_date']) == 1);
@@ -310,12 +304,10 @@ class CalendarMonthly extends CalendarBase
 
     /**
      * Build month calendar and assign the result in _$tpl_var_
-     *
-     * @param array $tpl_var
-     * @return bool
      */
-    protected function build_month_calendar(&$tpl_var)
-    {
+    protected function build_month_calendar(
+        array &$tpl_var
+    ): bool {
         global $page, $lang, $conf;
 
         $dayofmonth_ = pwg_db_get_dayofmonth($this->date_field);

@@ -9,8 +9,9 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-function xmlrpc_encode($data)
-{
+function xmlrpc_encode(
+    mixed $data
+): string|null {
     switch (gettype($data)) {
         case 'boolean':
             return '<boolean>' . ($data ? '1' : '0') . '</boolean>';
@@ -40,12 +41,16 @@ function xmlrpc_encode($data)
             }
             return $return;
     }
+
+    return null;
 }
 
 class PwgXmlRpcEncoder extends PwgResponseEncoder
 {
-    public function encodeResponse($response)
-    {
+    #[\Override]
+    public function encodeResponse(
+        array|bool|string|PwgError|null $response
+    ): string {
         if ($response instanceof PwgError) {
             $code = $response->code();
             $msg = htmlspecialchars($response->message());
@@ -86,7 +91,8 @@ EOD;
         return $ret;
     }
 
-    public function getContentType()
+    #[\Override]
+    public function getContentType(): string
     {
         return 'text/xml';
     }

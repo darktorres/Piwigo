@@ -15,11 +15,13 @@ declare(strict_types=1);
  * @param mixed[] $params
  *    @option bool sort_by_counter
  */
-function ws_tags_getList($params, &$service)
-{
+function ws_tags_getList(
+    array $params,
+    PwgServer &$service
+): array {
     $tags = get_available_tags();
     if ($params['sort_by_counter']) {
-        usort($tags, function ($a, $b) {  return -$a['counter'] + $b['counter']; });
+        usort($tags, function (array $a, array $b): float|int {  return -$a['counter'] + $b['counter']; });
     } else {
         usort($tags, 'tag_alpha_compare');
     }
@@ -52,8 +54,10 @@ function ws_tags_getList($params, &$service)
  * Only admin can run this method and permissions are not taken into
  * account.
  */
-function ws_tags_getAdminList($params, &$service)
-{
+function ws_tags_getAdminList(
+    array $params,
+    PwgServer &$service
+): array {
     return [
         'tags' => new PwgNamedArray(
             get_all_tags(),
@@ -75,8 +79,10 @@ function ws_tags_getAdminList($params, &$service)
  *    @option int page
  *    @option string order
  */
-function ws_tags_getImages($params, &$service)
-{
+function ws_tags_getImages(
+    array $params,
+    PwgServer &$service
+): array {
     // first build all the tag_ids we are interested in
     $tags = find_tags($params['tag_id'], $params['tag_url_name'], $params['tag_name']);
     $tags_by_id = [];
@@ -199,8 +205,10 @@ function ws_tags_getImages($params, &$service)
  * @param mixed[] $params
  *    @option string name
  */
-function ws_tags_add($params, &$service)
-{
+function ws_tags_add(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     $creation_output = create_tag($params['name']);
@@ -222,8 +230,10 @@ function ws_tags_add($params, &$service)
     ];
 }
 
-function ws_tags_delete($params, &$service)
-{
+function ws_tags_delete(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
@@ -251,8 +261,10 @@ function ws_tags_delete($params, &$service)
 
 }
 
-function ws_tags_rename($params, &$service)
-{
+function ws_tags_rename(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
@@ -299,8 +311,10 @@ function ws_tags_rename($params, &$service)
     return query2array($query)[0];
 }
 
-function ws_tags_duplicate($params, &$service)
-{
+function ws_tags_duplicate(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
@@ -369,8 +383,10 @@ function ws_tags_duplicate($params, &$service)
     ];
 }
 
-function ws_tags_merge($params, &$service)
-{
+function ws_tags_merge(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
 
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');

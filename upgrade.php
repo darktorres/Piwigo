@@ -48,10 +48,8 @@ include_once(PHPWG_ROOT_PATH . 'include/template.class.php');
 
 /**
  * list all tables in an array
- *
- * @return array
  */
-function get_tables()
+function get_tables(): array
 {
     $tables = [];
 
@@ -70,8 +68,9 @@ function get_tables()
  *
  * @return array of array
  */
-function get_columns_of($tables)
-{
+function get_columns_of(
+    array $tables
+): array {
     $columns_of = [];
 
     foreach ($tables as $table) {
@@ -88,8 +87,9 @@ function get_columns_of($tables)
     return $columns_of;
 }
 
-function print_time($message)
-{
+function print_time(
+    string $message
+): void {
     global $last_time;
 
     $new_time = get_moment();

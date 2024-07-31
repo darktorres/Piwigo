@@ -28,8 +28,10 @@ declare(strict_types=1);
  *    @option string min_register
  *    @option string max_register
  */
-function ws_users_getList($params, &$service)
-{
+function ws_users_getList(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $conf;
 
     if (! preg_match(PATTERN_ORDER, $params['order'])) {
@@ -323,8 +325,10 @@ function ws_users_getList($params, &$service)
  *    @option string password (optional)
  *    @option string email (optional)
  */
-function ws_users_add($params, &$service)
-{
+function ws_users_add(
+    array $params,
+    PwgServer &$service
+): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -366,8 +370,10 @@ function ws_users_add($params, &$service)
  *    @option int[] user_id
  *    @option string pwg_token
  */
-function ws_users_getAuthKey($params, &$service)
-{
+function ws_users_getAuthKey(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -388,8 +394,10 @@ function ws_users_getAuthKey($params, &$service)
  *    @option int[] user_id
  *    @option string pwg_token
  */
-function ws_users_delete($params, &$service)
-{
+function ws_users_delete(
+    array $params,
+    PwgServer &$service
+): PwgError|string {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -447,8 +455,10 @@ function ws_users_delete($params, &$service)
  *    @option bool show_nb_hits (optional)
  *    @option bool enabled_high (optional)
  */
-function ws_users_setInfo($params, &$service)
-{
+function ws_users_setInfo(
+    array $params,
+    PwgServer &$service
+): mixed {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -676,8 +686,10 @@ function ws_users_setInfo($params, &$service)
  *    @option string param
  *    @option string|mixed value
  */
-function ws_users_preferences_set($params, &$service)
-{
+function ws_users_preferences_set(
+    array $params,
+    PwgServer &$service
+): mixed {
     global $user;
 
     if (! preg_match('/^[a-zA-Z0-9_-]+$/', $params['param'])) {
@@ -700,8 +712,10 @@ function ws_users_preferences_set($params, &$service)
  * @param mixed[] $params
  *    @option int image_id
  */
-function ws_users_favorites_add($params, &$service)
-{
+function ws_users_favorites_add(
+    array $params,
+    PwgServer &$service
+): bool|PwgError {
     global $user;
 
     if (is_a_guest()) {
@@ -735,8 +749,10 @@ function ws_users_favorites_add($params, &$service)
  * @param mixed[] $params
  *    @option int image_id
  */
-function ws_users_favorites_remove($params, &$service)
-{
+function ws_users_favorites_remove(
+    array $params,
+    PwgServer &$service
+): bool|PwgError {
     global $user;
 
     if (is_a_guest()) {
@@ -765,8 +781,10 @@ function ws_users_favorites_remove($params, &$service)
  *    @option int page
  *    @option string order
  */
-function ws_users_favorites_getList($params, &$service)
-{
+function ws_users_favorites_getList(
+    array $params,
+    PwgServer &$service
+): array|bool {
     global $conf, $user;
 
     if (is_a_guest()) {
