@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -15,9 +18,9 @@ define('PHPWG_DEFAULT_LANGUAGE', 'en_UK');
 // default value (see file install/piwigo_structure-mysql.sql)
 define('PHPWG_DEFAULT_TEMPLATE', 'modus');
 
-define('PHPWG_THEMES_PATH', $conf['themes_dir'].'/');
-defined('PWG_COMBINED_DIR') or define('PWG_COMBINED_DIR', $conf['data_location'].'combined/');
-defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'].'i/');
+define('PHPWG_THEMES_PATH', $conf['themes_dir'] . '/');
+defined('PWG_COMBINED_DIR') or define('PWG_COMBINED_DIR', $conf['data_location'] . 'combined/');
+defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
 // Required versions
 define('REQUIRED_PHP_VERSION', '8.3.12');
@@ -38,5 +41,3 @@ define('ACTIVITY_SYSTEM_THEME', 3);
 // Sanity checks
 define('PATTERN_ID', '/^\d+$/');
 define('PATTERN_ORDER', '/^(rand(om)?|[a-z_]+(\s+(asc|desc))?)(\s*,\s*(rand(om)?|[a-z_]+(\s+(asc|desc))?))*$/i');
-
-?>
