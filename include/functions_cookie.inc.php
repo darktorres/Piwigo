@@ -14,10 +14,8 @@ declare(strict_types=1);
  * If Piwigo is installed on :
  * http://domain.org/meeting/gallery/
  * it will return : "/meeting/gallery"
- *
- * @return string
  */
-function cookie_path()
+function cookie_path(): string
 {
     if (isset($_SERVER['REDIRECT_SCRIPT_NAME']) and
          ! empty($_SERVER['REDIRECT_SCRIPT_NAME'])) {
@@ -69,11 +67,12 @@ function cookie_path()
  * Set $value to null to delete the cookie.
  *
  * @param mixed $value
- * @param int|null $expire
- * @return bool
  */
-function pwg_set_cookie_var($var, $value, $expire = null)
-{
+function pwg_set_cookie_var(
+    mixed $var,
+    string $value,
+    int $expire = null
+): bool {
     if ($value == null or $expire === 0) {
         unset($_COOKIE['pwg_' . $var]);
         return setcookie('pwg_' . $var, false, 0, cookie_path());
@@ -89,13 +88,11 @@ function pwg_set_cookie_var($var, $value, $expire = null)
 /**
  * Retrieves the value of a persistent variable in pwg cookie
  * @see pwg_set_cookie_var
- *
- * @param string $var
- * @param mixed $default
- * @return mixed
  */
-function pwg_get_cookie_var($var, $default = null)
-{
+function pwg_get_cookie_var(
+    string $var,
+    mixed $default = null
+): mixed {
     if (isset($_COOKIE['pwg_' . $var])) {
         return $_COOKIE['pwg_' . $var];
     }

@@ -19,8 +19,10 @@ declare(strict_types=1);
  *    @option int page
  *    @option string order (optional)
  */
-function ws_categories_getImages($params, &$service)
-{
+function ws_categories_getImages(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $user, $conf;
 
     $params['cat_id'] = array_unique($params['cat_id']);
@@ -205,8 +207,10 @@ function ws_categories_getImages($params, &$service)
  *    @option bool tree_output
  *    @option bool fullname
  */
-function ws_categories_getList($params, &$service)
-{
+function ws_categories_getList(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $user, $conf;
 
     if (! in_array($params['thumbnail_size'], array_keys(ImageStdParams::get_defined_type_map()))) {
@@ -457,8 +461,10 @@ function ws_categories_getList($params, &$service)
  * Only admin can run this method and permissions are not taken into
  * account.
  */
-function ws_categories_getAdminList($params, &$service)
-{
+function ws_categories_getAdminList(
+    array $params,
+    PwgServer &$service
+): array {
     global $conf;
 
     if (! isset($params['additional_output'])) {
@@ -550,8 +556,10 @@ function ws_categories_getAdminList($params, &$service)
  *    @option string status (optional)
  *    @option bool commentable
  */
-function ws_categories_add($params, &$service)
-{
+function ws_categories_add(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     global $conf;
@@ -596,8 +604,10 @@ function ws_categories_add($params, &$service)
  *    @option int cat_id
  *    @option int rank
  */
-function ws_categories_setRank($params, &$service)
-{
+function ws_categories_setRank(
+    array $params,
+    PwgServer &$service
+): PwgError|null {
     // does the category really exist?
     $category_id_ = implode(',', $params['category_id']);
     $query = "SELECT id, id_uppercat, rank_column FROM categories WHERE id IN ({$category_id_});";
@@ -649,6 +659,8 @@ function ws_categories_setRank($params, &$service)
     // include function to set the global rank
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     save_categories_order($order_new);
+
+    return null;
 }
 
 /**
@@ -663,8 +675,10 @@ function ws_categories_setRank($params, &$service)
  *    @option bool commentable (optional)
  *    @option bool apply_commentable_to_subalbums (optional)
  */
-function ws_categories_setInfo($params, &$service)
-{
+function ws_categories_setInfo(
+    array $params,
+    PwgServer &$service
+): PwgError|null {
     global $conf;
 
     if (isset($params['pwg_token']) and get_pwg_token() != $params['pwg_token']) {
@@ -738,6 +752,8 @@ function ws_categories_setInfo($params, &$service)
     pwg_activity('album', $params['category_id'], 'edit', [
         'fields' => implode(',', array_keys($update)),
     ]);
+
+    return null;
 }
 
 /**
@@ -747,8 +763,10 @@ function ws_categories_setInfo($params, &$service)
  *    @option int category_id
  *    @option int image_id
  */
-function ws_categories_setRepresentative($params, &$service)
-{
+function ws_categories_setRepresentative(
+    array $params,
+    PwgServer &$service
+): PwgError|null {
     // does the category really exist?
     $query = "SELECT COUNT(*) FROM categories WHERE id = {$params['category_id']};";
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -773,6 +791,8 @@ function ws_categories_setRepresentative($params, &$service)
     pwg_activity('album', $params['category_id'], 'edit', [
         'image_id' => $params['image_id'],
     ]);
+
+    return null;
 }
 
 /**
@@ -784,8 +804,10 @@ function ws_categories_setRepresentative($params, &$service)
  * @param mixed[] $params
  *    @option int category_id
  */
-function ws_categories_deleteRepresentative($params, &$service)
-{
+function ws_categories_deleteRepresentative(
+    array $params,
+    PwgServer &$service
+): PwgError|null {
     global $conf;
 
     // does the category really exist?
@@ -806,6 +828,8 @@ function ws_categories_deleteRepresentative($params, &$service)
     pwg_query($query);
 
     pwg_activity('album', $params['category_id'], 'edit');
+
+    return null;
 }
 
 /**
@@ -816,8 +840,10 @@ function ws_categories_deleteRepresentative($params, &$service)
  * @param mixed[] $params
  *    @option int category_id
  */
-function ws_categories_refreshRepresentative($params, &$service)
-{
+function ws_categories_refreshRepresentative(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $conf;
 
     // does the category really exist?
@@ -856,8 +882,10 @@ function ws_categories_refreshRepresentative($params, &$service)
  *    @option string photo_deletion_mode
  *    @option string pwg_token
  */
-function ws_categories_delete($params, &$service)
-{
+function ws_categories_delete(
+    array $params,
+    PwgServer &$service
+): PwgError|null {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -890,7 +918,7 @@ function ws_categories_delete($params, &$service)
     }
 
     if (count($category_ids) == 0) {
-        return;
+        return null;
     }
 
     $category_ids_ = implode(',', $category_ids);
@@ -898,13 +926,15 @@ function ws_categories_delete($params, &$service)
     $category_ids = array_from_query($query, 'id');
 
     if (count($category_ids) == 0) {
-        return;
+        return null;
     }
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     delete_categories($category_ids, $params['photo_deletion_mode']);
     update_global_rank();
     invalidate_user_cache();
+
+    return null;
 }
 
 /**
@@ -915,8 +945,10 @@ function ws_categories_delete($params, &$service)
  *    @option int parent
  *    @option string pwg_token
  */
-function ws_categories_move($params, &$service)
-{
+function ws_categories_move(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $page;
 
     if (get_pwg_token() != $params['pwg_token']) {
@@ -1050,8 +1082,10 @@ function ws_categories_move($params, &$service)
  * Return the number of orphan photos if an album is deleted
  * @since 12
  */
-function ws_categories_calculateOrphans($param, &$service)
-{
+function ws_categories_calculateOrphans(
+    array $param,
+    PwgServer &$service
+) {
     global $conf;
 
     $category_id = $param['category_id'][0];
