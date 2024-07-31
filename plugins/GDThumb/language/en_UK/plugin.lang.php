@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $lang['%d file'] = '%d file';
 $lang['%d files'] = '%d files';
 $lang['Animate thumbnail on hover'] = 'Animate thumbnail on hover';
@@ -53,5 +55,3 @@ $lang['Rating:'] = 'Rating:';
 $lang['This Thumb mode cannot be used in Slide mode. Changed to default'] = 'This Thumb mode cannot be used in Slide mode. Changed to default';
 $lang['Thumb animation cannot be used in Slide mode. Disabled'] = 'Thumb animation cannot be used in Slide mode. Disabled';
 $lang['Thumbnails max height must be an integer'] = 'Thumbnails max height must be an integer';
-
-?>

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+
@@ -23,8 +26,6 @@
 
 function plugin_uninstall()
 {
-  $query = 'DELETE FROM config WHERE param=\'LocalFilesEditor\' LIMIT 1;';
-  pwg_query($query);
+    $query = 'DELETE FROM config WHERE param=\'LocalFilesEditor\' LIMIT 1;';
+    pwg_query($query);
 }
-
-?>
