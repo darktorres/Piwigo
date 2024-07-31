@@ -6,6 +6,7 @@ use PhpCsFixer\Fixer\Alias\RandomApiMigrationFixer;
 use PhpCsFixer\Fixer\Basic\SingleLineEmptyBodyFixer;
 use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
 use PhpCsFixer\Fixer\StringNotation\NoTrailingWhitespaceInStringFixer;
+use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return ECSConfig::configure()
@@ -17,6 +18,7 @@ return ECSConfig::configure()
         __DIR__ . '/node_modules',
         __DIR__ . '/tests',
         __DIR__ . '/vendor',
+        LineLengthFixer::class,
     ])
     ->withRootFiles()
     // add sets - group of rules
@@ -26,10 +28,10 @@ return ECSConfig::configure()
         psr12: true,
         symplify: true
     )
-    // ->withRules([
-    //     DeclareStrictTypesFixer::class,
-    //     NoTrailingWhitespaceInStringFixer::class,
-    //     SingleLineEmptyBodyFixer::class,
-    //     RandomApiMigrationFixer::class,
-    // ])
+    ->withRules([
+        DeclareStrictTypesFixer::class,
+        NoTrailingWhitespaceInStringFixer::class,
+        SingleLineEmptyBodyFixer::class,
+        RandomApiMigrationFixer::class,
+    ])
 ;

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | PhpWebGallery - a PHP based picture gallery                           |
 // | Copyright (C) 2002-2003 Pierrick LE GALL - pierrick@phpwebgallery.net |
@@ -26,8 +29,7 @@
 
 // Recursive call
 $url = '../';
-header( 'Request-URI: '.$url );
-header( 'Content-Location: '.$url );
-header( 'Location: '.$url );
+header('Request-URI: ' . $url);
+header('Content-Location: ' . $url);
+header('Location: ' . $url);
 exit();
-?>
