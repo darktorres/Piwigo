@@ -90,12 +90,12 @@ $template->assign('selected_category', $selected_category);
 
 // how many existing albums?
 $query = 'SELECT COUNT(*) FROM categories;';
-list($nb_albums) = pwg_db_fetch_row(pwg_query($query));
+[$nb_albums] = pwg_db_fetch_row(pwg_query($query));
 // $nb_albums = 0;
 $template->assign('NB_ALBUMS', $nb_albums);
 
 // image level options
-$selected_level = isset($_POST['level']) ? $_POST['level'] : 0;
+$selected_level = $_POST['level'] ?? 0;
 $template->assign(
     [
         'level_options' => get_privacy_level_options(),
@@ -111,7 +111,7 @@ $template->assign(
 $setup_errors = [];
 
 $error_message = ready_for_upload_message();
-if (! empty($error_message)) {
+if ($error_message !== null && $error_message !== '' && $error_message !== '0') {
     $setup_errors[] = $error_message;
 }
 
@@ -128,7 +128,7 @@ if (isset($_GET['hide_warnings'])) {
 if (! isset($_SESSION['upload_hide_warnings'])) {
     $setup_warnings = [];
 
-    if ($conf['use_exif'] and ! function_exists('exif_read_data')) {
+    if ($conf['use_exif'] && ! function_exists('exif_read_data')) {
         $setup_warnings[] = l10n('Exif extension not available, admin should disable exif use');
     }
 

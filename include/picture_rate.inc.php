@@ -21,20 +21,22 @@ if ($conf['rate']) {
     ];
     if ($rate_summary['score'] != null) {
         $query = "SELECT COUNT(rate) AS count, ROUND(AVG(rate), 2) AS average FROM rate WHERE element_id = {$picture['current']['id']};";
-        list($rate_summary['count'], $rate_summary['average']) = pwg_db_fetch_row(pwg_query($query));
+        [$rate_summary['count'], $rate_summary['average']] = pwg_db_fetch_row(pwg_query($query));
     }
+
     $template->assign('rate_summary', $rate_summary);
 
     $user_rate = null;
-    if ($conf['rate_anonymous'] or is_autorize_status(ACCESS_CLASSIC)) {
+    if ($conf['rate_anonymous'] || is_autorize_status(ACCESS_CLASSIC)) {
         if ($rate_summary['count'] > 0) {
             $query = "SELECT rate FROM rate WHERE element_id = {$page['image_id']} AND user_id = {$user['id']}";
 
             if (! is_autorize_status(ACCESS_CLASSIC)) {
-                $ip_components = explode('.', $_SERVER['REMOTE_ADDR']);
+                $ip_components = explode('.', (string) $_SERVER['REMOTE_ADDR']);
                 if (count($ip_components) > 3) {
                     array_pop($ip_components);
                 }
+
                 $anonymous_id = implode('.', $ip_components);
                 $query .= " AND anonymous_id = '{$anonymous_id}'";
             }

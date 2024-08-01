@@ -13,7 +13,7 @@ declare(strict_types=1);
 $user['id'] = $conf['guest_id'];
 
 if (isset($_COOKIE[session_name()])) {
-    if (isset($_GET['act']) and $_GET['act'] == 'logout') { // logout
+    if (isset($_GET['act']) && $_GET['act'] == 'logout') { // logout
         logout_user();
         redirect(get_gallery_home_url());
     } elseif (! empty($_SESSION['pwg_uid'])) {
@@ -36,10 +36,8 @@ if ($conf['apache_authentication']) {
         }
     }
 
-    if (isset($remote_user)) {
-        if (! ($user['id'] = get_userid($remote_user))) {
-            $user['id'] = register_user($remote_user, '', '', false);
-        }
+    if (isset($remote_user) && ! ($user['id'] = get_userid($remote_user))) {
+        $user['id'] = register_user($remote_user, '', '', false);
     }
 }
 
@@ -48,25 +46,18 @@ if (isset($_GET['auth'])) {
     auth_key_login($_GET['auth']);
 }
 
-if (
-    defined('IN_WS')
-    and isset($_REQUEST['method'])
-    and $_REQUEST['method'] == 'pwg.images.uploadAsync'
-    and isset($_POST['username'])
-    and isset($_POST['password'])
-) {
-    if (! try_log_user($_POST['username'], $_POST['password'], false)) {
-        include_once(PHPWG_ROOT_PATH . 'include/ws_init.inc.php');
-        $service->sendResponse(new PwgError(999, 'Invalid username/password'));
-        exit();
-    }
+if ((defined('IN_WS') && isset($_REQUEST['method']) && $_REQUEST['method'] == 'pwg.images.uploadAsync' && isset($_POST['username']) && isset($_POST['password'])) && ! try_log_user($_POST['username'], $_POST['password'], false)) {
+    include_once(PHPWG_ROOT_PATH . 'include/ws_init.inc.php');
+    $service->sendResponse(new PwgError(999, 'Invalid username/password'));
+    exit();
 }
 
 $user = build_user(
     $user['id'],
-    (defined('IN_ADMIN') and IN_ADMIN) ? false : true // use cache ?
+    (defined('IN_ADMIN') && IN_ADMIN) ? false : true // use cache ?
 );
-if ($conf['browser_language'] and (is_a_guest() or is_generic()) and $language = get_browser_language()) {
+if ($conf['browser_language'] && (is_a_guest() || is_generic()) && ($language = get_browser_language())) {
     $user['language'] = $language;
 }
+
 trigger_notify('user_init', $user);
