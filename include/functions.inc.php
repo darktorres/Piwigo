@@ -802,7 +802,7 @@ function str2DateTime($original, $format = null)
         return DateTime::createFromFormat('!' . $format, $original); // ! char to reset fields to UNIX epoch
     }
 
-    $t = trim($original, '0123456789');
+    $t = trim((string) $original, '0123456789');
     if (empty($t)) { // from timestamp
         return new DateTime('@' . $original);
     }
@@ -829,8 +829,8 @@ function str2DateTime($original, $format = null)
     }
 
     $date = new DateTime();
-    $date->setDate($ymdhms[0], $ymdhms[1], $ymdhms[2]);
-    $date->setTime($ymdhms[3], $ymdhms[4], $ymdhms[5]);
+    $date->setDate((int) $ymdhms[0], (int) $ymdhms[1], (int) $ymdhms[2]);
+    $date->setTime((int) $ymdhms[3], (int) $ymdhms[4], (int) $ymdhms[5]);
     return $date;
 
 }
