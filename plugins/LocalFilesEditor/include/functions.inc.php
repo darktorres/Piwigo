@@ -43,7 +43,8 @@ function eval_syntax(
                 --$b;
             }
         }
-        if ($b) {
+
+        if ($b !== 0) {
             return false;
         }
 
@@ -55,6 +56,7 @@ function eval_syntax(
         }
 
     }
+
     return '<?php' . $code . '?>';
 }
 
@@ -66,14 +68,11 @@ function eval_syntax(
 function editarea_quote(
     string $value
 ): string {
-    switch (gettype($value)) {
-        case 'boolean':
-            return $value ? 'true' : 'false';
-        case 'integer':
-            return $value;
-        default:
-            return '"' . $value . '"';
-    }
+    return match (gettype($value)) {
+        'boolean' => $value ? 'true' : 'false',
+        'integer' => $value,
+        default => '"' . $value . '"',
+    };
 }
 
 /**
@@ -82,7 +81,7 @@ function editarea_quote(
 function get_bak_file(
     string $file
 ): array|string {
-    if (get_extension($file) == 'php') {
+    if (get_extension($file) === 'php') {
         return substr_replace($file, '.bak', strrpos($file, '.'), 0);
     }
 
@@ -102,12 +101,14 @@ function get_rec_dirs(
         $fh = opendir($path);
         while ($file = readdir($fh)) {
             $pathfile = $path . '/' . $file;
-            if ($file != '.' and $file != '..' and $file != '.svn' and is_dir($pathfile)) {
+            if ($file !== '.' && $file !== '..' && $file !== '.svn' && is_dir($pathfile)) {
                 $options[$pathfile] = str_replace(['./', '/'], ['', ' / '], $pathfile);
                 $options = array_merge($options, get_rec_dirs($pathfile));
             }
         }
+
         closedir($fh);
     }
+
     return $options;
 }

@@ -34,7 +34,7 @@ function ws_users_getList(
 ): array|PwgError {
     global $conf;
 
-    if (! preg_match(PATTERN_ORDER, $params['order'])) {
+    if (! preg_match(PATTERN_ORDER, (string) $params['order'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
     }
 
@@ -52,43 +52,45 @@ function ws_users_getList(
 
     $filtered_groups = [];
     if (! empty($params['filter'])) {
-        $filter_query = 'SELECT id FROM groups_table WHERE name LIKE \'%' . $params['filter'] . '%\';';
+        $filter_query = "SELECT id FROM groups_table WHERE name LIKE '%" . $params['filter'] . "%';";
         $filtered_groups_res = pwg_query($filter_query);
         while ($row = pwg_db_fetch_assoc($filtered_groups_res)) {
             $filtered_groups[] = $row['id'];
         }
-        $filter_where_clause = '(' . 'u.' . $conf['user_fields']['username'] . ' LIKE \'%' .
-        pwg_db_real_escape_string($params['filter']) . '%\' OR '
-        . 'u.' . $conf['user_fields']['email'] . ' LIKE \'%' .
-        pwg_db_real_escape_string($params['filter']) . '%\'';
 
-        if (! empty($filtered_groups)) {
+        $filter_where_clause = '(u.' . $conf['user_fields']['username'] . " LIKE '%" .
+        pwg_db_real_escape_string($params['filter']) . "%' OR "
+        . 'u.' . $conf['user_fields']['email'] . " LIKE '%" .
+        pwg_db_real_escape_string($params['filter']) . "%'";
+
+        if ($filtered_groups !== []) {
             $filter_where_clause .= 'OR ug.group_id IN (' . implode(',', $filtered_groups) . ')';
         }
+
         $where_clauses[] = $filter_where_clause . ')';
     }
 
     if (! empty($params['min_register'])) {
-        $date_tokens = explode('-', $params['min_register']);
+        $date_tokens = explode('-', (string) $params['min_register']);
         $min_register_year = $date_tokens[0];
         $min_register_month = $date_tokens[1] ?? 1;
         $min_register_day = $date_tokens[2] ?? 1;
         $min_date = sprintf('%u-%02u-%02u', $min_register_year, $min_register_month, $min_register_day);
-        $where_clauses[] = 'ui.registration_date >= \'' . $min_date . ' 00:00:00\'';
+        $where_clauses[] = "ui.registration_date >= '" . $min_date . " 00:00:00'";
     }
 
     if (! empty($params['max_register'])) {
-        $max_date_tokens = explode('-', $params['max_register']);
+        $max_date_tokens = explode('-', (string) $params['max_register']);
         $max_register_year = $max_date_tokens[0];
         $max_register_month = $max_date_tokens[1] ?? 12;
         $max_register_day = $max_date_tokens[2] ?? date('t', strtotime($max_register_year . '-' . $max_register_month . '-1'));
         $max_date = sprintf('%u-%02u-%02u', $max_register_year, $max_register_month, $max_register_day);
-        $where_clauses[] = 'ui.registration_date <= \'' . $max_date . ' 23:59:59\'';
+        $where_clauses[] = "ui.registration_date <= '" . $max_date . " 23:59:59'";
     }
 
     if (! empty($params['status'])) {
         $params['status'] = array_intersect($params['status'], get_enums('user_infos', 'status'));
-        if (count($params['status']) > 0) {
+        if ($params['status'] !== []) {
             $where_clauses[] = 'ui.status IN("' . implode('","', $params['status']) . '")';
         }
     }
@@ -97,6 +99,7 @@ function ws_users_getList(
         if (! in_array($params['min_level'], $conf['available_permission_levels'])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
+
         $where_clauses[] = 'ui.level >= ' . $params['min_level'];
     }
 
@@ -104,6 +107,7 @@ function ws_users_getList(
         if (! in_array($params['max_level'], $conf['available_permission_levels'])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
+
         $where_clauses[] = 'ui.level <= ' . $params['max_level'];
     }
 
@@ -120,7 +124,7 @@ function ws_users_getList(
     ];
 
     if ($params['display'] != 'none') {
-        $params['display'] = array_map(trim(...), explode(',', $params['display']));
+        $params['display'] = array_map(trim(...), explode(',', (string) $params['display']));
 
         if (in_array('all', $params['display'])) {
             $params['display'] = [
@@ -137,23 +141,25 @@ function ws_users_getList(
         } elseif (in_array('only_id', $params['display'])) {
             $params['display'] = [];
         }
+
         $params['display'] = array_flip($params['display']);
 
         // if registration_date_string or registration_date_since is requested,
         // then registration_date is automatically added
-        if (isset($params['display']['registration_date_string']) or isset($params['display']['registration_date_since'])) {
+        if (isset($params['display']['registration_date_string']) || isset($params['display']['registration_date_since'])) {
             $params['display']['registration_date'] = true;
         }
 
         // if last_visit_string or last_visit_since is requested, then
         // last_visit is automatically added
-        if (isset($params['display']['last_visit_string']) or isset($params['display']['last_visit_since'])) {
+        if (isset($params['display']['last_visit_string']) || isset($params['display']['last_visit_since'])) {
             $params['display']['last_visit'] = true;
         }
 
         if (isset($params['display']['username'])) {
             $display['u.' . $conf['user_fields']['username']] = 'username';
         }
+
         if (isset($params['display']['email'])) {
             $display['u.' . $conf['user_fields']['email']] = 'email';
         }
@@ -178,6 +184,7 @@ function ws_users_getList(
     if (isset($params['display']['total_count'])) {
         $query .= 'SQL_CALC_FOUND_ROWS ';
     }
+
     $first = true;
     foreach ($display as $field => $name) {
         if (! $first) {
@@ -185,6 +192,7 @@ function ws_users_getList(
         } else {
             $first = false;
         }
+
         $query .= "{$field} AS {$name}";
     }
 
@@ -192,34 +200,39 @@ function ws_users_getList(
         if (! $first) {
             $query .= ', ';
         }
+
         $query .= 'ui.last_visit_from_history AS last_visit_from_history';
     }
+
     $where_clauses_ = implode(' AND ', $where_clauses);
     $query .=
     " FROM users AS u INNER JOIN user_infos AS ui ON u.{$conf['user_fields']['id']} = ui.user_id LEFT JOIN user_group AS ug ON u.{$conf['user_fields']['id']} = ug.user_id
       WHERE {$where_clauses_} ORDER BY {$params['order']}";
-    if ($params['per_page'] != 0 || ! empty($params['display'])) {
+    if ($params['per_page'] != 0 || isset($params['display']) && $params['display'] !== []) {
         $offset_ = ($params['per_page'] * $params['page']);
         $query .= " LIMIT {$params['per_page']} OFFSET {$offset_};";
     }
+
     $users = [];
     $result = pwg_query($query);
 
     /* GET THE RESULT OF SQL_CALC_FOUND_ROWS if display total_count is requested*/
     if (isset($params['display']['total_count'])) {
         $total_count_query_result = pwg_query('SELECT FOUND_ROWS();');
-        list($total_count) = pwg_db_fetch_row($total_count_query_result);
+        [$total_count] = pwg_db_fetch_row($total_count_query_result);
     }
+
     while ($row = pwg_db_fetch_assoc($result)) {
         $row['id'] = intval($row['id']);
         if (isset($params['display']['groups'])) {
             $row['groups'] = []; // will be filled later
         }
+
         $users[$row['id']] = $row;
     }
 
     $users_id_arr = [];
-    if (count($users) > 0) {
+    if ($users !== []) {
         if (isset($params['display']['groups'])) {
             $users_ = implode(',', array_keys($users));
             $query = "SELECT user_id, group_id FROM user_group WHERE user_id IN ({$users_});";
@@ -228,19 +241,22 @@ function ws_users_getList(
                 $users[$row['user_id']]['groups'][] = intval($row['group_id']);
             }
         }
+
         foreach ($users as $cur_user) {
             $users_id_arr[] = $cur_user['id'];
             if (isset($params['display']['registration_date_string'])) {
                 $users[$cur_user['id']]['registration_date_string'] = format_date($cur_user['registration_date'], ['day', 'month', 'year']);
             }
+
             if (isset($params['display']['registration_date_since'])) {
                 $users[$cur_user['id']]['registration_date_since'] = time_since($cur_user['registration_date'], 'month');
             }
+
             if (isset($params['display']['last_visit'])) {
                 $last_visit = $cur_user['last_visit'];
                 $users[$cur_user['id']]['last_visit'] = $last_visit;
 
-                if (! get_boolean($cur_user['last_visit_from_history']) and empty($last_visit)) {
+                if (! get_boolean($cur_user['last_visit_from_history']) && empty($last_visit)) {
                     $last_visit = get_user_last_visit_from_history($cur_user['id'], true);
                     $users[$cur_user['id']]['last_visit'] = $last_visit;
                 }
@@ -296,6 +312,7 @@ function ws_users_getList(
             }
           }*/
     }
+
     $users = trigger_change('ws_users_getList', $users);
     if ($params['per_page'] == 0 && empty($params['display'])) {
         $method_result = $users_id_arr;
@@ -311,9 +328,11 @@ function ws_users_getList(
             'users' => new PwgNamedArray(array_values($users), 'user'),
         ];
     }
+
     if (isset($params['display']['total_count'])) {
         $method_result['total_count'] = $total_count;
     }
+
     return $method_result;
 }
 
@@ -339,10 +358,8 @@ function ws_users_add(
 
     global $conf;
 
-    if ($conf['double_password_type_in_admin']) {
-        if ($params['password'] != $params['password_confirm']) {
-            return new PwgError(WS_ERR_INVALID_PARAM, l10n('The passwords do not match'));
-        }
+    if ($conf['double_password_type_in_admin'] && $params['password'] != $params['password_confirm']) {
+        return new PwgError(WS_ERR_INVALID_PARAM, l10n('The passwords do not match'));
     }
 
     $user_id = register_user(
@@ -463,15 +480,15 @@ function ws_users_setInfo(
         return new PwgError(403, 'Invalid security token');
     }
 
-    if (isset($params['username']) and strlen(str_replace(' ', '', $params['username'])) == 0) {
+    if (isset($params['username']) && strlen(str_replace(' ', '', $params['username'])) == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Name field must not be empty');
     }
 
     global $conf, $user;
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-
-    $updates = $updates_infos = [];
+    $updates = [];
+    $updates_infos = [];
     $update_status = null;
 
     if (count($params['user_id']) == 1) {
@@ -481,12 +498,14 @@ function ws_users_setInfo(
 
         if (! empty($params['username'])) {
             $user_id = get_userid($params['username']);
-            if ($user_id and $user_id != $params['user_id'][0]) {
+            if ($user_id && $user_id != $params['user_id'][0]) {
                 return new PwgError(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
             }
-            if ($params['username'] != strip_tags($params['username'])) {
+
+            if ($params['username'] != strip_tags((string) $params['username'])) {
                 return new PwgError(WS_ERR_INVALID_PARAM, l10n('html tags are not allowed in login'));
             }
+
             $updates[$conf['user_fields']['username']] = $params['username'];
         }
 
@@ -494,6 +513,7 @@ function ws_users_setInfo(
             if (($error = validate_mail_address($params['user_id'][0], $params['email'])) != '') {
                 return new PwgError(WS_ERR_INVALID_PARAM, $error);
             }
+
             $updates[$conf['user_fields']['email']] = $params['email'];
         }
 
@@ -517,7 +537,7 @@ function ws_users_setInfo(
     }
 
     if (! empty($params['status'])) {
-        if (in_array($params['status'], ['webmaster', 'admin']) and ! is_webmaster()) {
+        if (in_array($params['status'], ['webmaster', 'admin']) && ! is_webmaster()) {
             return new PwgError(403, 'Only webmasters can grant "webmaster/admin" status');
         }
 
@@ -544,10 +564,11 @@ function ws_users_setInfo(
         $update_status = $params['status'];
     }
 
-    if (! empty($params['level']) or @$params['level'] === 0) {
+    if (! empty($params['level']) || @$params['level'] === 0) {
         if (! in_array($params['level'], $conf['available_permission_levels'])) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
         }
+
         $updates_infos['level'] = $params['level'];
     }
 
@@ -555,6 +576,7 @@ function ws_users_setInfo(
         if (! in_array($params['language'], array_keys(get_languages()))) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid language');
         }
+
         $updates_infos['language'] = $params['language'];
     }
 
@@ -562,6 +584,7 @@ function ws_users_setInfo(
         if (! in_array($params['theme'], array_keys(get_pwg_themes()))) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid theme');
         }
+
         $updates_infos['theme'] = $params['theme'];
     }
 
@@ -569,23 +592,23 @@ function ws_users_setInfo(
         $updates_infos['nb_image_page'] = $params['nb_image_page'];
     }
 
-    if (! empty($params['recent_period']) or @$params['recent_period'] === 0) {
+    if (! empty($params['recent_period']) || @$params['recent_period'] === 0) {
         $updates_infos['recent_period'] = $params['recent_period'];
     }
 
-    if (! empty($params['expand']) or @$params['expand'] === false) {
+    if (! empty($params['expand']) || @$params['expand'] === false) {
         $updates_infos['expand'] = boolean_to_string($params['expand']);
     }
 
-    if (! empty($params['show_nb_comments']) or @$params['show_nb_comments'] === false) {
+    if (! empty($params['show_nb_comments']) || @$params['show_nb_comments'] === false) {
         $updates_infos['show_nb_comments'] = boolean_to_string($params['show_nb_comments']);
     }
 
-    if (! empty($params['show_nb_hits']) or @$params['show_nb_hits'] === false) {
+    if (! empty($params['show_nb_hits']) || @$params['show_nb_hits'] === false) {
         $updates_infos['show_nb_hits'] = boolean_to_string($params['show_nb_hits']);
     }
 
-    if (! empty($params['enabled_high']) or @$params['enabled_high'] === false) {
+    if (! empty($params['enabled_high']) || @$params['enabled_high'] === false) {
         $updates_infos['enabled_high'] = boolean_to_string($params['enabled_high']);
     }
 
@@ -606,7 +629,7 @@ function ws_users_setInfo(
         deactivate_password_reset_key($params['user_id'][0]);
     }
 
-    if (isset($update_status) and count($params['user_id_for_status']) > 0) {
+    if (isset($update_status) && count($params['user_id_for_status']) > 0) {
         $user_id_for_status_ = implode(',', $params['user_id_for_status']);
         $query = "UPDATE user_infos SET status = '{$update_status}' WHERE user_id IN({$user_id_for_status_});";
         pwg_query($query);
@@ -620,7 +643,7 @@ function ws_users_setInfo(
         }
     }
 
-    if (count($updates_infos) > 0) {
+    if ($updates_infos !== []) {
         $query = 'UPDATE user_infos SET ';
 
         $first = true;
@@ -630,6 +653,7 @@ function ws_users_setInfo(
             } else {
                 $first = false;
             }
+
             $query .= "{$field} = '{$value}'";
         }
 
@@ -652,7 +676,7 @@ function ws_users_setInfo(
         // if only -1 (a group id that can't exist) is in the list, then no
         // group is associated
 
-        if (count($group_ids) > 0) {
+        if ($group_ids !== []) {
             $inserts = [];
 
             foreach ($group_ids as $group_id) {
@@ -692,11 +716,11 @@ function ws_users_preferences_set(
 ): mixed {
     global $user;
 
-    if (! preg_match('/^[a-zA-Z0-9_-]+$/', $params['param'])) {
+    if (! preg_match('/^[a-zA-Z0-9_-]+$/', (string) $params['param'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid param name #' . $params['param'] . '#');
     }
 
-    $value = stripslashes($params['value']);
+    $value = stripslashes((string) $params['value']);
     if ($params['is_json']) {
         $value = json_decode($value, true);
     }
@@ -724,7 +748,7 @@ function ws_users_favorites_add(
 
     // does the image really exist?
     $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
@@ -761,7 +785,7 @@ function ws_users_favorites_remove(
 
     // does the image really exist?
     $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
@@ -794,7 +818,7 @@ function ws_users_favorites_getList(
     check_user_favorites();
 
     $order_by = ws_std_image_sql_order($params, 'i.');
-    $order_by = empty($order_by) ? $conf['order_by'] : 'ORDER BY ' . $order_by;
+    $order_by = $order_by === '' || $order_by === '0' ? $conf['order_by'] : 'ORDER BY ' . $order_by;
 
     $filters_and_forbidden = get_sql_condition_FandF(
         [

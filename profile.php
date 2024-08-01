@@ -23,7 +23,7 @@ if (! defined('PHPWG_ROOT_PATH')) {//direct script access
     // +-----------------------------------------------------------------------+
     check_status(ACCESS_CLASSIC);
 
-    if (! empty($_POST)) {
+    if ($_POST !== []) {
         check_pwg_token();
     }
 
@@ -62,7 +62,7 @@ if (! defined('PHPWG_ROOT_PATH')) {//direct script access
 
     // include menubar
     $themeconf = $template->get_template_vars('themeconf');
-    if (! isset($themeconf['hide_menu_on']) or ! in_array('theProfilePage', $themeconf['hide_menu_on'])) {
+    if (! isset($themeconf['hide_menu_on']) || ! in_array('theProfilePage', $themeconf['hide_menu_on'])) {
         include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
     }
 
@@ -104,16 +104,14 @@ function save_profile_from_post(
         unset($_POST['username']);
     }
 
-    if ($conf['allow_user_customization'] or defined('IN_ADMIN')) {
+    if ($conf['allow_user_customization'] || defined('IN_ADMIN')) {
         $int_pattern = '/^\d+$/';
-        if (empty($_POST['nb_image_page'])
-            or (! preg_match($int_pattern, $_POST['nb_image_page']))) {
+        if (empty($_POST['nb_image_page']) || ! preg_match($int_pattern, (string) $_POST['nb_image_page'])) {
             $errors[] = l10n('The number of photos per page must be a not null scalar');
         }
 
         // periods must be integer values, they represents number of days
-        if (! preg_match($int_pattern, $_POST['recent_period'])
-            or $_POST['recent_period'] < 0) {
+        if (! preg_match($int_pattern, (string) $_POST['recent_period']) || $_POST['recent_period'] < 0) {
             $errors[] = l10n('Recent period must be a positive integer value');
         }
 
@@ -130,7 +128,7 @@ function save_profile_from_post(
         // if $_POST and $userdata have are same email
         // validate_mail_address allows, however, to check email
         $mail_error = validate_mail_address($userdata['id'], $_POST['mail_address']);
-        if (! empty($mail_error)) {
+        if ($mail_error !== null && $mail_error !== '' && $mail_error !== '0') {
             $errors[] = $mail_error;
         }
     }
@@ -143,7 +141,7 @@ function save_profile_from_post(
 
         if (! defined('IN_ADMIN')) {// changing password requires old password
             $query = "SELECT {$conf['user_fields']['password']} AS password FROM users WHERE {$conf['user_fields']['id']} = '{$userdata['id']}';";
-            list($current_password) = pwg_db_fetch_row(pwg_query($query));
+            [$current_password] = pwg_db_fetch_row(pwg_query($query));
 
             if (! $conf['password_verify']($_POST['password'], $current_password)) {
                 $errors[] = l10n('Current password is wrong');
@@ -176,7 +174,7 @@ function save_profile_from_post(
 
             // username is updated only if allowed
             if (! empty($_POST['username'])) {
-                if ($_POST['username'] != $userdata['username'] and get_userid($_POST['username'])) {
+                if ($_POST['username'] != $userdata['username'] && get_userid($_POST['username'])) {
                     $page['errors'][] = l10n('this login is already used');
                     unset($_POST['redirect']);
                 } else {
@@ -223,7 +221,7 @@ function save_profile_from_post(
             $activity_details_tables[] = 'users';
         }
 
-        if ($conf['allow_user_customization'] or defined('IN_ADMIN')) {
+        if ($conf['allow_user_customization'] || defined('IN_ADMIN')) {
             // update user "additional" informations (specific to Piwigo)
             $fields = [
                 'nb_image_page', 'language',
@@ -242,6 +240,7 @@ function save_profile_from_post(
                     $data[$field] = $_POST[$field];
                 }
             }
+
             mass_updates(
                 'user_infos',
                 [
@@ -253,6 +252,7 @@ function save_profile_from_post(
 
             $activity_details_tables[] = 'user_infos';
         }
+
         trigger_notify('save_profile_from_post', $userdata['id']);
         pwg_activity('user', $userdata['id'], 'edit', [
             'function' => __FUNCTION__,
@@ -263,6 +263,7 @@ function save_profile_from_post(
             redirect($_POST['redirect']);
         }
     }
+
     return true;
 }
 
@@ -288,7 +289,7 @@ function load_profile_in_template(
 
     $template->assign(
         [
-            $template_prefixe . 'USERNAME' => stripslashes($userdata['username']),
+            $template_prefixe . 'USERNAME' => stripslashes((string) $userdata['username']),
             $template_prefixe . 'EMAIL' => @$userdata['email'],
             $template_prefixe . 'ALLOW_USER_CUSTOMIZATION' => $conf['allow_user_customization'],
             $template_prefixe . 'ACTIVATE_COMMENTS' => $conf['activate_comments'],
@@ -306,9 +307,10 @@ function load_profile_in_template(
     $template->assign('template_options', get_pwg_themes());
 
     foreach (get_languages() as $language_code => $language_name) {
-        if (isset($_POST['submit']) or $userdata['language'] == $language_code) {
+        if (isset($_POST['submit']) || $userdata['language'] == $language_code) {
             $template->assign('language_selection', $language_code);
         }
+
         $language_options[$language_code] = $language_name;
     }
 
