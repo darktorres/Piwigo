@@ -64,7 +64,7 @@ function get_sync_exif_data(
         if (in_array($pwg_key, ['date_creation', 'date_available'])) {
             if (is_numeric($value) && (int) $value == $value) {
                 // UNIX timestamp
-                $exif[$pwg_key] = DateTime::createFromFormat('U', $value)->format('Y-m-d H:i:s');
+                $exif[$pwg_key] = DateTime::createFromFormat('U', (string) $value)->format('Y-m-d H:i:s');
 
                 if ($exif[$pwg_key] === '0000-00-00' || ! validateDate($exif[$pwg_key])) {
                     $exif[$pwg_key] = null;
