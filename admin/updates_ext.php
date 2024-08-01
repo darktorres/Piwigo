@@ -28,7 +28,7 @@ $autoupdate = new updates($page['page']);
 
 $show_reset = false;
 if (! $autoupdate->get_server_extensions()) {
-    $page['errors'][] = l10n('Can\'t connect to server.');
+    $page['errors'][] = l10n("Can't connect to server.");
     return; // TODO: remove this return and add a proper "page killer"
 }
 
@@ -47,28 +47,25 @@ foreach ($autoupdate->types as $type) {
     $updates_extension[$type] = [];
 
     foreach ($fs_ext as $ext_id => $fs_ext) {
-        if (! isset($fs_ext['extension']) or ! isset($server_ext[$fs_ext['extension']])) {
+        if (! isset($fs_ext['extension']) || ! isset($server_ext[$fs_ext['extension']])) {
             continue;
         }
 
         $ext_info = $server_ext[$fs_ext['extension']];
 
         if (! safe_version_compare($fs_ext['version'], $ext_info['revision_name'], '>=')) {
-            array_push(
-                $updates_extension[$type],
-                [
-                    'ID' => $ext_info['extension_id'],
-                    'REVISION_ID' => $ext_info['revision_id'],
-                    'EXT_ID' => $ext_id,
-                    'EXT_NAME' => $fs_ext['name'],
-                    'EXT_URL' => PEM_URL . '/extension_view.php?eid=' . $ext_info['extension_id'] . '#changelog',
-                    'REV_DESC' => trim($ext_info['revision_description'], " \n\r"),
-                    'CURRENT_VERSION' => $fs_ext['version'],
-                    'NEW_VERSION' => $ext_info['revision_name'],
-                    'URL_DOWNLOAD' => $ext_info['download_url'] . '&amp;origin=piwigo_download',
-                    'IGNORED' => in_array($ext_id, $conf['updates_ignored'][$type]),
-                ]
-            );
+            $updates_extension[$type][] = [
+                'ID' => $ext_info['extension_id'],
+                'REVISION_ID' => $ext_info['revision_id'],
+                'EXT_ID' => $ext_id,
+                'EXT_NAME' => $fs_ext['name'],
+                'EXT_URL' => PEM_URL . '/extension_view.php?eid=' . $ext_info['extension_id'] . '#changelog',
+                'REV_DESC' => trim((string) $ext_info['revision_description'], " \n\r"),
+                'CURRENT_VERSION' => $fs_ext['version'],
+                'NEW_VERSION' => $ext_info['revision_name'],
+                'URL_DOWNLOAD' => $ext_info['download_url'] . '&amp;origin=piwigo_download',
+                'IGNORED' => in_array($ext_id, $conf['updates_ignored'][$type]),
+            ];
         }
     }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-defined('ADMINTOOLS_PATH') or die('Hacking attempt!');
+defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 if (isset($_POST['save_config'])) {
     $conf['AdminTools'] = [

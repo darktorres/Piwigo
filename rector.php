@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
 use Rector\Config\RectorConfig;
+use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -13,16 +15,18 @@ return RectorConfig::configure()
         __DIR__ . '/node_modules',
         __DIR__ . '/tests',
         __DIR__ . '/vendor',
+        EncapsedStringsToSprintfRector::class,
+        RemoveExtraParametersRector::class,
     ])
     ->withRootFiles()
-    // ->withPhpSets()
+    ->withPhpSets()
     ->withPreparedSets(
-        codeQuality: false,
-        codingStyle: false,
+        codeQuality: true,
+        codingStyle: true,
         deadCode: false,
         earlyReturn: false,
         instanceOf: false,
         naming: false,
         privatization: false,
-        typeDeclarations: false
+        typeDeclarations: true
     );

@@ -26,7 +26,7 @@ function find_available_feed_id(): string
     while (true) {
         $key = generate_key(50);
         $query = "SELECT COUNT(*) FROM user_feed WHERE id = '{$key}';";
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return $key;
         }
@@ -82,7 +82,7 @@ $template->assign(
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theNotificationPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theNotificationPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 
