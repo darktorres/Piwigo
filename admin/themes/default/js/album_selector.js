@@ -1,5 +1,5 @@
 function set_up_popin() {
-  $(".ClosePopIn").on('click', function () {
+  $(".ClosePopIn").on("click", function () {
     linked_albums_close();
   });
 }
@@ -17,22 +17,21 @@ function linked_albums_open() {
 }
 
 function linked_albums_search(searchText) {
-
-  if (api_method == 'pwg.categories.getList') {
+  if (api_method == "pwg.categories.getList") {
     api_params = {
       cat_id: 0,
       recursive: true,
       fullname: true,
       search: searchText,
-    }
+    };
   } else {
     api_params = {
       search: searchText,
       additional_output: "full_name_with_admin_links",
-    }
+    };
   }
 
-  console.log('lalalal');
+  console.log("lalalal");
   console.log(api_method);
 
   $(".linkedAlbumPopInContainer .searching").show();
@@ -40,10 +39,8 @@ function linked_albums_search(searchText) {
     url: "ws.php?format=json&method=" + api_method,
     type: "POST",
     dataType: "json",
-    data : api_params,
-    before: function () {
-      
-    },
+    data: api_params,
+    before: function () {},
     success: function (raw_data) {
       $(".linkedAlbumPopInContainer .searching").hide();
 
@@ -63,6 +60,6 @@ function linked_albums_search(searchText) {
     error: function (e) {
       $(".linkedAlbumPopInContainer .searching").hide();
       console.log(e.message);
-    }
-  })
+    },
+  });
 }
