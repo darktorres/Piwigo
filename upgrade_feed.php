@@ -18,7 +18,7 @@ define('PHPWG_ROOT_PATH', './');
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 @include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
+defined('PWG_LOCAL_DIR') || define('PWG_LOCAL_DIR', 'local/');
 
 include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
 include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
@@ -47,8 +47,8 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $e) {
-    my_error(l10n($e->getMessage(), true));
+} catch (Exception $exception) {
+    my_error(l10n($exception->getMessage(), true));
 }
 
 // +-----------------------------------------------------------------------+
@@ -80,7 +80,7 @@ foreach ($to_apply as $upgrade_id) {
     include(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
 
     // notify upgrade
-    $query = "INSERT INTO upgrade (id, applied, description) VALUES ('{$upgrade_id}', NOW(), '{$upgrade_description}');";
+    $query = "INSERT INTO upgrade (id, applied, description) VALUES ('" . $upgrade_id . "', NOW(), '" . $upgrade_description . "');";
     pwg_query($query);
 }
 

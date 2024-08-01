@@ -57,14 +57,14 @@ function decode_slideshow_params(
         $result['period'] = $encode_params;
     } else {
         $matches = [];
-        if (preg_match_all('/([a-z]+)-(\d+)/', $encode_params, $matches)) {
+        if (preg_match_all('/([a-z]+)-(\d+)/', (string) $encode_params, $matches)) {
             $matchcount = count($matches[1]);
             for ($i = 0; $i < $matchcount; $i++) {
                 $result[$matches[1][$i]] = $matches[2][$i];
             }
         }
 
-        if (preg_match_all('/([a-z]+)-(true|false)/', $encode_params, $matches)) {
+        if (preg_match_all('/([a-z]+)-(true|false)/', (string) $encode_params, $matches)) {
             $matchcount = count($matches[1]);
             for ($i = 0; $i < $matchcount; $i++) {
                 $result[$matches[1][$i]] = get_boolean($matches[2][$i]);
@@ -102,7 +102,7 @@ function encode_slideshow_params(
  * @since 14
  * @param int $image_id
  */
-function increase_image_visit_counter($image_id)
+function increase_image_visit_counter($image_id): void
 {
     // avoiding auto update of "lastmodified" field
     $query = "UPDATE images SET hit = hit + 1, lastmodified = lastmodified WHERE id = {$image_id};";

@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
+defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class GDThumb_maintain extends PluginMaintain
 {
     private bool $installed = false;
 
+    #[\Override]
     public function install(
         string $plugin_version,
         array &$errors = []
     ): void {
-        include(dirname(__FILE__) . '/config_default.inc.php');
+        include(__DIR__ . '/config_default.inc.php');
         global $conf;
         if (empty($conf['gdThumb'])) {
             conf_update_param('gdThumb', $config_default, true);
@@ -21,6 +22,7 @@ class GDThumb_maintain extends PluginMaintain
         $this->installed = true;
     }
 
+    #[\Override]
     public function update(
         string $old_version,
         string $new_version,
@@ -29,6 +31,7 @@ class GDThumb_maintain extends PluginMaintain
         $this->install($new_version, $errors);
     }
 
+    #[\Override]
     public function activate(
         string $plugin_version,
         array &$errors = []
@@ -39,6 +42,7 @@ class GDThumb_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function uninstall(): void
     {
         $this->cleanUp();
@@ -58,7 +62,7 @@ class GDThumb_maintain extends PluginMaintain
         if (is_dir($path)) {
             $fh = opendir($path);
             while ($file = readdir($fh)) {
-                if ($file != '.' and $file != '..') {
+                if ($file !== '.' && $file !== '..') {
                     $pathfile = $path . '/' . $file;
                     if (is_dir($pathfile)) {
                         gtdeltree($pathfile);
@@ -67,6 +71,7 @@ class GDThumb_maintain extends PluginMaintain
                     }
                 }
             }
+
             closedir($fh);
             return @rmdir($path);
         }

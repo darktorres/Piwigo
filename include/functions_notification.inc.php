@@ -51,60 +51,70 @@ function custom_notification_query(
         case 'new_comments':
 
             $query = ' FROM comments AS c INNER JOIN image_category AS ic ON c.image_id = ic.image_id WHERE 1 = 1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= " AND c.validation_date > '{$start}'";
             }
-            if (! empty($end)) {
+
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= " AND c.validation_date <= '{$end}'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND');
             break;
 
         case 'unvalidated_comments':
 
             $query = ' FROM comments WHERE 1 = 1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= " AND date > '{$start}'";
             }
-            if (! empty($end)) {
+
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= " AND date <= '{$end}'";
             }
+
             $query .= " AND validated = 'false'";
             break;
 
         case 'new_elements':
 
             $query = ' FROM images INNER JOIN image_category AS ic ON image_id = id WHERE 1 = 1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= " AND date_available > '{$start}'";
             }
-            if (! empty($end)) {
+
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= " AND date_available <= '{$end}'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND', 'id');
             break;
 
         case 'updated_categories':
 
             $query = ' FROM images INNER JOIN image_category AS ic ON image_id = id WHERE 1 = 1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= " AND date_available > '{$start}'";
             }
-            if (! empty($end)) {
+
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= " AND date_available <= '{$end}'";
             }
+
             $query .= get_std_sql_where_restrict_filter('AND', 'id');
             break;
 
         case 'new_users':
 
             $query = ' FROM user_infos WHERE 1 = 1';
-            if (! empty($start)) {
+            if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= " AND registration_date > '{$start}'";
             }
-            if (! empty($end)) {
+
+            if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= " AND registration_date <= '{$end}'";
             }
+
             break;
 
         default:
@@ -131,8 +141,9 @@ function custom_notification_query(
                     $field_id = 'user_id';
                     break;
             }
+
             $query = 'SELECT COUNT(DISTINCT ' . $field_id . ') ' . $query . ';';
-            list($count) = pwg_db_fetch_row(pwg_query($query));
+            [$count] = pwg_db_fetch_row(pwg_query($query));
             return $count;
             break;
 
@@ -155,9 +166,9 @@ function custom_notification_query(
                     $field_id = 'user_id';
                     break;
             }
+
             $query = 'SELECT DISTINCT ' . $field_id . ' ' . $query . ';';
-            $infos = query2array($query);
-            return $infos;
+            return query2array($query);
             break;
 
         default:
@@ -306,11 +317,7 @@ function news_exists(
     string $start = null,
     string $end = null
 ): bool {
-    return (nb_new_comments($start, $end) > 0) or
-            (nb_new_elements($start, $end) > 0) or
-            (nb_updated_categories($start, $end) > 0) or
-            ((is_admin()) and (nb_unvalidated_comments($start, $end) > 0)) or
-            ((is_admin()) and (nb_new_users($start, $end) > 0));
+    return nb_new_comments($start, $end) > 0 || nb_new_elements($start, $end) > 0 || nb_updated_categories($start, $end) > 0 || is_admin() && nb_unvalidated_comments($start, $end) > 0 || is_admin() && nb_new_users($start, $end) > 0;
 }
 
 /**
@@ -326,9 +333,10 @@ function add_news_line(
 ): void {
     if ($count > 0) {
         $line = l10n_dec($singular_key, $plural_key, $count);
-        if ($add_url and ! empty($url)) {
+        if ($add_url && ($url !== '' && $url !== '0')) {
             $line = '<a href="' . $url . '">' . $line . '</a>';
         }
+
         $news[] = $line;
     }
 }
@@ -434,14 +442,16 @@ function get_recent_post_dates(
     if ($persistent_cache->get($cache_key, $cached)) {
         return $cached;
     }
+
     $where_sql = get_std_sql_where_restrict_filter('WHERE', 'i.id', true);
 
     $query =
     "SELECT date_available, COUNT(DISTINCT id) AS nb_elements, COUNT(DISTINCT category_id) AS nb_cats FROM images i INNER JOIN image_category AS ic ON id=image_id
      {$where_sql} GROUP BY date_available ORDER BY date_available DESC LIMIT {$max_dates};";
     $dates = query2array($query);
+    $counter = count($dates);
 
-    for ($i = 0; $i < count($dates); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         if ($max_elements > 0) { // get some thumbnails ...
             $query =
             "SELECT DISTINCT i.* FROM images i INNER JOIN image_category AS ic ON id = image_id {$where_sql} AND date_available = '{$dates[$i]['date_available']}'
@@ -520,6 +530,7 @@ function get_html_description_recent_post_date(
           )
           . '"><img src="' . $tn_src . '"></a>';
     }
+
     $description .= '...<br>';
 
     $description .=
@@ -536,11 +547,10 @@ function get_html_description_recent_post_date(
               l10n_dec('%d new photo', '%d new photos', $cat['img_count']) . ')'
               . '</li>';
     }
-    $description .= '</ul>';
 
     $description .= '</ul>';
 
-    return $description;
+    return $description . '</ul>';
 }
 
 /**
@@ -555,7 +565,7 @@ function get_title_recent_post_date(
 
     $title = l10n_dec('%d new photo', '%d new photos', $date_detail['nb_elements']);
 
-    if (preg_match('/^\d+-(\d+)-(\d+) /', $date_detail['date_available'], $matches)) {
+    if (preg_match('/^\d+-(\d+)-(\d+) /', (string) $date_detail['date_available'], $matches)) {
         $title .= ' (' . $lang['month'][(int) $matches[1]] . ' ' . $matches[2] . ')';
     }
 

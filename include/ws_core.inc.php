@@ -40,15 +40,15 @@ define('WS_XML_ATTRIBUTES', 'attributes_xml_');
  */
 class PwgError
 {
-    private int|null $_code;
+    private readonly int|null $_code;
 
-    private string $_codeText;
+    private readonly string $_codeText;
 
     public function __construct(
         int|null $code,
         string $codeText
     ) {
-        if ($code >= 400 and $code < 600) {
+        if ($code >= 400 && $code < 600) {
             set_status_header($code, $codeText);
         }
 
@@ -75,31 +75,24 @@ class PwgError
 class PwgNamedArray
 {
     /*private*/
-    public array $_content;
-
-    /*private*/
-    public string $_itemName;
-
-    /*private*/
     public array $_xmlAttributes;
 
     /**
      * Constructs a named array
-     * @param array $content (keys must be consecutive integers starting at 0)
-     * @param string $itemName xml element name for values of arr (e.g. image)
+     * @param array $_content (keys must be consecutive integers starting at 0)
+     * @param string $_itemName xml element name for values of arr (e.g. image)
      * @param array $xmlAttributes of sub-item attributes that will be encoded as
      *      xml attributes instead of xml child elements
      */
     public function __construct(
-        array $content,
-        string $itemName,
+        public array $_content,
+        public string $_itemName,
         array $xmlAttributes = []
     ) {
-        $this->_content = $content;
-        $this->_itemName = $itemName;
         $this->_xmlAttributes = array_flip($xmlAttributes);
     }
 }
+
 /**
  * Simple wrapper around a "struct" (php array whose keys are not consecutive
  * integers starting at 0). Provides naming clues for xml output (what is xml
@@ -108,35 +101,29 @@ class PwgNamedArray
 class PwgNamedStruct
 {
     /*private*/
-    public array $_content;
-
-    /*private*/
     public array $_xmlAttributes;
 
     /**
      * Constructs a named struct (usually returned by web service function
      * implementation)
-     * @param array $content - the actual content (php array)
+     * @param array $_content - the actual content (php array)
      * @param string $xmlAttributes - containing xml element name
      * @param array $xmlElements - name of the keys in $content that will be
      *    encoded as xml attributes (if null - automatically prefer xml attributes
      *    whenever possible)
      */
     public function __construct(
-        array $content,
+        public array $_content,
         array $xmlAttributes = null,
         array $xmlElements = null
     ) {
-        $this->_content = $content;
         if (isset($xmlAttributes)) {
             $this->_xmlAttributes = array_flip($xmlAttributes);
         } else {
             $this->_xmlAttributes = [];
             foreach ($this->_content as $key => $value) {
-                if (! empty($key) and (is_scalar($value) or $value === null)) {
-                    if (empty($xmlElements) or ! in_array($key, $xmlElements)) {
-                        $this->_xmlAttributes[$key] = 1;
-                    }
+                if (($key !== 0 && ($key !== '' && $key !== '0') && (is_scalar($value) || $value === null)) && ($xmlElements === null || $xmlElements === [] || ! in_array($key, $xmlElements))) {
+                    $this->_xmlAttributes[$key] = 1;
                 }
             }
         }
@@ -197,11 +184,12 @@ abstract class PwgResponseEncoder
         PwgNamedArray|PwgNamedStruct|array|string|int|float|bool|null &$value
     ): void {
         if (is_object($value)) {
-            $class = strtolower(@get_class($value));
-            if ($class == 'pwgnamedarray') {
+            $class = strtolower(@$value::class);
+            if ($class === 'pwgnamedarray') {
                 $value = $value->_content;
             }
-            if ($class == 'pwgnamedstruct') {
+
+            if ($class === 'pwgnamedstruct') {
                 $value = $value->_content;
             }
         }
@@ -210,11 +198,9 @@ abstract class PwgResponseEncoder
             return;
         }
 
-        if (self::is_struct($value)) {
-            if (isset($value[WS_XML_ATTRIBUTES])) {
-                $value = array_merge($value, $value[WS_XML_ATTRIBUTES]);
-                unset($value[WS_XML_ATTRIBUTES]);
-            }
+        if (self::is_struct($value) && isset($value[WS_XML_ATTRIBUTES])) {
+            $value = array_merge($value, $value[WS_XML_ATTRIBUTES]);
+            unset($value[WS_XML_ATTRIBUTES]);
         }
 
         foreach ($value as $key => &$v) {
@@ -265,7 +251,7 @@ class PwgServer
      */
     public function run(): void
     {
-        if ($this->_responseEncoder === null) {
+        if (! $this->_responseEncoder instanceof \PwgResponseEncoder) {
             set_status_header(400);
             @header('Content-Type: text/plain');
             echo 'Cannot process your request. Unknown response format.
@@ -274,7 +260,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             die(0);
         }
 
-        if ($this->_requestHandler === null) {
+        if (! $this->_requestHandler instanceof \PwgRequestHandler) {
             $this->sendResponse(new PwgError(400, 'Unknown request format'));
             return;
         }
@@ -353,12 +339,15 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                 if (! isset($data['flags'])) {
                     $data['flags'] = 0;
                 }
+
                 if (array_key_exists('default', $data)) {
                     $data['flags'] |= WS_PARAM_OPTIONAL;
                 }
+
                 if (! isset($data['type'])) {
                     $data['type'] = 0;
                 }
+
                 $params[$param] = $data;
             }
         }
@@ -382,14 +371,14 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         string $methodName
     ): string {
         $desc = @$this->_methods[$methodName]['description'];
-        return isset($desc) ? $desc : '';
+        return $desc ?? '';
     }
 
     public function getMethodSignature(
         string $methodName
     ): array {
         $signature = @$this->_methods[$methodName]['signature'];
-        return isset($signature) ? $signature : [];
+        return $signature ?? [];
     }
 
     /**
@@ -399,12 +388,12 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         string $methodName
     ): string {
         $options = @$this->_methods[$methodName]['options'];
-        return isset($options) ? $options : [];
+        return $options ?? [];
     }
 
     public static function isPost(): bool
     {
-        return isset($HTTP_RAW_POST_DATA) or ! empty($_POST);
+        return isset($HTTP_RAW_POST_DATA) || $_POST !== [];
     }
 
     public static function makeArrayParam(
@@ -412,10 +401,8 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     ): void {
         if ($param == null) {
             $param = [];
-        } else {
-            if (! is_array($param)) {
-                $param = [$param];
-            }
+        } elseif (! is_array($param)) {
+            $param = [$param];
         }
     }
 
@@ -441,6 +428,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain booleans');
                     }
                 }
+
                 unset($value);
             } elseif (self::hasFlag($type, WS_TYPE_INT)) {
                 foreach ($param as &$value) {
@@ -448,16 +436,17 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain' . $msg . ' integers');
                     }
                 }
+
                 unset($value);
             } elseif (self::hasFlag($type, WS_TYPE_FLOAT)) {
                 foreach ($param as &$value) {
                     if (
-                        ($value = filter_var($value, FILTER_VALIDATE_FLOAT)) === false
-                        or (isset($opts['options']['min_range']) and $value < $opts['options']['min_range'])
+                        ($value = filter_var($value, FILTER_VALIDATE_FLOAT)) === false || isset($opts['options']['min_range']) && $value < $opts['options']['min_range']
                     ) {
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain' . $msg . ' floats');
                     }
                 }
+
                 unset($value);
             }
         } elseif ($param !== '') {
@@ -471,8 +460,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                 }
             } elseif (self::hasFlag($type, WS_TYPE_FLOAT)) {
                 if (
-                    ($param = filter_var($param, FILTER_VALIDATE_FLOAT)) === false
-                    or (isset($opts['options']['min_range']) and $param < $opts['options']['min_range'])
+                    ($param = filter_var($param, FILTER_VALIDATE_FLOAT)) === false || isset($opts['options']['min_range']) && $param < $opts['options']['min_range']
                 ) {
                     return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must be a' . $msg . ' float');
                 }
@@ -486,7 +474,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
         int $val,
         int $flag
     ): bool {
-        return ($val & $flag) == $flag;
+        return ($val & $flag) === $flag;
     }
 
     /**
@@ -505,11 +493,11 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             return new PwgError(WS_ERR_INVALID_METHOD, 'Method name is not valid');
         }
 
-        if (isset($method['options']['post_only']) and $method['options']['post_only'] and ! self::isPost()) {
+        if (isset($method['options']['post_only']) && $method['options']['post_only'] && ! self::isPost()) {
             return new PwgError(405, 'This method requires HTTP POST');
         }
 
-        if (isset($method['options']['admin_only']) and $method['options']['admin_only'] and ! is_admin()) {
+        if (isset($method['options']['admin_only']) && $method['options']['admin_only'] && ! is_admin()) {
             return new PwgError(401, 'Access denied');
         }
 
@@ -532,14 +520,14 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                 }
             }
             // parameter provided but empty
-            elseif ($params[$name] === '' and ! self::hasFlag($flags, WS_PARAM_OPTIONAL)) {
+            elseif ($params[$name] === '' && ! self::hasFlag($flags, WS_PARAM_OPTIONAL)) {
                 $missing_params[] = $name;
             }
             // parameter provided - do some basic checks
             else {
                 $the_param = $params[$name];
 
-                if (is_array($the_param) and ! self::hasFlag($flags, WS_PARAM_ACCEPT_ARRAY)) {
+                if (is_array($the_param) && ! self::hasFlag($flags, WS_PARAM_ACCEPT_ARRAY)) {
                     return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must be scalar');
                 }
 
@@ -547,13 +535,11 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
                     self::makeArrayParam($the_param);
                 }
 
-                if ($options['type'] > 0) {
-                    if (($ret = self::checkType($the_param, $options['type'], $name)) !== null) {
-                        return $ret;
-                    }
+                if ($options['type'] > 0 && ($ret = self::checkType($the_param, $options['type'], $name)) instanceof \PwgError) {
+                    return $ret;
                 }
 
-                if (isset($options['maxValue']) and $the_param > $options['maxValue']) {
+                if (isset($options['maxValue']) && $the_param > $options['maxValue']) {
                     $the_param = $options['maxValue'];
                 }
 
@@ -561,7 +547,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             }
         }
 
-        if (count($missing_params)) {
+        if ($missing_params !== []) {
             return new PwgError(WS_ERR_MISSING_PARAM, 'Missing parameters: ' . implode(',', $missing_params));
         }
 
@@ -576,6 +562,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             if (! empty($method['include'])) {
                 include_once($method['include']);
             }
+
             $result = call_user_func_array($method['callback'], [$params, &$this]);
         }
 
@@ -591,7 +578,7 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
     ): array {
         $methods = array_filter(
             $service->_methods,
-            function (array $m): bool { return empty($m['options']['hidden']) || ! $m['options']['hidden']; }
+            fn (array $m): bool => empty($m['options']['hidden']) || ! $m['options']['hidden']
         );
         return [
             'methods' => new PwgNamedArray(array_keys($methods), 'method'),
@@ -629,9 +616,11 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             if (isset($options['default'])) {
                 $param_data['defaultValue'] = $options['default'];
             }
+
             if (isset($options['maxValue'])) {
                 $param_data['maxValue'] = $options['maxValue'];
             }
+
             if (isset($options['info'])) {
                 $param_data['info'] = $options['info'];
             }
@@ -643,15 +632,18 @@ Request format: ' . @$this->_requestFormat . ' Response format: ' . @$this->_res
             } elseif (self::hasFlag($options['type'], WS_TYPE_FLOAT)) {
                 $param_data['type'] = 'float';
             }
+
             if (self::hasFlag($options['type'], WS_TYPE_POSITIVE)) {
                 $param_data['type'] .= ' positive';
             }
+
             if (self::hasFlag($options['type'], WS_TYPE_NOTNULL)) {
                 $param_data['type'] .= ' notnull';
             }
 
             $res['params'][] = $param_data;
         }
+
         return $res;
     }
 }

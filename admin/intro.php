@@ -27,7 +27,7 @@ check_status(ACCESS_ADMINISTRATOR);
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['action']) and $_GET['action'] == 'hide_newsletter_subscription') {
+if (isset($_GET['action']) && $_GET['action'] == 'hide_newsletter_subscription') {
     userprefs_update_param('show_newsletter_subscription', 'false');
     exit();
 }
@@ -73,7 +73,7 @@ if ($nb_orphans > 0) {
 
 // locked album ?
 $query = "SELECT COUNT(*) FROM categories WHERE visible = 'false';";
-list($locked_album) = pwg_db_fetch_row(pwg_query($query));
+[$locked_album] = pwg_db_fetch_row(pwg_query($query));
 if ($locked_album > 0) {
     $locked_album_url = PHPWG_ROOT_PATH . 'admin.php?page=cat_options&section=visible';
 
@@ -94,7 +94,7 @@ $template->set_filenames([
     'intro' => 'intro.tpl',
 ]);
 
-if ($conf['show_newsletter_subscription'] and userprefs_get_param('show_newsletter_subscription', true)) {
+if ($conf['show_newsletter_subscription'] && userprefs_get_param('show_newsletter_subscription', true)) {
     $template->assign(
         [
             'EMAIL' => $user['email'],
@@ -104,34 +104,34 @@ if ($conf['show_newsletter_subscription'] and userprefs_get_param('show_newslett
 }
 
 $query = 'SELECT COUNT(*) FROM images;';
-list($nb_photos) = pwg_db_fetch_row(pwg_query($query));
+[$nb_photos] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT COUNT(*) FROM categories;';
-list($nb_categories) = pwg_db_fetch_row(pwg_query($query));
+[$nb_categories] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT COUNT(*) FROM tags;';
-list($nb_tags) = pwg_db_fetch_row(pwg_query($query));
+[$nb_tags] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT COUNT(*) FROM image_tag;';
-list($nb_image_tag) = pwg_db_fetch_row(pwg_query($query));
+[$nb_image_tag] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT COUNT(*) FROM users;';
-list($nb_users) = pwg_db_fetch_row(pwg_query($query));
+[$nb_users] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT COUNT(*) FROM groups_table;';
-list($nb_groups) = pwg_db_fetch_row(pwg_query($query));
+[$nb_groups] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT COUNT(*) FROM rate;';
-list($nb_rates) = pwg_db_fetch_row(pwg_query($query));
+[$nb_rates] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT SUM(nb_pages) FROM history_summary WHERE month IS NULL;';
-list($nb_views) = pwg_db_fetch_row(pwg_query($query));
+[$nb_views] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT SUM(filesize) FROM images;';
-list($disk_usage) = pwg_db_fetch_row(pwg_query($query));
+[$disk_usage] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT SUM(filesize) FROM image_format;';
-list($formats_disk_usage) = pwg_db_fetch_row(pwg_query($query));
+[$formats_disk_usage] = pwg_db_fetch_row(pwg_query($query));
 
 $disk_usage += $formats_disk_usage;
 
@@ -160,7 +160,7 @@ $template->assign(
 
 if ($conf['activate_comments']) {
     $query = 'SELECT COUNT(*) FROM comments;';
-    list($nb_comments) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_comments] = pwg_db_fetch_row(pwg_query($query));
     $template->assign('NB_COMMENTS', $nb_comments);
 } else {
     $template->assign('NB_COMMENTS', 0);
@@ -169,7 +169,7 @@ if ($conf['activate_comments']) {
 if ($conf['show_piwigo_latest_news']) {
     $latest_news = get_piwigo_news();
 
-    if (isset($latest_news['id']) and $latest_news['posted_on'] > time() - 60 * 60 * 24 * 30) {
+    if (isset($latest_news['id']) && $latest_news['posted_on'] > time() - 60 * 60 * 24 * 30) {
         $page['messages'][] = sprintf(
             '%s <a href="%s" title="%s" target="_blank"><i class="icon-bell"></i> %s</a>',
             l10n('Latest Piwigo news'),
@@ -200,7 +200,7 @@ $date = new DateTime();
 
 //Get data from $nb_weeks last weeks
 while ($mondays < $nb_weeks) {
-    if ($date->format('D') == 'Mon') {
+    if ($date->format('D') === 'Mon') {
         $week_number[] = $date->format('W');
         ++$mondays;
     }
@@ -211,7 +211,7 @@ while ($mondays < $nb_weeks) {
 $week_number = array_reverse($week_number);
 $date_string = $date->format('Y-m-d');
 
-if (! isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime('5 minutes ago')) {
+if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime('5 minutes ago')) {
     $start_time = get_moment();
 
     $query =
@@ -229,9 +229,10 @@ if (! isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity
                 $week = $i;
             }
         }
+
         $day_nb = $day_date->format('N');
 
-        @$activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst($action['action'])] = $action['activity_counter'];
+        @$activity_last_weeks[$week][$day_nb]['details'][ucfirst((string) $action['object'])][ucfirst((string) $action['action'])] = $action['activity_counter'];
         $activity_last_weeks[$week][$day_nb]['number'] = ($activity_last_weeks[$week][$day_nb]['number'] ?? null) + $action['activity_counter'];
         @$activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
     }
@@ -278,16 +279,17 @@ usort($temp_data, cmp_day(...));
 
 //Get the percent difference
 $diff_x = [];
+$counter = count($temp_data);
 
-for ($i = 1; $i < count($temp_data); $i++) {
+for ($i = 1; $i < $counter; $i++) {
     $diff_x[] = $temp_data[$i]['x'] / $temp_data[$i - 1]['x'] * 100;
 }
 
 $split = 0;
 //Split (split represented by -1)
-if (count($diff_x) > 0) {
+if ($diff_x !== []) {
     while (max($diff_x) > 120) {
-        $diff_x[array_search(max($diff_x), $diff_x)] = -1;
+        $diff_x[array_search(max($diff_x), $diff_x, true)] = -1;
         $split++;
     }
 }
@@ -307,10 +309,14 @@ if (isset($temp_data[0])) {
 }
 
 //Set sizes in chart data
-for ($i = 1; $i < count($temp_data); $i++) {
+$counter = count($temp_data);
+
+//Set sizes in chart data
+for ($i = 1; $i < $counter; $i++) {
     if ($diff_x[$i - 1] == -1) {
         $size++;
     }
+
     $chart_data[$temp_data[$i]['w']][$temp_data[$i]['d']] = $size;
 }
 
@@ -323,8 +329,9 @@ $template->assign('ACTIVITY_CHART_NUMBER_SIZES', $size);
 $day_labels = [];
 for ($i = 0; $i <= 6; $i++) {
     // first 3 letters of day name
-    $day_labels[] = mb_substr($lang['day'][($i + 1) % 7], 0, 3);
+    $day_labels[] = mb_substr((string) $lang['day'][($i + 1) % 7], 0, 3);
 }
+
 $template->assign('DAY_LABELS', $day_labels);
 
 // +-----------------------------------------------------------------------+
@@ -375,10 +382,8 @@ foreach ($file_extensions as $ext => $ext_details) {
 // Add cache size if requested and known.
 if ($conf['add_cache_to_storage_chart'] && isset($conf['cache_sizes'])) {
     $cache_sizes = unserialize($conf['cache_sizes']);
-    if (isset($cache_sizes)) {
-        if (isset($cache_sizes[0]) && isset($cache_sizes[0]['value'])) {
-            @$data_storage['Cache']['total']['filesize'] = $cache_sizes[0]['value'] / 1024;
-        }
+    if (isset($cache_sizes) && (isset($cache_sizes[0]) && isset($cache_sizes[0]['value']))) {
+        @$data_storage['Cache']['total']['filesize'] = $cache_sizes[0]['value'] / 1024;
     }
 }
 

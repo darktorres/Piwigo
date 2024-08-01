@@ -11,28 +11,19 @@ declare(strict_types=1);
 
 class PwgXmlWriter
 {
-    public bool $_indent;
+    public bool $_indent = true;
 
-    public string $_indentStr;
+    public string $_indentStr = "\t";
 
-    public array $_elementStack;
+    public array $_elementStack = [];
 
-    public bool $_lastTagOpen;
+    public bool $_lastTagOpen = false;
 
-    public int $_indentLevel;
+    public int $_indentLevel = 0;
 
-    public string $_encodedXml;
+    public string $_encodedXml = '';
 
-    public function __construct()
-    {
-        $this->_elementStack = [];
-        $this->_lastTagOpen = false;
-        $this->_indentLevel = 0;
-
-        $this->_encodedXml = '';
-        $this->_indent = true;
-        $this->_indentStr = "\t";
-    }
+    public function __construct() {}
 
     public function &getOutput(): string
     {
@@ -43,15 +34,17 @@ class PwgXmlWriter
         string $name
     ): void {
         $this->_end_prev(false);
-        if (! empty($this->_elementStack)) {
+        if ($this->_elementStack !== []) {
             $this->_eol_indent();
         }
+
         $this->_indentLevel++;
         $this->_indent();
         $diff = ord($name[0]) - ord('0');
         if ($diff >= 0 && $diff <= 9) {
             $name = '_' . $name;
         }
+
         $this->_output('<' . $name);
         $this->_lastTagOpen = true;
         $this->_elementStack[] = $name;
@@ -116,8 +109,10 @@ class PwgXmlWriter
             } else {
                 $this->_output('>');
             }
+
             $this->_lastTagOpen = false;
         }
+
         return $ret;
     }
 
@@ -130,8 +125,7 @@ class PwgXmlWriter
 
     public function _indent(): void
     {
-        if ($this->_indent and
-            $this->_indentLevel > count($this->_elementStack)) {
+        if ($this->_indent && $this->_indentLevel > count($this->_elementStack)) {
             $this->_output(
                 str_repeat($this->_indentStr, count($this->_elementStack))
             );
@@ -154,22 +148,20 @@ class PwgRestEncoder extends PwgResponseEncoder
         array|bool|string|PwgError|null $response
     ): string {
         if ($response instanceof PwgError) {
-            $ret = '<?xml version="1.0"?>
+            return '<?xml version="1.0"?>
 <rsp stat="fail">
 	<err code="' . $response->code() . '" msg="' . htmlspecialchars($response->message()) . '" />
 </rsp>';
-            return $ret;
         }
 
         $this->_writer = new PwgXmlWriter();
         $this->encode($response);
         $ret = $this->_writer->getOutput();
-        $ret = '<?xml version="1.0" encoding="utf-8" ?>
+
+        return '<?xml version="1.0" encoding="utf-8" ?>
 <rsp stat="ok">
 ' . $ret . '
 </rsp>';
-
-        return $ret;
     }
 
     #[\Override]
@@ -199,16 +191,21 @@ class PwgRestEncoder extends PwgResponseEncoder
             if (is_numeric($name)) {
                 continue;
             }
-            if ($skip_underscore and $name[0] == '_') {
+
+            if ($skip_underscore && $name[0] === '_') {
                 continue;
             }
+
             if ($value === null) {
                 continue;
-            } // null means we dont put it
-            if ($name == WS_XML_ATTRIBUTES) {
+            }
+
+            // null means we dont put it
+            if ($name === WS_XML_ATTRIBUTES) {
                 foreach ($value as $attr_name => $attr_value) {
                     $this->_writer->write_attribute($attr_name, $attr_value);
                 }
+
                 unset($data[$name]);
             } elseif (isset($xml_attributes[$name])) {
                 $this->_writer->write_attribute($name, $value);
@@ -220,12 +217,16 @@ class PwgRestEncoder extends PwgResponseEncoder
             if (is_numeric($name)) {
                 continue;
             }
-            if ($skip_underscore and $name[0] == '_') {
+
+            if ($skip_underscore && $name[0] === '_') {
                 continue;
             }
+
             if ($value === null) {
                 continue;
-            } // null means we dont put it
+            }
+
+            // null means we dont put it
             $this->_writer->start_element($name);
             $this->encode($value);
             $this->_writer->end_element($name);
@@ -258,22 +259,17 @@ class PwgRestEncoder extends PwgResponseEncoder
                 } else {
                     $this->encode_struct($data, false, $xml_attributes);
                 }
+
                 break;
             case 'object':
-                switch (strtolower(@get_class($data))) {
-                    case 'pwgnamedarray':
-                        $this->encode_array($data->_content, $data->_itemName, $data->_xmlAttributes);
-                        break;
-                    case 'pwgnamedstruct':
-                        $this->encode_struct($data->_content, false, $data->_xmlAttributes);
-                        break;
-                    default:
-                        $this->encode_struct(get_object_vars($data), true);
-                        break;
-                }
+                match (strtolower(@$data::class)) {
+                    'pwgnamedarray' => $this->encode_array($data->_content, $data->_itemName, $data->_xmlAttributes),
+                    'pwgnamedstruct' => $this->encode_struct($data->_content, false, $data->_xmlAttributes),
+                    default => $this->encode_struct(get_object_vars($data), true),
+                };
                 break;
             default:
-                trigger_error('Invalid type ' . gettype($data) . ' ' . @get_class($data), E_USER_WARNING);
+                trigger_error('Invalid type ' . gettype($data) . ' ' . @$data::class, E_USER_WARNING);
         }
     }
 }

@@ -22,7 +22,7 @@ check_status(ACCESS_ADMINISTRATOR);
 
 trigger_notify('loc_begin_cat_list');
 
-if (! empty($_POST) or isset($_GET['delete'])) {
+if ($_POST !== [] || isset($_GET['delete'])) {
     check_pwg_token();
 }
 
@@ -68,7 +68,7 @@ function get_categories_ref_date(
         $subcat_ids = [];
 
         foreach ($uppercats_of as $id => $uppercats) {
-            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', $uppercats)) {
+            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', (string) $uppercats)) {
                 $subcat_ids[] = $id;
             }
         }
@@ -80,8 +80,8 @@ function get_categories_ref_date(
             }
         }
 
-        if (count($to_compare) > 0) {
-            $ref_dates[$cat_id] = $minmax == 'max' ? max($to_compare) : min($to_compare);
+        if ($to_compare !== []) {
+            $ref_dates[$cat_id] = $minmax === 'max' ? max($to_compare) : min($to_compare);
         } else {
             $ref_dates[$cat_id] = null;
         }
@@ -120,11 +120,12 @@ include(PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php');
 // |                    virtual categories management                      |
 // +-----------------------------------------------------------------------+
 // request to delete a virtual category
-if (isset($_GET['delete']) and is_numeric($_GET['delete'])) {
+if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $photo_deletion_mode = 'no_delete';
     if (isset($_GET['photo_deletion_mode'])) {
         $photo_deletion_mode = $_GET['photo_deletion_mode'];
     }
+
     delete_categories([$_GET['delete']], $photo_deletion_mode);
 
     $_SESSION['page_infos'] = [l10n('Virtual album deleted')];
@@ -135,6 +136,7 @@ if (isset($_GET['delete']) and is_numeric($_GET['delete'])) {
     if (isset($_GET['parent_id'])) {
         $redirect_url .= '&parent_id=' . $_GET['parent_id'];
     }
+
     redirect($redirect_url);
 }
 // request to add a virtual category
@@ -152,6 +154,7 @@ elseif (isset($_POST['submitAdd'])) {
         $page['infos'][] = $output_create['info'] . ' <a class="icon-pencil" href="' . $edit_url . '">' . l10n('Edit album') . '</a>';
     }
 }
+
 // +-----------------------------------------------------------------------+
 // |                            Navigation path                            |
 // +-----------------------------------------------------------------------+
@@ -164,6 +167,7 @@ if (isset($_GET['parent_id'])) {
         $base_url . '&amp;parent_id='
     );
 }
+
 // +-----------------------------------------------------------------------+
 // |                       template initialization                         |
 // +-----------------------------------------------------------------------+
@@ -173,11 +177,12 @@ $form_action = PHPWG_ROOT_PATH . 'admin.php?page=cat_list';
 if (isset($_GET['parent_id'])) {
     $form_action .= '&amp;parent_id=' . $_GET['parent_id'];
 }
+
 $sort_orders_checked = array_keys($sort_orders);
 
 $template->assign([
     'ADMIN_PAGE_TITLE' => l10n('Album list management'),
-    'CATEGORIES_NAV' => preg_replace('# {2,}#', ' ', preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $navigation)),
+    'CATEGORIES_NAV' => preg_replace('# {2,}#', ' ', (string) preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $navigation)),
     'F_ACTION' => $form_action,
     'PWG_TOKEN' => get_pwg_token(),
     'sort_orders' => $sort_orders,
@@ -196,12 +201,13 @@ if (! isset($_GET['parent_id'])) {
 } else {
     $query .= " WHERE id_uppercat = {$_GET['parent_id']}";
 }
+
 $query .= ' ORDER BY rank_column ASC;';
 $categories = hash_from_query($query, 'id');
 
 // get the categories containing images directly
 $categories_with_images = [];
-if (count($categories)) {
+if ($categories !== []) {
     $query = 'SELECT category_id, COUNT(*) AS nb_photos FROM image_category GROUP BY category_id;'; // WHERE category_id IN ('.implode(',', array_keys($categories)).')
     $nb_photos_in = query2array($query, 'category_id', 'nb_photos');
 
@@ -210,7 +216,7 @@ if (count($categories)) {
     $subcats_of = [];
 
     foreach ($all_categories as $id => $uppercats) {
-        foreach (array_slice(explode(',', $uppercats), 0, -1) as $uppercat_id) {
+        foreach (array_slice(explode(',', (string) $uppercats), 0, -1) as $uppercat_id) {
             @$subcats_of[$uppercat_id][] = $id;
         }
     }
@@ -254,8 +260,8 @@ foreach ($categories as $category) {
                 $category['name'],
                 'admin_cat_list'
             ),
-          'NB_PHOTOS' => isset($nb_photos_in[$category['id']]) ? $nb_photos_in[$category['id']] : 0,
-          'NB_SUB_PHOTOS' => isset($nb_sub_photos[$category['id']]) ? $nb_sub_photos[$category['id']] : 0,
+          'NB_PHOTOS' => $nb_photos_in[$category['id']] ?? 0,
+          'NB_SUB_PHOTOS' => $nb_sub_photos[$category['id']] ?? 0,
           'NB_SUB_ALBUMS' => isset($subcats_of[$category['id']]) ? count($subcats_of[$category['id']]) : 0,
           'ID' => $category['id'],
           'RANK' => $category['rank'] * 10,
@@ -277,10 +283,8 @@ foreach ($categories as $category) {
     if (empty($category['dir'])) {
         $tpl_cat['U_DELETE'] = $self_url . '&amp;delete=' . $category['id'];
         $tpl_cat['U_DELETE'] .= '&amp;pwg_token=' . get_pwg_token();
-    } else {
-        if ($conf['enable_synchronization']) {
-            $tpl_cat['U_SYNC'] = $base_url . 'site_update&amp;site=1&amp;cat_id=' . $category['id'];
-        }
+    } elseif ($conf['enable_synchronization']) {
+        $tpl_cat['U_SYNC'] = $base_url . 'site_update&amp;site=1&amp;cat_id=' . $category['id'];
     }
 
     $template->append('categories', $tpl_cat);

@@ -23,16 +23,16 @@ foreach ($related_categories as $category) {
     }
 }
 
-if ($page['show_comments'] and isset($_POST['content'])) {
-    if (is_a_guest() and ! $conf['comments_forall']) {
+if ($page['show_comments'] && isset($_POST['content'])) {
+    if (is_a_guest() && ! $conf['comments_forall']) {
         die('Session expired');
     }
 
     $comm = [
-        'author' => empty(@$_POST['author']) ? '' : trim(@$_POST['author']),
-        'content' => empty(@$_POST['content']) ? '' : trim($_POST['content']),
-        'website_url' => empty(@$_POST['website_url']) ? '' : trim(@$_POST['website_url']),
-        'email' => empty(@$_POST['email']) ? '' : trim(@$_POST['email']),
+        'author' => empty(@$_POST['author']) ? '' : trim((string) @$_POST['author']),
+        'content' => empty(@$_POST['content']) ? '' : trim((string) $_POST['content']),
+        'website_url' => empty(@$_POST['website_url']) ? '' : trim((string) @$_POST['website_url']),
+        'email' => empty(@$_POST['email']) ? '' : trim((string) @$_POST['email']),
         'image_id' => $page['image_id'],
     ];
 
@@ -68,16 +68,10 @@ if ($page['show_comments'] and isset($_POST['content'])) {
 }
 
 if ($page['show_comments']) {
-    if (! is_admin()) {
-        $validated_clause = " AND validated = 'true'";
-    } else {
-        $validated_clause = '';
-    }
-
+    $validated_clause = is_admin() ? '' : " AND validated = 'true'";
     // number of comments for this picture
     $query = "SELECT COUNT(*) AS nb_comments FROM comments WHERE image_id = {$page['image_id']} {$validated_clause};";
     $row = pwg_db_fetch_assoc(pwg_query($query));
-
     // navigation bar creation
     if (! isset($page['start'])) {
         $page['start'] = 0;
@@ -90,7 +84,6 @@ if ($page['show_comments']) {
         $conf['nb_comment_page'],
         true // We want a clean URL
     );
-
     $template->assign(
         [
             'COMMENT_COUNT' => $row['nb_comments'],
@@ -98,12 +91,12 @@ if ($page['show_comments']) {
             'comments' => [],
         ]
     );
-
     if ($row['nb_comments'] > 0) {
         // comments order (get, session, conf)
-        if (! empty($_GET['comments_order']) && in_array(strtoupper($_GET['comments_order']), ['ASC', 'DESC'])) {
+        if (! empty($_GET['comments_order']) && in_array(strtoupper((string) $_GET['comments_order']), ['ASC', 'DESC'])) {
             pwg_set_session_var('comments_order', $_GET['comments_order']);
         }
+
         $comments_order = pwg_get_session_var('comments_order', $conf['comments_order']);
 
         $template->assign([
@@ -149,6 +142,7 @@ if ($page['show_comments']) {
                     ]
                 );
             }
+
             if (can_manage_comment('edit', $row['author_id'])) {
                 $tpl_comment['U_EDIT'] = add_url_params(
                     $url_self,
@@ -157,7 +151,7 @@ if ($page['show_comments']) {
                         'comment_to_edit' => $row['id'],
                     ]
                 );
-                if (isset($edit_comment) and ($row['id'] == $edit_comment)) {
+                if (isset($edit_comment) && $row['id'] == $edit_comment) {
                     $tpl_comment['IN_EDIT'] = true;
                     $key = get_ephemeral_key(2, $page['image_id']);
                     $tpl_comment['KEY'] = $key;
@@ -166,6 +160,7 @@ if ($page['show_comments']) {
                     $tpl_comment['U_CANCEL'] = $url_self;
                 }
             }
+
             if (is_admin()) {
                 $tpl_comment['EMAIL'] = $email;
 
@@ -180,6 +175,7 @@ if ($page['show_comments']) {
                     );
                 }
             }
+
             $template->append('comments', $tpl_comment);
         }
     }
@@ -188,7 +184,8 @@ if ($page['show_comments']) {
     if (isset($edit_comment)) {
         $show_add_comment_form = false;
     }
-    if (is_a_guest() and ! $conf['comments_forall']) {
+
+    if (is_a_guest() && ! $conf['comments_forall']) {
         $show_add_comment_form = false;
     }
 
@@ -203,7 +200,7 @@ if ($page['show_comments']) {
             'AUTHOR_MANDATORY' => $conf['comments_author_mandatory'],
             'AUTHOR' => '',
             'WEBSITE_URL' => '',
-            'SHOW_EMAIL' => ! is_classic_user() or empty($user['email']),
+            'SHOW_EMAIL' => ! is_classic_user() || empty($user['email']),
             'EMAIL_MANDATORY' => $conf['comments_email_mandatory'],
             'EMAIL' => '',
             'SHOW_WEBSITE' => $conf['comments_enable_website'],
@@ -211,11 +208,13 @@ if ($page['show_comments']) {
 
         if (@$comment_action == 'reject') {
             foreach (['content', 'author', 'website_url', 'email'] as $k) {
-                $tpl_var[strtoupper($k)] = isset($_POST[$k]) ? htmlspecialchars(stripslashes(@$_POST[$k])) : '';
+                $tpl_var[strtoupper($k)] = isset($_POST[$k]) ? htmlspecialchars(stripslashes((string) @$_POST[$k])) : '';
             }
         }
+
         $template->assign('comment_add', $tpl_var);
     }
+
     $template->set_filenames([
         'comment_list' => 'comment_list.tpl',
     ]);
