@@ -51,7 +51,7 @@ if (isset($_POST['submit'])) {
 
     if (count($page['errors']) == 0) {
         // email notification
-        if (isset($_POST['send_password_by_mail']) and email_check_format($_POST['mail_address'])) {
+        if (isset($_POST['send_password_by_mail']) && email_check_format($_POST['mail_address'])) {
             $_SESSION['page_infos'][] = l10n('Successfully registered, you will soon receive an email with your connection settings. Welcome!');
         }
 
@@ -60,13 +60,14 @@ if (isset($_POST['submit'])) {
         log_user($user_id, false);
         redirect(make_index_url());
     }
+
     $registration_post_key = get_ephemeral_key(2);
 } else {
     $registration_post_key = get_ephemeral_key(6);
 }
 
-$login = ! empty($_POST['login']) ? htmlspecialchars(stripslashes($_POST['login'])) : '';
-$email = ! empty($_POST['mail_address']) ? htmlspecialchars(stripslashes($_POST['mail_address'])) : '';
+$login = empty($_POST['login']) ? '' : htmlspecialchars(stripslashes((string) $_POST['login']));
+$email = empty($_POST['mail_address']) ? '' : htmlspecialchars(stripslashes((string) $_POST['mail_address']));
 
 //----------------------------------------------------- template initialization
 //
@@ -89,7 +90,7 @@ $template->assign([
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theRegisterPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theRegisterPage', $themeconf['hide_menu_on'])) {
     include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
 }
 
