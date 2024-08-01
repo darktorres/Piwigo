@@ -58,9 +58,9 @@ class pwg_image
 
         trigger_notify('load_image_library', [&$this]);
 
-        if (is_object($this->image)) {
-            return; // A plugin may have load its own library
-        }
+        // if (is_object($this->image)) {
+        //     return; // A plugin may have load its own library
+        // }
 
         $extension = strtolower(get_extension($source_filepath));
 
