@@ -47,11 +47,14 @@ class SPThumbPicker
             if ($params->max_height() < $height || $params->sizing->max_crop) {
                 continue;
             }
+
             if ($params->max_height() > 3 * $height) {
                 break;
             }
+
             $this->candidates[] = $params;
         }
+
         $this->default = ImageStdParams::get_custom($height * 3, $height, 1, 0, $height);
         $this->height = $height;
     }
@@ -69,9 +72,11 @@ class SPThumbPicker
                 break;
             }
         }
+
         if (! $ok) {
             $deriv = new DerivativeImage($this->default, $src_image);
         }
+
         return $deriv;
     }
 }
@@ -102,9 +107,9 @@ function sp_select_all_categories(
 // Get better derive parameters for screen size
 $type = IMG_LARGE;
 if (! empty($_COOKIE['screen_size'])) {
-    $screen_size = explode('x', $_COOKIE['screen_size']);
-    foreach (ImageStdParams::get_all_type_map() as $type => $map) {
-        if (max($map->sizing->ideal_size) >= max($screen_size) and min($map->sizing->ideal_size) >= min($screen_size)) {
+    $screen_size = explode('x', (string) $_COOKIE['screen_size']);
+    foreach (ImageStdParams::get_all_type_map() as $map) {
+        if (max($map->sizing->ideal_size) >= max($screen_size) && min($map->sizing->ideal_size) >= min($screen_size)) {
             break;
         }
     }
@@ -137,9 +142,9 @@ function mobile_link(): void
     global $template, $conf;
     $config = safe_unserialize($conf['smartpocket']);
     $template->assign('smartpocket', $config);
-    if (! empty($conf['mobile_theme']) && (get_device() != 'desktop' || mobile_theme())) {
+    if (! empty($conf['mobile_theme']) && (get_device() !== 'desktop' || mobile_theme())) {
         $template->assign([
-            'TOGGLE_MOBILE_THEME_URL' => add_url_params(htmlspecialchars($_SERVER['REQUEST_URI']), [
+            'TOGGLE_MOBILE_THEME_URL' => add_url_params(htmlspecialchars((string) $_SERVER['REQUEST_URI']), [
                 'mobile' => mobile_theme() ? 'false' : 'true',
             ]),
         ]);
@@ -147,20 +152,23 @@ function mobile_link(): void
 }
 
 if (! function_exists('add_menu_on_public_pages')) {
-    if (defined('IN_ADMIN') and IN_ADMIN) {
+    if (defined('IN_ADMIN') && IN_ADMIN) {
         return false;
     }
+
     add_event_handler('loc_after_page_header', add_menu_on_public_pages(...), 20);
 
     function add_menu_on_public_pages(): bool|null
     {
         if (function_exists('initialize_menu')) {
             return false;
-        } # The current page has already the menu
+        }
+
+        # The current page has already the menu
         global $template, $page, $conf;
-        if (isset($page['body_id']) and $page['body_id'] == 'thePicturePage') {
+        if (isset($page['body_id']) && $page['body_id'] == 'thePicturePage') {
             $template->set_filenames([
-                'add_menu_on_public_pages' => dirname(__FILE__) . '/template/add_menu_on_public_pages.tpl',
+                'add_menu_on_public_pages' => __DIR__ . '/template/add_menu_on_public_pages.tpl',
             ]);
             include_once(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
             $template->parse('add_menu_on_public_pages');

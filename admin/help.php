@@ -18,13 +18,8 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 check_status(ACCESS_ADMINISTRATOR);
 
 $help_link = get_root_url() . 'admin.php?page=help&section=';
-$selected = null;
 
-if (! isset($_GET['section'])) {
-    $selected = 'add_photos';
-} else {
-    $selected = $_GET['section'];
-}
+$selected = $_GET['section'] ?? 'add_photos';
 
 $tabsheet = new tabsheet();
 $tabsheet->set_id('help');
@@ -50,7 +45,7 @@ $template->assign(
     ]
 );
 
-if (substr($user['language'], 0, 3) == 'fr_') {
+if (str_starts_with((string) $user['language'], 'fr_')) {
     $page['messages'][] = sprintf(
         'Besoin d\'aide pour utiliser Piwigo ? Consultez la <a href="%s" target="_blank">documentation en ligne</a> !',
         'https://doc-fr.piwigo.org/'

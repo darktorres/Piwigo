@@ -38,7 +38,7 @@ class languages
     ): array {
         global $conf;
 
-        if (! $conf['enable_extensions_install'] and $action == 'delete') {
+        if (! $conf['enable_extensions_install'] && $action === 'delete') {
             die('Piwigo extensions install/update/delete system is disabled');
         }
 
@@ -65,7 +65,7 @@ class languages
                     break;
                 }
 
-                if ($language_id == get_default_language()) {
+                if ($language_id === get_default_language()) {
                     $errors[] = 'CANNOT DEACTIVATE - LANGUAGE IS DEFAULT LANGUAGE';
                     break;
                 }
@@ -79,6 +79,7 @@ class languages
                     $errors[] = 'CANNOT DELETE - LANGUAGE IS ACTIVATED';
                     break;
                 }
+
                 if (! isset($this->fs_languages[$language_id])) {
                     $errors[] = 'CANNOT DELETE - LANGUAGE DOES NOT EXIST';
                     break;
@@ -97,6 +98,7 @@ class languages
                 pwg_query($query);
                 break;
         }
+
         return $errors;
     }
 
@@ -106,18 +108,17 @@ class languages
     public function get_fs_languages(
         string $target_charset = null
     ): void {
-        if (empty($target_charset)) {
+        if ($target_charset === null || $target_charset === '' || $target_charset === '0') {
             $target_charset = 'utf-8';
         }
+
         $target_charset = strtolower($target_charset);
 
         $dir = opendir(PHPWG_ROOT_PATH . 'language');
         while ($file = readdir($dir)) {
-            if ($file != '.' and $file != '..') {
+            if ($file !== '.' && $file !== '..') {
                 $path = PHPWG_ROOT_PATH . 'language/' . $file;
-                if (is_dir($path) and ! is_link($path)
-                    and preg_match('/^[a-zA-Z0-9-_]+$/', $file)
-                    and file_exists($path . '/common.lang.php')
+                if (is_dir($path) && ! is_link($path) && preg_match('/^[a-zA-Z0-9-_]+$/', $file) && file_exists($path . '/common.lang.php')
                 ) {
                     $language = [
                         'name' => $file,
@@ -132,20 +133,25 @@ class languages
                         $language['name'] = trim($val[1]);
                         $language['name'] = convert_charset($language['name'], 'utf-8', $target_charset);
                     }
+
                     if (preg_match('|Version:\\s*([\\w.-]+)|', $plg_data, $val)) {
                         $language['version'] = trim($val[1]);
                     }
+
                     if (preg_match('|Language URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                         $language['uri'] = trim($val[1]);
                     }
+
                     if (preg_match('|Author:\\s*(.+)|', $plg_data, $val)) {
                         $language['author'] = trim($val[1]);
                     }
+
                     if (preg_match('|Author URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                         $language['author uri'] = trim($val[1]);
                     }
-                    if (! empty($language['uri']) and strpos($language['uri'], 'extension_view.php?eid=')) {
-                        list(, $extension) = explode('extension_view.php?eid=', $language['uri']);
+
+                    if (isset($language['uri']) && ($language['uri'] !== '' && $language['uri'] !== '0') && strpos($language['uri'], 'extension_view.php?eid=')) {
+                        [, $extension] = explode('extension_view.php?eid=', $language['uri']);
                         if (is_numeric($extension)) {
                             $language['extension'] = $extension;
                         }
@@ -157,6 +163,7 @@ class languages
                 }
             }
         }
+
         closedir($dir);
         @uasort($this->fs_languages, name_compare(...));
     }
@@ -188,18 +195,20 @@ class languages
         $version = PHPWG_VERSION;
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result)) {
+        if (fetchRemote($url, $result, $get_data) && ($pem_versions = @unserialize($result))) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
+
             $branch = get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
-                if (strpos($pem_version['name'], $branch) === 0) {
+                if (str_starts_with((string) $pem_version['name'], $branch)) {
                     $versions_to_check[] = $pem_version['id'];
                 }
             }
         }
-        if (empty($versions_to_check)) {
+
+        if ($versions_to_check === []) {
             return false;
         }
 
@@ -222,7 +231,7 @@ class languages
                 'get_nb_downloads' => 'true',
             ]
         );
-        if (! empty($languages_to_check)) {
+        if ($languages_to_check !== []) {
             if ($new) {
                 $get_data['extension_exclude'] = implode(',', $languages_to_check);
             } else {
@@ -235,14 +244,17 @@ class languages
             if (! is_array($pem_languages)) {
                 return false;
             }
+
             foreach ($pem_languages as $language) {
-                if (preg_match('/^.*? \[[A-Z]{2}\]$/', $language['extension_name'])) {
+                if (preg_match('/^.*? \[[A-Z]{2}\]$/', (string) $language['extension_name'])) {
                     $this->server_languages[$language['extension_id']] = $language;
                 }
             }
+
             @uasort($this->server_languages, $this->extension_name_compare(...));
             return true;
         }
+
         return false;
     }
 
@@ -267,15 +279,13 @@ class languages
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data)) {
+            if (($handle = @fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 $zip = new PclZip($archive);
                 if ($list = $zip->listContent()) {
                     foreach ($list as $file) {
                         // we search common.lang.php in archive
-                        if (basename($file['filename']) == 'common.lang.php'
-                          and (! isset($main_filepath)
-                          or strlen($file['filename']) < strlen($main_filepath))) {
+                        if (basename((string) $file['filename']) === 'common.lang.php' && (! isset($main_filepath) || strlen((string) $file['filename']) < strlen((string) $main_filepath))) {
                             $main_filepath = $file['filename'];
                         }
                     }
@@ -283,11 +293,12 @@ class languages
                     $logger->debug(__FUNCTION__ . ', $main_filepath = ' . $main_filepath);
 
                     if (isset($main_filepath)) {
-                        $root = basename(dirname($main_filepath)); // common.lang.php path in archive
+                        $root = basename(dirname((string) $main_filepath)); // common.lang.php path in archive
                         if (preg_match('/^[a-z]{2}_[A-Z]{2}$/', $root)) {
-                            if ($action == 'install') {
+                            if ($action === 'install') {
                                 $dest = $root;
                             }
+
                             $extract_path = PHPWG_ROOT_PATH . 'language/' . $dest;
 
                             $logger->debug(__FUNCTION__ . ', $extract_path = ' . $extract_path);
@@ -307,17 +318,17 @@ class languages
                                         break;
                                     }
                                 }
+
                                 if ($status == 'ok') {
                                     $this->get_fs_languages();
-                                    if ($action == 'install') {
+                                    if ($action === 'install') {
                                         $this->perform_action('activate', $dest);
                                     }
                                 }
-                                if (file_exists($extract_path . '/obsolete.list')
-                                  and $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)
-                                  and ! empty($old_files)) {
+
+                                if (file_exists($extract_path . '/obsolete.list') && ($old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)) && $old_files !== []) {
                                     $old_files[] = 'obsolete.list';
-                                    $logger->debug(__FUNCTION__ . ', $old_files = {' . join('},{', $old_files) . '}');
+                                    $logger->debug(__FUNCTION__ . ', $old_files = {' . implode('},{', $old_files) . '}');
 
                                     $extract_path_realpath = realpath($extract_path);
 
@@ -325,7 +336,7 @@ class languages
                                         $old_file = trim($old_file);
                                         $old_file = trim($old_file, '/'); // prevent path starting with a "/"
 
-                                        if (empty($old_file)) { // empty here means the extension itself
+                                        if ($old_file === '' || $old_file === '0') { // empty here means the extension itself
                                             continue;
                                         }
 
@@ -333,7 +344,7 @@ class languages
 
                                         // make sure the obsolete file is withing the extension directory, prevent traversal path
                                         $realpath = realpath($path);
-                                        if ($realpath === false or strpos($realpath, $extract_path_realpath) !== 0) {
+                                        if ($realpath === false || ! str_starts_with($realpath, $extract_path_realpath)) {
                                             continue;
                                         }
 
@@ -376,6 +387,6 @@ class languages
         array $a,
         array $b
     ): int {
-        return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
+        return strcmp(strtolower((string) $a['extension_name']), strtolower((string) $b['extension_name']));
     }
 }

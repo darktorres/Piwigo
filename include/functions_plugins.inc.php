@@ -19,13 +19,9 @@ define('EVENT_HANDLER_PRIORITY_NEUTRAL', 50);
  */
 class PluginMaintain
 {
-    protected string $plugin_id;
-
     public function __construct(
-        string $id
-    ) {
-        $this->plugin_id = $id;
-    }
+        protected string $plugin_id
+    ) {}
 
     /**
      * @param array $errors - used to return error messages
@@ -72,13 +68,9 @@ class PluginMaintain
  */
 class ThemeMaintain
 {
-    protected string $theme_id;
-
     public function __construct(
-        string $id
-    ) {
-        $this->theme_id = $id;
-    }
+        protected string $theme_id
+    ) {}
 
     /**
      * @param array $errors - used to return error messages
@@ -141,7 +133,9 @@ function remove_event_handler(
     if (! isset($pwg_event_handlers[$event][$priority])) {
         return false;
     }
-    for ($i = 0; $i < count($pwg_event_handlers[$event][$priority]); $i++) {
+
+    $counter = count($pwg_event_handlers[$event][$priority]);
+    for ($i = 0; $i < $counter; $i++) {
         if ($pwg_event_handlers[$event][$priority][$i]['function'] == $func) {
             unset($pwg_event_handlers[$event][$priority][$i]);
             $pwg_event_handlers[$event][$priority] =
@@ -153,9 +147,11 @@ function remove_event_handler(
                     unset($pwg_event_handlers[$event]);
                 }
             }
+
             return true;
         }
     }
+
     return false;
 }
 
@@ -189,10 +185,11 @@ function trigger_change(
     if (! isset($pwg_event_handlers[$event])) {
         return $data;
     }
+
     $args = func_get_args();
     array_shift($args);
 
-    foreach ($pwg_event_handlers[$event] as $priority => $handlers) {
+    foreach ($pwg_event_handlers[$event] as $handlers) {
         foreach ($handlers as $handler) {
             $args[0] = $data;
 
@@ -229,7 +226,7 @@ function trigger_notify(
 ): void {
     global $pwg_event_handlers;
 
-    if (isset($pwg_event_handlers['trigger']) and $event != 'trigger') {// debugging - avoid recursive calls
+    if (isset($pwg_event_handlers['trigger']) && $event !== 'trigger') {// debugging - avoid recursive calls
         trigger_notify(
             'trigger',
             [
@@ -243,10 +240,11 @@ function trigger_notify(
     if (! isset($pwg_event_handlers[$event])) {
         return;
     }
+
     $args = func_get_args();
     array_shift($args);
 
-    foreach ($pwg_event_handlers[$event] as $priority => $handlers) {
+    foreach ($pwg_event_handlers[$event] as $handlers) {
         foreach ($handlers as $handler) {
             if (! empty($handler['include_path'])) {
                 include_once($handler['include_path']);
@@ -271,6 +269,7 @@ function set_plugin_data(
         $pwg_loaded_plugins[$plugin_id]['plugin_data'] = &$data;
         return true;
     }
+
     return false;
 }
 
@@ -283,10 +282,7 @@ function &get_plugin_data(
     string $plugin_id
 ): mixed {
     global $pwg_loaded_plugins;
-    if (isset($pwg_loaded_plugins[$plugin_id]['plugin_data'])) {
-        return $pwg_loaded_plugins[$plugin_id]['plugin_data'];
-    }
-    return null;
+    return $pwg_loaded_plugins[$plugin_id]['plugin_data'] ?? null;
 }
 
 /**
@@ -301,13 +297,15 @@ function get_db_plugins(
 ): array {
     $query = 'SELECT * FROM plugins';
     $clauses = [];
-    if (! empty($state)) {
+    if ($state !== null && $state !== '' && $state !== '0') {
         $clauses[] = "state = '{$state}'";
     }
-    if (! empty($id)) {
+
+    if ($id !== '' && $id !== '0') {
         $clauses[] = "id = '{$id}'";
     }
-    if (count($clauses)) {
+
+    if ($clauses !== []) {
         $query .= ' WHERE ' . implode(' AND ', $clauses);
     }
 
@@ -361,7 +359,7 @@ function autoupdate_plugin(
 
     // if version is auto (dev) or superior
     if ($fs_version != null && (
-        $fs_version == 'auto' || $plugin['version'] == 'auto' ||
+        $fs_version === 'auto' || $plugin['version'] == 'auto' ||
           safe_version_compare($plugin['version'], $fs_version, '<')
     )
     ) {
@@ -416,6 +414,7 @@ function load_plugins(): void
         foreach ($plugins as $plugin) {// include main from a function to avoid using same function context
             load_plugin($plugin);
         }
+
         trigger_notify('plugins_loaded');
     }
 }

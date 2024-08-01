@@ -204,7 +204,7 @@ class Config
         }
 
         // Load and JSON decode the config
-        $loaded = json_decode($conf[self::CONF_PARAM], true);
+        $loaded = json_decode((string) $conf[self::CONF_PARAM], true);
 
         // Check for current version
         if (isset($loaded[self::KEY_VERSION]) && $loaded[self::KEY_VERSION] == self::CONF_VERSION) {
@@ -217,6 +217,7 @@ class Config
         if (is_array($loaded)) {
             $this->populateConfig($loaded);
         }
+
         $this->save();
     }
 
@@ -227,10 +228,10 @@ class Config
         if (array_key_exists($key, $this->defaults)) {
             switch ($this->types[$key]) {
                 case self::TYPE_STRING:
-                    $this->config[$key] = ! empty($value) ? $value : null;
+                    $this->config[$key] = $value === null || $value === '' || $value === '0' ? null : $value;
                     break;
                 case self::TYPE_BOOL:
-                    $this->config[$key] = $value ? true : false;
+                    $this->config[$key] = (bool) $value;
                     break;
                 case self::TYPE_NUM:
                     $this->config[$key] = is_numeric($value) ? $value : $this->defaults[$key];
@@ -263,7 +264,7 @@ class Config
         array $post
     ): void {
         foreach (array_keys($this->defaults) as $key) {
-            $this->__set($key, isset($post[$key]) ? stripslashes($post[$key]) : null);
+            $this->__set($key, isset($post[$key]) ? stripslashes((string) $post[$key]) : null);
         }
     }
 
@@ -298,11 +299,12 @@ class Config
         string $content
     ): void {
         $file = $this->files[$key];
-        $dir = dirname($file);
+        $dir = dirname((string) $file);
         if (! file_exists($dir)) {
             mkdir($dir, 0755, true);
         }
-        if (empty($content) && file_exists($file)) {
+
+        if (($content === '' || $content === '0') && file_exists($file)) {
             unlink($file);
         } else {
             file_put_contents($file, $content);
@@ -316,6 +318,7 @@ class Config
         if (file_exists($file)) {
             return file_get_contents($file);
         }
+
         return null;
 
     }

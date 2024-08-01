@@ -61,7 +61,7 @@ function save_upload_form_config(
     array &$errors = [],
     array &$form_errors = []
 ): bool {
-    if (! is_array($data) or empty($data)) {
+    if ($data === []) {
         return false;
     }
 
@@ -72,18 +72,14 @@ function save_upload_form_config(
         if (! isset($upload_form_config[$field])) {
             continue;
         }
-        if (is_bool($upload_form_config[$field]['default'])) {
-            if (isset($value)) {
-                $value = true;
-            } else {
-                $value = false;
-            }
 
+        if (is_bool($upload_form_config[$field]['default'])) {
+            $value = isset($value);
             $updates[] = [
                 'param' => $field,
                 'value' => boolean_to_string($value),
             ];
-        } elseif ($upload_form_config[$field]['can_be_null'] and empty($value)) {
+        } elseif ($upload_form_config[$field]['can_be_null'] && empty($value)) {
             $updates[] = [
                 'param' => $field,
                 'value' => 'false',
@@ -93,7 +89,7 @@ function save_upload_form_config(
             $max = $upload_form_config[$field]['max'];
             $pattern = $upload_form_config[$field]['pattern'];
 
-            if (preg_match($pattern, $value) and $value >= $min and $value <= $max) {
+            if (preg_match($pattern, (string) $value) && $value >= $min && $value <= $max) {
                 $updates[] = [
                     'param' => $field,
                     'value' => $value,
@@ -145,18 +141,14 @@ function add_uploaded_file(
         $original_filename = htmlspecialchars($original_filename);
     }
 
-    if (isset($original_md5sum)) {
-        $md5sum = $original_md5sum;
-    } else {
-        $md5sum = md5_file($source_filepath);
-    }
+    $md5sum = $original_md5sum ?? md5_file($source_filepath);
 
     // we only try to detect duplicate on a new image, not when updating an existing image
-    if (! isset($image_id) and $conf['upload_detect_duplicate']) {
+    if (! isset($image_id) && $conf['upload_detect_duplicate']) {
         $query = "SELECT id FROM images WHERE md5sum = '{$md5sum}';";
         $images_found = query2array($query);
 
-        if (count($images_found) > 0) {
+        if ($images_found !== []) {
             $image_id = $images_found[0]['id'];
             $logger->info('[' . __FUNCTION__ . '] image already exist #' . $image_id . ', we delete the newly uploaded file : ' . $source_filepath);
             unlink($source_filepath);
@@ -191,8 +183,8 @@ function add_uploaded_file(
         // this photo is new
 
         // current date
-        list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
-        list($year, $month, $day) = preg_split('/[^\d]/', $dbnow, 4);
+        [$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        [$year, $month, $day] = preg_split('/[^\d]/', (string) $dbnow, 4);
 
         // upload directory hierarchy
         $upload_dir = sprintf(
@@ -203,12 +195,12 @@ function add_uploaded_file(
         );
 
         // compute file path
-        $date_string = preg_replace('/[^\d]/', '', $dbnow);
+        $date_string = preg_replace('/[^\d]/', '', (string) $dbnow);
         $random_string = substr($md5sum, 0, 8);
         $filename_wo_ext = $date_string . '-' . $random_string;
         $file_path = $upload_dir . '/' . $filename_wo_ext . '.';
 
-        list($width, $height, $type) = getimagesize($source_filepath);
+        [$width, $height, $type] = getimagesize($source_filepath);
 
         if ($type == IMAGETYPE_PNG) {
             $file_path .= 'png';
@@ -218,7 +210,7 @@ function add_uploaded_file(
             $file_path .= 'jpg';
         } elseif ($type == IMAGETYPE_WEBP) {
             $file_path .= 'webp';
-        } elseif (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types']) {
+        } elseif (isset($conf['upload_form_all_types']) && $conf['upload_form_all_types']) {
             $original_extension = strtolower(get_extension($original_filename));
 
             if (in_array($original_extension, $conf['file_ext'])) {
@@ -240,13 +232,14 @@ function add_uploaded_file(
     } else {
         rename($source_filepath, $file_path);
     }
+
     @chmod($file_path, 0644);
 
     // handle the uploaded file type by potentially making a
     // pwg_representative file.
     $representative_ext = trigger_change('upload_file', null, $file_path);
 
-    $logger->info('Handling ' . (string) $file_path . ' got ' . (string) $representative_ext);
+    $logger->info('Handling ' . $file_path . ' got ' . $representative_ext);
 
     // If it is set to either true (the file didn't need a
     // representative generated) or false (the generation of the
@@ -284,7 +277,7 @@ function add_uploaded_file(
 
     if (isset($image_id)) {
         $update = [
-            'file' => pwg_db_real_escape_string(isset($original_filename) ? $original_filename : basename($file_path)),
+            'file' => pwg_db_real_escape_string($original_filename ?? basename((string) $file_path)),
             'filesize' => $file_infos['filesize'],
             'width' => $file_infos['width'],
             'height' => $file_infos['height'],
@@ -306,12 +299,12 @@ function add_uploaded_file(
         );
     } else {
         // database registration
-        $file = pwg_db_real_escape_string(isset($original_filename) ? $original_filename : basename($file_path));
+        $file = pwg_db_real_escape_string($original_filename ?? basename((string) $file_path));
         $insert = [
             'file' => $file,
             'name' => get_name_from_file($file),
             'date_available' => $dbnow,
-            'path' => preg_replace('#^' . preg_quote(PHPWG_ROOT_PATH) . '#', '', $file_path),
+            'path' => preg_replace('#^' . preg_quote(PHPWG_ROOT_PATH) . '#', '', (string) $file_path),
             'filesize' => $file_infos['filesize'],
             'width' => $file_infos['width'],
             'height' => $file_infos['height'],
@@ -337,9 +330,10 @@ function add_uploaded_file(
     add_uploaded_file_add_to_categories($image_id, $categories);
 
     // update metadata from the uploaded file (exif/iptc)
-    if ($conf['use_exif'] and ! function_exists('exif_read_data')) {
+    if ($conf['use_exif'] && ! function_exists('exif_read_data')) {
         $conf['use_exif'] = false;
     }
+
     sync_metadata([$image_id]);
 
     // cache a derivative
@@ -361,7 +355,7 @@ function add_uploaded_file(
     return $image_id;
 }
 
-function add_uploaded_file_add_to_categories($image_id, $categories)
+function add_uploaded_file_add_to_categories($image_id, $categories): void
 {
     global $conf;
 
@@ -371,13 +365,13 @@ function add_uploaded_file_add_to_categories($image_id, $categories)
 
     if (! $conf['lounge_active']) {
         // check if we need to use the lounge from now
-        list($nb_photos) = pwg_db_fetch_row(pwg_query('SELECT COUNT(*) FROM images;'));
+        [$nb_photos] = pwg_db_fetch_row(pwg_query('SELECT COUNT(*) FROM images;'));
         if ($nb_photos >= $conf['lounge_activate_threshold']) {
             conf_update_param('lounge_active', true, true);
         }
     }
 
-    if (isset($categories) and count($categories) > 0) {
+    if (isset($categories) && count($categories) > 0) {
         if ($conf['lounge_active']) {
             fill_lounge([$image_id], $categories);
         } else {
@@ -416,8 +410,8 @@ function add_format(
         die('[' . __FUNCTION__ . '] this photo does not exist in the database');
     }
 
-    $format_path = dirname($images[0]['path']) . '/pwg_format/';
-    $format_path .= get_filename_wo_extension(basename($images[0]['path']));
+    $format_path = dirname((string) $images[0]['path']) . '/pwg_format/';
+    $format_path .= get_filename_wo_extension(basename((string) $images[0]['path']));
     $format_path .= '.' . $format_ext;
 
     prepare_directory(dirname($format_path));
@@ -427,6 +421,7 @@ function add_format(
     } else {
         rename($source_filepath, $format_path);
     }
+
     @chmod($format_path, 0644);
 
     $file_infos = pwg_image_infos($format_path);
@@ -507,7 +502,7 @@ function upload_file_pdf(
 }
 
 add_event_handler('upload_file', 'upload_file_heic');
-function upload_file_heic($representative_ext, $file_path)
+function upload_file_heic($representative_ext, string $file_path)
 {
     global $logger, $conf;
 
@@ -521,7 +516,7 @@ function upload_file_heic($representative_ext, $file_path)
         return $representative_ext;
     }
 
-    if (! in_array(strtolower(get_extension($file_path)), ['heic'])) {
+    if (strtolower(get_extension($file_path)) !== 'heic') {
         return $representative_ext;
     }
 
@@ -531,7 +526,7 @@ function upload_file_heic($representative_ext, $file_path)
     $representative_file_path = original_to_representative($file_path, $ext);
     prepare_directory(dirname($representative_file_path));
 
-    list($w, $h) = get_optimal_dimensions_for_representative();
+    [$w, $h] = get_optimal_dimensions_for_representative();
 
     $exec = $conf['ext_imagick_dir'] . 'convert';
     $exec .= ' -sampling-factor 4:2:0 -quality 85 -interlace JPEG -colorspace sRGB -auto-orient +repage -resize "' . $w . 'x' . $h . '>"';
@@ -654,7 +649,7 @@ function upload_file_video(
     // Get duration of video and determine time of poster
     exec('ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1' . " '{$file_path}'", $O, $S);
 
-    if (! empty($O[0])) {
+    if (isset($O[0]) && ($O[0] !== '' && $O[0] !== '0')) {
         $second = min(floor($O[0] * 10) / 10, 2);
     } else {
         $second = 0; // Safest position of the poster
@@ -670,7 +665,7 @@ function upload_file_video(
     $ffmpeg .= ' "' . $representative_file_path . '"'; // Output file
 
     @exec($ffmpeg . ' 2>&1', $FO, $FS);
-    if (! empty($FO[0])) {
+    if (isset($FO[0]) && ($FO[0] !== '' && $FO[0] !== '0')) {
         $logger->debug(__FUNCTION__ . ', Tried ' . $ffmpeg);
         $logger->debug($FO[0]);
     }
@@ -684,7 +679,7 @@ function upload_file_video(
 }
 
 add_event_handler('upload_file', 'upload_file_psd');
-function upload_file_psd($representative_ext, $file_path)
+function upload_file_psd($representative_ext, string $file_path)
 {
     global $logger, $conf;
 
@@ -698,7 +693,7 @@ function upload_file_psd($representative_ext, $file_path)
         return $representative_ext;
     }
 
-    if (! in_array(strtolower(get_extension($file_path)), ['psd'])) {
+    if (strtolower(get_extension($file_path)) !== 'psd') {
         return $representative_ext;
     }
 
@@ -741,7 +736,7 @@ function upload_file_psd($representative_ext, $file_path)
 }
 
 add_event_handler('upload_file', 'upload_file_eps');
-function upload_file_eps($representative_ext, $file_path)
+function upload_file_eps($representative_ext, string $file_path)
 {
     global $logger, $conf;
 
@@ -755,7 +750,7 @@ function upload_file_eps($representative_ext, $file_path)
         return $representative_ext;
     }
 
-    if (! in_array(strtolower(get_extension($file_path)), ['eps'])) {
+    if (strtolower(get_extension($file_path)) !== 'eps') {
         return $representative_ext;
     }
 
@@ -789,9 +784,10 @@ function prepare_directory(
     string $directory
 ): void {
     if (! is_dir($directory)) {
-        if (substr(PHP_OS, 0, 3) == 'WIN') {
+        if (str_starts_with(PHP_OS, 'WIN')) {
             $directory = str_replace('/', DIRECTORY_SEPARATOR, $directory);
         }
+
         umask(0000);
         $recursive = true;
         if (! @mkdir($directory, 0777, $recursive)) {
@@ -819,19 +815,14 @@ function need_resize(
     // TODO : the resize check should take the orientation into account. If a
     // rotation must be applied to the resized photo, then we should test
     // invert width and height.
-    list($width, $height) = getimagesize($image_filepath);
-
-    if ($width > $max_width or $height > $max_height) {
-        return true;
-    }
-
-    return false;
+    [$width, $height] = getimagesize($image_filepath);
+    return $width > $max_width || $height > $max_height;
 }
 
 function pwg_image_infos(
     string $path
 ): array {
-    list($width, $height) = getimagesize($path);
+    [$width, $height] = getimagesize($path);
     $filesize = floor(filesize($path) / 1024);
 
     return [
@@ -846,7 +837,7 @@ function is_valid_image_extension(
 ): array {
     global $conf;
 
-    if (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types']) {
+    if (isset($conf['upload_form_all_types']) && $conf['upload_form_all_types']) {
         $extensions = $conf['file_ext'];
     } else {
         $extensions = $conf['picture_ext'];
@@ -858,27 +849,19 @@ function is_valid_image_extension(
 function file_upload_error_message(
     string $error_code
 ): string {
-    switch ($error_code) {
-        case UPLOAD_ERR_INI_SIZE:
-            return sprintf(
-                l10n('The uploaded file exceeds the upload_max_filesize directive in php.ini: %sB'),
-                get_ini_size('upload_max_filesize', false)
-            );
-        case UPLOAD_ERR_FORM_SIZE:
-            return l10n('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form');
-        case UPLOAD_ERR_PARTIAL:
-            return l10n('The uploaded file was only partially uploaded');
-        case UPLOAD_ERR_NO_FILE:
-            return l10n('No file was uploaded');
-        case UPLOAD_ERR_NO_TMP_DIR:
-            return l10n('Missing a temporary folder');
-        case UPLOAD_ERR_CANT_WRITE:
-            return l10n('Failed to write file to disk');
-        case UPLOAD_ERR_EXTENSION:
-            return l10n('File upload stopped by extension');
-        default:
-            return l10n('Unknown upload error');
-    }
+    return match ($error_code) {
+        UPLOAD_ERR_INI_SIZE => sprintf(
+            l10n('The uploaded file exceeds the upload_max_filesize directive in php.ini: %sB'),
+            get_ini_size('upload_max_filesize', false)
+        ),
+        UPLOAD_ERR_FORM_SIZE => l10n('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form'),
+        UPLOAD_ERR_PARTIAL => l10n('The uploaded file was only partially uploaded'),
+        UPLOAD_ERR_NO_FILE => l10n('No file was uploaded'),
+        UPLOAD_ERR_NO_TMP_DIR => l10n('Missing a temporary folder'),
+        UPLOAD_ERR_CANT_WRITE => l10n('Failed to write file to disk'),
+        UPLOAD_ERR_EXTENSION => l10n('File upload stopped by extension'),
+        default => l10n('Unknown upload error'),
+    };
 }
 
 function get_ini_size(
@@ -900,11 +883,11 @@ function convert_shorthand_notation_to_bytes(
     $suffix = substr($value, -1);
     $multiply_by = null;
 
-    if ($suffix == 'K') {
+    if ($suffix === 'K') {
         $multiply_by = 1024;
-    } elseif ($suffix == 'M') {
+    } elseif ($suffix === 'M') {
         $multiply_by = 1024 * 1024;
-    } elseif ($suffix == 'G') {
+    } elseif ($suffix === 'G') {
         $multiply_by = 1024 * 1024 * 1024;
     }
 
@@ -927,25 +910,22 @@ function ready_for_upload_message(): string|null
 {
     global $conf;
 
-    $relative_dir = preg_replace('#^' . PHPWG_ROOT_PATH . '#', '', $conf['upload_dir']);
+    $relative_dir = preg_replace('#^' . PHPWG_ROOT_PATH . '#', '', (string) $conf['upload_dir']);
 
     if (! is_dir($conf['upload_dir'])) {
-        if (! is_writable(dirname($conf['upload_dir']))) {
+        if (! is_writable(dirname((string) $conf['upload_dir']))) {
             return sprintf(
                 l10n('Create the "%s" directory at the root of your Piwigo installation'),
                 $relative_dir
             );
         }
-    } else {
+    } elseif (! is_writable($conf['upload_dir'])) {
+        @chmod($conf['upload_dir'], 0777);
         if (! is_writable($conf['upload_dir'])) {
-            @chmod($conf['upload_dir'], 0777);
-
-            if (! is_writable($conf['upload_dir'])) {
-                return sprintf(
-                    l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
-                    $relative_dir
-                );
-            }
+            return sprintf(
+                l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
+                $relative_dir
+            );
         }
     }
 
@@ -960,7 +940,7 @@ function ready_for_upload_message(): string|null
  *
  * @return array(width, height)
  */
-function get_optimal_dimensions_for_representative()
+function get_optimal_dimensions_for_representative(): array
 {
     global $conf;
 
@@ -970,13 +950,14 @@ function get_optimal_dimensions_for_representative()
         $disabled = [];
     }
 
-    $w = $h = 2000; // safe default values
+    $w = 2000;
+    $h = 2000; // safe default values
 
     foreach (ImageStdParams::get_all_types() as $type) {
         $params = $enabled[$type] ?? @$disabled[$type];
 
         if ($params) {
-            list($w, $h) = $params->sizing->ideal_size;
+            [$w, $h] = $params->sizing->ideal_size;
         }
     }
 
