@@ -112,7 +112,7 @@ function admintools_add_public_controller(): void
         ];
     }
     // album page (admin only)
-    elseif ($MultiView->is_admin() && $page['section'] == 'categories' && isset($page['category'])) {
+    elseif ($MultiView->is_admin() && ($page['section'] ?? null) == 'categories' && isset($page['category'])) {
         $url_self = duplicate_index_url();
 
         $tpl_vars['IS_CATEGORY'] = true;
