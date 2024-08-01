@@ -20,12 +20,11 @@ function ws_isInvokeAllowed(
 ): PwgError|bool {
     global $conf;
 
-    if (strpos($methodName, 'reflection.') === 0) { // OK for reflection
+    if (str_starts_with($methodName, 'reflection.')) { // OK for reflection
         return $res;
     }
 
-    if (! is_autorize_status(ACCESS_GUEST) and
-        strpos($methodName, 'pwg.session.') !== 0) {
+    if (! is_autorize_status(ACCESS_GUEST) && ! str_starts_with($methodName, 'pwg.session.')) {
         return new PwgError(401, 'Access denied');
     }
 
@@ -44,36 +43,47 @@ function ws_std_image_sql_filter(
     if (is_numeric($params['f_min_rate'])) {
         $clauses[] = $tbl_name . 'rating_score>=' . $params['f_min_rate'];
     }
+
     if (is_numeric($params['f_max_rate'])) {
         $clauses[] = $tbl_name . 'rating_score<=' . $params['f_max_rate'];
     }
+
     if (is_numeric($params['f_min_hit'])) {
         $clauses[] = $tbl_name . 'hit>=' . $params['f_min_hit'];
     }
+
     if (is_numeric($params['f_max_hit'])) {
         $clauses[] = $tbl_name . 'hit<=' . $params['f_max_hit'];
     }
+
     if (isset($params['f_min_date_available'])) {
         $clauses[] = $tbl_name . "date_available>='" . $params['f_min_date_available'] . "'";
     }
+
     if (isset($params['f_max_date_available'])) {
         $clauses[] = $tbl_name . "date_available<'" . $params['f_max_date_available'] . "'";
     }
+
     if (isset($params['f_min_date_created'])) {
         $clauses[] = $tbl_name . "date_creation>='" . $params['f_min_date_created'] . "'";
     }
+
     if (isset($params['f_max_date_created'])) {
         $clauses[] = $tbl_name . "date_creation<'" . $params['f_max_date_created'] . "'";
     }
+
     if (is_numeric($params['f_min_ratio'])) {
         $clauses[] = $tbl_name . 'width/' . $tbl_name . 'height>=' . $params['f_min_ratio'];
     }
+
     if (is_numeric($params['f_max_ratio'])) {
         $clauses[] = $tbl_name . 'width/' . $tbl_name . 'height<=' . $params['f_max_ratio'];
     }
+
     if (is_numeric($params['f_max_level'])) {
         $clauses[] = $tbl_name . 'level <= ' . $params['f_max_level'];
     }
+
     return $clauses;
 }
 
@@ -88,13 +98,15 @@ function ws_std_image_sql_order(
     if (empty($params['order'])) {
         return $ret;
     }
+
     $matches = [];
     preg_match_all(
         '/([a-z_]+) *(?:(asc|desc)(?:ending)?)? *(?:, *|$)/i',
-        $params['order'],
+        (string) $params['order'],
         $matches
     );
-    for ($i = 0; $i < count($matches[1]); $i++) {
+    $counter = count($matches[1]);
+    for ($i = 0; $i < $counter; $i++) {
         switch ($matches[1][$i]) {
             case 'date_created':
                 $matches[1][$i] = 'date_creation';
@@ -106,19 +118,23 @@ function ws_std_image_sql_order(
                 $matches[1][$i] = DB_RANDOM_FUNCTION . '()';
                 break;
         }
+
         $sortable_fields = ['id', 'file', 'name', 'hit', 'rating_score',
             'date_creation', 'date_available', DB_RANDOM_FUNCTION . '()'];
         if (in_array($matches[1][$i], $sortable_fields)) {
-            if (! empty($ret)) {
+            if ($ret !== '' && $ret !== '0') {
                 $ret .= ', ';
             }
-            if ($matches[1][$i] != DB_RANDOM_FUNCTION . '()') {
+
+            if ($matches[1][$i] !== DB_RANDOM_FUNCTION . '()') {
                 $ret .= $tbl_name;
             }
+
             $ret .= $matches[1][$i];
             $ret .= ' ' . $matches[2][$i];
         }
     }
+
     return $ret;
 }
 
@@ -142,7 +158,7 @@ function ws_std_get_urls(
 
     $provide_download_url = false;
 
-    if ($src_image->is_original()) {// we have a photo
+    if ($src_image->is_original() !== 0) {// we have a photo
         global $user;
         if ($user['enabled_high']) {
             $ret['element_url'] = $src_image->get_url();
@@ -162,13 +178,17 @@ function ws_std_get_urls(
     $derivatives_arr = [];
     foreach ($derivatives as $type => $derivative) {
         $size = $derivative->get_size();
-        $size != null or $size = [null, null];
+        if ($size == null) {
+            $size = [null, null];
+        }
+
         $derivatives_arr[$type] = [
             'url' => $derivative->get_url(),
             'width' => $size[0],
             'height' => $size[1],
         ];
     }
+
     $ret['derivatives'] = $derivatives_arr;
     return $ret;
 }

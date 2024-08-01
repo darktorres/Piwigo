@@ -15,7 +15,7 @@ fs_quick_check();
 // |                                actions                                |
 // +-----------------------------------------------------------------------+
 
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = $_GET['action'] ?? '';
 $register_activity = true;
 
 switch ($action) {
@@ -104,18 +104,17 @@ switch ($action) {
         $sessions_to_delete = [];
 
         foreach ($sessions as $session) {
-            if (preg_match('/pwg_uid\|i:(\d+);/', $session['data'], $matches)) {
-                if (! isset($all_user_ids[$matches[1]])) {
-                    $sessions_to_delete[] = $session['id'];
-                }
+            if (preg_match('/pwg_uid\|i:(\d+);/', (string) $session['data'], $matches) && ! isset($all_user_ids[$matches[1]])) {
+                $sessions_to_delete[] = $session['id'];
             }
         }
 
-        if (count($sessions_to_delete) > 0) {
+        if ($sessions_to_delete !== []) {
             $sessions_to_delete_ = implode("','", $sessions_to_delete);
             $query = "DELETE FROM sessions WHERE id IN ('{$sessions_to_delete_}');";
             pwg_query($query);
         }
+
         $page['infos'][] = sprintf('%s : %s', l10n('Purge sessions'), l10n('action successfully performed.'));
         break;
 
@@ -160,11 +159,12 @@ switch ($action) {
         if ($types_str == 'all') {
             clear_derivative_cache($_GET['type']);
         } else {
-            $types = explode('_', $types_str);
+            $types = explode('_', (string) $types_str);
             foreach ($types as $type_to_clear) {
                 clear_derivative_cache($type_to_clear);
             }
         }
+
         $page['infos'][] = l10n('action successfully performed.');
         break;
 
@@ -176,7 +176,7 @@ switch ($action) {
             $versions = [
                 'current' => PHPWG_VERSION,
             ];
-            $lines = @explode("\r\n", $result);
+            $lines = @explode("\r\n", (string) $result);
 
             // if the current version is a BSF (development branch) build, we check
             // the first line, for stable versions, we check the second line
@@ -198,7 +198,7 @@ switch ($action) {
             }
             // concatenation needed to avoid automatic transformation by release
             // script generator
-            elseif ('%' . 'PWGVERSION' . '%' == $versions['current']) {
+            elseif ($versions['current'] == '%PWGVERSION%') {
                 $page['infos'][] = l10n('You are running on development sources, no check possible.');
             } elseif (version_compare($versions['current'], $versions['latest']) < 0) {
                 $page['infos'][] = l10n('A new version of Piwigo is available.');
@@ -206,6 +206,7 @@ switch ($action) {
                 $page['infos'][] = l10n('You are running the latest version of Piwigo.');
             }
         }
+
         $page['infos'][] = l10n('action successfully performed.');
 
         // no break
@@ -240,11 +241,12 @@ $purge_urls[l10n('All')] = 'all';
 foreach (ImageStdParams::get_defined_type_map() as $params) {
     $purge_urls[l10n($params->type)] = $params->type;
 }
+
 $purge_urls[l10n(IMG_CUSTOM)] = IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
 $db_version = pwg_get_db_version();
-list($db_current_date) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$db_current_date] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 $template->assign(
     [
@@ -280,12 +282,9 @@ $template->assign(
     ]
 );
 
-// graphics library
-switch (pwg_image::get_library()) {
-    case 'vips':
-        $library = 'image_vips';
-        $template->assign('GRAPHICS_LIBRARY', $library);
-        break;
+if (pwg_image::get_library() === 'vips') {
+    $library = 'image_vips';
+    $template->assign('GRAPHICS_LIBRARY', $library);
 }
 
 if ($conf['gallery_locked']) {

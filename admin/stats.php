@@ -94,6 +94,7 @@ function get_month_of_last_years(
     if (count(query2array($query . ';')) > 1) {
         return set_missing_values('month', query2array($query . ';'));
     }
+
     $last_year_date = new DateTime();
     return set_missing_values(
         'month',
@@ -146,6 +147,7 @@ function get_month_stats(): array
         if ($lastDate > new DateTime()) {
             $lastDate = new DateTime();
         }
+
         $result['month'][] = set_missing_values('day', $val, new DateTime($key), $lastDate);
     }
 
@@ -157,7 +159,7 @@ function get_month_stats(): array
      )
      AND day IS NOT NULL AND hour IS NULL ORDER BY year DESC, month DESC;";
 
-    list($result['avg']) = pwg_db_fetch_row(pwg_query($query));
+    [$result['avg']] = pwg_db_fetch_row(pwg_query($query));
 
     return $result;
 }
@@ -204,31 +206,22 @@ function set_missing_values(
     DateTime $firstDate = null,
     DateTime $lastDate = null
 ): array {
-    $limit = count($data);
     $result = [];
+    $date = $firstDate == null ? get_date_object($data[count($data) - 1]) : $firstDate;
 
-    if ($firstDate == null) {
-        $date = get_date_object($data[count($data) - 1]);
-    } else {
-        $date = $firstDate;
-    }
-    if ($lastDate == null) {
-        $date_end = get_date_object($data[0]);
-    } else {
-        $date_end = $lastDate;
-    }
+    $date_end = $lastDate == null ? get_date_object($data[0]) : $lastDate;
 
     //Declare variable according the unit
-    if ($unit == 'year') {
+    if ($unit === 'year') {
         $date_format = 'Y';
         $date_add = 'P1Y';
-    } elseif ($unit == 'month') {
+    } elseif ($unit === 'month') {
         $date_format = 'Y-m';
         $date_add = 'P1M';
-    } elseif ($unit == 'day') {
+    } elseif ($unit === 'day') {
         $date_format = 'Y-m-d';
         $date_add = 'P1D';
-    } elseif ($unit == 'hour') {
+    } elseif ($unit === 'hour') {
         $date_format = 'Y-m-d\TH:00';
         $date_add = 'PT1H';
     }
@@ -327,7 +320,7 @@ $template->assign([
     'lastMonths' => $last_months,
     'lastYears' => $last_years,
     'langCode' => strval($user['language']),
-    'month_labels' => join('~', $lang['month']),
+    'month_labels' => implode('~', $lang['month']),
     'ADMIN_PAGE_TITLE' => l10n('History'),
 ]);
 

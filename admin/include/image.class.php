@@ -47,14 +47,11 @@ class pwg_image
 
     public bool|string $library = '';
 
-    public string $source_filepath = '';
-
     public function __construct(
-        string $source_filepath,
+        public string $source_filepath,
         string $library = null
     ) {
         global $conf;
-        $this->source_filepath = $source_filepath;
 
         trigger_notify('load_image_library', [&$this]);
 
@@ -62,7 +59,7 @@ class pwg_image
         //     return; // A plugin may have load its own library
         // }
 
-        $extension = strtolower(get_extension($source_filepath));
+        $extension = strtolower(get_extension($this->source_filepath));
 
         if (! in_array($extension, $conf['picture_ext'])) {
             die('[Image] unsupported file extension');
@@ -73,7 +70,7 @@ class pwg_image
         }
 
         $class = 'image_' . $this->library;
-        $this->image = new $class($source_filepath);
+        $this->image = new $class($this->source_filepath);
     }
 
     // Unknow methods will be redirected to image object
@@ -108,11 +105,12 @@ class pwg_image
         if ($automatic_rotation) {
             $rotation = self::get_rotation_angle($this->source_filepath);
         }
+
         $resize_dimensions = self::get_resize_dimensions($source_width, $source_height, $max_width, $max_height, $rotation, $crop, $follow_orientation);
 
         // testing on height is useless in theory: if width is unchanged, there
         // should be no resize, because width/height ratio is not modified.
-        if ($resize_dimensions['width'] == $source_width and $resize_dimensions['height'] == $source_height) {
+        if ($resize_dimensions['width'] == $source_width && $resize_dimensions['height'] == $source_height) {
             // the image doesn't need any resize! We just copy it to the destination
             copy($this->source_filepath, $destination_filepath);
             return $this->get_resize_result($destination_filepath, $resize_dimensions['width'], $resize_dimensions['height'], $starttime);
@@ -131,7 +129,7 @@ class pwg_image
 
         $this->image->resize($resize_dimensions['width'], $resize_dimensions['height']);
 
-        if (! empty($rotation)) {
+        if ($rotation !== null && $rotation !== 0) {
             $this->image->rotate($rotation);
         }
 
@@ -151,20 +149,20 @@ class pwg_image
         bool $follow_orientation = true
     ): array {
         $rotate_for_dimensions = false;
-        if (isset($rotation) and in_array(abs($rotation), [90, 270])) {
+        if (isset($rotation) && in_array(abs($rotation), [90, 270])) {
             $rotate_for_dimensions = true;
         }
 
         if ($rotate_for_dimensions) {
-            list($width, $height) = [$height, $width];
+            [$width, $height] = [$height, $width];
         }
 
         if ($crop) {
             $x = 0;
             $y = 0;
 
-            if ($width < $height and $follow_orientation) {
-                list($max_width, $max_height) = [$max_height, $max_width];
+            if ($width < $height && $follow_orientation) {
+                [$max_width, $max_height] = [$max_height, $max_width];
             }
 
             $img_ratio = $width / $height;
@@ -187,7 +185,7 @@ class pwg_image
         $destination_height = $height;
 
         // maximal size exceeded ?
-        if ($ratio_width > 1 or $ratio_height > 1) {
+        if ($ratio_width > 1 || $ratio_height > 1) {
             if ($ratio_width < $ratio_height) {
                 $destination_width = round($width / $ratio_height);
                 $destination_height = $max_height;
@@ -198,7 +196,7 @@ class pwg_image
         }
 
         if ($rotate_for_dimensions) {
-            list($destination_width, $destination_height) = [$destination_height, $destination_width];
+            [$destination_width, $destination_height] = [$destination_height, $destination_width];
         }
 
         $result = [
@@ -206,7 +204,7 @@ class pwg_image
             'height' => $destination_height,
         ];
 
-        if ($crop and ($x or $y)) {
+        if ($crop && ($x || $y)) {
             $result['crop'] = [
                 'width' => $width,
                 'height' => $height,
@@ -214,6 +212,7 @@ class pwg_image
                 'y' => $y,
             ];
         }
+
         return $result;
     }
 
@@ -230,17 +229,18 @@ class pwg_image
         if (! $fp) {
             throw new Exception("webp_info(): fopen({$f}): Failed");
         }
+
         $buf = fread($fp, 25);
         fclose($fp);
 
         switch (true) {
             case ! is_string($buf):
             case strlen($buf) < 25:
-            case substr($buf, 0, 4) != 'RIFF':
-            case substr($buf, 8, 4) != 'WEBP':
-            case substr($buf, 12, 3) != 'VP8':
+            case ! str_starts_with($buf, 'RIFF'):
+            case substr($buf, 8, 4) !== 'WEBP':
+            case substr($buf, 12, 3) !== 'VP8':
                 throw new Exception('webp_info(): not a valid webp image');
-            case $buf[15] == ' ':
+            case $buf[15] === ' ':
                 // Simple File Format (Lossy)
                 return [
                     'type' => 'VP8',
@@ -248,20 +248,20 @@ class pwg_image
                     'has-transparent' => false,
                 ];
 
-            case $buf[15] == 'L':
+            case $buf[15] === 'L':
                 // Simple File Format (Lossless)
                 return [
                     'type' => 'VP8L',
                     'has-animation' => false,
-                    'has-transparent' => (bool) (! ! (ord($buf[24]) & 0x00000010)),
+                    'has-transparent' => (bool) ((bool) (ord($buf[24]) & 0x00000010)),
                 ];
 
-            case $buf[15] == 'X':
+            case $buf[15] === 'X':
                 // Extended File Format
                 return [
                     'type' => 'VP8X',
-                    'has-animation' => (bool) (! ! (ord($buf[20]) & 0x00000002)),
-                    'has-transparent' => (bool) (! ! (ord($buf[20]) & 0x00000010)),
+                    'has-animation' => (bool) ((bool) (ord($buf[20]) & 0x00000002)),
+                    'has-transparent' => (bool) ((bool) (ord($buf[20]) & 0x00000010)),
                 ];
 
             default:
@@ -272,7 +272,7 @@ class pwg_image
     public static function get_rotation_angle(
         string $source_filepath
     ): int|null {
-        list($width, $height, $type) = getimagesize($source_filepath);
+        [$width, $height, $type] = getimagesize($source_filepath);
         if ($type != IMAGETYPE_JPEG) {
             return null;
         }
@@ -285,7 +285,7 @@ class pwg_image
 
         $exif = @exif_read_data($source_filepath);
 
-        if (isset($exif['Orientation']) and preg_match('/^\s*(\d)/', (string) $exif['Orientation'], $matches)) {
+        if (isset($exif['Orientation']) && preg_match('/^\s*(\d)/', (string) $exif['Orientation'], $matches)) {
             $orientation = $matches[1];
             if (in_array($orientation, [3, 4])) {
                 $rotation = 180;
@@ -302,25 +302,25 @@ class pwg_image
     public static function get_rotation_code_from_angle(
         int|null $rotation_angle
     ): int {
-        switch ($rotation_angle) {
-            case 0:   return 0;
-            case 90:  return 1;
-            case 180: return 2;
-            case 270: return 3;
-            default: return 0;
-        }
+        return match ($rotation_angle) {
+            0 => 0,
+            90 => 1,
+            180 => 2,
+            270 => 3,
+            default => 0,
+        };
     }
 
     public static function get_rotation_angle_from_code(
         string $rotation_code
     ): int {
-        switch ($rotation_code % 4) {
-            case 0: return 0;
-            case 1: return 90;
-            case 2: return 180;
-            case 3: return 270;
-            default: return 0;
-        }
+        return match ($rotation_code % 4) {
+            0 => 0,
+            1 => 90,
+            2 => 180,
+            3 => 270,
+            default => 0,
+        };
     }
 
     /**
@@ -365,7 +365,7 @@ class pwg_image
         }
 
         // Choose image library
-        switch (strtolower($library)) {
+        switch (strtolower((string) $library)) {
             case 'auto':
             case 'vips':
                 if (self::is_vips()) {
@@ -378,6 +378,7 @@ class pwg_image
                     return self::get_library('auto', $extension);
                 }
         }
+
         return false;
     }
 
@@ -386,6 +387,7 @@ class pwg_image
         if (method_exists($this->image, 'destroy')) {
             return $this->image->destroy();
         }
+
         return true;
     }
 
@@ -511,7 +513,7 @@ class image_vips implements imageInterface
     public function write(
         string $destination_filepath
     ): bool {
-        $dest = pathinfo((string) $destination_filepath);
+        $dest = pathinfo($destination_filepath);
         $this->image->writeToFile(realpath($dest['dirname']) . '/' . $dest['basename']);
         return true;
     }

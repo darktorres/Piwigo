@@ -12,16 +12,14 @@ declare(strict_types=1);
 // provides data for site synchronization from the local file system
 class LocalSiteReader
 {
-    public string $site_url;
-
     public function __construct(
-        string $url
+        public string $site_url
     ) {
-        $this->site_url = $url;
         global $conf;
         if (! isset($conf['flip_file_ext'])) {
             $conf['flip_file_ext'] = array_flip($conf['file_ext']);
         }
+
         if (! isset($conf['flip_picture_ext'])) {
             $conf['flip_picture_ext'] = array_flip($conf['picture_ext']);
         }
@@ -55,8 +53,7 @@ class LocalSiteReader
     public function get_full_directories(
         string $basedir
     ): array {
-        $fs_fulldirs = get_fs_directories($basedir);
-        return $fs_fulldirs;
+        return get_fs_directories($basedir);
     }
 
     /**
@@ -74,7 +71,7 @@ class LocalSiteReader
         $fs = [];
         if (is_dir($path) && $contents = opendir($path)) {
             while (($node = readdir($contents)) !== false) {
-                if ($node == '.' or $node == '..') {
+                if ($node === '.' || $node === '..') {
                     continue;
                 }
 
@@ -96,22 +93,23 @@ class LocalSiteReader
                             $fs[$path . '/' . $node]['formats'] = $this->get_formats($path, $filename_wo_ext);
                         }
                     }
-                } elseif (is_dir($path . '/' . $node)
-                         and $node != 'pwg_high'
-                         and $node != 'pwg_representative'
-                         and $node != 'pwg_format'
-                         and $node != 'thumbnail') {
+                } elseif (is_dir($path . '/' . $node) && $node !== 'pwg_high' && $node !== 'pwg_representative' && $node !== 'pwg_format' && $node !== 'thumbnail') {
                     $subdirs[] = $node;
                 }
-            } //end while readdir
+            }
+
+            //end while readdir
             closedir($contents);
 
             foreach ($subdirs as $subdir) {
                 $tmp_fs = $this->get_elements($path . '/' . $subdir);
                 $fs = array_merge($fs, $tmp_fs);
             }
+
             ksort($fs);
-        } //end if is_dir
+        }
+
+        //end if is_dir
         return $fs;
     }
 
@@ -169,6 +167,7 @@ class LocalSiteReader
                 return $ext;
             }
         }
+
         return null;
     }
 
