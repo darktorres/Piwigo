@@ -68,7 +68,7 @@
 
 {combine_script id='jquery.confirm' load='footer' require='jquery' path='node_modules/jquery-confirm/js/jquery-confirm.js'}
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10} {* order 10 is required, see issue 1080 *}
-{combine_css path="themes/default/vendor/fontello/css/gallery-icon.css" order=-10}
+{combine_css path="themes/default/fontello/css/gallery-icon.css" order=-10}
 
 <form class="filter" method="post" name="filter" action="">
   <fieldset class="history-filter">
