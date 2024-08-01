@@ -46,7 +46,7 @@ function get_local_dir(
         $uppercats = $row['uppercats'];
     }
 
-    $upper_array = explode(',', $uppercats);
+    $upper_array = explode(',', (string) $uppercats);
 
     $database_dirs = [];
     $query = "SELECT id, dir FROM categories WHERE id IN ({$uppercats});";
@@ -54,6 +54,7 @@ function get_local_dir(
     while ($row = pwg_db_fetch_assoc($result)) {
         $database_dirs[$row['id']] = $row['dir'];
     }
+
     foreach ($upper_array as $id) {
         $local_dir .= $database_dirs[$id] . '/';
     }
@@ -75,15 +76,14 @@ function get_site_url(
 
 function get_min_local_dir($local_dir)
 {
-    $full_dir = explode('/', $local_dir);
+    $full_dir = explode('/', (string) $local_dir);
     if (count($full_dir) <= 3) {
         return $local_dir;
     }
 
     $start = $full_dir[0] . '/' . $full_dir[1];
     $end = end($full_dir);
-    $concat = $start . '/&hellip;/' . $end;
-    return $concat;
+    return $start . '/&hellip;/' . $end;
 
 }
 
@@ -112,11 +112,11 @@ foreach (['comment', 'dir', 'site_id', 'id_uppercat'] as $nullable) {
     }
 }
 
-$category['is_virtual'] = empty($category['dir']) ? true : false;
+$category['is_virtual'] = empty($category['dir']);
 
 $query = "SELECT DISTINCT category_id FROM image_category WHERE category_id = {$_GET['cat_id']} LIMIT 1";
 $result = pwg_query($query);
-$category['has_images'] = pwg_db_num_rows($result) > 0 ? true : false;
+$category['has_images'] = pwg_db_num_rows($result) > 0;
 
 // number of sub-categories
 $subcat_ids = get_subcat_ids([$category['id']]);
@@ -130,7 +130,7 @@ $navigation = get_cat_display_name_cache(
 );
 
 // Parent navigation path
-$uppercats_array = explode(',', $category['uppercats']);
+$uppercats_array = explode(',', (string) $category['uppercats']);
 if (count($uppercats_array) > 1) {
     array_pop($uppercats_array);
     $parent_navigation = get_cat_display_name_cache(
@@ -157,12 +157,12 @@ $page['warnings'][] = l10n('This album is currently locked, visible only to admi
 
 $template->assign(
     [
-        'CATEGORIES_NAV' => preg_replace('# {2,}#', ' ', preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $navigation)),
-        'CATEGORIES_PARENT_NAV' => preg_replace('# {2,}#', ' ', preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $parent_navigation)),
-        'PARENT_CAT_ID' => ! empty($category['id_uppercat']) ? $category['id_uppercat'] : 0,
+        'CATEGORIES_NAV' => preg_replace('# {2,}#', ' ', (string) preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $navigation)),
+        'CATEGORIES_PARENT_NAV' => preg_replace('# {2,}#', ' ', (string) preg_replace("#(\r\n|\n\r|\n|\r)#", ' ', $parent_navigation)),
+        'PARENT_CAT_ID' => empty($category['id_uppercat']) ? 0 : $category['id_uppercat'],
         'CAT_ID' => $category['id'],
-        'CAT_NAME' => @htmlspecialchars($category['name']),
-        'CAT_COMMENT' => @htmlspecialchars($category['comment']),
+        'CAT_NAME' => @htmlspecialchars((string) $category['name']),
+        'CAT_COMMENT' => @htmlspecialchars((string) $category['comment']),
         'IS_VISIBLE' => boolean_to_string($category['visible']),
 
         'U_DELETE' => $base_url . 'albums',
@@ -193,7 +193,7 @@ if ($category['has_images']) {
     );
 
     $query = "SELECT COUNT(image_id), MIN(DATE(date_available)), MAX(DATE(date_available)) FROM images JOIN image_category ON image_id = id WHERE category_id = {$category['id']};";
-    list($image_count, $min_date, $max_date) = pwg_db_fetch_row(pwg_query($query));
+    [$image_count, $min_date, $max_date] = pwg_db_fetch_row(pwg_query($query));
 
     if ($min_date == $max_date) {
         $info_title = l10n(
@@ -211,6 +211,7 @@ if ($category['has_images']) {
     }
 
 }
+
 $info_photos = l10n('%d photos', $image_count);
 
 $template->assign(
@@ -231,7 +232,7 @@ $category['nb_images_recursive'] = count($image_ids_recursive);
 $query = "SELECT occured_on FROM activity WHERE object_id = {$category['id']} AND object = 'album' AND action = 'add';";
 $result = query2array($query);
 
-if (count($result) > 0) {
+if ($result !== []) {
     $template->assign(
         [
             'INFO_CREATION_SINCE' => time_since($result[0]['occured_on'], 'day', $format = null, $with_text = true, $with_week = true, $only_last_unit = true),
@@ -284,7 +285,7 @@ if (! $category['is_virtual']) {
             'CAT_FULL_DIR' => $category_full_dir,
         ]
     );
-    $template->assign('CAT_DIR_NAME', basename($category_full_dir));
+    $template->assign('CAT_DIR_NAME', basename((string) $category_full_dir));
     $template->assign('CAT_MIN_DIR', get_min_local_dir($category_full_dir));
 
     if ($conf['enable_synchronization']) {
@@ -297,7 +298,7 @@ if (! $category['is_virtual']) {
 }
 
 // representant management
-if ($category['has_images'] or ! empty($category['representative_picture_id'])) {
+if ($category['has_images'] || ! empty($category['representative_picture_id'])) {
     $tpl_representant = [];
 
     // picture to display : the identified representant or the generic random
@@ -307,17 +308,14 @@ if ($category['has_images'] or ! empty($category['representative_picture_id'])) 
     }
 
     // can the admin choose to set a new random representant ?
-    $tpl_representant['ALLOW_SET_RANDOM'] = ($category['has_images'] ? true : false);
+    $tpl_representant['ALLOW_SET_RANDOM'] = ((bool) $category['has_images']);
 
     // can the admin delete the current representant ?
     if (
-        ($category['has_images']
-         and $conf['allow_random_representative'])
-        or
-        (! $category['has_images']
-         and ! empty($category['representative_picture_id']))) {
+        $category['has_images'] && $conf['allow_random_representative'] || ! $category['has_images'] && ! empty($category['representative_picture_id'])) {
         $tpl_representant['ALLOW_DELETE'] = true;
     }
+
     $template->assign('representant', $tpl_representant);
 }
 

@@ -24,12 +24,13 @@ if (isset($_GET['batch'])) {
     pwg_query($query);
 
     $inserts = [];
-    foreach (explode(',', $_GET['batch']) as $image_id) {
+    foreach (explode(',', (string) $_GET['batch']) as $image_id) {
         $inserts[] = [
             'user_id' => $user['id'],
             'element_id' => $image_id,
         ];
     }
+
     mass_inserts(
         'caddie',
         array_keys($inserts[0]),
@@ -41,17 +42,17 @@ if (isset($_GET['batch'])) {
 
 if (userprefs_get_param('promote-mobile-apps', true)) {
     $query = 'SELECT registration_date FROM user_infos WHERE registration_date IS NOT NULL ORDER BY user_id ASC LIMIT 1;';
-    list($register_date) = pwg_db_fetch_row(pwg_query($query));
+    [$register_date] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM categories;';
-    list($nb_cats) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_cats] = pwg_db_fetch_row(pwg_query($query));
 
     $query = 'SELECT COUNT(*) FROM images;';
-    list($nb_images) = pwg_db_fetch_row(pwg_query($query));
+    [$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
     $uagent_obj = new uagent_info();
     // To see the mobile app promote, the account must have 2 weeks ancient, 3 albums created and 30 photos uploaded
-    $template->assign('PROMOTE_MOBILE_APPS', (! $uagent_obj->DetectIos() and strtotime($register_date) < strtotime('2 weeks ago') and $nb_cats >= 3 and $nb_images >= 30));
+    $template->assign('PROMOTE_MOBILE_APPS', (! $uagent_obj->DetectIos() && strtotime((string) $register_date) < strtotime('2 weeks ago') && $nb_cats >= 3 && $nb_images >= 30));
 } else {
     $template->assign('PROMOTE_MOBILE_APPS', false);
 }
@@ -81,7 +82,7 @@ if ($display_formats && $_GET['formats']) {
         $query = "SELECT * FROM image_format WHERE image_id = {$formats_original_info['id']};";
         $formats = query2array($query);
 
-        if (! empty($formats)) {
+        if ($formats !== []) {
             $format_strings = [];
 
             foreach ($formats as $format) {
@@ -91,7 +92,7 @@ if ($display_formats && $_GET['formats']) {
             $formats_original_info['formats'] = l10n('Formats: %s', implode(', ', $format_strings));
         }
 
-        $extTab = explode('.', $formats_original_info['file']);
+        $extTab = explode('.', (string) $formats_original_info['file']);
 
         $formats_original_info['ext'] = l10n('%s file type', strtoupper(end($extTab)));
 
@@ -99,7 +100,7 @@ if ($display_formats && $_GET['formats']) {
 
         $have_formats_original = true;
     } else {
-        $page['errors'][] = l10n('The original picture selected dosen\'t exists.');
+        $page['errors'][] = l10n("The original picture selected dosen't exists.");
     }
 
 }

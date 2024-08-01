@@ -19,15 +19,14 @@ $template->set_filenames([
 trigger_notify('loc_begin_page_header');
 
 $show_mobile_app_banner = conf_get_param('show_mobile_app_banner_in_gallery', false);
-if (defined('IN_ADMIN') and IN_ADMIN) {
+if (defined('IN_ADMIN') && IN_ADMIN) {
     $show_mobile_app_banner = conf_get_param('show_mobile_app_banner_in_admin', true);
 }
 
 $template->assign(
     [
         'GALLERY_TITLE' =>
-          isset($page['gallery_title']) ?
-            $page['gallery_title'] : $conf['gallery_title'],
+          $page['gallery_title'] ?? $conf['gallery_title'],
 
         'PAGE_BANNER' =>
           trigger_change(
@@ -35,16 +34,15 @@ $template->assign(
               str_replace(
                   '%gallery_title%',
                   $conf['gallery_title'],
-                  isset($page['page_banner']) ? $page['page_banner'] : $conf['page_banner']
+                  $page['page_banner'] ?? $conf['page_banner']
               )
           ),
 
         'BODY_ID' =>
-          isset($page['body_id']) ?
-            $page['body_id'] : '',
+          $page['body_id'] ?? '',
 
         'CONTENT_ENCODING' => 'utf-8',
-        'PAGE_TITLE' => strip_tags($title),
+        'PAGE_TITLE' => strip_tags((string) $title),
 
         'U_HOME' => get_gallery_home_url(),
 
@@ -77,13 +75,13 @@ if (! empty($page['meta_robots'])) {
           . '">'
     );
 }
+
 if (! isset($page['meta_robots']['noindex'])) {
     $template->assign('meta_ref', 1);
 }
 
 // refresh
-if (isset($refresh) and intval($refresh) >= 0
-    and isset($url_link)) {
+if (isset($refresh) && intval($refresh) >= 0 && isset($url_link)) {
     $template->assign(
         [
             'page_refresh' => [

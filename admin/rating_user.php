@@ -9,7 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
+defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 $tabsheet = new tabsheet();
@@ -38,7 +38,7 @@ $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     $users_by_id[(int) $row['id']] = [
         'name' => $row['name'],
-        'anon' => is_autorize_status(ACCESS_CLASSIC, $row['status']) ? false : true,
+        'anon' => ! is_autorize_status(ACCESS_CLASSIC, $row['status']),
     ];
 }
 
@@ -61,12 +61,10 @@ while ($row = pwg_db_fetch_assoc($result)) {
             'anon' => false,
         ];
     }
+
     $usr = $users_by_id[$row['user_id']];
-    if ($usr['anon']) {
-        $user_key = $usr['name'] . '(' . $row['anonymous_id'] . ')';
-    } else {
-        $user_key = $usr['name'];
-    }
+    $user_key = $usr['anon'] ? $usr['name'] . '(' . $row['anonymous_id'] . ')' : $usr['name'];
+
     $rating = &$by_user_ratings[$user_key];
     if ($rating === null) {
         $rating = $by_user_rating_model;
@@ -87,7 +85,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 
 // get image tn urls
 $image_urls = [];
-if (count($image_ids) > 0) {
+if ($image_ids !== []) {
     $image_ids_ = implode(',', array_keys($image_ids));
     $query = "SELECT id, name, file, path, representative_ext, level FROM images WHERE id IN ({$image_ids_})";
     $result = pwg_query($query);
@@ -140,7 +138,7 @@ foreach ($by_user_ratings as $id => &$rating) {
     }
 
     $consensus_dev /= $c;
-    if ($consensus_dev_top_count) {
+    if ($consensus_dev_top_count !== 0) {
         $consensus_dev_top /= $consensus_dev_top_count;
     }
 
@@ -151,9 +149,10 @@ foreach ($by_user_ratings as $id => &$rating) {
         'avg' => $s / $c,
         'cv' => $s == 0 ? -1 : sqrt($var) / ($s / $c), // http://en.wikipedia.org/wiki/Coefficient_of_variation
         'cd' => $consensus_dev,
-        'cdtop' => $consensus_dev_top_count ? $consensus_dev_top : '',
+        'cdtop' => $consensus_dev_top_count !== 0 ? $consensus_dev_top : '',
     ];
 }
+
 unset($rating);
 
 // filter
@@ -199,11 +198,11 @@ function last_rate_compare(
     array $a,
     array $b
 ): int {
-    return -strcmp($a['last_date'], $b['last_date']);
+    return -strcmp((string) $a['last_date'], (string) $b['last_date']);
 }
 
 $order_by_index = 4;
-if (isset($_GET['order_by']) and is_numeric($_GET['order_by'])) {
+if (isset($_GET['order_by']) && is_numeric($_GET['order_by'])) {
     $order_by_index = $_GET['order_by'];
 }
 
@@ -214,19 +213,21 @@ $available_order_by = [
     [l10n('Consensus deviation'), 'consensus_dev_compare'],
     [l10n('Last'), 'last_rate_compare'],
 ];
+$counter = count($available_order_by);
 
-for ($i = 0; $i < count($available_order_by); $i++) {
+for ($i = 0; $i < $counter; $i++) {
     $template->append(
         'order_by_options',
         $available_order_by[$i][0]
     );
 }
+
 $template->assign('order_by_options_selected', [$order_by_index]);
 
 $x = uasort($by_user_ratings, $available_order_by[$order_by_index][1]);
 
 $query = 'SELECT COUNT(*) FROM rate;';
-list($nb_elements) = pwg_db_fetch_row(pwg_query($query));
+[$nb_elements] = pwg_db_fetch_row(pwg_query($query));
 
 $template->assign([
     'F_ACTION' => get_root_url() . 'admin.php',

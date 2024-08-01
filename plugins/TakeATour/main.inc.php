@@ -16,12 +16,12 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 /** Tour sended via $_POST or $_GET**/
-if (isset($_REQUEST['submited_tour_path']) and defined('IN_ADMIN') and IN_ADMIN) {
+if (isset($_REQUEST['submited_tour_path']) && defined('IN_ADMIN') && IN_ADMIN) {
     check_pwg_token();
     pwg_set_session_var('tour_to_launch', $_REQUEST['submited_tour_path']);
     global $TAT_restart;
     $TAT_restart = true;
-} elseif (isset($_GET['tour_ended']) and defined('IN_ADMIN') and IN_ADMIN) {
+} elseif (isset($_GET['tour_ended']) && defined('IN_ADMIN') && IN_ADMIN) {
     pwg_unset_session_var('tour_to_launch');
 }
 
@@ -31,7 +31,7 @@ if (isset($_REQUEST['submited_tour_path']) and defined('IN_ADMIN') and IN_ADMIN)
 $version_=str_replace('.','_',PHPWG_VERSION);*/
 $version_ = '2_8_0';
 /***/
-if (pwg_get_session_var('tour_to_launch') != 'tours/' . $version_ and isset($_GET['page']) and $_GET['page'] == 'plugin-TakeATour') {
+if (pwg_get_session_var('tour_to_launch') != 'tours/' . $version_ && isset($_GET['page']) && $_GET['page'] == 'plugin-TakeATour') {
     pwg_unset_session_var('tour_to_launch');
 } elseif (pwg_get_session_var('tour_to_launch')) {
     add_event_handler('init', TAT_tour_setup(...));
@@ -49,7 +49,7 @@ function TAT_tour_setup(): void
         'force_fallback' => 'en_UK',
     ]);
 
-    list(, $tour_name) = explode('/', $tour_to_launch);
+    [, $tour_name] = explode('/', (string) $tour_to_launch);
     load_language('tour_' . $tour_name . '.lang', PHPWG_PLUGINS_PATH . 'TakeATour/', [
         'force_fallback' => 'en_UK',
     ]);
@@ -66,11 +66,12 @@ function TAT_tour_setup(): void
     $template->assign('ADMIN_THEME', $conf['admin_theme']);
     $template->parse('TAT_js_css');
 
-    if (isset($TAT_restart) and $TAT_restart) {
+    if (isset($TAT_restart) && $TAT_restart) {
         $TAT_restart = false;
         $template->assign('TAT_restart', true);
     }
-    $tat_path = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME']);
+
+    $tat_path = str_replace(basename((string) $_SERVER['SCRIPT_NAME']), '', $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME']);
     $template->assign('TAT_path', $tat_path);
     $template->assign('ABS_U_ADMIN', get_absolute_root_url()); // absolute one due to public pages and $conf['question_mark_in_urls'] = false+$conf['php_extension_in_urls'] = false;
 
@@ -93,6 +94,7 @@ function TAT_help(): void
     load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/');
     $template->set_prefilter('help', TAT_help_prefilter(...));
 }
+
 function TAT_help_prefilter(
     string $content
 ): array|string {
@@ -121,6 +123,7 @@ function TAT_no_photo_yet(): void
         ]
     );
 }
+
 function TAT_no_photo_yet_prefilter(
     string $content
 ): array|string {
