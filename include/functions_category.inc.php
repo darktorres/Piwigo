@@ -102,9 +102,9 @@ function get_categories_menu(): array
                     'get_categories_menu'
                 ),
                 'TITLE' => get_display_images_count(
-                    $row['nb_images'],
-                    $row['count_images'],
-                    $row['count_categories'],
+                    (int) $row['nb_images'],
+                    (int) $row['count_images'],
+                    (int) $row['count_categories'],
                     false,
                     ' / '
                 ),
