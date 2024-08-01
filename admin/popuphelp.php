@@ -23,7 +23,7 @@ include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! isset($_GET['output']) or $_GET['output'] != 'content_only') {
+if (! isset($_GET['output']) || $_GET['output'] != 'content_only') {
     // Note on 2023-09-28 : calling popuphelp.php without output=content_only no longer occurs in Piwigo core.
     $page['body_id'] = 'thePopuphelpPage';
     $title = l10n('Piwigo Help');
@@ -48,8 +48,7 @@ if (! isset($_GET['output']) or $_GET['output'] != 'content_only') {
 }
 
 if (
-    isset($_GET['page'])
-    and preg_match('/^[a-z_]*$/', $_GET['page'])
+    isset($_GET['page']) && preg_match('/^[a-z_]*$/', (string) $_GET['page'])
 ) {
     $help_content = load_language(
         'help/' . $_GET['page'] . '.html',
@@ -77,7 +76,7 @@ $template->assign(
     ]
 );
 
-if (isset($_GET['output']) and $_GET['output'] == 'content_only') {
+if (isset($_GET['output']) && $_GET['output'] == 'content_only') {
     echo $help_content;
     exit();
 }

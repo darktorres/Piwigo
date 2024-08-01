@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-if (! $conf['enable_extensions_install'] and ! $conf['enable_core_update']) {
+if (! $conf['enable_extensions_install'] && ! $conf['enable_core_update']) {
     die('update system is disabled');
 }
 
@@ -21,11 +21,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 
 $my_base_url = get_root_url() . 'admin.php?page=updates';
 
-if (isset($_GET['tab'])) {
-    $page['tab'] = $_GET['tab'];
-} else {
-    $page['tab'] = 'pwg';
-}
+$page['tab'] = $_GET['tab'] ?? 'pwg';
 
 $tabsheet = new tabsheet();
 $tabsheet->set_id('updates');
