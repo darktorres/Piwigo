@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
   $(".linked-albums.add-item").on("click", function () {
     linked_albums_open();
     set_up_popin();
@@ -8,9 +7,9 @@ $(document).ready(function () {
   $(".limitReached").html(str_no_search_in_progress);
   $(".search-cancel-linked-album").hide();
   $(".linkedAlbumPopInContainer .searching").hide();
-  $("#linkedAlbumSearch .search-input").on('input', function () {
+  $("#linkedAlbumSearch .search-input").on("input", function () {
     if ($(this).val() != 0) {
-      $("#linkedAlbumSearch .search-cancel-linked-album").show()
+      $("#linkedAlbumSearch .search-cancel-linked-album").show();
     } else {
       $("#linkedAlbumSearch .search-cancel-linked-album").hide();
     }
@@ -22,56 +21,67 @@ $(document).ready(function () {
       $(".limitReached").html(str_no_search_in_progress);
       $("#searchResult").empty();
     }
-  })
+  });
 
   $(".search-cancel-linked-album").on("click", function () {
     $("#linkedAlbumSearch .search-input").val("");
     $("#linkedAlbumSearch .search-input").trigger("input");
-  })
+  });
 
   $(".related-categories-container .breadcrumb-item .remove-item").on("click", function () {
     remove_related_category($(this).attr("id"));
-  })
+  });
   // Unsaved settings message before leave this page
   let form_unsaved = false;
   let user_interacted = false;
-  $('#pictureModify').find(':input').on('focus', function () {
-    user_interacted = true;
-  });
-  $('#pictureModify').find(':input').on('change', function () {
-    if (user_interacted) {
-      form_unsaved = true;
-      console.log($(this)[0].name, $(this));
-    }
-  });
-  $(window).on('beforeunload', function () {
+  $("#pictureModify")
+    .find(":input")
+    .on("focus", function () {
+      user_interacted = true;
+    });
+  $("#pictureModify")
+    .find(":input")
+    .on("change", function () {
+      if (user_interacted) {
+        form_unsaved = true;
+        console.log($(this)[0].name, $(this));
+      }
+    });
+  $(window).on("beforeunload", function () {
     if (form_unsaved) {
-      return 'Somes changes are not registered';
+      return "Somes changes are not registered";
     }
   });
-  $('#pictureModify').on('submit', function () {
+  $("#pictureModify").on("submit", function () {
     form_unsaved = false;
   });
-})
+});
 
 function fill_results(cats) {
   $("#searchResult").empty();
-  cats.forEach(cat => {
-    $("#searchResult").append(
-    "<div class='search-result-item' id="+ cat.id + ">" +
-      "<span class='search-result-path'>" + cat.fullname +"</span><span id="+ cat.id + " class='icon-plus-circled item-add'></span>" +
-    "</div>"
-    );
+  cats.forEach((cat) => {
+    $("#searchResult").append(`
+      <div class='search-result-item' id="${cat.id}">
+        <span class='search-result-path'>${cat.fullname}</span>
+        <span id="${cat.id}" class='icon-plus-circled item-add'></span>
+      </div>
+    `);
 
     if (related_categories_ids.includes(cat.id)) {
-      $(".search-result-item #"+ cat.id +".item-add").addClass("notClickable").attr("title", str_already_in_related_cats).on("click", function (event) {
-        event.preventDefault();
-      });
-      $(".search-result-item").addClass("notClickable").attr("title", str_already_in_related_cats).on("click", function (event) {
-        event.preventDefault();
-      });
+      $(".search-result-item #" + cat.id + ".item-add")
+        .addClass("notClickable")
+        .attr("title", str_already_in_related_cats)
+        .on("click", function (event) {
+          event.preventDefault();
+        });
+      $(".search-result-item")
+        .addClass("notClickable")
+        .attr("title", str_already_in_related_cats)
+        .on("click", function (event) {
+          event.preventDefault();
+        });
     } else {
-      $(".search-result-item#"+ cat.id).on("click", function () {
+      $(".search-result-item#" + cat.id).on("click", function () {
         add_related_category(cat.id, cat.full_name_with_admin_links);
       });
     }
@@ -79,9 +89,11 @@ function fill_results(cats) {
 }
 
 function remove_related_category(cat_id) {
-  $(".invisible-related-categories-select option[value="+ cat_id +"]").remove();
-  $(".invisible-related-categories-select").trigger('change');
-  $("#" + cat_id).parent().remove();
+  $(".invisible-related-categories-select option[value=" + cat_id + "]").remove();
+  $(".invisible-related-categories-select").trigger("change");
+  $("#" + cat_id)
+    .parent()
+    .remove();
 
   cat_to_remove_index = related_categories_ids.indexOf(cat_id);
   if (cat_to_remove_index > -1) {
@@ -93,19 +105,22 @@ function remove_related_category(cat_id) {
 
 function add_related_category(cat_id, cat_link_path) {
   if (!related_categories_ids.includes(cat_id)) {
-    $(".related-categories-container").append(
-      "<div class='breadcrumb-item'>" +
-        "<span class='link-path'>" + cat_link_path + "</span><span id="+ cat_id + " class='icon-cancel-circled remove-item'></span>" +
-      "</div>"
-    );
+    $(".related-categories-container").append(`
+      <div class='breadcrumb-item'>
+        <span class='link-path'>${cat_link_path}</span>
+        <span id="${cat_id}" class='icon-cancel-circled remove-item'></span>
+      </div>
+    `);
 
     $(".search-result-item #" + cat_id).addClass("notClickable");
     related_categories_ids.push(cat_id);
-    $(".invisible-related-categories-select").append("<option selected value="+ cat_id +"></option>").trigger('change');
+    $(".invisible-related-categories-select")
+      .append("<option selected value=" + cat_id + "></option>")
+      .trigger("change");
 
-    $("#"+ cat_id).on("click", function () {
-      remove_related_category($(this).attr("id"))
-    })
+    $("#" + cat_id).on("click", function () {
+      remove_related_category($(this).attr("id"));
+    });
 
     linked_albums_close();
   }
@@ -114,7 +129,6 @@ function add_related_category(cat_id, cat_link_path) {
 }
 
 function check_related_categories() {
-
   $(".linked-albums-badge").html(related_categories_ids.length);
 
   if (related_categories_ids.length == 0) {

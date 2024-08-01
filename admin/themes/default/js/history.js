@@ -1,5 +1,4 @@
 $(document).ready(() => {
-
   activateLineOptions();
   checkFilters();
 
@@ -19,26 +18,26 @@ $(document).ready(() => {
     if ($(".elem-type-select option:selected").attr("value") == "visited") {
       current_param.types = {
         0: "none",
-        1: "picture"
-      }
-    } else if ($(".elem-type-select option:selected").attr("value") == "downloaded"){
+        1: "picture",
+      };
+    } else if ($(".elem-type-select option:selected").attr("value") == "downloaded") {
       current_param.types = {
         0: "high",
-        1: "other"
-      }
+        1: "other",
+      };
     } else {
       current_param.types = {
         0: "none",
         1: "picture",
         2: "high",
-        3: "other"
-      }
+        3: "other",
+      };
     }
 
-    fillHistoryResult(current_param)
+    fillHistoryResult(current_param);
   });
 
-  $('.date-start').on("change", function () {
+  $(".date-start").on("change", function () {
     if (current_param.start != $('.date-start input[name="start"]').attr("value")) {
       current_param.start = $('.date-start input[name="start"]').attr("value");
       current_param.pageNumber = 0;
@@ -46,7 +45,7 @@ $(document).ready(() => {
     }
   });
 
-  $('.date-end').on("change", function () {
+  $(".date-end").on("change", function () {
     const newValue = $('.date-end input[name="end"]').attr("value");
     if (current_param.end != newValue) {
       current_param.end = $('.date-end input[name="end"]').attr("value");
@@ -54,7 +53,7 @@ $(document).ready(() => {
       // The datepicker first fills the end-date with '1899-12-31',
       // which triggers an unnecessary ajax request
       // when you come to the history search page from a photo.
-      if (newValue !== '1899-12-31') {
+      if (newValue !== "1899-12-31") {
         fillHistoryResult(current_param);
       }
     }
@@ -63,7 +62,6 @@ $(document).ready(() => {
   $("#start_unset").on("click", function () {
     // console.log("here" + current_param.start);
     if (!current_param.start == "") {
-      
       current_param.pageNumber = 0;
       current_param.start = "";
       fillHistoryResult(current_param);
@@ -78,40 +76,41 @@ $(document).ready(() => {
     }
   });
 
-
-  $('.pagination-arrow.rigth').on('click', () => {
+  $(".pagination-arrow.rigth").on("click", () => {
     current_param.pageNumber += 1;
     fillHistoryResult(current_param);
   });
-  
-  $('.pagination-arrow.left').on('click', () => {
+
+  $(".pagination-arrow.left").on("click", () => {
     current_param.pageNumber -= 1;
     fillHistoryResult(current_param);
   });
 
   $(".refresh-results").on("click", function () {
     fillHistoryResult(current_param);
-  })
-})
+  });
+});
 
 function activateLineOptions() {
   $(".search-line").find(".img-option").hide();
 
   /* Display the option on the click on "..." */
-  $(".search-line").find(".toggle-img-option").on("click", function () {
-    $(this).find(".img-option").toggle();
-  })
+  $(".search-line")
+    .find(".toggle-img-option")
+    .on("click", function () {
+      $(this).find(".img-option").toggle();
+    });
 
   /* Hide img options and rename field on click on the screen */
 
   $(document).mouseup(function (e) {
     e.stopPropagation();
-    let option_is_clicked = false
+    let option_is_clicked = false;
     $(".img-option span").each(function () {
       if (!($(this).has(e.target).length === 0)) {
         option_is_clicked = true;
       }
-    })
+    });
     if (!option_is_clicked) {
       $(".search-line").find(".img-option").hide();
     }
@@ -126,18 +125,21 @@ function fillSummaryResult(summary) {
   $(".summary-users .summary-data").html(summary.USERS);
   $(".summary-guests .summary-data").html(summary.GUESTS);
 
-  if ((summary.GUESTS.split(" ")[0] != "0")) {
-    $(".summary-guests .summary-data").addClass("icon-plus-circled").on("click", function () {
-      if (current_param.user_id == "-1") {
-        current_param.user_id = guest_id;
-        addGuestFilter(str_guest);
-        fillHistoryResult(current_param);
-      }
-    }).hover(function () {
-      $(this).css({
-        cursor : "pointer"
+  if (summary.GUESTS.split(" ")[0] != "0") {
+    $(".summary-guests .summary-data")
+      .addClass("icon-plus-circled")
+      .on("click", function () {
+        if (current_param.user_id == "-1") {
+          current_param.user_id = guest_id;
+          addGuestFilter(str_guest);
+          fillHistoryResult(current_param);
+        }
       })
-    });
+      .hover(function () {
+        $(this).css({
+          cursor: "pointer",
+        });
+      });
 
     $(".summary-guests").show();
   } else {
@@ -148,10 +150,10 @@ function fillSummaryResult(summary) {
   var user_dot_title = "";
 
   // not sorted
-  summary.MEMBERS.forEach(keyval => {
+  summary.MEMBERS.forEach((keyval) => {
     for (const [key, value] of Object.entries(keyval)) {
       id_of[key] = value;
-      user_dot_title += key + ", ";
+      user_dot_title += `${key}, `;
     }
   });
   user_dot_title = user_dot_title.slice(0, -2);
@@ -167,14 +169,14 @@ function fillSummaryResult(summary) {
       new_user_item.removeClass("hide");
       new_user_item.find(".user-item-name").html(key);
       new_user_item.data("user-id", id_of[key]);
-  
+
       new_user_item.on("click", function () {
         if (current_param.user_id != id_of[key]) {
           current_param.user_id = $(this).data("user-id");
-          addUserFilter(key)
+          addUserFilter(key);
           fillHistoryResult(current_param);
         }
-      })
+      });
       $(".user-list").append(new_user_item);
       tmp++;
     } else {
@@ -209,7 +211,6 @@ function fillHistoryResult(ajaxParam) {
       $(".tab").empty();
     },
     success: function (raw_data) {
-      
       data = raw_data.result["lines"];
       imageDisplay = raw_data.result["params"].display_thumbnail;
       maxPage = raw_data.result["maxPage"];
@@ -217,14 +218,14 @@ function fillHistoryResult(ajaxParam) {
       // console.log(raw_data);
 
       //clear lines before refill
-      
+
       if (data.length > 0) {
         var id = 0;
-        data.forEach(line => {
-          lineConstructor(line, id, imageDisplay)
-          id++
+        data.forEach((line) => {
+          lineConstructor(line, id, imageDisplay);
+          id++;
         });
-  
+
         fillSummaryResult(summary);
         showResults(true);
         $(".noResults").hide();
@@ -232,39 +233,27 @@ function fillHistoryResult(ajaxParam) {
         showResults(false);
         $(".noResults").show();
       }
-
     },
     error: function (e) {
       console.log(e);
-    }
+    },
   }).done(() => {
     activateLineOptions();
     $(".loading").addClass("hide");
     updatePagination(maxPage);
-    $('.tiptip').tipTip({
+    $(".tiptip").tipTip({
       delay: 0,
       fadeIn: 200,
       fadeOut: 200,
-      edgeOffset: 3
+      edgeOffset: 3,
     });
-  })
+  });
 }
 
 function lineConstructor(line, id, imageDisplay) {
   let newLine = $("#-1").clone();
 
-  let sections = [
-    "categories",
-    "tags",
-    "best_rated",
-    "memories-1-year-ago",
-    "list",
-    "search",
-    "most_visited",
-    "recent_pics",
-    "recent_cats",
-    "favorites"
-  ]
+  let sections = ["categories", "tags", "best_rated", "memories-1-year-ago", "list", "search", "most_visited", "recent_pics", "recent_cats", "favorites"];
 
   let icons = [
     "line-icon icon-folder-open icon-yellow",
@@ -276,7 +265,7 @@ function lineConstructor(line, id, imageDisplay) {
     "line-icon icon-fire icon-red",
     "line-icon icon-clock icon-yellow",
     "line-icon icon-clock icon-yellow",
-    "line-icon icon-heart icon-red"
+    "line-icon icon-heart icon-red",
   ];
 
   newLine.removeClass("hide");
@@ -289,19 +278,19 @@ function lineConstructor(line, id, imageDisplay) {
   newLine.find(".date-day").html(line.DATE);
   newLine.find(".date-hour").html(line.TIME);
 
-  newLine.find(".user-name").html(line.USERNAME + '<i class="add-filter icon-plus-circled"></i>');
+  newLine.find(".user-name").html(`${line.USERNAME}<i class="add-filter icon-plus-circled"></i>`);
 
   newLine.find(".user-name").attr("id", line.USERID);
   if (current_param.user_id == "-1") {
-    newLine.find(".user-name").on("click", function ()  {
-      current_param.user_id = $(this).attr('id') + "";
+    newLine.find(".user-name").on("click", function () {
+      current_param.user_id = $(this).attr("id") + "";
       current_param.pageNumber = 0;
       addUserFilter($(this).html());
       fillHistoryResult(current_param);
-    })
+    });
   }
 
-  newLine.find(".user-ip").html(line.IP + '<i class="add-filter icon-plus-circled"></i>');
+  newLine.find(".user-ip").html(`${line.IP}<i class="add-filter icon-plus-circled"></i>`);
   newLine.find(".user-ip").data("ip", line.IP);
   if (current_param.ip == "") {
     newLine.find(".user-ip").on("click", function () {
@@ -309,7 +298,7 @@ function lineConstructor(line, id, imageDisplay) {
       current_param.pageNumber = 0;
       addIpFilter($(this).html());
       fillHistoryResult(current_param);
-    })
+    });
   }
 
   newLine.find(".add-img-as-filter").data("img-id", line.IMAGEID);
@@ -325,40 +314,41 @@ function lineConstructor(line, id, imageDisplay) {
   if (line.EDIT_IMAGE != "") {
     newLine.find(".edit-img").attr("href", line.EDIT_IMAGE);
   } else {
-    newLine.find(".edit-img")
+    newLine
+      .find(".edit-img")
       .attr("href", "#")
       .addClass("notClickable tiptip")
-      .attr('title', str_no_longer_exist_photo)
+      .attr("title", str_no_longer_exist_photo)
       .on("click", (e) => {
-      e.preventDefault();
-    });
+        e.preventDefault();
+      });
   }
 
   switch (line.SECTION) {
     case "tags":
-      if (line.TAGS.length > 1 && line.TAGS.length <= 2  ) {
-        newLine.find(".type-name").html(line.TAGS[0] +", "+ line.TAGS[1] + ", ...");
-        newLine.find(".type-id").html("#" + line.TAGIDS[0] +", "+ line.TAGIDS[1] + ", ...");
+      if (line.TAGS.length > 1 && line.TAGS.length <= 2) {
+        newLine.find(".type-name").html(`${line.TAGS[0]}, ${line.TAGS[1]}, ...`);
+        newLine.find(".type-id").html(`#${line.TAGIDS[0]}, ${line.TAGIDS[1]}, ...`);
       } else if (line.TAGS.length > 2) {
-        newLine.find(".type-name").html(line.TAGS[0] +", "+ line.TAGS[1] +", "+ line.TAGS[2]  + ", ...");
-        newLine.find(".type-id").html("#" + line.TAGIDS[0] +", "+ line.TAGIDS[1] +", "+ line.TAGIDS[2] + ", ...");
+        newLine.find(".type-name").html(`${line.TAGS[0]}, ${line.TAGS[1]}, ${line.TAGS[2]}, ...`);
+        newLine.find(".type-id").html(`#${line.TAGIDS[0]}, ${line.TAGIDS[1]}, ${line.TAGIDS[2]}, ...`);
       } else {
         newLine.find(".type-name").html(line.TAGS[0]);
-        newLine.find(".type-id").html("#" + line.TAGIDS[0]);
+        newLine.find(".type-id").html(`#${line.TAGIDS[0]}`);
       }
-      
+
       let detail_str = "";
-      line.TAGS.forEach(tag => {
-        detail_str += tag + ", ";
+      line.TAGS.forEach((tag) => {
+        detail_str += `${tag}, `;
       });
-      detail_str = detail_str.slice(0, -2)
+      detail_str = detail_str.slice(0, -2);
       newLine.find(".detail-item-1").html(detail_str);
-      newLine.find(".detail-item-1").attr("title", detail_str).removeClass("hide").addClass('icon-tags');;
+      newLine.find(".detail-item-1").attr("title", detail_str).removeClass("hide").addClass("icon-tags");
       break;
-    
+
     case "most_visited":
       newLine.find(".type-name").html(str_most_visited);
-      newLine.find(".detail-item-1").html(str_most_visited).addClass('icon-fire');
+      newLine.find(".detail-item-1").html(str_most_visited).addClass("icon-fire");
       newLine.find(".type-id").hide();
       break;
     case "best_rated":
@@ -368,7 +358,7 @@ function lineConstructor(line, id, imageDisplay) {
       break;
     case "list":
       newLine.find(".type-name").html(str_list);
-      newLine.find(".detail-item-1").html(str_list).addClass('icon-dice-solid');
+      newLine.find(".detail-item-1").html(str_list).addClass("icon-dice-solid");
       newLine.find(".type-id").hide();
       break;
     case "search":
@@ -376,84 +366,78 @@ function lineConstructor(line, id, imageDisplay) {
       // console.log('search n° : ', line.SEARCH_ID, ' ', line.SEARCH_DETAILS);
       const search_details = line.SEARCH_DETAILS;
       const search_icons = {
-        'allwords': 'gallery-icon-search',
-        'tags': 'gallery-icon-tag',
-        'date_posted': 'gallery-icon-calendar-plus',
-        'cat': 'gallery-icon-album',
-        'author': 'gallery-icon-user-edit',
-        'added_by': 'gallery-icon-user',
-        'filetypes': 'gallery-icon-file-image',
-      }
+        allwords: "gallery-icon-search",
+        tags: "gallery-icon-tag",
+        date_posted: "gallery-icon-calendar-plus",
+        cat: "gallery-icon-album",
+        author: "gallery-icon-user-edit",
+        added_by: "gallery-icon-user",
+        filetypes: "gallery-icon-file-image",
+      };
       newLine.find(".type-name").html(line.SECTION);
-      newLine.find(".type-id").html("#" + line.SEARCH_ID);
-      if (!line.SEARCH_ID)
-      {
+      newLine.find(".type-id").html(`#${line.SEARCH_ID}`);
+      if (!line.SEARCH_ID) {
         newLine.find(".type-id").hide();
       }
 
-      if (!search_details) 
-      {
+      if (!search_details) {
         newLine.find(".detail-item-1").hide();
-        break; 
+        break;
       }
       let active_search_details = {};
-      Object.keys(search_details).forEach(key => {
-          if (search_details[key] !== null) {
-            active_search_details[key] = search_details[key];
-          }
+      Object.keys(search_details).forEach((key) => {
+        if (search_details[key] !== null) {
+          active_search_details[key] = search_details[key];
+        }
       });
       let count_item = 1;
       let active_more = [];
       const active_items = Object.keys(active_search_details);
-      if (active_items.length > 0)
-      {
-        if (active_search_details.allwords)
-        {
-          newLine.find(".detail-item-" + count_item).html(active_search_details.allwords.join(' ')).addClass(search_icons.allwords + ' tiptip');
-          newLine.find(".detail-item-" + count_item).attr('title', '<b>' + str_search_details['allwords'] + ' :</b> ' + active_search_details.allwords.join(' '));
+      if (active_items.length > 0) {
+        if (active_search_details.allwords) {
+          newLine.find(`.detail-item-${count_item}`).html(active_search_details.allwords.join(" ")).addClass(`${search_icons.allwords} tiptip`);
+          newLine.find(`.detail-item-${count_item}`).attr("title", `<b>${str_search_details["allwords"]} :</b> ${active_search_details.allwords.join(" ")}`);
           count_item++;
-          active_more.push('allwords');
+          active_more.push("allwords");
         }
-        if (active_search_details.cat)
-        {
+        if (active_search_details.cat) {
           const array_cat = Object.values(active_search_details.cat);
-          const cat = array_cat.join(' + ');
-          let temp_div = $('<div>').html(cat);
+          const cat = array_cat.join(" + ");
+          let temp_div = $("<div>").html(cat);
           let text = temp_div.text().trim();
-          newLine.find(".detail-item-" + count_item).html(cat).addClass(search_icons.cat + ' tiptip');
-          newLine.find(".detail-item-"+ count_item).attr('title','<b>' + str_search_details['cat'] + ' :</b> ' + text).removeClass("hide");
+          newLine.find(`.detail-item-${count_item}`).html(cat).addClass(`${search_icons.cat} tiptip`);
+          newLine.find(`.detail-item-${count_item}`).attr("title", `<b>${str_search_details["cat"]} :</b> ${text}`).removeClass("hide");
           count_item++;
-          active_more.push('cat');
+          active_more.push("cat");
         }
-        if (count_item <= 2 && active_search_details.tags)
-        {
+        if (count_item <= 2 && active_search_details.tags) {
           const array_tags = Object.values(active_search_details.tags);
-          newLine.find(".detail-item-" + count_item).html(array_tags.join(' + ')).addClass(search_icons.tags + ' tiptip');
-          newLine.find(".detail-item-"+ count_item).attr('title', '<b>' + str_search_details['tags'] + ' :</b> ' + array_tags.join(' + ')).removeClass("hide");
+          newLine.find(`.detail-item-${count_item}`).html(array_tags.join(" + ")).addClass(`${search_icons.tags} tiptip`);
+          newLine
+            .find(`.detail-item-${count_item}`)
+            .attr("title", `<b>${str_search_details["tags"]} :</b> ${array_tags.join(" + ")}`)
+            .removeClass("hide");
           count_item++;
-          active_more.push('tags');
+          active_more.push("tags");
         }
-        if (count_item <= 2)
-        {
+        if (count_item <= 2) {
           let badge_to_add = active_items.length == 1 ? 1 : count_item == 1 ? 2 : 1;
           let badge_added = 0;
-          active_items.some(key => {
-            if (key !== 'allwords' && key !== 'cat' && key !== 'tags') {
+          active_items.some((key) => {
+            if (key !== "allwords" && key !== "cat" && key !== "tags") {
               let array_key;
-              if (Array.isArray(active_search_details[key]))
-              {
+              if (Array.isArray(active_search_details[key])) {
                 array_key = active_search_details[key];
-              }
-              else if (typeof active_search_details[key] === 'object')
-              {
+              } else if (typeof active_search_details[key] === "object") {
                 array_key = Object.values(active_search_details[key]);
-              }
-              else
-              {
+              } else {
                 array_key = [active_search_details[key]];
               }
-              newLine.find(".detail-item-" + count_item).html(array_key.join(' + ')).addClass(search_icons[key] + ' tiptip');
-              newLine.find(".detail-item-" + count_item).attr('title', '<b>' + str_search_details[key] + ' :</b> ' + array_key.join(' + ')).removeClass("hide");
+              newLine.find(`.detail-item-${count_item}`).html(array_key.join(" + ")).addClass(`${search_icons[key]} tiptip`);
+              newLine
+                .find(`.detail-item-${count_item}`)
+                .attr("title", `<b>${str_search_details[key]} :</b> ${array_key.join(" + ")}`)
+                .removeClass("hide");
               count_item++;
               badge_added++;
               active_more.push(key);
@@ -464,52 +448,51 @@ function lineConstructor(line, id, imageDisplay) {
             return false;
           });
         }
-      }
-      else
-      {
+      } else {
         newLine.find(".detail-item-1").hide();
       }
-      if (active_items.length >= 3) 
-      {
+      if (active_items.length >= 3) {
         let count_more = 0;
         let search_details_str = Object.entries(active_search_details)
-        .filter(([key]) => !active_more.includes(key))
+          .filter(([key]) => !active_more.includes(key))
           .map(([key, value]) => {
             let value_str;
-            if(Array.isArray(value)) {
-              value_str = value.join(' + ');
-            } else if (typeof value === 'object') {
-              value_str = Object.entries(value).map(([k, v]) => v).join(' + ');
+            if (Array.isArray(value)) {
+              value_str = value.join(" + ");
+            } else if (typeof value === "object") {
+              value_str = Object.entries(value)
+                .map(([k, v]) => v)
+                .join(" + ");
             } else {
               value_str = value;
             }
 
-            if (key == 'cat')
-            {
-              let temp_div = $('<div>').html(value_str);
+            if (key == "cat") {
+              let temp_div = $("<div>").html(value_str);
               let text = temp_div.text().trim();
               value_str = text;
             }
             count_more++;
             return `<b>${str_search_details[key]}</b> : ${value_str}`;
-          }).join(' <br />');
-        newLine.find(".detail-item-3").html(sprintf(str_and_more, count_more)).addClass('icon-info-circled-1 tiptip');
-        newLine.find(".detail-item-3").attr('title', search_details_str).removeClass('hide');
+          })
+          .join(" <br />");
+        newLine.find(".detail-item-3").html(sprintf(str_and_more, count_more)).addClass("icon-info-circled-1 tiptip");
+        newLine.find(".detail-item-3").attr("title", search_details_str).removeClass("hide");
       }
       break;
     case "favorites":
       newLine.find(".type-name").html(str_favorites);
-      newLine.find(".detail-item-1").html(str_favorites).addClass('icon-heart');
+      newLine.find(".detail-item-1").html(str_favorites).addClass("icon-heart");
       newLine.find(".type-id").hide();
       break;
     case "recent_cats":
       newLine.find(".type-name").html(str_recent_cats);
-      newLine.find(".detail-item-1").html(str_recent_cats).addClass('icon-clock');
+      newLine.find(".detail-item-1").html(str_recent_cats).addClass("icon-clock");
       newLine.find(".type-id").hide();
       break;
     case "recent_pics":
       newLine.find(".type-name").html(str_recent_pics);
-      newLine.find(".detail-item-1").html(str_recent_pics).addClass('icon-clock');
+      newLine.find(".detail-item-1").html(str_recent_pics).addClass("icon-clock");
       newLine.find(".type-id").hide();
       break;
     case "categories":
@@ -521,28 +504,28 @@ function lineConstructor(line, id, imageDisplay) {
       break;
     case "memories-1-year-ago":
       newLine.find(".type-name").html(str_memories);
-      newLine.find(".detail-item-1").html(str_memories).addClass('icon-clock');
+      newLine.find(".detail-item-1").html(str_memories).addClass("icon-clock");
       newLine.find(".type-id").hide();
-    break;
+      break;
     case "contact":
       newLine.find(".type-icon i").addClass("line-icon icon-mail-1 icon-yellow");
       newLine.find(".type-name").html(str_contact_form);
       newLine.find(".detail-item-1").html(str_contact_form);
       newLine.find(".type-id").hide();
-    break;
+      break;
     default:
       newLine.find(".type-icon i").addClass("line-icon icon-help-puzzle icon-grey");
       newLine.find(".type-name").html(line.SECTION);
       newLine.find(".type-id").hide();
-    break;
+      break;
   }
 
   if (line.IMAGE != "") {
     newLine.find(".type-name").html(line.IMAGENAME);
     newLine.find(".type-icon").html(line.IMAGE);
-    newLine.find(".type-id").html("#" + line.IMAGEID);
-    newLine.find(".type-icon").attr("href", line.EDIT_IMAGE).removeClass("no-img")
-    newLine.find(".type-icon img").attr("title", str_edit_img).addClass("tiptip")
+    newLine.find(".type-id").html(`#${line.IMAGEID}`);
+    newLine.find(".type-icon").attr("href", line.EDIT_IMAGE).removeClass("no-img");
+    newLine.find(".type-icon img").attr("title", str_edit_img).addClass("tiptip");
     newLine.find(".type-id").show();
   } else {
     newLine.find(".type-icon .icon-file-image").removeClass("icon-file-image");
@@ -550,7 +533,7 @@ function lineConstructor(line, id, imageDisplay) {
 
     if (sections.indexOf(line.SECTION) != -1) {
       var lineIconClass = icons[sections.indexOf(line.SECTION)];
-      newLine.find(".type-icon i").addClass(lineIconClass)
+      newLine.find(".type-icon i").addClass(lineIconClass);
     } else {
       console.log("Unhandled section : " + line.SECTION);
     }
@@ -559,7 +542,7 @@ function lineConstructor(line, id, imageDisplay) {
   newLine.find(".detail-item-1").removeClass("hide");
   if (line.TYPE == "high") {
     newLine.find(".detail-item-1").html(str_dwld).addClass("icon-blue").removeClass("detail-item-1").removeClass("hide");
-    newLine.find(".date-dwld-icon").addClass("icon-blue icon-floppy")
+    newLine.find(".date-dwld-icon").addClass("icon-blue icon-floppy");
   } else {
     newLine.find(".date-dwld-icon").remove();
   }
@@ -585,7 +568,7 @@ function addUserFilter(username) {
     fillHistoryResult(current_param);
     checkFilters();
     $(".summary-guests").show();
-  })
+  });
 
   $(".summary-guests").hide();
   $(".filter-container").append(newFilter);
@@ -606,7 +589,7 @@ function addGuestFilter(username) {
     current_param.pageNumber = 0;
     fillHistoryResult(current_param);
     checkFilters();
-  })
+  });
 
   $(".filter-container").append(newFilter);
   checkFilters();
@@ -626,7 +609,7 @@ function addIpFilter(ip) {
     current_param.pageNumber = 0;
     fillHistoryResult(current_param);
     checkFilters();
-  })
+  });
 
   $(".filter-container").append(newFilter);
   checkFilters();
@@ -635,8 +618,8 @@ function addIpFilter(ip) {
 function addImageFilter(img_id) {
   var newFilter = $("#default-filter").clone();
   newFilter.removeClass("hide");
-  
-  newFilter.find(".filter-title").html("Image #" + img_id);
+
+  newFilter.find(".filter-title").html(`Image #${img_id}`);
   newFilter.find(".filter-icon").addClass("icon-picture");
 
   newFilter.find(".remove-filter").on("click", function () {
@@ -646,7 +629,7 @@ function addImageFilter(img_id) {
     current_param.pageNumber = 0;
     fillHistoryResult(current_param);
     checkFilters();
-  })
+  });
 
   $(".filter-container").append(newFilter);
   checkFilters();
@@ -654,15 +637,15 @@ function addImageFilter(img_id) {
 
 function updateArrows(actualPage, maxPage) {
   if (actualPage == 0) {
-    $('.pagination-arrow.left').addClass('unavailable');
+    $(".pagination-arrow.left").addClass("unavailable");
   } else {
-    $('.pagination-arrow.left').removeClass('unavailable');
+    $(".pagination-arrow.left").removeClass("unavailable");
   }
 
-  if (actualPage == maxPage-1) {
-    $('.pagination-arrow.rigth').addClass('unavailable');
+  if (actualPage == maxPage - 1) {
+    $(".pagination-arrow.rigth").addClass("unavailable");
   } else {
-    $('.pagination-arrow.rigth').removeClass('unavailable');
+    $(".pagination-arrow.rigth").removeClass("unavailable");
   }
 }
 
@@ -670,13 +653,12 @@ function updatePagination(maxPage) {
   updateArrows(current_param.pageNumber, maxPage);
 
   $(".pagination-item-container").empty();
-  $(".pagination-item-container").append(
-    "<a class='actual'>"+ (current_param.pageNumber+1) + "/" + maxPage +"</a>"
-  )
+  $(".pagination-item-container").append(`<a class='actual'>${current_param.pageNumber + 1}/${maxPage}</a>`);
 }
 
 function checkFilters() {
-  if ($(".filter-container")[0].childElementCount - 1 > 0) { //Check if there are filters
+  if ($(".filter-container")[0].childElementCount - 1 > 0) {
+    //Check if there are filters
     $(".filter-tags label").show();
   } else {
     $(".filter-tags label").hide();

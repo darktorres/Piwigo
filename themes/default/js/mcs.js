@@ -11,12 +11,12 @@ $(document).ready(function () {
   // If we open another filter, hide all other dropdowns expect the one just opened
   $("div.filter").on("click", function () {
     $(this).siblings().removeClass("show-filter-dropdown");
-    $(this).siblings().children("div.filter-form").css('display','none');
+    $(this).siblings().children("div.filter-form").css("display", "none");
   });
 
   // If we open the choose filters modal hide all filter forms if any open
   $("div.filter-manager").on("click", function () {
-    $('div.filter').children("div.filter-form").css('display','none');
+    $("div.filter").children("div.filter-form").css("display", "none");
   });
 
   global_params.search_id = search_id;
@@ -38,7 +38,7 @@ $(document).ready(function () {
 
     word_search_str = "";
     word_search_words = global_params.fields.allwords.words != null ? global_params.fields.allwords.words : [];
-    word_search_words.forEach(word => {
+    word_search_words.forEach((word) => {
       word_search_str += word + " ";
     });
     $("#word-search").val(word_search_str.slice(0, -1));
@@ -51,8 +51,8 @@ $(document).ready(function () {
     }
 
     word_search_fields = global_params.fields.allwords.fields;
-    Object.keys(word_search_fields).forEach(field_key => {
-      $("#"+word_search_fields[field_key]).prop("checked", true);
+    Object.keys(word_search_fields).forEach((field_key) => {
+      $("#" + word_search_fields[field_key]).prop("checked", true);
     });
 
     word_search_mode = global_params.fields.allwords.mode;
@@ -62,10 +62,10 @@ $(document).ready(function () {
       $("#tags").prop("checked", true);
     }
 
-    $(".filter-word .filter-actions .clear").on('click', function () {
-      $(".filter-word #word-search").val('');
-      $(".filter-word .search-params input").prop('checked', true);
-      $(".filter-word .word-search-options input[value='AND']").prop('checked', true);
+    $(".filter-word .filter-actions .clear").on("click", function () {
+      $(".filter-word #word-search").val("");
+      $(".filter-word .search-params input").prop("checked", true);
+      $(".filter-word .word-search-options input[value='AND']").prop("checked", true);
     });
 
     PS_params.allwords = word_search_str.slice(0, -1);
@@ -78,10 +78,10 @@ $(document).ready(function () {
   $(".filter-spinner").hide();
 
   // Setup tag filter
-  $("#tag-search").each(function() {
+  $("#tag-search").each(function () {
     $(this).selectize({
-      plugins: ['remove_button'],
-      maxOptions:$(this).find("option").length,
+      plugins: ["remove_button"],
+      maxOptions: $(this).find("option").length,
       items: global_params.fields.tags ? global_params.fields.tags.words : null,
     });
   });
@@ -91,9 +91,16 @@ $(document).ready(function () {
     $(".filter-tag-form .search-params input[value=" + global_params.fields.tags.mode + "]").prop("checked", true);
 
     tag_search_str = "";
-    $("#tag-search")[0].selectize.getValue().forEach(id => {
-      tag_search_str += $("#tag-search")[0].selectize.getItem(id).text().replace(/\(\d+ \w+\)×/, '').trim() + ", ";
-    });
+    $("#tag-search")[0]
+      .selectize.getValue()
+      .forEach((id) => {
+        tag_search_str +=
+          $("#tag-search")[0]
+            .selectize.getItem(id)
+            .text()
+            .replace(/\(\d+ \w+\)×/, "")
+            .trim() + ", ";
+      });
     if (global_params.fields.tags.words && global_params.fields.tags.words.length > 0) {
       $(".filter-tag").addClass("filter-filled");
       $(".filter.filter-tag .search-words").text(tag_search_str.slice(0, -2));
@@ -101,35 +108,35 @@ $(document).ready(function () {
       $(".filter.filter-tag .search-words").text(str_tags_widget_label);
     }
 
-    $(".filter-tag .filter-actions .clear").on('click', function () {
+    $(".filter-tag .filter-actions .clear").on("click", function () {
       $("#tag-search")[0].selectize.clear();
-      $(".filter-tag .search-params input[value='AND']").prop('checked', true);
+      $(".filter-tag .search-params input[value='AND']").prop("checked", true);
     });
 
-    PS_params.tags = global_params.fields.tags.words.length > 0 ? global_params.fields.tags.words : '';
+    PS_params.tags = global_params.fields.tags.words.length > 0 ? global_params.fields.tags.words : "";
     PS_params.tags_mode = global_params.fields.tags.mode;
 
     empty_filters_list.push(PS_params.tags);
   }
 
   // Setup Date post filter
-  if (global_params.fields.hasOwnProperty('date_posted')) {
+  if (global_params.fields.hasOwnProperty("date_posted")) {
     $(".filter-date_posted").css("display", "flex");
     $(".filter-manager-controller.date_posted").prop("checked", true);
 
     if (global_params.fields.date_posted != null && global_params.fields.date_posted != "") {
       $("#date_posted-" + global_params.fields.date_posted).prop("checked", true);
 
-      date_posted_str = $('.date_posted-option label#'+global_params.fields.date_posted+' .date-period').text();
+      date_posted_str = $(".date_posted-option label#" + global_params.fields.date_posted + " .date-period").text();
       $(".filter-date_posted").addClass("filter-filled");
       $(".filter.filter-date_posted .search-words").text(date_posted_str);
     }
 
-    $(".filter-date_posted .filter-actions .clear").on('click', function () {
-      $(".date_posted-option input").prop('checked', false);
+    $(".filter-date_posted .filter-actions .clear").on("click", function () {
+      $(".date_posted-option input").prop("checked", false);
     });
 
-    PS_params.date_posted = global_params.fields.date_posted.length > 0 ? global_params.fields.date_posted : '';
+    PS_params.date_posted = global_params.fields.date_posted.length > 0 ? global_params.fields.date_posted : "";
 
     empty_filters_list.push(PS_params.date_posted);
   }
@@ -138,9 +145,9 @@ $(document).ready(function () {
   if (global_params.fields.cat) {
     $(".filter-album").css("display", "flex");
     $(".filter-manager-controller.album").prop("checked", true);
-  
+
     album_widget_value = "";
-    global_params.fields.cat.words.forEach(cat_id => {
+    global_params.fields.cat.words.forEach((cat_id) => {
       add_related_category(cat_id, fullname_of_cat[cat_id]);
       album_widget_value += fullname_of_cat[cat_id] + ", ";
     });
@@ -150,29 +157,29 @@ $(document).ready(function () {
     } else {
       $(".filter-album .search-words").html(str_album_widget_label);
     }
-    
+
     if (global_params.fields.cat.sub_inc) {
       $("#search-sub-cats").prop("checked", true);
     }
 
-    $(".filter-album .filter-actions .clear").on('click', function () {
+    $(".filter-album .filter-actions .clear").on("click", function () {
       $(".filter-album .search-params input[value='AND']");
       related_categories_ids = [];
       $(".selected-categories-container").empty();
-      $("#search-sub-cats").prop('checked', false);
+      $("#search-sub-cats").prop("checked", false);
     });
 
-    PS_params.categories = global_params.fields.cat.words.length > 0 ? global_params.fields.cat.words : '';
+    PS_params.categories = global_params.fields.cat.words.length > 0 ? global_params.fields.cat.words : "";
     PS_params.categories_withsubs = global_params.fields.cat.sub_inc;
 
     empty_filters_list.push(PS_params.categories);
   }
-  
+
   // Setup author filter
-  $("#authors").each(function() {
+  $("#authors").each(function () {
     $(this).selectize({
-      plugins: ['remove_button'],
-      maxOptions:$(this).find("option").length,
+      plugins: ["remove_button"],
+      maxOptions: $(this).find("option").length,
       items: global_params.fields.author ? global_params.fields.author.words : null,
     });
     if (global_params.fields.author) {
@@ -180,9 +187,16 @@ $(document).ready(function () {
       $(".filter-manager-controller.author").prop("checked", true);
 
       author_search_str = "";
-      $("#authors")[0].selectize.getValue().forEach(id => {
-        author_search_str += $("#authors")[0].selectize.getItem(id).text().replace(/\(\d+ \w+\)×/, '').trim() + ", ";
-      });
+      $("#authors")[0]
+        .selectize.getValue()
+        .forEach((id) => {
+          author_search_str +=
+            $("#authors")[0]
+              .selectize.getItem(id)
+              .text()
+              .replace(/\(\d+ \w+\)×/, "")
+              .trim() + ", ";
+        });
 
       if (global_params.fields.author.words && global_params.fields.author.words.length > 0) {
         $(".filter-authors").addClass("filter-filled");
@@ -190,12 +204,12 @@ $(document).ready(function () {
       } else {
         $(".filter.filter-authors .search-words").text(str_author_widget_label);
       }
-      
-      $(".filter-authors .filter-actions .clear").on('click', function () {
+
+      $(".filter-authors .filter-actions .clear").on("click", function () {
         $("#authors")[0].selectize.clear();
       });
 
-      PS_params.authors = global_params.fields.author.words.length > 0 ? global_params.fields.author.words : '';
+      PS_params.authors = global_params.fields.author.words.length > 0 ? global_params.fields.author.words : "";
 
       empty_filters_list.push(PS_params.authors);
     }
@@ -212,26 +226,25 @@ $(document).ready(function () {
       added_by_names = [];
 
       $(".added_by-option").each(function () {
-        input = $(this).find('input');
-        added_by_id = parseInt(input.attr('name'));
+        input = $(this).find("input");
+        added_by_id = parseInt(input.attr("name"));
 
         if (jQuery.inArray(added_by_id, global_params.fields.added_by) >= 0) {
-          input.prop('checked', true);
-          added_by_names.push($(this).find('.added_by-name').text());
+          input.prop("checked", true);
+          added_by_names.push($(this).find(".added_by-name").text());
         }
       });
 
-      $(".filter.filter-added_by .search-words").text(added_by_names.join(', '));
-
+      $(".filter.filter-added_by .search-words").text(added_by_names.join(", "));
     } else {
       $(".filter.filter-added_by .search-words").text(str_added_by_widget_label);
     }
 
-    $(".filter-added_by .filter-actions .clear").on('click', function () {
+    $(".filter-added_by .filter-actions .clear").on("click", function () {
       $(".filter-added_by .added_by-option input").prop("checked", false);
     });
 
-    PS_params.added_by = global_params.fields.added_by.length > 0 ? global_params.fields.added_by : '';
+    PS_params.added_by = global_params.fields.added_by.length > 0 ? global_params.fields.added_by : "";
 
     empty_filters_list.push(PS_params.added_by);
   }
@@ -242,28 +255,28 @@ $(document).ready(function () {
     $(".filter-manager-controller.filetypes").prop("checked", true);
 
     filetypes_search_str = "";
-    global_params.fields.filetypes.forEach(ft => {
+    global_params.fields.filetypes.forEach((ft) => {
       filetypes_search_str += ft + ", ";
     });
-  
+
     if (global_params.fields.filetypes && global_params.fields.filetypes.length > 0) {
       $(".filter-filetypes").addClass("filter-filled");
       $(".filter.filter-filetypes .search-words").text(filetypes_search_str.toUpperCase().slice(0, -2));
 
       $(".filetypes-option input").each(function () {
-        if (global_params.fields.filetypes.includes($(this).attr('name'))) {
-          $(this).prop('checked', true);
+        if (global_params.fields.filetypes.includes($(this).attr("name"))) {
+          $(this).prop("checked", true);
         }
       });
     } else {
       $(".filter.filter-filetypes .search-words").text(str_filetypes_widget_label);
     }
 
-    $(".filter-filetypes .filter-actions .clear").on('click', function () {
+    $(".filter-filetypes .filter-actions .clear").on("click", function () {
       $(".filter-filetypes .filetypes-option input").prop("checked", false);
     });
 
-    PS_params.filetypes = global_params.fields.filetypes.length > 0 ? global_params.fields.filetypes : '';
+    PS_params.filetypes = global_params.fields.filetypes.length > 0 ? global_params.fields.filetypes : "";
 
     empty_filters_list.push(PS_params.filetypes);
   }
@@ -274,13 +287,13 @@ $(document).ready(function () {
     $(".mcs-no-result .text .bot").html(str_empty_search_bot_alt);
   }
 
-  if (!empty_filters_list.every(param => param === "" || param === null)) {
+  if (!empty_filters_list.every((param) => param === "" || param === null)) {
     $(".clear-all").addClass("clickable");
-    $(".clear-all.clickable").on('click', function () {
-      exclude_params = ['search_id', 'allwords_mode', 'allwords_fields', 'tags_mode', 'categories_withsubs'];
+    $(".clear-all.clickable").on("click", function () {
+      exclude_params = ["search_id", "allwords_mode", "allwords_fields", "tags_mode", "categories_withsubs"];
       for (const key in PS_params) {
         if (!exclude_params.includes(key)) {
-          PS_params[key] = '';
+          PS_params[key] = "";
         }
       }
       performSearch(PS_params, true);
@@ -290,111 +303,108 @@ $(document).ready(function () {
   /**
    * Filter Manager
    */
-  $(".filter-manager").on('click', function () {
+  $(".filter-manager").on("click", function () {
     $(".filter-manager-popin").show();
   });
 
-  $(document).on('keyup', function (e) {
+  $(document).on("keyup", function (e) {
     // 27 is 'Escape'
-    if(e.keyCode === 27) {
-      $(".filter-manager-popin .filter-manager-close").trigger('click');
+    if (e.keyCode === 27) {
+      $(".filter-manager-popin .filter-manager-close").trigger("click");
     }
     // 13 is 'Enter'
     if (e.keyCode === 13) {
-      $('.filter-form .filter-validate').each(function () {
-        if ($(this).is(':visible')) {
-          $(this).trigger('click');
+      $(".filter-form .filter-validate").each(function () {
+        if ($(this).is(":visible")) {
+          $(this).trigger("click");
         }
-      })
-    }
-  });
-  
-  $(".filter-manager-popin").on('click', function(e) {
-    if ($(this).is(e.target) && $(this).has(e.target).length === 0) {
-      $(".filter-manager-popin .filter-manager-close").trigger('click');
+      });
     }
   });
 
-  $(".filter-manager-popin .filter-cancel, .filter-manager-popin .filter-manager-close").on('click', function () {
+  $(".filter-manager-popin").on("click", function (e) {
+    if ($(this).is(e.target) && $(this).has(e.target).length === 0) {
+      $(".filter-manager-popin .filter-manager-close").trigger("click");
+    }
+  });
+
+  $(".filter-manager-popin .filter-cancel, .filter-manager-popin .filter-manager-close").on("click", function () {
     $(".filter-manager-popin").hide();
     $(".filter-manager-controller-container input").each(function (e) {
-      if ($(this).is(':checked')) {
-        if (!$(".filter.filter-" + $(this).data("wid")).is(':visible')) {
-          $(this).prop('checked', false);
+      if ($(this).is(":checked")) {
+        if (!$(".filter.filter-" + $(this).data("wid")).is(":visible")) {
+          $(this).prop("checked", false);
         }
       } else {
-        if ($(".filter.filter-" + $(this).data("wid")).is(':visible')) {
-          $(this).prop('checked', true);
+        if ($(".filter.filter-" + $(this).data("wid")).is(":visible")) {
+          $(this).prop("checked", true);
         }
       }
     });
   });
 
-  $(".filter-manager-popin .filter-validate").on('click', function () {
+  $(".filter-manager-popin .filter-validate").on("click", function () {
     $(".filter-manager-controller-container input").each(function (e) {
-      if ($(this).is(':checked')) {
-        if (!$(".filter.filter-" + $(this).data("wid")).is(':visible')) {
-          updateFilters($(this).data("wid"), 'add');
+      if ($(this).is(":checked")) {
+        if (!$(".filter.filter-" + $(this).data("wid")).is(":visible")) {
+          updateFilters($(this).data("wid"), "add");
         }
       } else {
-        if ($(".filter.filter-" + $(this).data("wid")).is(':visible')) {
+        if ($(".filter.filter-" + $(this).data("wid")).is(":visible")) {
           console.log($(this).data("wid"));
-          updateFilters($(this).data("wid"), 'del');
+          updateFilters($(this).data("wid"), "del");
         }
       }
     });
     // Set second param to true to trigger reload
-    performSearch(PS_params ,true);
+    performSearch(PS_params, true);
   });
 
   /**
    * Tags & Albums found
    */
-  $(".mcs-tags-found").on('click', function () {
+  $(".mcs-tags-found").on("click", function () {
     $(".tags-found-popin").show();
   });
-  $(".mcs-albums-found").on('click', function () {
+  $(".mcs-albums-found").on("click", function () {
     $(".albums-found-popin").show();
   });
 
-  $(document).on('keyup', function (e) {
+  $(document).on("keyup", function (e) {
     // 27 is 'Escape'
-    if(e.keyCode === 27) {
-      $(".tags-found-popin .tags-found-close").trigger('click');
-      $(".albums-found-popin .albums-found-close").trigger('click');
+    if (e.keyCode === 27) {
+      $(".tags-found-popin .tags-found-close").trigger("click");
+      $(".albums-found-popin .albums-found-close").trigger("click");
     }
   });
-  
-  $(".tags-found-popin").on('click', function(e) {
+
+  $(".tags-found-popin").on("click", function (e) {
     if ($(this).is(e.target) && $(this).has(e.target).length === 0) {
-      $(".tags-found-popin .tags-found-close").trigger('click');
+      $(".tags-found-popin .tags-found-close").trigger("click");
     }
   });
-  $(".tags-found-close").on('click', function () {
+  $(".tags-found-close").on("click", function () {
     $(".tags-found-popin").hide();
   });
 
-  $(".albums-found-popin").on('click', function(e) {
+  $(".albums-found-popin").on("click", function (e) {
     if ($(this).is(e.target) && $(this).has(e.target).length === 0) {
-      $(".albums-found-popin .albums-found-close").trigger('click');
+      $(".albums-found-popin .albums-found-close").trigger("click");
     }
   });
-  $(".albums-found-close").on('click', function () {
+  $(".albums-found-close").on("click", function () {
     $(".albums-found-popin").hide();
-  })
-
+  });
 
   /**
    * Filter Word
    */
   $(".filter-word").on("click", function (e) {
-    if ($(".filter-form").has(e.target).length != 0 ||
-        $(e.target).hasClass("filter-form")) {
+    if ($(".filter-form").has(e.target).length != 0 || $(e.target).hasClass("filter-form")) {
       return;
     }
     $(".filter-word-form").toggle(0, function () {
-      
-      if ($(this).is(':visible')) {
+      if ($(this).is(":visible")) {
         $(".filter-word").addClass("show-filter-dropdown");
         $("#word-search").focus();
       } else {
@@ -402,10 +412,10 @@ $(document).ready(function () {
 
         global_params.fields.allwords = {};
         global_params.fields.allwords.words = $("#word-search").val();
-        global_params.fields.allwords.mode = $(".word-search-options input:checked").attr('value');
-        
+        global_params.fields.allwords.mode = $(".word-search-options input:checked").attr("value");
+
         PS_params.allwords = $("#word-search").val();
-        PS_params.allwords_mode = $(".word-search-options input:checked").attr('value');
+        PS_params.allwords_mode = $(".word-search-options input:checked").attr("value");
 
         new_fields = [];
         $(".filter-word-form .search-params input:checked").each(function () {
@@ -418,7 +428,7 @@ $(document).ready(function () {
           delete global_params.fields.search_in_tags;
         }
         global_params.fields.allwords.fields = new_fields;
-        PS_params.allwords_fields = new_fields.length > 0 ? new_fields : '';
+        PS_params.allwords_fields = new_fields.length > 0 ? new_fields : "";
       }
     });
   });
@@ -427,7 +437,7 @@ $(document).ready(function () {
     performSearch(PS_params, true);
   });
   $(".filter-word .filter-actions .delete").on("click", function () {
-    updateFilters('word', 'del');
+    updateFilters("word", "del");
     performSearch(PS_params, true);
     if (!$(".filter-word").hasClass("filter-filled")) {
       $(".filter-word").hide();
@@ -439,13 +449,11 @@ $(document).ready(function () {
    * Filter Tag
    */
   $(".filter-tag").on("click", function (e) {
-    if ($(".filter-form").has(e.target).length != 0 ||
-        $(e.target).hasClass("filter-form") ||
-        $(e.target).hasClass("remove")) {
+    if ($(".filter-form").has(e.target).length != 0 || $(e.target).hasClass("filter-form") || $(e.target).hasClass("remove")) {
       return;
     }
     $(".filter-tag-form").toggle(0, function () {
-      if ($(this).is(':visible')) {
+      if ($(this).is(":visible")) {
         $(".filter-tag").addClass("show-filter-dropdown");
       } else {
         $(".filter-tag").removeClass("show-filter-dropdown");
@@ -453,7 +461,7 @@ $(document).ready(function () {
         global_params.fields.tags.mode = $(".filter-tag-form .search-params input:checked").val();
         global_params.fields.tags.words = $("#tag-search")[0].selectize.getValue();
 
-        PS_params.tags = $("#tag-search")[0].selectize.getValue().length > 0 ? $("#tag-search")[0].selectize.getValue() : '';
+        PS_params.tags = $("#tag-search")[0].selectize.getValue().length > 0 ? $("#tag-search")[0].selectize.getValue() : "";
         PS_params.tags_mode = $(".filter-tag-form .search-params input:checked").val();
       }
     });
@@ -463,7 +471,7 @@ $(document).ready(function () {
     performSearch(PS_params, true);
   });
   $(".filter-tag .filter-actions .delete").on("click", function () {
-    updateFilters('tag', 'del');
+    updateFilters("tag", "del");
     performSearch(PS_params, true);
     if (!$(".filter-tag").hasClass("filter-filled")) {
       $(".filter-tag").hide();
@@ -475,12 +483,11 @@ $(document).ready(function () {
    * Filter Date posted
    */
   $(".filter-date_posted").on("click", function (e) {
-    if ($(".filter-form").has(e.target).length != 0 ||
-        $(e.target).hasClass("filter-form")) {
+    if ($(".filter-form").has(e.target).length != 0 || $(e.target).hasClass("filter-form")) {
       return;
     }
     $(".filter-date_posted-form").toggle(0, function () {
-      if ($(this).is(':visible')) {
+      if ($(this).is(":visible")) {
         $(".filter-date_posted").addClass("show-filter-dropdown");
       } else {
         $(".filter-date_posted").removeClass("show-filter-dropdown");
@@ -497,7 +504,7 @@ $(document).ready(function () {
     performSearch(PS_params, true);
   });
   $(".filter-date_posted .filter-actions .delete").on("click", function () {
-    updateFilters('date_posted', 'del');
+    updateFilters("date_posted", "del");
     performSearch(PS_params, true);
     if (!$(".filter-date_posted").hasClass("filter-filled")) {
       $(".filter-date_posted").hide();
@@ -509,13 +516,11 @@ $(document).ready(function () {
    * Filter Album
    */
   $(".filter-album").on("click", function (e) {
-    if ($(".filter-form").has(e.target).length != 0 ||
-        $(e.target).hasClass("filter-form") ||
-        $(e.target).hasClass("remove-item")) {
+    if ($(".filter-form").has(e.target).length != 0 || $(e.target).hasClass("filter-form") || $(e.target).hasClass("remove-item")) {
       return;
     }
     $(".filter-album-form").toggle(0, function () {
-      if ($(this).is(':visible')) {
+      if ($(this).is(":visible")) {
         $(".filter-album").addClass("show-filter-dropdown");
       } else {
         $(".filter-album").removeClass("show-filter-dropdown");
@@ -524,7 +529,7 @@ $(document).ready(function () {
         // global_params.fields.cat.search_params = $(".filter-form.filter-album-form .search-params input:checked").val().toLowerCase();
         global_params.fields.cat.sub_inc = $("input[name='search-sub-cats']:checked").length != 0;
 
-        PS_params.categories = related_categories_ids.length > 0 ? related_categories_ids : '';
+        PS_params.categories = related_categories_ids.length > 0 ? related_categories_ids : "";
         PS_params.categories_withsubs = $("input[name='search-sub-cats']:checked").length != 0;
       }
     });
@@ -534,7 +539,7 @@ $(document).ready(function () {
     performSearch(PS_params, true);
   });
   $(".filter-album .filter-actions .delete").on("click", function () {
-    updateFilters('album', 'del');
+    updateFilters("album", "del");
     performSearch(PS_params, true);
     if (!$(".filter-album").hasClass("filter-filled")) {
       $(".filter-album").hide();
@@ -547,7 +552,7 @@ $(document).ready(function () {
     set_up_popin();
   });
 
-  $("#linkedAlbumSearch .search-input").on('input', function () {
+  $("#linkedAlbumSearch .search-input").on("input", function () {
     if ($(this).val() != 0) {
       $("#linkedAlbumSearch .search-cancel-linked-album").show();
     } else {
@@ -561,19 +566,17 @@ $(document).ready(function () {
       $(".limitReached").html(str_no_search_in_progress);
       $("#searchResult").empty();
     }
-  })
+  });
 
   /**
    * Author Widget
    */
   $(".filter-authors").on("click", function (e) {
-    if ($(".filter-form").has(e.target).length != 0 ||
-        $(e.target).hasClass("filter-form") ||
-        $(e.target).hasClass("remove")) {
+    if ($(".filter-form").has(e.target).length != 0 || $(e.target).hasClass("filter-form") || $(e.target).hasClass("remove")) {
       return;
     }
     $(".filter-author-form").toggle(0, function () {
-      if ($(this).is(':visible')) {
+      if ($(this).is(":visible")) {
         $(".filter-authors").addClass("show-filter-dropdown");
       } else {
         $(".filter-authors").removeClass("show-filter-dropdown");
@@ -581,7 +584,7 @@ $(document).ready(function () {
         global_params.fields.author.mode = "OR";
         global_params.fields.author.words = $("#authors")[0].selectize.getValue();
 
-        PS_params.authors = $("#authors")[0].selectize.getValue().length > 0 ? $("#authors")[0].selectize.getValue() : '';
+        PS_params.authors = $("#authors")[0].selectize.getValue().length > 0 ? $("#authors")[0].selectize.getValue() : "";
       }
     });
   });
@@ -590,7 +593,7 @@ $(document).ready(function () {
     performSearch(PS_params, true);
   });
   $(".filter-authors .filter-actions .delete").on("click", function () {
-    updateFilters('authors', 'del');
+    updateFilters("authors", "del");
     performSearch(PS_params, true);
     if (!$(".filter-authors").hasClass("filter-filled")) {
       $(".filter-authors").hide();
@@ -602,27 +605,25 @@ $(document).ready(function () {
    * Added by Widget
    */
   $(".filter-added_by").on("click", function (e) {
-    if ($(".filter-form").has(e.target).length != 0 ||
-        $(e.target).hasClass("filter-form") ||
-        $(e.target).hasClass("remove")) {
+    if ($(".filter-form").has(e.target).length != 0 || $(e.target).hasClass("filter-form") || $(e.target).hasClass("remove")) {
       return;
     }
     $(".filter-added_by-form").toggle(0, function () {
-      if ($(this).is(':visible')) {
+      if ($(this).is(":visible")) {
         $(".filter-added_by").addClass("show-filter-dropdown");
       } else {
         $(".filter-added_by").removeClass("show-filter-dropdown");
         global_params.fields.added_by = {};
         global_params.fields.added_by.mode = "OR";
 
-        added_by_array = []
+        added_by_array = [];
         $(".added_by-option input:checked").each(function () {
-          added_by_array.push($(this).attr('name'));
+          added_by_array.push($(this).attr("name"));
         });
 
         global_params.fields.added_by.words = added_by_array;
 
-        PS_params.added_by = added_by_array.length > 0 ? added_by_array : '';
+        PS_params.added_by = added_by_array.length > 0 ? added_by_array : "";
       }
     });
   });
@@ -631,7 +632,7 @@ $(document).ready(function () {
     performSearch(PS_params, true);
   });
   $(".filter-added_by .filter-actions .delete").on("click", function () {
-    updateFilters('added_by', 'del');
+    updateFilters("added_by", "del");
     performSearch(PS_params, true);
     if (!$(".filter-added_by").hasClass("filter-filled")) {
       $(".filter-added_by").hide();
@@ -643,25 +644,23 @@ $(document).ready(function () {
    * File type Widget
    */
   $(".filter-filetypes").on("click", function (e) {
-    if ($(".filter-form").has(e.target).length != 0 ||
-        $(e.target).hasClass("filter-form") ||
-        $(e.target).hasClass("remove")) {
+    if ($(".filter-form").has(e.target).length != 0 || $(e.target).hasClass("filter-form") || $(e.target).hasClass("remove")) {
       return;
     }
     $(".filter-filetypes-form").toggle(0, function () {
-      if ($(this).is(':visible')) {
+      if ($(this).is(":visible")) {
         $(".filter-filetypes").addClass("show-filter-dropdown");
       } else {
         $(".filter-filetypes").removeClass("show-filter-dropdown");
 
-        filetypes_array = []
+        filetypes_array = [];
         $(".filetypes-option input:checked").each(function () {
-          filetypes_array.push($(this).attr('name'));
+          filetypes_array.push($(this).attr("name"));
         });
 
         global_params.fields.filetypes = filetypes_array;
 
-        PS_params.filetypes = filetypes_array.length > 0 ? filetypes_array : '';
+        PS_params.filetypes = filetypes_array.length > 0 ? filetypes_array : "";
       }
     });
   });
@@ -670,7 +669,7 @@ $(document).ready(function () {
     performSearch(PS_params, true);
   });
   $(".filter-filetypes .filter-actions .delete").on("click", function () {
-    updateFilters('filetypes', 'del');
+    updateFilters("filetypes", "del");
     performSearch(PS_params, true);
     if (!$(".filter-filetypes").hasClass("filter-filled")) {
       $(".filter-filetypes").hide();
@@ -696,40 +695,42 @@ $(document).ready(function () {
   //     }
   //   }
   // });
-})
+});
 
 function performSearch(params, reload = false) {
   $.ajax({
     url: "ws.php?format=json&method=pwg.images.filteredSearch.create",
-    type:"POST",
+    type: "POST",
     dataType: "json",
     data: params,
-    success:function(data) {
-      if (reload && typeof data.result.search_url !== 'undefined') {
-       reloadPage(data.result.search_url);
+    success: function (data) {
+      if (reload && typeof data.result.search_url !== "undefined") {
+        reloadPage(data.result.search_url);
       }
     },
-    error:function(e) {
+    error: function (e) {
       console.log(e);
     },
   }).done(function () {
     $(".filter-validate").find(".validate-text").css("display", "block");
     $(".filter-validate").find(".loading").hide();
-    $(".remove-filter").removeClass(prefix_icon + 'spin6 animate-spin').addClass(prefix_icon + 'cancel');
+    $(".remove-filter")
+      .removeClass(prefix_icon + "spin6 animate-spin")
+      .addClass(prefix_icon + "cancel");
   });
 }
 
 function set_up_popin() {
-  $(".ClosePopIn").on('click', function () {
+  $(".ClosePopIn").on("click", function () {
     linked_albums_close();
   });
 
-  $("#addLinkedAlbum").on('keyup', function (e) {
+  $("#addLinkedAlbum").on("keyup", function (e) {
     // 27 is 'Escape'
-    if(e.keyCode === 27) {
+    if (e.keyCode === 27) {
       linked_albums_close();
     }
-  })
+  });
 }
 
 function linked_albums_close() {
@@ -738,15 +739,16 @@ function linked_albums_close() {
 
 function fill_results(cats) {
   $("#searchResult").empty();
-  cats.forEach(cat => {
+  cats.forEach((cat) => {
     if (!related_categories_ids.includes(cat.id)) {
-      $("#searchResult").append(
-      "<div class='search-result-item' id="+ cat.id + ">" +
-        "<span class='search-result-path'>" + cat.name +"</span><span id="+ cat.id + " class='gallery-icon-plus-circled item-add'></span>" +
-      "</div>"
-      );
+      $("#searchResult").append(`
+        <div class="search-result-item" id="${cat.id}">
+          <span class="search-result-path">${cat.name}</span>
+          <span id="${cat.id}" class="gallery-icon-plus-circled item-add"></span>
+        </div>
+      `);
 
-      $(".search-result-item#"+ cat.id).on("click", function () {
+      $(".search-result-item#" + cat.id).on("click", function () {
         add_related_category(cat.id, cat.name);
       });
     }
@@ -754,24 +756,27 @@ function fill_results(cats) {
 }
 
 function add_related_category(cat_id, cat_link_path) {
-    $(".selected-categories-container").append(
-      "<div class='breadcrumb-item'>" +
-        "<span class='link-path'>" + cat_link_path + "</span><span id="+ cat_id + " class='mcs-icon " + prefix_icon + "cancel remove-item'></span>" +
-      "</div>"
-    );
+  $(".selected-categories-container").append(`
+    <div class="breadcrumb-item">
+      <span class="link-path">${cat_link_path}</span>
+      <span id="${cat_id}" class="mcs-icon ${prefix_icon}cancel remove-item"></span>
+    </div>
+  `);
 
-    related_categories_ids.push(cat_id);
-    $(".invisible-related-categories-select").append("<option selected value="+ cat_id +"></option>");
+  related_categories_ids.push(cat_id);
+  $(".invisible-related-categories-select").append(`<option selected value="${cat_id}"></option>`);
 
-    $("#"+ cat_id).on("click", function () {
-      remove_related_category($(this).attr("id"));
-    });
+  $("#" + cat_id).on("click", function () {
+    remove_related_category($(this).attr("id"));
+  });
 
-    linked_albums_close();
+  linked_albums_close();
 }
 
 function remove_related_category(cat_id) {
-  $("#" + cat_id).parent().remove();
+  $("#" + cat_id)
+    .parent()
+    .remove();
 
   cat_to_remove_index = related_categories_ids.indexOf(parseInt(cat_id));
   if (cat_to_remove_index > -1) {
@@ -784,14 +789,14 @@ function remove_related_category(cat_id) {
 
 function updateFilters(filterName, mode) {
   switch (filterName) {
-    case 'word':
-      if (mode == 'add') {
+    case "word":
+      if (mode == "add") {
         global_params.fields.allwords = {};
 
-        PS_params.allwords = '';
-        PS_params.allwords_mode = 'AND';
+        PS_params.allwords = "";
+        PS_params.allwords_mode = "AND";
         PS_params.allwords_fields = [];
-      } else if (mode == 'del') {
+      } else if (mode == "del") {
         delete global_params.fields.allwords;
 
         delete PS_params.allwords;
@@ -800,13 +805,13 @@ function updateFilters(filterName, mode) {
       }
       break;
 
-    case 'tag':
-      if (mode == 'add') {
+    case "tag":
+      if (mode == "add") {
         global_params.fields.tags = {};
 
-        PS_params.tags = '';
-        PS_params.tags_mode = 'AND';
-      } else if (mode == 'del') {
+        PS_params.tags = "";
+        PS_params.tags_mode = "AND";
+      } else if (mode == "del") {
         delete global_params.fields.tags;
 
         delete PS_params.tags;
@@ -814,13 +819,13 @@ function updateFilters(filterName, mode) {
       }
       break;
 
-    case 'album':
-      if (mode == 'add') {
+    case "album":
+      if (mode == "add") {
         global_params.fields.cat = {};
 
-        PS_params.categories = '';
+        PS_params.categories = "";
         PS_params.categories_withsubs = false;
-      } else if (mode == 'del') {
+      } else if (mode == "del") {
         delete global_params.fields.cat;
 
         delete PS_params.categories;
@@ -829,11 +834,11 @@ function updateFilters(filterName, mode) {
       break;
 
     default:
-      if (mode == 'add') {
+      if (mode == "add") {
         global_params.fields[filterName] = {};
 
-        PS_params[filterName] = '';
-      } else if (mode == 'del') {
+        PS_params[filterName] = "";
+      } else if (mode == "del") {
         delete global_params.fields[filterName];
 
         delete PS_params[filterName];
@@ -842,40 +847,51 @@ function updateFilters(filterName, mode) {
   }
 }
 
-function reloadPage(url){
+function reloadPage(url) {
   window.location.href = url;
 }
 
 /**
  * Replace the filter_form elements if they exceed the window
  */
-function resize_filter_form(){
-  $('.form_mobile_arrow').remove();
-  $('.filter').each(function() {
+function resize_filter_form() {
+  $(".form_mobile_arrow").remove();
+  $(".filter").each(function () {
     const window_width = $(window).innerWidth();
     const left_distance = $(this).offset().left;
-    const filter_form = $(this).find($('.filter-form'));
+    const filter_form = $(this).find($(".filter-form"));
     const filter_form_width = filter_form.innerWidth();
-    const too_left = (left_distance + $(this).innerWidth()) - filter_form_width;
+    const too_left = left_distance + $(this).innerWidth() - filter_form_width;
     const is_desktop = window.matchMedia("(min-width: 600px)").matches;
-    filter_form.css('left', '0px');
+    filter_form.css("left", "0px");
     const margin_left = is_desktop ? 15 : 0;
 
-    if(left_distance + filter_form_width > window_width) {
+    if (left_distance + filter_form_width > window_width) {
       const check_left = too_left < 0 ? Math.abs(too_left - margin_left) : 0;
       const mobile_marg = is_desktop ? 0 : 2;
-      const replace_form_width = - filter_form_width + $(this).innerWidth() + check_left - mobile_marg;
-      filter_form.css('left', replace_form_width+'px');
+      const replace_form_width = -filter_form_width + $(this).innerWidth() + check_left - mobile_marg;
+      filter_form.css("left", replace_form_width + "px");
     }
-    if(!is_desktop){
-      const left_arrow = $(this).offset().left + ($(this).innerWidth() / 2);
-      filter_form.prepend('<svg width="10" height="10" viewBox="0 0 14 14" class="form_mobile_arrow" style="left:'+left_arrow+'px"><polygon class="arrow-border" points="7,0 14,14 0,14"/><polygon class="arrow-fill" points="7,1 13.5,14 0.5,14"/></svg>');
+    if (!is_desktop) {
+      const left_arrow = $(this).offset().left + $(this).innerWidth() / 2;
+      filter_form.prepend(`
+        <svg 
+          width="10" 
+          height="10" 
+          viewBox="0 0 14 14" 
+          class="form_mobile_arrow" 
+          style="left:${left_arrow}px"
+        >
+          <polygon class="arrow-border" points="7,0 14,14 0,14"></polygon>
+          <polygon class="arrow-fill" points="7,1 13.5,14 0.5,14"></polygon>
+        </svg>
+      `);
     }
   });
 }
-$(window).on('load', function() {
+$(window).on("load", function () {
   resize_filter_form();
 });
-$(window).on('resize', function() {
+$(window).on("resize", function () {
   resize_filter_form();
 });
