@@ -50,7 +50,7 @@ if (isset($_GET['delete'])) {
     // 2. else use the first reachable linked category
     // 3. redirect to gallery root
 
-    if (isset($_GET['cat_id']) and ! empty($_GET['cat_id'])) {
+    if (isset($_GET['cat_id']) && ! empty($_GET['cat_id'])) {
         redirect(
             make_index_url(
                 [
@@ -99,17 +99,9 @@ if (isset($_POST['submit'])) {
     $data['author'] = $_POST['author'];
     $data['level'] = $_POST['level'];
 
-    if ($conf['allow_html_descriptions']) {
-        $data['comment'] = @$_POST['description'];
-    } else {
-        $data['comment'] = strip_tags(@$_POST['description']);
-    }
+    $data['comment'] = $conf['allow_html_descriptions'] ? @$_POST['description'] : strip_tags((string) @$_POST['description']);
 
-    if (! empty($_POST['date_creation'])) {
-        $data['date_creation'] = $_POST['date_creation'];
-    } else {
-        $data['date_creation'] = null;
-    }
+    $data['date_creation'] = empty($_POST['date_creation']) ? null : $_POST['date_creation'];
 
     $data = trigger_change('picture_modify_before_update', $data);
 
@@ -126,12 +118,14 @@ if (isset($_POST['submit'])) {
     if (! empty($_POST['tags'])) {
         $tag_ids = get_tag_ids($_POST['tags']);
     }
+
     set_tags($tag_ids, $_GET['image_id']);
 
     // association to albums
     if (! isset($_POST['associate'])) {
         $_POST['associate'] = [];
     }
+
     check_input_parameter('associate', $_POST, true, PATTERN_ID);
     move_images_to_categories([$_GET['image_id']], $_POST['associate']);
 
@@ -141,15 +135,16 @@ if (isset($_POST['submit'])) {
     if (! isset($_POST['represent'])) {
         $_POST['represent'] = [];
     }
+
     check_input_parameter('represent', $_POST, true, PATTERN_ID);
 
     $no_longer_thumbnail_for = array_diff($represented_albums, $_POST['represent']);
-    if (count($no_longer_thumbnail_for) > 0) {
+    if ($no_longer_thumbnail_for !== []) {
         set_random_representant($no_longer_thumbnail_for);
     }
 
     $new_thumbnail_for = array_diff($_POST['represent'], $represented_albums);
-    if (count($new_thumbnail_for) > 0) {
+    if ($new_thumbnail_for !== []) {
         $new_thumbnail_for_ = implode(',', $new_thumbnail_for);
         $query = "UPDATE categories SET representative_picture_id = {$_GET['image_id']} WHERE id IN ({$new_thumbnail_for_});";
         pwg_query($query);
@@ -198,7 +193,7 @@ $src_image = new SrcImage($row);
 
 // in case the photo needs a rotation of 90 degrees (clockwise or counterclockwise), we switch width and height
 if (in_array($row['rotation'], [1, 3])) {
-    list($row['width'], $row['height']) = [$row['height'], $row['width']];
+    [$row['width'], $row['height']] = [$row['height'], $row['width']];
 }
 
 $template->assign(
@@ -216,7 +211,7 @@ $template->assign(
 
         'NAME' =>
           isset($_POST['name']) ?
-            stripslashes($_POST['name']) : @$row['name'],
+            stripslashes((string) $_POST['name']) : @$row['name'],
 
         'TITLE' => render_element_name($row),
 
@@ -229,16 +224,16 @@ $template->assign(
         'REGISTRATION_DATE' => format_date($row['date_available']),
 
         'AUTHOR' => htmlspecialchars(
-            isset($_POST['author'])
-            ? stripslashes($_POST['author'])
-            : (empty($row['author']) ? '' : $row['author'])
+            (string) (isset($_POST['author'])
+            ? stripslashes((string) $_POST['author'])
+            : (empty($row['author']) ? '' : $row['author']))
         ),
 
         'DATE_CREATION' => $row['date_creation'],
 
         'DESCRIPTION' =>
-          htmlspecialchars(isset($_POST['description']) ?
-            stripslashes($_POST['description']) : (empty($row['comment']) ? '' : $row['comment'])),
+          htmlspecialchars((string) (isset($_POST['description']) ?
+            stripslashes((string) $_POST['description']) : (empty($row['comment']) ? '' : $row['comment']))),
 
         'F_ACTION' =>
             get_root_url() . 'admin.php'
@@ -253,7 +248,7 @@ while ($user_row = pwg_db_fetch_assoc($result)) {
     $row['added_by'] = $user_row['username'];
 }
 
-$extTab = explode('.', $row['file']);
+$extTab = explode('.', (string) $row['file']);
 
 $intro_vars = [
     'file' => l10n('%s', $row['file']),
@@ -264,12 +259,12 @@ $intro_vars = [
     'stats' => l10n('Visited %d times', $row['hit']),
     'id' => l10n($row['id']),
     'ext' => l10n('%s file type', strtoupper(end($extTab))),
-    'is_svg' => (strtoupper(end($extTab)) == 'SVG'),
+    'is_svg' => (strtoupper(end($extTab)) === 'SVG'),
 ];
 
-if ($conf['rate'] and ! empty($row['rating_score'])) {
+if ($conf['rate'] && ! empty($row['rating_score'])) {
     $query = "SELECT COUNT(*) FROM rate WHERE element_id = {$_GET['image_id']};";
-    list($row['nb_rates']) = pwg_db_fetch_row(pwg_query($query));
+    [$row['nb_rates']] = pwg_db_fetch_row(pwg_query($query));
 
     $intro_vars['stats'] .= ', ' . sprintf(l10n('Rated %d times, score : %.2f'), $row['nb_rates'], $row['rating_score']);
 }
@@ -277,7 +272,7 @@ if ($conf['rate'] and ! empty($row['rating_score'])) {
 $query = "SELECT * FROM image_format WHERE image_id = {$row['id']};";
 $formats = query2array($query);
 
-if (! empty($formats)) {
+if ($formats !== []) {
     $format_strings = [];
 
     foreach ($formats as $format) {
@@ -294,7 +289,7 @@ if (in_array(get_extension($row['path']), $conf['picture_ext'])) {
 }
 
 // image level options
-$selected_level = isset($_POST['level']) ? $_POST['level'] : $row['level'];
+$selected_level = $_POST['level'] ?? $row['level'];
 $template->assign(
     [
         'level_options' => get_privacy_level_options(),
@@ -349,8 +344,7 @@ $authorizeds = array_diff(
     )
 );
 
-if (isset($_GET['cat_id'])
-    and in_array($_GET['cat_id'], $authorizeds)) {
+if (isset($_GET['cat_id']) && in_array($_GET['cat_id'], $authorizeds)) {
     $url_img = make_picture_url(
         [
             'image_id' => $_GET['image_id'],
@@ -371,7 +365,7 @@ if (isset($_GET['cat_id'])
     }
 }
 
-if (isset($url_img) and $user['level'] >= $page['image']['level']) {
+if (isset($url_img) && $user['level'] >= $page['image']['level']) {
     $template->assign('U_JUMPTO', $url_img);
 }
 

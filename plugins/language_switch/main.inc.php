@@ -37,7 +37,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-define('LANGUAGE_SWITCH_PATH', PHPWG_PLUGINS_PATH . basename(dirname(__FILE__)) . '/');
+define('LANGUAGE_SWITCH_PATH', PHPWG_PLUGINS_PATH . basename(__DIR__) . '/');
 
 include_once(LANGUAGE_SWITCH_PATH . 'language_switch.inc.php');
 

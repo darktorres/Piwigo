@@ -20,23 +20,21 @@ function rate_picture(
 ): array|bool {
     global $conf, $user;
 
-    if (! isset($rate)
-        or ! $conf['rate']
-        or ! preg_match('/^[0-9]+$/', $rate)
-        or ! in_array($rate, $conf['rate_items'])) {
+    if (! isset($rate) || ! $conf['rate'] || ! preg_match('/^\d+$/', $rate) || ! in_array($rate, $conf['rate_items'])) {
         return false;
     }
 
-    $user_anonymous = is_autorize_status(ACCESS_CLASSIC) ? false : true;
+    $user_anonymous = ! is_autorize_status(ACCESS_CLASSIC);
 
-    if ($user_anonymous and ! $conf['rate_anonymous']) {
+    if ($user_anonymous && ! $conf['rate_anonymous']) {
         return false;
     }
 
-    $ip_components = explode('.', $_SERVER['REMOTE_ADDR']);
+    $ip_components = explode('.', (string) $_SERVER['REMOTE_ADDR']);
     if (count($ip_components) > 3) {
         array_pop($ip_components);
     }
+
     $anonymous_id = implode('.', $ip_components);
 
     if ($user_anonymous) {
@@ -46,7 +44,7 @@ function rate_picture(
             $query = "SELECT element_id FROM rate WHERE user_id = {$user['id']} AND anonymous_id = '{$anonymous_id}';";
             $already_there = array_from_query($query, 'element_id');
 
-            if (count($already_there) > 0) {
+            if ($already_there !== []) {
                 $already_there_ = implode(',', $already_there);
                 $query = "DELETE FROM rate WHERE user_id = {$user['id']} AND anonymous_id = '{$save_anonymous_id}' AND element_id IN ({$already_there_});";
                 pwg_query($query);
@@ -63,6 +61,7 @@ function rate_picture(
     if ($user_anonymous) {
         $query .= " AND anonymous_id = '{$anonymous_id}'";
     }
+
     pwg_query($query);
     $query = "INSERT INTO rate (user_id, anonymous_id, element_id, rate, date) VALUES ({$user['id']}, '{$anonymous_id}', {$image_id}, {$rate}, NOW());";
     pwg_query($query);
@@ -116,11 +115,13 @@ function update_rating_score(
                 'count' => $rate_summary['rcount'],
             ];
         }
+
         $updates[] = [
             'id' => $id,
             'rating_score' => $score,
         ];
     }
+
     mass_updates(
         'images',
         [
@@ -136,14 +137,14 @@ function update_rating_score(
 
         $to_update = array_from_query($query, 'id');
 
-        if (! empty($to_update)) {
+        if ($to_update !== []) {
             $to_update_ = implode(',', $to_update);
             $query = "UPDATE images SET rating_score = NULL WHERE id IN ({$to_update_})";
             pwg_query($query);
         }
     }
 
-    return isset($return) ? $return : [
+    return $return ?? [
         'score' => null,
         'average' => null,
         'count' => 0,

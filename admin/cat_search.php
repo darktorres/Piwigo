@@ -42,7 +42,7 @@ foreach ($result as $cat) {
 
     $private = ($cat['status'] == 'private') ? 1 : 0;
 
-    $parents = explode(',', $cat['uppercats']);
+    $parents = explode(',', (string) $cat['uppercats']);
 
     $content = [$cat['name'], $parents, $private];
     $categories[$cat['id']] = $content;
@@ -59,8 +59,8 @@ $placeholder = null;
 foreach ($lines as $line) {
     $name = trigger_change('render_category_name', $line['name']);
 
-    if (mb_strlen($name) > 25) {
-        $name = mb_substr($name, 0, 25) . '...';
+    if (mb_strlen((string) $name) > 25) {
+        $name = mb_substr((string) $name, 0, 25) . '...';
     }
 
     $placeholder = $name;
