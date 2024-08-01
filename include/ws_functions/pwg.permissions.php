@@ -41,6 +41,7 @@ function ws_permissions_getList(
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
+
         $perms[$row['cat_id']]['users'][] = intval($row['user_id']);
     }
 
@@ -52,6 +53,7 @@ function ws_permissions_getList(
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
+
         $perms[$row['cat_id']]['users_indirect'][] = intval($row['user_id']);
     }
 
@@ -63,31 +65,27 @@ function ws_permissions_getList(
         if (! isset($perms[$row['cat_id']])) {
             $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
         }
+
         $perms[$row['cat_id']]['groups'][] = intval($row['group_id']);
     }
 
     // filter by group and user
     foreach ($perms as $cat_id => &$cat) {
-        if (isset($params['group_id'])) {
-            if (empty($cat['groups']) or count(array_intersect($cat['groups'], $params['group_id'])) == 0) {
-                unset($perms[$cat_id]);
-                continue;
-            }
-        }
-        if (isset($params['user_id'])) {
-            if (
-                (empty($cat['users_indirect']) or count(array_intersect($cat['users_indirect'], $params['user_id'])) == 0)
-                and (empty($cat['users']) or count(array_intersect($cat['users'], $params['user_id'])) == 0)
-            ) {
-                unset($perms[$cat_id]);
-                continue;
-            }
+        if (isset($params['group_id']) && (empty($cat['groups']) || count(array_intersect($cat['groups'], $params['group_id'])) == 0)) {
+            unset($perms[$cat_id]);
+            continue;
         }
 
-        $cat['groups'] = ! empty($cat['groups']) ? array_values(array_unique($cat['groups'])) : [];
-        $cat['users'] = ! empty($cat['users']) ? array_values(array_unique($cat['users'])) : [];
-        $cat['users_indirect'] = ! empty($cat['users_indirect']) ? array_values(array_unique($cat['users_indirect'])) : [];
+        if (isset($params['user_id']) && ((empty($cat['users_indirect']) || count(array_intersect($cat['users_indirect'], $params['user_id'])) == 0) && (empty($cat['users']) || count(array_intersect($cat['users'], $params['user_id'])) == 0))) {
+            unset($perms[$cat_id]);
+            continue;
+        }
+
+        $cat['groups'] = empty($cat['groups']) ? [] : array_values(array_unique($cat['groups']));
+        $cat['users'] = empty($cat['users']) ? [] : array_values(array_unique($cat['users']));
+        $cat['users_indirect'] = empty($cat['users_indirect']) ? [] : array_values(array_unique($cat['users_indirect']));
     }
+
     unset($cat);
 
     return [
@@ -152,6 +150,7 @@ function ws_permissions_add(
         if ($params['recursive']) {
             $_POST['apply_on_sub'] = true;
         }
+
         add_permission_on_category($params['cat_id'], $params['user_id']);
     }
 

@@ -16,15 +16,16 @@ if (! defined('PHPWG_ROOT_PATH')) {
 include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 check_status(ACCESS_ADMINISTRATOR);
 
-$sections = explode('/', $_GET['section']);
-for ($i = 0; $i < count($sections); $i++) {
+$sections = explode('/', (string) $_GET['section']);
+$counter = count($sections);
+for ($i = 0; $i < $counter; $i++) {
     if (empty($sections[$i])) {
         unset($sections[$i]);
         $i--;
         continue;
     }
 
-    if ($sections[$i] == '..' or ! preg_match('/^[a-zA-Z0-9_\.-]+$/', $sections[$i])) {
+    if ($sections[$i] === '..' || ! preg_match('/^[a-zA-Z0-9_\.-]+$/', $sections[$i])) {
         die('invalid section token [' . htmlentities($sections[$i]) . ']');
     }
 }

@@ -27,10 +27,11 @@ declare(strict_types=1);
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
+
 include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 include_once(LOCALEDIT_PATH . 'include/functions.inc.php');
 load_language('plugin.lang', LOCALEDIT_PATH);
-$my_base_url = get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__));
+$my_base_url = get_root_url() . 'admin.php?page=plugin-' . basename(__DIR__);
 
 check_status(ACCESS_WEBMASTER);
 
@@ -42,7 +43,7 @@ if (empty($conf['LocalFilesEditor_tabs'])) {
     $conf['LocalFilesEditor_tabs'] = ['localconf', 'css', 'tpl', 'lang', 'plug'];
 }
 
-$page['tab'] = isset($_GET['tab']) ? $_GET['tab'] : $conf['LocalFilesEditor_tabs'][0];
+$page['tab'] = $_GET['tab'] ?? $conf['LocalFilesEditor_tabs'][0];
 
 if (! in_array($page['tab'], $conf['LocalFilesEditor_tabs'])) {
     die('Hacking attempt!');
@@ -52,6 +53,7 @@ $tabsheet = new tabsheet();
 foreach ($conf['LocalFilesEditor_tabs'] as $tab) {
     $tabsheet->add($tab, l10n('locfiledit_onglet_' . $tab), $my_base_url . '-' . $tab);
 }
+
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
@@ -75,16 +77,18 @@ if (isset($_POST['submit'])) {
     if (! is_webmaster()) {
         $page['errors'][] = l10n('locfiledit_webmaster_only');
     } else {
-        $content_file = stripslashes($_POST['text']);
-        if (get_extension($edited_file) == 'php') {
+        $content_file = stripslashes((string) $_POST['text']);
+        if (get_extension($edited_file) === 'php') {
             $content_file = eval_syntax($content_file);
         }
+
         if ($content_file === false) {
             $page['errors'][] = l10n('locfiledit_syntax_error');
         } else {
-            if ($page['tab'] == 'plug' and ! is_dir(PHPWG_PLUGINS_PATH . 'PersonalPlugin')) {
+            if ($page['tab'] == 'plug' && ! is_dir(PHPWG_PLUGINS_PATH . 'PersonalPlugin')) {
                 @mkdir(PHPWG_PLUGINS_PATH . 'PersonalPlugin');
             }
+
             if (file_exists($edited_file)) {
                 @copy($edited_file, get_bak_file($edited_file));
                 $page['infos'][] = l10n('locfiledit_saved_bak', substr(get_bak_file($edited_file), 2));
@@ -106,24 +110,26 @@ if (isset($_POST['submit'])) {
 // |                            template initialization
 // +-----------------------------------------------------------------------+
 $template->set_filenames([
-    'plugin_admin_content' => dirname(__FILE__) . '/template/admin.tpl',
+    'plugin_admin_content' => __DIR__ . '/template/admin.tpl',
 ]);
 
 if (! empty($edited_file)) {
     if (! empty($page['errors'])) {
-        $content_file = stripslashes($_POST['text']);
+        $content_file = stripslashes((string) $_POST['text']);
     }
+
     $template->assign(
         'zone_edit',
         [
             'EDITED_FILE' => $edited_file,
-            'CONTENT_FILE' => htmlspecialchars($content_file),
-            'FILE_NAME' => trim($edited_file, './\\'),
+            'CONTENT_FILE' => htmlspecialchars((string) $content_file),
+            'FILE_NAME' => trim((string) $edited_file, './\\'),
         ]
     );
     if (file_exists(get_bak_file($edited_file))) {
         $template->assign('restore', true);
     }
+
     if (file_exists($edited_file)) {
         $template->assign('restore_infos', true);
     }
