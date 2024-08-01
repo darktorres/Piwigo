@@ -238,9 +238,9 @@ if (count($categories) > 0) {
                 ]
             ),
             'CAPTION_NB_IMAGES' => get_display_images_count(
-                $category['nb_images'],
-                $category['count_images'],
-                $category['count_categories'],
+                (int) $category['nb_images'],
+                (int) $category['count_images'],
+                (int) $category['count_categories'],
                 true,
                 '<br>'
             ),

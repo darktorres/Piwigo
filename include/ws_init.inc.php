@@ -12,6 +12,7 @@ declare(strict_types=1);
 defined('PHPWG_ROOT_PATH') or trigger_error('Hacking attempt!', E_USER_ERROR);
 
 include_once(PHPWG_ROOT_PATH . 'include/ws_core.inc.php');
+include_once(PHPWG_ROOT_PATH . 'include/ws_functions.inc.php');
 
 add_event_handler('ws_add_methods', 'ws_addDefaultMethods');
 add_event_handler('ws_invoke_allowed', 'ws_isInvokeAllowed', EVENT_HANDLER_PRIORITY_NEUTRAL, 3);
