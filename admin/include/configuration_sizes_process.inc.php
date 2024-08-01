@@ -30,13 +30,13 @@ $original_fields = [
 $updates = [];
 
 foreach ($original_fields as $field) {
-    $value = ! empty($_POST[$field]) ? $_POST[$field] : null;
+    $value = empty($_POST[$field]) ? null : $_POST[$field];
     $updates[$field] = $value;
 }
 
 save_upload_form_config($updates, $page['errors'], $errors);
 
-if ($_POST['resize_quality'] < 50 or $_POST['resize_quality'] > 98) {
+if ($_POST['resize_quality'] < 50 || $_POST['resize_quality'] > 98) {
     $errors['resize_quality'] = '[50..98]';
 }
 
@@ -44,13 +44,14 @@ $pderivatives = $_POST['d'];
 
 // step 1 - sanitize HTML input
 foreach ($pderivatives as $type => &$pderivative) {
-    if ($pderivative['must_square'] = ($type == IMG_SQUARE ? true : false)) {
+    if ($pderivative['must_square'] = ($type == IMG_SQUARE)) {
         $pderivative['h'] = $pderivative['w'];
         $pderivative['minh'] = $pderivative['minw'] = $pderivative['w'];
         $pderivative['crop'] = 100;
     }
-    $pderivative['must_enable'] = ($type == IMG_SQUARE || $type == IMG_THUMB || $type == $conf['derivative_default_size']) ? true : false;
-    $pderivative['enabled'] = isset($pderivative['enabled']) || $pderivative['must_enable'] ? true : false;
+
+    $pderivative['must_enable'] = $type == IMG_SQUARE || $type == IMG_THUMB || $type == $conf['derivative_default_size'];
+    $pderivative['enabled'] = isset($pderivative['enabled']) || $pderivative['must_enable'];
 
     if (isset($pderivative['crop'])) {
         $pderivative['crop'] = 100;
@@ -62,10 +63,11 @@ foreach ($pderivatives as $type => &$pderivative) {
         $pderivative['minh'] = null;
     }
 }
-unset($pderivative);
 
+unset($pderivative);
 // step 2 - check validity
-$prev_w = $prev_h = 0;
+$prev_w = 0;
+$prev_h = 0;
 foreach (ImageStdParams::get_all_types() as $type) {
     $pderivative = $pderivatives[$type];
     if (! $pderivative['enabled']) {
@@ -88,12 +90,12 @@ foreach (ImageStdParams::get_all_types() as $type) {
         }
     } else {
         $v = intval($pderivative['w']);
-        if ($v <= 0 or $v <= $prev_w) {
+        if ($v <= 0 || $v <= $prev_w) {
             $errors[$type]['w'] = '>' . $prev_w;
         }
 
         $v = intval($pderivative['h']);
-        if ($v <= 0 or $v <= $prev_h) {
+        if ($v <= 0 || $v <= $prev_h) {
             $errors[$type]['h'] = '>' . $prev_h;
         }
     }
@@ -111,7 +113,7 @@ foreach (ImageStdParams::get_all_types() as $type) {
 
 // step 3 - save data
 if (count($errors) == 0) {
-    $quality_changed = ImageStdParams::$quality != intval($_POST['resize_quality']);
+    $quality_changed = ImageStdParams::$quality !== intval($_POST['resize_quality']);
     ImageStdParams::$quality = intval($_POST['resize_quality']);
 
     $enabled = ImageStdParams::get_defined_type_map();
@@ -119,6 +121,7 @@ if (count($errors) == 0) {
     if ($disabled === false) {
         $disabled = [];
     }
+
     $changed_types = [];
 
     foreach (ImageStdParams::get_all_types() as $type) {
@@ -133,20 +136,15 @@ if (count($errors) == 0) {
                 )
             );
             $new_params->sharpen = intval($pderivative['sharpen']);
-
             ImageStdParams::apply_global($new_params);
-
             if (isset($enabled[$type])) {
                 $old_params = $enabled[$type];
                 $same = true;
-                if (! size_equals($old_params->sizing->ideal_size, $new_params->sizing->ideal_size)
-                    or $old_params->sizing->max_crop != $new_params->sizing->max_crop) {
+                if (! size_equals($old_params->sizing->ideal_size, $new_params->sizing->ideal_size) || $old_params->sizing->max_crop != $new_params->sizing->max_crop) {
                     $same = false;
                 }
 
-                if ($same
-                    and $new_params->sizing->max_crop != 0
-                    and ! size_equals($old_params->sizing->min_size, $new_params->sizing->min_size)) {
+                if ($same && $new_params->sizing->max_crop != 0 && ! size_equals($old_params->sizing->min_size, $new_params->sizing->min_size)) {
                     $same = false;
                 }
 
@@ -161,17 +159,18 @@ if (count($errors) == 0) {
                 } else {
                     $new_params->last_mod_time = $old_params->last_mod_time;
                 }
+
                 $enabled[$type] = $new_params;
             } else {// now enabled, before was disabled
                 $enabled[$type] = $new_params;
                 unset($disabled[$type]);
             }
-        } else {// disabled
-            if (isset($enabled[$type])) {// now disabled, before was enabled
-                $changed_types[] = $type;
-                $disabled[$type] = $enabled[$type];
-                unset($enabled[$type]);
-            }
+        } elseif (isset($enabled[$type])) {
+            // disabled
+            // now disabled, before was enabled
+            $changed_types[] = $type;
+            $disabled[$type] = $enabled[$type];
+            unset($enabled[$type]);
         }
     }
 
@@ -191,14 +190,15 @@ if (count($errors) == 0) {
 
     ImageStdParams::set_and_save($enabled_by);
     if (count($disabled) == 0) {
-        $query = 'DELETE FROM config WHERE param = \'disabled_derivatives\'';
+        $query = "DELETE FROM config WHERE param = 'disabled_derivatives'";
         pwg_query($query);
     } else {
         conf_update_param('disabled_derivatives', addslashes(serialize($disabled)));
     }
+
     $conf['disabled_derivatives'] = serialize($disabled);
 
-    if (count($changed_types)) {
+    if ($changed_types !== []) {
         clear_derivative_cache($changed_types);
     }
 
@@ -212,7 +212,7 @@ if (count($errors) == 0) {
             $template->append(
                 'sizes',
                 [
-                    $field => strip_tags($_POST[$field]), // strip_tags prevents from XSS attempt
+                    $field => strip_tags((string) $_POST[$field]), // strip_tags prevents from XSS attempt
                 ],
                 true
             );

@@ -11,12 +11,11 @@ function int_delete_gdthumb_cache(
 ): void {
     if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
         while (($node = readdir($contents)) !== false) {
-            if ($node != '.'
-                and $node != '..'
-                and is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)) {
+            if ($node !== '.' && $node !== '..' && is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)) {
                 clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
             }
         }
+
         closedir($contents);
     }
 }
@@ -31,11 +30,11 @@ function delete_gdthumb_cache(
 global $template, $conf, $page;
 
 load_language('plugin.lang', GDTHUMB_PATH);
-include(dirname(__FILE__) . '/config_default.inc.php');
+include(__DIR__ . '/config_default.inc.php');
 $params = $conf['gdThumb'];
 
 if (isset($_GET['getMissingDerivative'])) {
-    list($max_id, $image_count) = pwg_db_fetch_row(pwg_query('SELECT MAX(id) + 1, COUNT(*) FROM images;'));
+    [$max_id, $image_count] = pwg_db_fetch_row(pwg_query('SELECT MAX(id) + 1, COUNT(*) FROM images;'));
     $start_id = intval($_POST['prev_page']);
     $max_urls = intval($_POST['max_urls']);
     if ($start_id <= 0) {
@@ -58,21 +57,25 @@ if (isset($_GET['getMissingDerivative'])) {
         while ($row = pwg_db_fetch_assoc($result)) {
             $start_id = $row['id'];
             $src_image = new SrcImage($row);
-            if ($src_image->is_mimetype()) {
+            if ($src_image->is_mimetype() !== 0) {
                 continue;
             }
+
             if (($params['method'] == 'slide') || ($params['method'] == 'square')) {
                 $derivative = new DerivativeImage(ImageStdParams::get_custom($params['height'], 9999), $src_image);
             } else {
                 $derivative = new DerivativeImage(ImageStdParams::get_custom(9999, $params['height']), $src_image);
             }
+
             if (@filemtime($derivative->get_path()) === false) {
                 $urls[] = $derivative->get_url() . $uid;
             }
+
             if (count($urls) >= $max_urls && ! $is_last) {
                 break;
             }
         }
+
         if ($is_last) {
             $start_id = 0;
         }
@@ -82,6 +85,7 @@ if (isset($_GET['getMissingDerivative'])) {
     if ($start_id) {
         $ret['next_page'] = $start_id;
     }
+
     $ret['urls'] = $urls;
     echo json_encode($ret);
     exit();
@@ -97,42 +101,33 @@ if (isset($_POST['cachedelete'])) {
 
 // Save configuration
 if (isset($_POST['submit'])) {
+    $method = empty($_POST['method']) ? 'resize' : $_POST['method'];
 
-    if (empty($_POST['method'])) {
-        $method = 'resize';
-    } else {
-        $method = $_POST['method'];
-    }
-    if (empty($_POST['normalize_title'])) {
-        $normalize = 'off';
-    } else {
-        $normalize = $_POST['normalize_title'];
-    }
-
+    $normalize = empty($_POST['normalize_title']) ? 'off' : $_POST['normalize_title'];
     $big_thumb = ! empty($_POST['big_thumb']);
     $big_thumb_noinpw = ! empty($_POST['big_thumb_noinpw']);
     $thumb_animate = ! empty($_POST['thumb_animate']);
     $thumb_mode_album = $_POST['thumb_mode_album'];
     $thumb_mode_photo = $_POST['thumb_mode_photo'];
-
     if ($method == 'slide') {
         if ($big_thumb) {
             $big_thumb = false;
-            array_push($page['warnings'], l10n('Big thumb cannot be used in Slide mode. Disabled'));
+            $page['warnings'][] = l10n('Big thumb cannot be used in Slide mode. Disabled');
         }
+
         if ($thumb_animate) {
             $thumb_animate = false;
-            array_push($page['warnings'], l10n('Thumb animation cannot be used in Slide mode. Disabled'));
+            $page['warnings'][] = l10n('Thumb animation cannot be used in Slide mode. Disabled');
         }
 
         if (($thumb_mode_album == 'overlay-ex') || ($thumb_mode_album == 'overlay') || ($thumb_mode_album == 'top') || ($thumb_mode_album == 'bottom')) {
             $thumb_mode_album = 'bottom_static';
-            array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+            $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         }
 
         if (($thumb_mode_photo == 'overlay-ex') || ($thumb_mode_photo == 'overlay') || ($thumb_mode_photo == 'top') || ($thumb_mode_photo == 'bottom')) {
             $thumb_mode_photo = 'bottom_static';
-            array_push($page['warnings'], l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+            $page['warnings'][] = l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         }
     }
 
@@ -155,15 +150,16 @@ if (isset($_POST['submit'])) {
         'no_wordwrap' => ! empty($_POST['no_wordwrap']),
         'thumb_animate' => $thumb_animate,
     ];
-
     if (! is_numeric($params['height'])) {
-        array_push($page['errors'], l10n('Thumbnails max height must be an integer'));
+        $page['errors'][] = l10n('Thumbnails max height must be an integer');
     }
+
     if (! is_numeric($params['margin'])) {
-        array_push($page['errors'], l10n('Margin between thumbnails must be an integer'));
+        $page['errors'][] = l10n('Margin between thumbnails must be an integer');
     }
+
     if (! is_numeric($params['nb_image_page'])) {
-        array_push($page['errors'], l10n('Number of photos per page must be an integer'));
+        $page['errors'][] = l10n('Number of photos per page must be an integer');
     }
 
     if ($params['height'] != $conf['gdThumb']['height']) {
@@ -174,17 +170,13 @@ if (isset($_POST['submit'])) {
 
     if (empty($page['errors'])) {
         conf_update_param('gdThumb', $params);
-        array_push($page['infos'], l10n('Information data registered in database'));
+        $page['infos'][] = l10n('Information data registered in database');
     }
 }
 
 // Try to find GreyDragon Theme and use Theme's styles for admin area
-$css_file = str_replace('/./', '/', dirname(dirname(dirname(__FILE__))) . '/' . GDTHEME_PATH . 'admin/css/styles.css');
-if (@file_exists($css_file)) {
-    $custom_css = 'yes';
-} else {
-    $custom_css = 'no';
-}
+$css_file = str_replace('/./', '/', dirname(__FILE__, 3) . '/' . GDTHEME_PATH . 'admin/css/styles.css');
+$custom_css = @file_exists($css_file) ? 'yes' : 'no';
 
 if (! isset($params['normalize_title'])) {
     $params['normalize_title'] = 'off';
@@ -220,6 +212,6 @@ $template->assign(
 );
 
 $template->set_filenames([
-    'plugin_admin_content' => dirname(__FILE__) . '/template/admin.tpl',
+    'plugin_admin_content' => __DIR__ . '/template/admin.tpl',
 ]);
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugin_admin_content');

@@ -21,7 +21,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
     check_input_parameter('cat_true', $_POST, true, PATTERN_ID);
     check_input_parameter('cat_false', $_POST, true, PATTERN_ID);
@@ -32,9 +32,7 @@ if (! empty($_POST)) {
 // |                       modification registration                       |
 // +-----------------------------------------------------------------------+
 
-if (isset($_POST['falsify'])
-    and isset($_POST['cat_true'])
-    and count($_POST['cat_true']) > 0) {
+if (isset($_POST['falsify']) && isset($_POST['cat_true']) && count($_POST['cat_true']) > 0) {
     switch ($_GET['section']) {
         case 'comments':
 
@@ -66,9 +64,7 @@ if (isset($_POST['falsify'])
         'section' => $_GET['section'],
         'action' => 'falsify',
     ]);
-} elseif (isset($_POST['trueify'])
-         and isset($_POST['cat_false'])
-         and count($_POST['cat_false']) > 0) {
+} elseif (isset($_POST['trueify']) && isset($_POST['cat_false']) && count($_POST['cat_false']) > 0) {
     switch ($_GET['section']) {
         case 'comments':
 
@@ -113,7 +109,7 @@ $template->set_filenames(
     ]
 );
 
-$page['section'] = isset($_GET['section']) ? $_GET['section'] : 'status';
+$page['section'] = $_GET['section'] ?? 'status';
 $base_url = PHPWG_ROOT_PATH . 'admin.php?page=cat_options&amp;section=';
 
 $template->assign(
@@ -198,6 +194,7 @@ switch ($page['section']) {
         break;
 
 }
+
 display_select_cat_wrapper($query_true, [], 'category_option_true');
 display_select_cat_wrapper($query_false, [], 'category_option_false');
 $template->assign('PWG_TOKEN', get_pwg_token());

@@ -31,19 +31,15 @@ $tabsheet->assign();
 // +-----------------------------------------------------------------------+
 // |                            initialization                             |
 // +-----------------------------------------------------------------------+
-if (isset($_GET['start']) and is_numeric($_GET['start'])) {
-    $start = $_GET['start'];
-} else {
-    $start = 0;
-}
+$start = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['start'] : 0;
 
 $elements_per_page = 10;
-if (isset($_GET['display']) and is_numeric($_GET['display'])) {
+if (isset($_GET['display']) && is_numeric($_GET['display'])) {
     $elements_per_page = $_GET['display'];
 }
 
 $order_by_index = 0;
-if (isset($_GET['order_by']) and is_numeric($_GET['order_by'])) {
+if (isset($_GET['order_by']) && is_numeric($_GET['order_by'])) {
     $order_by_index = $_GET['order_by'];
 }
 
@@ -57,10 +53,10 @@ if (isset($_GET['users'])) {
 }
 
 $page['cat_filter'] = '';
-if (isset($_GET['cat']) and is_numeric($_GET['cat'])) {
+if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
     $cat_ids = get_subcat_ids([$_GET['cat']]);
 
-    if (count($cat_ids) > 0) {
+    if ($cat_ids !== []) {
         $page['cat_filter'] = ' AND ic.category_id IN (' . implode(',', $cat_ids) . ')';
     }
 }
@@ -69,20 +65,20 @@ $users = [];
 $query = "SELECT {$conf['user_fields']['username']} AS username, {$conf['user_fields']['id']} AS id FROM users;";
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
-    $users[$row['id']] = stripslashes($row['username']);
+    $users[$row['id']] = stripslashes((string) $row['username']);
 }
 
 $query = 'SELECT COUNT(DISTINCT(r.element_id)) FROM rate AS r';
 
-if (! empty($page['cat_filter'])) {
+if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= ' JOIN images AS i ON r.element_id = i.id JOIN image_category AS ic ON ic.image_id = i.id';
 }
 
 $query .= " WHERE 1 = 1 {$page['user_filter']};";
-list($nb_images) = pwg_db_fetch_row(pwg_query($query));
+[$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
 $query = 'SELECT COUNT(*) FROM rate;';
-list($nb_elements) = pwg_db_fetch_row(pwg_query($query));
+[$nb_elements] = pwg_db_fetch_row(pwg_query($query));
 
 // +-----------------------------------------------------------------------+
 // |                             template init                             |
@@ -116,13 +112,15 @@ $available_order_by = [
     [l10n('Creation date'), 'date_creation DESC'],
     [l10n('Post date'), 'date_available DESC'],
 ];
+$counter = count($available_order_by);
 
-for ($i = 0; $i < count($available_order_by); $i++) {
+for ($i = 0; $i < $counter; $i++) {
     $template->append(
         'order_by_options',
         $available_order_by[$i][0]
     );
 }
+
 $template->assign('order_by_options_selected', [$order_by_index]);
 
 $user_options = [
@@ -139,7 +137,7 @@ $query =
 'SELECT i.id, i.path, i.file, i.representative_ext, i.rating_score AS score, MAX(r.date) AS recently_rated, ROUND(AVG(r.rate), 2) AS avg_rates, COUNT(r.rate) AS nb_rates,
  SUM(r.rate) AS sum_rates FROM rate AS r LEFT JOIN images AS i ON r.element_id = i.id';
 
-if (! empty($page['cat_filter'])) {
+if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= ' JOIN image_category AS ic ON ic.image_id = i.id';
 }
 
@@ -178,18 +176,16 @@ foreach ($images as $image) {
       ];
 
     while ($row = pwg_db_fetch_assoc($result)) {
-        if (isset($users[$row['user_id']])) {
-            $user_rate = $users[$row['user_id']];
-        } else {
-            $user_rate = '? ' . $row['user_id'];
-        }
-        if (strlen($row['anonymous_id']) > 0) {
+        $user_rate = $users[$row['user_id']] ?? '? ' . $row['user_id'];
+
+        if (strlen((string) $row['anonymous_id']) > 0) {
             $user_rate .= '(' . $row['anonymous_id'] . ')';
         }
 
         $row['USER'] = $user_rate;
         $tpl_image['rates'][] = $row;
     }
+
     $template->append('images', $tpl_image);
 }
 

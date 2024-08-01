@@ -80,13 +80,12 @@ function get_history(
             }
         }
 
-        if (count($local_clauses) > 0) {
+        if ($local_clauses !== []) {
             $clauses[] = implode(' OR ', $local_clauses);
         }
     }
 
-    if (isset($search['fields']['user'])
-        and $search['fields']['user'] != -1) {
+    if (isset($search['fields']['user']) && $search['fields']['user'] != -1) {
         $clauses[] = 'user_id = ' . $search['fields']['user'];
     }
 
@@ -95,12 +94,7 @@ function get_history(
     }
 
     if (isset($search['fields']['filename'])) {
-        if (count($search['image_ids']) == 0) {
-            // a clause that is always false
-            $clauses[] = '1 = 2 ';
-        } else {
-            $clauses[] = 'image_id IN (' . implode(', ', $search['image_ids']) . ')';
-        }
+        $clauses[] = count($search['image_ids']) == 0 ? '1 = 2 ' : 'image_id IN (' . implode(', ', $search['image_ids']) . ')';
     }
 
     if (isset($search['fields']['ip'])) {
@@ -139,7 +133,7 @@ function history_summarize(
     $summary_lines = query2array($query);
 
     $history_min_id = 0;
-    if (count($summary_lines) > 0) {
+    if ($summary_lines !== []) {
         $last_summary = $summary_lines[0];
         $history_min_id = $last_summary['history_id_to'];
     } else {
@@ -148,7 +142,7 @@ function history_summarize(
         // have been purged already.
         $query = 'SELECT MIN(id) AS min_id FROM history;';
         $history_lines = query2array($query);
-        if (count($history_lines) > 0) {
+        if ($history_lines !== []) {
             $history_min_id = $history_lines[0]['min_id'] - 1;
         }
     }
@@ -170,9 +164,9 @@ function history_summarize(
 
     while ($row = pwg_db_fetch_assoc($result)) {
         $time_keys = [
-            substr($row['date'], 0, 4), //yyyy
-            substr($row['date'], 0, 7), //yyyy-mm
-            substr($row['date'], 0, 10), //yyyy-mm-dd
+            substr((string) $row['date'], 0, 4), //yyyy
+            substr((string) $row['date'], 0, 7), //yyyy-mm
+            substr((string) $row['date'], 0, 10), //yyyy-mm-dd
             sprintf(
                 '%s-%02u',
                 $row['date'],
@@ -188,6 +182,7 @@ function history_summarize(
                     'history_id_to' => $row['max_id'],
                 ];
             }
+
             $need_update[$time_key]['nb_pages'] += $row['nb_pages'];
 
             if ($row['min_id'] < $need_update[$time_key]['history_id_from']) {
@@ -224,7 +219,7 @@ function history_summarize(
     $inserts = [];
 
     if (isset($first_time_key)) {
-        list($year, $month, $day, $hour) = explode('-', $first_time_key);
+        [$year, $month, $day, $hour] = explode('-', $first_time_key);
 
         $query = "SELECT * FROM history_summary WHERE year = {$year} AND (month IS NULL OR (month = {$month} AND (day is NULL OR (day = {$day} AND (hour IS NULL OR hour = {$hour})))));";
         $result = pwg_query($query);
@@ -263,7 +258,7 @@ function history_summarize(
         ];
     }
 
-    if (count($updates) > 0) {
+    if ($updates !== []) {
         mass_updates(
             'history_summary',
             [
@@ -274,7 +269,7 @@ function history_summarize(
         );
     }
 
-    if (count($inserts) > 0) {
+    if ($inserts !== []) {
         mass_inserts(
             'history_summary',
             array_keys($inserts[0]),
@@ -299,7 +294,7 @@ function history_autopurge(): void
     // we want to purge only if there are too many lines and if the lines are summarized
 
     $query = 'SELECT COUNT(*) FROM history;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
 
     if ($count <= $conf['history_autopurge_keep_lines']) {
         history_remove_summarized_column();
@@ -337,7 +332,7 @@ function history_autopurge(): void
 
     $history_id_delete_before = min($search_min);
 
-    $logger->debug(__FUNCTION__ . ', ' . join('/', $search_min));
+    $logger->debug(__FUNCTION__ . ', ' . implode('/', $search_min));
 
     $query = "DELETE FROM history WHERE id < {$history_id_delete_before};";
     pwg_query($query);
@@ -349,12 +344,12 @@ function history_remove_summarized_column(): void
 {
     global $conf;
 
-    if (isset($conf['history_summarized_dropped']) and $conf['history_summarized_dropped']) {
+    if (isset($conf['history_summarized_dropped']) && $conf['history_summarized_dropped']) {
         return;
     }
 
     $query = 'SELECT COUNT(*) FROM history;';
-    list($count) = pwg_db_fetch_row(pwg_query($query));
+    [$count] = pwg_db_fetch_row(pwg_query($query));
 
     if ($count > $conf['history_autopurge_keep_lines'] + $conf['history_autopurge_blocksize']) {
         // it's not yet time to remove history.summarized

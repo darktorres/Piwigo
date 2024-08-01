@@ -12,9 +12,9 @@ Author URI: http://piwigo.org
 Has Settings: webmaster
 */
 
-defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
+defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
-define('ADMINTOOLS_ID', basename(dirname(__FILE__)));
+define('ADMINTOOLS_ID', basename(__DIR__));
 define('ADMINTOOLS_PATH', PHPWG_PLUGINS_PATH . ADMINTOOLS_ID . '/');
 define('ADMINTOOLS_ADMIN', get_root_url() . 'admin.php?page=plugin-' . ADMINTOOLS_ID);
 
@@ -26,8 +26,8 @@ $MultiView = new MultiView();
 
 add_event_handler('init', admintools_init(...));
 
-add_event_handler('user_init', [&$MultiView, 'user_init']);
-add_event_handler('init', [&$MultiView, 'init']);
+add_event_handler('user_init', $MultiView->user_init(...));
+add_event_handler('init', $MultiView->init(...));
 
 add_event_handler('ws_add_methods', MultiView::register_ws(...));
 add_event_handler('delete_user', MultiView::invalidate_cache(...));
