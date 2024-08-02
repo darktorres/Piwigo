@@ -34,8 +34,8 @@
    * @param callback {function} called with the data as first parameter
    */
   LocalStorageCache.prototype.get = function (callback) {
-    var now = new Date().getTime(),
-      that = this;
+    var now = new Date().getTime();
+    var that = this;
 
     if (this.ready && this.storage[this.key] != undefined) {
       var cache = JSON.parse(this.storage[this.key]);
@@ -103,10 +103,10 @@
 
     this.get(function (data) {
       $target.each(function () {
-        var filtered,
-          value,
-          defaultValue,
-          options = $.extend({}, globalOptions);
+        var filtered;
+        var value;
+        var defaultValue;
+        var options = $.extend({}, globalOptions);
 
         // apply filter function
         if (options.filter != undefined) {
