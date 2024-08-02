@@ -6,11 +6,11 @@
       $("div.infos").hide();
     });
 
-  var loader = new ImageLoader({ onChanged: loaderChanged }),
-    pending_next_page = null,
-    last_image_show_time = 0,
-    allDoneDfd,
-    urlDfd;
+  var loader = new ImageLoader({ onChanged: loaderChanged });
+  var pending_next_page = null;
+  var last_image_show_time = 0;
+  var allDoneDfd;
+  var urlDfd;
 
   jQuery.gdThumb_start = function () {
     allDoneDfd = jQuery.Deferred();
@@ -83,8 +83,8 @@
         var now = jQuery.now();
         if (now - last_image_show_time > 3000) {
           last_image_show_time = now;
-          var h = img.height,
-            url = img.src;
+          var h = img.height;
+          var url = img.src;
           jQuery("#feedbackWrap").hide("slide", { direction: "down" }, function () {
             last_image_show_time = jQuery.now();
             if (h > 300) jQuery("#feedbackImg").attr("height", 300);
