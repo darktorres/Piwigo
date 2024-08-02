@@ -1,6 +1,6 @@
 function rvas_get_scaled_size(d, available) {
-  var ratio_w = d.w / available.w,
-    ratio_h = d.h / available.h;
+  var ratio_w = d.w / available.w;
+  var ratio_h = d.h / available.h;
   if (ratio_w > 1 || ratio_h > 1) {
     if (ratio_w > ratio_h) return { w: available.w / available.dpr, h: Math.floor(d.h / ratio_w / available.dpr) };
     else return { w: Math.floor(d.w / ratio_h / available.dpr), h: available.h / available.dpr };
@@ -9,9 +9,9 @@ function rvas_get_scaled_size(d, available) {
 }
 
 function rvas_get_available_size() {
-  var width = $("#theImage").width(),
-    zoom = 1,
-    docHeight;
+  var width = $("#theImage").width();
+  var zoom = 1;
+  var docHeight;
 
   if ("innerHeight" in window) {
     docHeight = window.innerHeight;
@@ -29,10 +29,10 @@ function rvas_get_available_size() {
 }
 
 function rvas_choose(relaxed) {
-  var best,
-    available = rvas_get_available_size(),
-    $img = $("#theMainImage"),
-    changed = true;
+  var best;
+  var available = rvas_get_available_size();
+  var $img = $("#theMainImage");
+  var changed = true;
   for (var i = 0; i < RVAS.derivatives.length; i++) {
     var d = RVAS.derivatives[i];
     if (d.w > available.w * available.zoom || d.h > available.h * available.zoom) {
@@ -44,8 +44,8 @@ function rvas_choose(relaxed) {
     if (available.dpr > 1) {
       var rescaled = rvas_get_scaled_size(best, available);
       if ($img.attr("width") && available.zoom == 1) {
-        var changeRatio = rescaled.h / $img.height(),
-          limit = relaxed ? 1.25 : 1.15;
+        var changeRatio = rescaled.h / $img.height();
+        var limit = relaxed ? 1.25 : 1.15;
         if ((changeRatio >= 1 && changeRatio < limit) || (changeRatio < 1 && changeRatio > 1 / limit && $img.width() < available.w / available.dpr)) return;
       }
       if (!$img.data("natural-w") || $img.data("natural-w") < best.w) {
@@ -56,8 +56,8 @@ function rvas_choose(relaxed) {
       }
     } else {
       if ($img.attr("width")) {
-        var changeRatio = best.h / $img.height(),
-          limit = relaxed ? 2 : 1.15;
+        var changeRatio = best.h / $img.height();
+        var limit = relaxed ? 2 : 1.15;
         if ((changeRatio >= 1 && changeRatio < limit) || (changeRatio < 1 && changeRatio > 1 / limit && $img.width() < available.w)) return;
       }
       $img
@@ -91,8 +91,8 @@ $(document).ready(function () {
   }
 
   $(window).on("resize", function () {
-    var w = $("body").width(),
-      de = $(document.documentElement);
+    var w = $("body").width();
+    var de = $(document.documentElement);
     if (document.location.search.indexOf("slideshow") == -1) {
       if (w < 1262) de.removeClass("wide");
       else de.addClass("wide");
@@ -104,8 +104,8 @@ $(document).ready(function () {
 
   $("#theMainImage").on("click", function (e) {
     if (!$(this).attr("usemap") && e.clientY) {
-      var pct = (e.pageX - $(this).offset().left) / $(this).width(),
-        clientY = e.pageY - $(this).offset().top;
+      var pct = (e.pageX - $(this).offset().left) / $(this).width();
+      var clientY = e.pageY - $(this).offset().top;
       if (pct < 0.3) {
         if ($("#linkPrev").length && clientY > 15) window.location = $("#linkPrev").attr("href");
       } else if (pct > 0.7) {
