@@ -1,4 +1,6 @@
-var gRatingOptions, gRatingButtons, gUserRating;
+var gRatingOptions;
+var gRatingButtons;
+var gUserRating;
 
 function makeNiceRatingForm(options) {
   gRatingOptions = options;
@@ -65,9 +67,9 @@ function updateRating(e) {
         if (gRatingOptions.updateRateElement) gRatingOptions.updateRateElement.innerHTML = gRatingOptions.updateRateText;
         if (gRatingOptions.ratingSummaryElement) {
           var t = gRatingOptions.ratingSummaryText;
-          var args = [result.score, result.count, result.average],
-            idx = 0,
-            rexp = new RegExp(/%\.?\d*[sdf]/);
+          var args = [result.score, result.count, result.average];
+          var idx = 0;
+          var rexp = new RegExp(/%\.?\d*[sdf]/);
           while (idx < args.length) t = t.replace(rexp, args[idx++]);
           gRatingOptions.ratingSummaryElement.innerHTML = t;
         }
