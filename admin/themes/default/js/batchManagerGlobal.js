@@ -73,11 +73,11 @@ $(document).on("mouseup", function (e) {
 
 /* Shift-click: select all photos between the click and the shift+click */
 jQuery(document).ready(function () {
-  var last_clicked = 0,
-    last_clickedstatus = true;
+  var last_clicked = 0;
+  var last_clickedstatus = true;
   jQuery.fn.enableShiftClick = function () {
-    var inputs = [],
-      count = 0;
+    var inputs = [];
+    var count = 0;
     this.find("input[type=checkbox]").each(function () {
       var pos = count;
       inputs[count++] = this;
@@ -177,8 +177,8 @@ function progress(success) {
   percent = parseInt((derivatives.done / derivatives.total) * 100);
   jQuery("#uploadingActions .progressbar").width(percent.toString() + "%");
   if (success !== undefined) {
-    var type = success ? "regenerateSuccess" : "regenerateError",
-      s = jQuery('[name="' + type + '"]').val();
+    var type = success ? "regenerateSuccess" : "regenerateError";
+    var s = jQuery('[name="' + type + '"]').val();
     jQuery('[name="' + type + '"]').val(++s);
   }
 
