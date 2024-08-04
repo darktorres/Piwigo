@@ -107,14 +107,10 @@ class c13y_internal
             'l10n_bad_status' => 'Main "webmaster" user status is incorrect',
         ];
 
-        $query = '
-  select u.' . $conf['user_fields']['id'] . ' as id, ui.status
-  from users as u
-    left join user_infos as ui
-        on u.' . $conf['user_fields']['id'] . ' = ui.user_id
-  where
-    u.' . $conf['user_fields']['id'] . ' in (' . implode(',', array_keys($c13y_users)) . ')
-  ;';
+        $c13y_users_ = implode(',', array_keys($c13y_users));
+        $query =
+        "SELECT u.{$conf['user_fields']['id']} AS id, ui.status FROM users AS u LEFT JOIN user_infos AS ui
+         ON u.{$conf['user_fields']['id']} = ui.user_id WHERE u.{$conf['user_fields']['id']} IN ({$c13y_users_});";
 
         $status = [];
 
