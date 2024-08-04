@@ -22,6 +22,6 @@ function theme_activate($id, $version, &$errors)
 
 function theme_delete()
 {
-    $query = 'DELETE FROM config WHERE param="modus_theme"';
+    $query = "DELETE FROM config WHERE param = 'modus_theme';";
     pwg_query($query);
 }

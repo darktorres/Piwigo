@@ -251,7 +251,7 @@ if (isset($_POST['submit'])) {
     // updating configuration if no error found
     if (! in_array($page['section'], ['sizes', 'watermark']) and count($page['errors']) == 0 and is_webmaster()) {
         //echo '<pre>'; print_r($_POST); echo '</pre>';
-        $result = pwg_query('SELECT param FROM config');
+        $result = pwg_query('SELECT param FROM config;');
         while ($row = pwg_db_fetch_assoc($result)) {
             if (isset($_POST[$row['param']])) {
                 $value = $_POST[$row['param']];
@@ -262,11 +262,8 @@ if (isset($_POST['submit'])) {
                     }
                 }
 
-                $query = '
-UPDATE config
-SET value = \'' . str_replace("\'", "''", $value) . '\'
-WHERE param = \'' . $row['param'] . '\'
-;';
+                $value_ = str_replace("\'", "''", $value);
+                $query = "UPDATE config SET value = '{$value_}' WHERE param = '{$row['param']}';";
                 pwg_query($query);
             }
         }
@@ -283,7 +280,7 @@ WHERE param = \'' . $row['param'] . '\'
 // restore default derivatives settings
 if ($page['section'] == 'sizes' and isset($_GET['action']) and $_GET['action'] == 'restore_settings') {
     ImageStdParams::set_and_save(ImageStdParams::get_default_sizes());
-    pwg_query('DELETE FROM config WHERE param = \'disabled_derivatives\'');
+    pwg_query("DELETE FROM config WHERE param = 'disabled_derivatives';");
     clear_derivative_cache();
 
     $page['infos'][] = l10n('Your configuration settings are saved');
@@ -363,12 +360,7 @@ switch ($page['section']) {
         );
 
         // list of groups
-        $query = '
-    SELECT
-        id,
-        name
-      FROM groups_table
-    ;';
+        $query = 'SELECT id, name FROM groups_table;';
         $groups = query2array($query, 'id', 'name');
         natcasesort($groups);
 

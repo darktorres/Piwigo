@@ -128,11 +128,9 @@ if (isset($_POST['submit']) and is_webmaster()) {
     //var_export( $best_slice ); var_export($mb_conf);  var_export($mb_conf_db);
     // END OPTIM
     */
-    $query = '
-UPDATE config
-  SET value=\'' . addslashes(serialize($mb_conf_db)) . '\'
-  WHERE param=\'blk_' . addslashes($menu->get_id()) . '\'
-  ';
+    $mb_conf_db_ = addslashes(serialize($mb_conf_db));
+    $menu_id_ = addslashes($menu->get_id());
+    $query = "UPDATE config SET value = '{$mb_conf_db_}' WHERE param = 'blk_{$menu_id_}';";
     pwg_query($query);
 
     $page['infos'][] = l10n('Order of menubar items has been updated successfully.');

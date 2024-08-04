@@ -69,19 +69,13 @@ if ($page['show_comments'] and isset($_POST['content'])) {
 
 if ($page['show_comments']) {
     if (! is_admin()) {
-        $validated_clause = '  AND validated = \'true\'';
+        $validated_clause = " AND validated = 'true'";
     } else {
         $validated_clause = '';
     }
 
     // number of comments for this picture
-    $query = '
-SELECT
-    COUNT(*) AS nb_comments
-  FROM comments
-  WHERE image_id = ' . $page['image_id']
-    . $validated_clause . '
-;';
+    $query = "SELECT COUNT(*) AS nb_comments FROM comments WHERE image_id = {$page['image_id']} {$validated_clause};";
     $row = pwg_db_fetch_assoc(pwg_query($query));
 
     // navigation bar creation
@@ -119,26 +113,9 @@ SELECT
             'COMMENTS_ORDER_TITLE' => $comments_order == 'ASC' ? l10n('Show latest comments first') : l10n('Show oldest comments first'),
         ]);
 
-        $query = '
-SELECT
-    com.id,
-    com.author,
-    com.author_id,
-    u.' . $conf['user_fields']['email'] . ' AS user_email,
-    com.date,
-    com.image_id,
-    com.website_url,
-    com.email,
-    com.content,
-    com.validated
-  FROM comments AS com
-  LEFT JOIN users AS u
-    ON u.' . $conf['user_fields']['id'] . ' = author_id
-  WHERE com.image_id = ' . $page['image_id'] . '
-    ' . $validated_clause . '
-  ORDER BY com.date ' . $comments_order . '
-  LIMIT ' . $conf['nb_comment_page'] . ' OFFSET ' . $page['start'] . '
-;';
+        $query =
+        "SELECT com.id, com.author, com.author_id, u.{$conf['user_fields']['email']} AS user_email, com.date, com.image_id, com.website_url, com.email, com.content, com.validated FROM comments AS com
+         LEFT JOIN users AS u ON u.{$conf['user_fields']['id']} = author_id WHERE com.image_id = {$page['image_id']} {$validated_clause} ORDER BY com.date {$comments_order} LIMIT {$conf['nb_comment_page']} OFFSET {$page['start']};";
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {
