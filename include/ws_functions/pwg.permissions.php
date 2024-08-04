@@ -26,17 +26,13 @@ function ws_permissions_getList($params, &$service)
 
     $cat_filter = '';
     if (! empty($params['cat_id'])) {
-        $cat_filter = 'WHERE cat_id IN(' . implode(',', $params['cat_id']) . ')';
+        $cat_filter = 'WHERE cat_id IN (' . implode(',', $params['cat_id']) . ')';
     }
 
     $perms = [];
 
     // direct users
-    $query = '
-SELECT user_id, cat_id
-  FROM user_access
-  ' . $cat_filter . '
-;';
+    $query = "SELECT user_id, cat_id FROM user_access {$cat_filter};";
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -47,13 +43,7 @@ SELECT user_id, cat_id
     }
 
     // indirect users
-    $query = '
-SELECT ug.user_id, ga.cat_id
-  FROM user_group AS ug
-    INNER JOIN group_access AS ga
-    ON ug.group_id = ga.group_id
-  ' . $cat_filter . '
-;';
+    $query = "SELECT ug.user_id, ga.cat_id FROM user_group AS ug INNER JOIN group_access AS ga ON ug.group_id = ga.group_id {$cat_filter};";
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -64,11 +54,7 @@ SELECT ug.user_id, ga.cat_id
     }
 
     // groups
-    $query = '
-SELECT group_id, cat_id
-  FROM group_access
-  ' . $cat_filter . '
-;';
+    $query = "SELECT group_id, cat_id FROM group_access {$cat_filter};";
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -134,12 +120,8 @@ function ws_permissions_add($params, &$service)
             $cat_ids = array_merge($cat_ids, get_subcat_ids($params['cat_id']));
         }
 
-        $query = '
-SELECT id
-  FROM categories
-  WHERE id IN (' . implode(',', $cat_ids) . ')
-    AND status = \'private\'
-;';
+        $cat_ids_ = implode(',', $cat_ids);
+        $query = "SELECT id FROM categories WHERE id IN ({$cat_ids_}) AND status = 'private';";
         $private_cats = array_from_query($query, 'id');
 
         $inserts = [];
@@ -193,22 +175,16 @@ function ws_permissions_remove($params, &$service)
     $cat_ids = get_subcat_ids($params['cat_id']);
 
     if (! empty($params['group_id'])) {
-        $query = '
-DELETE
-  FROM group_access
-  WHERE group_id IN (' . implode(',', $params['group_id']) . ')
-    AND cat_id IN (' . implode(',', $cat_ids) . ')
-;';
+        $group_id_ = implode(',', $params['group_id']);
+        $cat_ids_ = implode(',', $cat_ids);
+        $query = "DELETE FROM group_access WHERE group_id IN ({$group_id_}) AND cat_id IN ({$cat_ids_});";
         pwg_query($query);
     }
 
     if (! empty($params['user_id'])) {
-        $query = '
-DELETE
-  FROM user_access
-  WHERE user_id IN (' . implode(',', $params['user_id']) . ')
-    AND cat_id IN (' . implode(',', $cat_ids) . ')
-;';
+        $user_id_ = implode(',', $params['user_id']);
+        $cat_ids_ = implode(',', $cat_ids);
+        $query = "DELETE FROM user_access WHERE user_id IN ({$user_id_}) AND cat_id IN ({$cat_ids_});";
         pwg_query($query);
     }
 

@@ -203,22 +203,8 @@ class ThemeController
         // }
 
         // select all pictures for this category
-        $query = '
-            SELECT
-              id,
-              file,
-              representative_ext,
-              name,
-              comment,
-              width,
-              height,
-              date_creation,
-              path,
-              rotation
-            FROM images
-            WHERE id IN (' . implode(',', $page['items']) . ')
-            ORDER BY FIELD(id, ' . implode(',', $page['items']) . ')
-            ;';
+        $items_ = implode(',', $page['items']);
+        $query = "SELECT id, file, representative_ext, name, comment, width, height, date_creation, path, rotation FROM images WHERE id IN ({$items_}) ORDER BY FIELD(id, {$items_});";
 
         $result = pwg_query($query);
 

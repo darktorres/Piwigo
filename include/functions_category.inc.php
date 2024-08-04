@@ -51,31 +51,24 @@ function get_categories_menu()
 {
     global $page, $user, $filter, $conf;
 
-    $query = '
-SELECT ';
+    $query = 'SELECT ';
     // From categories
-    $query .= '
-  id, name, permalink, nb_images, global_rank,';
+    $query .= ' id, name, permalink, nb_images, global_rank,';
     // From user_cache_categories
-    $query .= '
-  date_last, max_date_last, count_images, count_categories';
+    $query .= ' date_last, max_date_last, count_images, count_categories';
 
     // $user['forbidden_categories'] including with user_cache_categories
-    $query .= '
-FROM categories INNER JOIN user_cache_categories
-  ON id = cat_id and user_id = ' . $user['id'];
+    $query .= " FROM categories INNER JOIN user_cache_categories ON id = cat_id and user_id = {$user['id']}";
 
     // Always expand when filter is activated
     if (! $user['expand'] and ! $filter['enabled']) {
-        $where = '
-(id_uppercat is NULL';
+        $where = ' (id_uppercat is NULL';
         if (isset($page['category'])) {
-            $where .= ' OR id_uppercat IN (' . $page['category']['uppercats'] . ')';
+            $where .= " OR id_uppercat IN ({$page['category']['uppercats']})";
         }
         $where .= ')';
     } else {
-        $where = '
-  ' . get_sql_condition_FandF(
+        $where = ' ' . get_sql_condition_FandF(
             [
                 'visible_categories' => 'id',
             ],
@@ -91,10 +84,7 @@ FROM categories INNER JOIN user_cache_categories
         $filter['enabled']
     );
 
-    $query .= '
-WHERE ' . $where . '
-;';
-
+    $query .= " WHERE {$where};";
     $result = pwg_query($query);
     $cats = [];
     $selected_category = isset($page['category']) ? $page['category'] : null;
@@ -149,11 +139,7 @@ WHERE ' . $where . '
  */
 function get_cat_info($id)
 {
-    $query = '
-SELECT *
-  FROM categories
-  WHERE id = ' . $id . '
-;';
+    $query = "SELECT * FROM categories WHERE id = {$id};";
     $cat = pwg_db_fetch_assoc(pwg_query($query));
     if (empty($cat)) {
         return null;
@@ -177,11 +163,7 @@ SELECT *
             ],
         ];
     } else {
-        $query = '
-  SELECT id, name, permalink
-    FROM categories
-    WHERE id IN (' . $cat['uppercats'] . ')
-  ;';
+        $query = "SELECT id, name, permalink FROM categories WHERE id IN ({$cat['uppercats']});";
         $names = query2array($query, 'id');
 
         // category names must be in the same order than uppercats list
@@ -290,10 +272,7 @@ function display_select_cat_wrapper(
  */
 function get_subcat_ids($ids)
 {
-    $query = '
-SELECT DISTINCT(id)
-  FROM categories
-  WHERE ';
+    $query = 'SELECT DISTINCT(id) FROM categories WHERE ';
     foreach ($ids as $num => $category_id) {
         is_numeric($category_id)
           or trigger_error(
@@ -301,13 +280,11 @@ SELECT DISTINCT(id)
               E_USER_WARNING
           );
         if ($num > 0) {
-            $query .= '
-    OR ';
+            $query .= ' OR ';
         }
-        $query .= 'uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $category_id . '(,|$)\'';
+        $query .= 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$category_id}(,|$)'";
     }
-    $query .= '
-;';
+    $query .= ';';
     return query2array($query, null, 'id');
 }
 
@@ -325,17 +302,9 @@ function get_cat_id_from_permalinks($permalinks, &$idx)
         if (! empty($in)) {
             $in .= ', ';
         }
-        $in .= '\'' . $permalink . '\'';
+        $in .= "'{$permalink}'";
     }
-    $query = '
-SELECT cat_id AS id, permalink, 1 AS is_old
-  FROM old_permalinks
-  WHERE permalink IN (' . $in . ')
-UNION
-SELECT id, permalink, 0 AS is_old
-  FROM categories
-  WHERE permalink IN (' . $in . ')
-;';
+    $query = "SELECT cat_id AS id, permalink, 1 AS is_old FROM old_permalinks WHERE permalink IN ({$in}) UNION SELECT id, permalink, 0 AS is_old FROM categories WHERE permalink IN ({$in});";
     $perma_hash = query2array($query, 'permalink');
 
     if (empty($perma_hash)) {
@@ -346,10 +315,7 @@ SELECT id, permalink, 0 AS is_old
             $idx = $i;
             $cat_id = $perma_hash[$permalinks[$i]]['id'];
             if ($perma_hash[$permalinks[$i]]['is_old']) {
-                $query = '
-UPDATE old_permalinks SET last_hit=NOW(), hit=hit+1
-  WHERE permalink=\'' . $permalinks[$i] . '\' AND cat_id=' . $cat_id . '
-  LIMIT 1';
+                $query = "UPDATE old_permalinks SET last_hit = NOW(), hit = hit + 1 WHERE permalink = '{$permalinks[$i]}' AND cat_id = {$cat_id} LIMIT 1";
                 pwg_query($query);
             }
             return $cat_id;
@@ -405,31 +371,22 @@ function get_display_images_count($cat_nb_images, $cat_count_images, $cat_count_
 function get_random_image_in_category($category, $recursive = true)
 {
     $image_id = null;
+    $filters_and_forbidden = get_sql_condition_FandF(
+        [
+            'forbidden_categories' => 'c.id',
+            'visible_categories' => 'c.id',
+            'visible_images' => 'image_id',
+        ],
+        "\n  AND"
+    );
     if ($category['count_images'] > 0) {
-        $query = '
-SELECT image_id
-  FROM categories AS c
-    INNER JOIN image_category AS ic ON ic.category_id = c.id
-  WHERE ';
+        $query = 'SELECT image_id FROM categories AS c INNER JOIN image_category AS ic ON ic.category_id = c.id WHERE ';
         if ($recursive) {
-            $query .= '
-    (c.id=' . $category['id'] . ' OR uppercats LIKE \'' . $category['uppercats'] . ',%\')';
+            $query .= " (c.id = {$category['id']} OR uppercats LIKE '{$category['uppercats']},%')";
         } else {
-            $query .= '
-    c.id=' . $category['id'];
+            $query .= " c.id = {$category['id']}";
         }
-        $query .= '
-    ' . get_sql_condition_FandF(
-            [
-                'forbidden_categories' => 'c.id',
-                'visible_categories' => 'c.id',
-                'visible_images' => 'image_id',
-            ],
-            "\n  AND"
-        ) . '
-  ORDER BY ' . DB_RANDOM_FUNCTION . '()
-  LIMIT 1
-;';
+        $query .= " {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . '() LIMIT 1;';
         $result = pwg_query($query);
         if (pwg_db_num_rows($result) > 0) {
             list($image_id) = pwg_db_fetch_row($result);
@@ -449,29 +406,21 @@ SELECT image_id
  */
 function get_computed_categories(&$userdata, $filter_days = null)
 {
-    $query = 'SELECT c.id AS cat_id, id_uppercat';
-    $query .= ', global_rank';
     // Count by date_available to avoid count null
-    $query .= ',
-  MAX(date_available) AS date_last, COUNT(date_available) AS nb_images
-FROM categories as c
-  LEFT JOIN image_category AS ic ON ic.category_id = c.id
-  LEFT JOIN images AS i
-    ON ic.image_id = i.id
-      AND i.level<=' . $userdata['level'];
+    $query =
+    "SELECT c.id AS cat_id, id_uppercat, global_rank, MAX(date_available) AS date_last, COUNT(date_available) AS nb_images
+     FROM categories as c LEFT JOIN image_category AS ic ON ic.category_id = c.id LEFT JOIN images AS i ON ic.image_id = i.id
+     AND i.level <= {$userdata['level']}";
 
     if (isset($filter_days)) {
         $query .= ' AND i.date_available > ' . pwg_db_get_recent_period_expression($filter_days);
     }
 
     if (! empty($userdata['forbidden_categories'])) {
-        $query .= '
-  WHERE c.id NOT IN (' . $userdata['forbidden_categories'] . ')';
+        $query .= " WHERE c.id NOT IN ({$userdata['forbidden_categories']})";
     }
 
-    $query .= '
-  GROUP BY c.id';
-
+    $query .= ' GROUP BY c.id;';
     $result = pwg_query($query);
 
     $userdata['last_photo_date'] = null;
@@ -583,11 +532,8 @@ function get_image_ids_for_categories($cat_ids, $mode = 'AND', $extra_images_whe
         return [];
     }
 
-    $query = '
-SELECT id
-  FROM images i
-    INNER JOIN image_category ic ON id=ic.image_id
-  WHERE category_id IN (' . implode(',', $cat_ids) . ')';
+    $cat_ids_ = implode(',', $cat_ids);
+    $query = "SELECT id FROM images i INNER JOIN image_category ic ON id = ic.image_id WHERE category_id IN ({$cat_ids_})";
 
     if ($use_permissions) {
         $query .= get_sql_condition_FandF(
@@ -600,12 +546,10 @@ SELECT id
         );
     }
 
-    $query .= (empty($extra_images_where_sql) ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
-  GROUP BY id';
+    $query .= (empty($extra_images_where_sql) ? '' : " \nAND ({$extra_images_where_sql})") . ' GROUP BY id';
 
     if ($mode == 'AND' and count($cat_ids) > 1) {
-        $query .= '
-  HAVING COUNT(DISTINCT category_id)=' . count($cat_ids);
+        $query .= ' HAVING COUNT(DISTINCT category_id) = ' . count($cat_ids);
     }
     $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
 
@@ -626,14 +570,8 @@ function get_common_categories($items, $max = null, $excluded_cat_ids = [], $use
         return [];
     }
 
-    $query = '
-SELECT
-    c.id,
-    c.uppercats,
-    count(*) AS counter
-  FROM image_category
-    INNER JOIN categories c ON category_id = id
-  WHERE image_id IN (' . implode(',', $items) . ')';
+    $items_ = implode(',', $items);
+    $query = "SELECT c.id, c.uppercats, COUNT(*) AS counter FROM image_category INNER JOIN categories c ON category_id = id WHERE image_id IN ({$items_})";
 
     if ($use_permissions) {
         $query .= get_sql_condition_FandF(
@@ -646,16 +584,13 @@ SELECT
     }
 
     if (! empty($excluded_cat_ids)) {
-        $query .= '
-    AND category_id NOT IN (' . implode(',', $excluded_cat_ids) . ')';
+        $excluded_cat_ids_ = implode(',', $excluded_cat_ids);
+        $query .= " AND category_id NOT IN ({$excluded_cat_ids_})";
     }
 
-    $query .= '
-  GROUP BY c.id
-  ORDER BY ';
+    $query .= ' GROUP BY c.id ORDER BY ';
     if (isset($max)) {
-        $query .= 'counter DESC
-  LIMIT ' . $max;
+        $query .= "counter DESC LIMIT {$max}";
     } else {
         $query .= 'NULL';
     }
@@ -688,17 +623,8 @@ function get_related_categories_menu($items, $excluded_cat_ids = [])
         }
     }
 
-    $query = '
-SELECT
-    id,
-    name,
-    permalink,
-    id_uppercat,
-    uppercats,
-    global_rank
-  FROM categories
-  WHERE id IN (' . implode(',', array_keys($cat_ids)) . ')
-;';
+    $cat_ids_ = implode(',', array_keys($cat_ids));
+    $query = "SELECT id, name, permalink, id_uppercat, uppercats, global_rank FROM categories WHERE id IN ({$cat_ids_});";
     $cats = query2array($query);
     usort($cats, 'global_rank_compare');
 
