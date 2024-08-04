@@ -20,10 +20,7 @@ if (! defined('PHOTOS_ADD_BASE_URL')) {
 if (isset($_GET['batch'])) {
     check_input_parameter('batch', $_GET, false, '/^\d+(,\d+)*$/');
 
-    $query = '
-DELETE FROM caddie
-  WHERE user_id = ' . $user['id'] . '
-;';
+    $query = "DELETE FROM caddie WHERE user_id = {$user['id']};";
     pwg_query($query);
 
     $inserts = [];
@@ -43,25 +40,13 @@ DELETE FROM caddie
 }
 
 if (userprefs_get_param('promote-mobile-apps', true)) {
-    $query = '
-SELECT registration_date
-  FROM user_infos
-  WHERE registration_date IS NOT NULL
-  ORDER BY user_id ASC
-  LIMIT 1
-;';
+    $query = 'SELECT registration_date FROM user_infos WHERE registration_date IS NOT NULL ORDER BY user_id ASC LIMIT 1;';
     list($register_date) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = '
-SELECT COUNT(*)
-  FROM categories
-;';
+    $query = 'SELECT COUNT(*) FROM categories;';
     list($nb_cats) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = '
-SELECT COUNT(*)
-  FROM images
-;';
+    $query = 'SELECT COUNT(*) FROM images;';
     list($nb_images) = pwg_db_fetch_row(pwg_query($query));
 
     $uagent_obj = new uagent_info();
@@ -93,11 +78,7 @@ if ($display_formats && $_GET['formats']) {
         $formats_original_info['src'] = DerivativeImage::url(IMG_SQUARE, $src_image);
 
         // Fetch actual formats
-        $query = '
-SELECT *
-  FROM image_format
-  WHERE image_id = ' . $formats_original_info['id'] . '
-;';
+        $query = "SELECT * FROM image_format WHERE image_id = {$formats_original_info['id']};";
         $formats = query2array($query);
 
         if (! empty($formats)) {

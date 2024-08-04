@@ -108,11 +108,8 @@ function get_remote_addr_session_hash()
  */
 function pwg_session_read($session_id)
 {
-    $query = '
-SELECT data
-  FROM sessions
-  WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
-;';
+    $ip_hash_ = get_remote_addr_session_hash();
+    $query = "SELECT data FROM sessions WHERE id = '{$ip_hash_}{$session_id}';";
     $result = pwg_query($query);
     if (($row = pwg_db_fetch_assoc($result))) {
         return $row['data'];
@@ -129,11 +126,9 @@ SELECT data
  */
 function pwg_session_write($session_id, $data)
 {
-    $query = '
-REPLACE INTO sessions
-  (id,data,expiration)
-  VALUES(\'' . get_remote_addr_session_hash() . $session_id . '\',\'' . pwg_db_real_escape_string($data) . '\',now())
-;';
+    $ip_hash_ = get_remote_addr_session_hash();
+    $data_ = pwg_db_real_escape_string($data);
+    $query = "REPLACE INTO sessions (id, data, expiration) VALUES ('{$ip_hash_}{$session_id}', '{$data_}', NOW());";
     pwg_query($query);
     return true;
 }
@@ -146,11 +141,8 @@ REPLACE INTO sessions
  */
 function pwg_session_destroy($session_id)
 {
-    $query = '
-DELETE
-  FROM sessions
-  WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
-;';
+    $ip_hash_ = get_remote_addr_session_hash();
+    $query = "DELETE FROM sessions WHERE id = '{$ip_hash_}{$session_id}';";
     pwg_query($query);
     return true;
 }
@@ -164,12 +156,9 @@ function pwg_session_gc()
 {
     global $conf;
 
-    $query = '
-DELETE
-  FROM sessions
-  WHERE ' . pwg_db_date_to_ts('NOW()') . ' - ' . pwg_db_date_to_ts('expiration') . ' > '
-    . $conf['session_length'] . '
-;';
+    $date_now_ = pwg_db_date_to_ts('NOW()');
+    $date_expiration_ = pwg_db_date_to_ts('expiration');
+    $query = "DELETE FROM sessions WHERE {$date_now_} - {$date_expiration_} > {$conf['session_length']};";
     pwg_query($query);
     return true;
 }
@@ -228,10 +217,6 @@ function pwg_unset_session_var($var)
  */
 function delete_user_sessions($user_id)
 {
-    $query = '
-DELETE
-  FROM sessions
-  WHERE data LIKE \'%pwg_uid|i:' . (int) $user_id . ';%\'
-;';
+    $query = "DELETE FROM sessions WHERE data LIKE '%pwg_uid|i:{$user_id};%';";
     pwg_query($query);
 }

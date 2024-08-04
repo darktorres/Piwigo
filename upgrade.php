@@ -55,9 +55,7 @@ function get_tables()
 {
     $tables = [];
 
-    $query = '
-SHOW TABLES
-;';
+    $query = 'SHOW TABLES;';
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_row($result)) {
@@ -77,9 +75,7 @@ function get_columns_of($tables)
     $columns_of = [];
 
     foreach ($tables as $table) {
-        $query = '
-DESC ' . $table . '
-;';
+        $query = "DESC {$table};";
         $result = pwg_query($query);
 
         $columns_of[$table] = [];
@@ -293,10 +289,7 @@ if (! in_array('param', $columns_of['config'])) {
     $current_release = '2.9.0';
 } else {
     // retrieve already applied upgrades
-    $query = '
-SELECT id
-  FROM upgrade
-;';
+    $query = 'SELECT id FROM upgrade;';
     $applied_upgrades = array_from_query($query, 'id');
 
     if (! in_array(159, $applied_upgrades)) {
@@ -405,11 +398,7 @@ if ((isset($_POST['submit']) or isset($_GET['now']))
             $version_ = str_replace('.', '_', get_branch_from_version(PHPWG_VERSION) . '.0');
 
             if (file_exists(PHPWG_PLUGINS_PATH . 'TakeATour/tours/' . $version_ . '/config.inc.php')) {
-                $query = '
-REPLACE INTO plugins
-  (id, state)
-  VALUES (\'TakeATour\', \'active\')
-;';
+                $query = "REPLACE INTO plugins (id, state) VALUES ('TakeATour', 'active');";
                 pwg_query($query);
 
                 // we need the secret key for get_pwg_token()

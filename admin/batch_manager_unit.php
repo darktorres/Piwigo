@@ -38,11 +38,8 @@ if (isset($_POST['submit'])) {
 
     $datas = [];
 
-    $query = '
-SELECT id, date_creation
-  FROM images
-  WHERE id IN (' . implode(',', $collection) . ')
-;';
+    $collection_ = implode(',', $collection);
+    $query = "SELECT id, date_creation FROM images WHERE id IN ({$collection_});";
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -147,9 +144,7 @@ if (count($page['cat_elements_id']) > 0) {
         $conf['order_by'] = ' ORDER BY file, id';
     }
 
-    $query = '
-SELECT *
-  FROM images';
+    $query = 'SELECT * FROM images';
 
     if ($is_category) {
         $category_info = get_cat_info($_SESSION['bulk_manager_filter']['category']);
@@ -159,22 +154,17 @@ SELECT *
             $conf['order_by'] = ' ORDER BY ' . $category_info['image_order'];
         }
 
-        $query .= '
-    JOIN image_category ON id = image_id';
+        $query .= ' JOIN image_category ON id = image_id';
     }
 
-    $query .= '
-  WHERE id IN (' . implode(',', $page['cat_elements_id']) . ')';
+    $cat_elements_ids_ = implode(',', $page['cat_elements_id']);
+    $query .= " WHERE id IN ({$cat_elements_ids_})";
 
     if ($is_category) {
-        $query .= '
-    AND category_id = ' . $_SESSION['bulk_manager_filter']['category'];
+        $query .= " AND category_id = {$_SESSION['bulk_manager_filter']['category']}";
     }
 
-    $query .= '
-  ' . $conf['order_by'] . '
-  LIMIT ' . $page['nb_images'] . ' OFFSET ' . $page['start'] . '
-;';
+    $query .= " {$conf['order_by']} LIMIT {$page['nb_images']} OFFSET {$page['start']};";
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -182,14 +172,7 @@ SELECT *
 
         $src_image = new SrcImage($row);
 
-        $query = '
-SELECT
-    id,
-    name
-  FROM image_tag AS it
-    JOIN tags AS t ON t.id = it.tag_id
-  WHERE image_id = ' . $row['id'] . '
-;';
+        $query = "SELECT id, name FROM image_tag AS it JOIN tags AS t ON t.id = it.tag_id WHERE image_id = {$row['id']};";
         $tag_selection = get_taglist($query);
 
         $legend = render_element_name($row);

@@ -23,58 +23,43 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
 //Get the last unit of time for years, months, days and hours
 function get_last($last_number = 60, $type = 'year')
 {
-    $query = '
-SELECT
-    year,
-    month,
-    day,
-    hour,
-    nb_pages
-  FROM history_summary';
+    $query = 'SELECT year, month, day, hour, nb_pages FROM history_summary';
 
     if ($type === 'hour') {
-        $query .= '
-  WHERE year IS NOT NULL
-    AND month IS NOT NULL
-    AND day IS NOT NULL
-    AND hour IS NOT NULL
-  ORDER BY
-    year DESC,
-    month DESC,
-    day DESC,
-    hour DESC
-  LIMIT ' . $last_number . '
-;';
+        $query .= " WHERE year IS NOT NULL
+        AND month IS NOT NULL
+        AND day IS NOT NULL
+        AND hour IS NOT NULL
+        ORDER BY
+        year DESC,
+        month DESC,
+        day DESC,
+        hour DESC
+        LIMIT {$last_number};";
     } elseif ($type === 'day') {
-        $query .= '
-  WHERE year IS NOT NULL
-    AND month IS NOT NULL
-    AND day IS NOT NULL
-    AND hour IS NULL
-  ORDER BY
-    year DESC,
-    month DESC,
-    day DESC
-  LIMIT ' . $last_number . '
-;';
+        $query .= " WHERE year IS NOT NULL
+        AND month IS NOT NULL
+        AND day IS NOT NULL
+        AND hour IS NULL
+        ORDER BY
+        year DESC,
+        month DESC,
+        day DESC
+        LIMIT {$last_number};";
     } elseif ($type === 'month') {
-        $query .= '
-  WHERE year IS NOT NULL
-    AND month IS NOT NULL
-    AND day IS NULL
-  ORDER BY
-    year DESC,
-    month DESC
-  LIMIT ' . $last_number . '
-;';
+        $query .= " WHERE year IS NOT NULL
+        AND month IS NOT NULL
+        AND day IS NULL
+        ORDER BY
+        year DESC,
+        month DESC
+        LIMIT {$last_number};";
     } else {
-        $query .= '
-  WHERE year IS NOT NULL
-    AND month IS NULL
-  ORDER BY
-    year DESC
-  LIMIT ' . $last_number . '
-;';
+        $query .= " WHERE year IS NOT NULL
+        AND month IS NULL
+        ORDER BY
+        year DESC
+        LIMIT {$last_number};";
     }
 
     $result = pwg_query($query);
@@ -90,25 +75,12 @@ SELECT
 function get_month_of_last_years($last = 'all')
 {
 
-    $query = '
-SELECT
-  year,
-  month,
-  day,
-  hour,
-  nb_pages
-FROM history_summary
-WHERE month IS NOT NULL
-  AND day IS NULL
-ORDER BY
-  year DESC,
-  month DESC';
+    $query = 'SELECT year, month, day, hour, nb_pages FROM history_summary WHERE month IS NOT NULL AND day IS NULL ORDER BY year DESC, month DESC';
 
     if ($last !== 'all') {
         $date = new DateTime();
         $limit = ($last - 1) * 12 + $date->format('n') - 1;
-        $query .=
-' LIMIT ' . $limit;
+        $query .= ' LIMIT ' . $limit;
         $result = query2array($query . ';');
         $lastDate = $date->sub(new DateInterval('P' . ($last - 1) . 'Y' . ($date->format('n') - 1) . 'M'));
         return set_missing_values('month', $result, $lastDate, new DateTime());
@@ -137,26 +109,14 @@ function get_month_stats()
 
     $date_last_month->sub(new DateInterval('P1M'));
     $date_last_year->sub(new DateInterval('P1Y'));
-    $query = '
-SELECT
-  year,
-  month,
-  day,
-  hour,
-  nb_pages
-FROM history_summary
-WHERE
-  (
-    (year = ' . $date->format('Y') . ' AND month = ' . $date->format('n') . ')
-    OR (year = ' . $date_last_month->format('Y') . ' AND month = ' . $date_last_month->format('n') . ')
-    OR (year = ' . $date_last_year->format('Y') . ' AND month = ' . $date_last_year->format('n') . ')
-  )
-  AND day IS NOT NULL
-  AND hour IS NULL
-ORDER BY
-  year DESC,
-  month DESC
-;';
+    $query =
+    "SELECT year, month, day, hour, nb_pages FROM history_summary WHERE
+     (
+      (year = {$date->format('Y')} AND month = {$date->format('n')})
+       OR (year = {$date_last_month->format('Y')} AND month = {$date_last_month->format('n')})
+       OR (year = {$date_last_year->format('Y')} AND month = {$date_last_year->format('n')})
+     )
+     AND day IS NOT NULL AND hour IS NULL ORDER BY year DESC, month DESC;";
 
     foreach (query2array($query) as $value) {
         $date = get_date_object($value);
@@ -184,21 +144,13 @@ ORDER BY
         $result['month'][] = set_missing_values('day', $val, new DateTime($key), $lastDate);
     }
 
-    $query = '
-SELECT
-  AVG(nb_pages)
-FROM history_summary
-WHERE
-  (
-  year = ' . $date->format('Y') . ' OR
-  (year = ' . ($date->format('Y') - 1) . ' and month > ' . $date->format('n') . ')
-  )
-  AND day IS NOT NULL
-  AND hour IS NULL
-ORDER BY
-  year DESC,
-  month DESC
-;';
+    $query =
+    "SELECT AVG(nb_pages) FROM history_summary WHERE
+     (
+      year = {$date->format('Y')}
+      OR (year = ({$date->format('Y')} - 1) AND month > {$date->format('n')})
+     )
+     AND day IS NOT NULL AND hour IS NULL ORDER BY year DESC, month DESC;";
 
     list($result['avg']) = pwg_db_fetch_row(pwg_query($query));
 
