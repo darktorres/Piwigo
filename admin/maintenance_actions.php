@@ -78,20 +78,14 @@ switch ($action) {
 
     case 'history_detail':
 
-        $query = '
-DELETE
-  FROM history
-;';
+        $query = 'DELETE FROM history;';
         pwg_query($query);
         $page['infos'][] = sprintf('%s : %s', l10n('Purge history detail'), l10n('action successfully performed.'));
         break;
 
     case 'history_summary':
 
-        $query = '
-DELETE
-  FROM history_summary
-;';
+        $query = 'DELETE FROM history_summary;';
         pwg_query($query);
         $page['infos'][] = sprintf('%s : %s', l10n('Purge history summary'), l10n('action successfully performed.'));
         break;
@@ -101,19 +95,10 @@ DELETE
         pwg_session_gc();
 
         // delete all sessions associated to invalid user ids (it should never happen)
-        $query = '
-SELECT
-    id,
-    data
-  FROM sessions
-;';
+        $query = 'SELECT id, data FROM sessions;';
         $sessions = query2array($query);
 
-        $query = '
-SELECT
-    ' . $conf['user_fields']['id'] . ' AS id
-  FROM users
-;';
+        $query = "SELECT {$conf['user_fields']['id']} AS id FROM users;";
         $all_user_ids = query2array($query, 'id', null);
 
         $sessions_to_delete = [];
@@ -127,11 +112,8 @@ SELECT
         }
 
         if (count($sessions_to_delete) > 0) {
-            $query = '
-DELETE
-  FROM sessions
-  WHERE id IN (\'' . implode("','", $sessions_to_delete) . '\')
-;';
+            $sessions_to_delete_ = implode("','", $sessions_to_delete);
+            $query = "DELETE FROM sessions WHERE id IN ('{$sessions_to_delete_}');";
             pwg_query($query);
         }
         $page['infos'][] = sprintf('%s : %s', l10n('Purge sessions'), l10n('action successfully performed.'));
@@ -139,11 +121,7 @@ DELETE
 
     case 'feeds':
 
-        $query = '
-DELETE
-  FROM user_feed
-  WHERE last_check IS NULL
-;';
+        $query = 'DELETE FROM user_feed WHERE last_check IS NULL;';
         pwg_query($query);
         $page['infos'][] = sprintf('%s : %s', l10n('Purge never used notification feeds'), l10n('action successfully performed.'));
         break;
@@ -163,10 +141,7 @@ DELETE
 
     case 'search':
 
-        $query = '
-DELETE
-  FROM search
-;';
+        $query = 'DELETE FROM search;';
         pwg_query($query);
         sprintf('%s : %s', l10n('Reinitialize check integrity'), l10n('action successfully performed.'));
         break;
@@ -269,7 +244,7 @@ $purge_urls[l10n(IMG_CUSTOM)] = IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
 $db_version = pwg_get_db_version();
-list($db_current_date) = pwg_db_fetch_row(pwg_query('SELECT now();'));
+list($db_current_date) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 $template->assign(
     [

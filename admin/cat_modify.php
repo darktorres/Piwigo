@@ -39,9 +39,7 @@ function get_local_dir($category_id)
     if (isset($page['plain_structure'][$category_id]['uppercats'])) {
         $uppercats = $page['plain_structure'][$category_id]['uppercats'];
     } else {
-        $query = 'SELECT uppercats';
-        $query .= ' FROM categories WHERE id = ' . $category_id;
-        $query .= ';';
+        $query = "SELECT uppercats FROM categories WHERE id = {$category_id};";
         $row = pwg_db_fetch_assoc(pwg_query($query));
         $uppercats = $row['uppercats'];
     }
@@ -49,9 +47,7 @@ function get_local_dir($category_id)
     $upper_array = explode(',', $uppercats);
 
     $database_dirs = [];
-    $query = 'SELECT id,dir';
-    $query .= ' FROM categories WHERE id IN (' . $uppercats . ')';
-    $query .= ';';
+    $query = "SELECT id, dir FROM categories WHERE id IN ({$uppercats});";
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $database_dirs[$row['id']] = $row['dir'];
@@ -69,12 +65,7 @@ function get_site_url($category_id)
 {
     global $page;
 
-    $query = '
-SELECT galleries_url
-  FROM sites AS s,categories AS c
-  WHERE s.id = c.site_id
-    AND c.id = ' . $category_id . '
-;';
+    $query = "SELECT galleries_url FROM sites AS s, categories AS c WHERE s.id = c.site_id AND c.id = {$category_id};";
     $row = pwg_db_fetch_assoc(pwg_query($query));
     return $row['galleries_url'];
 }
@@ -120,10 +111,7 @@ foreach (['comment', 'dir', 'site_id', 'id_uppercat'] as $nullable) {
 
 $category['is_virtual'] = empty($category['dir']) ? true : false;
 
-$query = 'SELECT DISTINCT category_id
-  FROM image_category
-  WHERE category_id = ' . $_GET['cat_id'] . '
-  LIMIT 1';
+$query = "SELECT DISTINCT category_id FROM image_category WHERE category_id = {$_GET['cat_id']} LIMIT 1";
 $result = pwg_query($query);
 $category['has_images'] = pwg_db_num_rows($result) > 0 ? true : false;
 
@@ -201,15 +189,7 @@ if ($category['has_images']) {
         $base_url . 'batch_manager&amp;filter=album-' . $category['id']
     );
 
-    $query = '
-SELECT
-    COUNT(image_id),
-    MIN(DATE(date_available)),
-    MAX(DATE(date_available))
-  FROM images
-    JOIN image_category ON image_id = id
-  WHERE category_id = ' . $category['id'] . '
-;';
+    $query = "SELECT COUNT(image_id), MIN(DATE(date_available)), MAX(DATE(date_available)) FROM images JOIN image_category ON image_id = id WHERE category_id = {$category['id']};";
     list($image_count, $min_date, $max_date) = pwg_db_fetch_row(pwg_query($query));
 
     if ($min_date == $max_date) {
@@ -238,26 +218,14 @@ $template->assign(
 );
 
 // total number of images under this category (including sub-categories)
-$query = '
-SELECT DISTINCT
-    (image_id)
-  FROM
-    image_category
-  WHERE
-    category_id IN (' . implode(',', $subcat_ids) . ')
-  ;';
+$subcat_ids_ = implode(',', $subcat_ids);
+$query = "SELECT DISTINCT (image_id) FROM image_category WHERE category_id IN ({$subcat_ids_});";
 $image_ids_recursive = query2array($query, null, 'image_id');
 
 $category['nb_images_recursive'] = count($image_ids_recursive);
 
 // date creation
-$query = '
-SELECT occured_on
-  FROM activity
-  WHERE object_id = ' . $category['id'] . '
-    AND object = "album"
-    AND action = "add"
-';
+$query = "SELECT occured_on FROM activity WHERE object_id = {$category['id']} AND object = 'album' AND action = 'add';";
 $result = query2array($query);
 
 if (count($result) > 0) {
@@ -270,11 +238,7 @@ if (count($result) > 0) {
 }
 
 // Sub Albums
-$query = '
-SELECT COUNT(*)
-  FROM categories
-  WHERE id_uppercat = ' . $category['id'] . '
-';
+$query = "SELECT COUNT(*) FROM categories WHERE id_uppercat = {$category['id']};";
 $result = query2array($query);
 
 $template->assign(

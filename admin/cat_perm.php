@@ -46,11 +46,7 @@ if (! empty($_POST)) {
         //
         // manage groups
         //
-        $query = '
-SELECT group_id
-  FROM group_access
-  WHERE cat_id = ' . $page['cat'] . '
-;';
+        $query = "SELECT group_id FROM group_access WHERE cat_id = {$page['cat']};";
         $groups_granted = array_from_query($query, 'group_id');
 
         if (! isset($_POST['groups'])) {
@@ -64,12 +60,9 @@ SELECT group_id
         if (count($deny_groups) > 0) {
             // if you forbid access to an album, all sub-albums become
             // automatically forbidden
-            $query = '
-DELETE
-  FROM group_access
-  WHERE group_id IN (' . implode(',', $deny_groups) . ')
-    AND cat_id IN (' . implode(',', get_subcat_ids([$page['cat']])) . ')
-;';
+            $deny_groups_ = implode(',', $deny_groups);
+            $cat_ids_ = implode(',', get_subcat_ids([$page['cat']]));
+            $query = "DELETE FROM group_access WHERE group_id IN ({$deny_groups_}) AND cat_id IN ({$cat_ids_});";
             pwg_query($query);
         }
 
@@ -83,12 +76,8 @@ DELETE
                 $cat_ids = array_merge($cat_ids, get_subcat_ids([$page['cat']]));
             }
 
-            $query = '
-SELECT id
-  FROM categories
-  WHERE id IN (' . implode(',', $cat_ids) . ')
-    AND status = \'private\'
-;';
+            $cat_ids_ = implode(',', $cat_ids);
+            $query = "SELECT id FROM categories WHERE id IN ({$cat_ids_}) AND status = 'private';";
             $private_cats = array_from_query($query, 'id');
 
             $inserts = [];
@@ -114,11 +103,7 @@ SELECT id
         //
         // users
         //
-        $query = '
-SELECT user_id
-  FROM user_access
-  WHERE cat_id = ' . $page['cat'] . '
-;';
+        $query = "SELECT user_id FROM user_access WHERE cat_id = {$page['cat']};";
         $users_granted = array_from_query($query, 'user_id');
 
         if (! isset($_POST['users'])) {
@@ -132,12 +117,9 @@ SELECT user_id
         if (count($deny_users) > 0) {
             // if you forbid access to an album, all sub-album become automatically
             // forbidden
-            $query = '
-DELETE
-  FROM user_access
-  WHERE user_id IN (' . implode(',', $deny_users) . ')
-    AND cat_id IN (' . implode(',', get_subcat_ids([$page['cat']])) . ')
-;';
+            $deny_users_ = implode(',', $deny_users);
+            $cat_ids_ = implode(',', get_subcat_ids([$page['cat']]));
+            $query = "DELETE FROM user_access WHERE user_id IN ({$deny_users_}) AND cat_id IN ({$cat_ids_});";
             pwg_query($query);
         }
 
@@ -181,39 +163,23 @@ $template->assign(
 
 $groups = [];
 
-$query = '
-SELECT id, name
-  FROM groups_table
-  ORDER BY name ASC
-;';
+$query = 'SELECT id, name FROM groups_table ORDER BY name ASC;';
 $groups = simple_hash_from_query($query, 'id', 'name');
 $template->assign('groups', $groups);
 
 // groups granted to access the category
-$query = '
-SELECT group_id
-  FROM group_access
-  WHERE cat_id = ' . $page['cat'] . '
-;';
+$query = "SELECT group_id FROM group_access WHERE cat_id = {$page['cat']};";
 $group_granted_ids = array_from_query($query, 'group_id');
 $template->assign('groups_selected', $group_granted_ids);
 
 // users...
 $users = [];
 
-$query = '
-SELECT ' . $conf['user_fields']['id'] . ' AS id,
-       ' . $conf['user_fields']['username'] . ' AS username
-  FROM users
-;';
+$query = "SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username FROM users;";
 $users = simple_hash_from_query($query, 'id', 'username');
 $template->assign('users', $users);
 
-$query = '
-SELECT user_id
-  FROM user_access
-  WHERE cat_id = ' . $page['cat'] . '
-;';
+$query = "SELECT user_id FROM user_access WHERE cat_id = {$page['cat']};";
 $user_granted_direct_ids = array_from_query($query, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
@@ -221,11 +187,8 @@ $user_granted_indirect_ids = [];
 if (count($group_granted_ids) > 0) {
     $granted_groups = [];
 
-    $query = '
-SELECT user_id, group_id
-  FROM user_group
-  WHERE group_id IN (' . implode(',', $group_granted_ids) . ')
-';
+    $group_ids_ = implode(',', $group_granted_ids);
+    $query = "SELECT user_id, group_id FROM user_group WHERE group_id IN ({$group_ids_})";
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         if (! isset($granted_groups[$row['group_id']])) {

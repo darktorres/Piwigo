@@ -18,10 +18,7 @@ $tabsheet->set_id('albums');
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
-$query = '
-SELECT COUNT(*)
-  FROM categories
-;';
+$query = 'SELECT COUNT(*) FROM categories;';
 
 list($nb_cats) = pwg_db_fetch_row(pwg_query($query));
 $template->assign(

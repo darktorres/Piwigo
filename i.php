@@ -369,7 +369,7 @@ try {
     $logger->error($e->getMessage());
 }
 
-list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM config WHERE param=\'derivatives\''));
+list($conf['derivatives']) = pwg_db_fetch_row(pwg_query("SELECT value FROM config WHERE param = 'derivatives';"));
 ImageStdParams::load_from_db();
 
 parse_request();
@@ -416,11 +416,8 @@ if (strpos($page['src_location'], '/pwg_representative/') === false
     && strpos($page['src_location'], 'themes/') === false
     && strpos($page['src_location'], 'plugins/') === false) {
     try {
-        $query = '
-SELECT *
-  FROM images
-  WHERE path=\'' . addslashes($page['src_location']) . '\'
-;';
+        $path_ = addslashes($page['src_location']);
+        $query = "SELECT * FROM images WHERE path = '{$path_}';";
 
         if (($row = pwg_db_fetch_assoc(pwg_query($query)))) {
             if (isset($row['width'])) {
