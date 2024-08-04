@@ -399,38 +399,25 @@ function pwg_mail_admins($args = [], $tpl = [], $exclude_current_user = true, $o
     }
 
     // get admins (except ourself)
-    $query = '
-SELECT
-    i.user_id,
-    u.' . $conf['user_fields']['username'] . ' AS name,
-    u.' . $conf['user_fields']['email'] . ' AS email
-  FROM users AS u
-    JOIN user_infos AS i
-    ON i.user_id =  u.' . $conf['user_fields']['id'];
+    $query =
+    "SELECT i.user_id, u.{$conf['user_fields']['username']} AS name, u.{$conf['user_fields']['email']} AS email
+     FROM users AS u JOIN user_infos AS i ON i.user_id =  u.{$conf['user_fields']['id']}";
 
     if ($group_id !== null) {
-        $query .= '
-    JOIN user_group AS ug
-      ON ug.user_id = i.user_id';
+        $query .= ' JOIN user_group AS ug ON ug.user_id = i.user_id';
     }
 
-    $query .= '
-  WHERE i.status in (\'' . implode("','", $user_statuses) . '\')
-    AND u.' . $conf['user_fields']['email'] . ' IS NOT NULL';
+    $query .= " WHERE i.status in ('" . implode("','", $user_statuses) . "') AND u.{$conf['user_fields']['email']} IS NOT NULL";
 
     if ($group_id !== null) {
-        $query .= '
-    AND group_id = ' . intval($group_id);
+        $query .= ' AND group_id = ' . intval($group_id);
     }
 
     if ($exclude_current_user) {
-        $query .= '
-    AND i.user_id <> ' . $user['id'];
+        $query .= " AND i.user_id <> {$user['id']}";
     }
 
-    $query .= '
-  ORDER BY name
-;';
+    $query .= ' ORDER BY name;';
     $admins = array_from_query($query);
 
     if (empty($admins)) {
@@ -466,22 +453,14 @@ function pwg_mail_group($group_id, $args = [], $tpl = [])
     $return = true;
 
     // get distinct languages of targeted users
-    $query = '
-SELECT DISTINCT language
-  FROM user_group AS ug
-    INNER JOIN users AS u
-    ON ' . $conf['user_fields']['id'] . ' = ug.user_id
-    INNER JOIN user_infos AS ui
-    ON ui.user_id = ug.user_id
-  WHERE group_id = ' . $group_id . '
-    AND ' . $conf['user_fields']['email'] . ' <> ""';
+    $query =
+    "SELECT DISTINCT language FROM user_group AS ug INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id
+     INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id WHERE group_id = {$group_id} AND {$conf['user_fields']['email']} <> ''";
     if (! empty($args['language_selected'])) {
-        $query .= '
-    AND language = \'' . $args['language_selected'] . '\'';
+        $query .= ' AND language = \'' . $args['language_selected'] . '\'';
     }
 
-    $query .= '
-;';
+    $query .= ';';
     $languages = array_from_query($query, 'language');
 
     if (empty($languages)) {
@@ -490,21 +469,10 @@ SELECT DISTINCT language
 
     foreach ($languages as $language) {
         // get subset of users in this group for a specific language
-        $query = '
-SELECT
-    ui.user_id,
-    ui.status,
-    u.' . $conf['user_fields']['username'] . ' AS name,
-    u.' . $conf['user_fields']['email'] . ' AS email
-  FROM user_group AS ug
-    INNER JOIN users AS u
-    ON ' . $conf['user_fields']['id'] . ' = ug.user_id
-    INNER JOIN user_infos AS ui
-    ON ui.user_id = ug.user_id
-  WHERE group_id = ' . $group_id . '
-    AND ' . $conf['user_fields']['email'] . ' <> ""
-    AND language = \'' . $language . '\'
-;';
+        $query =
+        "SELECT ui.user_id, ui.status, u.{$conf['user_fields']['username']} AS name, u.{$conf['user_fields']['email']} AS email FROM user_group AS ug
+         INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id WHERE group_id = {$group_id}
+         AND {$conf['user_fields']['email']} <> '' AND language = '{$language}';";
         $users = array_from_query($query);
 
         if (empty($users)) {

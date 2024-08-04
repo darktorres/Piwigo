@@ -228,13 +228,8 @@ function sync_metadata($ids)
     $datas = [];
     $tags_of = [];
 
-    $query = '
-SELECT id, path, representative_ext
-  FROM images
-  WHERE id IN (
-' . wordwrap(implode(', ', $ids), 160, "\n") . '
-)
-;';
+    $ids_ = wordwrap(implode(', ', $ids), 160, "\n");
+    $query = "SELECT id, path, representative_ext FROM images WHERE id IN ({$ids_});";
 
     $result = pwg_query($query);
     while ($data = pwg_db_fetch_assoc($result)) {
@@ -303,24 +298,15 @@ function get_filelist(
     // filling $cat_ids : all categories required
     $cat_ids = [];
 
-    $query = '
-SELECT id
-  FROM categories
-  WHERE site_id = ' . $site_id . '
-    AND dir IS NOT NULL';
+    $query = "SELECT id FROM categories WHERE site_id = {$site_id} AND dir IS NOT NULL";
     if (is_numeric($category_id)) {
         if ($recursive) {
-            $query .= '
-    AND uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $category_id . '(,|$)\'
-';
+            $query .= ' AND uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$category_id}(,|$)'";
         } else {
-            $query .= '
-    AND id = ' . $category_id . '
-';
+            $query .= " AND id = {$category_id}";
         }
     }
-    $query .= '
-;';
+    $query .= ';';
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $cat_ids[] = $row['id'];
@@ -330,17 +316,12 @@ SELECT id
         return [];
     }
 
-    $query = '
-SELECT id, path, representative_ext
-  FROM images
-  WHERE storage_category_id IN (' . implode(',', $cat_ids) . ')';
+    $cat_ids_ = implode(',', $cat_ids);
+    $query = "SELECT id, path, representative_ext FROM images WHERE storage_category_id IN ({$cat_ids_})";
     if ($only_new) {
-        $query .= '
-    AND date_metadata_update IS NULL
-';
+        $query .= ' AND date_metadata_update IS NULL';
     }
-    $query .= '
-;';
+    $query .= ';';
     return hash_from_query($query, 'id');
 }
 

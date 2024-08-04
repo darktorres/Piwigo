@@ -48,12 +48,8 @@ if (isset($_POST['falsify'])
     // if you forbid access to a category, all sub-categories become
     // automatically forbidden
     $subcats = get_subcat_ids($_POST['cat_true']);
-    $query = '
-DELETE
-  FROM group_access
-  WHERE group_id = ' . $page['group'] . '
-  AND cat_id IN (' . implode(',', $subcats) . ')
-;';
+    $subcats_ = implode(',', $subcats);
+    $query = "DELETE FROM group_access WHERE group_id = {$page['group']} AND cat_id IN ({$subcats_});";
     pwg_query($query);
 } elseif (isset($_POST['trueify'])
          and isset($_POST['cat_false'])
@@ -61,12 +57,8 @@ DELETE
     $uppercats = get_uppercat_ids($_POST['cat_false']);
     $private_uppercats = [];
 
-    $query = '
-SELECT id
-  FROM categories
-  WHERE id IN (' . implode(',', $uppercats) . ')
-  AND status = \'private\'
-;';
+    $uppercats_ = implode(',', $uppercats);
+    $query = "SELECT id FROM categories WHERE id IN ({$uppercats_}) AND status = 'private';";
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $private_uppercats[] = $row['id'];
@@ -77,11 +69,7 @@ SELECT id
     // accesible
     $authorized_ids = [];
 
-    $query = '
-SELECT cat_id
-  FROM group_access
-  WHERE group_id = ' . $page['group'] . '
-;';
+    $query = "SELECT cat_id FROM group_access WHERE group_id = {$page['group']};";
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -130,12 +118,7 @@ $template->assign(
 );
 
 // only private categories are listed
-$query_true = '
-SELECT id,name,uppercats,global_rank
-  FROM categories INNER JOIN group_access ON cat_id = id
-  WHERE status = \'private\'
-    AND group_id = ' . $page['group'] . '
-;';
+$query_true = "SELECT id, name, uppercats, global_rank FROM categories INNER JOIN group_access ON cat_id = id WHERE status = 'private' AND group_id = {$page['group']};";
 display_select_cat_wrapper($query_true, [], 'category_option_true');
 
 $result = pwg_query($query_true);
@@ -144,16 +127,12 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $authorized_ids[] = $row['id'];
 }
 
-$query_false = '
-SELECT id,name,uppercats,global_rank
-  FROM categories
-  WHERE status = \'private\'';
+$query_false = "SELECT id, name, uppercats, global_rank FROM categories WHERE status = 'private'";
 if (count($authorized_ids) > 0) {
-    $query_false .= '
-    AND id NOT IN (' . implode(',', $authorized_ids) . ')';
+    $authorized_ids_ = implode(',', $authorized_ids);
+    $query_false .= " AND id NOT IN ({$authorized_ids_})";
 }
-$query_false .= '
-;';
+$query_false .= ' ;';
 display_select_cat_wrapper($query_false, [], 'category_option_false');
 
 $template->assign('PWG_TOKEN', get_pwg_token());

@@ -199,8 +199,8 @@ if (isset($_POST['install'])) {
         $step = 2;
 
         pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], '');
-        pwg_query('DROP DATABASE IF EXISTS ' . $dbname);
-        pwg_query('CREATE DATABASE ' . $dbname);
+        pwg_query("DROP DATABASE IF EXISTS {$dbname}");
+        pwg_query("CREATE DATABASE {$dbname}");
 
         pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], $_POST['dbname']);
 
@@ -215,10 +215,8 @@ if (isset($_POST['install'])) {
             'mysql'
         );
 
-        $query = '
-INSERT INTO config (param,value,comment)
-   VALUES (\'secret_key\',md5(' . pwg_db_cast_to_text(DB_RANDOM_FUNCTION . '()') . '),
-   \'a secret key specific to the gallery for internal use\');';
+        $query =
+        "INSERT INTO config (param, value, comment) VALUES ('secret_key', md5(" . DB_RANDOM_FUNCTION . "()), 'a secret key specific to the gallery for internal use');";
         pwg_query($query);
 
         conf_update_param('piwigo_db_version', get_branch_from_version(PHPWG_VERSION));
@@ -266,7 +264,7 @@ INSERT INTO config (param,value,comment)
         // Available upgrades must be ignored after a fresh installation. To
         // make PWG avoid upgrading, we must tell it upgrades have already been
         // made.
-        // list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        // list($dbnow) = pwg_db_fetch_row(pwg_query("SELECT NOW();"));
         // define('CURRENT_DATE', $dbnow);
         // $datas = array();
         // foreach (get_available_upgrade_ids() as $upgrade_id)

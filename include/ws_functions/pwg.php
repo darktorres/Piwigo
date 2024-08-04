@@ -32,7 +32,7 @@ function ws_getMissingDerivatives($params, &$service)
     }
 
     $max_urls = $params['max_urls'];
-    $query = 'SELECT MAX(id)+1, COUNT(*) FROM images;';
+    $query = 'SELECT MAX(id) + 1, COUNT(*) FROM images;';
     list($max_id, $image_count) = pwg_db_fetch_row(pwg_query($query));
 
     if ($image_count == 0) {
@@ -57,13 +57,8 @@ function ws_getMissingDerivatives($params, &$service)
         $where_clauses[] = 'id IN (' . implode(',', $params['ids']) . ')';
     }
 
-    $query_model = '
-SELECT id, path, representative_ext, width, height, rotation
-  FROM images
-  WHERE ' . implode(' AND ', $where_clauses) . '
-  ORDER BY id DESC
-  LIMIT ' . $qlimit . '
-;';
+    $where_clauses_ = implode(' AND ', $where_clauses);
+    $query_model = "SELECT id, path, representative_ext, width, height, rotation FROM images WHERE {$where_clauses_} ORDER BY id DESC LIMIT {$qlimit};";
 
     $urls = [];
     do {
@@ -260,14 +255,8 @@ function ws_caddie_add($params, &$service)
 {
     global $user;
 
-    $query = '
-SELECT id
-  FROM images
-      LEFT JOIN caddie
-      ON id=element_id AND user_id=' . $user['id'] . '
-  WHERE id IN (' . implode(',', $params['image_id']) . ')
-    AND element_id IS NULL
-;';
+    $image_id_ = implode(',', $params['image_id']);
+    $query = "SELECT id FROM images LEFT JOIN caddie ON id = element_id AND user_id = {$user['id']} WHERE id IN ({$image_id_}) AND element_id IS NULL;";
     $result = array_from_query($query, 'id');
 
     $datas = [];
@@ -296,15 +285,13 @@ SELECT id
  */
 function ws_rates_delete($params, &$service)
 {
-    $query = '
-DELETE FROM rate
-  WHERE user_id=' . $params['user_id'];
+    $query = "DELETE FROM rate WHERE user_id = {$params['user_id']}";
 
     if (! empty($params['anonymous_id'])) {
-        $query .= ' AND anonymous_id=\'' . $params['anonymous_id'] . '\'';
+        $query .= " AND anonymous_id = '{$params['anonymous_id']}'";
     }
     if (! empty($params['image_id'])) {
-        $query .= ' AND element_id=' . $params['image_id'];
+        $query .= " AND element_id = {$params['image_id']}";
     }
 
     $changes = pwg_db_changes(pwg_query($query));
@@ -411,37 +398,19 @@ function ws_getActivityList($param, &$service)
 
     $user_ids = [];
 
-    $query = '
-SELECT
-    activity_id,
-    performed_by,
-    object,
-    object_id,
-    action,
-    session_idx,
-    ip_address,
-    occured_on,
-    details,
-    user_agent
-  FROM activity
-  WHERE object != \'system\'';
+    $query = "SELECT activity_id, performed_by, object, object_id, action, session_idx, ip_address, occured_on, details, user_agent FROM activity WHERE object != 'system'";
 
     if (isset($param['uid'])) {
-        $query .= '
-    AND performed_by = ' . $param['uid'];
+        $query .= " AND performed_by = {$param['uid']}";
     } elseif ($conf['activity_display_connections'] == 'none') {
-        $query .= '
-    AND action NOT IN (\'login\', \'logout\')';
+        $query .= " AND action NOT IN ('login', 'logout')";
     } elseif ($conf['activity_display_connections'] == 'admins_only') {
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-        $query .= '
-    AND NOT (action IN (\'login\', \'logout\') AND object_id NOT IN (' . implode(',', get_admins()) . '))';
+        $admins_ = implode(',', get_admins());
+        $query .= " AND NOT (action IN ('login', 'logout') AND object_id NOT IN ({$admins_}))";
     }
 
-    $query .= '
-  ORDER BY activity_id DESC
-  LIMIT ' . $page_size . ' OFFSET ' . $page_offset . '
-;';
+    $query .= " ORDER BY activity_id DESC LIMIT {$page_size} OFFSET {$page_offset};";
 
     $line_id = 0;
     $result = pwg_query($query);
@@ -495,13 +464,8 @@ SELECT
     $username_of = [];
     $user_id_list = [];
     if (count($user_ids) > 0) {
-        $query = '
-SELECT
-    ' . $conf['user_fields']['id'] . ' AS user_id,
-    ' . $conf['user_fields']['username'] . ' AS username
-  FROM users
-  WHERE ' . $conf['user_fields']['id'] . ' IN (' . implode(',', array_keys($user_ids)) . ')
-;';
+        $user_ids_ = implode(',', array_keys($user_ids));
+        $query = "SELECT {$conf['user_fields']['id']} AS user_id, {$conf['user_fields']['username']} AS username FROM users WHERE {$conf['user_fields']['id']} IN ({$user_ids_});";
         $username_of = query2array($query, 'user_id', 'username');
     }
 
@@ -523,18 +487,9 @@ SELECT
     }
 
     if (isset($param['uid'])) {
-        $query = '
-  SELECT
-      count(*)
-    FROM activity
-    WHERE performed_by = ' . $param['uid'] . '
-  ;';
+        $query = "SELECT COUNT(*) FROM activity WHERE performed_by = {$param['uid']};";
     } else {
-        $query = '
-  SELECT
-      count(*)
-    FROM activity
-  ;';
+        $query = 'SELECT COUNT(*) FROM activity;';
     }
 
     $result = (pwg_db_fetch_row(pwg_query($query))[0]) / $page_size;
@@ -685,12 +640,8 @@ function ws_history_search($param, &$service)
     if (! empty($search)) {
         // register search rules in database, then they will be available on
         // thumbnails page and picture page.
-        $query = '
-  INSERT INTO search
-  (rules)
-  VALUES
-  (\'' . pwg_db_real_escape_string(serialize($search)) . '\')
-  ;';
+        $search_ = pwg_db_real_escape_string(serialize($search));
+        $query = "INSERT INTO search (rules) VALUES (' {$search_}');";
 
         pwg_query($query);
 
@@ -705,11 +656,7 @@ function ws_history_search($param, &$service)
     }
 
     // what are the lines to display in reality ?
-    $query = '
-SELECT rules
-  FROM search
-  WHERE id = ' . $search_id . '
-;';
+    $query = "SELECT rules FROM search WHERE id = {$search_id};";
     list($serialized_rules) = pwg_db_fetch_row(pwg_query($query));
 
     $page['search'] = unserialize($serialized_rules);
@@ -753,13 +700,8 @@ SELECT rules
 
     // prepare reference data (users, tags, categories...)
     if (count($search_ids) > 0) {
-        $query = '
-SELECT
-    id,
-    rules
-  FROM search
-  WHERE id IN (' . implode(',', $search_ids) . ')
-;';
+        $search_ids_ = implode(',', $search_ids);
+        $query = "SELECT id, rules FROM search WHERE id IN ({$search_ids_});";
         $search_details = query2array($query, 'id', 'rules');
 
         foreach ($search_details as $id_search => $rules_search) {
@@ -783,12 +725,8 @@ SELECT
     }
 
     if (count($user_ids) > 0) {
-        $query = '
-SELECT ' . $conf['user_fields']['id'] . ' AS id
-     , ' . $conf['user_fields']['username'] . ' AS username
-  FROM users
-  WHERE id IN (' . implode(',', array_keys($user_ids)) . ')
-;';
+        $user_ids_ = implode(',', array_keys($user_ids));
+        $query = "SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username FROM users WHERE id IN ({$user_ids_});";
         $result = pwg_query($query);
 
         $username_of = [];
@@ -798,11 +736,8 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id
     }
 
     if (count($category_ids) > 0) {
-        $query = '
-SELECT id, uppercats
-  FROM categories
-  WHERE id IN (' . implode(',', array_values($category_ids)) . ')
-;';
+        $category_ids_ = implode(',', array_values($category_ids));
+        $query = "SELECT id, uppercats FROM categories WHERE id IN ({$category_ids_});";
         $uppercats_of = query2array($query, 'id', 'uppercats');
 
         $full_cat_path = [];
@@ -823,26 +758,13 @@ SELECT id, uppercats
     }
 
     if (count($image_ids) > 0) {
-        $query = '
-SELECT
-    id,
-    IF(name IS NULL, file, name) AS label,
-    filesize,
-    file,
-    path,
-    representative_ext
-  FROM images
-  WHERE id IN (' . implode(',', array_keys($image_ids)) . ')
-;';
+        $image_ids_ = implode(',', array_keys($image_ids));
+        $query = "SELECT id, IF(name IS NULL, file, name) AS label, filesize, file, path, representative_ext FROM images WHERE id IN ({$image_ids_});";
         $image_infos = query2array($query, 'id');
     }
 
     if ($has_tags > 0) {
-        $query = '
-SELECT
-    id,
-    name, url_name
-  FROM tags';
+        $query = 'SELECT id, name, url_name FROM tags';
 
         global $name_of_tag; // used for preg_replace
         $name_of_tag = [];

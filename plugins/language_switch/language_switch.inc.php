@@ -45,11 +45,7 @@ function language_controler_switch()
             if (is_a_guest() or is_generic()) {
                 pwg_set_session_var('lang_switch', $_GET['lang']);
             } else {
-                $query = '
-UPDATE user_infos
-  SET language = \'' . $_GET['lang'] . '\'
-  WHERE user_id = ' . $user['id'] . '
-;';
+                $query = "UPDATE user_infos SET language = '{$_GET['lang']}' WHERE user_id = {$user['id']};";
                 pwg_query($query);
             }
 
