@@ -56,10 +56,7 @@ try {
 // +-----------------------------------------------------------------------+
 
 // retrieve already applied upgrades
-$query = '
-SELECT id
-  FROM upgrade
-;';
+$query = 'SELECT id FROM upgrade;';
 $applied = array_from_query($query, 'id');
 
 // retrieve existing upgrades
@@ -83,12 +80,7 @@ foreach ($to_apply as $upgrade_id) {
     include(UPGRADES_PATH . '/' . $upgrade_id . '-database.php');
 
     // notify upgrade
-    $query = '
-INSERT INTO upgrade
-  (id, applied, description)
-  VALUES
-  (\'' . $upgrade_id . '\', NOW(), \'' . $upgrade_description . '\')
-;';
+    $query = "INSERT INTO upgrade (id, applied, description) VALUES ('{$upgrade_id}', NOW(), '{$upgrade_description}');";
     pwg_query($query);
 }
 

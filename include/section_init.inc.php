@@ -225,18 +225,14 @@ if ($page['section'] == 'categories') {
         if (isset($page['flat'])) {
             // get all allowed sub-categories
             if (isset($page['category'])) {
-                $query = '
-SELECT id
-  FROM categories
-  WHERE
-    uppercats LIKE \'' . $page['category']['uppercats'] . ',%\' '
-    . get_sql_condition_FandF(
-        [
-            'forbidden_categories' => 'id',
-            'visible_categories' => 'id',
-        ],
-        "\n  AND"
-    );
+                $filters_and_forbidden = get_sql_condition_FandF(
+                    [
+                        'forbidden_categories' => 'id',
+                        'visible_categories' => 'id',
+                    ],
+                    "\n  AND"
+                );
+                $query = "SELECT id FROM categories WHERE uppercats LIKE '{$page['category']['uppercats']},%' {$filters_and_forbidden}";
 
                 $subcat_ids = query2array($query, null, 'id');
                 $subcat_ids[] = $page['category']['id'];
@@ -251,26 +247,17 @@ SELECT id
             } else {
                 $cache_key = $persistent_cache->make_key('all_iids' . $user['id'] . $user['cache_update_time'] . $conf['order_by']);
                 unset($page['is_homepage']);
-                $where_sql = '1=1';
+                $where_sql = '1 = 1';
             }
         }
         // normal mode
         else {
-            $where_sql = 'category_id = ' . $page['category']['id'];
+            $where_sql = "category_id = {$page['category']['id']}";
         }
 
         if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
             // main query
-            $query = '
-SELECT DISTINCT(image_id)
-  FROM image_category
-    INNER JOIN images ON id = image_id
-  WHERE
-    ' . $where_sql . '
-' . $forbidden . '
-  ' . $conf['order_by'] . '
-;';
-
+            $query = "SELECT DISTINCT(image_id) FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
             $page['items'] = query2array($query, null, 'image_id');
 
             if (isset($cache_key)) {
@@ -351,28 +338,19 @@ else {
         );
 
         if (! empty($_GET['action']) && ($_GET['action'] == 'remove_all_from_favorites')) {
-            $query = '
-DELETE FROM favorites
-  WHERE user_id = ' . $user['id'] . '
-;';
+            $query = "DELETE FROM favorites WHERE user_id = {$user['id']};";
             pwg_query($query);
             redirect(make_index_url([
                 'section' => 'favorites',
             ]));
         } else {
-            $query = '
-SELECT image_id
-  FROM favorites
-    INNER JOIN images ON image_id = id
-  WHERE user_id = ' . $user['id'] . '
-' . get_sql_condition_FandF(
+            $filters_and_forbidden = get_sql_condition_FandF(
                 [
                     'visible_images' => 'id',
                 ],
                 'AND'
-            ) . '
-  ' . $conf['order_by'] . '
-;';
+            );
+            $query = "SELECT image_id FROM favorites INNER JOIN images ON image_id = id WHERE user_id = {$user['id']} {$filters_and_forbidden} {$conf['order_by']};";
             $page = array_merge(
                 $page,
                 [
@@ -409,15 +387,8 @@ SELECT image_id
             );
         }
 
-        $query = '
-SELECT DISTINCT(id)
-  FROM images
-    INNER JOIN image_category AS ic ON id = ic.image_id
-  WHERE '
-  . get_recent_photos_sql('date_available') . '
-  ' . $forbidden
-  . $conf['order_by'] . '
-;';
+        $date_available_ = get_recent_photos_sql('date_available');
+        $query = "SELECT DISTINCT(id) FROM images INNER JOIN image_category AS ic ON id = ic.image_id WHERE {$date_available_} {$forbidden} {$conf['order_by']};";
 
         $page = array_merge(
             $page,
@@ -451,15 +422,7 @@ SELECT DISTINCT(id)
         $page['super_order_by'] = true;
         $conf['order_by'] = ' ORDER BY hit DESC, id DESC';
 
-        $query = '
-SELECT DISTINCT(id)
-  FROM images
-    INNER JOIN image_category AS ic ON id = ic.image_id
-  WHERE hit > 0
-    ' . $forbidden . '
-    ' . $conf['order_by'] . '
-  LIMIT ' . $conf['top_number'] . '
-;';
+        $query = "SELECT DISTINCT(id) FROM images INNER JOIN image_category AS ic ON id = ic.image_id WHERE hit > 0 {$forbidden} {$conf['order_by']} LIMIT {$conf['top_number']};";
 
         $page = array_merge(
             $page,
@@ -479,15 +442,7 @@ SELECT DISTINCT(id)
         $page['super_order_by'] = true;
         $conf['order_by'] = ' ORDER BY rating_score DESC, id DESC';
 
-        $query = '
-SELECT DISTINCT(id)
-  FROM images
-    INNER JOIN image_category AS ic ON id = ic.image_id
-  WHERE rating_score IS NOT NULL
-    ' . $forbidden . '
-    ' . $conf['order_by'] . '
-  LIMIT ' . $conf['top_number'] . '
-;';
+        $query = "SELECT DISTINCT(id) FROM images INNER JOIN image_category AS ic ON id = ic.image_id WHERE rating_score IS NOT NULL {$forbidden} {$conf['order_by']} LIMIT {$conf['top_number']};";
         $page = array_merge(
             $page,
             [
@@ -503,14 +458,8 @@ SELECT DISTINCT(id)
     // |                             list section                              |
     // +-----------------------------------------------------------------------+
     elseif ($page['section'] == 'list') {
-        $query = '
-SELECT DISTINCT(id)
-  FROM images
-    INNER JOIN image_category AS ic ON id = ic.image_id
-  WHERE image_id IN (' . implode(',', $page['list']) . ')
-    ' . $forbidden . '
-  ' . $conf['order_by'] . '
-;';
+        $page_list_ = implode(',', $page['list']);
+        $query = "SELECT DISTINCT(id) FROM images INNER JOIN image_category AS ic ON id = ic.image_id WHERE image_id IN ({$page_list_}) {$forbidden} {$conf['order_by']};";
 
         $page = array_merge(
             $page,

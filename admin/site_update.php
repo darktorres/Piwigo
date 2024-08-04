@@ -30,10 +30,7 @@ if (! is_numeric($_GET['site'])) {
 }
 $site_id = $_GET['site'];
 
-$query = '
-SELECT galleries_url
-  FROM sites
-  WHERE id = ' . $site_id;
+$query = "SELECT galleries_url FROM sites WHERE id = {$site_id};";
 list($site_url) = pwg_db_fetch_row(pwg_query($query));
 if (! isset($site_url)) {
     die('site ' . $site_id . ' does not exist');
@@ -128,20 +125,12 @@ if (isset($_POST['submit'])
     and ! $general_failure) {
     $start = get_moment();
     // which categories to update ?
-    $query = '
-SELECT id, uppercats, global_rank, status, visible
-  FROM categories
-  WHERE dir IS NOT NULL
-    AND site_id = ' . $site_id;
+    $query = "SELECT id, uppercats, global_rank, status, visible FROM categories WHERE dir IS NOT NULL AND site_id = {$site_id}";
     if (isset($_POST['cat']) and is_numeric($_POST['cat'])) {
         if (isset($_POST['subcats-included']) and $_POST['subcats-included'] == 1) {
-            $query .= '
-    AND uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $_POST['cat'] . '(,|$)\'
-';
+            $query .= ' AND uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$_POST['cat']}(,|$)'";
         } else {
-            $query .= '
-    AND id = ' . $_POST['cat'] . '
-';
+            $query .= " AND id = {$_POST['cat']}";
         }
     }
     $db_categories = hash_from_query($query, 'id');
@@ -164,19 +153,14 @@ SELECT id, uppercats, global_rank, status, visible
     // has 1 for next rank on its sub-categories to create
     $next_rank['NULL'] = 1;
 
-    $query = '
-SELECT id
-  FROM categories';
+    $query = 'SELECT id FROM categories';
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $next_rank[$row['id']] = 1;
     }
 
     // let's see if some categories already have some sub-categories...
-    $query = '
-SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
-  FROM categories
-  GROUP BY id_uppercat';
+    $query = 'SELECT id_uppercat, MAX(rank_column) + 1 AS next_rank FROM categories GROUP BY id_uppercat';
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         // for the id_uppercat NULL, we write 'NULL' and not the empty string
@@ -291,11 +275,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
 
             $category_up = implode(',', array_unique($category_up));
             if ($conf['inheritance_by_default'] and ! empty($category_up)) {
-                $query = '
-          SELECT *
-          FROM group_access
-          WHERE cat_id IN (' . $category_up . ')
-        ;';
+                $query = "SELECT * FROM group_access WHERE cat_id IN ({$category_up});";
                 $result = pwg_query($query);
                 if (! empty($result)) {
                     $granted_grps = [];
@@ -312,11 +292,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
                         );
                     }
                 }
-                $query = '
-          SELECT *
-          FROM user_access
-          WHERE cat_id IN (' . $category_up . ')
-        ;';
+                $query = "SELECT * FROM user_access WHERE cat_id IN ({$category_up});";
                 $result = pwg_query($query);
                 if (! empty($result)) {
                     $granted_users = [];
@@ -424,15 +400,12 @@ if (isset($_POST['submit']) and $_POST['sync'] == 'files'
     $db_elements = [];
 
     if (count($cat_ids) > 0) {
-        $query = '
-SELECT id, path
-  FROM images
-  WHERE storage_category_id IN ('
-          . wordwrap(
-              implode(', ', $cat_ids),
-              160,
-              "\n"
-          ) . ')';
+        $cat_ids_ = wordwrap(
+            implode(', ', $cat_ids),
+            160,
+            "\n"
+        );
+        $query = "SELECT id, path FROM images WHERE storage_category_id IN ({$cat_ids_});";
         $db_elements = simple_hash_from_query($query, 'id', 'path');
     }
 
@@ -524,11 +497,8 @@ SELECT id, path
             $db_formats = [];
 
             // find formats for existing photos (already in database)
-            $query = '
-SELECT *
-  FROM image_format
-  WHERE image_id IN (' . implode(',', $existing_ids) . ')
-;';
+            $existing_ids_ = implode(',', $existing_ids);
+            $query = "SELECT * FROM image_format WHERE image_id IN ({$existing_ids_});";
             $result = pwg_query($query);
             while ($row = pwg_db_fetch_assoc($result)) {
                 if (! isset($db_formats[$row['image_id']])) {
@@ -615,11 +585,8 @@ SELECT *
         }
 
         if (count($formats_to_delete) > 0) {
-            $query = '
-DELETE
-  FROM image_format
-  WHERE format_id IN (' . implode(',', $formats_to_delete) . ')
-;';
+            $formats_to_delete_ = implode(',', $formats_to_delete);
+            $query = "DELETE FROM image_format WHERE format_id IN ({$formats_to_delete_});";
             pwg_query($query);
         }
     }
@@ -910,10 +877,7 @@ $tpl_introduction['privacy_level_options'] = get_privacy_level_options();
 
 $template->assign('introduction', $tpl_introduction);
 
-$query = '
-SELECT id,name,uppercats,global_rank
-  FROM categories
-  WHERE site_id = ' . $site_id;
+$query = "SELECT id, name, uppercats, global_rank FROM categories WHERE site_id = {$site_id}";
 display_select_cat_wrapper(
     $query,
     $cat_selected,

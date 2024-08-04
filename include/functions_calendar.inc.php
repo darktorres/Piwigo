@@ -26,8 +26,7 @@ function initialize_calendar()
 
     if ($page['section'] == 'categories') { // we will regenerate the items by including subcats elements
         $page['items'] = [];
-        $inner_sql .= '
-INNER JOIN image_category ON id = image_id';
+        $inner_sql .= ' INNER JOIN image_category ON id = image_id';
 
         if (isset($page['category'])) {
             $sub_ids = array_diff(
@@ -38,10 +37,8 @@ INNER JOIN image_category ON id = image_id';
             if (empty($sub_ids)) {
                 return; // nothing to do
             }
-            $inner_sql .= '
-WHERE category_id IN (' . implode(',', $sub_ids) . ')';
-            $inner_sql .= '
-    ' . get_sql_condition_FandF(
+            $inner_sql .= ' WHERE category_id IN (' . implode(',', $sub_ids) . ')';
+            $inner_sql .= ' ' . get_sql_condition_FandF(
                 [
                     'visible_images' => 'id',
                 ],
@@ -49,8 +46,7 @@ WHERE category_id IN (' . implode(',', $sub_ids) . ')';
                 false
             );
         } else {
-            $inner_sql .= '
-    ' . get_sql_condition_FandF(
+            $inner_sql .= ' ' . get_sql_condition_FandF(
                 [
                     'forbidden_categories' => 'category_id',
                     'visible_categories' => 'category_id',
@@ -64,8 +60,7 @@ WHERE category_id IN (' . implode(',', $sub_ids) . ')';
         if (empty($page['items'])) {
             return; // nothing to do
         }
-        $inner_sql .= '
-WHERE id IN (' . implode(',', $page['items']) . ')';
+        $inner_sql .= ' WHERE id IN (' . implode(',', $page['items']) . ')';
     }
 
     //-------------------------------------- initialize the calendar parameters ---
@@ -246,10 +241,7 @@ WHERE id IN (' . implode(',', $page['items']) . ')';
         }
 
         if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
-            $query = 'SELECT DISTINCT id '
-              . $calendar->inner_sql . '
-  ' . $calendar->get_date_where() . '
-  ' . $order_by;
+            $query = "SELECT DISTINCT id {$calendar->inner_sql} {$calendar->get_date_where()} {$order_by};";
             $page['items'] = array_from_query($query, 'id');
             if (isset($cache_key)) {
                 $persistent_cache->set($cache_key, $page['items']);
