@@ -29,12 +29,8 @@ function deactivate_non_standard_plugins()
         'LocalFilesEditor',
     ];
 
-    $query = '
-SELECT id
-FROM plugins
-WHERE state = \'active\'
-AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
-;';
+    $standard_plugins_ = implode('\',\'', $standard_plugins);
+    $query = "SELECT id FROM plugins WHERE state = 'active' AND id NOT IN ('{$standard_plugins_}');";
 
     $result = pwg_query($query);
     $plugins = [];
@@ -43,11 +39,8 @@ AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
     }
 
     if (! empty($plugins)) {
-        $query = '
-UPDATE plugins
-SET state=\'inactive\'
-WHERE id IN (\'' . implode('\',\'', $plugins) . '\')
-;';
+        $plugins_ = implode('\',\'', $plugins);
+        $query = "UPDATE plugins SET state = 'inactive' WHERE id IN ('{$plugins_}');";
         pwg_query($query);
 
         $page['infos'][] = l10n('As a precaution, following plugins have been deactivated. You must check for plugins upgrade before reactiving them:')
@@ -66,13 +59,8 @@ function deactivate_non_standard_themes()
         'smartpocket',
     ];
 
-    $query = '
-SELECT
-    id,
-    name
-  FROM themes
-  WHERE id NOT IN (\'' . implode("','", $standard_themes) . '\')
-;';
+    $standard_themes_ = implode("','", $standard_themes);
+    $query = "SELECT id, name FROM themes WHERE id NOT IN ('{$standard_themes_}');";
     $result = pwg_query($query);
     $theme_ids = [];
     $theme_names = [];
@@ -82,33 +70,21 @@ SELECT
     }
 
     if (! empty($theme_ids)) {
-        $query = '
-DELETE
-  FROM themes
-  WHERE id IN (\'' . implode("','", $theme_ids) . '\')
-;';
+        $theme_ids_ = implode("','", $theme_ids);
+        $query = "DELETE FROM themes WHERE id IN ('{$theme_ids_}');";
         pwg_query($query);
 
         $page['infos'][] = l10n('As a precaution, following themes have been deactivated. You must check for themes upgrade before reactiving them:')
                             . '<p><i>' . implode(', ', $theme_names) . '</i></p>';
 
         // what is the default theme?
-        $query = '
-SELECT theme
-  FROM user_infos
-  WHERE user_id = ' . $conf['default_user_id'] . '
-;';
+        $query = "SELECT theme FROM user_infos WHERE user_id = {$conf['default_user_id']};";
         list($default_theme) = pwg_db_fetch_row(pwg_query($query));
 
         // if the default theme has just been deactivated, let's set another core theme as default
         if (in_array($default_theme, $theme_ids)) {
             // make sure default Piwigo theme is active
-            $query = '
-SELECT
-    COUNT(*)
-  FROM themes
-  WHERE id = \'' . PHPWG_DEFAULT_TEMPLATE . '\'
-;';
+            $query = "SELECT COUNT(*) FROM themes WHERE id = '" . PHPWG_DEFAULT_TEMPLATE . "';";
             list($counter) = pwg_db_fetch_row(pwg_query($query));
             if ($counter < 1) {
                 // we need to activate theme first
@@ -118,11 +94,7 @@ SELECT
             }
 
             // then associate it to default user
-            $query = '
-UPDATE user_infos
-  SET theme = \'' . PHPWG_DEFAULT_TEMPLATE . '\'
-  WHERE user_id = ' . $conf['default_user_id'] . '
-;';
+            $query = "UPDATE user_infos SET theme = '" . PHPWG_DEFAULT_TEMPLATE . "' WHERE user_id = {$conf['default_user_id']};";
             pwg_query($query);
         }
     }
@@ -143,11 +115,7 @@ function check_upgrade_access_rights()
         // Check if user is already connected as webmaster
         session_start();
         if (! empty($_SESSION['pwg_uid'])) {
-            $query = '
-SELECT status
-  FROM user_infos
-  WHERE user_id = ' . $_SESSION['pwg_uid'] . '
-;';
+            $query = "SELECT status FROM user_infos WHERE user_id = {$_SESSION['pwg_uid']};";
             pwg_query($query);
 
             $row = pwg_db_fetch_assoc(pwg_query($query));
@@ -175,19 +143,11 @@ SELECT status
     }
 
     if (version_compare($current_release, '1.5', '<')) {
-        $query = '
-SELECT password, status
-FROM users
-WHERE username = \'' . $username . '\'
-;';
+        $query = "SELECT password, status FROM users WHERE username = '{$username}';";
     } else {
-        $query = '
-SELECT u.password, ui.status
-FROM users AS u
-INNER JOIN user_infos AS ui
-ON u.' . $conf['user_fields']['id'] . '=ui.user_id
-WHERE ' . $conf['user_fields']['username'] . '=\'' . $username . '\'
-;';
+        $query =
+        "SELECT u.password, ui.status FROM users AS u INNER JOIN user_infos AS ui ON u.{$conf['user_fields']['id']} = ui.user_id
+         WHERE {$conf['user_fields']['username']} = '{$username}';";
     }
     $row = pwg_db_fetch_assoc(pwg_query($query));
 
@@ -234,10 +194,7 @@ function get_available_upgrade_ids()
 function check_upgrade_feed()
 {
     // retrieve already applied upgrades
-    $query = '
-SELECT id
-  FROM upgrade
-;';
+    $query = 'SELECT id FROM upgrade;';
     $applied = array_from_query($query, 'id');
 
     // retrieve existing upgrades

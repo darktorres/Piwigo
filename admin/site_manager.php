@@ -63,11 +63,7 @@ if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
     }
 
     // site must not exists
-    $query = '
-SELECT COUNT(id) AS count
-  FROM sites
-  WHERE galleries_url = \'' . $url . '\'
-;';
+    $query = "SELECT COUNT(id) AS count FROM sites WHERE galleries_url = '{$url}';";
     $row = pwg_db_fetch_assoc(pwg_query($query));
     if ($row['count'] > 0) {
         $page['errors'][] = l10n('This site already exists') . ' [' . $url . ']';
@@ -79,12 +75,7 @@ SELECT COUNT(id) AS count
     }
 
     if (count($page['errors']) == 0) {
-        $query = '
-INSERT INTO sites
-  (galleries_url)
-  VALUES
-  (\'' . $url . '\')
-;';
+        $query = "INSERT INTO sites (galleries_url) VALUES ('{$url}');";
         pwg_query($query);
         $page['infos'][] = $url . ' ' . l10n('created');
     }
@@ -97,11 +88,7 @@ if (isset($_GET['site']) and is_numeric($_GET['site'])) {
     $page['site'] = $_GET['site'];
 }
 if (isset($_GET['action']) and isset($page['site'])) {
-    $query = '
-SELECT galleries_url
-  FROM sites
-  WHERE id = ' . $page['site'] . '
-;';
+    $query = "SELECT galleries_url FROM sites WHERE id = {$page['site']};";
     list($galleries_url) = pwg_db_fetch_row(pwg_query($query));
     switch ($_GET['action']) {
         case 'delete':
@@ -121,19 +108,12 @@ $template->assign(
     ]
 );
 
-$query = '
-SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_images
-  FROM categories AS c LEFT JOIN images AS i
-  ON c.id=i.storage_category_id
-  WHERE c.site_id IS NOT NULL
-  GROUP BY c.site_id
-;';
+$query =
+'SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_images FROM categories AS c LEFT JOIN images AS i
+ ON c.id = i.storage_category_id WHERE c.site_id IS NOT NULL GROUP BY c.site_id;';
 $sites_detail = hash_from_query($query, 'site_id');
 
-$query = '
-SELECT *
-  FROM sites
-;';
+$query = 'SELECT * FROM sites;';
 $result = pwg_query($query);
 
 while ($row = pwg_db_fetch_assoc($result)) {

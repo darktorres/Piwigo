@@ -790,13 +790,6 @@ function get_user_favorites()
         return [];
     }
 
-    $query = '
-SELECT
-    image_id,
-    1 as fake_value
-  FROM favorites
-  WHERE user_id = ' . $user['id'] . '
-';
-
+    $query = "SELECT image_id, 1 AS fake_value FROM favorites WHERE user_id = {$user['id']};";
     return query2array($query, 'image_id', 'fake_value');
 }

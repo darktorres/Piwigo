@@ -56,12 +56,7 @@ $image_only = isset($_GET['image_only']);
 
 // echo '<pre>'.generate_key(50).'</pre>';
 if (! empty($feed_id)) {
-    $query = '
-SELECT user_id,
-       last_check
-  FROM user_feed
-  WHERE id = \'' . $feed_id . '\'
-;';
+    $query = "SELECT user_id, last_check FROM user_feed WHERE id = '{$feed_id}';";
     $feed_row = pwg_db_fetch_assoc(pwg_query($query));
     if (empty($feed_row)) {
         page_not_found(l10n('Unknown feed identifier'));
@@ -116,11 +111,7 @@ if (! $image_only) {
 
         $rss->addItem($item);
 
-        $query = '
-UPDATE user_feed
-  SET last_check = \'' . $dbnow . '\'
-  WHERE id = \'' . $feed_id . '\'
-;';
+        $query = "UPDATE user_feed SET last_check = '{$dbnow}' WHERE id = '{$feed_id}';";
         pwg_query($query);
     }
 }
@@ -128,11 +119,8 @@ UPDATE user_feed
 if (! empty($feed_id) and empty($news)) {// update the last check from time to time to avoid deletion by maintenance tasks
     if (! isset($feed_row['last_check'])
       or time() - datetime_to_ts($feed_row['last_check']) > 30 * 24 * 3600) {
-        $query = '
-UPDATE user_feed
-  SET last_check = ' . pwg_db_get_recent_period_expression(-15, $dbnow) . '
-  WHERE id = \'' . $feed_id . '\'
-;';
+        $date_ = pwg_db_get_recent_period_expression(-15, $dbnow);
+        $query = "UPDATE user_feed SET last_check = {$date_} WHERE id = '{$feed_id}';";
         pwg_query($query);
     }
 }

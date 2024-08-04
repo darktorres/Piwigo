@@ -25,21 +25,16 @@ check_status(ACCESS_GUEST);
 // |                     generate random element list                      |
 // +-----------------------------------------------------------------------+
 
-$query = '
-SELECT id
-  FROM images
-    INNER JOIN image_category AS ic ON id = ic.image_id
-' . get_sql_condition_FandF(
+$filters_and_forbidden = get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',
         'visible_categories' => 'category_id',
         'visible_images' => 'id',
     ],
     'WHERE'
-) . '
-  ORDER BY ' . DB_RANDOM_FUNCTION . '()
-  LIMIT ' . min(50, $conf['top_number'], $user['nb_image_page']) . '
-;';
+);
+$min_ = min(50, $conf['top_number'], $user['nb_image_page']);
+$query = "SELECT id FROM images INNER JOIN image_category AS ic ON id = ic.image_id {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . "() LIMIT {$min_};";
 
 // +-----------------------------------------------------------------------+
 // |                                redirect                               |
