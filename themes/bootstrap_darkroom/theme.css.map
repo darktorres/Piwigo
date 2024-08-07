@@ -45,7 +45,6 @@
 		"scss/theme/_picture.scss",
 		"scss/theme/_picture-info-sidebar.scss",
 		"scss/theme/_comments.scss",
-		"scss/theme/_photoswipe.scss",
 		"scss/theme/_tag-cloud.scss",
 		"scss/theme/_carousel-fade.scss",
 		"scss/theme/_page-header.scss",
