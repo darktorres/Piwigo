@@ -1,5 +1,5 @@
 (function () {
-  const loader = new ImageLoader({ onChanged: loaderChanged, maxRequests: 1 });
+  const loader = new ImageLoader({ onChanged: loaderChanged });
   let pendingNextPage = null;
   let allDoneDfd;
   let urlDfd;
