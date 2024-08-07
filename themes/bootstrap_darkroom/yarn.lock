@@ -1709,10 +1709,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"photoswipe@npm:4.1.3":
-  version: 4.1.3
-  resolution: "photoswipe@npm:4.1.3"
-  checksum: 10c0/89d7bcba2b1aefc7b0798a0cba7fd643c6eb30994d1f717f5f822df5ac27a851cf9aa14388129f4332abadabf4998d782e5bfe4af2341ab8dca9a27efd2bc74d
+"photoswipe@npm:5.4.4":
+  version: 5.4.4
+  resolution: "photoswipe@npm:5.4.4"
+  checksum: 10c0/9a62a8ee4b87564f3d2067edfd7f168d07973e1e37b21cd4f548363b441d8192991a88d272a0f299de0e7c773e6c74367ebcf895f0e60ca919d52e1d2f3b0355
   languageName: node
   linkType: hard
 
@@ -1768,7 +1768,7 @@ __metadata:
     jquery: "npm:^3.7.1"
     jquery-migrate: "npm:^3.5.2"
     npm-run-all: "npm:^4.1.5"
-    photoswipe: "npm:4.1.3"
+    photoswipe: "npm:5.4.4"
     popper.js: "npm:^1.16.1"
     postcss: "npm:^8.4.47"
     postcss-cli: "npm:^11.0.0"
