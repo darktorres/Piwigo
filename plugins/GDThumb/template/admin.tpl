@@ -134,17 +134,15 @@
     <input type="button" name="cachedelete" id="cachedelete" value="{'Purge thumbnails cache'|@translate}"
       title="{'Delete images in GDThumb cache.'|@translate}" onclick="return confirm('{'Are you sure?'|@translate}');">
     <input type="button" name="cachebuild" id="cachebuild" value="{'Pre-cache thumbnails'|@translate}"
-      title="{'Finds images that have not been cached and creates the cached version.'|@translate}"
-      onclick="jQuery.gdThumb_start();">
+      title="{'Finds images that have not been cached and creates the cached version.'|@translate}">
   </p>
 </form>
 <fieldset id="generate_cache">
   <legend>{'Pre-cache thumbnails'|@translate}</legend>
   <p class="buttons">
-    <input id="startLink" value="{'Start'|@translate}" onclick="jQuery.gdThumb_start()" type="button">
-    <input id="pauseLink" value="{'Pause'|@translate}" onclick="jQuery.gdThumb_pause()" type="button"
-      disabled="disbled">
-    <input id="stopLink" value="{'Stop'|@translate}" onclick="jQuery.gdThumb_stop()" type="button" disabled="disbled">
+    <input id="startLink" value="{'Start'|@translate}" type="button">
+    <input id="pauseLink" value="{'Pause'|@translate}" type="button" disabled="disbled">
+    <input id="stopLink" value="{'Stop'|@translate}" type="button" disabled="disbled">
   </p>
   <div>
     <ul>
@@ -160,6 +158,30 @@
   <div id="errorList">
   </div>
 </fieldset>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cacheBuildButton = document.getElementById('cachebuild');
+    if (cacheBuildButton) {
+      cacheBuildButton.addEventListener('click', gdThumb_start);
+    }
+
+    const startLinkButton = document.getElementById('startLink');
+    if (startLinkButton) {
+      startLinkButton.addEventListener('click', gdThumb_start);
+    }
+
+    const pauseLinkButton = document.getElementById('pauseLink');
+    if (pauseLinkButton) {
+      pauseLinkButton.addEventListener('click', gdThumb_pause);
+    }
+
+    const stopLinkButton = document.getElementById('stopLink');
+    if (stopLinkButton) {
+      stopLinkButton.addEventListener('click', gdThumb_stop);
+    }
+  });
+</script>
 
 {combine_css path=$GDTHUMB_PATH|cat:"/css/admin.css"}
 
