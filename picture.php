@@ -72,7 +72,7 @@ if (! isset($page['rank_of'][$page['image_id']])) {
             if (pwg_db_num_rows(pwg_query($query)) == 0) {
                 access_denied();
             } elseif ($page['section'] == 'best_rated') {
-                $page['rank_of'][$page['image_id']] = count($page['items']);
+                $page['rank_of'][$page['image_id']] = $page['items_total'];
                 $page['items'][] = $page['image_id'];
             } else {
                 $url = make_picture_url(
@@ -201,7 +201,7 @@ function default_picture_content(
 // caching first_rank, last_rank, current_rank in the displayed
 // section. This should also help in readability.
 $page['first_rank'] = 0;
-$page['last_rank'] = count($page['items']) - 1;
+$page['last_rank'] = $page['items_total'] - 1;
 $page['current_rank'] = $page['rank_of'][$page['image_id']];
 
 // caching current item : readability purpose
@@ -535,7 +535,7 @@ if ($page['slideshow'] && $conf['light_slideshow']) {
 }
 
 $title = $picture['current']['TITLE'];
-$title_nb = ($page['current_rank'] + 1) . '/' . count($page['items']);
+$title_nb = ($page['current_rank'] + 1) . '/' . $page['items_total'];
 
 // metadata
 $url_metadata = duplicate_picture_url();

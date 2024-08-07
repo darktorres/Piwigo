@@ -16,11 +16,7 @@ declare(strict_types=1);
 
 $pictures = [];
 
-$selection = array_slice(
-    $page['items'],
-    (int) $page['start'],
-    (int) $page['nb_image_page']
-);
+$selection = $page['items'];
 
 $selection = trigger_change('loc_index_thumbnails_selection', $selection);
 

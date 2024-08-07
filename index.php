@@ -25,7 +25,7 @@ if (isset($page['category'])) {
     check_restrictions($page['category']['id']);
 }
 
-if ($page['start'] > 0 && $page['start'] >= count($page['items'])) {
+if ($page['start'] > 0 && $page['start'] >= $page['items_total']) {
     page_not_found('', duplicate_index_url([
         'start' => 0,
     ]));
@@ -59,10 +59,10 @@ if (isset($_GET['display'])) {
 //-------------------------------------------------------------- initialization
 // navigation bar
 $page['navigation_bar'] = [];
-if (count($page['items']) > $page['nb_image_page']) {
+if (($page['items_total'] ?? null) > $page['nb_image_page']) {
     $page['navigation_bar'] = create_navigation_bar(
         duplicate_index_url([], ['start']),
-        count($page['items']),
+        $page['items_total'],
         (int) $page['start'],
         (int) $page['nb_image_page'],
         true,
@@ -82,7 +82,7 @@ if (isset($page['is_homepage']) && $page['is_homepage']) {
     $canonical_url = get_gallery_home_url();
 } else {
     $start = $page['nb_image_page'] * round($page['start'] / $page['nb_image_page']);
-    if ($start > 0 && $start >= count($page['items'])) {
+    if ($start > 0 && $start >= $page['items_total']) {
         $start -= $page['nb_image_page'];
     }
 
@@ -96,7 +96,7 @@ $template->assign('U_CANONICAL', $canonical_url);
 //-------------------------------------------------------------- page title
 $title = $page['title'];
 $template_title = $page['section_title'];
-$nb_items = count($page['items']);
+$nb_items = $page['items_total'] ?? null;
 $template->assign('TITLE', $template_title);
 $template->assign('NB_ITEMS', $nb_items);
 
@@ -512,7 +512,7 @@ if (empty($page['is_external'])) {
     }
 
     // image order
-    if ($conf['index_sort_order_input'] && count($page['items']) > 0 && $page['section'] != 'most_visited' && $page['section'] != 'best_rated') {
+    if ($conf['index_sort_order_input'] && ($page['items_total'] ?? null) > 0 && $page['section'] != 'most_visited' && $page['section'] != 'best_rated') {
         $preferred_image_orders = get_category_preferred_image_orders();
         $order_idx = pwg_get_session_var('image_order', 0);
 

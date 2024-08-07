@@ -104,7 +104,7 @@ function initialize_menu(): void
     $block = $menu->get_block('mbRelatedCategories');
 
     if (
-        isset($page['items']) && count($page['items']) < $conf['related_albums_maximum_items_to_compute'] && $block != null && ! empty($page['items'])
+        isset($page['items']) && ($page['items_total'] ?? null) < $conf['related_albums_maximum_items_to_compute'] && $block != null && ! empty($page['items'])
     ) {
         $exclude_cat_ids = [];
         if (isset($page['category'])) {
