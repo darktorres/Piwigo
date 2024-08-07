@@ -37,7 +37,24 @@ var GDThumb = {
       GDThumb.build();
       jQuery(window).on("RVTS_loaded", GDThumb.build);
 
-      mainlists.on("resize", GDThumb.process);
+      function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+          const context = this;
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+      }
+
+      const resizeObserver = new ResizeObserver(
+        debounce(() => {
+          GDThumb.process();
+        }, 200)
+      ); // Adjust the wait time (200 ms) as needed
+      mainlists.each(function () {
+        resizeObserver.observe(this);
+      });
+
       jQuery("ul.thumbnails .thumbLegend.overlay").on("click", function () {
         window.location.href = $(this).parent().find("a").attr("href");
       });
