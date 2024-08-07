@@ -1,89 +1,93 @@
-function ImageLoader(opts) {
-  this.opts = Object.assign(
-    {
+class ImageLoader {
+  constructor(opts = {}) {
+    const defaultOptions = {
       maxRequests: 6,
-      onChanged: function () {}, // No-op function
-    },
-    opts || {}
-  );
+      onChanged: () => {}, // No-op function
+    };
+    this.opts = { ...defaultOptions, ...opts };
 
-  this.loaded = 0;
-  this.errors = 0;
-  this.errorEma = 0;
-  this.paused = false;
-  this.current = [];
-  this.queue = [];
-  this.pool = [];
-}
+    this.loaded = 0;
+    this.errors = 0;
+    this.errorEma = 0;
+    this.paused = false;
+    this.current = [];
+    this.queue = [];
+    this.pool = [];
+  }
 
-ImageLoader.prototype = {
-  remaining: function () {
+  remaining() {
     return this.current.length + this.queue.length;
-  },
+  }
 
-  add: function (urls) {
-    this.queue = this.queue.concat(urls);
+  add(urls) {
+    this.queue.push(...urls);
     this._fireChanged("add");
     this._checkQueue();
-  },
+  }
 
-  clear: function () {
-    this.queue.length = 0;
-    while (this.current.length) {
-      const img = this.current.pop();
-      img.onload = null;
-      img.onerror = null;
-      img.onabort = null;
-    }
-    this.loaded = this.errors = this.errorEma = 0;
-  },
+  clear() {
+    this.queue = [];
+    this.current.forEach((img) => this._removeEventListeners(img));
+    this.current = [];
+    this.loaded = 0;
+    this.errors = 0;
+    this.errorEma = 0;
+  }
 
-  pause: function (val) {
+  pause(val) {
     if (val !== undefined) {
       this.paused = val;
       this._checkQueue();
     }
     return this.paused;
-  },
+  }
 
-  _checkQueue: function () {
-    while (!this.paused && this.queue.length && this.current.length < this.opts.maxRequests) {
+  _checkQueue() {
+    while (!this.paused && this.queue.length > 0 && this.current.length < this.opts.maxRequests) {
       this._processOne(this.queue.shift());
     }
-  },
+  }
 
-  _processOne: function (url) {
-    const img = this.pool.shift() || new Image();
+  _processOne(url) {
+    const img = this.pool.pop() || new Image();
     this.current.push(img);
-    const that = this;
 
-    function eventHandler(e) {
-      img.onload = null;
-      img.onerror = null;
-      img.onabort = null;
-      that.current.splice(that.current.indexOf(img), 1);
-
-      if (e.type === "load") {
-        that.loaded++;
-        that.errorEma *= 0.9;
-      } else {
-        that.errors++;
-        that.errorEma++;
-        if (that.errorEma >= 20 && that.errorEma < 21) that.paused = true;
-      }
-
-      that._fireChanged(e.type, img);
-      that._checkQueue();
-      that.pool.push(img);
-    }
-
+    const eventHandler = this._handleEvent.bind(this, img);
     img.onload = eventHandler;
     img.onerror = eventHandler;
     img.onabort = eventHandler;
     img.src = url;
-  },
+  }
 
-  _fireChanged: function (type, img) {
-    this.opts.onChanged(type, img);
-  },
-};
+  _handleEvent(img, event) {
+    this._removeEventListeners(img);
+    this.current.splice(this.current.indexOf(img), 1);
+
+    if (event.type === "load") {
+      this.loaded++;
+      this.errorEma *= 0.9;
+    } else {
+      this.errors++;
+      this.errorEma++;
+      if (this.errorEma >= 20 && this.errorEma < 21) {
+        this.paused = true;
+      }
+    }
+
+    this._fireChanged(event.type, img);
+    this._checkQueue();
+    this.pool.push(img);
+  }
+
+  _removeEventListeners(img) {
+    img.onload = null;
+    img.onerror = null;
+    img.onabort = null;
+  }
+
+  _fireChanged(type, img) {
+    if (typeof this.opts.onChanged === "function") {
+      this.opts.onChanged(type, img);
+    }
+  }
+}

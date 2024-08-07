@@ -163,22 +163,22 @@
   document.addEventListener('DOMContentLoaded', function() {
     const cacheBuildButton = document.getElementById('cachebuild');
     if (cacheBuildButton) {
-      cacheBuildButton.addEventListener('click', gdThumb_start);
+      cacheBuildButton.addEventListener('click', gdThumbStart);
     }
 
     const startLinkButton = document.getElementById('startLink');
     if (startLinkButton) {
-      startLinkButton.addEventListener('click', gdThumb_start);
+      startLinkButton.addEventListener('click', gdThumbStart);
     }
 
     const pauseLinkButton = document.getElementById('pauseLink');
     if (pauseLinkButton) {
-      pauseLinkButton.addEventListener('click', gdThumb_pause);
+      pauseLinkButton.addEventListener('click', gdThumbPause);
     }
 
     const stopLinkButton = document.getElementById('stopLink');
     if (stopLinkButton) {
-      stopLinkButton.addEventListener('click', gdThumb_stop);
+      stopLinkButton.addEventListener('click', gdThumbStop);
     }
   });
 </script>
