@@ -432,9 +432,13 @@ class image_vips implements imageInterface
         string $source_filepath
     ) {
         // putenv('VIPS_WARNING=0');
-        $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), [
-            'access' => 'sequential',
-        ]);
+        try {
+            $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), [
+                'access' => 'sequential',
+            ]);
+        } catch (\Throwable) {
+        }
+
         $this->source_filepath = realpath($source_filepath);
     }
 
