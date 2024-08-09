@@ -250,6 +250,9 @@ function parse_request(): void
     $page['src_location'] = $req . $ext;
     $page['src_path'] = PHPWG_ROOT_PATH . $page['src_location'];
     $page['src_url'] = $page['root_path'] . $page['src_location'];
+
+    $page['derivative_path'] .= '.webp';
+    $page['derivative_ext'] = '.webp';
 }
 
 function try_switch_source(
