@@ -7,17 +7,17 @@
   {combine_script id='mousetrap' load='footer' path=$ADMINTOOLS_PATH|cat:'template/mousetrap.js'}
 
   {*<!-- colorbox -->*}
-  {combine_script id='jquery.colorbox' load='footer' require='jquery' path='themes/default/js/plugins/jquery.colorbox.js'}
-  {combine_css id='colorbox' path='themes/default/js/plugins/colorbox/style2/colorbox.css'}
+  {combine_script id='jquery.colorbox' load='footer' require='jquery' path='node_modules/jquery-colorbox/jquery.colorbox.js'}
+  {combine_css id='colorbox' path='node_modules/jquery-colorbox/example2/colorbox.css'}
 
   {if isset($ato.IS_PICTURE)}
     {*<!-- tokeninput -->*}
-    {combine_script id='jquery.tokeninput' load='footer' require='jquery' path='themes/default/js/plugins/jquery.tokeninput.js'}
-    {combine_css path='themes/default/js/plugins/jquery.tokeninput.css'}
+    {combine_script id='jquery.tokeninput' load='footer' require='jquery' path='node_modules/jquery-tokeninput/src/jquery.tokeninput.js'}
+    {combine_css path='node_modules/jquery-tokeninput/styles/token-input.css'}
 
     {*<!-- datepicker -->*}
-    {combine_script id='jquery-ui' load='footer' path='themes/default/js/jquery-ui/jquery-ui.js'}
-    {combine_css path='themes/default/js/jquery-ui/jquery-ui.css'}
+    {combine_script id='jquery-ui' load='footer' path='node_modules/jquery-ui/dist/jquery-ui.js'}
+    {combine_css path='node_modules/jquery-ui/dist/themes/base/jquery-ui.css'}
   {/if}
 {/if}
 
