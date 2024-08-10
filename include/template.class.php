@@ -1726,9 +1726,9 @@ class ScriptLoader
         if (isset(self::$known_paths[$id]) || str_starts_with($id, 'jquery.ui.')) {
             $this->add($id, $load_mode, [], null);
 
-            if ($id === 'jquery') {
-                $this->add('jquery-migrate', $load_mode, [], null);
-            }
+            // if ($id === 'jquery') {
+            //     $this->add('jquery-migrate', $load_mode, [], null);
+            // }
 
             return true;
         }
