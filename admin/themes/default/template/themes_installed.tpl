@@ -1,8 +1,8 @@
 {include file='include/colorbox.inc.tpl'}
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
-{combine_css path="themes/default/js/plugins/jquery-confirm.css"}
+{combine_script id='jquery.confirm' load='footer' require='jquery' path='node_modules/jquery-confirm/js/jquery-confirm.js'}
+{combine_css path="node_modules/jquery-confirm/css/jquery-confirm.css"}
 {footer_script}<script>
   const title_msg = '{'Are you sure you want to delete this theme?'|@translate|@escape:'javascript'}';
   const confirm_msg = '{"Yes, I am sure"|@translate}';

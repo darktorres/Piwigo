@@ -83,7 +83,7 @@ class RVTS
         $template->func_combine_script([
             'id' => 'jquery',
             'load' => 'footer',
-            'path' => 'themes/default/js/jquery.js',
+            'path' => 'node_modules/jquery/dist/jquery.js',
         ]);
         $template->func_combine_script([
             'id' => $my_base_name,

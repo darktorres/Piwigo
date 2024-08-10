@@ -1,4 +1,4 @@
-{combine_script id='jquery.dataTables' load='footer' path='themes/default/js/plugins/jquery.dataTables.js'}
+{combine_script id='jquery.dataTables' load='footer' path='node_modules/jquery-datatables/js/jquery.dataTables.js'}
 {html_style}<style type="text/css">
 	.sorting { background: url({$ROOT_URL}themes/default/js/plugins/datatables/images/sort_both.png) no-repeat center right; cursor:pointer; }
 	.sorting_asc { background: url({$ROOT_URL}themes/default/js/plugins/datatables/images/sort_asc.png) no-repeat center right; }
@@ -75,8 +75,8 @@
 	</fieldset>
 </form>
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
-{combine_css path="themes/default/js/plugins/jquery-confirm.css"}
+{combine_script id='jquery.confirm' load='footer' require='jquery' path='node_modules/jquery-confirm/js/jquery-confirm.js'}
+{combine_css path="node_modules/jquery-confirm/css/jquery-confirm.css"}
 {combine_script id='core.scripts' load='async' path='themes/default/js/scripts.js'}
 {combine_script id='jquery.geoip' load='async' path='admin/themes/default/js/jquery.geoip.js'}
 {footer_script}<script>

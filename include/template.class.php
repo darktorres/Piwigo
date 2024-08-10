@@ -1445,9 +1445,9 @@ class ScriptLoader
 
     private static array $known_paths = [
         'core.scripts' => 'themes/default/js/scripts.js',
-        'jquery' => 'themes/default/js/jquery.js',
-        'jquery-migrate' => 'themes/default/js/jquery-migrate.js',
-        'jquery-ui' => 'themes/default/js/jquery-ui/jquery-ui.js',
+        'jquery' => 'node_modules/jquery/dist/jquery.js',
+        'jquery-migrate' => 'node_modules/jquery-migrate/dist/jquery-migrate.js',
+        'jquery-ui' => 'node_modules/jquery-ui/dist/jquery-ui.js',
     ];
 
     public function __construct()
