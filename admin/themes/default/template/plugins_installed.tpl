@@ -1,10 +1,10 @@
 {combine_script id='jquery.ajaxmanager' load='footer' require='jquery' path='themes/default/js/plugins/jquery.ajaxmanager.js' }
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.cookie' path='themes/default/js/jquery.cookie.js' load='footer'}
+{combine_script id='jquery.cookie' path='node_modules/jquery.cookie/jquery.cookie.js' load='footer'}
 
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
-{combine_css path="themes/default/js/plugins/jquery-confirm.css"}
-{combine_script id='tiptip' load='header' path='themes/default/js/plugins/jquery.tipTip.js'}
+{combine_script id='jquery.confirm' load='footer' require='jquery' path='node_modules/jquery-confirm/js/jquery-confirm.js'}
+{combine_css path="node_modules/jquery-confirm/css/jquery-confirm.css"}
+{combine_script id='tiptip' load='header' path='node_modules/jquery.tiptip/jquery.tipTip.js'}
 
 {combine_script id='pluginInstallated' load='footer' require='jquery.ajaxmanager' path='admin/themes/default/js/plugins_installated.js'}
 
