@@ -143,7 +143,7 @@
     }
   </style>
 
-  {combine_script id='jquery.cluetip' load='async' require='jquery' path='themes/default/js/plugins/jquery.cluetip.js'}
+  {combine_script id='jquery.cluetip' load='async' require='jquery' path='node_modules/cluetip/jquery.cluetip.js'}
 
   {footer_script require='jquery.cluetip'}<script>
     jQuery().ready(function() {

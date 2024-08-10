@@ -1,15 +1,15 @@
 {combine_script id='jquery.sort' load='footer' path='themes/default/js/plugins/jquery.sort.js'}
 
-{combine_script id='jquery-ui' require='jquery' load='header' path='themes/default/js/jquery-ui/jquery-ui.js'}
-{combine_css path="themes/default/js/jquery-ui/jquery-ui.css"}
+{combine_script id='jquery-ui' require='jquery' load='header' path='node_modules/jquery-ui/dist/jquery-ui.js'}
+{combine_css path="node_modules/jquery-ui/dist/themes/base/jquery-ui.css"}
 
-{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
+{combine_script id='jquery.selectize' load='footer' path='node_modules/selectize/dist/js/standalone/selectize.js'}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
+{combine_script id='jquery.confirm' load='footer' require='jquery' path='node_modules/jquery-confirm/js/jquery-confirm.js'}
 {combine_script id='pluginsNew' load='footer' require='jquery-ui,jquery.sort' path='admin/themes/default/js/plugins_new.js'}
-{combine_css path="themes/default/js/plugins/jquery-confirm.css"}
+{combine_css path="node_modules/jquery-confirm/css/jquery-confirm.css"}
 
 {footer_script}<script>
   const str_confirm_msg = "{"Yes, I am sure"|@translate}";
