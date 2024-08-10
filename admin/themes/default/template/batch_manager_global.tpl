@@ -4,13 +4,13 @@
 
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
-{combine_script id='jquery-ui' require='jquery' load='async' path='themes/default/js/jquery-ui/jquery-ui.js'}
-{combine_css path="themes/default/js/jquery-ui/jquery-ui.css"}
+{combine_script id='jquery-ui' require='jquery' load='async' path='node_modules/jquery-ui/dist/jquery-ui.js'}
+{combine_css path="node_modules/jquery-ui/dist/themes/base/jquery-ui.css"}
 {combine_script id='doubleSlider' load='async' require='jquery-ui' path='admin/themes/default/js/doubleSlider.js'}
 
 {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
 
-{combine_script id='jquery.selectize' load='footer' path='themes/default/js/plugins/selectize.js'}
+{combine_script id='jquery.selectize' load='footer' path='node_modules/selectize/dist/js/standalone/selectize.js'}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {combine_script id='jquery.progressBar' load='async' path='themes/default/js/plugins/jquery.progressbar.js'}
@@ -344,8 +344,8 @@
   };
 </script>{/footer_script}
 
-{combine_script id='jquery.confirm' load='footer' require='jquery' path='themes/default/js/plugins/jquery-confirm.js'}
-{combine_css path="themes/default/js/plugins/jquery-confirm.css"}
+{combine_script id='jquery.confirm' load='footer' require='jquery' path='node_modules/jquery-confirm/js/jquery-confirm.js'}
+{combine_css path="node_modules/jquery-confirm/css/jquery-confirm.css"}
 {combine_css path="admin/themes/default/fontello/css/animation.css" order=10} {* order 10 is required, see issue 1080 *}
 
 <div id="batchManagerGlobal">

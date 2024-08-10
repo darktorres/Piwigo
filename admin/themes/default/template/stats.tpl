@@ -17,10 +17,10 @@
   moment.locale("{$langCode}");
 </script>{/footer_script}
 
-{combine_script id='chart.js' load='footer' path='themes/default/js/plugins/Chart.js'}
-{combine_css path="themes/default/js/plugins/Chart.css"}
+{combine_script id='chart.js' load='footer' path='node_modules/chart.js/dist/Chart.js'}
+{combine_css path="node_modules/chart.js/dist/Chart.css"}
 
-{combine_script id='moment-with-locales.js' path='themes/default/js/plugins/moment-with-locales.js'}
+{combine_script id='moment-with-locales.js' path='node_modules/moment/min/moment-with-locales.js'}
 
 {combine_script id='stats' load='footer' path='admin/themes/default/js/stats.js'}
 

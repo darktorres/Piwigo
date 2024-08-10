@@ -164,10 +164,10 @@
 {combine_css path=$GDTHUMB_PATH|cat:"/css/admin.css"}
 
 {if $CUSTOM_CSS=="yes"}
-  {combine_css path="themes/default/js/plugins/colorbox/style2/colorbox.css"}
+  {combine_css path="node_modules/jquery-colorbox/example2/colorbox.css"}
   {combine_css path=$GDTHEME_PATH|cat:"admin/css/styles.css"}
   {combine_css path=$GDTHEME_PATH|cat:"css/all.css"}
-  {combine_script id='jquery.colorbox' load='footer' require='jquery' path='themes/default/js/plugins/jquery.colorbox.js' }
+  {combine_script id='jquery.colorbox' load='footer' require='jquery' path='node_modules/jquery-colorbox/jquery.colorbox.js' }
   {combine_script id='greydragon.admin' load='footer' require='jquery' path=$GDTHEME_PATH|cat:"admin/js/admin.js" }
 {else}
   {html_head}
