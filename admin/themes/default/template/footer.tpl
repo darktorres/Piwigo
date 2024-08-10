@@ -32,7 +32,7 @@
 </div>{* <!-- the_page --> *}
 
 
-{combine_script id='jquery.tipTip' load='footer' path='themes/default/js/plugins/jquery.tipTip.js'}
+{combine_script id='jquery.tipTip' load='footer' path='node_modules/jquery.tiptip/jquery.tipTip.js'}
 {footer_script require='jquery.tipTip'}<script>
   jQuery('.tiptip').tipTip({
     delay: 0,
