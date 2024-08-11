@@ -84,8 +84,7 @@
   {else}
     {assign var=loc value="footer"}
   {/if}
-  {combine_script id='jquery' path='themes/bootstrap_darkroom/node_modules/jquery/dist/jquery.js' load=$loc}
-  {combine_script id='jquery-migrate' require='jquery' path='themes/bootstrap_darkroom/node_modules/jquery-migrate/dist/jquery-migrate.js' load=$loc}
+  {combine_script id='jquery' load=$loc}
   {combine_script id='popper.js' require='jquery' path='themes/bootstrap_darkroom/node_modules/popper.js/dist/umd/popper.js' load=$loc}
   {if preg_match('/^material/', $theme_config->bootstrap_theme)}
     {combine_script id='bootstrap' require='popper.js' path='themes/bootstrap_darkroom/node_modules/bootstrap-material-design/dist/js/bootstrap-material-design.js' load=$loc}
