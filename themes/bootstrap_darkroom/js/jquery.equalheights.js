@@ -27,6 +27,7 @@
     Example 3: $(".cols").equalHeights(100,300); Cols are at least 100 but no more
     than 300 pixels tall. Elements with too much content will gain a scrollbar.
 **/
+// todo: remove this code
 
    (function($) {
      $.fn.equalHeights = function(minHeight, maxHeight) {
