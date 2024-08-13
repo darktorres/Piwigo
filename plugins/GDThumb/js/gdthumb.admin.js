@@ -3,7 +3,7 @@
   jQuery('input[name^="cache"]').tipTip({'delay' : 0, 'fadeIn' : 200, 'fadeOut' : 200});
   $('div.infos').delay(4000).slideUp('slow', function() { $('div.infos').hide(); });
 
-  var loader = new ImageLoader( {onChanged: loaderChanged, maxRequests:1 } )
+  var loader = new ImageLoader( {onChanged: loaderChanged } )
     , pending_next_page = null
     , last_image_show_time = 0
     , allDoneDfd, urlDfd;
