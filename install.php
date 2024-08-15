@@ -170,28 +170,28 @@ include(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 include(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
 $languages = new languages('utf-8');
 
-if (isset($_GET['language']))
-{
-  $language = strip_tags($_GET['language']);
+// if (isset($_GET['language']))
+// {
+//   $language = strip_tags($_GET['language']);
   
-  if (!in_array($language, array_keys($languages->fs_languages)))
-  {
-    $language = PHPWG_DEFAULT_LANGUAGE;
-  }
-}
-else
-{
+//   if (!in_array($language, array_keys($languages->fs_languages)))
+//   {
+//     $language = PHPWG_DEFAULT_LANGUAGE;
+//   }
+// }
+// else
+// {
   $language = 'en_UK';
-  // Try to get browser language
-  foreach ($languages->fs_languages as $language_code => $fs_language)
-  {
-    if (substr($language_code,0,2) == @substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,2))
-    {
-      $language = $language_code;
-      break;
-    }
-  }
-}
+//   // Try to get browser language
+//   foreach ($languages->fs_languages as $language_code => $fs_language)
+//   {
+//     if (substr($language_code,0,2) == @substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,2))
+//     {
+//       $language = $language_code;
+//       break;
+//     }
+//   }
+// }
 
 if ('fr_FR' == $language) {
   define('PHPWG_DOMAIN', 'fr.piwigo.org');
