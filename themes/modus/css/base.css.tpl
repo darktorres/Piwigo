@@ -28,7 +28,6 @@ A:hover .pwg-icon {
 IMG {
 	border: 0; /*IE <= 9 adds border for linked images*/
 }
-
 H2 {
 	margin: 0;
 	padding: 2px 5px 3px 0;
