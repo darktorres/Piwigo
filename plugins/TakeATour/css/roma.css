@@ -15,7 +15,6 @@
   color: #ccc;
   background-color: #111111;
   border-color: #333;
-
 }
 .btn-default:hover,
 .btn-default:focus,
@@ -25,7 +24,7 @@
   color: #ff3363;
   background-color: #141414;
   border-color: #ff3363;
-/*  color: #ccc;
+  /*  color: #ccc;
   background-color: #141414;
   border-color: #525252;*/
 }
@@ -69,7 +68,8 @@ fieldset[disabled] .btn-default.active {
 .popover.bottom {
   box-shadow: 0px -5px 10px rgba(170, 170, 170, 0.2);
 }
-.popover-title, .popover-content {
+.popover-title,
+.popover-content {
   color: #aaa;
 }
 .popover-title {
