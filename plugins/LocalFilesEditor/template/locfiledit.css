@@ -12,7 +12,7 @@
   float: left;
 }
 
-#LocalFilesEditor .default_file  {
+#LocalFilesEditor .default_file {
   float: right;
 }
 
@@ -20,9 +20,10 @@
   padding: 0.5em;
 }
 
-#LocalFilesEditor TEXTAREA, .CodeMirror {
-  background-color: #EEEEEE;
-  font-family: monospace,Arial,sans-serif;
+#LocalFilesEditor TEXTAREA,
+.CodeMirror {
+  background-color: #eeeeee;
+  font-family: monospace, Arial, sans-serif;
   font-size: 1.2em;
   border: 1px solid #999999;
   margin: 0.5em 0;
