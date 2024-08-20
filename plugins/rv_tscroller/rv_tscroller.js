@@ -5,7 +5,7 @@ if (window.jQuery && window.RVTS)
 (function($){
 if (RVTS.start>0) {
 	var $f = $('.navigationBar A[rel=first]');
-	$('.thumbnails, #thumbnails').before( '<div id=rvtsUp style="text-align:center;font-size:120%;margin:10px"><a href="'+$f.attr("href")+'">'+$f.html()+'</a> | <a href="javascript:RVTS.loadUp()">'+RVTS.prevMsg+"</a></div>" );
+	$('#thumbnails').before( '<div id=rvtsUp style="text-align:center;font-size:120%;margin:10px"><a href="'+$f.attr("href")+'">'+$f.html()+'</a> | <a href="javascript:RVTS.loadUp()">'+RVTS.prevMsg+"</a></div>" );
 }
 
 RVTS = $.fn.extend( RVTS, {
@@ -95,7 +95,7 @@ checkAutoScroll: function(evt) {
 
 engage: function() {
 	var $w = $(window);
-	RVTS.$thumbs = $('.thumbnails, #thumbnails');
+	RVTS.$thumbs = $('#thumbnails');
 	RVTS.$thumbs.after('<div id="ajaxLoader" style="display:none;position:fixed;bottom:32px;right:1%;z-index:999"><img src="'+ RVTS.ajaxLoaderImage + '" width="128" height="15" alt="~"></div>');
 
 	if ("#top" == window.location.hash)
