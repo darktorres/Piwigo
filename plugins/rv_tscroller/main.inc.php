@@ -13,13 +13,13 @@ class RVTS
 {
 static function on_end_section_init()
 {
-	global $page;
-	$page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
-	if (count($page['items'])<$page['nb_image_page']+3)
-	{
-		if (!@$page['start'] || script_basename()=='picture')
-			$page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
-	}
+	// global $page;
+	// $page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
+	// if (count($page['items'])<$page['nb_image_page']+3)
+	// {
+		// if (!@$page['start'] || script_basename()=='picture')
+			// $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
+	// }
 	add_event_handler('loc_begin_index', array('RVTS','on_index_begin'), EVENT_HANDLER_PRIORITY_NEUTRAL+10);
 }
 
@@ -45,7 +45,7 @@ static function on_index_begin()
 			if ($adj<0 && $mult>1)
 				pwg_set_session_var('rvts_mult', --$mult);
 		}
-		$page['nb_image_page']=(int)$_GET['rvts'];
+		// $page['nb_image_page']=(int)$_GET['rvts'];
 		add_event_handler('loc_end_index_thumbnails', array('RVTS','on_index_thumbnails_ajax'), EVENT_HANDLER_PRIORITY_NEUTRAL+5, 1);
 		$page['root_path'] = get_absolute_root_url(false);
 		$page['body_id'] = 'scroll';
