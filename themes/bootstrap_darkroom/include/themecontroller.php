@@ -174,13 +174,13 @@ class ThemeController {
           return;
         }
 
-        if (count($page['items']) > 1000)
-        {
-          $this->config->slick_enabled = false; 
-          $this->config->photoswipe = false; 
+        // if (count($page['items']) > 1000)
+        // {
+        //   $this->config->slick_enabled = false; 
+        //   $this->config->photoswipe = false; 
 
-          return;
-        }
+        //   return;
+        // }
 
         // select all pictures for this category
         $query = '
