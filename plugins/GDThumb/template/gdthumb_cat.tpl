@@ -68,6 +68,6 @@ $(function() {
   {else}
   var big_thumb = null;
   {/if}
-  GDThumb.setup('{$GDThumb.method}', {$GDThumb.height}, {$GDThumb.margin}, true, big_thumb, {$GDThumb.big_thumb_noinpw});
+  GDThumb.setup('{$GDThumb.method}', {$GDThumb.height}, {$GDThumb.margin}, false, big_thumb, {$GDThumb.big_thumb_noinpw});
 });
 {/footer_script}
