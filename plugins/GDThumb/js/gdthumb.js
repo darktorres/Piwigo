@@ -196,11 +196,11 @@ var GDThumb = {
     }
 
     if (best_size.width == 1) {
-      if (GDThumb.small_thumb != null && GDThumb.small_thumb.src != first_thumb.attr('src')) {  
-        first_thumb.prop('src', GDThumb.small_thumb.src).attr({width: GDThumb.small_thumb.width, height: GDThumb.small_thumb.height});
-        GDThumb.t[0].width = GDThumb.small_thumb.width;
-        GDThumb.t[0].height = GDThumb.small_thumb.height;
-      }
+      // if (GDThumb.small_thumb != null && GDThumb.small_thumb.src != first_thumb.attr('src')) {  
+      //   first_thumb.prop('src', GDThumb.small_thumb.src).attr({width: GDThumb.small_thumb.width, height: GDThumb.small_thumb.height});
+      //   GDThumb.t[0].width = GDThumb.small_thumb.width;
+      //   GDThumb.t[0].height = GDThumb.small_thumb.height;
+      // }
       GDThumb.t[0].crop = false;
     }
 
