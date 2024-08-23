@@ -239,14 +239,16 @@
                 <td>
                   <select id="dbtype" name="dbtype" required>
                     <option value="mysqli">MySQL</option>
+                    <option value="mysqli-socket">MySQL Socket</option>
                     <option value="pgsql">PostgreSQL</option>
+                    <option value="pgsql-socket">PostgreSQL Socket</option>
                   </select>
                 </td>
                 <td class="fielddesc">{'Select the type of your database'|@translate}</td>
               </tr>
               <tr>
                 <td style="width: 30%;" class="fieldname">{'Host:Port'|@translate}</td>
-                <td><input type="text" id="dbhost" name="dbhost" value="localhost:3306" required></td>
+                <td><input type="text" id="dbhost" name="dbhost" value="127.0.0.1:3306" required></td>
                 <td class="fielddesc">{'localhost or other, supplied by your host provider'|@translate}</td>
               </tr>
               <tr>
@@ -256,7 +258,7 @@
               </tr>
               <tr>
                 <td class="fieldname">{'Password'|@translate}</td>
-                <td><input type="password" name="dbpasswd" value="1234" autocomplete="current-password"></td>
+                <td><input type="password" id="dbpasswd" name="dbpasswd" value="1234" autocomplete="current-password"></td>
                 <td class="fielddesc">{'user password given by your host provider'|@translate}</td>
               </tr>
               <tr>
@@ -277,15 +279,28 @@
 
                     const dbHostInput = document.getElementById('dbhost');
                     const dbUserInput = document.getElementById('dbuser');
+                    const dbPasswdInput = document.getElementById('dbpasswd');
 
                     switch (dbType) {
                       case 'mysqli':
-                        dbHostInput.value = 'localhost:3306';
+                        dbHostInput.value = '127.0.0.1:3306';
                         dbUserInput.value = 'root';
+                        dbPasswdInput.value = '1234';
+                        break;
+                      case 'mysqli-socket':
+                        dbHostInput.value = '/var/run/mysqld/mysqld.sock';
+                        dbUserInput.value = 'www-data';
+                        dbPasswdInput.value = '';
                         break;
                       case 'pgsql':
-                        dbHostInput.value = 'localhost:5432';
+                        dbHostInput.value = '127.0.0.1:5432';
                         dbUserInput.value = 'postgres';
+                        dbPasswdInput.value = '1234';
+                        break;
+                      case 'pgsql-socket':
+                        dbHostInput.value = '/var/run/postgresql';
+                        dbUserInput.value = 'www-data';
+                        dbPasswdInput.value = '';
                         break;
                     }
                   });
