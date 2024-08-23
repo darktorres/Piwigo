@@ -67,7 +67,7 @@ if (! empty($_GET['dl']) && file_exists(PHPWG_ROOT_PATH . $conf['data_location']
 }
 
 // Obtain various vars
-$dbhost = (empty($_POST['dbhost'])) ? 'localhost' : $_POST['dbhost'];
+$dbhost = (empty($_POST['dbhost'])) ? '127.0.0.1' : $_POST['dbhost'];
 $dbuser = (empty($_POST['dbuser'])) ? '' : $_POST['dbuser'];
 $dbpasswd = (empty($_POST['dbpasswd'])) ? '' : $_POST['dbpasswd'];
 $dbname = (empty($_POST['dbname'])) ? '' : $_POST['dbname'];
