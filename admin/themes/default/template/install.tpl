@@ -280,11 +280,11 @@
 
                     switch (dbType) {
                       case 'mysqli':
-                        dbHostInput.value = 'localhost:3306';
+                        dbHostInput.value = '127.0.0.1:3306';
                         dbUserInput.value = 'root';
                         break;
                       case 'pgsql':
-                        dbHostInput.value = 'localhost:5432';
+                        dbHostInput.value = '127.0.0.1:5432';
                         dbUserInput.value = 'postgres';
                         break;
                     }
