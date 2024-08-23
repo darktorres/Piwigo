@@ -1,0 +1,11 @@
+services:
+  nginx-php-fpm:
+    build: .
+    network_mode: "host"
+    volumes:
+      - data:/var/www/html/piwigo2/galleries
+    restart: unless-stopped
+
+volumes:
+  data:
+    external: true
