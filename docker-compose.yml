@@ -1,0 +1,12 @@
+services:
+  nginx-php-fpm:
+    build: .
+    network_mode: "host"
+    volumes:
+      - piwigo:/var/www/html/piwigo2
+      - percona_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  piwigo:
+  percona_data:
