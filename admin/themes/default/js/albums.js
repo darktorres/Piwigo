@@ -314,7 +314,7 @@ function createAlbumNode(node, li) {
     title += 'icon-lock';
   }
   title += '">';
-  if (node.visible == 'false' || node.parent.visble == 'false') {
+  if (node.visible == 'false' || node.parent.visible == 'false') {
     node.visble = 'false';
     title += '<span class="tiptip icon-cone" title="'+ tiptip_locked_album +'" style="font-size: 16px"></span>';
   }
