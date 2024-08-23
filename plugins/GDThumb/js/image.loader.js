@@ -11,7 +11,7 @@ ImageLoader.prototype = {
 	errors: 0,
 	errorEma: 0,
 
-	pause: false,
+	paused: false,
 
 	current: [],
 	queue: [],
