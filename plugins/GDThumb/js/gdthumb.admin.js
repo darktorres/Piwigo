@@ -1,5 +1,5 @@
 (function ($) {
-  jQuery('input[name^="cache"]').tipTip({ delay: 0, fadeIn: 200, fadeOut: 200 });
+  // jQuery('input[name^="cache"]').tipTip({ delay: 0, fadeIn: 200, fadeOut: 200 });
   $("div.infos")
     .delay(4000)
     .slideUp("slow", function () {
