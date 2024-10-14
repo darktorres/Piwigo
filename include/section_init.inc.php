@@ -250,16 +250,20 @@ if ($page['section'] == 'categories') {
             $where_sql = "category_id = {$page['category']['id']}";
         }
 
-        if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
-            $order_by_clause = $conf['order_by'];
-            $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
-            $column_names = ', ' . $cleaned_order_by;
+        $order_by_clause = $conf['order_by'];
+        $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
+        $column_names = ', ' . $cleaned_order_by;
 
-            // main query
-            $query = "SELECT DISTINCT(image_id) {$column_names} FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
+        // main query
+        // FIXME: this query fetches all photos of an album everytime rvtscroller asks for few more photos on scroll
+        $query = "SELECT DISTINCT(image_id) {$column_names} FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
+        $cache_key = $query;
+
+        if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
             $page['items'] = query2array($query, null, 'image_id');
 
             if (isset($cache_key)) {
+                // TODO: invalidate this cache on album sync
                 $persistent_cache->set($cache_key, $page['items']);
             }
         }
