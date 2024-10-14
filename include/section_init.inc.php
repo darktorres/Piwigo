@@ -256,6 +256,7 @@ if ($page['section'] == 'categories') {
             $column_names = ', ' . $cleaned_order_by;
 
             // main query
+            // FIXME: this query fetches all photos of an album everytime rvtscroller asks for few more photos on scroll
             $query = "SELECT DISTINCT(image_id) {$column_names} FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
             $page['items'] = query2array($query, null, 'image_id');
 
