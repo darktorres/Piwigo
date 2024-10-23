@@ -31,7 +31,7 @@
     "moment": "^2.30.1",
     "piecon": "github:lipka/piecon#0.5.0",
     "plupload": "^2.3.9",
-    "selectize": "github:selectize/selectize.js#v0.11.2",
+    "selectize": "github:selectize/selectize.js#v0.15.2",
     "underscore": "^1.13.7"
   }
 }
