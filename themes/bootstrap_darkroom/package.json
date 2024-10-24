@@ -45,7 +45,8 @@
 
     "build:custom:sass": "sass --quiet scss/custom/custom.scss css/custom/bootstrap.css",
     "build:custom:postcss": "postcss --config postcss.config.js --replace css/custom/bootstrap.css",
-    "build:custom": "npm run build:custom:sass && npm run build:custom:postcss"
+    "build:custom": "npm run build:custom:sass && npm run build:custom:postcss",
+    "postinstall": "patch-package"
   },
   "style": "css/bootstrap-darkroom.css",
   "sass": "scss/bootstrap-darkroom.scss",
@@ -57,7 +58,8 @@
     "bootstrap-social": "^5.1.1",
     "bootswatch": "^4.6.2",
     "jQuery-Touch-Events": "benmajor/jQuery-Touch-Events#2.0.3",
-    "photoswipe": "^5.4.4",
+    "patch-package": "^8.0.0",
+    "photoswipe": "5.4.4",
     "popper.js": "^1.16.1",
     "selectize": "^0.12.6",
     "slick-carousel": "tkuther/slick#1.8.1-pwg",
