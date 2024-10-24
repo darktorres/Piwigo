@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "preinstall": "cd tests && npm install && cd ../themes/bootstrap_darkroom && yarn install --production",
+    "preinstall": "cd tests && npm install && cd ../themes/bootstrap_darkroom && yarn workspaces focus --all --production",
     "start": "cd tests && npm start",
     "test": "cd tests && npm test",
     "build": "cd tests && npm run build"
