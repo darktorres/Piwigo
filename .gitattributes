@@ -1,3 +1,4 @@
 # Ensure Git does not change line endings
 docker/* -text
 patches/* -text
+themes/bootstrap_darkroom/patches/* -text
