@@ -1,2 +1,3 @@
 # Ensure Git does not change line endings of any files in the 'patches' folder
 patches/* -text
+themes/bootstrap_darkroom/patches/* -text
