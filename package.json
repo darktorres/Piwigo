@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "preinstall": "cd tests && npm install",
+    "preinstall": "cd tests && npm install && cd ../themes/bootstrap_darkroom && npm install --omit=dev",
     "test": "cd tests && npm test"
   }
 }
