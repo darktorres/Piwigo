@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "preinstall": "cd tests && npm install",
-    "reinstall": "npm ci && cd tests && npm ci",
+    "preinstall": "cd tests && npm install && cd ../themes/bootstrap_darkroom && npm install",
+    "reinstall": "npm ci && cd tests && npm ci && cd ../themes/bootstrap_darkroom && npm ci",
     "test": "cd tests && npm test"
   },
   "dependencies": {
