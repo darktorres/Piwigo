@@ -1951,22 +1951,7 @@ pre code {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 0 0.2rem rgba(60, 60, 60, 0.25);
 }
 
-.form-control::-webkit-input-placeholder {
-  color: #a9a9a9;
-  opacity: 1;
-}
-
 .form-control::-moz-placeholder {
-  color: #a9a9a9;
-  opacity: 1;
-}
-
-.form-control:-ms-input-placeholder {
-  color: #a9a9a9;
-  opacity: 1;
-}
-
-.form-control::-ms-input-placeholder {
   color: #a9a9a9;
   opacity: 1;
 }
@@ -2425,7 +2410,6 @@ textarea.form-control {
   vertical-align: middle;
   -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   background-color: transparent;
   border: 1px solid transparent;
@@ -3795,9 +3779,7 @@ input[type="button"].btn-block {
   height: calc(1rem - 4px);
   background-color: #adb5bd;
   border-radius: 0.5rem;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out;
   transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3808,7 +3790,6 @@ input[type="button"].btn-block {
 
 .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
   background-color: #fff;
-  -webkit-transform: translateX(0.75rem);
   transform: translateX(0.75rem);
 }
 
@@ -3984,6 +3965,7 @@ input[type="button"].btn-block {
   border: 0;
   border-radius: 1rem;
   box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.1);
+  -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   -webkit-appearance: none;
   appearance: none;
@@ -3991,6 +3973,7 @@ input[type="button"].btn-block {
 
 @media (prefers-reduced-motion: reduce) {
   .custom-range::-webkit-slider-thumb {
+    -webkit-transition: none;
     transition: none;
   }
 }
@@ -4017,6 +4000,7 @@ input[type="button"].btn-block {
   border: 0;
   border-radius: 1rem;
   box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.1);
+  -moz-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   -moz-appearance: none;
   appearance: none;
@@ -4024,6 +4008,7 @@ input[type="button"].btn-block {
 
 @media (prefers-reduced-motion: reduce) {
   .custom-range::-moz-range-thumb {
+    -moz-transition: none;
     transition: none;
   }
 }
@@ -4053,12 +4038,14 @@ input[type="button"].btn-block {
   border: 0;
   border-radius: 1rem;
   box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.1);
+  -ms-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   appearance: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .custom-range::-ms-thumb {
+    -ms-transition: none;
     transition: none;
   }
 }
@@ -4804,10 +4791,8 @@ input[type="button"].btn-block {
 
 @media (min-width: 576px) {
   .card-columns {
-    -webkit-column-count: 3;
     -moz-column-count: 3;
     column-count: 3;
-    -webkit-column-gap: 1.25rem;
     -moz-column-gap: 1.25rem;
     column-gap: 1.25rem;
     orphans: 1;
@@ -5287,15 +5272,6 @@ a.badge-dark:focus, a.badge-dark.focus {
   color: black;
 }
 
-@-webkit-keyframes progress-bar-stripes {
-  from {
-    background-position: 1rem 0;
-  }
-  to {
-    background-position: 0 0;
-  }
-}
-
 @keyframes progress-bar-stripes {
   from {
     background-position: 1rem 0;
@@ -5338,13 +5314,11 @@ a.badge-dark:focus, a.badge-dark.focus {
 }
 
 .progress-bar-animated {
-  -webkit-animation: progress-bar-stripes 1s linear infinite;
   animation: progress-bar-stripes 1s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .progress-bar-animated {
-    -webkit-animation: none;
     animation: none;
   }
 }
@@ -5802,10 +5776,7 @@ a.close.disabled {
 }
 
 .modal.fade .modal-dialog {
-  transition: -webkit-transform 0.3s ease-out;
   transition: transform 0.3s ease-out;
-  transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
-  -webkit-transform: translate(0, -50px);
   transform: translate(0, -50px);
 }
 
@@ -5816,7 +5787,6 @@ a.close.disabled {
 }
 
 .modal.show .modal-dialog {
-  -webkit-transform: none;
   transform: none;
 }
 
@@ -6286,11 +6256,8 @@ a.close.disabled {
   float: left;
   width: 100%;
   margin-right: -100%;
-  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  transition: -webkit-transform 0.6s ease-in-out;
   transition: transform 0.6s ease-in-out;
-  transition: transform 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -6307,20 +6274,17 @@ a.close.disabled {
 
 .carousel-item-next:not(.carousel-item-left),
 .active.carousel-item-right {
-  -webkit-transform: translateX(100%);
   transform: translateX(100%);
 }
 
 .carousel-item-prev:not(.carousel-item-right),
 .active.carousel-item-left {
-  -webkit-transform: translateX(-100%);
   transform: translateX(-100%);
 }
 
 .carousel-fade .carousel-item {
   opacity: 0;
   transition-property: opacity;
-  -webkit-transform: none;
   transform: none;
 }
 
@@ -6454,16 +6418,8 @@ a.close.disabled {
   text-align: center;
 }
 
-@-webkit-keyframes spinner-border {
-  to {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
 @keyframes spinner-border {
   to {
-    -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
 }
@@ -6476,7 +6432,6 @@ a.close.disabled {
   border: 0.25em solid currentColor;
   border-right-color: transparent;
   border-radius: 50%;
-  -webkit-animation: spinner-border .75s linear infinite;
   animation: spinner-border .75s linear infinite;
 }
 
@@ -6486,19 +6441,8 @@ a.close.disabled {
   border-width: 0.2em;
 }
 
-@-webkit-keyframes spinner-grow {
-  0% {
-    -webkit-transform: scale(0);
-    transform: scale(0);
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 @keyframes spinner-grow {
   0% {
-    -webkit-transform: scale(0);
     transform: scale(0);
   }
   50% {
@@ -6514,7 +6458,6 @@ a.close.disabled {
   background-color: currentColor;
   border-radius: 50%;
   opacity: 0;
-  -webkit-animation: spinner-grow .75s linear infinite;
   animation: spinner-grow .75s linear infinite;
 }
 
@@ -7778,7 +7721,6 @@ button.bg-dark:focus {
 }
 
 .position-sticky {
-  position: -webkit-sticky !important;
   position: sticky !important;
 }
 
@@ -7798,9 +7740,8 @@ button.bg-dark:focus {
   z-index: 1030;
 }
 
-@supports ((position: -webkit-sticky) or (position: sticky)) {
+@supports (position: sticky) {
   .sticky-top {
-    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 1020;
@@ -10530,69 +10471,4 @@ a.text-dark:hover, a.text-dark:focus {
 #sidebar .info .imageInfo > dd > a:hover, #sidebar .info .imageInfo > dd > a:focus {
   color: #fff;
 }
-
-
-.mcs-no-result .text span:first-child,
-.filetypes-option label .checked-icon,
-.added_by-option label .checked-icon,
-.date_posted-option label .checked-icon,
-.breadcrumb-item .icon-cancel-circled:hover,
-.clear-all.clickable,
-.filter-form .filter-form-title
-{
-  color: var(--primary)!important;
-}
-
-.tags-found-container .tag-item,
-.albums-found-container .album-item,
-.breadcrumb-item,
-.filter-tag-form .selectize-control.multi .selectize-input > div,
-.filter-tag-form .selectize-control.multi .selectize-input [data-value].active,
-.filter-author-form .selectize-control.multi .selectize-input > div,
-.filter-author-form .selectize-control.multi .selectize-input [data-value].active,
-.filter-added_by-form .selectize-control.multi .selectize-input > div,
-.filter-added_by-form .selectize-control.multi .selectize-input [data-value].active,
-.date_posted-option input:checked + label,
-.filetypes-option  input:checked + label,
-.added_by-option  input:checked + label{
-  background: var(--secondary)!important;
-}
-
-.albums-found-popin .mcs-popin-title,
-.tags-found-popin .mcs-popin-title,
-.filter-manager-popin .mcs-popin-title,
-.filter-validate,
-.filter-form .filter-form-title,
-.mcs-container .filter-filled,
-.mcs-container .filter-filled .filter-icon,
-.tags-found-container .tag-item,
-.albums-found-container .album-item,
-.filter-manager-close.pwg-icon-cancel:before,
-.tags-found-close.pwg-icon-cancel:before,
-.albums-found-close.pwg-icon-cancel:before,
-.ClosePopIn.pwg-icon-cancel:before{
-  color: var(--gray)!important;
-}
-
-.filter-manager,
-.filter-validate,
-.filter-manager:hover,
-.filter-validate:hover,
-.filetypes-option label .ext-badge,
-.added_by-option label .added_by-badge,
-.date_posted-option label .date_posted-badge,
-.mcs-container .filter-filled,
-.search-result-item,
-.mcs-side-results > div{
-  background: var(--primary)!important;
-}
-
-.mcs-container .filter-filled {
-  border: 1px solid var(--primary) !important;
-}
-
-.filter-manager{
-  color: var(--white);
-}
-
 /*# sourceMappingURL=bootstrap.css.map */
