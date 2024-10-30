@@ -66,10 +66,6 @@
   {get_combined_scripts load='header'}
   <!-- END get_combined -->
 
-  <!--[if lt IE 7]>
-<script src="https://raw.githack.com/Piwigo/Piwigo/refs/heads/14.x/themes/default/js/pngfix.js"></script>
-<![endif]-->
-
   {if not empty($head_elements)}
     {foreach $head_elements as $elt}
       {$elt}
