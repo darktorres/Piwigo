@@ -91,8 +91,5 @@
   <style type="text/css">
     #thumbnails .gdthumb { margin:{$GDThumb.margin / 2}px {$GDThumb.margin / 2}px {$GDThumb.margin - $GDThumb.margin / 2}px {$GDThumb.margin - $GDThumb.margin / 2}px !important; }
   </style>
-  <!--[if IE 8]>
-<style type="text/css">#thumbnails .gdthumb a { right: 0px; }</style>
-<![endif]-->
   {/html_head}
 {/if}
