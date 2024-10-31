@@ -83,8 +83,8 @@ function GDThumb_endsWith(
 
     $arr_needles = explode(',', $needles);
 
-    foreach ((array) $arr_needles as $needle) {
-        if ((string) $needle === substr($haystack, -strlen($needle))) {
+    foreach ($arr_needles as $needle) {
+        if (str_ends_with($haystack, $needle)) {
             return true;
         }
     }

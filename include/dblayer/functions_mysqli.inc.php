@@ -497,7 +497,7 @@ function single_insert(
 
         $query .= '(';
         $is_first = true;
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             if (! $is_first) {
                 $query .= ',';
             } else {
@@ -577,7 +577,7 @@ function pwg_db_concat_ws(
     string $separator
 ): string {
     $string = implode(',', $array);
-    return 'CONCAT_WS(\'' . $separator . '\',' . $string . ')';
+    return "CONCAT_WS('" . $separator . "'," . $string . ')';
 }
 
 function pwg_db_cast_to_text(

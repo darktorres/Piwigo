@@ -17,8 +17,6 @@ class check_integrity
 
     public $build_ignore_list = [];
 
-    public function __construct() {}
-
     /**
      * Check integrities
      */
@@ -137,14 +135,13 @@ class check_integrity
                 'check_integrity' => 'check_integrity.tpl',
             ]);
 
-            foreach ($this->retrieve_list as $i => $c13y) {
+            foreach ($this->retrieve_list as $c13y) {
                 $can_select = false;
                 $c13y_display = [
                     'id' => $c13y['id'],
                     'anomaly' => $c13y['anomaly'],
                     'show_ignore_msg' => false,
                     'show_correction_success_fct' => false,
-                    'correction_error_fct' => '',
                     'show_correction_fct' => false,
                     'correction_error_fct' => '',
                     'show_correction_bad_fct' => false,

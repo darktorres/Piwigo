@@ -49,8 +49,6 @@ function size_equals(
 
 /**
  * Converts a char a-z into a float.
- *
- * @return float
  */
 function char_to_fraction(
     string $c

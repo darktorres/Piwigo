@@ -23,8 +23,6 @@ include_once(PHPWG_ROOT_PATH . 'include/derivative.inc.php');
 
 /**
  * returns the current microsecond since Unix epoch
- *
- * @return int
  */
 function micro_seconds(): string
 {
@@ -1479,8 +1477,6 @@ function load_conf_from_db(
  * Is the config table currentable writeable?
  *
  * @since 14
- *
- * @return boolean
  */
 function pwg_is_dbconf_writeable(): bool
 {
@@ -1962,7 +1958,7 @@ function create_navigation_bar(
     $pages_around = $conf['paginate_pages_around'];
     $start_str = $clean_url ? '/' . $param_name . '-' : (str_contains($url, '?') ? '&amp;' : '?') . $param_name . '=';
 
-    if (! isset($start) || ! is_numeric($start) || is_numeric($start) && $start < 0) {
+    if ($start < 0) {
         $start = 0;
     }
 

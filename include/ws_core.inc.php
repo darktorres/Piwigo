@@ -203,7 +203,7 @@ abstract class PwgResponseEncoder
             unset($value[WS_XML_ATTRIBUTES]);
         }
 
-        foreach ($value as $key => &$v) {
+        foreach ($value as &$v) {
             self::flatten($v);
         }
     }
@@ -220,8 +220,6 @@ class PwgServer
     public string $_responseFormat;
 
     public array $_methods = [];
-
-    public function __construct() {}
 
     /**
      *  Initializes the request handler.

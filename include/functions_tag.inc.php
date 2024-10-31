@@ -51,7 +51,7 @@ function get_available_tags(array $tag_ids = []): array
     );
     $query = "SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter FROM image_category ic INNER JOIN image_tag it ON ic.image_id = it.image_id WHERE 1 = 1 {$filters_and_forbidden}";
 
-    if (is_array($tag_ids) && $tag_ids !== []) {
+    if ($tag_ids !== []) {
         $tag_ids_ = implode(',', $tag_ids);
         $query .= " AND tag_id IN ({$tag_ids_})";
     }

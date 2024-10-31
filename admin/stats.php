@@ -206,7 +206,6 @@ function set_missing_values(
     DateTime $firstDate = null,
     DateTime $lastDate = null
 ): array {
-    $limit = count($data);
     $result = [];
     $date = $firstDate == null ? get_date_object($data[count($data) - 1]) : $firstDate;
 

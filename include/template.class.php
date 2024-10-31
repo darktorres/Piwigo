@@ -906,7 +906,7 @@ class Template
             $content[] = '<script type="text/javascript">';
             $content[] = '(function() {
 var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTagName(\'script\').length-1];';
-            foreach ($scripts[1] as $id => $script) {
+            foreach ($scripts[1] as $script) {
                 $content[] =
                   "s=document.createElement('script'); s.type='text/javascript'; s.async=true; s.src='"
                   . $this->make_script_src($script)
@@ -1186,7 +1186,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         if ($this->picture_buttons !== []) {
             ksort($this->picture_buttons);
             $buttons = [];
-            foreach ($this->picture_buttons as $k => $row) {
+            foreach ($this->picture_buttons as $row) {
                 $buttons = array_merge($buttons, $row);
             }
 
@@ -1210,7 +1210,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
         if ($this->index_buttons !== []) {
             ksort($this->index_buttons);
             $buttons = [];
-            foreach ($this->index_buttons as $k => $row) {
+            foreach ($this->index_buttons as $row) {
                 $buttons = array_merge($buttons, $row);
             }
 
@@ -1513,17 +1513,15 @@ class ScriptLoader
             trigger_error('Attempt to add inline script but the footer has been written', E_USER_WARNING);
         }
 
-        if ($require !== []) {
-            foreach ($require as $id) {
-                if (! isset($this->registered_scripts[$id]) && ! $this->load_known_required_script($id, 1)) {
-                    fatal_error("inline script not found require {$id}");
-                }
-
-                $s = $this->registered_scripts[$id];
-                if ($s->load_mode == 2) {
-                    $s->load_mode = 1;
-                } // until now the implementation does not allow executing inline script depending on another async script
+        foreach ($require as $id) {
+            if (! isset($this->registered_scripts[$id]) && ! $this->load_known_required_script($id, 1)) {
+                fatal_error("inline script not found require {$id}");
             }
+
+            $s = $this->registered_scripts[$id];
+            if ($s->load_mode == 2) {
+                $s->load_mode = 1;
+            } // until now the implementation does not allow executing inline script depending on another async script
         }
 
         $this->inline_scripts[] = $code;
@@ -1609,7 +1607,7 @@ class ScriptLoader
         }
 
         $this->did_head = true;
-        return $this->do_combine($this->head_done_scripts, 0);
+        return $this->do_combine($this->head_done_scripts);
     }
 
     /**
@@ -1644,7 +1642,7 @@ class ScriptLoader
             }
         }
 
-        return [$this->do_combine($result[0], 1), $this->do_combine($result[1], 2)];
+        return [$this->do_combine($result[0]), $this->do_combine($result[1])];
     }
 
     /**
@@ -1652,8 +1650,7 @@ class ScriptLoader
      * @return Combinable[]
      */
     private function do_combine(
-        array $scripts,
-        int $load_mode
+        array $scripts
     ): array {
         $combiner = new FileCombiner('js', $scripts);
         return $combiner->combine();
@@ -1671,7 +1668,7 @@ class ScriptLoader
         global $conf;
         do {
             $changed = false;
-            foreach ($scripts as $id => $script) {
+            foreach ($scripts as $script) {
                 $load = $script->load_mode;
                 foreach ($script->precedents as $precedent) {
                     if (! isset($scripts[$precedent])) {
@@ -1932,7 +1929,6 @@ final class FileCombiner
             $result[] = $pending[0];
         }
 
-        $key = [];
         $pending = [];
     }
 

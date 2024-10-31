@@ -23,8 +23,6 @@ class PwgXmlWriter
 
     public string $_encodedXml = '';
 
-    public function __construct() {}
-
     public function &getOutput(): string
     {
         return $this->_encodedXml;
@@ -67,7 +65,6 @@ class PwgXmlWriter
         string $value
     ): void {
         $this->_end_prev(false);
-        $value = (string) $value;
         $this->_output(htmlspecialchars($value));
     }
 
@@ -75,7 +72,6 @@ class PwgXmlWriter
         string $value
     ): void {
         $this->_end_prev(false);
-        $value = (string) $value;
         $this->_output(
             '<![CDATA['
       . str_replace(']]>', ']]&gt;', $value)
@@ -93,7 +89,7 @@ class PwgXmlWriter
     public function encode_attribute(
         string $value
     ): string {
-        return htmlspecialchars((string) $value);
+        return htmlspecialchars($value);
     }
 
     public function _end_prev(

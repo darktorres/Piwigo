@@ -18,7 +18,6 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
 check_status(ACCESS_ADMINISTRATOR);
 
 $help_link = get_root_url() . 'admin.php?page=help&section=';
-$selected = null;
 
 $selected = $_GET['section'] ?? 'add_photos';
 

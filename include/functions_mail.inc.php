@@ -598,10 +598,8 @@ function pwg_mail(
         ];
     }
 
-    if ($Bcc !== []) {
-        foreach ($Bcc as $recipient) {
-            $mail->addBCC($recipient['email'], $recipient['name']);
-        }
+    foreach ($Bcc as $recipient) {
+        $mail->addBCC($recipient['email'], $recipient['name']);
     }
 
     // theme

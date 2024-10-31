@@ -26,23 +26,16 @@ $t2 = microtime(true);
 // but we stil want to sanitize user input variables.
 if (! function_exists('get_magic_quotes_gpc') || ! @get_magic_quotes_gpc()) {
     function sanitize_mysql_kv(
-        string &$v,
-        string $k
+        string &$v
     ): void {
         $v = addslashes($v);
     }
 
-    if (is_array($_GET)) {
-        array_walk_recursive($_GET, sanitize_mysql_kv(...));
-    }
+    array_walk_recursive($_GET, sanitize_mysql_kv(...));
 
-    if (is_array($_POST)) {
-        array_walk_recursive($_POST, sanitize_mysql_kv(...));
-    }
+    array_walk_recursive($_POST, sanitize_mysql_kv(...));
 
-    if (is_array($_COOKIE)) {
-        array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
-    }
+    array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
 }
 
 if (! empty($_SERVER['PATH_INFO'])) {
@@ -198,8 +191,8 @@ if (is_a_guest()) {
 // be here, with language loaded, to prepare the message
 if (isset($page['auth_key_invalid']) && $page['auth_key_invalid']) {
     $page['errors'][] =
-      l10n('Your authentication key is no longer valid.')
-      . sprintf(' <a href="%s">%s</a>', get_root_url() . 'identification.php', l10n('Login'))
+        l10n('Your authentication key is no longer valid.')
+        . sprintf(' <a href="%s">%s</a>', get_root_url() . 'identification.php', l10n('Login'))
     ;
 }
 

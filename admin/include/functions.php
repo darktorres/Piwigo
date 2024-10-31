@@ -766,7 +766,7 @@ function set_cat_status(
 function get_uppercat_ids(
     array $cat_ids
 ): array {
-    if (! is_array($cat_ids) || count($cat_ids) < 1) {
+    if (count($cat_ids) < 1) {
         return [];
     }
 
@@ -1770,7 +1770,7 @@ function move_images_to_categories(
     $images_ = implode(',', $images);
     $query = "DELETE image_category.* FROM image_category JOIN images ON image_id = id WHERE id IN ({$images_})";
 
-    if (is_array($categories) && $categories !== []) {
+    if ($categories !== []) {
         $categories_ = implode(',', $categories);
         $query .= " AND category_id NOT IN ({$categories_})";
     }
@@ -1778,7 +1778,7 @@ function move_images_to_categories(
     $query .= ' AND (storage_category_id IS NULL OR storage_category_id != category_id);';
     pwg_query($query);
 
-    if (is_array($categories) && $categories !== []) {
+    if ($categories !== []) {
         associate_images_to_categories($images, $categories);
     }
 
@@ -2962,7 +2962,7 @@ function fs_quick_check(): void
     $query = "SELECT id, path FROM images WHERE id IN ({$fs_quick_check_ids_});";
     $fsqc_paths = query2array($query, 'id', 'path');
 
-    foreach ($fsqc_paths as $id => $path) {
+    foreach ($fsqc_paths as $path) {
         if (! file_exists($path)) {
             global $template;
 

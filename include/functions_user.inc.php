@@ -1217,7 +1217,6 @@ function get_sql_condition_FandF(
             default:
 
                 die('Unknow condition');
-                break;
 
         }
     }

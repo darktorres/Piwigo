@@ -189,7 +189,7 @@ function trigger_change(
     $args = func_get_args();
     array_shift($args);
 
-    foreach ($pwg_event_handlers[$event] as $priority => $handlers) {
+    foreach ($pwg_event_handlers[$event] as $handlers) {
         foreach ($handlers as $handler) {
             $args[0] = $data;
 
@@ -244,7 +244,7 @@ function trigger_notify(
     $args = func_get_args();
     array_shift($args);
 
-    foreach ($pwg_event_handlers[$event] as $priority => $handlers) {
+    foreach ($pwg_event_handlers[$event] as $handlers) {
         foreach ($handlers as $handler) {
             if (! empty($handler['include_path'])) {
                 include_once($handler['include_path']);
