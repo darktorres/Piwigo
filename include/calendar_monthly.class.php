@@ -197,15 +197,12 @@ class CalendarMonthly extends CalendarBase
         global $page;
 
         assert(count($page['chronology_date']) == 0);
-        $query = '
-  SELECT ' . pwg_db_get_date_YYYYMM($this->date_field) . ' as period,
-    COUNT(distinct id) as count';
-        $query .= $this->inner_sql;
-        $query .= $this->get_date_where();
-        $query .= '
-    GROUP BY period
-    ORDER BY ' . pwg_db_get_year($this->date_field) . ' DESC, ' . pwg_db_get_month($this->date_field) . ' ASC';
-
+        $year_ = pwg_db_get_year($this->date_field);
+        $month_ = pwg_db_get_month($this->date_field);
+        $date_ = pwg_db_get_date_YYYYMM($this->date_field);
+        $query =
+        "SELECT {$date_} AS period, COUNT(distinct id) AS count {$this->inner_sql} {$this->get_date_where()}
+         GROUP BY period ORDER BY {$year_} DESC, {$month_} ASC;";
         $result = pwg_query($query);
         $items = [];
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -265,14 +262,8 @@ class CalendarMonthly extends CalendarBase
         global $page;
 
         assert(count($page['chronology_date']) == 1);
-        $query = 'SELECT ' . pwg_db_get_date_MMDD($this->date_field) . ' as period,
-              COUNT(DISTINCT id) as count';
-        $query .= $this->inner_sql;
-        $query .= $this->get_date_where();
-        $query .= '
-    GROUP BY period
-    ORDER BY period ASC';
-
+        $date_ = pwg_db_get_date_MMDD($this->date_field);
+        $query = "SELECT {$date_} AS period, COUNT(DISTINCT id) AS count {$this->inner_sql} {$this->get_date_where()} GROUP BY period ORDER BY period ASC;";
         $result = pwg_query($query);
         $items = [];
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -327,14 +318,8 @@ class CalendarMonthly extends CalendarBase
     {
         global $page, $lang, $conf;
 
-        $query = 'SELECT ' . pwg_db_get_dayofmonth($this->date_field) . ' as period,
-              COUNT(DISTINCT id) as count';
-        $query .= $this->inner_sql;
-        $query .= $this->get_date_where();
-        $query .= '
-    GROUP BY period
-    ORDER BY period ASC';
-
+        $dayofmonth_ = pwg_db_get_dayofmonth($this->date_field);
+        $query = "SELECT {$dayofmonth_} AS period, COUNT(DISTINCT id) AS count {$this->inner_sql} {$this->get_date_where()} GROUP BY period ORDER BY period ASC;";
         $items = [];
         $result = pwg_query($query);
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -346,13 +331,10 @@ class CalendarMonthly extends CalendarBase
 
         foreach ($items as $day => $data) {
             $page['chronology_date'][CDAY] = $day;
-            $query = '
-  SELECT id, file,representative_ext,path,width,height,rotation, ' . pwg_db_get_dayofweek($this->date_field) . '-1 as dow';
-            $query .= $this->inner_sql;
-            $query .= $this->get_date_where();
-            $query .= '
-    ORDER BY ' . DB_RANDOM_FUNCTION . '()
-    LIMIT 1';
+            $dayofweek_ = pwg_db_get_dayofweek($this->date_field);
+            $query =
+            "SELECT id, file, representative_ext, path, width, height, rotation, {$dayofweek_} - 1 AS dow {$this->inner_sql} {$this->get_date_where()}
+             ORDER BY " . DB_RANDOM_FUNCTION . '() LIMIT 1;';
             unset($page['chronology_date'][CDAY]);
 
             $row = pwg_db_fetch_assoc(pwg_query($query));

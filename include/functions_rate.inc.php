@@ -43,59 +43,28 @@ function rate_picture($image_id, $rate)
         $save_anonymous_id = pwg_get_cookie_var('anonymous_rater', $anonymous_id);
 
         if ($anonymous_id != $save_anonymous_id) { // client has changed his IP adress or he's trying to fool us
-            $query = '
-SELECT element_id
-  FROM rate
-  WHERE user_id = ' . $user['id'] . '
-    AND anonymous_id = \'' . $anonymous_id . '\'
-;';
+            $query = "SELECT element_id FROM rate WHERE user_id = {$user['id']} AND anonymous_id = '{$anonymous_id}';";
             $already_there = array_from_query($query, 'element_id');
 
             if (count($already_there) > 0) {
-                $query = '
-DELETE
-  FROM rate
-  WHERE user_id = ' . $user['id'] . '
-    AND anonymous_id = \'' . $save_anonymous_id . '\'
-    AND element_id IN (' . implode(',', $already_there) . ')
-;';
+                $already_there_ = implode(',', $already_there);
+                $query = "DELETE FROM rate WHERE user_id = {$user['id']} AND anonymous_id = '{$save_anonymous_id}' AND element_id IN ({$already_there_});";
                 pwg_query($query);
             }
 
-            $query = '
-UPDATE rate
-  SET anonymous_id = \'' . $anonymous_id . '\'
-  WHERE user_id = ' . $user['id'] . '
-    AND anonymous_id = \'' . $save_anonymous_id . '\'
-;';
+            $query = "UPDATE rate SET anonymous_id = '{$anonymous_id}' WHERE user_id = {$user['id']} AND anonymous_id = '{$save_anonymous_id}';";
             pwg_query($query);
         } // end client changed ip
 
         pwg_set_cookie_var('anonymous_rater', $anonymous_id);
     } // end anonymous user
 
-    $query = '
-DELETE
-  FROM rate
-  WHERE element_id = ' . $image_id . '
-    AND user_id = ' . $user['id'] . '
-';
+    $query = "DELETE FROM rate WHERE element_id = {$image_id} AND user_id = {$user['id']}";
     if ($user_anonymous) {
-        $query .= ' AND anonymous_id = \'' . $anonymous_id . '\'';
+        $query .= " AND anonymous_id = '{$anonymous_id}'";
     }
     pwg_query($query);
-    $query = '
-INSERT
-  INTO rate
-  (user_id,anonymous_id,element_id,rate,date)
-  VALUES
-  ('
-      . $user['id'] . ','
-      . '\'' . $anonymous_id . '\','
-      . $image_id . ','
-      . $rate
-      . ',NOW())
-;';
+    $query = "INSERT INTO rate (user_id, anonymous_id, element_id, rate, date) VALUES ({$user['id']}, '{$anonymous_id}', {$image_id}, {$rate}, NOW());";
     pwg_query($query);
 
     return update_rating_score($image_id);
@@ -116,12 +85,7 @@ function update_rating_score($element_id = false)
         return $alt_result;
     }
 
-    $query = '
-SELECT element_id,
-    COUNT(rate) AS rcount,
-    SUM(rate) AS rsum
-  FROM rate
-  GROUP by element_id';
+    $query = 'SELECT element_id, COUNT(rate) AS rcount, SUM(rate) AS rsum FROM rate GROUP by element_id';
 
     $all_rates_count = 0;
     $all_rates_avg = 0;
@@ -167,18 +131,13 @@ SELECT element_id,
 
     //set to null all items with no rate
     if (! isset($by_item[$element_id])) {
-        $query = '
-SELECT id FROM images
-  LEFT JOIN rate ON id=element_id
-  WHERE element_id IS NULL AND rating_score IS NOT NULL';
+        $query = 'SELECT id FROM images LEFT JOIN rate ON id = element_id WHERE element_id IS NULL AND rating_score IS NOT NULL';
 
         $to_update = array_from_query($query, 'id');
 
         if (! empty($to_update)) {
-            $query = '
-UPDATE images
-  SET rating_score=NULL
-  WHERE id IN (' . implode(',', $to_update) . ')';
+            $to_update_ = implode(',', $to_update);
+            $query = "UPDATE images SET rating_score = NULL WHERE id IN ({$to_update_})";
             pwg_query($query);
         }
     }

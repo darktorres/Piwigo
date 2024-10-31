@@ -225,12 +225,7 @@ abstract class CalendarBase
     {
         global $template, $conf, $page;
 
-        $query = '
-SELECT DISTINCT(' . $this->calendar_levels[$level]['sql'] . ') as period,
-  COUNT(DISTINCT id) as nb_images' .
-$this->inner_sql .
-$this->get_date_where($level) . '
-  GROUP BY period;';
+        $query = "SELECT DISTINCT({$this->calendar_levels[$level]['sql']}) AS period, COUNT(DISTINCT id) AS nb_images {$this->inner_sql} {$this->get_date_where($level)} GROUP BY period;";
 
         $level_items = query2array($query, 'period', 'nb_images');
 
@@ -287,13 +282,12 @@ $this->get_date_where($level) . '
             if ($page['chronology_date'][$i] === 'any') {
                 $sub_queries[] = '\'any\'';
             } else {
-                $sub_queries[] = pwg_db_cast_to_text($this->calendar_levels[$i]['sql']);
+                $sub_queries[] = $this->calendar_levels[$i]['sql'];
             }
         }
-        $query = 'SELECT ' . pwg_db_concat_ws($sub_queries, '-') . ' AS period';
-        $query .= $this->inner_sql . '
-AND ' . $this->date_field . ' IS NOT NULL
-GROUP BY period';
+        $sub_queries_ = pwg_db_concat_ws($sub_queries, '-');
+        $query = "SELECT {$sub_queries_} AS period";
+        $query .= " {$this->inner_sql} AND {$this->date_field} IS NOT NULL GROUP BY period;";
 
         $current = implode('-', $page['chronology_date']);
         $upper_items = query2array($query, null, 'period');

@@ -39,11 +39,8 @@ if (! defined('PHPWG_ROOT_PATH')) {//direct script access
         ];
 
         // Get the Guest custom settings
-        $query = '
-SELECT ' . implode(',', $fields) . '
-  FROM user_infos
-  WHERE user_id = ' . $conf['default_user_id'] . '
-;';
+        $fields_ = implode(',', $fields);
+        $query = "SELECT {$fields_} FROM user_infos WHERE user_id = {$conf['default_user_id']};";
         $result = pwg_query($query);
         $default_user = pwg_db_fetch_assoc($result);
         $userdata = array_merge($userdata, $default_user);
@@ -143,11 +140,7 @@ function save_profile_from_post($userdata, &$errors)
         }
 
         if (! defined('IN_ADMIN')) {// changing password requires old password
-            $query = '
-  SELECT ' . $conf['user_fields']['password'] . ' AS password
-    FROM users
-    WHERE ' . $conf['user_fields']['id'] . ' = \'' . $userdata['id'] . '\'
-  ;';
+            $query = "SELECT {$conf['user_fields']['password']} AS password FROM users WHERE {$conf['user_fields']['id']} = '{$userdata['id']}';";
             list($current_password) = pwg_db_fetch_row(pwg_query($query));
 
             if (! $conf['password_verify']($_POST['password'], $current_password)) {
