@@ -18,14 +18,12 @@
     {*<!-- datepicker -->*}
     {combine_script id='jquery.ui' load='footer' require='jquery'}
 
-    {assign var=datepicker_language value='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/i18n/jquery.ui.datepicker-'|cat:$lang_info.code|cat:'.js'}
-    {if 'PHPWG_ROOT_PATH'|constant|cat:$datepicker_language|file_exists}
-      {combine_script id='jquery.ui.datepicker-'|cat:$lang_info.code load='footer' path=$datepicker_language}
-    {/if}
+    {* {assign var=datepicker_language value='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/i18n/jquery.ui.datepicker-'|cat:$lang_info.code|cat:'.js'} *}
+    {* {if 'PHPWG_ROOT_PATH'|constant|cat:$datepicker_language|file_exists} *}
+      {* {combine_script id='jquery.ui.datepicker-'|cat:$lang_info.code load='footer' path=$datepicker_language} *}
+    {* {/if} *}
 
-    {combine_css path='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/css/jquery.ui.core.css'}
-    {combine_css path='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/css/jquery.ui.theme.css'}
-    {combine_css path='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/css/jquery.ui.datepicker.css'}
+    {combine_css path='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.css'}
   {/if}
 {/if}
 
