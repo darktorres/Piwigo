@@ -68,18 +68,11 @@ if ($filter['enabled']) {
             $filter['visible_categories'] = -1;
         }
 
-        $query = '
-SELECT
-  distinct image_id
-FROM
-  image_category INNER JOIN images ON image_id = id
-WHERE ';
+        $query = 'SELECT distinct image_id FROM image_category INNER JOIN images ON image_id = id WHERE ';
         if (! empty($filter['visible_categories'])) {
-            $query .= '
-  category_id  IN (' . $filter['visible_categories'] . ') and';
+            $query .= " category_id IN ({$filter['visible_categories']}) AND ";
         }
-        $query .= '
-    date_available >= ' . pwg_db_get_recent_period_expression($filter['recent_period']);
+        $query .= ' date_available >= ' . pwg_db_get_recent_period_expression($filter['recent_period']) . ';';
 
         $filter['visible_images'] = implode(',', array_from_query($query, 'image_id'));
 

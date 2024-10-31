@@ -77,7 +77,7 @@ $since_options = [
     ],
     4 => [
         'label' => l10n('the beginning'),
-        'clause' => '1=1',
+        'clause' => '1 = 1',
     ], // stupid but generic
 ];
 
@@ -284,17 +284,14 @@ $template->assign(
 // Search in a particular category
 $blockname = 'categories';
 
-$query = '
-SELECT id, name, uppercats, global_rank
-  FROM categories
-' . get_sql_condition_FandF(
+$filters_and_forbidden = get_sql_condition_FandF(
     [
         'forbidden_categories' => 'id',
         'visible_categories' => 'id',
     ],
     'WHERE'
-) . '
-;';
+);
+$query = "SELECT id, name, uppercats, global_rank FROM categories {$filters_and_forbidden};";
 display_select_cat_wrapper($query, [@$_GET['cat']], $blockname, true);
 
 // Filter on recent comments...
@@ -340,40 +337,22 @@ $comments = [];
 $element_ids = [];
 $category_ids = [];
 
-$query = '
-SELECT SQL_CALC_FOUND_ROWS com.id AS comment_id,
-       com.image_id,
-       ic.category_id,
-       com.author,
-       com.author_id,
-       u.' . $conf['user_fields']['email'] . ' AS user_email,
-       com.email,
-       com.date,
-       com.website_url,
-       com.content,
-       com.validated
-  FROM image_category AS ic
-    INNER JOIN comments AS com
-    ON ic.image_id = com.image_id
-    LEFT JOIN users As u
-    ON u.' . $conf['user_fields']['id'] . ' = com.author_id
-  WHERE ' . implode('
-    AND ', $page['where_clauses']) . '
-  GROUP BY comment_id
-  ORDER BY ' . $page['sort_by'] . ' ' . $page['sort_order'];
+$where_clauses_ = implode(' AND ', $page['where_clauses']);
+$query =
+"SELECT SQL_CALC_FOUND_ROWS com.id AS comment_id, com.image_id, ic.category_id, com.author, com.author_id, u.{$conf['user_fields']['email']} AS user_email,
+ com.email, com.date, com.website_url, com.content, com.validated FROM image_category AS ic INNER JOIN comments AS com ON ic.image_id = com.image_id
+ LEFT JOIN users As u ON u.{$conf['user_fields']['id']} = com.author_id WHERE {$where_clauses_} GROUP BY comment_id ORDER BY {$page['sort_by']} {$page['sort_order']}";
 if ($page['items_number'] != 'all') {
-    $query .= '
-  LIMIT ' . $page['items_number'] . ' OFFSET ' . $start;
+    $query .= "\nLIMIT {$page['items_number']} OFFSET {$start}";
 }
-$query .= '
-;';
+$query .= ';';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     $comments[] = $row;
     $element_ids[] = $row['image_id'];
     $category_ids[] = $row['category_id'];
 }
-list($counter) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+list($counter) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
 $url = PHPWG_ROOT_PATH . 'comments.php'
   . get_query_string_diff(['start', 'edit', 'delete', 'validate', 'pwg_token']);
@@ -390,17 +369,13 @@ $template->assign('navbar', $navbar);
 
 if (count($comments) > 0) {
     // retrieving element informations
-    $query = '
-SELECT *
-  FROM images
-  WHERE id IN (' . implode(',', $element_ids) . ')
-;';
+    $element_ids_ = implode(',', $element_ids);
+    $query = "SELECT * FROM images WHERE id IN ({$element_ids_});";
     $elements = query2array($query, 'id');
 
     // retrieving category informations
-    $query = 'SELECT id, name, permalink, uppercats
-  FROM categories
-  WHERE id IN (' . implode(',', $category_ids) . ')';
+    $category_ids_ = implode(',', $category_ids);
+    $query = "SELECT id, name, permalink, uppercats FROM categories WHERE id IN ({$category_ids_});";
     $categories = query2array($query, 'id');
 
     foreach ($comments as $comment) {

@@ -63,10 +63,7 @@ function admintools_add_public_controller()
                 ]
             );
 
-            $query = '
-SELECT element_id FROM caddie
-  WHERE element_id = ' . $page['image_id'] . '
-;';
+            $query = "SELECT element_id FROM caddie WHERE element_id = {$page['image_id']};";
             $tpl_vars['IS_IN_CADDIE'] = pwg_db_num_rows(pwg_query($query)) > 0;
 
             if (isset($page['category'])) {
@@ -97,12 +94,7 @@ SELECT element_id FROM caddie
         // gets tags (full available list is loaded in ajax)
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
-        $query = '
-SELECT id, name
-  FROM image_tag AS it
-    JOIN tags AS t ON t.id = it.tag_id
-  WHERE image_id = ' . $page['image_id'] . '
-;';
+        $query = "SELECT id, name FROM image_tag AS it JOIN tags AS t ON t.id = it.tag_id WHERE image_id = {$page['image_id']};";
         $tag_selection = get_taglist($query);
 
         (! isset($picture['current']['date_creation'])) ? $picture['current']['date_creation'] = '' : false;
@@ -147,10 +139,7 @@ SELECT id, name
         ];
 
         if (! empty($page['category']['representative_picture_id'])) {
-            $query = '
-SELECT * FROM images
-  WHERE id = ' . $page['category']['representative_picture_id'] . '
-;';
+            $query = "SELECT * FROM images WHERE id = {$page['category']['representative_picture_id']};";
             $image_infos = pwg_db_fetch_assoc(pwg_query($query));
 
             $tpl_vars['QUICK_EDIT']['img'] = DerivativeImage::get_one(IMG_SQUARE, $image_infos)->get_url();
