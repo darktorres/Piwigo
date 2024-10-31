@@ -18,41 +18,34 @@
 
     "build:bootstrap:sass": "sass --quiet scss/bootstrap-default.scss css/bootstrap-default/bootstrap.css",
     "build:bootstrap:postcss": "postcss --config postcss.config.js --replace css/bootstrap-default/bootstrap.css",
-    "build:bootstrap:cleancss": "cleancss --source-map --source-map-inline-sources --output css/bootstrap-default/bootstrap.min.css css/bootstrap-default/bootstrap.css",
-    "build:bootstrap": "npm run build:bootstrap:sass && npm run build:bootstrap:postcss && npm run build:bootstrap:cleancss",
+    "build:bootstrap": "npm run build:bootstrap:sass && npm run build:bootstrap:postcss",
 
     "build:bootstrap-darkroom:sass": "sass --quiet scss/bootstrap-darkroom.scss css/bootstrap-darkroom/bootstrap.css",
     "build:bootstrap-darkroom:postcss": "postcss --config postcss.config.js --replace css/bootstrap-darkroom/bootstrap.css",
-    "build:bootstrap-darkroom:cleancss": "cleancss --source-map --source-map-inline-sources --output css/bootstrap-darkroom/bootstrap.min.css css/bootstrap-darkroom/bootstrap.css",
-    "build:bootstrap-darkroom": "npm run build:bootstrap-darkroom:sass && npm run build:bootstrap-darkroom:postcss && npm run build:bootstrap-darkroom:cleancss",
+    "build:bootstrap-darkroom": "npm run build:bootstrap-darkroom:sass && npm run build:bootstrap-darkroom:postcss",
 
     "build:theme:sass": "sass --quiet scss/theme.scss theme.css",
     "build:theme": "npm run build:theme:sass",
 
     "build:material:windows:sass": "for %i in (amber blue brown darkroom deep-orange deep-purple indigo light-green lime purple red teal) do (sass --quiet scss/material/_%i.scss css/material-%i/bootstrap.css || exit /b 1)",
     "build:material:windows:postcss": "for %i in (amber blue brown darkroom deep-orange deep-purple indigo light-green lime purple red teal) do (postcss --config postcss.config.js --replace css/material-%i/bootstrap.css || exit /b 1)",
-    "build:material:windows:cleancss": "for %i in (amber blue brown darkroom deep-orange deep-purple indigo light-green lime purple red teal) do (cleancss --source-map --source-map-inline-sources --output css/material-%i/bootstrap.min.css css/material-%i/bootstrap.css || exit /b 1)",
-    "build:material:windows": "npm run build:material:windows:sass && npm run build:material:windows:postcss && npm run build:material:windows:cleancss",
+    "build:material:windows": "npm run build:material:windows:sass && npm run build:material:windows:postcss",
 
     "build:material:linux:sass": "for i in amber blue brown darkroom deep-orange deep-purple indigo light-green lime purple red teal; do sass --quiet scss/material/_${i}.scss css/material-${i}/bootstrap.css || exit 1; done",
     "build:material:linux:postcss": "for i in amber blue brown darkroom deep-orange deep-purple indigo light-green lime purple red teal; do postcss --config postcss.config.js --replace css/material-${i}/bootstrap.css || exit 1; done",
-    "build:material:linux:cleancss": "for i in amber blue brown darkroom deep-orange deep-purple indigo light-green lime purple red teal; do cleancss --source-map --source-map-inline-sources --output css/material-${i}/bootstrap.min.css css/material-${i}/bootstrap.css || exit 1; done",
-    "build:material:linux": "npm run build:material:linux:sass && npm run build:material:linux:postcss && npm run build:material:linux:cleancss",
+    "build:material:linux": "npm run build:material:linux:sass && npm run build:material:linux:postcss",
 
     "build:bootswatch:windows:sass": "for %i in (cerulean cosmo cyborg darkly flatly journal litera lumen lux materia minty pulse sandstone simplex sketchy slate solar spacelab superhero united yeti) do (sass --quiet scss/bootswatch/_%i.scss css/bootswatch-%i/bootstrap.css || exit /b 1)",
     "build:bootswatch:windows:postcss": "for %i in (cerulean cosmo cyborg darkly flatly journal litera lumen lux materia minty pulse sandstone simplex sketchy slate solar spacelab superhero united yeti) do (postcss --config postcss.config.js --replace css/bootswatch-%i/bootstrap.css || exit /b 1)",
-    "build:bootswatch:windows:cleancss": "for %i in (cerulean cosmo cyborg darkly flatly journal litera lumen lux materia minty pulse sandstone simplex sketchy slate solar spacelab superhero united yeti) do (cleancss --source-map --source-map-inline-sources --output css/bootswatch-%i/bootstrap.min.css css/bootswatch-%i/bootstrap.css || exit /b 1)",
-    "build:bootswatch:windows": "npm run build:bootswatch:windows:sass && npm run build:bootswatch:windows:postcss && npm run build:bootswatch:windows:cleancss",
+    "build:bootswatch:windows": "npm run build:bootswatch:windows:sass && npm run build:bootswatch:windows:postcss",
 
     "build:bootswatch:linux:sass": "for i in cerulean cosmo cyborg darkly flatly journal litera lumen lux materia minty pulse sandstone simplex sketchy slate solar spacelab superhero united yeti; do sass --quiet scss/bootswatch/_${i}.scss css/bootswatch-${i}/bootstrap.css || exit 1; done",
     "build:bootswatch:linux:postcss": "for i in cerulean cosmo cyborg darkly flatly journal litera lumen lux materia minty pulse sandstone simplex sketchy slate solar spacelab superhero united yeti; do postcss --config postcss.config.js --replace css/bootswatch-${i}/bootstrap.css || exit 1; done",
-    "build:bootswatch:linux:cleancss": "for i in cerulean cosmo cyborg darkly flatly journal litera lumen lux materia minty pulse sandstone simplex sketchy slate solar spacelab superhero united yeti; do cleancss --source-map --source-map-inline-sources --output css/bootswatch-${i}/bootstrap.min.css css/bootswatch-${i}/bootstrap.css || exit 1; done",
-    "build:bootswatch:linux": "npm run build:bootswatch:linux:sass && npm run build:bootswatch:linux:postcss && npm run build:bootswatch:linux:cleancss",
+    "build:bootswatch:linux": "npm run build:bootswatch:linux:sass && npm run build:bootswatch:linux:postcss",
 
     "build:custom:sass": "sass --quiet scss/custom/custom.scss css/custom/bootstrap.css",
     "build:custom:postcss": "postcss --config postcss.config.js --replace css/custom/bootstrap.css",
-    "build:custom:cleancss": "cleancss --source-map --source-map-inline-sources --output css/custom/bootstrap.min.css css/custom/bootstrap.css",
-    "build:custom": "npm run build:custom:sass && npm run build:custom:postcss && npm run build:custom:cleancss"
+    "build:custom": "npm run build:custom:sass && npm run build:custom:postcss"
   },
   "style": "css/bootstrap-darkroom.css",
   "sass": "scss/bootstrap-darkroom.scss",
@@ -73,7 +66,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
-    "clean-css-cli": "^4.3.0",
     "npm-run-all": "^4.1.5",
     "postcss-cli": "^11.0.0",
     "sass": "^1.84.0",

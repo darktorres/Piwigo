@@ -45,7 +45,7 @@
 
   {combine_script id='jquery' path='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.js'}
   {combine_script id='config' path='themes/smartpocket/js/config.js' require='jquery'}
-  {combine_script id='jquery.mobile' path='https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.3.1/jquery.mobile.min.js' require='jquery,config'}
+  {combine_script id='jquery.mobile' path='https://cdnjs.cloudflare.com/ajax/libs/jquery-mobile/1.3.1/jquery.mobile.js' require='jquery,config'}
 
 </head>
 
