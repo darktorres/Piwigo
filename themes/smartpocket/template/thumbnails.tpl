@@ -4,7 +4,7 @@
 	{$vmargin=5}
 	{$container_margin=-10}
 
-	{combine_script id='jquery'}
+	{combine_script id='jquery' path='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.js'}
 	{combine_script id='klass' path='https://raw.githack.com/ded/klass/35c1b57d0aa049cb8f70074494a4e7f1ab1d5687/klass.js'}
 	{combine_script id='photoswipe' path='https://cdnjs.cloudflare.com/ajax/libs/photoswipe/3.0.5/code.photoswipe.jquery.js' require='klass,jquery.mobile'}
 	{combine_script id='smartpocket' path='themes/smartpocket/js/smartpocket.js' require='photoswipe' load='footer'}
