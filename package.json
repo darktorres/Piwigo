@@ -3,6 +3,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "jquery-migrate": "^1.4.1"
+  },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@eslint/js": "^9.17.0",
