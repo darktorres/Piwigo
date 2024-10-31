@@ -2,7 +2,7 @@
 {combine_css path="themes/elegant/admin/jquery.ui.button.css"}
 {footer_script require='jquery.ui'}<script>
   jQuery(document).ready(function() {
-    jQuery(".radio").buttonset();
+    jQuery(".radio").controlgroup();
   });
 </script>{/footer_script}
 
