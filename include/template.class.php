@@ -1444,6 +1444,7 @@ class ScriptLoader
     private static array $known_paths = [
         'core.scripts' => 'themes/default/js/scripts.js',
         'jquery' => 'node_modules/jquery/dist/jquery.js',
+        'jquery-migrate' => 'node_modules/jquery-migrate/dist/jquery-migrate.js',
         'jquery.ui' => 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
     ];
 
@@ -1679,6 +1680,11 @@ class ScriptLoader
     ): bool {
         if (isset(self::$known_paths[$id])) {
             $this->add($id, $load_mode, [], null);
+
+            if ($id === 'jquery') {
+                $this->add('jquery-migrate', $load_mode, [], null);
+            }
+
             return true;
         }
 
