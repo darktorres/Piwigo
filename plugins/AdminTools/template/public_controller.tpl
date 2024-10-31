@@ -4,7 +4,7 @@
 
 {if isset($ato.QUICK_EDIT)}
   {*<!-- mousetrap -->*}
-  {combine_script id='mousetrap' load='footer' path='node_modules/mousetrap/mousetrap.min.js'}
+  {combine_script id='mousetrap' load='footer' path='node_modules/mousetrap/mousetrap.js'}
 
   {*<!-- colorbox -->*}
   {combine_script id='jquery.colorbox' load='footer' require='jquery' path='node_modules/jquery-colorbox/jquery.colorbox-min.js'}
