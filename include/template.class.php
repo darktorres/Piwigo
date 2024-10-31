@@ -1445,7 +1445,7 @@ class ScriptLoader
         'core.scripts' => 'themes/default/js/scripts.js',
         'jquery' => 'node_modules/jquery/dist/jquery.js',
         'jquery-migrate' => 'node_modules/jquery-migrate/dist/jquery-migrate.js',
-        'jquery.ui' => 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
+        'jquery.ui' => 'node_modules/jquery-ui/dist/jquery-ui.js',
     ];
 
     public function __construct()
