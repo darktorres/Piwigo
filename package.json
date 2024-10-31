@@ -15,6 +15,7 @@
         "jquery": "1.11.3",
         "jquery-colorbox": "1.5.15",
         "jquery-confirm": "3.3.4",
+        "jquery-migrate": "1.4.1",
         "jQuery-Timepicker-Addon": "github:trentrichardson/jQuery-Timepicker-Addon#v1.4.4",
         "jquery.cookie": "github:js-cookie/js-cookie#v1.4.1",
         "jquery.Jcrop.js": "0.9.12",
