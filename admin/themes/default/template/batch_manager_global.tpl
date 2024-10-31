@@ -5,7 +5,7 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
 {combine_script id='jquery.ui' require='jquery' load='async'}
-{combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/css/jquery.ui.slider.css"}
+{combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.css"}
 {combine_script id='doubleSlider' load='async' require='jquery.ui' path='admin/themes/default/js/doubleSlider.js'}
 
 {combine_script id='LocalStorageCache' load='footer' path='admin/themes/default/js/LocalStorageCache.js'}
