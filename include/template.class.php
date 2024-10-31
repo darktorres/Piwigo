@@ -1443,15 +1443,8 @@ class ScriptLoader
 
     private static array $known_paths = [
         'core.scripts' => 'themes/default/js/scripts.js',
-        'jquery' => 'themes/default/js/jquery.min.js',
-        'jquery.ui' => 'themes/default/js/ui/minified/jquery.ui.core.min.js',
-        'jquery.ui.effect' => 'themes/default/js/ui/minified/jquery.ui.effect.min.js',
-    ];
-
-    private static array $ui_core_dependencies = [
-        'jquery.ui.widget' => ['jquery'],
-        'jquery.ui.position' => ['jquery'],
-        'jquery.ui.mouse' => ['jquery', 'jquery.ui', 'jquery.ui.widget'],
+        'jquery' => 'node_modules/jquery/dist/jquery.min.js',
+        'jquery.ui' => 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
     ];
 
     public function __construct()
@@ -1528,13 +1521,6 @@ class ScriptLoader
             $script->is_template = $is_template;
             $this->fill_well_known($id, $script);
             $this->registered_scripts[$id] = $script;
-
-            // Load or modify all UI core files
-            if ($id === 'jquery.ui' && $script->path == self::$known_paths['jquery.ui']) {
-                foreach (self::$ui_core_dependencies as $script_id => $required_ids) {
-                    $this->add($script_id, $load_mode, $required_ids, null, $version);
-                }
-            }
 
             // Try to load undefined required script
             foreach ($script->precedents as $script_id) {
@@ -1680,32 +1666,6 @@ class ScriptLoader
         if (($script->path === '' || $script->path === '0') && isset(self::$known_paths[$id])) {
             $script->path = self::$known_paths[$id];
         }
-
-        if (str_starts_with($id, 'jquery.')) {
-            $required_ids = ['jquery'];
-
-            if (str_starts_with($id, 'jquery.ui.effect-')) {
-                $required_ids = ['jquery', 'jquery.ui.effect'];
-
-                if ($script->path === '' || $script->path === '0') {
-                    $script->path = dirname((string) self::$known_paths['jquery.ui.effect']) . "/{$id}.min.js";
-                }
-            } elseif (str_starts_with($id, 'jquery.ui.')) {
-                if (! isset(self::$ui_core_dependencies[$id])) {
-                    $required_ids = array_merge(['jquery', 'jquery.ui'], array_keys(self::$ui_core_dependencies));
-                }
-
-                if ($script->path === '' || $script->path === '0') {
-                    $script->path = dirname((string) self::$known_paths['jquery.ui']) . "/{$id}.min.js";
-                }
-            }
-
-            foreach ($required_ids as $required_id) {
-                if (! in_array($required_id, $script->precedents)) {
-                    $script->precedents[] = $required_id;
-                }
-            }
-        }
     }
 
     /**
@@ -1717,7 +1677,7 @@ class ScriptLoader
         string $id,
         int $load_mode
     ): bool {
-        if (isset(self::$known_paths[$id]) || str_starts_with($id, 'jquery.ui.')) {
+        if (isset(self::$known_paths[$id])) {
             $this->add($id, $load_mode, [], null);
             return true;
         }

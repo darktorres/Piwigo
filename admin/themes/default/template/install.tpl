@@ -22,7 +22,7 @@
   {get_combined_scripts load='header'}
   <!-- END get_combined_scripts -->
 
-  {combine_script id='jquery' path='themes/default/js/jquery.min.js'}
+  {combine_script id='jquery'}
   <script>
     $(document).ready(function() {
       $("a.externalLink").click(function() {
@@ -143,7 +143,7 @@
     }
   </style>
 
-  {combine_script id='jquery.cluetip' load='async' require='jquery' path='themes/default/js/plugins/jquery.cluetip.js'}
+  {combine_script id='jquery.cluetip' load='async' require='jquery' path='node_modules/cluetip/jquery.cluetip.js'}
 
   {footer_script require='jquery.cluetip'}<script>
     jQuery().ready(function() {
