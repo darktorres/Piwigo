@@ -30,22 +30,9 @@ include(PHPWG_ROOT_PATH . 'admin/include/user_tabs.inc.php');
 if (isset($_GET['type']) && $_GET['type'] == 'download_logs') {
     $output_lines = [];
 
-    $query = '
-SELECT
-    activity_id,
-    performed_by,
-    object,
-    object_id,
-    action,
-    ip_address,
-    occured_on,
-    details,
-    ' . $conf['user_fields']['username'] . ' AS username
-  FROM activity
-    JOIN users AS u ON performed_by = u.' . $conf['user_fields']['id'] . '
-  ORDER BY activity_id DESC
-;';
-
+    $query =
+    "SELECT activity_id, performed_by, object, object_id, action, ip_address, occured_on, details, {$conf['user_fields']['username']} AS username
+     FROM activity JOIN users AS u ON performed_by = u.{$conf['user_fields']['id']} ORDER BY activity_id DESC;";
     $result = pwg_query($query);
     array_push($output_lines, ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details']);
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -92,24 +79,15 @@ $template->assign([
     'CACHE_KEYS' => get_admin_client_cache_keys(['users']),
 ]);
 
-$query = '
-SELECT
-    performed_by,
-    COUNT(*) as counter
-  FROM activity
-  WHERE object != \'system\'
-  GROUP BY performed_by
-;';
+$query = "SELECT performed_by, COUNT(*) AS counter FROM activity WHERE object != 'system' GROUP BY performed_by;";
 
 $nb_lines_for_user = query2array($query, 'performed_by', 'counter');
 
 if (count($nb_lines_for_user) > 0) {
-    $query = '
-  SELECT
-      ' . $conf['user_fields']['id'] . ' AS id,
-      ' . $conf['user_fields']['username'] . ' AS username
-    FROM users
-    WHERE ' . $conf['user_fields']['id'] . ' IN (' . implode(',', array_keys($nb_lines_for_user)) . ');';
+    $nb_lines_for_user_ = implode(',', array_keys($nb_lines_for_user));
+    $query =
+    "SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username FROM users
+     WHERE {$conf['user_fields']['id']} IN ({$nb_lines_for_user_});";
 }
 
 $username_of = query2array($query, 'id', 'username');
@@ -128,11 +106,7 @@ foreach ($nb_lines_for_user as $id => $nb_line) {
 }
 $template->assign('ulist', $filterable_users);
 
-$query = '
-SELECT COUNT(*)
-  FROM users
-;';
-
+$query = 'SELECT COUNT(*) FROM users;';
 list($nb_users) = pwg_db_fetch_row(pwg_query($query));
 $template->assign('nb_users', $nb_users);
 

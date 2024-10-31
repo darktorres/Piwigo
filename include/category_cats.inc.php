@@ -15,33 +15,17 @@ declare(strict_types=1);
  */
 
 // $user['forbidden_categories'] including with user_cache_categories
-$query = '
-SELECT SQL_CALC_FOUND_ROWS
-    c.*,
-    user_representative_picture_id,
-    nb_images,
-    date_last,
-    max_date_last,
-    count_images,
-    nb_categories,
-    count_categories
-  FROM categories c
-    INNER JOIN user_cache_categories ucc
-    ON id = cat_id
-    AND user_id = ' . $user['id'] . '
-  WHERE count_images > 0
-';
+$query =
+"SELECT SQL_CALC_FOUND_ROWS c.*, user_representative_picture_id, nb_images, date_last, max_date_last, count_images, nb_categories, count_categories
+ FROM categories c INNER JOIN user_cache_categories ucc ON id = cat_id AND user_id = {$user['id']} WHERE count_images > 0";
 
 if ($page['section'] == 'recent_cats') {
-    $query .= '
-  AND ' . get_recent_photos_sql('date_last');
+    $query .= ' AND ' . get_recent_photos_sql('date_last');
 } else {
-    $query .= '
-  AND id_uppercat ' . (! isset($page['category']) ? 'is NULL' : '= ' . $page['category']['id']);
+    $query .= ' AND id_uppercat ' . (! isset($page['category']) ? 'IS NULL' : '= ' . $page['category']['id']);
 }
 
-$query .= '
-      ' . get_sql_condition_FandF(
+$query .= ' ' . get_sql_condition_FandF(
     [
         'visible_categories' => 'id',
     ],
@@ -49,23 +33,19 @@ $query .= '
 );
 
 // special string to let plugins modify this query at this exact position
-$query .= '
--- after conditions
-';
+$query .= ' -- after conditions ';
 
 if ($page['section'] != 'recent_cats') {
-    $query .= '
-  ORDER BY rank_column';
+    $query .= ' ORDER BY rank_column';
 }
 
-$query .= '
-  LIMIT ' . $conf['nb_categories_page'] . ' OFFSET ' . ($page['startcat'] ?? 0) . '
-;';
+$startcat_ = $page['startcat'] ?? 0;
+$query .= " LIMIT {$conf['nb_categories_page']} OFFSET {$startcat_};";
 
 $query = trigger_change('loc_begin_index_category_thumbnails_query', $query);
 
 $result = pwg_query($query);
-list($page['total_categories']) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+list($page['total_categories']) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
 $categories = [];
 $category_ids = [];
@@ -83,21 +63,15 @@ while ($row = pwg_db_fetch_assoc($result)) {
         $image_id = get_random_image_in_category($row);
     } elseif ($row['count_categories'] > 0 and $row['count_images'] > 0) { // at this point, $row['count_images'] should always be >0 (used as condition in SQL)
         // searching a random representant among representant of sub-categories
-        $query = '
-SELECT representative_picture_id
-  FROM categories INNER JOIN user_cache_categories
-  ON id = cat_id and user_id = ' . $user['id'] . '
-  WHERE uppercats LIKE \'' . $row['uppercats'] . ',%\'
-    AND representative_picture_id IS NOT NULL'
-  . get_sql_condition_FandF(
-      [
-          'visible_categories' => 'id',
-      ],
-      "\n  AND"
-  ) . '
-  ORDER BY ' . DB_RANDOM_FUNCTION . '()
-  LIMIT 1
-;';
+        $filters_and_forbidden = get_sql_condition_FandF(
+            [
+                'visible_categories' => 'id',
+            ],
+            "\n  AND"
+        );
+        $query =
+        "SELECT representative_picture_id FROM categories INNER JOIN user_cache_categories ON id = cat_id and user_id = {$user['id']} WHERE uppercats
+         LIKE '{$row['uppercats']},%' AND representative_picture_id IS NOT NULL {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . '() LIMIT 1;';
         $subresult = pwg_query($query);
         if (pwg_db_num_rows($subresult) > 0) {
             list($image_id) = pwg_db_fetch_row($subresult);
@@ -127,23 +101,17 @@ SELECT representative_picture_id
 
 if ($conf['display_fromto']) {
     if (count($category_ids) > 0) {
-        $query = '
-SELECT
-    category_id,
-    MIN(date_creation) AS from,
-    MAX(date_creation) AS to
-  FROM image_category
-    INNER JOIN images ON image_id = id
-  WHERE category_id IN (' . implode(',', $category_ids) . ')
-' . get_sql_condition_FandF(
+        $category_ids_ = implode(',', $category_ids);
+        $filters_and_forbidden = get_sql_condition_FandF(
             [
                 'visible_categories' => 'category_id',
                 'visible_images' => 'id',
             ],
             'AND'
-        ) . '
-  GROUP BY category_id
-;';
+        );
+        $query =
+        "SELECT category_id, MIN(date_creation) AS from, MAX(date_creation) AS to FROM image_category INNER JOIN images ON image_id = id WHERE category_id
+         IN ({$category_ids_}) {$filters_and_forbidden} GROUP BY category_id;";
         $dates_of_category = query2array($query, 'category_id');
     }
 }
@@ -156,11 +124,8 @@ if (count($categories) > 0) {
     $infos_of_image = [];
     $new_image_ids = [];
 
-    $query = '
-SELECT *
-  FROM images
-  WHERE id IN (' . implode(',', $image_ids) . ')
-;';
+    $image_ids_ = implode(',', $image_ids);
+    $query = "SELECT * FROM images WHERE id IN ({$image_ids_});";
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         if ($row['level'] <= $user['level']) {
@@ -195,11 +160,8 @@ SELECT *
     }
 
     if (count($new_image_ids) > 0) {
-        $query = '
-SELECT *
-  FROM images
-  WHERE id IN (' . implode(',', $new_image_ids) . ')
-;';
+        $new_image_ids_ = implode(',', $new_image_ids);
+        $query = "SELECT * FROM images WHERE id IN ({$new_image_ids_});";
         $result = pwg_query($query);
         while ($row = pwg_db_fetch_assoc($result)) {
             $infos_of_image[$row['id']] = $row;

@@ -86,10 +86,8 @@ if (isset($_POST['set_permalink']) and $_POST['cat_id'] > 0) {
     $selected_cat = [$_POST['cat_id']];
 } elseif (isset($_GET['delete_permanent'])) {
     check_pwg_token();
-    $query = '
-DELETE FROM old_permalinks
-  WHERE permalink=\'' . pwg_db_real_escape_string($_GET['delete_permanent']) . '\'
-  LIMIT 1';
+    $delete_permanent_ = pwg_db_real_escape_string($_GET['delete_permanent']);
+    $query = "DELETE FROM old_permalinks WHERE permalink = '{$delete_permanent_}' LIMIT 1;";
     $result = pwg_query($query);
     if (pwg_db_changes($result) == 0) {
         $page['errors'][] = l10n('Cannot delete the old permalink !');
@@ -105,13 +103,7 @@ $template->set_filename('permalinks', 'permalinks.tpl');
 $page['tab'] = 'permalinks';
 include(PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php');
 
-$query = '
-SELECT
-  id, permalink,
-  CONCAT(id, " - ", name, IF(permalink IS NULL, "", " &radic;") ) AS name,
-  uppercats, global_rank
-FROM categories';
-
+$query = "SELECT id, permalink, CONCAT(id, ' - ', name, IF(permalink IS NULL, '', ' &radic;')) AS name, uppercats, global_rank FROM categories";
 display_select_cat_wrapper($query, $selected_cat, 'categories', false);
 
 $pwg_token = get_pwg_token();
@@ -125,14 +117,11 @@ $sort_by = parse_sort_variables(
     'SORT_'
 );
 
-$query = '
-SELECT id, permalink, uppercats, global_rank
-  FROM categories
-  WHERE permalink IS NOT NULL
-';
+$query = 'SELECT id, permalink, uppercats, global_rank FROM categories WHERE permalink IS NOT NULL ';
 if ($sort_by[0] == 'id' or $sort_by[0] == 'permalink') {
-    $query .= ' ORDER BY ' . $sort_by[0];
+    $query .= " ORDER BY {$sort_by[0]}";
 }
+$query .= ';';
 $categories = [];
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {

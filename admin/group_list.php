@@ -58,11 +58,7 @@ $template->assign(
 // |                              group list                               |
 // +-----------------------------------------------------------------------+
 
-$query = '
-SELECT id, name, is_default
-  FROM groups_table
-  ORDER BY name ASC
-;';
+$query = 'SELECT id, name, is_default FROM groups_table ORDER BY name ASC;';
 $result = pwg_query($query);
 
 $admin_url = get_root_url() . 'admin.php?page=';
@@ -74,13 +70,8 @@ $toggle_is_default_url = $admin_url . 'group_list&amp;toggle_is_default=';
 $group_counter = 0;
 
 while ($row = pwg_db_fetch_assoc($result)) {
-    $query = '
-SELECT u.' . $conf['user_fields']['username'] . ' AS username
-  FROM users AS u
-  INNER JOIN user_group AS ug
-    ON u.' . $conf['user_fields']['id'] . ' = ug.user_id
-  WHERE ug.group_id = ' . $row['id'] . '
-;';
+    $query =
+    "SELECT u.{$conf['user_fields']['username']} AS username FROM users AS u INNER JOIN user_group AS ug ON u.{$conf['user_fields']['id']} = ug.user_id WHERE ug.group_id = {$row['id']};";
     $members = [];
     $res = pwg_query($query);
     while ($us = pwg_db_fetch_assoc($res)) {

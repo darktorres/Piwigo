@@ -92,18 +92,11 @@ $missing_language_ids = array_diff(
 );
 
 foreach ($missing_language_ids as $language_id) {
-    $query = '
-UPDATE user_infos
-  SET language = \'' . get_default_language() . '\'
-  WHERE language = \'' . $language_id . '\'
-;';
+    $language_ = get_default_language();
+    $query = "UPDATE user_infos SET language = '{$language_}' WHERE language = '{$language_id}';";
     pwg_query($query);
 
-    $query = '
-DELETE
-  FROM languages
-  WHERE id= \'' . $language_id . '\'
-;';
+    $query = "DELETE FROM languages WHERE id = '{$language_id}';";
     pwg_query($query);
 }
 
