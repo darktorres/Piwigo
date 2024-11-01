@@ -20,7 +20,7 @@
     "jquery-ui": "^1.14.1",
     "jquery.cookie": "github:js-cookie/js-cookie#v1.4.1",
     "jquery.Jcrop.js": "0.9.12",
-    "moment": "2.26",
+    "moment": "2.30",
     "mousetrap": "1.4.6",
     "piecon": "github:lipka/piecon#0.5.0",
     "plupload": "2.2.0",
