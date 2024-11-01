@@ -163,12 +163,6 @@ function pwg_db_num_rows(
     return $result->num_rows;
 }
 
-function pwg_db_fetch_array(
-    mysqli_result $result
-): array|bool|null {
-    return $result->fetch_array();
-}
-
 function pwg_db_fetch_assoc(
     mysqli_result $result
 ): array|bool|null {
@@ -179,18 +173,6 @@ function pwg_db_fetch_row(
     mysqli_result $result
 ): array|bool|null {
     return $result->fetch_row();
-}
-
-function pwg_db_fetch_object(
-    mysqli_result $result
-): bool|object|null {
-    return $result->fetch_object();
-}
-
-function pwg_db_free_result(
-    mysqli_result $result
-): void {
-    $result->free_result();
 }
 
 function pwg_db_real_escape_string(
@@ -206,20 +188,6 @@ function pwg_db_insert_id(): int|string
     global $mysqli;
 
     return $mysqli->insert_id;
-}
-
-function pwg_db_errno(): int
-{
-    global $mysqli;
-
-    return $mysqli->errno;
-}
-
-function pwg_db_error(): string
-{
-    global $mysqli;
-
-    return $mysqli->error;
 }
 
 function pwg_db_close(): bool
@@ -565,25 +533,12 @@ function do_maintenance_all_tables(): void
     }
 }
 
-function pwg_db_concat(
-    array $array
-): string {
-    $string = implode(',', $array);
-    return 'CONCAT(' . $string . ')';
-}
-
 function pwg_db_concat_ws(
     array $array,
     string $separator
 ): string {
     $string = implode(',', $array);
     return "CONCAT_WS('" . $separator . "'," . $string . ')';
-}
-
-function pwg_db_cast_to_text(
-    string $string
-): string {
-    return $string;
 }
 
 /**
