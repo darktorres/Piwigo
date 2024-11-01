@@ -188,6 +188,5 @@
   {/html_head}
 {/if}
 
-{combine_script id='iloader' load='footer' path=$GDTHUMB_PATH|cat:"/js/image.loader.js"}
-{combine_script id='jquery.tipTip' load='footer' require='jquery' path='https://raw.githack.com/drewwilson/TipTip/refs/heads/master/jquery.tipTip.js'}
-{combine_script id='admin.precache' load='footer' path=$GDTHUMB_PATH|cat:"/js/gdthumb.admin.js" require='jquery.ui,jquery.tipTip'}
+{combine_script id='jquery.tipTip' load='footer' require='jquery,jquery.ui' path='https://raw.githack.com/drewwilson/TipTip/refs/heads/master/jquery.tipTip.js'}
+{footer_script}<script type='module' src='plugins/GDThumb/js/gdthumb.admin.js'></script>{/footer_script}

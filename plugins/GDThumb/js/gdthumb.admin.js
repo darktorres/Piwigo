@@ -1,4 +1,7 @@
-"use strict";
+// import '../../../node_modules/jquery/dist/jquery.js';
+// import '../../../node_modules/jquery-ui/dist/jquery-ui.js';
+// import 'https://raw.githack.com/drewwilson/TipTip/refs/heads/master/jquery.tipTip.js';
+import { ImageLoader } from './image.loader.js';
 
 (function ($) {
   jQuery('input[name^="cache"]').tipTip({ delay: 0, fadeIn: 200, fadeOut: 200 });
@@ -48,7 +51,7 @@
   };
 
   function getUrls(page_token) {
-    data = { prev_page: page_token, max_urls: 500, types: [] };
+    const data = { prev_page: page_token, max_urls: 500, types: [] };
     jQuery.post("admin.php?page=plugin-GDThumb&getMissingDerivative=", data, wsData, "json").fail(wsError);
   }
 

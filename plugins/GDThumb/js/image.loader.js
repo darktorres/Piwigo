@@ -1,6 +1,4 @@
-"use strict";
-
-function ImageLoader(opts) {
+export function ImageLoader(opts) {
   this.opts = jQuery.extend(
     {
       maxRequests: 30,
