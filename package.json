@@ -23,7 +23,7 @@
     "moment": "2.26",
     "mousetrap": "1.4.6",
     "piecon": "github:lipka/piecon#0.5.0",
-    "plupload": "2.2.0",
+    "plupload": "2.3.9",
     "selectize": "github:selectize/selectize.js#v0.11.2",
     "underscore": "1.5.2"
   },
