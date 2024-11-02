@@ -27,18 +27,18 @@
   {/if}
 {/if}
 
-{combine_script id='admintools.controller' load='footer' require='jquery' path=$ADMINTOOLS_PATH|cat:'template/public_controller.js'}
+{footer_script}<script type="module">
+  import { AdminTools } from './plugins/AdminTools/template/public_controller.js';
 
-{footer_script require='admintools.controller'}<script>
-  AdminTools.urlWS = '{$ROOT_URL}ws.php?format=json&method=';
-  AdminTools.urlSelf = '{$ato.U_SELF}';
+  AdminTools.setUrlWS('{$ROOT_URL}ws.php?format=json&method=');
+  AdminTools.setUrlSelf('{$ato.U_SELF}');
 
   {if isset($ato.MULTIVIEW)}
-    AdminTools.multiView = {
+    AdminTools.setMultiView({
       view_as: {$ato.MULTIVIEW.view_as},
       theme: '{$ato.MULTIVIEW.theme}',
       lang: '{$ato.MULTIVIEW.lang}'
-    };
+    });
   {/if}
 
   {if isset($ato.DELETE_CACHE) and $ato.DELETE_CACHE}
