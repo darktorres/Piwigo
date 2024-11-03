@@ -85,13 +85,6 @@ class RVTS
             'load' => 'footer',
             'path' => 'node_modules/jquery/dist/jquery.js',
         ]);
-        $template->func_combine_script([
-            'id' => $my_base_name,
-            'load' => 'async',
-            'path' => 'plugins/' . $my_base_name . '/rv_tscroller.js',
-            'require' => 'jquery',
-            'version' => RVTS_VERSION,
-        ]);
         $start = (int) $page['start'];
         $per_page = $page['nb_image_page'];
         $moreMsg = 'See the remaining %d photos';
@@ -103,8 +96,10 @@ class RVTS
         // the String.fromCharCode comes from google bot which somehow manage to get these urls
         $template->block_footer_script(
             null,
-            '<script>
-                var RVTS = {
+            '<script type="module">
+                import "./plugins/rv_tscroller/rv_tscroller.js";
+
+                RVTS.init({
                     ajaxUrlModel: String.fromCharCode(' . ord($ajax_url_model[0]) . ")+'" . substr($ajax_url_model, 1) . "',
                     start: {$start},
                     perPage: {$per_page},
@@ -114,7 +109,7 @@ class RVTS
                     moreMsg: '{$moreMsg}',
                     prevMsg: '" . l10n('Previous') . "',
                     ajaxLoaderImage: '{$ajax_loader_image}'
-                };
+                });
                 jQuery('.navigationBar').hide();
             </script>"
         );
