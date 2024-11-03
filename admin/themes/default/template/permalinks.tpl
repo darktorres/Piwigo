@@ -1,4 +1,4 @@
-{footer_script require='jquery.ui.sortable'}<script>
+{footer_script require='jquery.ui'}<script>
   jQuery(document).ready(function() {
     $("h1").append("<span class='badge-number'>{$nb_cats}</span>")
     jQuery("#addPermalinkOpen").click(function() {
