@@ -240,4 +240,4 @@
       loopy();
     }, jq_resize[str_delay]);
   }
-})(jQuery, this);
+})(jQuery, window);

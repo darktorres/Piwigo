@@ -58,9 +58,11 @@
 
 {combine_css path=$GDThumb.GDTHUMB_ROOT|cat:"/css/gdthumb.css"}
 {combine_script id='jquery.ba-resize' require='jquery' path=$GDThumb.GDTHUMB_ROOT|cat:"/js/jquery.ba-resize.js" load="footer"}
-{combine_script id='gdthumb' require='jquery,jquery.ba-resize' path=$GDThumb.GDTHUMB_ROOT|cat:"/js/gdthumb.js" load="footer"}
+{* {combine_script id='gdthumb' require='jquery,jquery.ba-resize' path=$GDThumb.GDTHUMB_ROOT|cat:"/js/gdthumb.js" load="footer"} *}
 
-{footer_script require="gdthumb"}<script>
+{footer_script}<script type="module">
+  import { GDThumb } from './plugins/GDThumb/js/gdthumb.js';
+
   $(function() {
     {if isset($GDThumb_big)}
       {assign var=gt_size value=$GDThumb_big->get_size()}
