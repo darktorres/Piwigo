@@ -1,3 +1,5 @@
+"use strict";
+
 jQuery.fn.pwgAddAlbum = function (options) {
   options = options || {};
 

@@ -1,4 +1,6 @@
-﻿(function () {
+﻿"use strict";
+
+(function () {
   var session_storage = window.sessionStorage || {};
 
   var menubar = jQuery("#menubar");

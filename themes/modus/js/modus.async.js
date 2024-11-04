@@ -1,3 +1,5 @@
+"use strict";
+
 $("#albumActionsSwitcher").on("click", function () {
   var box = $(this).siblings(".categoryActions");
   if (box.is(":visible")) {

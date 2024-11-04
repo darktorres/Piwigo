@@ -1,3 +1,5 @@
+"use strict";
+
 $(window).on("load", function () {
   const checkbox = $('input[type="checkbox"]');
   checkbox.checkboxradio("refresh");

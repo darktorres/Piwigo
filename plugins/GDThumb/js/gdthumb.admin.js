@@ -1,3 +1,5 @@
+"use strict";
+
 (function ($) {
   jQuery('input[name^="cache"]').tipTip({ delay: 0, fadeIn: 200, fadeOut: 200 });
   $("div.infos")

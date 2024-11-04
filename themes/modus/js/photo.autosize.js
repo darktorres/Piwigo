@@ -1,3 +1,5 @@
+"use strict";
+
 function rvas_get_scaled_size(d, available) {
   var ratio_w = d.w / available.w;
   var ratio_h = d.h / available.h;

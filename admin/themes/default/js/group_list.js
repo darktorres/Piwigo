@@ -1,3 +1,5 @@
+"use strict";
+
 const DELAY_FEEDBACK = 3000;
 /*-------
 Group Popin

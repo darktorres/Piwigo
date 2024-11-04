@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function () {
   $(".linked-albums.add-item").on("click", function () {
     linked_albums_open();

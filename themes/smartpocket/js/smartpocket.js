@@ -1,3 +1,5 @@
+"use strict";
+
 (function (window, $, PhotoSwipe) {
   $(document).ready(function () {
     var more_link;

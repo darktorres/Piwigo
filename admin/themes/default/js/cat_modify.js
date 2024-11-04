@@ -1,3 +1,5 @@
+"use strict";
+
 jQuery(document).ready(function () {
   activateCommentDropdown();
   checkAlbumLock();

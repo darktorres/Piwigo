@@ -1,3 +1,5 @@
+"use strict";
+
 /*
 Don't use directly. Compile on http://closure-compiler.appspot.com/home
 */

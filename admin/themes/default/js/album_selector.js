@@ -1,3 +1,5 @@
+"use strict";
+
 function set_up_popin() {
   $(".ClosePopIn").on("click", function () {
     linked_albums_close();

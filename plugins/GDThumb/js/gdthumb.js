@@ -1,3 +1,5 @@
+"use strict";
+
 var GDThumb = {
   max_height: 200,
   margin: 10,

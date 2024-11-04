@@ -1,3 +1,5 @@
+"use strict";
+
 //Get the data
 var dataTags = $(".tag-container").data("tags");
 

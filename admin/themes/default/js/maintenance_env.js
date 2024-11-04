@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function () {
   jQuery.ajax({
     url: "ws.php?format=json&method=pwg.plugins.getList",

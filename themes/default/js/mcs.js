@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function () {
   related_categories_ids = [];
 

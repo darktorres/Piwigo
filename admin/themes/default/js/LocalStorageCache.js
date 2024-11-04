@@ -1,6 +1,6 @@
-(function ($, exports) {
-  "use strict";
+"use strict";
 
+(function ($, exports) {
   /**
    * Base LocalStorage cache
    *
@@ -187,13 +187,13 @@
     lang = lang || { Add: "Add" };
 
     return {
-      option: function (data, escape) {
+      option: function (data) {
         return `<div class="option">${data[field_label]}</div>`;
       },
-      item: function (data, escape) {
+      item: function (data) {
         return `<div class="item">${data[field_label]}</div>`;
       },
-      option_create: function (data, escape) {
+      option_create: function (data) {
         return `<div class="create">${lang["Add"]} <strong>${data.input}</strong>&hellip;</div>`;
       },
     };

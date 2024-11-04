@@ -1,3 +1,5 @@
+"use strict";
+
 var gRatingOptions;
 var gRatingButtons;
 var gUserRating;

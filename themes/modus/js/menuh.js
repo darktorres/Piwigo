@@ -1,3 +1,5 @@
+"use strict";
+
 $("#menuSwitcher").on("click", function () {
   var mb = $("#menubar");
   if (mb.is(":visible")) {

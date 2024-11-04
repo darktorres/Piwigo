@@ -1,3 +1,5 @@
+"use strict";
+
 function ImageLoader(opts) {
   this.opts = jQuery.extend(
     {

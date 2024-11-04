@@ -1,3 +1,5 @@
+"use strict";
+
 var AdminTools = (function ($) {
   var __this = this;
 

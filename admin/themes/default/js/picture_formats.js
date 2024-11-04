@@ -1,3 +1,5 @@
+"use strict";
+
 function fitExtensions() {
   $(".format-card-ext span").each((i, node) => {
     let size = Math.min((180 * 1) / node.innerHTML.length, 45);

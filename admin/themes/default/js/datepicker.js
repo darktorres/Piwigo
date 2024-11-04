@@ -1,3 +1,5 @@
+"use strict";
+
 (function ($) {
   jQuery.timepicker.log = jQuery.noop; // that's ugly, but the timepicker is acting weird and throws parsing errors
 

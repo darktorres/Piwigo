@@ -1,3 +1,5 @@
+"use strict";
+
 const color_icons = ["icon-red", "icon-blue", "icon-yellow", "icon-purple", "icon-green"];
 const status_arr = ["webmaster", "admin", "normal", "generic", "guest"];
 const level_arr = ["0", "1", "2", "4", "8"];

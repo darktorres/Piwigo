@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function () {
   // Grid view button click
   $("#btn-grid").on("click", function () {

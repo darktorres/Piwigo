@@ -1,3 +1,5 @@
+"use strict";
+
 (function () {
   var sbFunc = function (link, box) {
     jQuery(link).on("click", function () {

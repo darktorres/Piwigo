@@ -1,3 +1,5 @@
+"use strict";
+
 /*!
  * jQuery resize event - v1.1 - 3/14/2010
  * http://benalman.com/projects/jquery-resize-plugin/

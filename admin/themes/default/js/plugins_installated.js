@@ -1,3 +1,5 @@
+"use strict";
+
 function setDisplayClassic() {
   $(".pluginContainer").removeClass("line-form").removeClass("compact-form").addClass("classic-form");
 

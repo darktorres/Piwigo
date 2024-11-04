@@ -1,3 +1,5 @@
+"use strict";
+
 jQuery.fn.fontCheckbox = function () {
   /* checkbox */
   this.find("input[type=checkbox]").each(function () {

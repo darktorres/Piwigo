@@ -1,3 +1,5 @@
+"use strict";
+
 var gRatingOptions, gRatingButtons, gUserRating;
 
 function makeNiceRatingForm(options) {

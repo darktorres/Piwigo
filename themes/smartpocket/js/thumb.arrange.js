@@ -1,3 +1,5 @@
+"use strict";
+
 function SPTLine(margin, rowHeight) {
   this.elements = new Array();
   this.margin = margin;

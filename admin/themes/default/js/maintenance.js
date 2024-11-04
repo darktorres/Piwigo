@@ -1,3 +1,5 @@
+"use strict";
+
 function displayResponse(domElem, values, mDivs, mValues) {
   for (let index = 0; index < domElem.length; index++) {
     domElem[index].html(unit_MB.replace("%s", values[index]));

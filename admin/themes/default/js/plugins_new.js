@@ -1,3 +1,5 @@
+"use strict";
+
 // <-- Define sort orders -->
 var sortOrder = "date";
 var sortPlugins = function (a, b) {

@@ -1,3 +1,5 @@
+"use strict";
+
 /* ********** Filters*/
 function filter_enable(filter) {
   /* show the filter*/
