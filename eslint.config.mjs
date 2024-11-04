@@ -2,7 +2,7 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 
 export default [
-    // pluginJs.configs.recommended,
+    pluginJs.configs.recommended,
 
     {
         ignores: ["_data/*", "galleries/*", "**/node_modules/*", "vendor/*"]

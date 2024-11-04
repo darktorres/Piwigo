@@ -1,6 +1,1861 @@
 
-/var/www/html/piwigo2/themes/default/js/rating.js
-  25:5  error  Parsing error: 'with' in strict mode
+/var/www/html/piwigo2/admin/themes/default/js/LocalStorageCache.js
+  190:31  error  'escape' is defined but never used  no-unused-vars
+  193:29  error  'escape' is defined but never used  no-unused-vars
+  196:38  error  'escape' is defined but never used  no-unused-vars
 
-✖ 1 problem (1 error, 0 warnings)
+/var/www/html/piwigo2/admin/themes/default/js/album_selector.js
+   1:10  error  'set_up_popin' is defined but never used          no-unused-vars
+  11:10  error  'linked_albums_open' is defined but never used    no-unused-vars
+  16:27  error  'str_no_search_in_progress' is not defined        no-undef
+  19:10  error  'linked_albums_search' is defined but never used  no-unused-vars
+  20:7   error  'api_method' is not defined                       no-undef
+  21:5   error  'api_params' is not defined                       no-undef
+  28:5   error  'api_params' is not defined                       no-undef
+  35:15  error  'api_method' is not defined                       no-undef
+  39:41  error  'api_method' is not defined                       no-undef
+  42:11  error  'api_params' is not defined                       no-undef
+  47:7   error  'categories' is not defined                       no-undef
+  48:7   error  'fill_results' is not defined                     no-undef
+  48:20  error  'categories' is not defined                       no-undef
+  51:33  error  'str_result_limit' is not defined                 no-undef
+  51:64  error  'categories' is not defined                       no-undef
+  53:13  error  'categories' is not defined                       no-undef
+  54:35  error  'str_album_found' is not defined                  no-undef
+  56:35  error  'str_albums_found' is not defined                 no-undef
+  56:66  error  'categories' is not defined                       no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/albums.js
+    2:3    error  'formatedData' is not defined                   no-undef
+    2:18   error  'data' is not defined                           no-undef
+    4:48   error  'nb_albums' is not defined                      no-undef
+    8:11   error  'formatedData' is not defined                   no-undef
+   11:22   error  'delay_autoOpen' is not defined                 no-undef
+   13:32   error  'node' is defined but never used                no-unused-vars
+   18:57   error  'e' is defined but never used                   no-unused-vars
+   22:7    error  'open_nodes' is not defined                     no-undef
+   23:12   error  'open_nodes' is not defined                     no-undef
+   24:22   error  'toggler_open' is not defined                   no-undef
+   27:22   error  'toggler_close' is not defined                  no-undef
+   33:40   error  'e' is defined but never used                   no-unused-vars
+   34:55   error  'toggler_open' is not defined                   no-undef
+   37:41   error  'e' is defined but never used                   no-unused-vars
+   38:55   error  'toggler_close' is not defined                  no-undef
+   45:7    error  'parentIsPrivate' is not defined                no-undef
+   47:9    error  'parentIsPrivate' is not defined                no-undef
+   49:9    error  'parentIsPrivate' is not defined                no-undef
+   52:11   error  'parentIsPrivate' is not defined                no-undef
+   54:18   error  'str_are_you_sure' is not defined               no-undef
+   57:21   error  'str_yes_change_parent' is not defined          no-undef
+   65:21   error  'str_no_change_parent' is not defined           no-undef
+   68:14   error  'jConfirm_confirm_options' is not defined       no-undef
+   78:55   error  'e' is defined but never used                   no-unused-vars
+   85:54   error  'str_sub_album_order' is not defined            no-undef
+   91:49   error  'str_root' is not defined                       no-undef
+   93:52   error  'str_root_order' is not defined                 no-undef
+  104:7    error  'openCat' is not defined                        no-undef
+  105:5    error  'nodeToGo' is not defined                       no-undef
+  105:47   error  'openCat' is not defined                        no-undef
+  107:14   error  'nodeToGo' is not defined                       no-undef
+  107:24   error  'nodeToGo' is not defined                       no-undef
+  108:9    error  'nodeToGo' is not defined                       no-undef
+  109:35   error  'nodeToGo' is not defined                       no-undef
+  114:30   error  'openCat' is not defined                        no-undef
+  134:5    error  'catToEdit' is not defined                      no-undef
+  139:22   error  'catToEdit' is not defined                      no-undef
+  143:9    error  'data' is not defined                           no-undef
+  144:35   error  'catToEdit' is not defined                      no-undef
+  193:5    error  'newAlbumName' is not defined                   no-undef
+  194:5    error  'newAlbumParent' is not defined                 no-undef
+  195:5    error  'newAlbumPosition' is not defined               no-undef
+  201:15   error  'newAlbumName' is not defined                   no-undef
+  202:17   error  'newAlbumParent' is not defined                 no-undef
+  203:19   error  'newAlbumPosition' is not defined               no-undef
+  206:9    error  'data' is not defined                           no-undef
+  207:58   error  'newAlbumParent' is not defined                 no-undef
+  209:13   error  'data' is not defined                           no-undef
+  210:15   error  'newAlbumPosition' is not defined               no-undef
+  214:21   error  'data' is not defined                           no-undef
+  216:23   error  'newAlbumName' is not defined                   no-undef
+  224:21   error  'data' is not defined                           no-undef
+  226:23   error  'newAlbumName' is not defined                   no-undef
+  235:84   error  'e' is defined but never used                   no-unused-vars
+  239:17   error  'open_nodes' is not defined                     no-undef
+  240:22   error  'open_nodes' is not defined                     no-undef
+  241:32   error  'toggler_open' is not defined                   no-undef
+  244:32   error  'toggler_close' is not defined                  no-undef
+  273:28   error  'nb_albums' is not defined                      no-undef
+  275:51   error  'data' is not defined                           no-undef
+  275:99   error  'data' is not defined                           no-undef
+  278:36   error  'data' is not defined                           no-undef
+  286:37   error  'str_album_name_empty' is not defined           no-undef
+  304:8    error  'light_album_manager' is not defined            no-undef
+  315:3    error  'icon' is not defined                           no-undef
+  316:3    error  'title' is not defined                          no-undef
+  319:5    error  'title' is not defined                          no-undef
+  321:3    error  'title' is not defined                          no-undef
+  324:5    error  'title' is not defined                          no-undef
+  324:55   error  'tiptip_locked_album' is not defined            no-undef
+  326:3    error  'title' is not defined                          no-undef
+  327:3    error  'toggler_cont' is not defined                   no-undef
+  328:3    error  'toggler_close' is not defined                  no-undef
+  329:3    error  'toggler_open' is not defined                   no-undef
+  330:3    error  'actions' is not defined                        no-undef
+  333:64   error  'str_add_album' is not defined                  no-undef
+  334:62   error  'str_edit_album' is not defined                 no-undef
+  335:70   error  'str_add_photo' is not defined                  no-undef
+  336:58   error  'str_visit_gallery' is not defined              no-undef
+  337:90   error  'str_sort_order' is not defined                 no-undef
+  338:84   error  'str_delete_album' is not defined               no-undef
+  343:3    error  'cont' is not defined                           no-undef
+  344:3    error  'cont' is not defined                           no-undef
+  345:3    error  'cont' is not defined                           no-undef
+  346:3    error  'cont' is not defined                           no-undef
+  348:3    error  'cont' is not defined                           no-undef
+  348:15   error  'actions' is not defined                        no-undef
+  350:3    error  'cont' is not defined                           no-undef
+  356:5    error  'open_nodes' is not defined                     no-undef
+  357:9    error  'open_nodes' is not defined                     no-undef
+  358:7    error  'toggler' is not defined                        no-undef
+  358:17   error  'toggler_open' is not defined                   no-undef
+  360:7    error  'toggler' is not defined                        no-undef
+  360:17   error  'toggler_close' is not defined                  no-undef
+  362:5    error  'cont' is not defined                           no-undef
+  362:19   error  'toggler_cont' is not defined                   no-undef
+  362:54   error  'toggler' is not defined                        no-undef
+  364:5    error  'cont' is not defined                           no-undef
+  366:5    error  'cont' is not defined                           no-undef
+  366:19   error  'toggler_cont' is not defined                   no-undef
+  366:54   error  'toggler_close' is not defined                  no-undef
+  369:3    error  'cont' is not defined                           no-undef
+  369:17   error  'icon' is not defined                           no-undef
+  372:5    error  'cont' is not defined                           no-undef
+  372:19   error  'icon' is not defined                           no-undef
+  374:5    error  'cont' is not defined                           no-undef
+  374:19   error  'icon' is not defined                           no-undef
+  377:3    error  'cont' is not defined                           no-undef
+  377:17   error  'title' is not defined                          no-undef
+  381:3    error  'cont' is not defined                           no-undef
+  383:3    error  'cont' is not defined                           no-undef
+  389:59   error  'x_nb_subcats' is not defined                   no-undef
+  390:60   error  'x_nb_images' is not defined                    no-undef
+  391:70   error  'x_nb_sub_photos' is not defined                no-undef
+  397:5    error  'cont' is not defined                           no-undef
+  401:5    error  'cont' is not defined                           no-undef
+  405:5    error  'cont' is not defined                           no-undef
+  409:5    error  'cont' is not defined                           no-undef
+  435:10   error  'isNumeric' is defined but never used           no-unused-vars
+  441:44   error  'add_sub_album_of' is not defined               no-undef
+  443:44   error  'add_album_root_title' is not defined           no-undef
+  468:36   error  'rename_item' is not defined                    no-undef
+  503:13   error  'has_images_associated_outside' is not defined  no-undef
+  510:58   error  'has_images_becomming_orphans' is not defined   no-undef
+  524:3    error  'node' is not defined                           no-undef
+  525:7    error  'node' is not defined                           no-undef
+  526:37   error  'delete_album_with_name' is not defined         no-undef
+  526:74   error  'node' is not defined                           no-undef
+  528:5    error  'nb_sub_cats' is not defined                    no-undef
+  529:37   error  'delete_album_with_subs' is not defined         no-undef
+  529:74   error  'node' is not defined                           no-undef
+  529:123  error  'node' is not defined                           no-undef
+  529:129  error  'nb_sub_cats' is not defined                    no-undef
+  542:22   error  'pwg_token' is not defined                      no-undef
+  544:28   error  'raw_data' is defined but never used            no-unused-vars
+  545:11   error  'parentOfDeletedNode' is not defined            no-undef
+  545:33   error  'node' is not defined                           no-undef
+  546:41   error  'node' is not defined                           no-undef
+  568:28   error  'nb_albums' is not defined                      no-undef
+  569:27   error  'parentOfDeletedNode' is not defined            no-undef
+  588:7    error  'tmp' is not defined                            no-undef
+  589:22   error  'tmp' is not defined                            no-undef
+  606:13   error  'x_nb_subcats' is not defined                   no-undef
+  615:3    error  'nb_albums' is not defined                      no-undef
+  648:10   error  'closeTree' is defined but never used           no-unused-vars
+  683:3    error  'waitingTimeout' is not defined                 no-undef
+  686:3    error  'id' is not defined                             no-undef
+  687:3    error  'moveParent' is not defined                     no-undef
+  688:3    error  'moveRank' is not defined                       no-undef
+  689:3    error  'previous_parent' is not defined                no-undef
+  690:3    error  'target' is not defined                         no-undef
+  692:15   error  'previous_parent' is not defined                no-undef
+  692:41   error  'target' is not defined                         no-undef
+  693:7    error  'moveParent' is not defined                     no-undef
+  693:26   error  'target' is not defined                         no-undef
+  695:5    error  'moveRank' is not defined                       no-undef
+  695:24   error  'target' is not defined                         no-undef
+  695:32   error  'id' is not defined                             no-undef
+  697:15   error  'previous_parent' is not defined                no-undef
+  697:41   error  'target' is not defined                         no-undef
+  698:7    error  'moveParent' is not defined                     no-undef
+  698:26   error  'target' is not defined                         no-undef
+  700:5    error  'moveRank' is not defined                       no-undef
+  702:15   error  'previous_parent' is not defined                no-undef
+  702:41   error  'target' is not defined                         no-undef
+  703:7    error  'moveParent' is not defined                     no-undef
+  703:26   error  'target' is not defined                         no-undef
+  705:5    error  'moveRank' is not defined                       no-undef
+  707:12   error  'id' is not defined                             no-undef
+  707:16   error  'moveRank' is not defined                       no-undef
+  707:26   error  'moveParent' is not defined                     no-undef
+  710:20   error  'waitingTimeout' is not defined                 no-undef
+  712:23   error  'previous_parent' is not defined                no-undef
+  713:54   error  'moveParent' is not defined                     no-undef
+  774:3    error  'oldParent' is not defined                      no-undef
+  782:20   error  'pwg_token' is not defined                      no-undef
+  785:9    error  'oldParent' is not defined                      no-undef
+  788:9    error  'data' is not defined                           no-undef
+  789:13   error  'data' is not defined                           no-undef
+  791:32   error  'data' is not defined                           no-undef
+  821:9    error  'data' is not defined                           no-undef
+  822:13   error  'data' is not defined                           no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/batchManagerGlobal.js
+   60:43  error  'sliders' is not defined                             no-undef
+   61:44  error  'sliders' is not defined                             no-undef
+   62:43  error  'sliders' is not defined                             no-undef
+   63:46  error  'sliders' is not defined                             no-undef
+   94:13  error  'input' is not defined                               no-undef
+   95:15  error  'input' is not defined                               no-undef
+   97:17  error  'input' is not defined                               no-undef
+   99:17  error  'input' is not defined                               no-undef
+  128:17  error  'lang' is not defined                                no-undef
+  177:3   error  'percent' is not defined                             no-undef
+  178:50  error  'percent' is not defined                             no-undef
+  191:10  error  'getDerivativeUrls' is defined but never used        no-unused-vars
+  201:36  error  'lang' is not defined                                no-undef
+  220:30  error  'data' is defined but never used                     no-unused-vars
+  225:28  error  'data' is defined but never used                     no-unused-vars
+  237:10  error  'selectGenerateDerivAll' is defined but never used   no-unused-vars
+  240:10  error  'selectGenerateDerivNone' is defined but never used  no-unused-vars
+  244:10  error  'selectDelDerivAll' is defined but never used        no-unused-vars
+  247:10  error  'selectDelDerivNone' is defined but never used       no-unused-vars
+  261:38  error  'lang' is not defined                                no-undef
+  262:5   error  'elements' is not defined                            no-undef
+  265:7   error  'elements' is not defined                            no-undef
+  265:18  error  'all_elements' is not defined                        no-undef
+  270:11  error  'elements' is not defined                            no-undef
+  274:5   error  'progressBar_max' is not defined                     no-undef
+  274:23  error  'elements' is not defined                            no-undef
+  276:42  error  'elements' is not defined                            no-undef
+  284:10  error  'i' is not defined                                   no-undef
+  284:17  error  'i' is not defined                                   no-undef
+  284:21  error  'elements' is not defined                            no-undef
+  284:38  error  'i' is not defined                                   no-undef
+  285:22  error  'elements' is not defined                            no-undef
+  285:31  error  'i' is not defined                                   no-undef
+  286:11  error  'i' is not defined                                   no-undef
+  286:53  error  'i' is not defined                                   no-undef
+  286:58  error  'elements' is not defined                            no-undef
+  309:86  error  'progressBar_max' is not defined                     no-undef
+  310:32  error  'progressBar_max' is not defined                     no-undef
+  312:28  error  'data' is defined but never used                     no-unused-vars
+  315:86  error  'progressBar_max' is not defined                     no-undef
+  316:32  error  'progressBar_max' is not defined                     no-undef
+  343:3   error  'elements' is not defined                            no-undef
+  346:5   error  'elements' is not defined                            no-undef
+  346:16  error  'all_elements' is not defined                        no-undef
+  351:9   error  'elements' is not defined                            no-undef
+  355:3   error  'progressBar_max' is not defined                     no-undef
+  355:21  error  'elements' is not defined                            no-undef
+  356:7   error  'todo' is already defined                            no-redeclare
+  357:42  error  'elements' is not defined                            no-undef
+  358:7   error  'image_ids' is already defined                       no-redeclare
+  363:36  error  'lang' is not defined                                no-undef
+  366:8   error  'i' is not defined                                   no-undef
+  366:15  error  'i' is not defined                                   no-undef
+  366:19  error  'elements' is not defined                            no-undef
+  366:36  error  'i' is not defined                                   no-undef
+  367:20  error  'elements' is not defined                            no-undef
+  367:29  error  'i' is not defined                                   no-undef
+  368:9   error  'i' is not defined                                   no-undef
+  368:55  error  'i' is not defined                                   no-undef
+  368:60  error  'elements' is not defined                            no-undef
+  388:84  error  'progressBar_max' is not defined                     no-undef
+  389:30  error  'progressBar_max' is not defined                     no-undef
+  391:26  error  'data' is defined but never used                     no-unused-vars
+  394:84  error  'progressBar_max' is not defined                     no-undef
+  395:30  error  'progressBar_max' is not defined                     no-undef
+  404:83  error  'elements' is not defined                            no-undef
+  414:10  error  'progress_bar_end' is defined but never used         no-unused-vars
+  418:33  error  'success' is defined but never used                  no-unused-vars
+  419:3   error  'percent' is not defined                             no-undef
+  420:50  error  'percent' is not defined                             no-undef
+  428:46  error  'e' is defined but never used                        no-unused-vars
+  473:49  error  'e' is defined but never used                        no-unused-vars
+
+/var/www/html/piwigo2/admin/themes/default/js/cat_list.js
+  260:5  error  Duplicate key 'transform'  no-dupe-keys
+
+/var/www/html/piwigo2/admin/themes/default/js/cat_modify.js
+   11:22   error  'album_id' is not defined                              no-undef
+   16:11   error  'is_visible' is not defined                            no-undef
+   59:22   error  'album_id' is not defined                              no-undef
+   64:20   error  'pwg_token' is not defined                             no-undef
+   71:67   error  'str_just_now' is not defined                          no-undef
+   72:64   error  'str_just_now' is not defined                          no-undef
+   74:11   error  'is_visible' is not defined                            no-undef
+   98:9    error  'parent_album' is not defined                          no-undef
+   98:25   error  'default_parent_album' is not defined                  no-undef
+  104:24   error  'album_id' is not defined                              no-undef
+  105:19   error  'parent_album' is not defined                          no-undef
+  106:22   error  'pwg_token' is not defined                             no-undef
+  111:13   error  'default_parent_album' is not defined                  no-undef
+  111:36   error  'parent_album' is not defined                          no-undef
+  142:14   error  'str_delete_album' is not defined                      no-undef
+  149:26   error  'album_id' is not defined                              no-undef
+  155:17   error  'str_delete_album_and_his_x_subalbums' is not defined  no-undef
+  155:79   error  'album_name' is not defined                            no-undef
+  155:127  error  'nb_sub_albums' is not defined                         no-undef
+  161:42   error  'str_dont_delete_photos' is not defined                no-undef
+  168:45   error  'str_delete_all_photos' is not defined                 no-undef
+  170:20   error  '_' is defined but never used                          no-unused-vars
+  178:47   error  'str_delete_orphans' is not defined                    no-undef
+  192:17   error  'str_delete_album' is not defined                      no-undef
+  198:51   error  'u_delete' is not defined                              no-undef
+  207:17   error  'str_cancel' is not defined                            no-undef
+  210:10   error  'jConfirm_confirm_options' is not defined              no-undef
+  220:24   error  'album_id' is not defined                              no-undef
+  222:22   error  'pwg_token' is not defined                             no-undef
+  224:28   error  'raw_data' is defined but never used                   no-unused-vars
+  243:22   error  'album_id' is not defined                              no-undef
+  246:13   error  'data' is already defined                              no-redeclare
+  274:22   error  'album_id' is not defined                              no-undef
+  277:13   error  'data' is already defined                              no-redeclare
+  299:7    error  'linked_albums_open' is not defined                    no-undef
+  300:7    error  'set_up_popin' is not defined                          no-undef
+  302:11   error  'parent_album' is not defined                          no-undef
+  305:35   error  'str_root' is not defined                              no-undef
+  313:27   error  'str_no_search_in_progress' is not defined             no-undef
+  324:7    error  'linked_albums_search' is not defined                  no-undef
+  326:31   error  'str_no_search_in_progress' is not defined             no-undef
+  342:22   error  'album_id' is not defined                              no-undef
+  356:11   error  'temp_txt' is not defined                              no-undef
+  357:35   error  'str_album_comment_allow' is not defined               no-undef
+  362:37   error  'temp_txt' is not defined                              no-undef
+  383:22   error  'album_id' is not defined                              no-undef
+  397:11   error  'temp_txt' is not defined                              no-undef
+  398:35   error  'str_album_comment_disallow' is not defined            no-undef
+  403:37   error  'temp_txt' is not defined                              no-undef
+  420:7    error  'form_unsaved' is assigned a value but never used      no-unused-vars
+  421:9    error  'cat_modify' is assigned a value but never used        no-unused-vars
+  444:7    error  'is_visible' is not defined                            no-undef
+  453:10   error  'fill_results' is defined but never used               no-unused-vars
+  466:9    error  'parent_album' is not defined                          no-undef
+  466:69   error  'album_id' is not defined                              no-undef
+  469:24   error  'str_already_in_related_cats' is not defined           no-undef
+  482:7    error  'parent_album' is not defined                          no-undef
+  486:5    error  'parent_album' is not defined                          no-undef
+  489:5    error  'linked_albums_close' is not defined                   no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/common.js
+   42:10  error  'array_delete' is defined but never used                       no-unused-vars
+   67:10  error  'getRandomInt' is defined but never used                       no-unused-vars
+   73:10  error  'sprintf' is defined but never used                            no-unused-vars
+  158:7   error  'TemporaryState' is defined but never used                     no-unused-vars
+  260:7   error  'jConfirm_alert_options' is assigned a value but never used    no-unused-vars
+  287:7   error  'jConfirm_warning_options' is assigned a value but never used  no-unused-vars
+  294:3   error  Duplicate key 'draggable'                                      no-dupe-keys
+
+/var/www/html/piwigo2/admin/themes/default/js/doubleSlider.js
+  15:38  error  'sprintf' is not defined  no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/group_list.js
+   60:6    error  'complete' is not defined                         no-undef
+   89:25   error  'TemporaryState' is not defined                   no-undef
+  100:22   error  'pwg_token' is not defined                        no-undef
+  104:11   error  'data' is not defined                             no-undef
+  105:15   error  'data' is not defined                             no-undef
+  107:13   error  'group' is not defined                            no-undef
+  107:21   error  'data' is not defined                             no-undef
+  108:13   error  'groupBox' is not defined                         no-undef
+  108:36   error  'group' is not defined                            no-undef
+  109:38   error  'groupBox' is not defined                         no-undef
+  110:27   error  'groupBox' is not defined                         no-undef
+  113:49   error  'str_name_not_empty' is not defined               no-undef
+  124:43   error  'str_name_not_empty' is not defined               no-undef
+  133:3    error  'newgroup' is not defined                         no-undef
+  134:3    error  'newgroup' is not defined                         no-undef
+  135:3    error  'newgroup' is not defined                         no-undef
+  136:3    error  'newgroup' is not defined                         no-undef
+  137:3    error  'newgroup' is not defined                         no-undef
+  138:3    error  'newgroup' is not defined                         no-undef
+  139:3    error  'newgroup' is not defined                         no-undef
+  140:3    error  'newgroup' is not defined                         no-undef
+  140:87   error  'str_members_default' is not defined              no-undef
+  140:109  error  'str_member_default' is not defined               no-undef
+  141:3    error  'newgroup' is not defined                         no-undef
+  142:3    error  'newgroup' is not defined                         no-undef
+  148:3    error  'newgroup' is not defined                         no-undef
+  151:3    error  'newgroup' is not defined                         no-undef
+  151:39   error  'str_group_created' is not defined                no-undef
+  152:3    error  'newgroup' is not defined                         no-undef
+  153:3    error  'newgroup' is not defined                         no-undef
+  154:10   error  'newgroup' is not defined                         no-undef
+  238:3    error  'groupBox' is not defined                         no-undef
+  240:5    error  'groupBox' is not defined                         no-undef
+  241:5    error  'groupBox' is not defined                         no-undef
+  242:5    error  'groupBox' is not defined                         no-undef
+  243:5    error  'groupBox' is not defined                         no-undef
+  246:5    error  'item' is not defined                             no-undef
+  249:16   error  'groupBox' is not defined                         no-undef
+  252:5    error  'item' is not defined                             no-undef
+  253:5    error  'item' is not defined                             no-undef
+  254:7    error  'groupBox' is not defined                         no-undef
+  258:5    error  'option' is not defined                           no-undef
+  258:47   error  'groupBox' is not defined                         no-undef
+  259:5    error  'option' is not defined                           no-undef
+  261:5    error  'groupBox' is not defined                         no-undef
+  262:5    error  'groupBox' is not defined                         no-undef
+  263:5    error  'groupBox' is not defined                         no-undef
+  264:5    error  'groupBox' is not defined                         no-undef
+  282:12   error  'str_delete' is not defined                       no-undef
+  296:15   error  'str_yes_delete_confirmation' is not defined      no-undef
+  302:22   error  'str_group_deleted' is not defined                no-undef
+  307:53   error  'pwg_token' is not defined                        no-undef
+  309:21   error  'data' is not defined                             no-undef
+  310:25   error  'data' is not defined                             no-undef
+  323:16   error  'jConfirm_alert_options' is not defined           no-undef
+  328:15   error  'str_no_delete_confirmation' is not defined       no-undef
+  335:23   error  'TemporaryState' is not defined                   no-undef
+  344:41   error  'pwg_token' is not defined                        no-undef
+  346:9    error  'data' is not defined                             no-undef
+  348:13   error  'data' is not defined                             no-undef
+  349:21   error  'data' is not defined                             no-undef
+  351:56   error  'str_renaming_done' is not defined                no-undef
+  360:54   error  'str_name_taken' is not defined                   no-undef
+  371:48   error  'str_name_not_empty' is not defined               no-undef
+  399:39   error  'pwg_token' is not defined                        no-undef
+  401:7    error  'data' is not defined                             no-undef
+  403:11   error  'data' is not defined                             no-undef
+  422:50   error  'str_unset_default' is not defined                no-undef
+  423:63   error  'str_unset_default' is not defined                no-undef
+  437:50   error  'str_set_default' is not defined                  no-undef
+  438:63   error  'str_set_default' is not defined                  no-undef
+  450:23   error  'TemporaryState' is not defined                   no-undef
+  454:3    error  'copy_name' is not defined                        no-undef
+  454:54   error  'str_copy' is not defined                         no-undef
+  457:5    error  'exist' is not defined                            no-undef
+  459:36   error  'exist' is not defined                            no-undef
+  461:12   error  'exist' is not defined                            no-undef
+  465:21   error  'copy_name' is not defined                        no-undef
+  466:5    error  'copy_name' is not defined                        no-undef
+  466:56   error  'str_other_copy' is not defined                   no-undef
+  472:39   error  'pwg_token' is not defined                        no-undef
+  472:62   error  'copy_name' is not defined                        no-undef
+  474:7    error  'data' is not defined                             no-undef
+  476:11   error  'data' is not defined                             no-undef
+  478:9    error  'group' is not defined                            no-undef
+  478:17   error  'data' is not defined                             no-undef
+  479:36   error  'group' is not defined                            no-undef
+  485:13   error  'data' is not defined                             no-undef
+  486:31   error  'data' is not defined                             no-undef
+  604:23   error  'TemporaryState' is not defined                   no-undef
+  608:3    error  'merge_group' is not defined                      no-undef
+  609:3    error  'str_merge_group' is not defined                  no-undef
+  610:3    error  'name_merge' is not defined                       no-undef
+  611:3    error  'name_dest' is not defined                        no-undef
+  612:3    error  'dest_grp' is not defined                         no-undef
+  615:9    error  'dest_grp' is not defined                         no-undef
+  616:7    error  'str_merge_group' is not defined                  no-undef
+  617:7    error  'merge_group' is not defined                      no-undef
+  618:7    error  'name_merge' is not defined                       no-undef
+  620:7    error  'name_dest' is not defined                        no-undef
+  627:35   error  'dest_grp' is not defined                         no-undef
+  627:46   error  'str_merge_group' is not defined                  no-undef
+  627:75   error  'pwg_token' is not defined                        no-undef
+  630:7    error  'data' is not defined                             no-undef
+  631:11   error  'data' is not defined                             no-undef
+  633:9    error  'merge_group' is not defined                      no-undef
+  635:14   error  'complete' is not defined                         no-undef
+  640:25   error  'dest_grp' is not defined                         no-undef
+  645:23   error  'str_merged_into' is not defined                  no-undef
+  645:54   error  'name_merge' is not defined                       no-undef
+  645:92   error  'name_dest' is not defined                        no-undef
+  646:14   error  'jConfirm_alert_options' is not defined           no-undef
+  649:21   error  'dest_grp' is not defined                         no-undef
+  653:29   error  'dest_grp' is not defined                         no-undef
+  655:13   error  'data' is not defined                             no-undef
+  656:26   error  'data' is not defined                             no-undef
+  657:25   error  'dest_grp' is not defined                         no-undef
+  657:91   error  'str_members_default' is not defined              no-undef
+  657:113  error  'str_member_default' is not defined               no-undef
+  679:23   error  'TemporaryState' is not defined                   no-undef
+  684:3    error  'str_id' is not defined                           no-undef
+  686:5    error  'str_id' is not defined                           no-undef
+  692:14   error  'str_id' is not defined                           no-undef
+  692:33   error  'pwg_token' is not defined                        no-undef
+  694:7    error  'data' is not defined                             no-undef
+  695:11   error  'data' is not defined                             no-undef
+  705:23   error  'str_groups_deleted' is not defined               no-undef
+  706:14   error  'jConfirm_alert_options' is not defined           no-undef
+  749:3    error  '$select' is not defined                          no-undef
+  752:15   error  '$select' is not defined                          no-undef
+  757:7    error  'updateUserSearch' is not defined                 no-undef
+  762:3    error  'updateUserSearch' is not defined                 no-undef
+  764:10   error  Unexpected constant condition                     no-constant-condition
+  765:24   error  'UsersCache' is not defined                       no-undef
+  766:20   error  'serverKey' is not defined                        no-undef
+  767:19   error  'serverId' is not defined                         no-undef
+  768:18   error  'rootUrl' is not defined                          no-undef
+  775:17   error  'key' is assigned a value but never used          no-unused-vars
+  788:23   error  'TemporaryState' is not defined                   no-undef
+  799:7    error  'data' is not defined                             no-undef
+  800:11   error  'data' is not defined                             no-undef
+  802:90   error  'str_user_list' is not defined                    no-undef
+  809:24   error  'data' is not defined                             no-undef
+  845:34   error  'str_user_dissociate' is not defined              no-undef
+  863:64   error  'pwg_token' is not defined                        no-undef
+  865:9    error  'data' is not defined                             no-undef
+  866:13   error  'data' is not defined                             no-undef
+  867:21   error  'str_user_dissociated' is not defined             no-undef
+  875:11   error  'updateUserSearch' is not defined                 no-undef
+  894:94   error  'str_members_default' is not defined              no-undef
+  894:116  error  'str_member_default' is not defined               no-undef
+  908:7    error  'usersString' is assigned a value but never used  no-unused-vars
+  913:25   error  'TemporaryState' is not defined                   no-undef
+  921:59   error  'pwg_token' is not defined                        no-undef
+  924:9    error  'data' is not defined                             no-undef
+  926:13   error  'data' is not defined                             no-undef
+  942:44   error  'str_user_associated' is not defined              no-undef
+  945:11   error  'updateUserSearch' is not defined                 no-undef
+  962:3    error  'searchString' is not defined                     no-undef
+  963:3    error  'grp_id' is not defined                           no-undef
+  964:7    error  'searchString' is not defined                     no-undef
+  967:58   error  'searchString' is not defined                     no-undef
+  973:42   error  'grp_id' is not defined                           no-undef
+  981:68   error  'grp_id' is not defined                           no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/history.js
+    5:7   error  'current_param' is not defined                no-undef
+    6:17  error  'current_param' is not defined                no-undef
+    8:7   error  'current_param' is not defined                no-undef
+    9:20  error  'current_param' is not defined                no-undef
+   11:7   error  'current_param' is not defined                no-undef
+   12:19  error  'filter_user_name' is not defined             no-undef
+   15:49  error  'e' is defined but never used                 no-unused-vars
+   19:7   error  'current_param' is not defined                no-undef
+   24:7   error  'current_param' is not defined                no-undef
+   29:7   error  'current_param' is not defined                no-undef
+   37:23  error  'current_param' is not defined                no-undef
+   41:9   error  'current_param' is not defined                no-undef
+   42:7   error  'current_param' is not defined                no-undef
+   43:7   error  'current_param' is not defined                no-undef
+   44:25  error  'current_param' is not defined                no-undef
+   50:9   error  'current_param' is not defined                no-undef
+   51:7   error  'current_param' is not defined                no-undef
+   52:7   error  'current_param' is not defined                no-undef
+   57:27  error  'current_param' is not defined                no-undef
+   64:10  error  'current_param' is not defined                no-undef
+   65:7   error  'current_param' is not defined                no-undef
+   66:7   error  'current_param' is not defined                no-undef
+   67:25  error  'current_param' is not defined                no-undef
+   72:10  error  'current_param' is not defined                no-undef
+   72:33  error  'today' is not defined                        no-undef
+   73:7   error  'current_param' is not defined                no-undef
+   73:27  error  'today' is not defined                        no-undef
+   74:7   error  'current_param' is not defined                no-undef
+   75:25  error  'current_param' is not defined                no-undef
+   80:5   error  'current_param' is not defined                no-undef
+   81:23  error  'current_param' is not defined                no-undef
+   85:5   error  'current_param' is not defined                no-undef
+   86:23  error  'current_param' is not defined                no-undef
+   90:23  error  'current_param' is not defined                no-undef
+  124:43  error  'unit_MB' is not defined                      no-undef
+  132:13  error  'current_param' is not defined                no-undef
+  133:11  error  'current_param' is not defined                no-undef
+  133:35  error  'guest_id' is not defined                     no-undef
+  134:26  error  'str_guest' is not defined                    no-undef
+  135:29  error  'current_param' is not defined                no-undef
+  165:20  error  'value' is assigned a value but never used    no-unused-vars
+  167:7   error  'new_user_item' is not defined                no-undef
+  169:7   error  'new_user_item' is not defined                no-undef
+  170:7   error  'new_user_item' is not defined                no-undef
+  171:7   error  'new_user_item' is not defined                no-undef
+  173:7   error  'new_user_item' is not defined                no-undef
+  174:13  error  'current_param' is not defined                no-undef
+  175:11  error  'current_param' is not defined                no-undef
+  177:29  error  'current_param' is not defined                no-undef
+  180:30  error  'new_user_item' is not defined                no-undef
+  203:10  error  'API_METHOD' is not defined                   no-undef
+  214:7   error  'data' is not defined                         no-undef
+  215:7   error  'imageDisplay' is not defined                 no-undef
+  216:7   error  'maxPage' is not defined                      no-undef
+  217:7   error  'summary' is not defined                      no-undef
+  222:11  error  'data' is not defined                         no-undef
+  224:9   error  'data' is not defined                         no-undef
+  225:37  error  'imageDisplay' is not defined                 no-undef
+  229:27  error  'summary' is not defined                      no-undef
+  243:22  error  'maxPage' is not defined                      no-undef
+  253:36  error  'imageDisplay' is defined but never used      no-unused-vars
+  284:7   error  'current_param' is not defined                no-undef
+  286:7   error  'current_param' is not defined                no-undef
+  287:7   error  'current_param' is not defined                no-undef
+  289:25  error  'current_param' is not defined                no-undef
+  295:7   error  'current_param' is not defined                no-undef
+  297:7   error  'current_param' is not defined                no-undef
+  298:7   error  'current_param' is not defined                no-undef
+  300:25  error  'current_param' is not defined                no-undef
+  305:7   error  'current_param' is not defined                no-undef
+  307:7   error  'current_param' is not defined                no-undef
+  308:7   error  'current_param' is not defined                no-undef
+  310:25  error  'current_param' is not defined                no-undef
+  321:22  error  'str_no_longer_exist_photo' is not defined    no-undef
+  340:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  350:39  error  'str_most_visited' is not defined             no-undef
+  351:43  error  'str_most_visited' is not defined             no-undef
+  355:39  error  'str_best_rated' is not defined               no-undef
+  356:43  error  'str_best_rated' is not defined               no-undef
+  360:39  error  'str_list' is not defined                     no-undef
+  361:43  error  'str_list' is not defined                     no-undef
+  367:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  368:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  387:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  393:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  394:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  395:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  399:74  error  'str_search_details' is not defined           no-undef
+  409:74  error  'str_search_details' is not defined           no-undef
+  418:34  error  'str_search_details' is not defined           no-undef
+  439:38  error  'str_search_details' is not defined           no-undef
+  464:24  error  'k' is defined but never used                 no-unused-vars
+  476:26  error  'str_search_details' is not defined           no-undef
+  479:45  error  'sprintf' is not defined                      no-undef
+  479:53  error  'str_and_more' is not defined                 no-undef
+  484:39  error  'str_favorites' is not defined                no-undef
+  485:43  error  'str_favorites' is not defined                no-undef
+  489:39  error  'str_recent_cats' is not defined              no-undef
+  490:43  error  'str_recent_cats' is not defined              no-undef
+  494:39  error  'str_recent_pics' is not defined              no-undef
+  495:43  error  'str_recent_pics' is not defined              no-undef
+  506:39  error  'str_memories' is not defined                 no-undef
+  507:43  error  'str_memories' is not defined                 no-undef
+  512:39  error  'str_contact_form' is not defined             no-undef
+  513:43  error  'str_contact_form' is not defined             no-undef
+  528:50  error  'str_edit_img' is not defined                 no-undef
+  544:41  error  'str_dwld' is not defined                     no-undef
+  566:5   error  'current_param' is not defined                no-undef
+  567:5   error  'current_param' is not defined                no-undef
+  568:23  error  'current_param' is not defined                no-undef
+  588:5   error  'current_param' is not defined                no-undef
+  589:5   error  'current_param' is not defined                no-undef
+  590:23  error  'current_param' is not defined                no-undef
+  608:5   error  'current_param' is not defined                no-undef
+  609:5   error  'current_param' is not defined                no-undef
+  610:23  error  'current_param' is not defined                no-undef
+  628:5   error  'current_param' is not defined                no-undef
+  629:5   error  'current_param' is not defined                no-undef
+  630:23  error  'current_param' is not defined                no-undef
+  653:16  error  'current_param' is not defined                no-undef
+  656:63  error  'current_param' is not defined                no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/jquery.geoip.js
+   1:1   error  'GeoIp' is not defined                                                     no-undef
+   6:10  error  'GeoIp' is not defined                                                     no-undef
+   7:7   error  'GeoIp' is not defined                                                     no-undef
+  15:9   error  'GeoIp' is not defined                                                     no-undef
+  18:58  error  'GeoIp' is not defined                                                     no-undef
+  22:9   error  'GeoIp' is not defined                                                     no-undef
+  22:21  error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  22:50  error  'GeoIp' is not defined                                                     no-undef
+  23:14  error  'GeoIp' is not defined                                                     no-undef
+  23:33  error  'GeoIp' is not defined                                                     no-undef
+  25:7   error  'GeoIp' is not defined                                                     no-undef
+  39:11  error  'GeoIp' is not defined                                                     no-undef
+  40:27  error  'GeoIp' is not defined                                                     no-undef
+  41:18  error  'GeoIp' is not defined                                                     no-undef
+  48:11  error  'GeoIp' is not defined                                                     no-undef
+  49:27  error  'GeoIp' is not defined                                                     no-undef
+  50:18  error  'GeoIp' is not defined                                                     no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/maintenance.js
+   3:25  error  'unit_MB' is not defined                    no-undef
+   7:5   error  'mDivName' is not defined                   no-undef
+   8:26  error  'unit_MB' is not defined                    no-undef
+   8:56  error  'mDivName' is not defined                   no-undef
+  11:41  error  'no_time_elapsed' is not defined            no-undef
+  27:11  error  'data' is not defined                       no-undef
+  28:15  error  'data' is not defined                       no-undef
+  32:34  error  'data' is not defined                       no-undef
+  32:62  error  'data' is not defined                       no-undef
+  32:94  error  'data' is not defined                       no-undef
+  38:39  error  'data' is not defined                       no-undef
+  39:30  error  'value' is assigned a value but never used  no-unused-vars
+  47:17  error  'data' is not defined                       no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/maintenance_env.js
+   7:7   error  'plugins' is not defined             no-undef
+   8:7   error  'hasActivePlugins' is not defined    no-undef
+   9:7   error  'nbActivatedPlugins' is not defined  no-undef
+  10:7   error  'plugins' is not defined             no-undef
+  12:11  error  'hasActivePlugins' is not defined    no-undef
+  15:11  error  'nbActivatedPlugins' is not defined  no-undef
+  19:12  error  'hasActivePlugins' is not defined    no-undef
+  21:42  error  'no_active_plugin' is not defined    no-undef
+  23:33  error  'nbActivatedPlugins' is not defined  no-undef
+  27:40  error  'error_occured' is not defined       no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/picture_formats.js
+  15:14  error  'str_confirm_delete_format' is not defined  no-undef
+  19:17  error  'str_confirm_msg' is not defined            no-undef
+  26:17  error  'str_cancel_msg' is not defined             no-undef
+  29:10  error  'jConfirm_confirm_options' is not defined   no-undef
+  40:18  error  'pwg_token' is not defined                  no-undef
+  43:24  error  'raw_data' is defined but never used        no-unused-vars
+
+/var/www/html/piwigo2/admin/themes/default/js/picture_modify.js
+    3:5   error  'linked_albums_open' is not defined           no-undef
+    4:5   error  'set_up_popin' is not defined                 no-undef
+    7:27  error  'str_no_search_in_progress' is not defined    no-undef
+   19:7   error  'linked_albums_search' is not defined         no-undef
+   21:31  error  'str_no_search_in_progress' is not defined    no-undef
+   60:10  error  'fill_results' is defined but never used      no-unused-vars
+   70:9   error  'related_categories_ids' is not defined       no-undef
+   73:24  error  'str_already_in_related_cats' is not defined  no-undef
+   79:24  error  'str_already_in_related_cats' is not defined  no-undef
+   98:3   error  'cat_to_remove_index' is not defined          no-undef
+   98:25  error  'related_categories_ids' is not defined       no-undef
+   99:7   error  'cat_to_remove_index' is not defined          no-undef
+  100:5   error  'related_categories_ids' is not defined       no-undef
+  100:35  error  'cat_to_remove_index' is not defined          no-undef
+  107:8   error  'related_categories_ids' is not defined       no-undef
+  116:5   error  'related_categories_ids' is not defined       no-undef
+  125:5   error  'linked_albums_close' is not defined          no-undef
+  132:34  error  'related_categories_ids' is not defined       no-undef
+  134:7   error  'related_categories_ids' is not defined       no-undef
+  137:29  error  'str_orphan' is not defined                   no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/plugins_installated.js
+   34:10  error  'reduceTitle' is defined but never used          no-unused-vars
+   50:10  error  'normalTitle' is defined but never used          no-unused-vars
+   65:93  error  'pwg_token' is not defined                       no-undef
+   68:13  error  'pluginName' is assigned a value but never used  no-unused-vars
+   70:66  error  'plugin_added_str' is not defined                no-undef
+   73:9   error  'nb_plugin' is not defined                       no-undef
+   74:9   error  'nb_plugin' is not defined                       no-undef
+   81:65  error  'plugin_action_error' is not defined             no-undef
+   87:21  error  'data' is defined but never used                 no-unused-vars
+  100:95  error  'pwg_token' is not defined                       no-undef
+  103:13  error  'pluginName' is assigned a value but never used  no-unused-vars
+  105:73  error  'plugin_deactivated_str' is not defined          no-undef
+  108:9   error  'nb_plugin' is not defined                       no-undef
+  109:9   error  'nb_plugin' is not defined                       no-undef
+  116:65  error  'plugin_action_error' is not defined             no-undef
+  122:21  error  'data' is defined but never used                 no-unused-vars
+  130:12  error  'deleted_plugin_msg' is not defined              no-undef
+  136:95  error  'pwg_token' is not defined                       no-undef
+  140:13  error  'nb_plugin' is not defined                       no-undef
+  141:13  error  'nb_plugin' is not defined                       no-undef
+  148:69  error  'plugin_action_error' is not defined             no-undef
+  156:8   error  'jConfirm_alert_options' is not defined          no-undef
+  165:92  error  'pwg_token' is not defined                       no-undef
+  168:13  error  'pluginName' is assigned a value but never used  no-unused-vars
+  170:70  error  'plugin_restored_str' is not defined             no-undef
+  177:65  error  'plugin_action_error' is not defined             no-undef
+  183:21  error  'data' is defined but never used                 no-unused-vars
+  193:94  error  'pwg_token' is not defined                       no-undef
+  194:24  error  'data' is defined but never used                 no-unused-vars
+  196:7   error  'nb_plugin' is not defined                       no-undef
+  197:7   error  'nb_plugin' is not defined                       no-undef
+  202:65  error  'plugin_action_error' is not defined             no-undef
+  245:7   error  'nb_plugin' is not defined                       no-undef
+  295:7   error  'isWebmaster' is not defined                     no-undef
+  326:65  error  'not_webmaster' is not defined                   no-undef
+  347:16  error  'delete_plugin_msg' is not defined               no-undef
+  350:19  error  'confirm_msg' is not defined                     no-undef
+  357:19  error  'cancel_msg' is not defined                      no-undef
+  360:12  error  'jConfirm_confirm_options' is not defined        no-undef
+  373:16  error  'restore_plugin_msg' is not defined              no-undef
+  374:18  error  'str_restore_def' is not defined                 no-undef
+  377:19  error  'confirm_msg' is not defined                     no-undef
+  384:19  error  'cancel_msg' is not defined                      no-undef
+  387:12  error  'jConfirm_confirm_options' is not defined        no-undef
+  400:16  error  'uninstall_plugin_msg' is not defined            no-undef
+  403:19  error  'confirm_msg' is not defined                     no-undef
+  410:19  error  'cancel_msg' is not defined                      no-undef
+  413:12  error  'jConfirm_confirm_options' is not defined        no-undef
+  442:6   error  'complete' is not defined                        no-undef
+  449:47  error  'nb_plugin' is not defined                       no-undef
+  450:50  error  'nb_plugin' is not defined                       no-undef
+  451:52  error  'nb_plugin' is not defined                       no-undef
+  452:49  error  'nb_plugin' is not defined                       no-undef
+  456:9   error  'nb_plugin' is not defined                       no-undef
+  462:9   error  'nb_plugin' is not defined                       no-undef
+  468:9   error  'nb_plugin' is not defined                       no-undef
+  486:18  error  'pwg_token' is not defined                       no-undef
+  494:7   error  'done' is constant                               no-const-assign
+  503:50  error  'nb_plugin' is not defined                       no-undef
+  504:52  error  'nb_plugin' is not defined                       no-undef
+  505:49  error  'nb_plugin' is not defined                       no-undef
+  509:9   error  'nb_plugin' is not defined                       no-undef
+  515:9   error  'nb_plugin' is not defined                       no-undef
+  521:9   error  'nb_plugin' is not defined                       no-undef
+  536:14  error  'deactivate_all_msg' is not defined              no-undef
+  539:17  error  'confirm_msg' is not defined                     no-undef
+  548:17  error  'cancel_msg' is not defined                      no-undef
+  551:10  error  'jConfirm_confirm_options' is not defined        no-undef
+  562:12  error  'i' is not defined                               no-undef
+  562:19  error  'i' is not defined                               no-undef
+  562:36  error  'i' is not defined                               no-undef
+  563:13  error  'show_details' is not defined                    no-undef
+  563:43  error  'i' is not defined                               no-undef
+  563:98  error  'incompatible_msg' is not defined                no-undef
+  564:30  error  'i' is not defined                               no-undef
+  564:88  error  'incompatible_msg' is not defined                no-undef
+  565:25  error  'i' is not defined                               no-undef
+  566:25  error  'i' is not defined                               no-undef
+  568:26  error  'incompatible_msg' is not defined                no-undef
+  568:45  error  'activate_msg' is not defined                    no-undef
+  569:28  error  'confirm_msg' is not defined                     no-undef
+  570:27  error  'cancel_msg' is not defined                      no-undef
+  634:9   error  'nb_plugin' is not defined                       no-undef
+  635:9   error  'nb_plugin' is not defined                       no-undef
+  636:9   error  'nb_plugin' is not defined                       no-undef
+  637:9   error  'nb_plugin' is not defined                       no-undef
+  668:11  error  'nb_plugin' is not defined                       no-undef
+  669:11  error  'nb_plugin' is not defined                       no-undef
+  670:11  error  'nb_plugin' is not defined                       no-undef
+  671:11  error  'nb_plugin' is not defined                       no-undef
+  675:11  error  'nb_plugin' is not defined                       no-undef
+  676:11  error  'nb_plugin' is not defined                       no-undef
+  677:11  error  'nb_plugin' is not defined                       no-undef
+  678:11  error  'nb_plugin' is not defined                       no-undef
+  686:39  error  'nothing_found' is not defined                   no-undef
+  688:39  error  'plugin_found' is not defined                    no-undef
+  690:39  error  'x_plugins_found' is not defined                 no-undef
+  697:7   error  'plugin_filter' is not defined                   no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/plugins_new.js
+   55:20  error  'str_install_title' is not defined     no-undef
+   56:22  error  'str_confirm_msg' is not defined       no-undef
+   57:21  error  'str_cancel_msg' is not defined        no-undef
+   95:3   error  '$select' is not defined               no-undef
+  103:25  error  '$select' is not defined               no-undef
+  107:3   error  '$select' is not defined               no-undef
+  115:22  error  '$select' is not defined               no-undef
+  137:15  error  '_' is not defined                     no-undef
+  147:20  error  'str_x_month' is not defined           no-undef
+  148:9   error  Unreachable code                       no-unreachable
+  150:20  error  'str_x_months' is not defined          no-undef
+  151:9   error  Unreachable code                       no-unreachable
+  153:20  error  'str_x_months' is not defined          no-undef
+  154:9   error  Unreachable code                       no-unreachable
+  156:21  error  'str_x_year' is not defined            no-undef
+  157:9   error  Unreachable code                       no-unreachable
+  159:21  error  'str_x_years' is not defined           no-undef
+  160:9   error  Unreachable code                       no-unreachable
+  162:21  error  'str_x_years' is not defined           no-undef
+  163:9   error  Unreachable code                       no-unreachable
+  165:42  error  'str_from_begining' is not defined     no-undef
+  166:9   error  Unreachable code                       no-unreachable
+  230:30  error  'strs_certification' is not defined    no-undef
+  240:6   error  '_' is not defined                     no-undef
+  292:12  error  'clearSort' is defined but never used  no-unused-vars
+
+/var/www/html/piwigo2/admin/themes/default/js/stats.js
+    4:1   error  'data' is not defined                     no-undef
+    5:1   error  'data' is not defined                     no-undef
+    6:1   error  'data' is not defined                     no-undef
+    7:1   error  'data' is not defined                     no-undef
+    8:1   error  'data' is not defined                     no-undef
+    9:1   error  'data' is not defined                     no-undef
+   10:1   error  'data' is not defined                     no-undef
+   12:1   error  'data_unit' is not defined                no-undef
+   19:1   error  'compareMode' is not defined              no-undef
+   34:1   error  'Chart' is not defined                    no-undef
+   35:1   error  'Chart' is not defined                    no-undef
+   36:1   error  'Chart' is not defined                    no-undef
+   37:1   error  'Chart' is not defined                    no-undef
+   38:1   error  'Chart' is not defined                    no-undef
+   39:1   error  'Chart' is not defined                    no-undef
+   41:21  error  'Chart' is not defined                    no-undef
+   54:8   error  'compareMode' is not defined              no-undef
+   58:18  error  'str_number_page_visited' is not defined  no-undef
+   59:27  error  'data' is not defined                     no-undef
+   96:32  error  'str_tooltip_format' is not defined       no-undef
+   97:23  error  'data_unit' is not defined                no-undef
+   98:33  error  'str_unit_format' is not defined          no-undef
+  117:21  error  'str_months' is not defined               no-undef
+  127:28  error  'str_number_page_visited' is not defined  no-undef
+  136:7   error  'days' is not defined                     no-undef
+  138:9   error  'days' is not defined                     no-undef
+  147:21  error  'days' is not defined                     no-undef
+  157:28  error  'str_number_page_visited' is not defined  no-undef
+  169:3   error  'values' is not defined                   no-undef
+  175:5   error  'values' is not defined                   no-undef
+  177:10  error  'values' is not defined                   no-undef
+  181:3   error  'colors' is not defined                   no-undef
+  182:3   error  'values' is not defined                   no-undef
+  183:3   error  'dataset' is not defined                  no-undef
+  185:15  error  'data' is not defined                     no-undef
+  186:5   error  'date' is not defined                     no-undef
+  187:9   error  'values' is not defined                   no-undef
+  187:16  error  'date' is not defined                     no-undef
+  188:7   error  'values' is not defined                   no-undef
+  188:14  error  'date' is not defined                     no-undef
+  190:5   error  'values' is not defined                   no-undef
+  190:12  error  'date' is not defined                     no-undef
+  190:41  error  'date' is not defined                     no-undef
+  190:61  error  'data' is not defined                     no-undef
+  193:15  error  'values' is not defined                   no-undef
+  194:5   error  'dataset' is not defined                  no-undef
+  196:13  error  'values' is not defined                   no-undef
+  198:20  error  'colors' is not defined                   no-undef
+  198:43  error  'colors' is not defined                   no-undef
+  203:10  error  'dataset' is not defined                  no-undef
+  207:3   error  'colors' is not defined                   no-undef
+  208:3   error  'dataset' is not defined                  no-undef
+  209:3   error  'colorIndice' is not defined              no-undef
+  212:3   error  'data' is not defined                     no-undef
+  218:5   error  'dataset' is not defined                  no-undef
+  219:14  error  'str_months' is not defined               no-undef
+  222:20  error  'colors' is not defined                   no-undef
+  222:27  error  'colorIndice' is not defined              no-undef
+  222:41  error  'colors' is not defined                   no-undef
+  225:5   error  'colorIndice' is not defined              no-undef
+  228:3   error  'averageTab' is not defined               no-undef
+  230:5   error  'averageTab' is not defined               no-undef
+  230:21  error  'data' is not defined                     no-undef
+  232:3   error  'dataset' is not defined                  no-undef
+  233:12  error  'str_avg' is not defined                  no-undef
+  234:11  error  'averageTab' is not defined               no-undef
+  236:18  error  'colors' is not defined                   no-undef
+  240:10  error  'dataset' is not defined                  no-undef
+  245:3   error  'dataType' is not defined                 no-undef
+  246:14  error  'dataType' is not defined                 no-undef
+  250:3   error  'compareMode' is not defined              no-undef
+  252:7   error  'compareMode' is not defined              no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/tags.js
+    10:14   error  'orphan_tag_names' is not defined              no-undef
+    11:21   error  'str_orphan_tags' is not defined               no-undef
+    14:12   error  'str_delete_orphan_tags' is not defined        no-undef
+    26:15   error  'str_delete_them' is not defined               no-undef
+    33:15   error  'str_keep_them' is not defined                 no-undef
+    58:3    error  'newTag' is not defined                        no-undef
+    60:5    error  'newTag' is not defined                        no-undef
+    61:5    error  'newTag' is not defined                        no-undef
+    64:5    error  'newTag' is not defined                        no-undef
+    65:5    error  'newTag' is not defined                        no-undef
+    65:48   error  'str_number_photos' is not defined             no-undef
+    67:5    error  'newTag' is not defined                        no-undef
+    67:48   error  'str_no_photos' is not defined                 no-undef
+    69:10   error  'newTag' is not defined                        no-undef
+    91:48   error  'str_number_photos' is not defined             no-undef
+    93:48   error  'str_no_photos' is not defined                 no-undef
+   148:5    error  'loadState' is not defined                     no-undef
+   148:21   error  'TemporaryState' is not defined                no-undef
+   149:5    error  'loadState' is not defined                     no-undef
+   150:5    error  'loadState' is not defined                     no-undef
+   151:5    error  'loadState' is not defined                     no-undef
+   154:21   error  'str_tag_created' is not defined               no-undef
+   158:9    error  'loadState' is not defined                     no-undef
+   161:9    error  'loadState' is not defined                     no-undef
+   182:9    error  'data' is not defined                          no-undef
+   183:13   error  'data' is not defined                          no-undef
+   184:11   error  'newTag' is not defined                        no-undef
+   184:33   error  'data' is not defined                          no-undef
+   184:49   error  'data' is not defined                          no-undef
+   184:67   error  'data' is not defined                          no-undef
+   185:39   error  'newTag' is not defined                        no-undef
+   186:23   error  'newTag' is not defined                        no-undef
+   191:19   error  'data' is not defined                          no-undef
+   192:23   error  'data' is not defined                          no-undef
+   193:17   error  'data' is not defined                          no-undef
+   194:23   error  'data' is not defined                          no-undef
+   199:18   error  'str_already_exist' is not defined             no-undef
+   254:14   error  'str_delete' is not defined                    no-undef
+   257:17   error  'str_yes_delete_confirmation' is not defined   no-undef
+   264:17   error  'str_no_delete_confirmation' is not defined    no-undef
+   267:10   error  'jConfirm_confirm_options' is not defined      no-undef
+   274:19   error  'str_tag_created' is not defined               no-undef
+   282:32   error  'str_tag_rename' is not defined                no-undef
+   286:24   error  'str_yes_rename_confirmation' is not defined   no-undef
+   301:12   error  'str_tag_deleted' is not defined               no-undef
+   308:22   error  'pwg_token' is not defined                     no-undef
+   311:11   error  'data' is not defined                          no-undef
+   313:15   error  'data' is not defined                          no-undef
+   317:25   error  'str_tag_deleted' is not defined               no-undef
+   327:8    error  'jConfirm_alert_options' is not defined        no-undef
+   339:20   error  'pwg_token' is not defined                     no-undef
+   342:9    error  'data' is not defined                          no-undef
+   343:21   error  'data' is not defined                          no-undef
+   344:13   error  'data' is not defined                          no-undef
+   345:105  error  'data' is not defined                          no-undef
+   346:78   error  'data' is not defined                          no-undef
+   347:56   error  'data' is not defined                          no-undef
+   351:11   error  'index' is not defined                         no-undef
+   352:20   error  'index' is not defined                         no-undef
+   352:34   error  'data' is not defined                          no-undef
+   353:20   error  'index' is not defined                         no-undef
+   353:38   error  'data' is not defined                          no-undef
+   355:19   error  'data' is not defined                          no-undef
+   357:18   error  'str_already_exist' is not defined             no-undef
+   369:5    error  'copy_name' is not defined                     no-undef
+   369:24   error  'str_copy' is not defined                      no-undef
+   372:7    error  'exist' is not defined                         no-undef
+   374:38   error  'exist' is not defined                         no-undef
+   376:14   error  'exist' is not defined                         no-undef
+   380:23   error  'copy_name' is not defined                     no-undef
+   381:7    error  'copy_name' is not defined                     no-undef
+   381:26   error  'str_other_copy' is not defined                no-undef
+   389:20   error  'copy_name' is not defined                     no-undef
+   390:20   error  'pwg_token' is not defined                     no-undef
+   393:9    error  'data' is not defined                          no-undef
+   394:13   error  'data' is not defined                          no-undef
+   395:11   error  'newTag' is not defined                        no-undef
+   395:33   error  'data' is not defined                          no-undef
+   395:49   error  'data' is not defined                          no-undef
+   395:67   error  'data' is not defined                          no-undef
+   395:89   error  'data' is not defined                          no-undef
+   396:11   error  'newTag' is not defined                        no-undef
+   397:23   error  'newTag' is not defined                        no-undef
+   400:11   error  'index' is not defined                         no-undef
+   401:27   error  'index' is not defined                         no-undef
+   402:19   error  'data' is not defined                          no-undef
+   403:17   error  'data' is not defined                          no-undef
+   404:23   error  'data' is not defined                          no-undef
+   405:22   error  'data' is not defined                          no-undef
+   409:19   error  'data' is not defined                          no-undef
+   423:1    error  'maxItemDisplayed' is not defined              no-undef
+   458:27   error  'maxItemDisplayed' is not defined              no-undef
+   461:39   error  'str_and_others_tags' is not defined           no-undef
+   494:30   error  'maxItemDisplayed' is not defined              no-undef
+   496:9    error  'isNotCreate' is not defined                   no-undef
+   497:39   error  'isNotCreate' is not defined                   no-undef
+   499:13   error  'isNotCreate' is not defined                   no-undef
+   500:13   error  'indexOfTag' is not defined                    no-undef
+   501:55   error  'indexOfTag' is not defined                    no-undef
+   509:37   error  'str_and_others_tags' is not defined           no-undef
+   526:1    error  'mergeOption' is not defined                   no-undef
+   529:3    error  'number' is not defined                        no-undef
+   530:7    error  'number' is not defined                        no-undef
+   531:5    error  'mergeOption' is not defined                   no-undef
+   535:14   error  'number' is not defined                        no-undef
+   536:5    error  'mergeOption' is not defined                   no-undef
+   541:14   error  'number' is not defined                        no-undef
+   544:9    error  'mergeOption' is not defined                   no-undef
+   556:3    error  'mergeOption' is not defined                   no-undef
+   561:3    error  'mergeOption' is not defined                   no-undef
+   569:23   error  'str_selection_done' is not defined            no-undef
+   569:79   error  'str_select_all_tag' is not defined            no-undef
+   575:29   error  'str_tag_selected' is not defined              no-undef
+   575:79   error  'str_clear_selection' is not defined           no-undef
+   586:3    error  'promises' is not defined                      no-undef
+   588:5    error  'promises' is not defined                      no-undef
+   589:25   error  'rej' is defined but never used                no-unused-vars
+   596:22   error  'promises' is not defined                      no-undef
+   633:5    error  'tagBox' is not defined                        no-undef
+   634:9    error  'tagBox' is not defined                        no-undef
+   635:7    error  'tagBox' is not defined                        no-undef
+   638:7    error  'tagBox' is not defined                        no-undef
+   657:12   error  'str_delete_tags' is not defined               no-undef
+   660:15   error  'str_yes_delete_confirmation' is not defined   no-undef
+   667:15   error  'str_no_delete_confirmation' is not defined    no-undef
+   670:8    error  'jConfirm_confirm_options' is not defined      no-undef
+   681:12   error  'str_tags_deleted' is not defined              no-undef
+   687:22   error  'pwg_token' is not defined                     no-undef
+   692:16   error  Unexpected constant condition                  no-constant-condition
+   713:8    error  'jConfirm_alert_options' is not defined        no-undef
+   719:3    error  'dest_id' is not defined                       no-undef
+   720:15   error  'dest_id' is not defined                       no-undef
+   724:3    error  'destination_name' is not defined              no-undef
+   725:3    error  'merge_name' is not defined                    no-undef
+   728:5    error  'merge_name' is not defined                    no-undef
+   731:3    error  'str_message' is not defined                   no-undef
+   731:17   error  'str_merged_into' is not defined               no-undef
+   731:64   error  'merge_name' is not defined                    no-undef
+   731:92   error  'destination_name' is not defined              no-undef
+   734:12   error  'str_message' is not defined                   no-undef
+   740:22   error  'pwg_token' is not defined                     no-undef
+   746:11   error  'data' is not defined                          no-undef
+   747:15   error  'data' is not defined                          no-undef
+   748:13   error  'data' is not defined                          no-undef
+   749:19   error  'data' is not defined                          no-undef
+   755:17   error  'data' is not defined                          no-undef
+   756:15   error  'tagBox' is not defined                        no-undef
+   756:48   error  'data' is not defined                          no-undef
+   757:15   error  'tagBox' is not defined                        no-undef
+   758:48   error  'str_number_photos' is not defined             no-undef
+   758:80   error  'data' is not defined                          no-undef
+   761:15   error  'index' is not defined                         no-undef
+   761:61   error  'data' is not defined                          no-undef
+   762:24   error  'index' is not defined                         no-undef
+   762:41   error  'data' is not defined                          no-undef
+   775:8    error  'jConfirm_alert_options' is not defined        no-undef
+   781:48   error  'str_and_others_tags' is not defined           no-undef
+   791:5    error  'maxShown' is assigned a value but never used  no-unused-vars
+   809:10   error  'isSearched' is defined but never used         no-unused-vars
+   852:5    error  'delay' is assigned a value but never used     no-unused-vars
+   895:3    error  'nbPage' is not defined                        no-undef
+   903:40   error  'nbPage' is not defined                        no-undef
+   907:20   error  'nbPage' is not defined                        no-undef
+   911:24   error  'nbPage' is not defined                        no-undef
+   945:3    error  'dataVisible' is not defined                   no-undef
+   946:22   error  'dataVisible' is not defined                   no-undef
+   965:32   error  'reject' is defined but never used             no-unused-vars
+   966:5    error  'newPage' is not defined                       no-undef
+   967:5    error  'dataToDisplay' is not defined                 no-undef
+   968:5    error  'tagBoxes' is not defined                      no-undef
+   974:45   error  'rej' is defined but never used                no-unused-vars
+   975:11   error  'boxToRecycle' is not defined                  no-undef
+   975:35   error  'dataToDisplay' is not defined                 no-undef
+   975:57   error  'tagBoxes' is not defined                      no-undef
+   977:31   error  'boxToRecycle' is not defined                  no-undef
+   978:23   error  'dataToDisplay' is not defined                 no-undef
+   979:29   error  'tagBoxes' is not defined                      no-undef
+   982:15   error  'dataToDisplay' is not defined                 no-undef
+   982:38   error  'tagBoxes' is not defined                      no-undef
+   983:26   error  'boxToRecycle' is not defined                  no-undef
+   983:44   error  'tagBoxes' is not defined                      no-undef
+   984:17   error  'tagBoxes' is not defined                      no-undef
+   986:22   error  'dataToDisplay' is not defined                 no-undef
+   986:45   error  'tagBoxes' is not defined                      no-undef
+   987:26   error  'boxToRecycle' is not defined                  no-undef
+   987:44   error  'dataToDisplay' is not defined                 no-undef
+   988:25   error  'dataToDisplay' is not defined                 no-undef
+   989:15   error  'newTag' is not defined                        no-undef
+   990:15   error  'newTag' is not defined                        no-undef
+   991:42   error  'newTag' is not defined                        no-undef
+   992:27   error  'newTag' is not defined                        no-undef
+  1049:30   error  'str_tags_found' is not defined                no-undef
+  1051:30   error  'str_tag_found' is not defined                 no-undef
+
+/var/www/html/piwigo2/admin/themes/default/js/user_list.js
+    11:5   error  'nb_photos_per_page' is assigned a value but never used  no-unused-vars
+   257:11  error  'pagination' is not defined                              no-undef
+   288:31  error  'pagination' is not defined                              no-undef
+   290:7   error  'has_group' is not defined                               no-undef
+   292:42  error  'has_group' is not defined                               no-undef
+   399:10  error  'sprintf' is not defined                                 no-undef
+   403:10  error  'sprintf' is not defined                                 no-undef
+   519:5   error  'promise_pending' is assigned a value but never used     no-unused-vars
+   520:5   error  'update_ask' is assigned a value but never used          no-unused-vars
+   644:10  error  'setupRegisterDates' is defined but never used           no-unused-vars
+   651:47  error  'sprintf' is not defined                                 no-undef
+   651:55  error  'dates_infos' is not defined                             no-undef
+   654:47  error  'sprintf' is not defined                                 no-undef
+   654:55  error  'dates_infos' is not defined                             no-undef
+   657:47  error  'sprintf' is not defined                                 no-undef
+   657:55  error  'dates_infos' is not defined                             no-undef
+   662:43  error  'sprintf' is not defined                                 no-undef
+   662:51  error  'dates_infos' is not defined                             no-undef
+   675:16  error  'getRandomInt' is not defined                            no-undef
+   699:10  error  'checkbox_container_change' is defined but never used    no-unused-vars
+   709:10  error  'checkbox_container_click' is defined but never used     no-unused-vars
+   758:38  error  'str_and_others_tags' is not defined                     no-undef
+   781:3   error  'number' is not defined                                  no-undef
+   783:7   error  'number' is not defined                                  no-undef
+   801:5   error  'selection_ids' is not defined                           no-undef
+   802:9   error  'selection_ids' is not defined                           no-undef
+   824:9   error  'view_selector' is not defined                           no-undef
+   828:9   error  'view_selector' is not defined                           no-undef
+   840:9   error  'view_selector' is not defined                           no-undef
+   840:37  error  'view_selector' is not defined                           no-undef
+   957:54  error  'status_to_str' is not defined                           no-undef
+  1010:23  error  'groupOptions' is not defined                            no-undef
+  1011:5   error  'groupOptions' is not defined                            no-undef
+  1011:50  error  'groupOptions' is not defined                            no-undef
+  1040:63  error  'registered_str' is not defined                          no-undef
+  1042:65  error  'last_visit_str' is not defined                          no-undef
+  1043:56  error  'history_base_url' is not defined                        no-undef
+  1058:14  error  'groupOptions' is not defined                            no-undef
+  1061:17  error  'groupOptions' is not defined                            no-undef
+  1104:16  error  'title_msg' is not defined                               no-undef
+  1108:19  error  'confirm_msg' is not defined                             no-undef
+  1115:19  error  'cancel_msg' is not defined                              no-undef
+  1118:12  error  'jConfirm_confirm_options' is not defined                no-undef
+  1142:34  error  'connected_user_status' is not defined                   no-undef
+  1142:59  error  'connected_user_status' is not defined                   no-undef
+  1149:41  error  'connected_user_status' is not defined                   no-undef
+  1149:66  error  'connected_user_status' is not defined                   no-undef
+  1156:56  error  'connected_user_status' is not defined                   no-undef
+  1162:52  error  'connected_user_status' is not defined                   no-undef
+  1191:22  error  'owner_id' is not defined                                no-undef
+  1226:5   error  'connected_user_status' is not defined                   no-undef
+  1231:14  error  'connected_user_status' is not defined                   no-undef
+  1301:21  error  'register_dates' is not defined                          no-undef
+  1302:21  error  'register_dates' is not defined                          no-undef
+  1315:22  error  'XMLHttpRequest' is defined but never used               no-unused-vars
+  1315:38  error  'textStatus' is defined but never used                   no-unused-vars
+  1315:50  error  'errorThrows' is defined but never used                  no-unused-vars
+  1329:33  error  'fieldNotEmpty' is not defined                           no-undef
+  1337:7   error  'data' is not defined                                    no-undef
+  1338:11  error  'data' is not defined                                    no-undef
+  1340:53  error  'data' is not defined                                    no-undef
+  1365:7   error  'data' is not defined                                    no-undef
+  1366:11  error  'data' is not defined                                    no-undef
+  1395:7   error  'data' is not defined                                    no-undef
+  1396:11  error  'data' is not defined                                    no-undef
+  1397:27  error  'data' is not defined                                    no-undef
+  1418:18  error  'data' is not defined                                    no-undef
+  1419:47  error  'data' is not defined                                    no-undef
+  1431:10  error  'get_guest_info' is defined but never used               no-unused-vars
+  1440:7   error  'data' is not defined                                    no-undef
+  1441:11  error  'data' is not defined                                    no-undef
+  1442:22  error  'data' is not defined                                    no-undef
+  1449:40  error  'None' is not defined                                    no-undef
+  1458:7   error  'data' is not defined                                    no-undef
+  1459:11  error  'data' is not defined                                    no-undef
+  1460:27  error  'data' is not defined                                    no-undef
+  1486:7   error  'data' is not defined                                    no-undef
+  1487:11  error  'data' is not defined                                    no-undef
+  1513:35  error  'register_dates' is not defined                          no-undef
+  1514:35  error  'register_dates' is not defined                          no-undef
+  1524:7   error  'data' is not defined                                    no-undef
+  1525:11  error  'data' is not defined                                    no-undef
+  1526:21  error  'data' is not defined                                    no-undef
+  1529:21  error  'data' is not defined                                    no-undef
+  1534:27  error  'data' is not defined                                    no-undef
+  1536:23  error  'data' is not defined                                    no-undef
+  1554:85  error  'register_dates' is not defined                          no-undef
+  1558:13  error  'raw_data' is defined but never used                     no-unused-vars
+  1579:43  error  'missingUsername' is not defined                         no-undef
+  1603:52  error  'user_added_str' is not defined                          no-undef
+  1624:24  error  'data' is defined but never used                         no-unused-vars
+  1630:22  error  'XMLHttpRequest' is defined but never used               no-unused-vars
+  1630:38  error  'textStatus' is defined but never used                   no-unused-vars
+  1630:50  error  'errorThrows' is defined but never used                  no-unused-vars
+  1640:33  error  'filtered_users' is not defined                          no-undef
+  1642:33  error  'filtered_user' is not defined                           no-undef
+
+/var/www/html/piwigo2/plugins/AdminTools/template/admin_controller.js
+   1:5   error  'AdminTools' is assigned a value but never used  no-unused-vars
+  71:25  error  'open' is defined but never used                 no-unused-vars
+  76:24  error  'e' is defined but never used                    no-unused-vars
+
+/var/www/html/piwigo2/plugins/AdminTools/template/public_controller.js
+    1:5  error  'AdminTools' is assigned a value but never used  no-unused-vars
+  320:5  error  'Mousetrap' is not defined                       no-undef
+
+/var/www/html/piwigo2/plugins/GDThumb/js/gdthumb.admin.js
+   9:20  error  'ImageLoader' is not defined  no-undef
+  49:5   error  'data' is not defined         no-undef
+  50:72  error  'data' is not defined         no-undef
+
+/var/www/html/piwigo2/plugins/GDThumb/js/gdthumb.js
+   79:11   error  'main_width' is already defined     no-redeclare
+   80:11   error  'max_col_count' is already defined  no-redeclare
+   81:11   error  'thumb_width' is already defined    no-redeclare
+   87:7    error  'width' is not defined              no-undef
+   88:7    error  'height' is not defined             no-undef
+   89:7    error  'th' is not defined                 no-undef
+   89:35   error  'width' is not defined              no-undef
+   89:50   error  'height' is not defined             no-undef
+   89:70   error  'width' is not defined              no-undef
+   89:90   error  'height' is not defined             no-undef
+   92:21   error  'th' is not defined                 no-undef
+   92:32   error  'th' is not defined                 no-undef
+   96:72   error  'th' is not defined                 no-undef
+   96:85   error  'th' is not defined                 no-undef
+   97:9    error  'th' is not defined                 no-undef
+   98:9    error  'th' is not defined                 no-undef
+   99:9    error  'th' is not defined                 no-undef
+  100:18   error  'height' is not defined             no-undef
+  101:9    error  'th' is not defined                 no-undef
+  101:53   error  'width' is not defined              no-undef
+  101:62   error  'height' is not defined             no-undef
+  102:9    error  'th' is not defined                 no-undef
+  105:22   error  'th' is not defined                 no-undef
+  112:5    error  'first' is not defined              no-undef
+  113:9    error  'first' is not defined              no-undef
+  115:16   error  'first' is not defined              no-undef
+  116:16   error  'first' is not defined              no-undef
+  117:17   error  'first' is not defined              no-undef
+  160:9    error  'min_ratio' is not defined          no-undef
+  162:14   error  'width' is not defined              no-undef
+  162:47   error  'width' is not defined              no-undef
+  162:75   error  'min_ratio' is not defined          no-undef
+  162:86   error  'width' is not defined              no-undef
+  164:11   error  'height' is not defined             no-undef
+  165:11   error  'max_height' is not defined         no-undef
+  166:11   error  'available_width' is not defined    no-undef
+  166:43   error  'width' is not defined              no-undef
+  168:16   error  'i' is not defined                  no-undef
+  168:23   error  'i' is not defined                  no-undef
+  168:45   error  'i' is not defined                  no-undef
+  169:38   error  'i' is not defined                  no-undef
+  170:13   error  'max_height' is not defined         no-undef
+  170:45   error  'i' is not defined                  no-undef
+  170:56   error  'max_height' is not defined         no-undef
+  172:31   error  'available_width' is not defined    no-undef
+  173:15   error  'ratio' is not defined              no-undef
+  173:37   error  'available_width' is not defined    no-undef
+  174:15   error  'height' is not defined             no-undef
+  174:36   error  'max_height' is not defined         no-undef
+  174:49   error  'ratio' is not defined              no-undef
+  176:15   error  'max_height' is not defined         no-undef
+  179:21   error  'height' is not defined             no-undef
+  179:51   error  'width' is not defined              no-undef
+  179:59   error  'height' is not defined             no-undef
+  179:69   error  'min_ratio' is not defined          no-undef
+  179:82   error  'height' is not defined             no-undef
+  180:40   error  'width' is not defined              no-undef
+  180:55   error  'height' is not defined             no-undef
+  187:17   error  'max_height' is not defined         no-undef
+  188:15   error  'height' is not defined             no-undef
+  190:15   error  'height' is not defined             no-undef
+  190:25   error  'max_height' is not defined         no-undef
+  192:17   error  'height' is not defined             no-undef
+  192:47   error  'width' is not defined              no-undef
+  192:55   error  'height' is not defined             no-undef
+  192:65   error  'min_ratio' is not defined          no-undef
+  192:78   error  'height' is not defined             no-undef
+  193:36   error  'width' is not defined              no-undef
+  193:51   error  'height' is not defined             no-undef
+  217:5    error  'max_height' is not defined         no-undef
+  218:5    error  'last_height' is not defined        no-undef
+  220:5    error  'thumb_process' is not defined      no-undef
+  222:10   error  'i' is not defined                  no-undef
+  222:50   error  'i' is not defined                  no-undef
+  222:72   error  'i' is not defined                  no-undef
+  223:32   error  'i' is not defined                  no-undef
+  224:7    error  'max_height' is not defined         no-undef
+  224:39   error  'i' is not defined                  no-undef
+  224:50   error  'max_height' is not defined         no-undef
+  225:7    error  'thumb_process' is not defined      no-undef
+  225:36   error  'i' is not defined                  no-undef
+  227:7    error  'available_width' is not defined    no-undef
+  229:9    error  'available_width' is not defined    no-undef
+  232:25   error  'available_width' is not defined    no-undef
+  233:9    error  'last_thumb' is not defined         no-undef
+  233:32   error  'i' is not defined                  no-undef
+  234:9    error  'ratio' is not defined              no-undef
+  234:31   error  'available_width' is not defined    no-undef
+  235:9    error  'new_height' is not defined         no-undef
+  235:33   error  'max_height' is not defined         no-undef
+  235:46   error  'ratio' is not defined              no-undef
+  239:14   error  'j' is not defined                  no-undef
+  239:21   error  'j' is not defined                  no-undef
+  239:25   error  'thumb_process' is not defined      no-undef
+  239:47   error  'j' is not defined                  no-undef
+  241:13   error  'new_width' is not defined          no-undef
+  242:13   error  'new_height' is not defined         no-undef
+  244:17   error  'thumb_process' is not defined      no-undef
+  244:31   error  'j' is not defined                  no-undef
+  244:43   error  'last_thumb' is not defined         no-undef
+  245:15   error  'new_width' is not defined          no-undef
+  245:27   error  'available_width' is not defined    no-undef
+  247:15   error  'new_width' is not defined          no-undef
+  247:28   error  'thumb_process' is not defined      no-undef
+  247:42   error  'j' is not defined                  no-undef
+  247:67   error  'ratio' is not defined              no-undef
+  248:28   error  'new_width' is not defined          no-undef
+  248:51   error  'new_width' is not defined          no-undef
+  249:15   error  'new_width' is not defined          no-undef
+  249:38   error  'new_width' is not defined          no-undef
+  253:54   error  'thumb_process' is not defined      no-undef
+  253:68   error  'j' is not defined                  no-undef
+  254:13   error  'thumb_process' is not defined      no-undef
+  254:27   error  'j' is not defined                  no-undef
+  255:13   error  'thumb_process' is not defined      no-undef
+  255:27   error  'j' is not defined                  no-undef
+  256:13   error  'new_width' is not defined          no-undef
+  257:13   error  'new_height' is not defined         no-undef
+  260:11   error  'last_height' is not defined        no-undef
+  260:34   error  'last_height' is not defined        no-undef
+  260:47   error  'new_height' is not defined         no-undef
+  262:26   error  'new_width' is not defined          no-undef
+  264:9    error  'thumb_process' is not defined      no-undef
+  266:9    error  'max_height' is not defined         no-undef
+  271:9    error  'last_height' is not defined        no-undef
+  272:7    error  'last_height' is not defined        no-undef
+  276:10   error  'j' is not defined                  no-undef
+  276:17   error  'j' is not defined                  no-undef
+  276:21   error  'thumb_process' is not defined      no-undef
+  276:43   error  'j' is not defined                  no-undef
+  280:52   error  'thumb_process' is not defined      no-undef
+  280:66   error  'j' is not defined                  no-undef
+  281:11   error  'thumb_process' is not defined      no-undef
+  281:25   error  'j' is not defined                  no-undef
+  282:11   error  'thumb_process' is not defined      no-undef
+  282:25   error  'j' is not defined                  no-undef
+  283:11   error  'thumb_process' is not defined      no-undef
+  283:25   error  'j' is not defined                  no-undef
+  284:11   error  'last_height' is not defined        no-undef
+  291:11   error  'new_width' is not defined          no-undef
+  292:11   error  'new_height' is not defined         no-undef
+  294:11   error  'new_width' is not defined          no-undef
+  294:24   error  'thumb_process' is not defined      no-undef
+  294:38   error  'j' is not defined                  no-undef
+  294:63   error  'ratio' is not defined              no-undef
+  295:24   error  'new_width' is not defined          no-undef
+  295:47   error  'new_width' is not defined          no-undef
+  296:11   error  'new_width' is not defined          no-undef
+  296:34   error  'new_width' is not defined          no-undef
+  300:52   error  'thumb_process' is not defined      no-undef
+  300:66   error  'j' is not defined                  no-undef
+  301:11   error  'thumb_process' is not defined      no-undef
+  301:25   error  'j' is not defined                  no-undef
+  302:11   error  'thumb_process' is not defined      no-undef
+  302:25   error  'j' is not defined                  no-undef
+  303:11   error  'new_width' is not defined          no-undef
+  304:11   error  'new_height' is not defined         no-undef
+  307:9    error  'last_height' is not defined        no-undef
+  307:32   error  'last_height' is not defined        no-undef
+  307:45   error  'new_height' is not defined         no-undef
+  309:24   error  'new_width' is not defined          no-undef
+  319:5    error  'use_crop' is not defined           no-undef
+  321:7    error  'use_crop' is not defined           no-undef
+  326:9    error  'real_height' is not defined        no-undef
+  327:9    error  'real_width' is not defined         no-undef
+  329:9    error  'real_height' is not defined        no-undef
+  330:9    error  'real_width' is not defined         no-undef
+  333:7    error  'height_crop' is not defined        no-undef
+  333:33   error  'real_height' is not defined        no-undef
+  334:7    error  'width_crop' is not defined         no-undef
+  334:32   error  'real_width' is not defined         no-undef
+  336:17   error  'real_height' is not defined        no-undef
+  337:16   error  'real_width' is not defined         no-undef
+  344:9    error  'real_height' is not defined        no-undef
+  345:9    error  'real_width' is not defined         no-undef
+  347:9    error  'real_height' is not defined        no-undef
+  348:9    error  'real_width' is not defined         no-undef
+  351:7    error  'height_crop' is not defined        no-undef
+  351:33   error  'real_height' is not defined        no-undef
+  352:7    error  'width_crop' is not defined         no-undef
+  352:32   error  'real_width' is not defined         no-undef
+  354:17   error  'real_height' is not defined        no-undef
+  355:16   error  'real_width' is not defined         no-undef
+  358:7    error  'real_width' is not defined         no-undef
+  359:7    error  'real_height' is not defined        no-undef
+  360:7    error  'width_crop' is not defined         no-undef
+  361:7    error  'height_crop' is not defined        no-undef
+  365:11   error  'real_width' is not defined         no-undef
+  366:11   error  'width_crop' is not defined         no-undef
+  366:36   error  'real_width' is not defined         no-undef
+  368:11   error  'real_height' is not defined        no-undef
+  369:11   error  'height_crop' is not defined        no-undef
+  369:37   error  'real_height' is not defined        no-undef
+  373:17   error  'real_height' is not defined        no-undef
+  374:16   error  'real_width' is not defined         no-undef
+  378:7    error  'height_crop' is not defined        no-undef
+  379:7    error  'width_crop' is not defined         no-undef
+  383:9    error  'use_crop' is not defined           no-undef
+  385:25   error  'height_crop' is not defined        no-undef
+  385:61   error  'width_crop' is not defined         no-undef
+  385:98   error  'height_crop' is not defined        no-undef
+  385:122  error  'width_crop' is not defined         no-undef
+  386:15   error  'height_crop' is not defined        no-undef
+  387:16   error  'width_crop' is not defined         no-undef
+  390:37   error  'height_crop' is not defined        no-undef
+  390:64   error  'width_crop' is not defined         no-undef
+
+/var/www/html/piwigo2/plugins/GDThumb/js/jquery.ba-resize.js
+  49:23  error  Shadowing of global property 'undefined'  no-shadow-restricted-names
+
+/var/www/html/piwigo2/plugins/rv_tscroller/rv_tscroller.js
+    6:9   error  'RVTS' is not defined  no-undef
+   11:48  error  'RVTS' is not defined  no-undef
+   16:5   error  'RVTS' is not defined  no-undef
+   16:24  error  'RVTS' is not defined  no-undef
+   22:13  error  'RVTS' is not defined  no-undef
+   22:31  error  'RVTS' is not defined  no-undef
+   23:24  error  'RVTS' is not defined  no-undef
+   23:37  error  'RVTS' is not defined  no-undef
+   24:24  error  'RVTS' is not defined  no-undef
+   29:19  error  'RVTS' is not defined  no-undef
+   31:9   error  'RVTS' is not defined  no-undef
+   37:13  error  'RVTS' is not defined  no-undef
+   42:46  error  'RVTS' is not defined  no-undef
+   44:17  error  'RVTS' is not defined  no-undef
+   47:13  error  'RVTS' is not defined  no-undef
+   48:13  error  'RVTS' is not defined  no-undef
+   55:13  error  'RVTS' is not defined  no-undef
+   55:29  error  'RVTS' is not defined  no-undef
+   55:42  error  'RVTS' is not defined  no-undef
+   56:19  error  'RVTS' is not defined  no-undef
+   56:56  error  'RVTS' is not defined  no-undef
+   56:84  error  'RVTS' is not defined  no-undef
+   57:13  error  'RVTS' is not defined  no-undef
+   58:28  error  'RVTS' is not defined  no-undef
+   59:11  error  'RVTS' is not defined  no-undef
+   62:9   error  'RVTS' is not defined  no-undef
+   68:13  error  'RVTS' is not defined  no-undef
+   68:26  error  'RVTS' is not defined  no-undef
+   72:46  error  'RVTS' is not defined  no-undef
+   85:13  error  'RVTS' is not defined  no-undef
+   86:13  error  'RVTS' is not defined  no-undef
+   93:20  error  'RVTS' is not defined  no-undef
+   93:50  error  'RVTS' is not defined  no-undef
+   96:32  error  'RVTS' is not defined  no-undef
+  101:9   error  'RVTS' is not defined  no-undef
+  102:9   error  'RVTS' is not defined  no-undef
+  104:25  error  'RVTS' is not defined  no-undef
+  110:13  error  'RVTS' is not defined  no-undef
+  110:55  error  'RVTS' is not defined  no-undef
+  111:18  error  'RVTS' is not defined  no-undef
+  111:59  error  'RVTS' is not defined  no-undef
+  112:32  error  'RVTS' is not defined  no-undef
+  113:13  error  'RVTS' is not defined  no-undef
+  113:55  error  'RVTS' is not defined  no-undef
+  119:25  error  'RVTS' is not defined  no-undef
+  123:22  error  'RVTS' is not defined  no-undef
+  127:22  error  'RVTS' is not defined  no-undef
+  131:27  error  'RVTS' is not defined  no-undef
+  133:41  error  'RVTS' is not defined  no-undef
+  134:35  error  'RVTS' is not defined  no-undef
+  134:77  error  'RVTS' is not defined  no-undef
+
+/var/www/html/piwigo2/tests/dist/run-tests.mjs
+  250:20  error  'error' is defined but never used  no-unused-vars
+
+/var/www/html/piwigo2/themes/bootstrap_darkroom/js/rating.js
+  21:5   error  'pwgAddEventListener' is not defined  no-undef
+  22:5   error  'pwgAddEventListener' is not defined  no-undef
+  25:5   error  'pwgAddEventListener' is not defined  no-undef
+  51:15  error  'PwgWS' is not defined                no-undef
+  83:52  error  '_pwgRatingAutoQueue' is not defined  no-undef
+  84:25  error  '_pwgRatingAutoQueue' is not defined  no-undef
+  84:77  error  '_pwgRatingAutoQueue' is not defined  no-undef
+  86:3   error  '_pwgRatingAutoQueue' is not defined  no-undef
+
+/var/www/html/piwigo2/themes/bootstrap_darkroom/js/theme.js
+   74:10  error  'bd_popup' is defined but never used         no-unused-vars
+   94:10  error  'setColorOpacity' is defined but never used  no-unused-vars
+  102:9   error  'rgbaCol' is already defined                 no-redeclare
+  109:9   error  'rgbaCol' is already defined                 no-redeclare
+
+/var/www/html/piwigo2/themes/bootstrap_darkroom/postcss.config.js
+  3:1  error  'module' is not defined  no-undef
+
+/var/www/html/piwigo2/themes/default/js/mcs.js
+    2:3   error  'related_categories_ids' is not defined                                    no-undef
+    4:56  error  'prefix_icon' is not defined                                               no-undef
+   22:3   error  'global_params' is not defined                                             no-undef
+   22:29  error  'search_id' is not defined                                                 no-undef
+   24:8   error  'global_params' is not defined                                             no-undef
+   25:5   error  'global_params' is not defined                                             no-undef
+   30:3   error  'PS_params' is not defined                                                 no-undef
+   31:3   error  'PS_params' is not defined                                                 no-undef
+   31:25  error  'search_id' is not defined                                                 no-undef
+   32:3   error  'empty_filters_list' is not defined                                        no-undef
+   35:7   error  'global_params' is not defined                                             no-undef
+   39:5   error  'word_search_str' is not defined                                           no-undef
+   40:5   error  'word_search_words' is not defined                                         no-undef
+   40:25  error  'global_params' is not defined                                             no-undef
+   40:71  error  'global_params' is not defined                                             no-undef
+   41:5   error  'word_search_words' is not defined                                         no-undef
+   42:7   error  'word_search_str' is not defined                                           no-undef
+   44:27  error  'word_search_str' is not defined                                           no-undef
+   46:9   error  'global_params' is not defined                                             no-undef
+   46:48  error  'global_params' is not defined                                             no-undef
+   48:44  error  'word_search_str' is not defined                                           no-undef
+   50:44  error  'str_word_widget_label' is not defined                                     no-undef
+   53:5   error  'word_search_fields' is not defined                                        no-undef
+   53:26  error  'global_params' is not defined                                             no-undef
+   54:17  error  'word_search_fields' is not defined                                        no-undef
+   55:15  error  'word_search_fields' is not defined                                        no-undef
+   58:5   error  'word_search_mode' is not defined                                          no-undef
+   58:24  error  'global_params' is not defined                                             no-undef
+   59:45  error  'word_search_mode' is not defined                                          no-undef
+   61:9   error  'global_params' is not defined                                             no-undef
+   71:5   error  'PS_params' is not defined                                                 no-undef
+   71:26  error  'word_search_str' is not defined                                           no-undef
+   72:5   error  'PS_params' is not defined                                                 no-undef
+   72:33  error  'word_search_fields' is not defined                                        no-undef
+   73:5   error  'PS_params' is not defined                                                 no-undef
+   73:31  error  'word_search_mode' is not defined                                          no-undef
+   75:5   error  'empty_filters_list' is not defined                                        no-undef
+   75:29  error  'PS_params' is not defined                                                 no-undef
+   85:14  error  'global_params' is not defined                                             no-undef
+   85:42  error  'global_params' is not defined                                             no-undef
+   88:7   error  'global_params' is not defined                                             no-undef
+   91:56  error  'global_params' is not defined                                             no-undef
+   93:5   error  'tag_search_str' is not defined                                            no-undef
+   97:9   error  'tag_search_str' is not defined                                            no-undef
+  104:9   error  'global_params' is not defined                                             no-undef
+  104:44  error  'global_params' is not defined                                             no-undef
+  106:50  error  'tag_search_str' is not defined                                            no-undef
+  108:50  error  'str_tags_widget_label' is not defined                                     no-undef
+  116:5   error  'PS_params' is not defined                                                 no-undef
+  116:22  error  'global_params' is not defined                                             no-undef
+  116:67  error  'global_params' is not defined                                             no-undef
+  117:5   error  'PS_params' is not defined                                                 no-undef
+  117:27  error  'global_params' is not defined                                             no-undef
+  119:5   error  'empty_filters_list' is not defined                                        no-undef
+  119:29  error  'PS_params' is not defined                                                 no-undef
+  123:7   error  'global_params' is not defined                                             no-undef
+  123:28  error  Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  127:9   error  'global_params' is not defined                                             no-undef
+  127:53  error  'global_params' is not defined                                             no-undef
+  128:27  error  'global_params' is not defined                                             no-undef
+  130:7   error  'date_posted_str' is not defined                                           no-undef
+  130:58  error  'global_params' is not defined                                             no-undef
+  132:58  error  'date_posted_str' is not defined                                           no-undef
+  139:5   error  'PS_params' is not defined                                                 no-undef
+  139:29  error  'global_params' is not defined                                             no-undef
+  139:75  error  'global_params' is not defined                                             no-undef
+  141:5   error  'empty_filters_list' is not defined                                        no-undef
+  141:29  error  'PS_params' is not defined                                                 no-undef
+  145:7   error  'global_params' is not defined                                             no-undef
+  149:5   error  'album_widget_value' is not defined                                        no-undef
+  150:5   error  'global_params' is not defined                                             no-undef
+  151:36  error  'fullname_of_cat' is not defined                                           no-undef
+  152:7   error  'album_widget_value' is not defined                                        no-undef
+  152:29  error  'fullname_of_cat' is not defined                                           no-undef
+  154:9   error  'global_params' is not defined                                             no-undef
+  154:43  error  'global_params' is not defined                                             no-undef
+  156:45  error  'album_widget_value' is not defined                                        no-undef
+  158:45  error  'str_album_widget_label' is not defined                                    no-undef
+  161:9   error  'global_params' is not defined                                             no-undef
+  167:7   error  'related_categories_ids' is not defined                                    no-undef
+  172:5   error  'PS_params' is not defined                                                 no-undef
+  172:28  error  'global_params' is not defined                                             no-undef
+  172:72  error  'global_params' is not defined                                             no-undef
+  173:5   error  'PS_params' is not defined                                                 no-undef
+  173:37  error  'global_params' is not defined                                             no-undef
+  175:5   error  'empty_filters_list' is not defined                                        no-undef
+  175:29  error  'PS_params' is not defined                                                 no-undef
+  183:14  error  'global_params' is not defined                                             no-undef
+  183:44  error  'global_params' is not defined                                             no-undef
+  185:9   error  'global_params' is not defined                                             no-undef
+  189:7   error  'author_search_str' is not defined                                         no-undef
+  193:11  error  'author_search_str' is not defined                                         no-undef
+  201:11  error  'global_params' is not defined                                             no-undef
+  201:48  error  'global_params' is not defined                                             no-undef
+  203:56  error  'author_search_str' is not defined                                         no-undef
+  205:56  error  'str_author_widget_label' is not defined                                   no-undef
+  212:7   error  'PS_params' is not defined                                                 no-undef
+  212:27  error  'global_params' is not defined                                             no-undef
+  212:74  error  'global_params' is not defined                                             no-undef
+  214:7   error  'empty_filters_list' is not defined                                        no-undef
+  214:31  error  'PS_params' is not defined                                                 no-undef
+  219:7   error  'global_params' is not defined                                             no-undef
+  223:9   error  'global_params' is not defined                                             no-undef
+  223:42  error  'global_params' is not defined                                             no-undef
+  226:7   error  'added_by_names' is not defined                                            no-undef
+  229:9   error  'input' is not defined                                                     no-undef
+  230:9   error  'added_by_id' is not defined                                               no-undef
+  230:32  error  'input' is not defined                                                     no-undef
+  232:28  error  'added_by_id' is not defined                                               no-undef
+  232:41  error  'global_params' is not defined                                             no-undef
+  233:11  error  'input' is not defined                                                     no-undef
+  234:11  error  'added_by_names' is not defined                                            no-undef
+  238:55  error  'added_by_names' is not defined                                            no-undef
+  240:55  error  'str_added_by_widget_label' is not defined                                 no-undef
+  247:5   error  'PS_params' is not defined                                                 no-undef
+  247:26  error  'global_params' is not defined                                             no-undef
+  247:69  error  'global_params' is not defined                                             no-undef
+  249:5   error  'empty_filters_list' is not defined                                        no-undef
+  249:29  error  'PS_params' is not defined                                                 no-undef
+  253:7   error  'global_params' is not defined                                             no-undef
+  257:5   error  'filetypes_search_str' is not defined                                      no-undef
+  258:5   error  'global_params' is not defined                                             no-undef
+  259:7   error  'filetypes_search_str' is not defined                                      no-undef
+  262:9   error  'global_params' is not defined                                             no-undef
+  262:43  error  'global_params' is not defined                                             no-undef
+  264:56  error  'filetypes_search_str' is not defined                                      no-undef
+  267:13  error  'global_params' is not defined                                             no-undef
+  272:56  error  'str_filetypes_widget_label' is not defined                                no-undef
+  279:5   error  'PS_params' is not defined                                                 no-undef
+  279:27  error  'global_params' is not defined                                             no-undef
+  279:71  error  'global_params' is not defined                                             no-undef
+  281:5   error  'empty_filters_list' is not defined                                        no-undef
+  281:29  error  'PS_params' is not defined                                                 no-undef
+  286:41  error  'str_empty_search_top_alt' is not defined                                  no-undef
+  287:41  error  'str_empty_search_bot_alt' is not defined                                  no-undef
+  290:8   error  'empty_filters_list' is not defined                                        no-undef
+  293:7   error  'exclude_params' is not defined                                            no-undef
+  294:25  error  'PS_params' is not defined                                                 no-undef
+  295:14  error  'exclude_params' is not defined                                            no-undef
+  296:11  error  'PS_params' is not defined                                                 no-undef
+  299:21  error  'PS_params' is not defined                                                 no-undef
+  333:68  error  'e' is defined but never used                                              no-unused-vars
+  347:68  error  'e' is defined but never used                                              no-unused-vars
+  360:19  error  'PS_params' is not defined                                                 no-undef
+  413:9   error  'global_params' is not defined                                             no-undef
+  414:9   error  'global_params' is not defined                                             no-undef
+  415:9   error  'global_params' is not defined                                             no-undef
+  417:9   error  'PS_params' is not defined                                                 no-undef
+  418:9   error  'PS_params' is not defined                                                 no-undef
+  420:9   error  'new_fields' is not defined                                                no-undef
+  423:13  error  'global_params' is not defined                                             no-undef
+  425:11  error  'new_fields' is not defined                                                no-undef
+  428:18  error  'global_params' is not defined                                             no-undef
+  430:9   error  'global_params' is not defined                                             no-undef
+  430:48  error  'new_fields' is not defined                                                no-undef
+  431:9   error  'PS_params' is not defined                                                 no-undef
+  431:37  error  'new_fields' is not defined                                                no-undef
+  431:61  error  'new_fields' is not defined                                                no-undef
+  437:19  error  'PS_params' is not defined                                                 no-undef
+  441:19  error  'PS_params' is not defined                                                 no-undef
+  460:9   error  'global_params' is not defined                                             no-undef
+  461:9   error  'global_params' is not defined                                             no-undef
+  462:9   error  'global_params' is not defined                                             no-undef
+  464:9   error  'PS_params' is not defined                                                 no-undef
+  465:9   error  'PS_params' is not defined                                                 no-undef
+  471:19  error  'PS_params' is not defined                                                 no-undef
+  475:19  error  'PS_params' is not defined                                                 no-undef
+  495:9   error  'global_params' is not defined                                             no-undef
+  497:9   error  'PS_params' is not defined                                                 no-undef
+  504:19  error  'PS_params' is not defined                                                 no-undef
+  508:19  error  'PS_params' is not defined                                                 no-undef
+  527:9   error  'global_params' is not defined                                             no-undef
+  528:9   error  'global_params' is not defined                                             no-undef
+  528:42  error  'related_categories_ids' is not defined                                    no-undef
+  530:9   error  'global_params' is not defined                                             no-undef
+  532:9   error  'PS_params' is not defined                                                 no-undef
+  532:32  error  'related_categories_ids' is not defined                                    no-undef
+  532:68  error  'related_categories_ids' is not defined                                    no-undef
+  533:9   error  'PS_params' is not defined                                                 no-undef
+  539:19  error  'PS_params' is not defined                                                 no-undef
+  543:19  error  'PS_params' is not defined                                                 no-undef
+  551:5   error  'linked_albums_open' is not defined                                        no-undef
+  564:7   error  'linked_albums_search' is not defined                                      no-undef
+  566:31  error  'str_no_search_in_progress' is not defined                                 no-undef
+  583:9   error  'global_params' is not defined                                             no-undef
+  584:9   error  'global_params' is not defined                                             no-undef
+  585:9   error  'global_params' is not defined                                             no-undef
+  587:9   error  'PS_params' is not defined                                                 no-undef
+  593:19  error  'PS_params' is not defined                                                 no-undef
+  597:19  error  'PS_params' is not defined                                                 no-undef
+  616:9   error  'global_params' is not defined                                             no-undef
+  617:9   error  'global_params' is not defined                                             no-undef
+  619:9   error  'added_by_array' is not defined                                            no-undef
+  621:11  error  'added_by_array' is not defined                                            no-undef
+  624:9   error  'global_params' is not defined                                             no-undef
+  624:47  error  'added_by_array' is not defined                                            no-undef
+  626:9   error  'PS_params' is not defined                                                 no-undef
+  626:30  error  'added_by_array' is not defined                                            no-undef
+  626:58  error  'added_by_array' is not defined                                            no-undef
+  632:19  error  'PS_params' is not defined                                                 no-undef
+  636:19  error  'PS_params' is not defined                                                 no-undef
+  656:9   error  'filetypes_array' is not defined                                           no-undef
+  658:11  error  'filetypes_array' is not defined                                           no-undef
+  661:9   error  'global_params' is not defined                                             no-undef
+  661:42  error  'filetypes_array' is not defined                                           no-undef
+  663:9   error  'PS_params' is not defined                                                 no-undef
+  663:31  error  'filetypes_array' is not defined                                           no-undef
+  663:60  error  'filetypes_array' is not defined                                           no-undef
+  669:19  error  'PS_params' is not defined                                                 no-undef
+  673:19  error  'PS_params' is not defined                                                 no-undef
+  718:20  error  'prefix_icon' is not defined                                               no-undef
+  719:17  error  'prefix_icon' is not defined                                               no-undef
+  740:10  error  'fill_results' is defined but never used                                   no-unused-vars
+  743:10  error  'related_categories_ids' is not defined                                    no-undef
+  762:46  error  'prefix_icon' is not defined                                               no-undef
+  766:3   error  'related_categories_ids' is not defined                                    no-undef
+  781:3   error  'cat_to_remove_index' is not defined                                       no-undef
+  781:25  error  'related_categories_ids' is not defined                                    no-undef
+  782:7   error  'cat_to_remove_index' is not defined                                       no-undef
+  783:5   error  'related_categories_ids' is not defined                                    no-undef
+  783:35  error  'cat_to_remove_index' is not defined                                       no-undef
+  785:7   error  'related_categories_ids' is not defined                                    no-undef
+  786:5   error  'related_categories_ids' is not defined                                    no-undef
+  794:9   error  'global_params' is not defined                                             no-undef
+  796:9   error  'PS_params' is not defined                                                 no-undef
+  797:9   error  'PS_params' is not defined                                                 no-undef
+  798:9   error  'PS_params' is not defined                                                 no-undef
+  800:16  error  'global_params' is not defined                                             no-undef
+  802:16  error  'PS_params' is not defined                                                 no-undef
+  803:16  error  'PS_params' is not defined                                                 no-undef
+  804:16  error  'PS_params' is not defined                                                 no-undef
+  810:9   error  'global_params' is not defined                                             no-undef
+  812:9   error  'PS_params' is not defined                                                 no-undef
+  813:9   error  'PS_params' is not defined                                                 no-undef
+  815:16  error  'global_params' is not defined                                             no-undef
+  817:16  error  'PS_params' is not defined                                                 no-undef
+  818:16  error  'PS_params' is not defined                                                 no-undef
+  824:9   error  'global_params' is not defined                                             no-undef
+  826:9   error  'PS_params' is not defined                                                 no-undef
+  827:9   error  'PS_params' is not defined                                                 no-undef
+  829:16  error  'global_params' is not defined                                             no-undef
+  831:16  error  'PS_params' is not defined                                                 no-undef
+  832:16  error  'PS_params' is not defined                                                 no-undef
+  838:9   error  'global_params' is not defined                                             no-undef
+  840:9   error  'PS_params' is not defined                                                 no-undef
+  842:16  error  'global_params' is not defined                                             no-undef
+  844:16  error  'PS_params' is not defined                                                 no-undef
+
+/var/www/html/piwigo2/themes/default/js/rating.js
+  17:12  error  'i' is already defined                no-redeclare
+  22:14  error  'e' is defined but never used         no-unused-vars
+  22:17  error  Empty block statement                 no-empty
+  31:5   error  'pwgAddEventListener' is not defined  no-undef
+  32:5   error  'pwgAddEventListener' is not defined  no-undef
+  35:5   error  'pwgAddEventListener' is not defined  no-undef
+  52:15  error  'PwgWS' is not defined                no-undef
+  82:52  error  '_pwgRatingAutoQueue' is not defined  no-undef
+  83:25  error  '_pwgRatingAutoQueue' is not defined  no-undef
+  83:77  error  '_pwgRatingAutoQueue' is not defined  no-undef
+  85:3   error  '_pwgRatingAutoQueue' is not defined  no-undef
+
+/var/www/html/piwigo2/themes/default/js/scripts.js
+    1:10  error  'phpWGOpenWindow' is defined but never used      no-unused-vars
+    2:3   error  'img' is not defined                             no-undef
+    3:3   error  'img' is not defined                             no-undef
+    4:7   error  'img' is not defined                             no-undef
+    5:17  error  'img' is not defined                             no-undef
+    6:18  error  'img' is not defined                             no-undef
+    8:9   error  'width' is already defined                       no-redeclare
+    9:9   error  'height' is already defined                      no-redeclare
+   10:5   error  'img' is not defined                             no-undef
+   11:7   error  'newWin' is not defined                          no-undef
+   11:23  error  'img' is not defined                             no-undef
+   11:39  error  'img' is not defined                             no-undef
+   14:3   error  'newWin' is not defined                          no-undef
+   17:10  error  'popuphelp' is defined but never used            no-unused-vars
+   45:14  error  'e' is defined but never used                    no-unused-vars
+   47:24  error  'ActiveXObject' is not defined                   no-undef
+   48:16  error  'e' is defined but never used                    no-unused-vars
+   50:26  error  'ActiveXObject' is not defined                   no-undef
+   51:18  error  'e' is defined but never used                    no-unused-vars
+   63:16  error  'prop' is already defined                        no-redeclare
+  126:10  error  'pwgAddEventListener' is defined but never used  no-unused-vars
+
+/var/www/html/piwigo2/themes/default/js/switchbox.js
+  17:25  error  'SwitchBox' is not defined  no-undef
+  17:58  error  'SwitchBox' is not defined  no-undef
+  17:72  error  'SwitchBox' is not defined  no-undef
+
+/var/www/html/piwigo2/themes/elegant/scripts.js
+  26:32  error  'p_main_menu' is not defined  no-undef
+  29:57  error  'p_main_menu' is not defined  no-undef
+  47:39  error  'p_main_menu' is not defined  no-undef
+
+/var/www/html/piwigo2/themes/elegant/scripts_pp.js
+   63:32  error  'p_main_menu' is not defined       no-undef
+   68:60  error  'p_main_menu' is not defined       no-undef
+   89:35  error  'p_pict_descr' is not defined      no-undef
+   94:57  error  'p_pict_descr' is not defined      no-undef
+  115:33  error  'p_pict_comment' is not defined    no-undef
+  127:56  error  'p_pict_comment' is not defined    no-undef
+  142:39  error  'event' is defined but never used  no-unused-vars
+
+/var/www/html/piwigo2/themes/modus/js/photo.autosize.js
+   27:79  error  'RVAS' is not defined             no-undef
+   36:23  error  'RVAS' is not defined             no-undef
+   37:13  error  'RVAS' is not defined             no-undef
+   59:13  error  'changeRatio' is already defined  no-redeclare
+   60:13  error  'limit' is already defined        no-redeclare
+   86:5   error  'RVAS' is not defined             no-undef
+   86:29  error  'changeImgSrc' is not defined     no-undef
+   87:5   error  'changeImgSrc' is not defined     no-undef
+   88:7   error  'RVAS' is not defined             no-undef
+   89:7   error  'RVAS' is not defined             no-undef
+  101:9   error  'RVAS' is not defined             no-undef
+
+/var/www/html/piwigo2/themes/modus/js/thumb.arrange.js
+  139:11  error  'eltW' is already defined  no-redeclare
+  140:11  error  'eltH' is already defined  no-redeclare
+
+/var/www/html/piwigo2/themes/modus/js/thumb.pop.js
+  155:9  error  'remaining' is already defined  no-redeclare
+
+/var/www/html/piwigo2/themes/smartpocket/js/smartpocket.js
+   6:13  error  'var_loop' is not defined                      no-undef
+   7:39  error  'var_autohide' is not defined                  no-undef
+  18:13  error  'var_trad' is not defined                      no-undef
+  37:74  error  'e' is defined but never used                  no-unused-vars
+  43:42  error  'Util' is not defined                          no-undef
+  50:82  error  'e' is defined but never used                  no-unused-vars
+  65:9   error  'spThumbs' is assigned a value but never used  no-unused-vars
+  65:24  error  'SPThumbs' is not defined                      no-undef
+  65:33  error  'SPThumbsOpts' is not defined                  no-undef
+
+/var/www/html/piwigo2/themes/smartpocket/js/thumb.arrange.js
+  121:11  error  'eltW' is already defined  no-redeclare
+  122:11  error  'eltH' is already defined  no-redeclare
+
+✖ 1776 problems (1776 errors, 0 warnings)
 
