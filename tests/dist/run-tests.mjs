@@ -13,7 +13,10 @@ main().catch((err) => console.error("Error during operation:", err));
 // ===================================== END MAIN ===========================================
 async function runPuppeteerScript() {
     // Delete the _data folder before starting Puppeteer operations
-    clearDirectoryExcept(path.resolve(import.meta.dirname, "../../_data"), path.resolve(import.meta.dirname, "../../_data/i")).catch((err) => console.error("Error during operation:", err));
+    clearDirectoryExcept(
+        path.resolve(import.meta.dirname, "../../_data"),
+        path.resolve(import.meta.dirname, "../../_data/i"),
+    ).catch((err) => console.error("Error during operation:", err));
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: { width: 1280, height: 1024 },
@@ -24,23 +27,35 @@ async function runPuppeteerScript() {
     const page = pages[0];
     // Set Xdebug session cookie if necessary
     await page.setCookie({
-        name: 'XDEBUG_SESSION',
-        value: 'VSCODE',
-        domain: 'localhost'
+        name: "XDEBUG_SESSION",
+        value: "VSCODE",
+        domain: "localhost",
     });
     page.setDefaultTimeout(10000);
-    page
-        .on("console", handleConsoleMessage)
+    page.on("console", handleConsoleMessage)
         .on("pageerror", ({ message }) => console.log(red(message)))
         //.on('response', response => console.log(green(`${response.status()} ${response.url()}`)))
-        .on("requestfailed", (request) => console.log(magenta(`${request.failure()?.errorText} ${request.url()}`)));
+        .on("requestfailed", (request) =>
+            console.log(
+                magenta(`${request.failure()?.errorText} ${request.url()}`),
+            ),
+        );
     // Enable request interception
     await page.setRequestInterception(true);
     page.on("request", handleRequest);
-    await fs.remove(path.resolve(import.meta.dirname, "../../local/config/database.inc.php"));
+    await fs.remove(
+        path.resolve(
+            import.meta.dirname,
+            "../../local/config/database.inc.php",
+        ),
+    );
     // Navigate to the install page
-    await page.goto("http://localhost/piwigo2/install.php", { waitUntil: "networkidle0" });
-    await page.waitForSelector("#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=text]");
+    await page.goto("http://localhost/piwigo2/install.php", {
+        waitUntil: "networkidle0",
+    });
+    await page.waitForSelector(
+        "#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=text]",
+    );
     // Database config
     // dbuser
     // await page.type("#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=text]", "root");
@@ -74,7 +89,9 @@ async function runPuppeteerScript() {
     await page.waitForSelector("#deactivate > a");
     await page.click("#deactivate > a");
     // admin button
-    await page.waitForSelector("#menubar > dl:nth-child(7) > dt > a:nth-child(4)");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(7) > dt > a:nth-child(4)",
+    );
     await page.click("#menubar > dl:nth-child(7) > dt > a:nth-child(4)");
     // hide subscribe to newsletter button
     await page.waitForSelector("#content > p > span > a.newsletter-hide");
@@ -88,52 +105,92 @@ async function runPuppeteerScript() {
     await page.click("#menubar > dl:nth-child(2) > dt > span");
     await sleep(1500);
     // click on 'Add' button
-    await page.waitForSelector("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(1) > a");
-    await page.click("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(1) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(1) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(1) > a",
+    );
     await sleep(1500);
     // click on 'Tags' button
-    await page.waitForSelector("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(2) > a");
-    await page.click("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(2) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(2) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(2) > a",
+    );
     await sleep(1500);
     // click on 'Recent photos'
-    await page.waitForSelector("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(3) > a");
-    await page.click("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(3) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(3) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(3) > a",
+    );
     await sleep(1500);
     // click on 'Batch Manager'
-    await page.waitForSelector("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(4) > a");
-    await page.click("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(4) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(4) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(4) > a",
+    );
     await sleep(1500);
     // click on 'Caddie'
-    await page.waitForSelector("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(5) > a");
-    await page.click("#menubar > dl:nth-child(2) > dd > ul > li:nth-child(5) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(5) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(2) > dd > ul > li:nth-child(5) > a",
+    );
     await sleep(1500);
     // click on 'Albums' menu
     await page.waitForSelector("#menubar > dl:nth-child(3) > dt > span");
     await page.click("#menubar > dl:nth-child(3) > dt > span");
     await sleep(1500);
     // click on 'Manage' button
-    await page.waitForSelector("#menubar > dl:nth-child(3) > dd > ul > li:nth-child(1) > a");
-    await page.click("#menubar > dl:nth-child(3) > dd > ul > li:nth-child(1) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(3) > dd > ul > li:nth-child(1) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(3) > dd > ul > li:nth-child(1) > a",
+    );
     await sleep(1500);
     // click on 'Properties'
-    await page.waitForSelector("#menubar > dl:nth-child(3) > dd > ul > li:nth-child(2) > a");
-    await page.click("#menubar > dl:nth-child(3) > dd > ul > li:nth-child(2) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(3) > dd > ul > li:nth-child(2) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(3) > dd > ul > li:nth-child(2) > a",
+    );
     await sleep(1500);
     // click on 'Users' menu
     await page.waitForSelector("#menubar > dl:nth-child(4) > dt > span");
     await page.click("#menubar > dl:nth-child(4) > dt > span");
     await sleep(1500);
     // click on 'Manage' button
-    await page.waitForSelector("#menubar > dl:nth-child(4) > dd > ul > li:nth-child(1) > a");
-    await page.click("#menubar > dl:nth-child(4) > dd > ul > li:nth-child(1) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(4) > dd > ul > li:nth-child(1) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(4) > dd > ul > li:nth-child(1) > a",
+    );
     await sleep(1500);
     // click on 'Groups' button
-    await page.waitForSelector("#menubar > dl:nth-child(4) > dd > ul > li:nth-child(2) > a");
-    await page.click("#menubar > dl:nth-child(4) > dd > ul > li:nth-child(2) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(4) > dd > ul > li:nth-child(2) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(4) > dd > ul > li:nth-child(2) > a",
+    );
     await sleep(1500);
     // click on 'Notification' button
-    await page.waitForSelector("#menubar > dl:nth-child(4) > dd > ul > li:nth-child(3) > a");
-    await page.click("#menubar > dl:nth-child(4) > dd > ul > li:nth-child(3) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(4) > dd > ul > li:nth-child(3) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(4) > dd > ul > li:nth-child(3) > a",
+    );
     await sleep(1500);
     // click on 'Plugins' menu
     await page.waitForSelector("#menubar > dl:nth-child(5) > dt > a > span");
@@ -144,40 +201,72 @@ async function runPuppeteerScript() {
     await page.click("#menubar > dl:nth-child(6) > dt > span");
     await sleep(1500);
     // click on 'Synchronize' button
-    await page.waitForSelector("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(1) > a");
-    await page.click("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(1) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(1) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(1) > a",
+    );
     await sleep(1500);
     // click on 'History' button
-    await page.waitForSelector("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(2) > a");
-    await page.click("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(2) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(2) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(2) > a",
+    );
     await sleep(1500);
     // click on 'Maintenance' button
-    await page.waitForSelector("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(3) > a");
-    await page.click("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(3) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(3) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(3) > a",
+    );
     await sleep(1500);
     // click on 'Updates' button
-    await page.waitForSelector("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(4) > a");
-    await page.click("#menubar > dl:nth-child(6) > dd > ul > li:nth-child(4) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(4) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(6) > dd > ul > li:nth-child(4) > a",
+    );
     await sleep(1500);
     // click on 'Configuration' menu
     await page.waitForSelector("#menubar > dl:nth-child(7) > dt > span");
     await page.click("#menubar > dl:nth-child(7) > dt > span");
     await sleep(1500);
     // click on 'Options' button
-    await page.waitForSelector("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(1) > a");
-    await page.click("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(1) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(1) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(1) > a",
+    );
     await sleep(1500);
     // click on 'Menus' button
-    await page.waitForSelector("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(2) > a");
-    await page.click("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(2) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(2) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(2) > a",
+    );
     await sleep(1500);
     // click on 'Languages' button
-    await page.waitForSelector("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(3) > a");
-    await page.click("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(3) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(3) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(3) > a",
+    );
     await sleep(1500);
     // click on 'Themes' button
-    await page.waitForSelector("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(4) > a");
-    await page.click("#menubar > dl:nth-child(7) > dd > ul > li:nth-child(4) > a");
+    await page.waitForSelector(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(4) > a",
+    );
+    await page.click(
+        "#menubar > dl:nth-child(7) > dd > ul > li:nth-child(4) > a",
+    );
     await sleep(1500);
     // Gallery
     // go to homepage
@@ -227,7 +316,9 @@ async function handleRequest(interceptedRequest) {
 async function handleConsoleMessage(message) {
     const type = message.type();
     const text = message.text();
-    if (text.startsWith("JQMIGRATE: Migrate is installed with logging active")) {
+    if (
+        text.startsWith("JQMIGRATE: Migrate is installed with logging active")
+    ) {
         return;
     }
     const colors = {
@@ -246,8 +337,7 @@ async function handleConsoleMessage(message) {
             try {
                 const value = await arg.jsonValue();
                 console.log(value);
-            }
-            catch (error) {
+            } catch (error) {
                 console.log("***" + arg.toString());
             }
         }
@@ -256,7 +346,9 @@ async function handleConsoleMessage(message) {
     // if (!text.startsWith("PHP:")) {
     const stackTrace = message.stackTrace();
     for (const frame of stackTrace) {
-        console.log(`    at ${frame.url}:${(frame.lineNumber ?? 0) + 1}:${(frame.columnNumber ?? 0) + 1}`);
+        console.log(
+            `    at ${frame.url}:${(frame.lineNumber ?? 0) + 1}:${(frame.columnNumber ?? 0) + 1}`,
+        );
     }
     // }
     console.log("");
