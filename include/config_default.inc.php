@@ -6,6 +6,34 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+if (!extension_loaded('curl')) {
+  die('PHP extension "curl" is not loaded');
+}
+
+if (!extension_loaded('fileinfo')) {
+  die('PHP extension "fileinfo" is not loaded');
+}
+
+if (!extension_loaded('gd')) {
+  die('PHP extension "gd" is not loaded');
+}
+
+if (!extension_loaded('mbstring')) {
+  die('PHP extension "mbstring" is not loaded');
+}
+
+if (!extension_loaded('exif')) {
+  die('PHP extension "exif" is not loaded');
+}
+
+if (!extension_loaded('mysqli')) {
+  die('PHP extension "mysqli" is not loaded');
+}
+
+if (!extension_loaded('openssl')) {
+  die('PHP extension "openssl" is not loaded');
+}
+
 require_once PHPWG_ROOT_PATH . 'vendor/autoload.php';
 
 /**
