@@ -49,7 +49,7 @@ SELECT
       }
     }
 
-    header('Content-Type: text/html; charset='.get_pwg_charset());
+    header('Content-Type: text/html; charset=utf-8');
     $template->set_filenames(array('no_photo_yet'=>'no_photo_yet.tpl'));
 
     if (is_admin())

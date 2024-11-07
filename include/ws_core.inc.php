@@ -289,7 +289,7 @@ Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseF
     $encodedResponse = $this->_responseEncoder->encodeResponse($response);
     $contentType = $this->_responseEncoder->getContentType();
 
-    @header('Content-Type: '.$contentType.'; charset='.get_pwg_charset());
+    @header('Content-Type: '.$contentType.'; charset=utf-8');
     print_r($encodedResponse);
     trigger_notify('sendResponse', $encodedResponse );
   }
