@@ -39,7 +39,7 @@ $template->assign(
       isset($page['body_id']) ?
         $page['body_id'] : '',
 
-    'CONTENT_ENCODING' => get_pwg_charset(),
+    'CONTENT_ENCODING' => 'utf-8',
     'PAGE_TITLE' => strip_tags($title),
 
     'U_HOME' => get_gallery_home_url(),
@@ -96,7 +96,7 @@ if ( isset( $refresh ) and intval($refresh) >= 0
 
 trigger_notify('loc_end_page_header');
 
-header('Content-Type: text/html; charset='.get_pwg_charset());
+header('Content-Type: text/html; charset=utf-8');
 $template->parse('header');
 
 trigger_notify('loc_after_page_header');
