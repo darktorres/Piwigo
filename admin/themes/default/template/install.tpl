@@ -232,7 +232,7 @@ jQuery().ready(function(){ldelim}
       <td class="fielddesc">{'Select the type of your database'|@translate}</td>
     </tr>  
     <tr>
-      <td style="width: 30%;" class="fieldname">{'Host'|@translate}</td>
+      <td style="width: 30%;" class="fieldname">{'Host:Port'|@translate}</td>
       <td><input type="text" id="dbhost" name="dbhost" value="localhost:3306" required></td>
       <td class="fielddesc">{'localhost or other, supplied by your host provider'|@translate}</td>
     </tr>
