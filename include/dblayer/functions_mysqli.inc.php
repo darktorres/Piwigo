@@ -46,15 +46,13 @@ function pwg_db_connect($host, $user, $password, $database)
   {
     list($host, $port) = explode(':', $host);
   }
-
-  $dbname = '';
   
-  $mysqli = new mysqli($host, $user, $password, $dbname, $port, $socket);
+  $mysqli = new mysqli($host, $user, $password, '', $port, $socket);
   if (mysqli_connect_error())
   {
     throw new Exception("Can't connect to server");
   }
-  if (!$mysqli->select_db($database))
+  if (!empty($database) && !$mysqli->select_db($database))
   {
     throw new Exception('Connection to server succeed, but it was impossible to connect to database');
   }
