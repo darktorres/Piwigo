@@ -53,7 +53,6 @@ catch (Exception $e)
   my_error(l10n($e->getMessage(), true)); 
 }
 
-pwg_db_check_charset();
 
 // +-----------------------------------------------------------------------+
 // |                              Upgrades                                 |

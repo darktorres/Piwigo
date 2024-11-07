@@ -247,8 +247,6 @@ if (isset($_POST['install']))
     print_r($errors);
   }
 
-  pwg_db_check_charset();
-
   $webmaster = trim(preg_replace('/\s{2,}/', ' ', $admin_name));
   if (empty($webmaster))
   {
@@ -288,9 +286,6 @@ $conf[\'db_host\'] = \''.$dbhost.'\';
 $prefixeTable = \''.$prefixeTable.'\';
 
 define(\'PHPWG_INSTALLED\', true);
-define(\'PWG_CHARSET\', \'utf-8\');
-define(\'DB_CHARSET\', \'utf8\');
-define(\'DB_COLLATE\', \'\');
 
 ?'.'>';
 
@@ -352,12 +347,6 @@ INSERT INTO '.$prefixeTable.'config (param,value,comment)
     // fill $conf global array
     load_conf_from_db();
 
-    // PWG_CHARSET is required for building the fs_themes array in the
-    // themes class
-    if (!defined('PWG_CHARSET'))
-    {
-      define('PWG_CHARSET', 'utf-8');
-    }
     activate_core_themes();
     activate_core_plugins();
 
