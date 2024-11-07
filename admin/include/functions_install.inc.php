@@ -42,13 +42,6 @@ function execute_sqlfile($filepath, $replaced, $replacing, $dblayer)
       // we don't execute "DROP TABLE" queries
       if (!preg_match('/^DROP TABLE/i', $query))
       {
-        if ('mysql' == $dblayer)
-        {
-          if ( preg_match('/^(CREATE TABLE .*)[\s]*;[\s]*/im', $query, $matches) )
-          {
-            $query = $matches[1].' DEFAULT CHARACTER SET utf8'.';';
-          }
-        }
         pwg_query($query);
       }
       $query = '';

@@ -768,7 +768,7 @@ function pwg_mail($to, $args=array(), $tpl=array())
           'GALLERY_TITLE' => isset($page['gallery_title']) ? $page['gallery_title'] : $conf['gallery_title'],
           'VERSION' => $conf['show_version'] ? PHPWG_VERSION : '',
           'PHPWG_URL' => defined('PHPWG_URL') ? PHPWG_URL : '',
-          'CONTENT_ENCODING' => get_pwg_charset(),
+          'CONTENT_ENCODING' => 'utf-8',
           'CONTACT_MAIL' => $conf_mail['email_webmaster'],
           )
         );
