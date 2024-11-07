@@ -74,21 +74,6 @@ function pwg_db_connect($host, $user, $password, $database)
 }
 
 /**
- * Set charset for database connection.
- */
-function pwg_db_check_charset() 
-{
-  global $mysqli;
-
-  $db_charset = 'utf8';
-  if (defined('DB_CHARSET') and DB_CHARSET != '')
-  {
-    $db_charset = DB_CHARSET;
-  }
-  $mysqli->set_charset($db_charset);
-}
-
-/**
  * Check MySQL version. Can call fatal_error().
  */
 function pwg_db_check_version()
