@@ -13,7 +13,7 @@ define('DB_ENGINE', 'MySQL');
 define('REQUIRED_MYSQL_VERSION', '8.4.3');
 
 define('DB_REGEX_OPERATOR', 'REGEXP');
-define('DB_RANDOM_FUNCTION', 'RAND');
+define('DB_RANDOM_FUNCTION', 'RAND()');
 
 /**
  * Connect to database and store MySQLi resource in __$mysqli__ global variable.
