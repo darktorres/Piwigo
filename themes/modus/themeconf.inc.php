@@ -52,7 +52,7 @@ if (!$conf['compiled_template_cache_language'])
 
 if (isset($_COOKIE['caps']))
 {
-	setcookie('caps',false,0,cookie_path());
+	setcookie('caps','',0,cookie_path());
 	pwg_set_session_var('caps', explode('x', $_COOKIE['caps']) );
 	/*file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'tmp/modus.log', implode("\t", array(
 		date("Y-m-d H:i:s"), $_COOKIE['caps'], $_SERVER['HTTP_USER_AGENT']
@@ -75,7 +75,7 @@ function modus_smarty_prefilter_wrap($source)
 if (!defined('IN_ADMIN') && defined('RVCDN') )
 {
 	$this->smarty->registerFilter('pre', 'rv_cdn_prefilter' );
-	add_event_handler('combined_script', 'rv_cdn_combined_script', EVENT_HANDLER_PRIORITY_NEUTRAL, 2);
+	add_event_handler('combined_script', 'rv_cdn_combined_script');
 }
 
 function rv_cdn_prefilter($source, &$smarty)
@@ -133,9 +133,9 @@ function modus_combinable_preparse($template)
 	global $conf, $template;
 	include_once(dirname(__FILE__).'/functions.inc.php');
 
-	try {
-		$template->smarty->registerPlugin('modifier', 'cssGradient', 'modus_css_gradient');
-	} catch(SmartyException $exc) {}
+    if (! isset($template->smarty->registered_plugins['modifier']['cssGradient'])) {
+        $template->smarty->registerPlugin('modifier', 'cssGradient', 'modus_css_gradient');
+    }
 
 	include( dirname(__FILE__).'/skins/'.$conf['modus_theme']['skin'].'.inc.php' );
 
@@ -152,9 +152,9 @@ function modus_combinable_preparse($template)
 $this->smarty->registerPlugin('function', 'cssResolution', 'modus_css_resolution');
 function modus_css_resolution($params)
 {
-	$base = @$params['base'];
-	$min = @$params['min'];
-	$max = @$params['max'];
+	$base = $params['base'] ?? null;
+	$min = $params['min'] ?? null;
+	$max = $params['max'] ?? null;
 
 	$rules = array();
 	if (!empty($base))
@@ -365,7 +365,7 @@ function modus_loc_begin_picture()
 	$template->append('head_elements', '<script>if(document.documentElement.offsetWidth>1270)document.documentElement.className=\'wide\'</script>');
 }
 
-add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL-1, 2 );
+add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL-1 );
 function modus_picture_content($content, $element_info)
 {
 	global $conf, $picture, $template;
@@ -391,7 +391,7 @@ function modus_picture_content($content, $element_info)
 	}
 
 	if (isset($_COOKIE['picture_deriv'])) // ignore persistence
-		setcookie('picture_deriv', false, 0, cookie_path() );
+		setcookie('picture_deriv', '', 0, cookie_path() );
 
 	$selected_derivative = null;
 	if (isset($_COOKIE['phavsz']))
