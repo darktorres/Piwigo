@@ -492,7 +492,7 @@ function get_recent_post_dates($max_dates, $max_elements, $max_cats)
                 INNER JOIN image_category AS ic ON id = image_id
                 {$where_sql}
                     AND date_available = '{$dates[$i]['date_available']}'
-                ORDER BY {$randomFunction}()
+                ORDER BY {$randomFunction}
                 LIMIT {$max_elements};
                 SQL;
             $dates[$i]['elements'] = query2array($query);
