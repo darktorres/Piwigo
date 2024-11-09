@@ -120,7 +120,7 @@ SELECT id, name
       );
   }
   // album page (admin only)
-  else if ($MultiView->is_admin() and @$page['section'] == 'categories' and isset($page['category']))
+  else if ($MultiView->is_admin() and ($page['section'] ?? null) == 'categories' and isset($page['category']))
   {
     $url_self = duplicate_index_url();
 
@@ -251,7 +251,7 @@ function admintools_save_picture()
 {
   global $page, $conf, $MultiView, $user, $picture;
 
-  if (!isset($_GET['delete']) and !isset($_POST['action']) and @$_POST['action'] != 'quick_edit')
+  if (!isset($_GET['delete']) and !isset($_POST['action']) or $_POST['action'] != 'quick_edit')
   {
     return;
   }
@@ -352,7 +352,7 @@ function admintools_save_category()
     return;
   }
 
-  if (@$_POST['action'] == 'quick_edit')
+  if (($_POST['action'] ?? null) == 'quick_edit')
   {
     check_pwg_token();
 
