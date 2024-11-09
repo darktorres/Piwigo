@@ -1,5 +1,5 @@
 {if !$current.selected_derivative->is_cached()}
-{combine_script id='jquery.ajaxmanager' path='https://raw.githack.com/aFarkas/Ajaxmanager/refs/heads/master/jquery.ajaxmanager.js' load='footer'}
+{combine_script id='jquery.ajaxmanager' path='https://raw.githack.com/aFarkas/Ajaxmanager/refs/heads/master/jquery.ajaxmanager.js' require='jquery' load='footer'}
 {combine_script id='thumbnails.loader' path='themes/default/js/thumbnails.loader.js' require='jquery.ajaxmanager' load='footer'}
 {footer_script}var error_icon = "{$ROOT_URL}{$themeconf.icon_dir}/errors_small.png"{/footer_script}
 {/if}
