@@ -114,9 +114,9 @@ async function runPuppeteerScript() {
     await page.click("#deactivate > a");
     // admin button
     await page.waitForSelector(
-        "#mbIdentification > dd > ul > li:nth-child(3) > a",
+        "#menubar > dl:nth-child(7) > dt > a:nth-child(4)",
     );
-    await page.click("#mbIdentification > dd > ul > li:nth-child(3) > a");
+    await page.click("#menubar > dl:nth-child(7) > dt > a:nth-child(4)");
     // hide subscribe to newsletter button
     await page.waitForSelector("#content > p > span > a.newsletter-hide");
     await page.click("#content > p > span > a.newsletter-hide");
