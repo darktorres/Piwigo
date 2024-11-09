@@ -963,7 +963,7 @@ function set_random_representant($categories)
             SELECT image_id
             FROM image_category
             WHERE category_id = {$category_id}
-            ORDER BY {$random_function}()
+            ORDER BY {$random_function}
             LIMIT 1;
             SQL;
 
