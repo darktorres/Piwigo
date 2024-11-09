@@ -14,7 +14,7 @@
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {combine_script id='jquery.progressBar' load='async' path='https://raw.githack.com/Piwigo/Piwigo/refs/heads/14.x/themes/default/js/plugins/jquery.progressbar.min.js'}
-{combine_script id='jquery.ajaxmanager' load='async' path='https://raw.githack.com/aFarkas/Ajaxmanager/refs/heads/master/jquery.ajaxmanager.js'}
+{combine_script id='jquery.ajaxmanager' load='async' require='jquery' path='https://raw.githack.com/aFarkas/Ajaxmanager/refs/heads/master/jquery.ajaxmanager.js'}
 
 {combine_script id='batchManagerGlobal' load='async' require='jquery,datepicker,jquery.colorbox,addAlbum,doubleSlider' path='admin/themes/default/js/batchManagerGlobal.js'}
 
