@@ -36,7 +36,7 @@ static function on_index_begin()
 	}
 	else
 	{
-		$adj = (int)@$_GET['adj'];
+		$adj = (int)($_GET['adj'] ?? null);
 		if ($adj)
 		{
 			$mult = pwg_get_session_var('rvts_mult', 1);
