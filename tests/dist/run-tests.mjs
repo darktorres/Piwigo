@@ -299,8 +299,8 @@ async function runPuppeteerScript() {
     await page.click("#pwgHead > a");
     await sleep(1500);
     // open album
-    await page.waitForSelector("#rv-at > li > a");
-    await page.click("#rv-at > li > a");
+    await page.waitForSelector("#content > ul > li > a > img");
+    await page.click("#content > ul > li > a > img");
     await sleep(1500);
     // open image
     await page.waitForSelector("#thumbnails > li:nth-child(1) > a");
