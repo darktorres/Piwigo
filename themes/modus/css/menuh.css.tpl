@@ -1,14 +1,16 @@
 #menubar UL {
 	list-style: none;
 	padding: 0 0 0 2px;
-	margin: 0; /*various default user agent css*/
+	margin: 0;
+	/*various default user agent css*/
 }
 
 {if !isset($loaded_plugins['rv_menutree'])}
-#mbCategories UL {
-	list-style-type: square;
-	padding-left: 8px;
-}
+	#mbCategories UL {
+		list-style-type: square;
+		padding-left: 8px;
+	}
+
 {/if}
 
 #menubar LI.selected>A {
@@ -16,23 +18,24 @@
 }
 
 #menubar .menuInfoCat {
-	padding:0px 5px;
+	padding: 0px 5px;
 	font-size: 90%;
 	border-radius: 20px;
 	font-weight: bold;
-{if !empty($skin.menubar.badgeBackgroundColor)}
-	background-color: {$skin.menubar.badgeBackgroundColor};
-{/if}
-{if !empty($skin.menubar.badgeColor)}
-	color: {$skin.menubar.badgeColor};
-{/if}
+	{if !empty($skin.menubar.badgeBackgroundColor)}
+		background-color: {$skin.menubar.badgeBackgroundColor};
+	{/if}
+	{if !empty($skin.menubar.badgeColor)}
+		color: {$skin.menubar.badgeColor};
+	{/if}
 }
 
 #menubar .menuInfoCat::before {
-  content:'[';
+	content: '[';
 }
+
 #menubar .menuInfoCat::after {
-  content:']';
+	content: ']';
 }
 
 #menubar .menuInfoCatByChild {
@@ -51,7 +54,6 @@
 	padding: 0 5px;
 }
 
-
 #menuTagCloud {
 	text-align: center;
 }
@@ -61,34 +63,32 @@
 	margin-right: 5px;
 }
 
-
-
-
-
 /* Horizontal menu */
 #menubar {
 	margin: 0;
 	width: 100%;
 	padding: 5px 0 8px;
 	background-color: {$skin.menubar.backgroundColor};
-{if !empty($skin.menubar.gradient)}
-	{$skin.menubar.gradient|cssGradient}
-{/if}
-{if !empty($skin.menubar.color)}
-	color: {$skin.menubar.color};
-{/if}
+	{if !empty($skin.menubar.gradient)}
+		{$skin.menubar.gradient|cssGradient}
+	{/if}
+	{if !empty($skin.menubar.color)}
+		color: {$skin.menubar.color};
+	{/if}
 }
 
 {if !empty($skin.menubar.link.color)}
-#menubar DT A {
-	color: {$skin.menubar.link.color};
-}
+	#menubar DT A {
+		color: {$skin.menubar.link.color};
+	}
+
 {/if}
 
 {if !empty($skin.menubar.linkHover.color)}
-#menubar DT A:hover {
-	color: {$skin.menubar.linkHover.color};
-}
+	#menubar DT A:hover {
+		color: {$skin.menubar.linkHover.color};
+	}
+
 {/if}
 
 #menubar DL {
@@ -115,17 +115,17 @@
 	max-width: 300px;
 	box-shadow: 2px 2px 5px gray;
 	background-color: {$skin.dropdowns.backgroundColor};
-{if !empty($skin.menubar.color)}
-	color: {$skin.BODY.color};
-{/if}
+	{if !empty($skin.menubar.color)}
+		color: {$skin.BODY.color};
+	{/if}
 }
 
 #menubar DD A {
-		font-size: 14px;
+	font-size: 14px;
 }
 
 
-#menubar DL:hover > DD {
+#menubar DL:hover>DD {
 	display: block;
 	z-index: 5;
 }
@@ -139,9 +139,6 @@
 	max-width: 180px;
 }
 
-
-
-
 #menuSwitcher {
 	display: none;
 }
@@ -150,6 +147,7 @@
 	#mbProfile {
 		display: none !important;
 	}
+
 	#mbTags {
 		display: none !important;
 	}
@@ -170,26 +168,29 @@
 		display: block;
 		position: absolute;
 		padding-top: 2px;
-{if !empty($skin.pageTitle.link.color)}
-		color: {$skin.pageTitle.link.color};/*switcher is outside page title so not inherited*/
-{/if}
+		{if !empty($skin.pageTitle.link.color)}
+			color: {$skin.pageTitle.link.color};/*switcher is outside page title so not inherited*/
+		{/if}
 	}
 
-{if !empty($skin.pageTitle.linkHover.color)}
-	#menuSwitcher:hover {
-		color: {$skin.pageTitle.linkHover.color};/*switcher is outside page title so not inherited*/
-	}
-{/if}
+	{if !empty($skin.pageTitle.linkHover.color)}
+		#menuSwitcher:hover {
+			color: {$skin.pageTitle.linkHover.color};/*switcher is outside page title so not inherited*/
+		}
+
+	{/if}
 
 	.contentWithMenu .titrePage H2,
 	.contentWithMenu .browsePath {
-		text-indent: 25px; /*make space for menu switcher*/
+		text-indent: 25px;
+		/*make space for menu switcher*/
 		letter-spacing: -0.5px;
 	}
 
 	.titrePage H2:first-line,
 	.browsePath:first-line {
-		line-height: 28px; /*long bread crumbs go on second line and would run into menu switcher*/
+		line-height: 28px;
+		/*long bread crumbs go on second line and would run into menu switcher*/
 	}
 
 	#menubar {
@@ -200,22 +201,24 @@
 		opacity: 0.95;
 		z-index: 5;
 		min-width: 40%;
-{if $skin.menubar.backgroundColor != $skin.dropdowns.backgroundColor}
-		background-color: {$skin.dropdowns.backgroundColor};
-{/if}
-{if !empty($skin.menubar.gradient)}
-		background-image: none;
-{/if}
-{if !empty($skin.menubar.color)}
-		color: inherit;
-{/if}
+		{if $skin.menubar.backgroundColor != $skin.dropdowns.backgroundColor}
+			background-color: {$skin.dropdowns.backgroundColor};
+		{/if}
+		{if !empty($skin.menubar.gradient)}
+			background-image: none;
+		{/if}
+		{if !empty($skin.menubar.color)}
+			color: inherit;
+		{/if}
 	}
 
-{if !empty($skin.menubar.link.color)}
-	#menubar DT A {
-			color: {$skin.A.color}; /*update link color because background is dropdowns; don't care about hover as this is mobile probably...*/
-	}
-{/if}
+	{if !empty($skin.menubar.link.color)}
+		#menubar DT A {
+			color: {$skin.A.color}; /*update link color because background is dropdowns; don't care about hover as this is mobile
+			probably...*/
+		}
+
+	{/if}
 
 	#menubar DL {
 		display: block;
@@ -231,14 +234,17 @@
 		font-weight: normal;
 	}
 
-	#menubar DL:hover > DD { /*reset large wifth hover effect*/
+	#menubar DL:hover>DD {
+		/*reset large wifth hover effect*/
 		display: none;
 	}
-	
+
 	#menubar DD {
 		position: static;
-		box-shadow: none; /*reset std*/
-		padding-top: 5px; /*reduce from standard*/
+		box-shadow: none;
+		/*reset std*/
+		padding-top: 5px;
+		/*reduce from standard*/
 	}
 
 	#qsearchInput {
@@ -246,5 +252,4 @@
 		max-width: none;
 		margin: 5px 0;
 	}
-
 }
