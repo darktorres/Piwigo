@@ -938,9 +938,6 @@ $conf['derivatives_strip_metadata_threshold'] = 256000;
 // different from derivatives.resize_quality
 $conf['animated_webp_compression_quality'] = 70;
 
-//Maximum Ajax requests at once, for thumbnails on-the-fly generation
-$conf['max_requests'] = 3;
-
 // one of '', 'images', 'all'
 //TODO: Put this in admin and also manage .htaccess in #sites and upload folders
 $conf['original_url_protection'] = '';
