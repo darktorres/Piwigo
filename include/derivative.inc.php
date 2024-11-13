@@ -164,8 +164,6 @@ final class DerivativeImage
 
     private ?string $rel_url = null;
 
-    private bool $is_cached = true;
-
     /**
      * @param string|DerivativeParams $type standard derivative param type (e.g. IMG_*)
      *    or a DerivativeParams object
@@ -176,7 +174,7 @@ final class DerivativeImage
         public SrcImage $src_image
     ) {
         $this->params = is_string($type) ? ImageStdParams::get_by_type($type) : $type;
-        self::build($this->src_image, $this->params, $this->rel_path, $this->rel_url, $this->is_cached);
+        self::build($this->src_image, $this->params, $this->rel_path, $this->rel_url);
     }
 
     /**
@@ -354,7 +352,7 @@ final class DerivativeImage
             return 'width="' . $size[0] . '" height="' . $size[1] . '"';
         }
 
-        return null;
+        return '';
     }
 
     /**
@@ -410,11 +408,6 @@ final class DerivativeImage
         return null;
     }
 
-    public function is_cached(): bool
-    {
-        return $this->is_cached;
-    }
-
     /**
      * @todo : documentation of DerivativeImage::build
      */
@@ -422,8 +415,7 @@ final class DerivativeImage
         SrcImage $src,
         DerivativeParams &$params,
         ?string &$rel_path,
-        ?string &$rel_url,
-        ?bool &$is_cached = null
+        ?string &$rel_url
     ): void {
         if ($src->has_size() && $params->is_identity($src->get_size())) {// the source image is smaller than what we should do - we do not upsample
             if (! $params->will_watermark($src->get_size()) && ! $src->rotation) {// no watermark, no rotation required -> we will use the source image
@@ -441,7 +433,7 @@ final class DerivativeImage
                         $smaller = ImageStdParams::get_by_type($defined_types[$i]);
                         if ($smaller->sizing->max_crop === $params->sizing->max_crop && $smaller->is_identity($src->get_size())) {
                             $params = $smaller;
-                            self::build($src, $params, $rel_path, $rel_url, $is_cached);
+                            self::build($src, $params, $rel_path, $rel_url);
                             return;
                         }
                     }
@@ -473,12 +465,7 @@ final class DerivativeImage
         $url_style = $conf['derivative_url_style'];
         if (! $url_style) {
             $mtime = file_exists(PHPWG_ROOT_PATH . $rel_path) ? filemtime(PHPWG_ROOT_PATH . $rel_path) : false;
-            if ($mtime === false || $mtime < $params->last_mod_time) {
-                $is_cached = false;
-                $url_style = 2;
-            } else {
-                $url_style = 1;
-            }
+            $url_style = $mtime === false || $mtime < $params->last_mod_time ? 2 : 1;
         }
 
         if ($url_style == 2) {
