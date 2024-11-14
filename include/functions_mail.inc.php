@@ -455,7 +455,7 @@ function pwg_mail_group(
         INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id
         INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id
         WHERE group_id = {$group_id}
-            AND {$conf['user_fields']['email']} <> ""
+            AND {$conf['user_fields']['email']} <> ''
 
         SQL;
 
@@ -481,7 +481,7 @@ function pwg_mail_group(
             INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id
             INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id
             WHERE group_id = {$group_id}
-                AND {$conf['user_fields']['email']} <> ""
+                AND {$conf['user_fields']['email']} <> ''
                 AND language = '{$language}';
             SQL;
         $users = query2array($query);

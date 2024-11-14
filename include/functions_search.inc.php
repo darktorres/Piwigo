@@ -368,9 +368,12 @@ function get_regular_search_results(
 
     if (! empty($search_clause)) {
         $has_filters_filled = true;
+        $order_by_clause = $conf['order_by'];
+        $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
+        $column_names = ', ' . $cleaned_order_by;
 
         $query = <<<SQL
-            SELECT DISTINCT(id)
+            SELECT DISTINCT(id) {$column_names}
             FROM images i
             INNER JOIN image_category AS ic ON id = ic.image_id
             LEFT JOIN image_tag AS it ON id = it.image_id

@@ -256,10 +256,14 @@ if ($page['section'] == 'categories') {
             $where_sql = "category_id = {$page['category']['id']}";
         }
 
+        $order_by_clause = $conf['order_by'];
+        $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
+        $column_names = ', ' . $cleaned_order_by;
+
         // main query
         // FIXME: this query fetches all photos of an album everytime rvtscroller asks for few more photos on scroll
         $query = <<<SQL
-            SELECT DISTINCT(image_id)
+            SELECT DISTINCT(image_id) {$column_names}
             FROM image_category
             INNER JOIN images ON id = image_id
             WHERE {$where_sql}
