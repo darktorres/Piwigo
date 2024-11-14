@@ -21,7 +21,7 @@ if (isset($_GET['batch'])) {
     check_input_parameter('batch', $_GET, false, '/^\d+(,\d+)*$/');
 
     $query = '
-DELETE FROM ' . CADDIE_TABLE . '
+DELETE FROM caddie
   WHERE user_id = ' . $user['id'] . '
 ;';
     pwg_query($query);
@@ -34,7 +34,7 @@ DELETE FROM ' . CADDIE_TABLE . '
         ];
     }
     mass_inserts(
-        CADDIE_TABLE,
+        'caddie',
         array_keys($inserts[0]),
         $inserts
     );
@@ -45,7 +45,7 @@ DELETE FROM ' . CADDIE_TABLE . '
 if (userprefs_get_param('promote-mobile-apps', true)) {
     $query = '
 SELECT registration_date
-  FROM ' . USER_INFOS_TABLE . '
+  FROM user_infos
   WHERE registration_date IS NOT NULL
   ORDER BY user_id ASC
   LIMIT 1
@@ -54,13 +54,13 @@ SELECT registration_date
 
     $query = '
 SELECT COUNT(*)
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
 ;';
     list($nb_cats) = pwg_db_fetch_row(pwg_query($query));
 
     $query = '
 SELECT COUNT(*)
-  FROM ' . IMAGES_TABLE . '
+  FROM images
 ;';
     list($nb_images) = pwg_db_fetch_row(pwg_query($query));
 
@@ -95,7 +95,7 @@ if ($display_formats && $_GET['formats']) {
         // Fetch actual formats
         $query = '
 SELECT *
-  FROM ' . IMAGE_FORMAT_TABLE . '
+  FROM image_format
   WHERE image_id = ' . $formats_original_info['id'] . '
 ;';
         $formats = query2array($query);

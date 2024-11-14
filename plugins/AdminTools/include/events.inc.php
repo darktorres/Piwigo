@@ -64,7 +64,7 @@ function admintools_add_public_controller()
             );
 
             $query = '
-SELECT element_id FROM ' . CADDIE_TABLE . '
+SELECT element_id FROM caddie
   WHERE element_id = ' . $page['image_id'] . '
 ;';
             $tpl_vars['IS_IN_CADDIE'] = pwg_db_num_rows(pwg_query($query)) > 0;
@@ -99,8 +99,8 @@ SELECT element_id FROM ' . CADDIE_TABLE . '
 
         $query = '
 SELECT id, name
-  FROM ' . IMAGE_TAG_TABLE . ' AS it
-    JOIN ' . TAGS_TABLE . ' AS t ON t.id = it.tag_id
+  FROM image_tag AS it
+    JOIN tags AS t ON t.id = it.tag_id
   WHERE image_id = ' . $page['image_id'] . '
 ;';
         $tag_selection = get_taglist($query);
@@ -148,7 +148,7 @@ SELECT id, name
 
         if (! empty($page['category']['representative_picture_id'])) {
             $query = '
-SELECT * FROM ' . IMAGES_TABLE . '
+SELECT * FROM images
   WHERE id = ' . $page['category']['representative_picture_id'] . '
 ;';
             $image_infos = pwg_db_fetch_assoc(pwg_query($query));
@@ -249,7 +249,7 @@ function admintools_save_picture()
         return;
     }
 
-    $query = 'SELECT added_by FROM ' . IMAGES_TABLE . ' WHERE id = ' . $page['image_id'] . ';';
+    $query = 'SELECT added_by FROM images WHERE id = ' . $page['image_id'] . ';';
     list($added_by) = pwg_db_fetch_row(pwg_query($query));
 
     if (! $MultiView->is_admin() and $user['id'] != $added_by) {
@@ -302,7 +302,7 @@ function admintools_save_picture()
         }
 
         single_update(
-            IMAGES_TABLE,
+            'images',
             $data,
             [
                 'id' => $page['image_id'],
@@ -343,7 +343,7 @@ function admintools_save_category()
         }
 
         single_update(
-            CATEGORIES_TABLE,
+            'categories',
             $data,
             [
                 'id' => $page['category']['id'],

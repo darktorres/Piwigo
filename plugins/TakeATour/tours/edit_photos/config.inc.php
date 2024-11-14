@@ -68,7 +68,7 @@ if (isset($_GET['image_id']) and pwg_get_session_var('TAT_image_id') == null) {
 } else {
     $query = '
     SELECT id
-      FROM ' . IMAGES_TABLE . '
+      FROM images
       ORDER BY RAND()
       LIMIT 1
     ;';
@@ -88,7 +88,7 @@ if (isset($_GET['cat_id']) and pwg_get_session_var('TAT_cat_id') == null) {
 } else {
     $query = '
     SELECT id
-      FROM ' . CATEGORIES_TABLE . '
+      FROM categories
       ORDER BY RAND()
       LIMIT 1
     ;';

@@ -50,8 +50,8 @@ function get_categories_ref_date($ids, $field = 'date_available', $minmax = 'max
 SELECT
     category_id,
     ' . $minmax . '(' . $field . ') as ref_date
-  FROM ' . IMAGE_CATEGORY_TABLE . '
-    JOIN ' . IMAGES_TABLE . ' ON image_id = id
+  FROM image_category
+    JOIN images ON image_id = id
   WHERE category_id IN (' . implode(',', $category_ids) . ')
   GROUP BY category_id
 ;';
@@ -63,7 +63,7 @@ SELECT
 SELECT
     id,
     uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
     $uppercats_of = query2array($query, 'id', 'uppercats');
@@ -197,7 +197,7 @@ $categories = [];
 
 $query = '
 SELECT id, name, permalink, dir, rank_column, status
-  FROM ' . CATEGORIES_TABLE;
+  FROM categories';
 if (! isset($_GET['parent_id'])) {
     $query .= '
   WHERE id_uppercat IS NULL';
@@ -217,7 +217,7 @@ if (count($categories)) {
 SELECT
     category_id,
     COUNT(*) AS nb_photos
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   GROUP BY category_id
 ;';
     // WHERE category_id IN ('.implode(',', array_keys($categories)).')
@@ -228,7 +228,7 @@ SELECT
 SELECT
     id,
     uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
 ;';
     $all_categories = query2array($query, 'id', 'uppercats');
     $subcats_of = [];
