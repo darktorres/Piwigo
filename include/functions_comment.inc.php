@@ -179,7 +179,7 @@ function insert_user_comment(
 
         if (! is_classic_user()) {
             $query .= <<<SQL
-                AND anonymous_id LIKE "{$anonymous_id}.%"
+                AND anonymous_id LIKE '{$anonymous_id}.%'
 
                 SQL;
         }

@@ -249,8 +249,12 @@ function initialize_calendar(): void
         }
 
         if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
+            $order_by_clause = $order_by;
+            $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
+            $column_names = ", {$cleaned_order_by}";
+
             $query = <<<SQL
-                SELECT DISTINCT id
+                SELECT DISTINCT id {$column_names}
                 {$calendar->inner_sql}
                 {$calendar->get_date_where()}
                 {$order_by};

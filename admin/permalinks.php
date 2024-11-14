@@ -113,7 +113,7 @@ $page['tab'] = 'permalinks';
 require PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php';
 
 $query = <<<SQL
-    SELECT id, permalink, CONCAT(id, " - ", name, IF(permalink IS NULL, "", " &radic;")) AS name, uppercats, global_rank
+    SELECT id, permalink, CONCAT(id, ' - ', name, IF(permalink IS NULL, '', ' &radic;')) AS name, uppercats, global_rank
     FROM categories;
     SQL;
 

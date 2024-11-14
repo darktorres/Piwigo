@@ -256,10 +256,14 @@ if ($page['section'] == 'categories') {
             $where_sql = "category_id = {$page['category']['id']}";
         }
 
+        $order_by_clause = $conf['order_by'];
+        $cleaned_order_by = str_replace(['ORDER BY', 'ASC', 'DESC'], '', $order_by_clause);
+        $column_names = ', ' . $cleaned_order_by;
+
         if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
             // main query
             $query = <<<SQL
-                SELECT DISTINCT(image_id)
+                SELECT DISTINCT(image_id) {$column_names}
                 FROM image_category
                 INNER JOIN images ON id = image_id
                 WHERE {$where_sql}
@@ -395,7 +399,7 @@ if ($page['section'] == 'categories') {
 
     $recent_photos_sql = get_recent_photos_sql('date_available');
     $query = <<<SQL
-            SELECT DISTINCT(id)
+            SELECT DISTINCT(id), date_available, date_creation
             FROM images
             INNER JOIN image_category AS ic ON id = ic.image_id
             WHERE {$recent_photos_sql}
@@ -428,7 +432,7 @@ if ($page['section'] == 'categories') {
     $conf['order_by'] = ' ORDER BY hit DESC, id DESC';
 
     $query = <<<SQL
-            SELECT DISTINCT(id)
+            SELECT DISTINCT(id), hit
             FROM images
             INNER JOIN image_category AS ic ON id = ic.image_id
             WHERE hit > 0
@@ -452,7 +456,7 @@ if ($page['section'] == 'categories') {
     $conf['order_by'] = ' ORDER BY rating_score DESC, id DESC';
 
     $query = <<<SQL
-            SELECT DISTINCT(id)
+            SELECT DISTINCT(id), rating_score
             FROM images
             INNER JOIN image_category AS ic ON id = ic.image_id
             WHERE rating_score IS NOT NULL
@@ -474,7 +478,7 @@ if ($page['section'] == 'categories') {
 } elseif ($page['section'] == 'list') {
     $image_ids = implode(',', $page['list']);
     $query = <<<SQL
-            SELECT DISTINCT(id)
+            SELECT DISTINCT(id), date_creation
             FROM images
             INNER JOIN image_category AS ic ON id = ic.image_id
             WHERE image_id IN ({$image_ids})

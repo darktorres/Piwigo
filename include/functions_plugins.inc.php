@@ -385,8 +385,8 @@ function autoupdate_plugin(
         if ($new_version != $old_version) {
             $query = <<<SQL
                 UPDATE plugins
-                SET version = "{$plugin['version']}"
-                WHERE id = "{$plugin['id']}";
+                SET version = '{$plugin['version']}'
+                WHERE id = '{$plugin['id']}';
                 SQL;
             pwg_query($query);
 
