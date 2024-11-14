@@ -30,7 +30,7 @@ SELECT
     day,
     hour,
     nb_pages
-  FROM ' . HISTORY_SUMMARY_TABLE;
+  FROM history_summary';
 
     if ($type === 'hour') {
         $query .= '
@@ -97,7 +97,7 @@ SELECT
   day,
   hour,
   nb_pages
-FROM ' . HISTORY_SUMMARY_TABLE . '
+FROM history_summary
 WHERE month IS NOT NULL
   AND day IS NULL
 ORDER BY
@@ -144,7 +144,7 @@ SELECT
   day,
   hour,
   nb_pages
-FROM ' . HISTORY_SUMMARY_TABLE . '
+FROM history_summary
 WHERE
   (
     (year = ' . $date->format('Y') . ' AND month = ' . $date->format('n') . ')
@@ -187,7 +187,7 @@ ORDER BY
     $query = '
 SELECT
   AVG(nb_pages)
-FROM ' . HISTORY_SUMMARY_TABLE . '
+FROM history_summary
 WHERE
   (
   year = ' . $date->format('Y') . ' OR

@@ -21,7 +21,7 @@ function delete_site($id)
     // destruction of the categories of the site
     $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE site_id = ' . $id . '
 ;';
     $category_ids = query2array($query, null, 'id');
@@ -29,7 +29,7 @@ SELECT id
 
     // destruction of the site
     $query = '
-DELETE FROM ' . SITES_TABLE . '
+DELETE FROM sites
   WHERE id = ' . $id . '
 ;';
     pwg_query($query);
@@ -61,7 +61,7 @@ function delete_categories($ids, $photo_deletion_mode = 'no_delete')
     // destruction of all photos physically linked to the category
     $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE storage_category_id IN (
 ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
 ;';
@@ -73,7 +73,7 @@ SELECT id
         $query = '
 SELECT
     DISTINCT(image_id)
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE category_id IN (' . implode(',', $ids) . ')
 ;';
         $image_ids_linked = query2array($query, null, 'image_id');
@@ -83,7 +83,7 @@ SELECT
                 $query = '
 SELECT
     DISTINCT(image_id)
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE image_id IN (' . implode(',', $image_ids_linked) . ')
     AND category_id NOT IN (' . implode(',', $ids) . ')
 ;';
@@ -101,7 +101,7 @@ SELECT
 
     // destruction of the links between images and this category
     $query = '
-DELETE FROM ' . IMAGE_CATEGORY_TABLE . '
+DELETE FROM image_category
   WHERE category_id IN (
 ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
 ;';
@@ -109,14 +109,14 @@ DELETE FROM ' . IMAGE_CATEGORY_TABLE . '
 
     // destruction of the access linked to the category
     $query = '
-DELETE FROM ' . USER_ACCESS_TABLE . '
+DELETE FROM user_access
   WHERE cat_id IN (
 ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
 ;';
     pwg_query($query);
 
     $query = '
-DELETE FROM ' . GROUP_ACCESS_TABLE . '
+DELETE FROM group_access
   WHERE cat_id IN (
 ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
 ;';
@@ -124,19 +124,19 @@ DELETE FROM ' . GROUP_ACCESS_TABLE . '
 
     // destruction of the category
     $query = '
-DELETE FROM ' . CATEGORIES_TABLE . '
+DELETE FROM categories
   WHERE id IN (
 ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
 ;';
     pwg_query($query);
 
     $query = '
-DELETE FROM ' . OLD_PERMALINKS_TABLE . '
+DELETE FROM old_permalinks
   WHERE cat_id IN (' . implode(',', $ids) . ')';
     pwg_query($query);
 
     $query = '
-DELETE FROM ' . USER_CACHE_CATEGORIES_TABLE . '
+DELETE FROM user_cache_categories
   WHERE cat_id IN (' . implode(',', $ids) . ')';
     pwg_query($query);
 
@@ -166,7 +166,7 @@ function delete_element_files($ids)
 SELECT
     image_id,
     ext
-  FROM ' . IMAGE_FORMAT_TABLE . '
+  FROM image_format
   WHERE image_id IN (' . implode(',', $ids) . ')
 ;';
     $result = pwg_query($query);
@@ -183,7 +183,7 @@ SELECT
     id,
     path,
     representative_ext
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id IN (' . implode(',', $ids) . ')
 ;';
     $result = pwg_query($query);
@@ -256,56 +256,56 @@ function delete_elements($ids, $physical_deletion = false)
 
     // destruction of the comments on the image
     $query = '
-DELETE FROM ' . COMMENTS_TABLE . '
+DELETE FROM comments
   WHERE image_id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
 
     // destruction of the links between images and categories
     $query = '
-DELETE FROM ' . IMAGE_CATEGORY_TABLE . '
+DELETE FROM image_category
   WHERE image_id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
 
     // destruction of the formats
     $query = '
-DELETE FROM ' . IMAGE_FORMAT_TABLE . '
+DELETE FROM image_format
   WHERE image_id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
 
     // destruction of the links between images and tags
     $query = '
-DELETE FROM ' . IMAGE_TAG_TABLE . '
+DELETE FROM image_tag
   WHERE image_id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
 
     // destruction of the favorites associated with the picture
     $query = '
-DELETE FROM ' . FAVORITES_TABLE . '
+DELETE FROM favorites
   WHERE image_id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
 
     // destruction of the rates associated to this element
     $query = '
-DELETE FROM ' . RATE_TABLE . '
+DELETE FROM rate
   WHERE element_id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
 
     // destruction of the caddie associated to this element
     $query = '
-DELETE FROM ' . CADDIE_TABLE . '
+DELETE FROM caddie
   WHERE element_id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
 
     // destruction of the image
     $query = '
-DELETE FROM ' . IMAGES_TABLE . '
+DELETE FROM images
   WHERE id IN (' . $ids_str . ')
 ;';
     pwg_query($query);
@@ -314,7 +314,7 @@ DELETE FROM ' . IMAGES_TABLE . '
     $query = '
 SELECT
     id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE representative_picture_id IN (' . $ids_str . ')
 ;';
     $category_ids = query2array($query, null, 'id');
@@ -339,24 +339,24 @@ function delete_user($user_id)
     global $conf;
     $tables = [
         // destruction of the access linked to the user
-        USER_ACCESS_TABLE,
+        'user_access',
         // destruction of data notification by mail for this user
-        USER_MAIL_NOTIFICATION_TABLE,
+        'user_mail_notification',
         // destruction of data RSS notification for this user
-        USER_FEED_TABLE,
+        'user_feed',
         // deletion of calculated permissions linked to the user
-        USER_CACHE_TABLE,
+        'user_cache',
         // deletion of computed cache data linked to the user
-        USER_CACHE_CATEGORIES_TABLE,
+        'user_cache_categories',
         // destruction of the group links for this user
-        USER_GROUP_TABLE,
+        'user_group',
         // destruction of the favorites associated with the user
-        FAVORITES_TABLE,
+        'favorites',
         // destruction of the caddie associated with the user
-        CADDIE_TABLE,
+        'caddie',
         // deletion of piwigo specific information
-        USER_INFOS_TABLE,
-        USER_AUTH_KEYS_TABLE,
+        'user_infos',
+        'user_auth_keys',
     ];
 
     foreach ($tables as $table) {
@@ -372,7 +372,7 @@ DELETE FROM ' . $table . '
 
     // destruction of the user
     $query = '
-DELETE FROM ' . USERS_TABLE . '
+DELETE FROM users
   WHERE ' . $conf['user_fields']['id'] . ' = ' . $user_id . '
 ;';
     pwg_query($query);
@@ -407,8 +407,8 @@ function get_orphan_tags()
 SELECT
     id,
     name
-  FROM ' . TAGS_TABLE . '
-    LEFT JOIN ' . IMAGE_TAG_TABLE . ' ON id = tag_id
+  FROM tags
+    LEFT JOIN image_tag ON id = tag_id
   WHERE tag_id IS NULL
     AND lastmodified < SUBDATE(NOW(), INTERVAL 1 DAY)
 ;';
@@ -440,7 +440,7 @@ function update_category($ids = 'all')
     // the picture does not exist
     $query = '
 SELECT DISTINCT c.id
-  FROM ' . CATEGORIES_TABLE . ' AS c LEFT JOIN ' . IMAGES_TABLE . ' AS i
+  FROM categories AS c LEFT JOIN images AS i
     ON c.representative_picture_id = i.id
   WHERE representative_picture_id IS NOT NULL
     AND ' . sprintf($where_cats, 'c.id') . '
@@ -450,7 +450,7 @@ SELECT DISTINCT c.id
 
     if (count($wrong_representant) > 0) {
         $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET representative_picture_id = NULL
   WHERE id IN (' . wordwrap(implode(', ', $wrong_representant), 120, "\n") . ')
 ;';
@@ -464,7 +464,7 @@ UPDATE ' . CATEGORIES_TABLE . '
         // representant.
         $query = '
 SELECT DISTINCT id
-  FROM ' . CATEGORIES_TABLE . ' INNER JOIN ' . IMAGE_CATEGORY_TABLE . '
+  FROM categories INNER JOIN image_category
     ON id = category_id
   WHERE representative_picture_id IS NULL
     AND ' . sprintf($where_cats, 'category_id') . '
@@ -477,7 +477,7 @@ SELECT DISTINCT id
 }
 
 /**
- * Checks and repairs IMAGE_CATEGORY_TABLE integrity.
+ * Checks and repairs image_category integrity.
  * Removes all entries from the table which correspond to a deleted image.
  */
 function images_integrity()
@@ -485,8 +485,8 @@ function images_integrity()
     $query = '
 SELECT
     image_id
-  FROM ' . IMAGE_CATEGORY_TABLE . '
-    LEFT JOIN ' . IMAGES_TABLE . ' ON id = image_id
+  FROM image_category
+    LEFT JOIN images ON id = image_id
   WHERE id IS NULL
 ;';
     $orphan_image_ids = query2array($query, null, 'image_id');
@@ -494,7 +494,7 @@ SELECT
     if (count($orphan_image_ids) > 0) {
         $query = '
 DELETE
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE image_id IN (' . implode(',', $orphan_image_ids) . ')
 ;';
         pwg_query($query);
@@ -508,11 +508,11 @@ DELETE
 function categories_integrity()
 {
     $related_columns = [
-        IMAGE_CATEGORY_TABLE . '.category_id',
-        USER_ACCESS_TABLE . '.cat_id',
-        GROUP_ACCESS_TABLE . '.cat_id',
-        OLD_PERMALINKS_TABLE . '.cat_id',
-        USER_CACHE_CATEGORIES_TABLE . '.cat_id',
+        'image_category.category_id',
+        'user_access.cat_id',
+        'group_access.cat_id',
+        'old_permalinks.cat_id',
+        'user_cache_categories.cat_id',
     ];
 
     foreach ($related_columns as $fullcol) {
@@ -522,7 +522,7 @@ function categories_integrity()
 SELECT
     ' . $column . '
   FROM ' . $table . '
-    LEFT JOIN ' . CATEGORIES_TABLE . ' ON id = ' . $column . '
+    LEFT JOIN categories ON id = ' . $column . '
   WHERE id IS NULL
 ;';
         $orphans = array_unique(query2array($query, null, $column));
@@ -618,7 +618,7 @@ function save_categories_order($categories)
         'primary' => ['id'],
         'update' => ['rank_column'],
     ];
-    mass_updates(CATEGORIES_TABLE, $fields, $datas);
+    mass_updates('categories', $fields, $datas);
 
     update_global_rank();
 }
@@ -631,7 +631,7 @@ function update_global_rank()
 {
     $query = '
 SELECT id, id_uppercat, uppercats, rank_column, global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   ORDER BY id_uppercat, rank_column, name';
 
     global $cat_map; // used in preg_replace callback
@@ -680,7 +680,7 @@ SELECT id, id_uppercat, uppercats, rank_column, global_rank
     unset($cat_map);
 
     mass_updates(
-        CATEGORIES_TABLE,
+        'categories',
         [
             'primary' => ['id'],
             'update' => ['rank_column', 'global_rank'],
@@ -711,7 +711,7 @@ function set_cat_visible($categories, $value, $unlock_child = false)
             $cats = array_merge($cats, get_subcat_ids($categories));
         }
         $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET visible = \'true\'
   WHERE id IN (' . implode(',', $cats) . ')';
         pwg_query($query);
@@ -720,7 +720,7 @@ UPDATE ' . CATEGORIES_TABLE . '
     else {
         $subcats = get_subcat_ids($categories);
         $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET visible = \'false\'
   WHERE id IN (' . implode(',', $subcats) . ')';
         pwg_query($query);
@@ -744,7 +744,7 @@ function set_cat_status($categories, $value)
     if ($value == 'public') {
         $uppercats = get_uppercat_ids($categories);
         $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET status = \'public\'
   WHERE id IN (' . implode(',', $uppercats) . ')
 ;';
@@ -756,7 +756,7 @@ UPDATE ' . CATEGORIES_TABLE . '
         $subcats = get_subcat_ids($categories);
 
         $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET status = \'private\'
   WHERE id IN (' . implode(',', $subcats) . ')';
         pwg_query($query);
@@ -804,7 +804,7 @@ SELECT
     id_uppercat,
     uppercats,
     global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $categories) . ')
 ;';
         $all_categories = query2array($query);
@@ -841,15 +841,15 @@ SELECT
 SELECT
     id,
     status
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $parent_ids) . ')
 ;';
             $parent_cats = query2array($query, 'id');
         }
 
         $tables = [
-            USER_ACCESS_TABLE => 'user_id',
-            GROUP_ACCESS_TABLE => 'group_id',
+            'user_access' => 'user_id',
+            'group_access' => 'group_id',
         ];
 
         foreach ($top_categories as $top_category) {
@@ -907,7 +907,7 @@ function get_uppercat_ids($cat_ids)
 
     $query = '
 SELECT uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $cat_ids) . ')
 ;';
     $result = pwg_query($query);
@@ -926,7 +926,7 @@ function get_category_representant_properties($image_id, $size = null)
 {
     $query = '
 SELECT id,representative_ext,path
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id = ' . $image_id . '
 ;';
 
@@ -955,7 +955,7 @@ function set_random_representant($categories)
     foreach ($categories as $category_id) {
         $query = '
 SELECT image_id
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE category_id = ' . $category_id . '
   ORDER BY ' . DB_RANDOM_FUNCTION . '()
   LIMIT 1
@@ -969,7 +969,7 @@ SELECT image_id
     }
 
     mass_updates(
-        CATEGORIES_TABLE,
+        'categories',
         [
             'primary' => ['id'],
             'update' => ['representative_picture_id'],
@@ -994,7 +994,7 @@ function get_fulldirs($cat_ids)
     global $cat_dirs; // used in preg_replace callback
     $query = '
 SELECT id, dir
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE dir IS NOT NULL
 ;';
     $cat_dirs = query2array($query, 'id', 'dir');
@@ -1002,14 +1002,14 @@ SELECT id, dir
     // caching galleries_url
     $query = '
 SELECT id, galleries_url
-  FROM ' . SITES_TABLE . '
+  FROM sites
 ;';
     $galleries_url = query2array($query, 'id', 'galleries_url');
 
     // categories : id, site_id, uppercats
     $query = '
 SELECT id, uppercats, site_id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE dir IS NOT NULL
     AND id IN (
 ' . wordwrap(implode(', ', $cat_ids), 80, "\n") . ')
@@ -1114,8 +1114,8 @@ function get_fs($path, $recursive = true)
 /**
  * Synchronize base users list and related users list.
  *
- * Compares and synchronizes base users table (USERS_TABLE) with its child
- * tables (USER_INFOS_TABLE, USER_ACCESS, USER_CACHE, USER_GROUP): each
+ * Compares and synchronizes base users table (users) with its child
+ * tables (user_infos, user_access, user_cache, user_group): each
  * base user must be present in child tables, users in child tables not
  * present in base table must be deleted.
  */
@@ -1125,13 +1125,13 @@ function sync_users()
 
     $query = '
 SELECT ' . $conf['user_fields']['id'] . ' AS id
-  FROM ' . USERS_TABLE . '
+  FROM users
 ;';
     $base_users = query2array($query, null, 'id');
 
     $query = '
 SELECT user_id
-  FROM ' . USER_INFOS_TABLE . '
+  FROM user_infos
 ;';
     $infos_users = query2array($query, null, 'user_id');
 
@@ -1145,13 +1145,13 @@ SELECT user_id
     // users present in user related tables must be present in the base user
     // table
     $tables = [
-        USER_MAIL_NOTIFICATION_TABLE,
-        USER_FEED_TABLE,
-        USER_INFOS_TABLE,
-        USER_ACCESS_TABLE,
-        USER_CACHE_TABLE,
-        USER_CACHE_CATEGORIES_TABLE,
-        USER_GROUP_TABLE,
+        'user_mail_notification',
+        'user_feed',
+        'user_infos',
+        'user_access',
+        'user_cache',
+        'user_cache_categories',
+        'user_group',
     ];
 
     foreach ($tables as $table) {
@@ -1182,7 +1182,7 @@ function update_uppercats()
 {
     $query = '
 SELECT id, id_uppercat, uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
 ;';
     $cat_map = query2array($query, 'id');
 
@@ -1208,7 +1208,7 @@ SELECT id, id_uppercat, uppercats
         'primary' => ['id'],
         'update' => ['uppercats'],
     ];
-    mass_updates(CATEGORIES_TABLE, $fields, $datas);
+    mass_updates('categories', $fields, $datas);
 }
 
 /**
@@ -1218,7 +1218,7 @@ function update_path()
 {
     $query = '
 SELECT DISTINCT(storage_category_id)
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE storage_category_id IS NOT NULL
 ;';
     $cat_ids = query2array($query, null, 'storage_category_id');
@@ -1226,7 +1226,7 @@ SELECT DISTINCT(storage_category_id)
 
     foreach ($cat_ids as $cat_id) {
         $query = '
-UPDATE ' . IMAGES_TABLE . '
+UPDATE images
   SET path = ' . pwg_db_concat(["'" . $fulldirs[$cat_id] . "/'", 'file']) . '
   WHERE storage_category_id = ' . $cat_id . '
 ;';
@@ -1255,7 +1255,7 @@ function move_categories($category_ids, $new_parent = -1)
 
     $query = '
 SELECT id, id_uppercat, status, uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
     $result = pwg_query($query);
@@ -1273,7 +1273,7 @@ SELECT id, id_uppercat, status, uppercats
     if ($new_parent != 'NULL') {
         $query = '
 SELECT uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id = ' . $new_parent . '
 ;';
         list($new_parent_uppercats) = pwg_db_fetch_row(pwg_query($query));
@@ -1289,12 +1289,12 @@ SELECT uppercats
     }
 
     $tables = [
-        USER_ACCESS_TABLE => 'user_id',
-        GROUP_ACCESS_TABLE => 'group_id',
+        'user_access' => 'user_id',
+        'group_access' => 'group_id',
     ];
 
     $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET id_uppercat = ' . $new_parent . '
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
@@ -1309,7 +1309,7 @@ UPDATE ' . CATEGORIES_TABLE . '
     } else {
         $query = '
 SELECT status
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id = ' . $new_parent . '
 ;';
         list($parent_status) = pwg_db_fetch_row(pwg_query($query));
@@ -1359,7 +1359,7 @@ function create_virtual_category($category_name, $parent_id = null, $options = [
         //what is the current higher rank for this parent?
         $query = '
 SELECT MAX(rank_column) AS max_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id_uppercat ' . (empty($parent_id) ? 'IS NULL' : '= ' . $parent_id) . '
 ;';
         $row = pwg_db_fetch_assoc(pwg_query($query));
@@ -1408,7 +1408,7 @@ SELECT MAX(rank_column) AS max_rank
     if (! empty($parent_id) and is_numeric($parent_id)) {
         $query = '
 SELECT id, uppercats, global_rank, visible, status
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id = ' . $parent_id . '
 ;';
         $parent = pwg_db_fetch_assoc(pwg_query($query));
@@ -1436,11 +1436,11 @@ SELECT id, uppercats, global_rank, visible, status
     }
 
     // we have then to add the virtual category
-    single_insert(CATEGORIES_TABLE, $insert);
+    single_insert('categories', $insert);
     $inserted_id = pwg_db_insert_id();
 
     single_update(
-        CATEGORIES_TABLE,
+        'categories',
         [
             'uppercats' => $uppercats_prefix . $inserted_id,
         ],
@@ -1454,7 +1454,7 @@ SELECT id, uppercats, global_rank, visible, status
     if ($insert['status'] == 'private' and ! empty($insert['id_uppercat']) and ((isset($options['inherit']) and $options['inherit']) or $conf['inheritance_by_default'])) {
         $query = '
       SELECT group_id
-      FROM ' . GROUP_ACCESS_TABLE . '
+      FROM group_access
       WHERE cat_id = ' . $insert['id_uppercat'] . '
     ;';
         $granted_grps = query2array($query, null, 'group_id');
@@ -1465,11 +1465,11 @@ SELECT id, uppercats, global_rank, visible, status
                 'cat_id' => $inserted_id,
             ];
         }
-        mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $inserts);
+        mass_inserts('group_access', ['group_id', 'cat_id'], $inserts);
 
         $query = '
       SELECT user_id
-      FROM ' . USER_ACCESS_TABLE . '
+      FROM user_access
       WHERE cat_id = ' . $insert['id_uppercat'] . '
     ;';
         $granted_users = query2array($query, null, 'user_id');
@@ -1521,7 +1521,7 @@ function add_tags($tags, $images)
     // delete lines we'll insert later
     $query = '
 DELETE
-  FROM ' . IMAGE_TAG_TABLE . '
+  FROM image_tag
   WHERE image_id IN (' . implode(',', $images) . ')
     AND tag_id IN (' . implode(',', $tags) . ')
 ;';
@@ -1537,7 +1537,7 @@ DELETE
         }
     }
     mass_inserts(
-        IMAGE_TAG_TABLE,
+        'image_tag',
         array_keys($inserts[0]),
         $inserts
     );
@@ -1568,21 +1568,21 @@ function delete_tags($tag_ids)
     $query = '
 SELECT
     image_id
-  FROM ' . IMAGE_TAG_TABLE . '
+  FROM image_tag
   WHERE tag_id IN (' . implode(',', $tag_ids) . ')
 ;';
     $image_ids = query2array($query, null, 'image_id');
 
     $query = '
 DELETE
-  FROM ' . IMAGE_TAG_TABLE . '
+  FROM image_tag
   WHERE tag_id IN (' . implode(',', $tag_ids) . ')
 ;';
     pwg_query($query);
 
     $query = '
 DELETE
-  FROM ' . TAGS_TABLE . '
+  FROM tags
   WHERE id IN (' . implode(',', $tag_ids) . ')
 ;';
     pwg_query($query);
@@ -1612,7 +1612,7 @@ function tag_id_from_tag_name($tag_name)
     // search existing by exact name
     $query = '
 SELECT id
-  FROM ' . TAGS_TABLE . '
+  FROM tags
   WHERE name = \'' . $tag_name . '\'
 ;';
     if (count($existing_tags = query2array($query, null, 'id')) == 0) {
@@ -1620,7 +1620,7 @@ SELECT id
         // search existing by url name
         $query = '
 SELECT id
-  FROM ' . TAGS_TABLE . '
+  FROM tags
   WHERE url_name = \'' . $url_name . '\'
 ;';
         if (count($existing_tags = query2array($query, null, 'id')) == 0) {
@@ -1629,7 +1629,7 @@ SELECT id
             if (count($sub_name_where)) {
                 $query = '
 SELECT id
-  FROM ' . TAGS_TABLE . '
+  FROM tags
   WHERE ' . implode(' OR ', $sub_name_where) . '
 ;';
                 $existing_tags = query2array($query, null, 'id');
@@ -1637,7 +1637,7 @@ SELECT id
 
             if (count($existing_tags) == 0) {// finally, create the tag
                 mass_inserts(
-                    TAGS_TABLE,
+                    'tags',
                     ['name', 'url_name'],
                     [
                         [
@@ -1674,7 +1674,7 @@ function set_tags_of($tags_of)
 
         $query = '
 DELETE
-  FROM ' . IMAGE_TAG_TABLE . '
+  FROM image_tag
   WHERE image_id IN (' . implode(',', array_keys($tags_of)) . ')
 ;';
         pwg_query($query);
@@ -1692,7 +1692,7 @@ DELETE
 
         if (count($inserts)) {
             mass_inserts(
-                IMAGE_TAG_TABLE,
+                'image_tag',
                 array_keys($inserts[0]),
                 $inserts
             );
@@ -1732,7 +1732,7 @@ function get_image_tag_ids($image_ids)
 SELECT
     image_id,
     tag_id
-  FROM ' . IMAGE_TAG_TABLE . '
+  FROM image_tag
   WHERE image_id IN (' . implode(',', $image_ids) . ')
 ;';
 
@@ -1792,7 +1792,7 @@ function fill_lounge($images, $categories)
 
     if (count($inserts)) {
         mass_inserts(
-            LOUNGE_TABLE,
+            'lounge',
             array_keys($inserts[0]),
             $inserts,
             [
@@ -1827,13 +1827,13 @@ function empty_lounge($invalidate_user_cache = true)
     // if lounge is already being emptied, skip
     $query = '
 INSERT IGNORE
-  INTO ' . CONFIG_TABLE . '
+  INTO config
   SET param="empty_lounge_running"
     , value="' . $exec_id . '-' . time() . '"
 ;';
     pwg_query($query);
 
-    list($empty_lounge_running) = pwg_db_fetch_row(pwg_query('SELECT value FROM ' . CONFIG_TABLE . ' WHERE param = "empty_lounge_running"'));
+    list($empty_lounge_running) = pwg_db_fetch_row(pwg_query('SELECT value FROM config WHERE param = "empty_lounge_running"'));
     list($running_exec_id) = explode('-', $empty_lounge_running);
 
     if ($running_exec_id != $exec_id) {
@@ -1848,7 +1848,7 @@ INSERT IGNORE
 SELECT
     image_id,
     category_id
-  FROM ' . LOUNGE_TABLE . '
+  FROM lounge
   ORDER BY category_id ASC, image_id ASC
 ;';
 
@@ -1871,7 +1871,7 @@ SELECT
 
     $query = '
 DELETE
-  FROM ' . LOUNGE_TABLE . '
+  FROM lounge
   WHERE image_id <= ' . $max_image_id . '
 ;';
     pwg_query($query);
@@ -1908,7 +1908,7 @@ function associate_images_to_categories($images, $categories)
 SELECT
     image_id,
     category_id
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE image_id IN (' . implode(',', $images) . ')
     AND category_id IN (' . implode(',', $categories) . ')
 ;';
@@ -1924,7 +1924,7 @@ SELECT
 SELECT
     category_id,
     MAX(rank_column) AS max_rank
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE rank_column IS NOT NULL
     AND category_id IN (' . implode(',', $categories) . ')
   GROUP BY category_id
@@ -1961,7 +1961,7 @@ SELECT
 
     if (count($inserts)) {
         mass_inserts(
-            IMAGE_CATEGORY_TABLE,
+            'image_category',
             array_keys($inserts[0]),
             $inserts
         );
@@ -1981,8 +1981,8 @@ function dissociate_images_from_category($images, $category)
     // which create virtual links with the category to "dissociate from".
     $query = '
 SELECT id
-  FROM ' . IMAGE_CATEGORY_TABLE . '
-    INNER JOIN ' . IMAGES_TABLE . ' ON image_id = id
+  FROM image_category
+    INNER JOIN images ON image_id = id
   WHERE category_id =' . $category . '
     AND id IN (' . implode(',', $images) . ')
     AND (
@@ -1995,7 +1995,7 @@ SELECT id
     if (! empty($dissociables)) {
         $query = '
 DELETE
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE category_id = ' . $category . '
     AND image_id IN (' . implode(',', $dissociables) . ')
 ';
@@ -2021,9 +2021,9 @@ function move_images_to_categories($images, $categories)
 
     // let's first break links with all old albums but their "storage album"
     $query = '
-DELETE ' . IMAGE_CATEGORY_TABLE . '.*
-  FROM ' . IMAGE_CATEGORY_TABLE . '
-    JOIN ' . IMAGES_TABLE . ' ON image_id=id
+DELETE image_category.*
+  FROM image_category
+    JOIN images ON image_id=id
   WHERE id IN (' . implode(',', $images) . ')
 ';
 
@@ -2058,7 +2058,7 @@ function associate_categories_to_categories($sources, $destinations)
 
     $query = '
 SELECT image_id
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE category_id IN (' . implode(',', $sources) . ')
 ;';
     $images = query2array($query, null, 'image_id');
@@ -2091,14 +2091,14 @@ function invalidate_user_cache($full = true)
 {
     if ($full) {
         $query = '
-TRUNCATE TABLE ' . USER_CACHE_CATEGORIES_TABLE . ';';
+TRUNCATE TABLE user_cache_categories;';
         pwg_query($query);
         $query = '
-TRUNCATE TABLE ' . USER_CACHE_TABLE . ';';
+TRUNCATE TABLE user_cache;';
         pwg_query($query);
     } else {
         $query = '
-UPDATE ' . USER_CACHE_TABLE . '
+UPDATE user_cache
   SET need_update = \'true\';';
         pwg_query($query);
     }
@@ -2115,7 +2115,7 @@ function invalidate_user_cache_nb_tags()
     unset($user['nb_available_tags']);
 
     $query = '
-UPDATE ' . USER_CACHE_TABLE . '
+UPDATE user_cache
   SET nb_available_tags = NULL';
     pwg_query($query);
 }
@@ -2180,14 +2180,14 @@ function create_tag($tag_name)
     // does the tag already exist?
     $query = '
 SELECT id
-  FROM ' . TAGS_TABLE . '
+  FROM tags
   WHERE name = \'' . $tag_name . '\'
 ;';
     $existing_tags = query2array($query, null, 'id');
 
     if (count($existing_tags) == 0) {
         single_insert(
-            TAGS_TABLE,
+            'tags',
             [
                 'name' => $tag_name,
                 'url_name' => trigger_change('render_tag_url', $tag_name),
@@ -2395,7 +2395,7 @@ function get_groupname($group_id)
 {
     $query = '
 SELECT name
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id = ' . intval($group_id) . '
 ;';
     $result = pwg_query($query);
@@ -2429,7 +2429,7 @@ function delete_groups($group_ids)
     // destruction of the access linked to the group
     $query = '
 DELETE
-  FROM ' . GROUP_ACCESS_TABLE . '
+  FROM group_access
   WHERE group_id IN (' . $group_id_string . ')
 ;';
     pwg_query($query);
@@ -2437,14 +2437,14 @@ DELETE
     // destruction of the users links for this group
     $query = '
 DELETE
-  FROM ' . USER_GROUP_TABLE . '
+  FROM user_group
   WHERE group_id IN (' . $group_id_string . ')
 ;';
     pwg_query($query);
 
     $query = '
 SELECT id, name
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id IN (' . $group_id_string . ')
 ;';
 
@@ -2454,7 +2454,7 @@ SELECT id, name
     // destruction of the group
     $query = '
 DELETE
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id IN (' . $group_id_string . ')
 ;';
     pwg_query($query);
@@ -2477,7 +2477,7 @@ function get_username($user_id)
 
     $query = '
 SELECT ' . $conf['user_fields']['username'] . '
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE ' . $conf['user_fields']['id'] . ' = ' . intval($user_id) . '
 ;';
     $result = pwg_query($query);
@@ -2684,7 +2684,7 @@ function add_permission_on_category($category_ids, $user_ids)
 
     $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $cat_ids) . ')
     AND status = \'private\'
 ;';
@@ -2705,7 +2705,7 @@ SELECT id
     }
 
     mass_inserts(
-        USER_ACCESS_TABLE,
+        'user_access',
         ['user_id', 'cat_id'],
         $inserts,
         [
@@ -2731,7 +2731,7 @@ function get_admins($include_webmaster = true)
     $query = '
 SELECT
     user_id
-  FROM ' . USER_INFOS_TABLE . '
+  FROM user_infos
   WHERE status in (\'' . implode("','", $status_list) . '\')
 ;';
 
@@ -2927,11 +2927,11 @@ function deltree($path, $trash_path = null)
 function get_admin_client_cache_keys($requested = [])
 {
     $tables = [
-        'categories' => CATEGORIES_TABLE,
-        'groups' => GROUPS_TABLE,
-        'images' => IMAGES_TABLE,
-        'tags' => TAGS_TABLE,
-        'users' => USER_INFOS_TABLE,
+        'categories' => 'categories',
+        'groups' => 'groups_table',
+        'images' => 'images',
+        'tags' => 'tags',
+        'users' => 'user_infos',
     ];
 
     if (! is_array($requested)) {
@@ -2971,7 +2971,7 @@ function get_photos_no_md5sum()
 {
     $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE md5sum is null
 ;';
     return query2array($query, null, 'id');
@@ -2986,7 +2986,7 @@ function add_md5sum($ids)
 {
     $query = '
 SELECT path
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id IN (' . implode(', ', $ids) . ')
 ;';
     $paths = query2array($query, null, 'path');
@@ -3001,7 +3001,7 @@ SELECT path
         ];
     }
     mass_updates(
-        IMAGES_TABLE,
+        'images',
         [
             'primary' => ['id'],
             'update' => ['md5sum'],
@@ -3019,14 +3019,14 @@ function count_orphans()
         $query = '
 SELECT
     COUNT(*)
-  FROM ' . IMAGES_TABLE . '
+  FROM images
 ;';
         list($image_counter_all) = pwg_db_fetch_row(pwg_query($query));
 
         $query = '
 SELECT
     COUNT(DISTINCT(image_id))
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
 ;';
         list($image_counter_in_categories) = pwg_db_fetch_row(pwg_query($query));
 
@@ -3048,15 +3048,15 @@ function get_orphans()
     $query = '
 SELECT
     image_id
-  FROM ' . LOUNGE_TABLE . '
+  FROM lounge
 ;';
     $lounged_ids = query2array($query, null, 'image_id');
 
     $query = '
 SELECT
     id
-  FROM ' . IMAGES_TABLE . '
-    LEFT JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id
+  FROM images
+    LEFT JOIN image_category ON id = image_id
   WHERE category_id is null';
 
     if (count($lounged_ids) > 0) {
@@ -3095,7 +3095,7 @@ function save_images_order($category_id, $images)
         'primary' => ['image_id', 'category_id'],
         'update' => ['rank_column'],
     ];
-    mass_updates(IMAGE_CATEGORY_TABLE, $fields, $datas);
+    mass_updates('image_category', $fields, $datas);
 }
 
 /**
@@ -3116,7 +3116,7 @@ function update_images_lastmodified($image_ids)
     }
 
     $query = '
-UPDATE ' . IMAGES_TABLE . '
+UPDATE images
   SET lastmodified = NOW()
   WHERE id IN (' . implode(',', $image_ids) . ')
 ;';
@@ -3168,7 +3168,7 @@ function get_image_infos($image_id, $die_on_missing = false)
 
     $query = '
 SELECT *
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id = ' . $image_id . '
 ;';
     $images = query2array($query);
@@ -3243,7 +3243,7 @@ function fs_quick_check()
     $query = '
 SELECT
     id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE date_available < \'2022-12-08 00:00:00\'
     AND path LIKE \'./upload/%\'
   LIMIT 5000
@@ -3255,7 +3255,7 @@ SELECT
     $query = '
 SELECT
     id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   LIMIT 5000
 ;';
     $random_image_ids = query2array($query, null, 'id');
@@ -3272,7 +3272,7 @@ SELECT
 SELECT
     id,
     path
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id IN (' . implode(',', $fs_quick_check_ids) . ')
 ;';
     $fsqc_paths = query2array($query, 'id', 'path');

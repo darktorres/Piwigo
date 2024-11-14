@@ -15,7 +15,7 @@ $template->assign('TAT_HAS_ORPHANS', count(get_orphans()) > 0 ? true : false);
 if (! isset($_SESSION['TAT_cat_id'])) {
     $query = '
 SELECT MAX(id) AS cat_id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
 ;';
     $row = pwg_db_fetch_assoc(pwg_query($query));
     $_SESSION['TAT_cat_id'] = $row['cat_id'];

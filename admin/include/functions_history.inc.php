@@ -48,7 +48,7 @@ function get_history($data, $search, $types)
         $query = '
 SELECT
     id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE file LIKE \'' . $search['fields']['filename'] . '\'
 ;';
         $search['image_ids'] = array_from_query($query, 'id');
@@ -129,7 +129,7 @@ SELECT
     tag_ids,
     image_id,
     image_type
-  FROM ' . HISTORY_TABLE . '
+  FROM history
   WHERE ' . $where_separator . '
 ;';
 
@@ -155,7 +155,7 @@ function history_summarize($max_lines = null)
     $query = '
 SELECT
     *
-  FROM ' . HISTORY_SUMMARY_TABLE . '
+  FROM history_summary
   WHERE history_id_to IS NOT NULL
   ORDER BY history_id_to DESC
   LIMIT 1
@@ -173,7 +173,7 @@ SELECT
         $query = '
 SELECT
     MIN(id) AS min_id
-  FROM ' . HISTORY_TABLE . '
+  FROM history
 ;';
         $history_lines = query2array($query);
         if (count($history_lines) > 0) {
@@ -188,7 +188,7 @@ SELECT
     MIN(id) AS min_id,
     MAX(id) AS max_id,
     COUNT(*) AS nb_pages
-  FROM ' . HISTORY_TABLE . '
+  FROM history
   WHERE id > ' . $history_min_id;
 
     if (isset($max_lines)) {
@@ -271,7 +271,7 @@ SELECT
 
         $query = '
 SELECT *
-  FROM ' . HISTORY_SUMMARY_TABLE . '
+  FROM history_summary
   WHERE year=' . $year . '
     AND ( month IS NULL
       OR ( month=' . $month . '
@@ -321,7 +321,7 @@ SELECT *
 
     if (count($updates) > 0) {
         mass_updates(
-            HISTORY_SUMMARY_TABLE,
+            'history_summary',
             [
                 'primary' => ['year', 'month', 'day', 'hour'],
                 'update' => ['nb_pages', 'history_id_to'],
@@ -332,7 +332,7 @@ SELECT *
 
     if (count($inserts) > 0) {
         mass_inserts(
-            HISTORY_SUMMARY_TABLE,
+            'history_summary',
             array_keys($inserts[0]),
             $inserts
         );
@@ -357,7 +357,7 @@ function history_autopurge()
     $query = '
 SELECT
     COUNT(*)
-  FROM ' . HISTORY_TABLE . '
+  FROM history
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
 
@@ -370,7 +370,7 @@ SELECT
     $query = '
 SELECT
     *
-  FROM ' . HISTORY_SUMMARY_TABLE . '
+  FROM history_summary
   WHERE history_id_to IS NOT NULL
   ORDER BY history_id_to DESC
   LIMIT 1
@@ -386,7 +386,7 @@ SELECT
     $query = '
 SELECT
     id
-  FROM ' . HISTORY_TABLE . '
+  FROM history
   ORDER BY id DESC
   LIMIT 1
 ;';
@@ -401,7 +401,7 @@ SELECT
     $query = '
 SELECT
     id
-  FROM ' . HISTORY_TABLE . '
+  FROM history
   ORDER BY id ASC
   LIMIT 1
 ;';
@@ -420,7 +420,7 @@ SELECT
 
     $query = '
 DELETE
-  FROM ' . HISTORY_TABLE . '
+  FROM history
   WHERE id < ' . $history_id_delete_before . '
 ;';
     pwg_query($query);
@@ -439,7 +439,7 @@ function history_remove_summarized_column()
     $query = '
 SELECT
     COUNT(*)
-  FROM ' . HISTORY_TABLE . '
+  FROM history
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
 
@@ -448,9 +448,9 @@ SELECT
         return;
     }
 
-    $result = pwg_query('SHOW COLUMNS FROM ' . HISTORY_TABLE . ' LIKE "summarized";');
+    $result = pwg_query('SHOW COLUMNS FROM history LIKE "summarized";');
     if (pwg_db_num_rows($result)) {
-        pwg_query('ALTER TABLE ' . HISTORY_TABLE . ' DROP COLUMN summarized;');
+        pwg_query('ALTER TABLE history DROP COLUMN summarized;');
     }
 
     conf_update_param('history_summarized_dropped', true);
