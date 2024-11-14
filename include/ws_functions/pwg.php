@@ -32,7 +32,7 @@ function ws_getMissingDerivatives($params, &$service)
     }
 
     $max_urls = $params['max_urls'];
-    $query = 'SELECT MAX(id)+1, COUNT(*) FROM ' . IMAGES_TABLE . ';';
+    $query = 'SELECT MAX(id)+1, COUNT(*) FROM images;';
     list($max_id, $image_count) = pwg_db_fetch_row(pwg_query($query));
 
     if ($image_count == 0) {
@@ -59,7 +59,7 @@ function ws_getMissingDerivatives($params, &$service)
 
     $query_model = '
 SELECT id, path, representative_ext, width, height, rotation
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE ' . implode(' AND ', $where_clauses) . '
   ORDER BY id DESC
   LIMIT ' . $qlimit . '
@@ -124,45 +124,45 @@ function ws_getInfos($params, &$service)
 {
     $infos['version'] = PHPWG_VERSION;
 
-    $query = 'SELECT COUNT(*) FROM ' . IMAGES_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM images;';
     list($infos['nb_elements']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM categories;';
     list($infos['nb_categories']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ' WHERE dir IS NULL;';
+    $query = 'SELECT COUNT(*) FROM categories WHERE dir IS NULL;';
     list($infos['nb_virtual']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . CATEGORIES_TABLE . ' WHERE dir IS NOT NULL;';
+    $query = 'SELECT COUNT(*) FROM categories WHERE dir IS NOT NULL;';
     list($infos['nb_physical']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . IMAGE_CATEGORY_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM image_category;';
     list($infos['nb_image_category']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . TAGS_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM tags;';
     list($infos['nb_tags']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . IMAGE_TAG_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM image_tag;';
     list($infos['nb_image_tag']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . USERS_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM users;';
     list($infos['nb_users']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . GROUPS_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM groups_table;';
     list($infos['nb_groups']) = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . ';';
+    $query = 'SELECT COUNT(*) FROM comments;';
     list($infos['nb_comments']) = pwg_db_fetch_row(pwg_query($query));
 
     // first element
     if ($infos['nb_elements'] > 0) {
-        $query = 'SELECT MIN(date_available) FROM ' . IMAGES_TABLE . ';';
+        $query = 'SELECT MIN(date_available) FROM images;';
         list($infos['first_date']) = pwg_db_fetch_row(pwg_query($query));
     }
 
     // unvalidated comments
     if ($infos['nb_comments'] > 0) {
-        $query = 'SELECT COUNT(*) FROM ' . COMMENTS_TABLE . ' WHERE validated=\'false\';';
+        $query = 'SELECT COUNT(*) FROM comments WHERE validated=\'false\';';
         list($infos['nb_unvalidated_comments']) = pwg_db_fetch_row(pwg_query($query));
     }
 
@@ -264,8 +264,8 @@ function ws_caddie_add($params, &$service)
 
     $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
-      LEFT JOIN ' . CADDIE_TABLE . '
+  FROM images
+      LEFT JOIN caddie
       ON id=element_id AND user_id=' . $user['id'] . '
   WHERE id IN (' . implode(',', $params['image_id']) . ')
     AND element_id IS NULL
@@ -281,7 +281,7 @@ SELECT id
     }
     if (count($datas)) {
         mass_inserts(
-            CADDIE_TABLE,
+            'caddie',
             ['element_id', 'user_id'],
             $datas
         );
@@ -299,7 +299,7 @@ SELECT id
 function ws_rates_delete($params, &$service)
 {
     $query = '
-DELETE FROM ' . RATE_TABLE . '
+DELETE FROM rate
   WHERE user_id=' . $params['user_id'];
 
     if (! empty($params['anonymous_id'])) {
@@ -426,7 +426,7 @@ SELECT
     occurred_on,
     details,
     user_agent
-  FROM ' . ACTIVITY_TABLE . '
+  FROM activity
   WHERE object != \'system\'';
 
     if (isset($param['uid'])) {
@@ -502,7 +502,7 @@ SELECT
 SELECT
     ' . $conf['user_fields']['id'] . ' AS user_id,
     ' . $conf['user_fields']['username'] . ' AS username
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE ' . $conf['user_fields']['id'] . ' IN (' . implode(',', array_keys($user_ids)) . ')
 ;';
         $username_of = query2array($query, 'user_id', 'username');
@@ -529,14 +529,14 @@ SELECT
         $query = '
   SELECT
       count(*)
-    FROM ' . ACTIVITY_TABLE . '
+    FROM activity
     WHERE performed_by = ' . $param['uid'] . '
   ;';
     } else {
         $query = '
   SELECT
       count(*)
-    FROM ' . ACTIVITY_TABLE . '
+    FROM activity
   ;';
     }
 
@@ -558,7 +558,7 @@ function ws_history_log($params, &$service)
 {
     global $logger, $page;
 
-    if (! empty($params['section']) and in_array($params['section'], get_enums(HISTORY_TABLE, 'section'))) {
+    if (! empty($params['section']) and in_array($params['section'], get_enums('history', 'section'))) {
         $page['section'] = $params['section'];
     }
 
@@ -606,7 +606,7 @@ function ws_history_search($param, &$service)
         $page['start'] = 0;
     }
 
-    $types = array_merge(['none'], get_enums(HISTORY_TABLE, 'image_type'));
+    $types = array_merge(['none'], get_enums('history', 'image_type'));
 
     $display_thumbnails = [
         'no_display_thumbnail' => l10n('No display'),
@@ -689,7 +689,7 @@ function ws_history_search($param, &$service)
         // register search rules in database, then they will be available on
         // thumbnails page and picture page.
         $query = '
-  INSERT INTO ' . SEARCH_TABLE . '
+  INSERT INTO search
   (rules)
   VALUES
   (\'' . pwg_db_real_escape_string(serialize($search)) . '\')
@@ -710,7 +710,7 @@ function ws_history_search($param, &$service)
     // what are the lines to display in reality?
     $query = '
 SELECT rules
-  FROM ' . SEARCH_TABLE . '
+  FROM search
   WHERE id = ' . $search_id . '
 ;';
     list($serialized_rules) = pwg_db_fetch_row(pwg_query($query));
@@ -760,7 +760,7 @@ SELECT rules
 SELECT
     id,
     rules
-  FROM ' . SEARCH_TABLE . '
+  FROM search
   WHERE id IN (' . implode(',', $search_ids) . ')
 ;';
         $search_details = query2array($query, 'id', 'rules');
@@ -789,7 +789,7 @@ SELECT
         $query = '
 SELECT ' . $conf['user_fields']['id'] . ' AS id
      , ' . $conf['user_fields']['username'] . ' AS username
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE id IN (' . implode(',', array_keys($user_ids)) . ')
 ;';
         $result = pwg_query($query);
@@ -803,7 +803,7 @@ SELECT ' . $conf['user_fields']['id'] . ' AS id
     if (count($category_ids) > 0) {
         $query = '
 SELECT id, uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', array_values($category_ids)) . ')
 ;';
         $uppercats_of = query2array($query, 'id', 'uppercats');
@@ -834,7 +834,7 @@ SELECT
     file,
     path,
     representative_ext
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id IN (' . implode(',', array_keys($image_ids)) . ')
 ;';
         $image_infos = query2array($query, 'id');
@@ -845,7 +845,7 @@ SELECT
 SELECT
     id,
     name, url_name
-  FROM ' . TAGS_TABLE;
+  FROM tags';
 
         global $name_of_tag; // used for preg_replace
         $name_of_tag = [];

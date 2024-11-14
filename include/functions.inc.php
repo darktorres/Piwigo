@@ -459,7 +459,7 @@ function get_languages()
 {
     $query = '
 SELECT id, name
-  FROM ' . LANGUAGES_TABLE . '
+  FROM languages
   ORDER BY name ASC
 ;';
     $result = pwg_query($query);
@@ -520,7 +520,7 @@ function pwg_log($image_id = null, $image_type = null, $format_id = null)
 
     if ($update_last_visit) {
         $query = '
-UPDATE ' . USER_INFOS_TABLE . '
+UPDATE user_infos
   SET last_visit = NOW(),
       lastmodified = lastmodified
   WHERE user_id = ' . $user['id'] . '
@@ -558,7 +558,7 @@ UPDATE ' . USER_INFOS_TABLE . '
     if (isset($page['section'])) {
         // set cache if not available
         if (! isset($conf['history_sections_cache'])) {
-            conf_update_param('history_sections_cache', get_enums(HISTORY_TABLE, 'section'), true);
+            conf_update_param('history_sections_cache', get_enums('history', 'section'), true);
         }
 
         $conf['history_sections_cache'] = safe_unserialize($conf['history_sections_cache']);
@@ -569,21 +569,21 @@ UPDATE ' . USER_INFOS_TABLE . '
         ) {
             $section = $page['section'];
         } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', $page['section'])) {
-            $history_sections = get_enums(HISTORY_TABLE, 'section');
+            $history_sections = get_enums('history', 'section');
             $history_sections[] = $page['section'];
 
             // alter history table structure, to include a new section
-            pwg_query('ALTER TABLE ' . HISTORY_TABLE . ' CHANGE section section enum(\'' . implode("','", array_unique($history_sections)) . '\') DEFAULT NULL;');
+            pwg_query('ALTER TABLE history CHANGE section section enum(\'' . implode("','", array_unique($history_sections)) . '\') DEFAULT NULL;');
 
             // and refresh cache
-            conf_update_param('history_sections_cache', get_enums(HISTORY_TABLE, 'section'), true);
+            conf_update_param('history_sections_cache', get_enums('history', 'section'), true);
 
             $section = $page['section'];
         }
     }
 
     $query = '
-INSERT INTO ' . HISTORY_TABLE . '
+INSERT INTO history
   (
     date,
     time,
@@ -711,7 +711,7 @@ function pwg_activity($object, $object_id, $action, $details = [])
         ];
     }
 
-    mass_inserts(ACTIVITY_TABLE, array_keys($inserts[0]), $inserts);
+    mass_inserts('activity', array_keys($inserts[0]), $inserts);
 }
 
 /**
@@ -1145,7 +1145,7 @@ function get_pwg_themes($show_mobile = false)
 SELECT
     id,
     name
-  FROM ' . THEMES_TABLE . '
+  FROM themes
   ORDER BY name ASC
 ;';
     $result = pwg_query($query);
@@ -1236,7 +1236,7 @@ function fill_caddie($elements_id)
 
     $query = '
 SELECT element_id
-  FROM ' . CADDIE_TABLE . '
+  FROM caddie
   WHERE user_id = ' . $user['id'] . '
 ;';
     $in_caddie = query2array($query, null, 'element_id');
@@ -1253,7 +1253,7 @@ SELECT element_id
     }
 
     if (count($caddiables) > 0) {
-        mass_inserts(CADDIE_TABLE, ['element_id', 'user_id'], $datas);
+        mass_inserts('caddie', ['element_id', 'user_id'], $datas);
     }
 }
 
@@ -1394,7 +1394,7 @@ function get_webmaster_mail_address()
 
     $query = '
 SELECT ' . $conf['user_fields']['email'] . '
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE ' . $conf['user_fields']['id'] . ' = ' . $conf['webmaster_id'] . '
 ;';
     list($email) = pwg_db_fetch_row(pwg_query($query));
@@ -1487,7 +1487,7 @@ function load_conf_from_db($condition = '')
 
     $query = '
 SELECT param, value
- FROM ' . CONFIG_TABLE . '
+ FROM config
  ' . (! empty($condition) ? 'WHERE ' . $condition : '') . '
 ;';
     $result = pwg_query($query);
@@ -1522,7 +1522,7 @@ function pwg_is_dbconf_writeable()
     list($param, $value) = ['pwg_is_dbconf_writeable_' . generate_key(12), date('c') . ' ' . generate_key(20)];
 
     conf_update_param($param, $value);
-    list($dbvalue) = pwg_db_fetch_row(pwg_query('SELECT value FROM ' . CONFIG_TABLE . ' WHERE param = \'' . $param . '\''));
+    list($dbvalue) = pwg_db_fetch_row(pwg_query('SELECT value FROM config WHERE param = \'' . $param . '\''));
 
     if ($dbvalue != $value) {
         return false;
@@ -1553,7 +1553,7 @@ function conf_update_param($param, $value, $updateGlobal = false, $parser = null
 
     $query = '
 INSERT INTO
-  ' . CONFIG_TABLE . ' (param, value)
+  config (param, value)
   VALUES(\'' . $param . '\', \'' . $dbValue . '\')
   ON DUPLICATE KEY UPDATE value = \'' . $dbValue . '\'
 ;';
@@ -1584,7 +1584,7 @@ function conf_delete_param($params)
     }
 
     $query = '
-DELETE FROM ' . CONFIG_TABLE . '
+DELETE FROM config
   WHERE param IN(\'' . implode('\',\'', $params) . '\')
 ;';
     pwg_query($query);
@@ -2305,15 +2305,15 @@ function get_nb_available_comments()
 
         $query = '
 SELECT COUNT(DISTINCT(com.id))
-  FROM ' . IMAGE_CATEGORY_TABLE . ' AS ic
-    INNER JOIN ' . COMMENTS_TABLE . ' AS com
+  FROM image_category AS ic
+    INNER JOIN comments AS com
     ON ic.image_id = com.image_id
   WHERE ' . implode('
     AND ', $where);
         list($user['nb_available_comments']) = pwg_db_fetch_row(pwg_query($query));
 
         single_update(
-            USER_CACHE_TABLE,
+            'user_cache',
             [
                 'nb_available_comments' => $user['nb_available_comments'],
             ],
@@ -2378,8 +2378,8 @@ SELECT
     image_id,
     date_available,
     NOW() AS dbnow
-  FROM ' . LOUNGE_TABLE . '
-    JOIN ' . IMAGES_TABLE . ' ON image_id = id
+  FROM lounge
+    JOIN images ON image_id = id
   ORDER BY image_id ASC
   LIMIT 1
 ;';

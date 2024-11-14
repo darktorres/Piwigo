@@ -27,8 +27,8 @@ check_status(ACCESS_GUEST);
 
 $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
-    INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON id = ic.image_id
+  FROM images
+    INNER JOIN image_category AS ic ON id = ic.image_id
 ' . get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',

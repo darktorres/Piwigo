@@ -794,7 +794,7 @@ function get_user_favorites()
 SELECT
     image_id,
     1 as fake_value
-  FROM ' . FAVORITES_TABLE . '
+  FROM favorites
   WHERE user_id = ' . $user['id'] . '
 ';
 
