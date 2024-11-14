@@ -376,7 +376,7 @@ function ws_tags_duplicate(
     $query = <<<SQL
         SELECT COUNT(*)
         FROM tags
-        WHERE name = "{$copy_name}";
+        WHERE name = '{$copy_name}';
         SQL;
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {

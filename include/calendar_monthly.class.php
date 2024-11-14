@@ -209,13 +209,12 @@ class CalendarMonthly extends CalendarBase
 
         $period = pwg_db_get_date_YYYYMM($this->date_field);
         $year = pwg_db_get_year($this->date_field);
-        $month = pwg_db_get_month($this->date_field);
         $query = <<<SQL
             SELECT {$period} AS period, COUNT(DISTINCT id) AS count
             {$this->inner_sql}
             {$this->get_date_where()}
             GROUP BY period
-            ORDER BY {$year} DESC, {$month} ASC;
+            ORDER BY period;
             SQL;
 
         $result = pwg_query($query);
