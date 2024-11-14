@@ -109,7 +109,7 @@ function save_upload_form_config($data, &$errors = [], &$form_errors = [])
 
     if (count($errors) == 0) {
         mass_updates(
-            CONFIG_TABLE,
+            'config',
             [
                 'primary' => ['param'],
                 'update' => ['value'],
@@ -147,7 +147,7 @@ function add_uploaded_file($source_filepath, $original_filename = null, $categor
         $query = '
 SELECT
     id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE md5sum = \'' . $md5sum . '\'
 ;';
         $images_found = query2array($query);
@@ -174,7 +174,7 @@ SELECT
         $query = '
 SELECT
     path
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id = ' . $image_id . '
 ;';
         $result = pwg_query($query);
@@ -299,7 +299,7 @@ SELECT
         }
 
         single_update(
-            IMAGES_TABLE,
+            'images',
             $update,
             [
                 'id' => $image_id,
@@ -329,7 +329,7 @@ SELECT
             $insert['representative_ext'] = $representative_ext;
         }
 
-        single_insert(IMAGES_TABLE, $insert);
+        single_insert('images', $insert);
 
         $image_id = pwg_db_insert_id();
         pwg_activity('photo', $image_id, 'add');
@@ -349,7 +349,7 @@ SELECT
     id,
     path,
     representative_ext
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id = ' . $image_id . '
 ;';
     $image_infos = pwg_db_fetch_assoc(pwg_query($query));
@@ -379,7 +379,7 @@ function add_uploaded_file_add_to_categories($image_id, $categories)
 
     if (! $conf['lounge_active']) {
         // check if we need to use the lounge from now
-        list($nb_photos) = pwg_db_fetch_row(pwg_query('SELECT COUNT(*) FROM ' . IMAGES_TABLE . ';'));
+        list($nb_photos) = pwg_db_fetch_row(pwg_query('SELECT COUNT(*) FROM images;'));
         if ($nb_photos >= $conf['lounge_activate_threshold']) {
             conf_update_param('lounge_active', true, true);
         }
@@ -417,7 +417,7 @@ function add_format($source_filepath, $format_ext, $format_of)
     $query = '
 SELECT
     path
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id = ' . $format_of . '
 ;';
     $images = query2array($query);
@@ -447,7 +447,7 @@ SELECT
         'filesize' => $file_infos['filesize'],
     ];
 
-    single_insert(IMAGE_FORMAT_TABLE, $insert);
+    single_insert('image_format', $insert);
     $format_id = pwg_db_insert_id();
 
     pwg_activity('photo', $format_of, 'edit', [

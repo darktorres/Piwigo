@@ -30,7 +30,7 @@ $groups = [];
 
 $query = '
 SELECT id, name
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   ORDER BY name ASC
 ;';
 $result = pwg_query($query);
@@ -47,7 +47,7 @@ $query = '
 SELECT DISTINCT
       month(registration_date) as registration_month,
       year(registration_date) as registration_year
-FROM ' . USER_INFOS_TABLE . '
+FROM user_infos
 ORDER BY registration_date
 ;';
 $result = pwg_query($query);
@@ -90,7 +90,7 @@ if ($user['status'] == 'admin') {
     $query = '
 SELECT
     user_id
-  FROM ' . USER_INFOS_TABLE . '
+  FROM user_infos
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
     $admin_ids = query2array($query, null, 'user_id');
@@ -127,7 +127,7 @@ if (isset($_GET['show_add_user'])) {
 }
 
 // Status options
-foreach (get_enums(USER_INFOS_TABLE, 'status') as $status) {
+foreach (get_enums('user_infos', 'status') as $status) {
     $label_of_status[$status] = l10n('user_status_' . $status);
 }
 
@@ -152,7 +152,7 @@ $template->assign('level_selected', $default_user['level']);
 
 $query = '
 SELECT id, name, is_default
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   ORDER BY name ASC
 ;';
 $result = pwg_query($query);

@@ -35,7 +35,7 @@ $categories = [];
 
 $query = '
 SELECT id, name, status, uppercats
-  FROM ' . CATEGORIES_TABLE;
+  FROM categories';
 
 $result = query2array($query);
 
@@ -58,7 +58,7 @@ foreach ($result as $cat) {
 $query = '
 SELECT
     name
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   ORDER BY RAND()
   LIMIT 1
 ;';

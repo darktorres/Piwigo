@@ -68,7 +68,7 @@ if (isset($_GET['cat']) and is_numeric($_GET['cat'])) {
 $users = [];
 $query = '
 SELECT ' . $conf['user_fields']['username'] . ' as username, ' . $conf['user_fields']['id'] . ' as id
-  FROM ' . USERS_TABLE . '
+  FROM users
 ;';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
@@ -78,12 +78,12 @@ while ($row = pwg_db_fetch_assoc($result)) {
 $query = '
 SELECT
     COUNT(DISTINCT(r.element_id))
-  FROM ' . RATE_TABLE . ' AS r';
+  FROM rate AS r';
 
 if (! empty($page['cat_filter'])) {
     $query .= '
-    JOIN ' . IMAGES_TABLE . ' AS i ON r.element_id = i.id
-    JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON ic.image_id = i.id';
+    JOIN images AS i ON r.element_id = i.id
+    JOIN image_category AS ic ON ic.image_id = i.id';
 }
 
 $query .= '
@@ -93,7 +93,7 @@ list($nb_images) = pwg_db_fetch_row(pwg_query($query));
 $query = '
 SELECT
     COUNT(*)
-  FROM ' . RATE_TABLE .
+  FROM rate' .
 ';';
 list($nb_elements) = pwg_db_fetch_row(pwg_query($query));
 
@@ -158,12 +158,12 @@ SELECT i.id,
     ROUND(AVG(r.rate),2) AS avg_rates,
     COUNT(r.rate)        AS nb_rates,
     SUM(r.rate)          AS sum_rates
-  FROM ' . RATE_TABLE . ' AS r
-    LEFT JOIN ' . IMAGES_TABLE . ' AS i ON r.element_id = i.id';
+  FROM rate AS r
+    LEFT JOIN images AS i ON r.element_id = i.id';
 
 if (! empty($page['cat_filter'])) {
     $query .= '
-    JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON ic.image_id = i.id';
+    JOIN image_category AS ic ON ic.image_id = i.id';
 }
 
 $query .= '
@@ -191,7 +191,7 @@ foreach ($images as $image) {
     $image_url = get_root_url() . 'admin.php?page=photo-' . $image['id'];
 
     $query = 'SELECT *
-FROM ' . RATE_TABLE . ' AS r
+FROM rate AS r
 WHERE r.element_id=' . $image['id'] . '
 ORDER BY date DESC;';
     $result = pwg_query($query);

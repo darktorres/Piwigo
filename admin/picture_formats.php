@@ -22,7 +22,7 @@ check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 
 $query = '
 SELECT *
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id = ' . $_GET['image_id'] . '
 ;';
 $images = query2array($query);
@@ -31,7 +31,7 @@ $image = $images[0];
 $query = '
 SELECT
     *
-  FROM ' . IMAGE_FORMAT_TABLE . '
+  FROM image_format
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
 
