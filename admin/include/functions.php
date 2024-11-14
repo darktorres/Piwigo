@@ -1800,13 +1800,13 @@ function empty_lounge(
     $query = <<<SQL
         INSERT IGNORE
         INTO config
-        SET param = "empty_lounge_running",
-            value = "{$exec_id}-{$current_time}";
+        SET param = 'empty_lounge_running',
+            value = '{$exec_id}-{$current_time}';
         SQL;
     pwg_query($query);
 
     $query = <<<SQL
-        SELECT value FROM config WHERE param = "empty_lounge_running";
+        SELECT value FROM config WHERE param = 'empty_lounge_running';
         SQL;
     [$empty_lounge_running] = pwg_db_fetch_row(pwg_query($query));
     [$running_exec_id] = explode('-', (string) $empty_lounge_running);
@@ -2970,7 +2970,7 @@ function get_admin_client_cache_keys(
 
     foreach ($requested as $item) {
         $query = <<<SQL
-            SELECT CONCAT(UNIX_TIMESTAMP(MAX(lastmodified)), "_", COUNT(*))
+            SELECT CONCAT(UNIX_TIMESTAMP(MAX(lastmodified)), '_', COUNT(*))
             FROM {$tables[$item]};
             SQL;
         [$keys[$item]] = pwg_db_fetch_row(pwg_query($query));

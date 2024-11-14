@@ -668,7 +668,7 @@ function ws_users_setInfo(
         $userIdsForStatus = implode(',', $params['user_id_for_status']);
         $query = <<<SQL
             UPDATE user_infos
-            SET status = "{$update_status}"
+            SET status = '{$update_status}'
             WHERE user_id IN ({$userIdsForStatus});
             SQL;
         pwg_query($query);
