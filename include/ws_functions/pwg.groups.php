@@ -35,8 +35,8 @@ function ws_groups_getList($params, &$service)
     $query = '
 SELECT
     g.*, COUNT(user_id) AS nb_users
-  FROM ' . GROUPS_TABLE . ' AS g
-    LEFT JOIN ' . USER_GROUP_TABLE . ' AS ug
+  FROM groups_table AS g
+    LEFT JOIN user_group AS ug
     ON ug.group_id = g.id
   WHERE ' . implode(' AND ', $where_clauses) . '
   GROUP BY id
@@ -71,7 +71,7 @@ function ws_groups_add($params, &$service)
     // is the name not already used?
     $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE name = \'' . $params['name'] . '\'
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -85,7 +85,7 @@ SELECT COUNT(*)
 
     // creating the group
     single_insert(
-        GROUPS_TABLE,
+        'groups_table',
         [
             'name' => $params['name'],
             'is_default' => boolean_to_string($params['is_default']),
@@ -144,7 +144,7 @@ function ws_groups_setInfo($params, &$service)
     // does the group exist?
     $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id = ' . $params['group_id'] . '
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -158,7 +158,7 @@ SELECT COUNT(*)
         // is the name not already used?
         $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE name = \'' . $params['name'] . '\'
   AND id != ' . $params['group_id'] . '
 ;';
@@ -175,7 +175,7 @@ SELECT COUNT(*)
     }
 
     single_update(
-        GROUPS_TABLE,
+        'groups_table',
         $updates,
         [
             'id' => $params['group_id'],
@@ -205,7 +205,7 @@ function ws_groups_addUser($params, &$service)
     // does the group exist?
     $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id = ' . $params['group_id'] . '
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -222,7 +222,7 @@ SELECT COUNT(*)
     }
 
     mass_inserts(
-        USER_GROUP_TABLE,
+        'user_group',
         ['group_id', 'user_id'],
         $inserts
     );
@@ -263,7 +263,7 @@ function ws_groups_merge($params, &$service)
 
     $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id in (' . implode(',', $all_groups) . ')
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -277,7 +277,7 @@ SELECT COUNT(*)
 
     $query = '
 SELECT DISTINCT(user_id)
-  FROM ' . USER_GROUP_TABLE . '
+  FROM user_group
   WHERE
     group_id IN (' . implode(',', $merge_group) . ')
 ;';
@@ -285,7 +285,7 @@ SELECT DISTINCT(user_id)
 
     $query = '
 SELECT user_id
-  FROM ' . USER_GROUP_TABLE . '
+  FROM user_group
   WHERE group_id = ' . $params['destination_group_id'] . '
 ;';
 
@@ -302,7 +302,7 @@ SELECT user_id
     }
 
     mass_inserts(
-        USER_GROUP_TABLE,
+        'user_group',
         ['group_id', 'user_id'],
         $inserts,
         [
@@ -348,7 +348,7 @@ function ws_groups_duplicate($params, &$service)
 
     $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE name = \'' . pwg_db_real_escape_string($params['copy_name']) . '\'
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -358,7 +358,7 @@ SELECT COUNT(*)
 
     $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id = ' . $params['group_id'] . '
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -368,7 +368,7 @@ SELECT COUNT(*)
 
     $query = '
 SELECT is_default
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id = ' . $params['group_id'] . '
 ;';
 
@@ -376,7 +376,7 @@ SELECT is_default
 
     // creating the group
     single_insert(
-        GROUPS_TABLE,
+        'groups_table',
         [
             'name' => $params['copy_name'],
             'is_default' => boolean_to_string($is_default),
@@ -388,7 +388,7 @@ SELECT is_default
 
     $query = '
   SELECT user_id
-    FROM ' . USER_GROUP_TABLE . '
+    FROM user_group
     WHERE group_id = ' . $params['group_id'] . '
   ;';
 
@@ -403,7 +403,7 @@ SELECT is_default
     }
 
     mass_inserts(
-        USER_GROUP_TABLE,
+        'user_group',
         ['group_id', 'user_id'],
         $inserts,
         [
@@ -441,7 +441,7 @@ function ws_groups_deleteUser($params, &$service)
     // does the group exist?
     $query = '
 SELECT COUNT(*)
-  FROM ' . GROUPS_TABLE . '
+  FROM groups_table
   WHERE id = ' . $params['group_id'] . '
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
@@ -450,7 +450,7 @@ SELECT COUNT(*)
     }
 
     $query = '
-DELETE FROM ' . USER_GROUP_TABLE . '
+DELETE FROM user_group
   WHERE
     group_id = ' . $params['group_id'] . '
     AND user_id IN(' . implode(',', $params['user_id']) . ')

@@ -137,7 +137,7 @@ function pwg_session_read($session_id)
 {
     $query = '
 SELECT data
-  FROM ' . SESSIONS_TABLE . '
+  FROM sessions
   WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
 ;';
     $result = pwg_query($query);
@@ -157,7 +157,7 @@ SELECT data
 function pwg_session_write($session_id, $data)
 {
     $query = '
-REPLACE INTO ' . SESSIONS_TABLE . '
+REPLACE INTO sessions
   (id,data,expiration)
   VALUES(\'' . get_remote_addr_session_hash() . $session_id . '\',\'' . pwg_db_real_escape_string($data) . '\',now())
 ;';
@@ -175,7 +175,7 @@ function pwg_session_destroy($session_id)
 {
     $query = '
 DELETE
-  FROM ' . SESSIONS_TABLE . '
+  FROM sessions
   WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
 ;';
     pwg_query($query);
@@ -193,7 +193,7 @@ function pwg_session_gc()
 
     $query = '
 DELETE
-  FROM ' . SESSIONS_TABLE . '
+  FROM sessions
   WHERE ' . pwg_db_date_to_ts('NOW()') . ' - ' . pwg_db_date_to_ts('expiration') . ' > '
     . $conf['session_length'] . '
 ;';
@@ -257,7 +257,7 @@ function delete_user_sessions($user_id)
 {
     $query = '
 DELETE
-  FROM ' . SESSIONS_TABLE . '
+  FROM sessions
   WHERE data LIKE \'%pwg_uid|i:' . (int) $user_id . ';%\'
 ;';
     pwg_query($query);

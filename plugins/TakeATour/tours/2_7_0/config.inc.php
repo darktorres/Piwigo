@@ -30,7 +30,7 @@ if (isset($_GET['image_id']) and pwg_get_session_var('TAT_image_id') == null) {
 } else {
     $query = '
     SELECT id
-      FROM ' . IMAGES_TABLE . '
+      FROM images
       ORDER BY RAND()
       LIMIT 1
     ;';

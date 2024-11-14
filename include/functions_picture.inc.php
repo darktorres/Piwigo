@@ -115,7 +115,7 @@ function increase_image_visit_counter($image_id)
     // avoiding auto update of "lastmodified" field
     $query = '
 UPDATE
-  ' . IMAGES_TABLE . '
+  images
   SET hit = hit+1, lastmodified = lastmodified
   WHERE id = ' . $image_id . '
 ;';

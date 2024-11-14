@@ -65,7 +65,7 @@ if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
     // site must not exist
     $query = '
 SELECT COUNT(id) AS count
-  FROM ' . SITES_TABLE . '
+  FROM sites
   WHERE galleries_url = \'' . $url . '\'
 ;';
     $row = pwg_db_fetch_assoc(pwg_query($query));
@@ -80,7 +80,7 @@ SELECT COUNT(id) AS count
 
     if (count($page['errors']) == 0) {
         $query = '
-INSERT INTO ' . SITES_TABLE . '
+INSERT INTO sites
   (galleries_url)
   VALUES
   (\'' . $url . '\')
@@ -99,7 +99,7 @@ if (isset($_GET['site']) and is_numeric($_GET['site'])) {
 if (isset($_GET['action']) and isset($page['site'])) {
     $query = '
 SELECT galleries_url
-  FROM ' . SITES_TABLE . '
+  FROM sites
   WHERE id = ' . $page['site'] . '
 ;';
     list($galleries_url) = pwg_db_fetch_row(pwg_query($query));
@@ -123,7 +123,7 @@ $template->assign(
 
 $query = '
 SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_images
-  FROM ' . CATEGORIES_TABLE . ' AS c LEFT JOIN ' . IMAGES_TABLE . ' AS i
+  FROM categories AS c LEFT JOIN images AS i
   ON c.id=i.storage_category_id
   WHERE c.site_id IS NOT NULL
   GROUP BY c.site_id
@@ -132,7 +132,7 @@ $sites_detail = hash_from_query($query, 'site_id');
 
 $query = '
 SELECT *
-  FROM ' . SITES_TABLE . '
+  FROM sites
 ;';
 $result = pwg_query($query);
 

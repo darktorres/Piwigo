@@ -68,7 +68,7 @@ if (isset($_POST['submit'])) {
         $image_order = 'rank_column ASC';
     }
     $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
   WHERE id=' . $page['category_id'];
     pwg_query($query);
@@ -77,7 +77,7 @@ UPDATE ' . CATEGORIES_TABLE . '
         $cat_info = get_cat_info($page['category_id']);
 
         $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
   WHERE uppercats LIKE \'' . $cat_info['uppercats'] . ',%\'';
         pwg_query($query);
@@ -99,7 +99,7 @@ $base_url = get_root_url() . 'admin.php';
 
 $query = '
 SELECT *
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id = ' . $page['category_id'] . '
 ;';
 $category = pwg_db_fetch_assoc(pwg_query($query));
@@ -136,8 +136,8 @@ SELECT
     width, height, rotation,
     name,
     rank_column
-  FROM ' . IMAGES_TABLE . '
-    JOIN ' . IMAGE_CATEGORY_TABLE . ' ON image_id = id
+  FROM images
+    JOIN image_category ON image_id = id
   WHERE category_id = ' . $page['category_id'] . '
   ORDER BY rank_column
 ;';

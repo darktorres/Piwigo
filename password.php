@@ -79,7 +79,7 @@ function process_password_request()
     list($expire) = pwg_db_fetch_row(pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
 
     single_update(
-        USER_INFOS_TABLE,
+        'user_infos',
         [
             'activation_key' => pwg_password_hash($activation_key),
             'activation_key_expire' => $expire,
@@ -147,7 +147,7 @@ function check_password_reset_key($reset_key)
     $query = '
 SELECT
   ' . $conf['user_fields']['id'] . ' AS id
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE ' . $conf['user_fields']['email'] . ' = \'' . pwg_db_real_escape_string($email) . '\'
 ;';
     $user_ids = query2array($query, null, 'id');
@@ -166,7 +166,7 @@ SELECT
     activation_key,
     activation_key_expire,
     NOW() AS dbnow
-  FROM ' . USER_INFOS_TABLE . '
+  FROM user_infos
   WHERE user_id IN (' . implode(',', $user_ids) . ')
 ;';
     $result = pwg_query($query);
@@ -221,7 +221,7 @@ function reset_password()
     }
 
     single_update(
-        USERS_TABLE,
+        'users',
         [
             $conf['user_fields']['password'] => $conf['password_hash']($_POST['use_new_pwd']),
         ],

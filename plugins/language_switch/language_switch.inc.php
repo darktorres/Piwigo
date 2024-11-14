@@ -46,7 +46,7 @@ function language_controler_switch()
                 pwg_set_session_var('lang_switch', $_GET['lang']);
             } else {
                 $query = '
-UPDATE ' . USER_INFOS_TABLE . '
+UPDATE user_infos
   SET language = \'' . $_GET['lang'] . '\'
   WHERE user_id = ' . $user['id'] . '
 ;';

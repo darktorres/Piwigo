@@ -239,7 +239,7 @@ INSERT INTO config (param,value,comment)
             'id' => 1,
             'galleries_url' => PHPWG_ROOT_PATH . 'galleries/',
         ];
-        mass_inserts(SITES_TABLE, array_keys($insert), [$insert]);
+        mass_inserts('sites', array_keys($insert), [$insert]);
 
         // webmaster admin user
         $inserts = [
@@ -254,7 +254,7 @@ INSERT INTO config (param,value,comment)
                 'username' => 'guest',
             ],
         ];
-        mass_inserts(USERS_TABLE, array_keys($inserts[0]), $inserts);
+        mass_inserts('users', array_keys($inserts[0]), $inserts);
 
         create_user_infos([1, 2], [
             'language' => $language,
@@ -275,7 +275,7 @@ INSERT INTO config (param,value,comment)
         //     );
         // }
         // mass_inserts(
-        //   UPGRADE_TABLE,
+        //   'upgrade',
         //   array_keys($datas[0]),
         //   $datas
         //   );

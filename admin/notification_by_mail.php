@@ -106,7 +106,7 @@ function insert_new_data_user_mail_notification()
     // Set null mail_address empty
     $query = '
 update
-  ' . USERS_TABLE . '
+  users
 set
   ' . $conf['user_fields']['email'] . ' = null
 where
@@ -120,7 +120,7 @@ select
   u.' . $conf['user_fields']['username'] . ' as username,
   u.' . $conf['user_fields']['email'] . ' as mail_address
 from
-  ' . USERS_TABLE . ' as u left join ' . USER_MAIL_NOTIFICATION_TABLE . ' as m on u.' . $conf['user_fields']['id'] . ' = m.user_id
+  users as u left join user_mail_notification as m on u.' . $conf['user_fields']['id'] . ' = m.user_id
 where
   u.' . $conf['user_fields']['email'] . ' is not null and
   m.user_id is null
@@ -155,7 +155,7 @@ order by
         }
 
         // Insert new nbm_users
-        mass_inserts(USER_MAIL_NOTIFICATION_TABLE, ['user_id', 'check_key', 'enabled'], $inserts);
+        mass_inserts('user_mail_notification', ['user_id', 'check_key', 'enabled'], $inserts);
         // Update field enabled with specific function
         $check_key_treated = do_subscribe_unsubscribe_notification_by_mail(
             true,
@@ -167,7 +167,7 @@ order by
         if ($env_nbm['is_sendmail_timeout']) {
             $quoted_check_key_list = quote_check_key_list(array_diff($check_key_list, $check_key_treated));
             if (count($quoted_check_key_list) != 0) {
-                $query = 'delete from ' . USER_MAIL_NOTIFICATION_TABLE . ' where check_key in (' . implode(',', $quoted_check_key_list) . ');';
+                $query = 'delete from user_mail_notification where check_key in (' . implode(',', $quoted_check_key_list) . ');';
                 $result = pwg_query($query);
 
                 redirect($base_url . get_query_string_diff([], false), l10n('Operation in progress') . "\n" . l10n('Please wait...'));
@@ -381,7 +381,7 @@ function do_action_send_mail_notification($action = 'list_to_send', $check_key_l
 
                 if ($is_action_send) {
                     mass_updates(
-                        USER_MAIL_NOTIFICATION_TABLE,
+                        'user_mail_notification',
                         [
                             'primary' => ['user_id'],
                             'update' => ['last_send'],
@@ -456,7 +456,7 @@ switch ($page['mode']) {
 
             $updated_param_count = 0;
             // Update param
-            $result = pwg_query('select param, value from ' . CONFIG_TABLE . ' where param like \'nbm\\_%\'');
+            $result = pwg_query('select param, value from config where param like \'nbm\\_%\'');
             while ($nbm_user = pwg_db_fetch_assoc($result)) {
                 if (isset($_POST[$nbm_user['param']])) {
                     conf_update_param($nbm_user['param'], $_POST[$nbm_user['param']], true);

@@ -32,7 +32,7 @@ $site_id = $_GET['site'];
 
 $query = '
 SELECT galleries_url
-  FROM ' . SITES_TABLE . '
+  FROM sites
   WHERE id = ' . $site_id;
 list($site_url) = pwg_db_fetch_row(pwg_query($query));
 if (! isset($site_url)) {
@@ -130,7 +130,7 @@ if (isset($_POST['submit'])
     // which categories to update?
     $query = '
 SELECT id, uppercats, global_rank, status, visible
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE dir IS NOT NULL
     AND site_id = ' . $site_id;
     if (isset($_POST['cat']) and is_numeric($_POST['cat'])) {
@@ -166,7 +166,7 @@ SELECT id, uppercats, global_rank, status, visible
 
     $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE;
+  FROM categories';
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $next_rank[$row['id']] = 1;
@@ -175,7 +175,7 @@ SELECT id
     // let's see if some categories already have some sub-categories...
     $query = '
 SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   GROUP BY id_uppercat';
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -187,7 +187,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
     }
 
     // next category id available
-    $next_id = pwg_db_nextval('id', CATEGORIES_TABLE);
+    $next_id = pwg_db_nextval('id', 'categories');
 
     // retrieve subdirectories fulldirs from the site reader
     $fs_fulldirs = $site_reader->get_full_directories($basedir);
@@ -273,7 +273,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
                 'id', 'dir', 'name', 'site_id', 'id_uppercat', 'uppercats', 'commentable',
                 'visible', 'status', 'rank_column', 'global_rank',
             ];
-            mass_inserts(CATEGORIES_TABLE, $dbfields, $inserts);
+            mass_inserts('categories', $dbfields, $inserts);
 
             // add default permissions to categories
             $category_ids = [];
@@ -293,7 +293,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
             if ($conf['inheritance_by_default'] and ! empty($category_up)) {
                 $query = '
           SELECT *
-          FROM ' . GROUP_ACCESS_TABLE . '
+          FROM group_access
           WHERE cat_id IN (' . $category_up . ')
         ;';
                 $result = pwg_query($query);
@@ -314,7 +314,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
                 }
                 $query = '
           SELECT *
-          FROM ' . USER_ACCESS_TABLE . '
+          FROM user_access
           WHERE cat_id IN (' . $category_up . ')
         ;';
                 $result = pwg_query($query);
@@ -359,9 +359,9 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
                         }
                     }
                 }
-                mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $insert_granted_grps);
+                mass_inserts('group_access', ['group_id', 'cat_id'], $insert_granted_grps);
                 $insert_granted_users = array_unique($insert_granted_users, SORT_REGULAR);
-                mass_inserts(USER_ACCESS_TABLE, ['user_id', 'cat_id'], $insert_granted_users);
+                mass_inserts('user_access', ['user_id', 'cat_id'], $insert_granted_users);
             } else {
                 add_permission_on_category($category_ids, get_admins());
             }
@@ -426,7 +426,7 @@ if (isset($_POST['submit']) and $_POST['sync'] == 'files'
     if (count($cat_ids) > 0) {
         $query = '
 SELECT id, path
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE storage_category_id IN ('
           . wordwrap(
               implode(', ', $cat_ids),
@@ -437,7 +437,7 @@ SELECT id, path
     }
 
     // next element id available
-    $next_element_id = pwg_db_nextval('id', IMAGES_TABLE);
+    $next_element_id = pwg_db_nextval('id', 'images');
 
     $start = get_moment();
 
@@ -526,7 +526,7 @@ SELECT id, path
             // find formats for existing photos (already in database)
             $query = '
 SELECT *
-  FROM ' . IMAGE_FORMAT_TABLE . '
+  FROM image_format
   WHERE image_id IN (' . implode(',', $existing_ids) . ')
 ;';
             $result = pwg_query($query);
@@ -583,14 +583,14 @@ SELECT *
         // inserts all new elements
         if (count($inserts) > 0) {
             mass_inserts(
-                IMAGES_TABLE,
+                'images',
                 array_keys($inserts[0]),
                 $inserts
             );
 
             // inserts all links between new elements and their storage category
             mass_inserts(
-                IMAGE_CATEGORY_TABLE,
+                'image_category',
                 array_keys($insert_links[0]),
                 $insert_links
             );
@@ -608,7 +608,7 @@ SELECT *
         // inserts all formats
         if (count($insert_formats) > 0) {
             mass_inserts(
-                IMAGE_FORMAT_TABLE,
+                'image_format',
                 array_keys($insert_formats[0]),
                 $insert_formats
             );
@@ -617,7 +617,7 @@ SELECT *
         if (count($formats_to_delete) > 0) {
             $query = '
 DELETE
-  FROM ' . IMAGE_FORMAT_TABLE . '
+  FROM image_format
   WHERE format_id IN (' . implode(',', $formats_to_delete) . ')
 ;';
             pwg_query($query);
@@ -702,7 +702,7 @@ if (isset($_POST['submit'])
         $counts['upd_elements'] = count($datas);
         if (! $simulate and count($datas) > 0) {
             mass_updates(
-                IMAGES_TABLE,
+                'images',
                 // fields
                 [
                     'primary' => ['id'],
@@ -798,7 +798,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
     if (! $simulate) {
         if (count($datas) > 0) {
             mass_updates(
-                IMAGES_TABLE,
+                'images',
                 // fields
                 [
                     'primary' => ['id'],
@@ -912,7 +912,7 @@ $template->assign('introduction', $tpl_introduction);
 
 $query = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE site_id = ' . $site_id;
 display_select_cat_wrapper(
     $query,

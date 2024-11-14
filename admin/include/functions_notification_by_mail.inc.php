@@ -40,7 +40,7 @@ function find_available_check_key()
 select
   count(*)
 from
-  ' . USER_MAIL_NOTIFICATION_TABLE . '
+  user_mail_notification
 where
   check_key = \'' . $key . '\';';
 
@@ -106,9 +106,9 @@ select
   N.enabled,
   N.last_send,
   UI.status
-from ' . USER_MAIL_NOTIFICATION_TABLE . ' as N
-  JOIN ' . USERS_TABLE . ' as U on N.user_id =  U.' . $conf['user_fields']['id'] . '
-  JOIN ' . USER_INFOS_TABLE . ' as UI on UI.user_id = N.user_id
+from user_mail_notification as N
+  JOIN users as U on N.user_id =  U.' . $conf['user_fields']['id'] . '
+  JOIN user_infos as UI on UI.user_id = N.user_id
 where 1=1';
 
         if ($action == 'send') {
@@ -443,7 +443,7 @@ function do_subscribe_unsubscribe_notification_by_mail($is_admin_request, $is_su
         display_counter_info();
 
         mass_updates(
-            USER_MAIL_NOTIFICATION_TABLE,
+            'user_mail_notification',
             [
                 'primary' => ['check_key'],
                 'update' => ['enabled'],

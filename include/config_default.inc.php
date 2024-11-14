@@ -544,34 +544,9 @@ $conf['show_php_errors_on_frontend'] = true;
 // users table?
 $conf['apache_authentication'] = false;
 
-// users_table: which table is the reference for users? Can be a different
-// table than Piwigo table
-//
-// If you decide to use another table than the default one, you need to
-// prepare your database by deleting some datas :
-//
-// delete from user_access;
-// delete from user_cache;
-// delete from user_feed;
-// delete from user_group;
-// delete from user_infos;
-// delete from sessions;
-// delete from rate;
-// update images set rating_score = null, added_by = <webmaster_id>;
-// delete from caddie;
-// delete from favorites;
-//
-// All information contained in these tables and column are related to
-// piwigo_users table.
-$conf['users_table'] = null;
-
 // If you decide to use external authentication
 // change conf below by $conf['external_authentication'] = true;
 $conf['external_authentication'] = false;
-
-// Other tables can be changed if you define associated constants
-// Example:
-//   define('USER_INFOS_TABLE', 'pwg_main'.'user_infos');
 
 // user_fields: mapping between generic field names and table specific
 // field names. For example, in PWG, the mail address is named

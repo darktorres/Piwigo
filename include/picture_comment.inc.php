@@ -78,7 +78,7 @@ if ($page['show_comments']) {
     $query = '
 SELECT
     COUNT(*) AS nb_comments
-  FROM ' . COMMENTS_TABLE . '
+  FROM comments
   WHERE image_id = ' . $page['image_id']
     . $validated_clause . '
 ;';
@@ -131,8 +131,8 @@ SELECT
     com.email,
     com.content,
     com.validated
-  FROM ' . COMMENTS_TABLE . ' AS com
-  LEFT JOIN ' . USERS_TABLE . ' AS u
+  FROM comments AS com
+  LEFT JOIN users AS u
     ON u.' . $conf['user_fields']['id'] . ' = author_id
   WHERE com.image_id = ' . $page['image_id'] . '
     ' . $validated_clause . '
