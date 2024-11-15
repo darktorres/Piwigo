@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $lang['modus_theme'] = 'modus_theme';
 $lang['Explore'] = 'Explore';
 $lang['%d album'] = '%d album';
@@ -15,4 +17,3 @@ $lang['Default sizes'] = 'Default sizes';
 $lang['Default size for thumbnails'] = 'Default size for thumbnails';
 $lang['Default size for thumbnails on high density display (retina)'] = 'Default size for thumbnails on high density display (retina)';
 $lang['Display page banner'] = 'Display page banner';
-?>
