@@ -495,56 +495,53 @@ function mass_inserts($table_name, $dbfields, $datas, $options=array())
   
   if (count($datas) != 0)
   {
-    $first = true;
-
     $query = 'SHOW VARIABLES LIKE \'max_allowed_packet\'';
     list(, $packet_size) = pwg_db_fetch_row(pwg_query($query));
-    $packet_size = $packet_size - 2000; // The last list of values MUST not exceed 2000 character*/
+    $dbfields_ = implode(',', $dbfields);
+    $queryBase = "INSERT {$ignore} INTO {$table_name} ({$dbfields_}) VALUES ";
     $query = '';
 
     foreach ($datas as $insert)
     {
-      if (strlen($query) >= $packet_size)
-      {
-        pwg_query($query);
-        $first = true;
-      }
+      $queryTemp = '(';
 
-      if ($first)
-      {
-        $query = '
-INSERT '.$ignore.' INTO '.$table_name.'
-  ('.implode(',', $dbfields).')
-  VALUES';
-        $first = false;
-      }
-      else
-      {
-        $query .= '
-  , ';
-      }
-
-      $query .= '(';
       foreach ($dbfields as $field_id => $dbfield)
       {
         if ($field_id > 0)
         {
-          $query .= ',';
+          $queryTemp .= ',';
         }
-
-        if (!isset($insert[$dbfield]) or $insert[$dbfield] === '')
+        if (! isset($insert[$dbfield]) || $insert[$dbfield] === '')
         {
-          $query .= 'NULL';
+          $queryTemp .= 'NULL';
         }
         else
         {
-          $query .= "'".$insert[$dbfield]."'";
+          $queryTemp .= "'{$insert[$dbfield]}'";
         }
       }
-      $query .= ')';
+
+      $queryTemp .= ')';
+
+      $len = strlen($queryBase . $query . ', ' . $queryTemp);
+
+      if ($len >= $packet_size)
+      { // delay $insert to next query
+        pwg_query($queryBase . $query);
+        $query = $queryTemp;
+      }
+      else
+      {
+        if ($query !== '' && $query !== '0')
+        {
+          $query .= ', ';
+        }
+
+        $query .= $queryTemp;
+      }
     }
 
-    pwg_query($query);
+    pwg_query($queryBase . $query);
   }
 }
 
