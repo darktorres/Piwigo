@@ -272,6 +272,7 @@ WHERE id IN (' . implode(',',$page['items']) .')';
       {// selected period is small (month,week) so we show oldest first
         $order = ' ASC, ';
       }
+      // TODO: fix duplicated ORDER BY => 'ORDER BY date_creation DESC' => 'ORDER BY date_creation DESC, date_creation DESC'
       $order_by = str_replace(
         'ORDER BY ',
         'ORDER BY '.$calendar->date_field.$order, $conf['order_by']
