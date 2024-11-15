@@ -641,7 +641,7 @@ class Template
         'AAAA_DEBUG_TOTAL_TIME__' => get_elapsed_time($t2, get_moment())
         )
         );
-      Smarty_Internal_Debug::display_debug($this->smarty);
+      $this->smarty->display(__DIR__ . '/../vendor/smarty/smarty/libs/debug.tpl');
     }
   }
 
