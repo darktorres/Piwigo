@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -10,8 +13,8 @@
 // |                          define and include                           |
 // +-----------------------------------------------------------------------+
 
-define('PHPWG_ROOT_PATH','./');
-include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
+define('PHPWG_ROOT_PATH', './');
+include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -24,25 +27,24 @@ check_status(ACCESS_GUEST);
 
 $query = '
 SELECT id
-  FROM '.IMAGES_TABLE.'
-    INNER JOIN '.IMAGE_CATEGORY_TABLE.' AS ic ON id = ic.image_id
-'.get_sql_condition_FandF
-  (
-    array
-      (
+  FROM ' . IMAGES_TABLE . '
+    INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON id = ic.image_id
+' . get_sql_condition_FandF(
+    [
         'forbidden_categories' => 'category_id',
         'visible_categories' => 'category_id',
-        'visible_images' => 'id'
-      ),
+        'visible_images' => 'id',
+    ],
     'WHERE'
-  ).'
-  ORDER BY '.DB_RANDOM_FUNCTION.'()
-  LIMIT '.min(50, $conf['top_number'],$user['nb_image_page']).'
+) . '
+  ORDER BY ' . DB_RANDOM_FUNCTION . '()
+  LIMIT ' . min(50, $conf['top_number'], $user['nb_image_page']) . '
 ;';
 
 // +-----------------------------------------------------------------------+
 // |                                redirect                               |
 // +-----------------------------------------------------------------------+
 
-redirect(make_index_url(array('list' => array_from_query($query, 'id'))));
-?>
+redirect(make_index_url([
+    'list' => array_from_query($query, 'id'),
+]));

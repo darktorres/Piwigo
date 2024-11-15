@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -8,31 +11,28 @@
 
 class PwgSerialPhpEncoder extends PwgResponseEncoder
 {
-  function encodeResponse($response)
-  {
-    if ($response instanceof PwgError)
+    public function encodeResponse($response)
     {
-      return serialize(
-        array(
-          'stat' => 'fail',
-          'err' => $response->code(),
-          'message' => $response->message(),
-          )
-      );
+        if ($response instanceof PwgError) {
+            return serialize(
+                [
+                    'stat' => 'fail',
+                    'err' => $response->code(),
+                    'message' => $response->message(),
+                ]
+            );
+        }
+        parent::flattenResponse($response);
+        return serialize(
+            [
+                'stat' => 'ok',
+                'result' => $response,
+            ]
+        );
     }
-    parent::flattenResponse($response);
-    return serialize(
-        array(
-          'stat' => 'ok',
-          'result' => $response
-      )
-    );
-  }
 
-  function getContentType()
-  {
-    return 'text/plain';
-  }
+    public function getContentType()
+    {
+        return 'text/plain';
+    }
 }
-
-?>
