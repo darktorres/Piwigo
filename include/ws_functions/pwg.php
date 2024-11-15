@@ -211,7 +211,7 @@ function ws_getCacheSize($params, &$service)
   $infos['cache_size'] = null;
   if (function_exists('exec'))
   {
-    @exec('du -sk '.$path_cache, $return_array_cache);
+    @exec('du -sk '.$path_cache, $return_array_cache); // TODO: don't work on Windows
     if (
       is_array($return_array_cache)
       and !empty($return_array_cache[0])
@@ -244,7 +244,7 @@ function ws_getCacheSize($params, &$service)
   $infos['tsizes'] = null;
   if (function_exists('exec'))
   {
-    @exec('du -sk '.$path_template_c, $return_array_template_c);
+    @exec('du -sk '.$path_template_c, $return_array_template_c); // TODO: don't work on Windows
     if (
       is_array($return_array_template_c)
       and !empty($return_array_template_c[0])
