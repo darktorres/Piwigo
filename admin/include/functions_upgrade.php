@@ -305,15 +305,8 @@ function upgrade_db_connect()
 {
   global $conf;
 
-  try
-  {
-    pwg_db_connect($conf['db_host'], $conf['db_user'],
-                   $conf['db_password'], $conf['db_base']);
-    pwg_db_check_version();
-  }
-  catch (Exception $e)
-  {
-    my_error(l10n($e->getMessage()), true); 
-  }
+  pwg_db_connect($conf['db_host'], $conf['db_user'],
+                $conf['db_password'], $conf['db_base']);
+  pwg_db_check_version();
 }
 ?>
