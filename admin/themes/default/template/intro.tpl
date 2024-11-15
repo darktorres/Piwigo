@@ -322,9 +322,15 @@ $(window).on('resize', function(){
 
   <div class="storage-chart">
     {foreach from=$STORAGE_CHART_DATA key=type item=details}
-      <span data-type="storage-{$type}" style="width:{$details.total.filesize/$STORAGE_TOTAL*100}%"> 
-        <p>{round($details.total.filesize/$STORAGE_TOTAL*100)}%</p>
-      </span>  
+      {if $STORAGE_TOTAL == 0}
+        <span data-type="storage-{$type}" style="width:0%">
+          <p>0%</p>
+        </span>
+      {else}
+        <span data-type="storage-{$type}" style="width:{$details.total.filesize/$STORAGE_TOTAL*100}%">
+          <p>{round($details.total.filesize/$STORAGE_TOTAL*100)}%</p>
+        </span>
+      {/if}
     {/foreach}
   </div>
 
