@@ -69,7 +69,8 @@ function get_elapsed_time($start, $end)
  */
 function get_extension( $filename )
 {
-  return substr( strrchr( $filename, '.' ), 1, strlen ( $filename ) );
+  $pos = strrpos((string) $filename, '.');
+  return ($pos !== false) ? substr($filename, $pos + 1) : '';
 }
 
 /**
