@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class PwgSessionHandler implements SessionHandlerInterface
 {
     public function open(string $save_path, string $name): bool

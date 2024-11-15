@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -6,32 +9,24 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-/**
- * @package functions\session
- */
-
-
 if (isset($conf['session_save_handler'])
   and ($conf['session_save_handler'] == 'db')
-  and defined('PHPWG_INSTALLED'))
-{
-  require_once PHPWG_ROOT_PATH . 'include/PwgSessionHandler.php';
-  $handler = new PwgSessionHandler();
-  session_set_save_handler($handler, true);
+  and defined('PHPWG_INSTALLED')) {
+    require_once PHPWG_ROOT_PATH . 'include/PwgSessionHandler.php';
+    $handler = new PwgSessionHandler();
+    session_set_save_handler($handler, true);
 
-  if (function_exists('ini_set'))
-  {
-    ini_set('session.use_cookies', $conf['session_use_cookies']);
-    ini_set('session.use_only_cookies', $conf['session_use_only_cookies']);
-    ini_set('session.use_trans_sid', intval($conf['session_use_trans_sid']));
-    ini_set('session.cookie_httponly', 1);
-  }
+    if (function_exists('ini_set')) {
+        ini_set('session.use_cookies', $conf['session_use_cookies']);
+        ini_set('session.use_only_cookies', $conf['session_use_only_cookies']);
+        ini_set('session.use_trans_sid', intval($conf['session_use_trans_sid']));
+        ini_set('session.cookie_httponly', 1);
+    }
 
-  session_name($conf['session_name']);
-  session_set_cookie_params(0, cookie_path());
-  register_shutdown_function('session_write_close');
+    session_name($conf['session_name']);
+    session_set_cookie_params(0, cookie_path());
+    register_shutdown_function('session_write_close');
 }
-
 
 /**
  * Generates a pseudo random string.
@@ -43,16 +38,16 @@ if (isset($conf['session_save_handler'])
 function generate_key($size)
 {
 
-  $bytes = random_bytes($size+10);
+    $bytes = random_bytes($size + 10);
 
-  return substr(
-    str_replace(
-      array('+', '/'),
-      '',
-      base64_encode($bytes)
-      ),
-    0,
-    $size
+    return substr(
+        str_replace(
+            ['+', '/'],
+            '',
+            base64_encode($bytes)
+        ),
+        0,
+        $size
     );
 }
 
@@ -65,7 +60,7 @@ function generate_key($size)
  */
 function pwg_session_open($path, $name)
 {
-  return true;
+    return true;
 }
 
 /**
@@ -75,7 +70,7 @@ function pwg_session_open($path, $name)
  */
 function pwg_session_close()
 {
-  return true;
+    return true;
 }
 
 /**
@@ -85,21 +80,19 @@ function pwg_session_close()
  */
 function get_remote_addr_session_hash()
 {
-  global $conf;
+    global $conf;
 
-  if (!$conf['session_use_ip_address'])
-  {
-    return '';
-  }
-  
-  if (strpos($_SERVER['REMOTE_ADDR'],':')===false)
-  {//ipv4
-    return vsprintf(
-      "%02X%02X",
-      explode('.',$_SERVER['REMOTE_ADDR'])
-    );
-  }
-  return ''; //ipv6 not yet
+    if (! $conf['session_use_ip_address']) {
+        return '';
+    }
+
+    if (strpos($_SERVER['REMOTE_ADDR'], ':') === false) {//ipv4
+        return vsprintf(
+            '%02X%02X',
+            explode('.', $_SERVER['REMOTE_ADDR'])
+        );
+    }
+    return ''; //ipv6 not yet
 }
 
 /**
@@ -110,14 +103,14 @@ function get_remote_addr_session_hash()
  */
 function pwg_session_read($session_id)
 {
-  $query = '
+    $query = '
 SELECT data
-  FROM '.SESSIONS_TABLE.'
-  WHERE id = \''.get_remote_addr_session_hash().$session_id.'\'
+  FROM ' . SESSIONS_TABLE . '
+  WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
 ;';
-  $result = pwg_query($query);
-  $row = pwg_db_fetch_assoc($result);
-  return $row ? $row['data'] : '';
+    $result = pwg_query($query);
+    $row = pwg_db_fetch_assoc($result);
+    return $row ? $row['data'] : '';
 }
 
 /**
@@ -129,13 +122,13 @@ SELECT data
  */
 function pwg_session_write($session_id, $data)
 {
-  $query = '
-REPLACE INTO '.SESSIONS_TABLE.'
+    $query = '
+REPLACE INTO ' . SESSIONS_TABLE . '
   (id,data,expiration)
-  VALUES(\''.get_remote_addr_session_hash().$session_id.'\',\''.pwg_db_real_escape_string($data).'\',now())
+  VALUES(\'' . get_remote_addr_session_hash() . $session_id . '\',\'' . pwg_db_real_escape_string($data) . '\',now())
 ;';
-  pwg_query($query);
-  return true;
+    pwg_query($query);
+    return true;
 }
 
 /**
@@ -146,13 +139,13 @@ REPLACE INTO '.SESSIONS_TABLE.'
  */
 function pwg_session_destroy($session_id)
 {
-  $query = '
+    $query = '
 DELETE
-  FROM '.SESSIONS_TABLE.'
-  WHERE id = \''.get_remote_addr_session_hash().$session_id.'\'
+  FROM ' . SESSIONS_TABLE . '
+  WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
 ;';
-  pwg_query($query);
-  return true;
+    pwg_query($query);
+    return true;
 }
 
 /**
@@ -162,23 +155,23 @@ DELETE
  */
 function pwg_session_gc()
 {
-  global $conf;
+    global $conf;
 
-  $query = '
+    $query = '
 DELETE
-  FROM '.SESSIONS_TABLE.'
-  WHERE '.pwg_db_date_to_ts('NOW()').' - '.pwg_db_date_to_ts('expiration').' > '
-  .$conf['session_length'].'
+  FROM ' . SESSIONS_TABLE . '
+  WHERE ' . pwg_db_date_to_ts('NOW()') . ' - ' . pwg_db_date_to_ts('expiration') . ' > '
+    . $conf['session_length'] . '
 ;';
-  $result = pwg_query($query);
+    $result = pwg_query($query);
 
-  if ($result === false) {
-    return false;
-  }
+    if ($result === false) {
+        return false;
+    }
 
-  $affected_rows = pwg_db_changes();
+    $affected_rows = pwg_db_changes();
 
-  return $affected_rows;
+    return $affected_rows;
 }
 
 /**
@@ -190,10 +183,11 @@ DELETE
  */
 function pwg_set_session_var($var, $value)
 {
-  if ( !isset($_SESSION) )
-    return false;
-  $_SESSION['pwg_'.$var] = $value;
-  return true;
+    if (! isset($_SESSION)) {
+        return false;
+    }
+    $_SESSION['pwg_' . $var] = $value;
+    return true;
 }
 
 /**
@@ -205,11 +199,10 @@ function pwg_set_session_var($var, $value)
  */
 function pwg_get_session_var($var, $default = null)
 {
-  if (isset( $_SESSION['pwg_'.$var] ) )
-  {
-    return $_SESSION['pwg_'.$var];
-  }
-  return $default;
+    if (isset($_SESSION['pwg_' . $var])) {
+        return $_SESSION['pwg_' . $var];
+    }
+    return $default;
 }
 
 /**
@@ -220,10 +213,11 @@ function pwg_get_session_var($var, $default = null)
  */
 function pwg_unset_session_var($var)
 {
-  if ( !isset($_SESSION) )
-    return false;
-  unset( $_SESSION['pwg_'.$var] );
-  return true;
+    if (! isset($_SESSION)) {
+        return false;
+    }
+    unset($_SESSION['pwg_' . $var]);
+    return true;
 }
 
 /**
@@ -231,15 +225,13 @@ function pwg_unset_session_var($var)
  *
  * @since 2.8
  * @param int $user_id
- * @return null
  */
 function delete_user_sessions($user_id)
 {
-  $query = '
+    $query = '
 DELETE
-  FROM '.SESSIONS_TABLE.'
-  WHERE data LIKE \'%pwg_uid|i:'.(int)$user_id.';%\'
+  FROM ' . SESSIONS_TABLE . '
+  WHERE data LIKE \'%pwg_uid|i:' . (int) $user_id . ';%\'
 ;';
-  pwg_query($query);
+    pwg_query($query);
 }
-?>
