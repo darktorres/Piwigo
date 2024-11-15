@@ -57,6 +57,8 @@ function pwg_db_connect($host, $user, $password, $database)
     throw new Exception('Connection to server succeed, but it was impossible to connect to database');
   }
 
+  // mysqli_options($mysqli, MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
+
   // MySQL 5.7 default settings forbid to select a colum that is not in the
   // group by. We've used that in Piwigo for years. As an immediate solution,
   // we can remove this constraint in the current MySQL session.
