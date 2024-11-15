@@ -112,7 +112,21 @@ function pwg_query($query)
   global $mysqli, $conf, $page, $debug, $t2;
 
   $start = microtime(true);
-  ($result = $mysqli->query($query)) or my_error($query, $conf['die_on_sql_error']);
+
+  try {
+    $result = $mysqli->query($query);
+  } catch (Throwable) {
+    $error = '[mysql error ' . $mysqli->errno . '] ' . $mysqli->error . "\n";
+    $error .= $query;
+
+    if ($conf['die_on_sql_error']) {
+        fatal_error($error);
+    }
+
+    echo '<pre>';
+    trigger_error($error, E_USER_WARNING);
+    echo '</pre>';
+  }
 
   $time = microtime(true) - $start;
 
@@ -136,12 +150,12 @@ function pwg_query($query)
     $output.= number_format($page['queries_time'], 3, '.', ' ').' s)';
     $output.= "\n".'(total time      : ';
     $output.= number_format( ($time+$start-$t2), 3, '.', ' ').' s)';
-    if ( $result!=null and preg_match('/\s*SELECT\s+/i',$query) )
+    if ( $result!=false and preg_match('/\s*SELECT\s+/i',$query) )
     {
       $output.= "\n".'(num rows        : ';
       $output.= pwg_db_num_rows($result).' )';
     }
-    elseif ( $result!=null
+    elseif ( $result!=false
       and preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i',$query) )
     {
       $output.= "\n".'(affected rows   : ';
@@ -799,26 +813,6 @@ function pwg_db_get_weekday($date)
 function pwg_db_date_to_ts($date) 
 {
   return 'UNIX_TIMESTAMP('.$date.')';
-}
-
-/**
- * Returns (or send to standard output) the message concerning the 
- * error occurred for the last mysql query.
- */
-function my_error($header, $die)
-{
-  global $mysqli;
-  
-  $error = "[mysql error ".$mysqli->errno.'] '.$mysqli->error."\n";
-  $error .= $header;
-
-  if ($die)
-  {
-    fatal_error($error);
-  }
-  echo("<pre>");
-  trigger_error($error, E_USER_WARNING);
-  echo("</pre>");
 }
 
 /**
