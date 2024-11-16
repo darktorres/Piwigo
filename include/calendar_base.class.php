@@ -287,7 +287,7 @@ abstract class CalendarBase
             if ($page['chronology_date'][$i] === 'any') {
                 $sub_queries[] = '\'any\'';
             } else {
-                $sub_queries[] = pwg_db_cast_to_text($this->calendar_levels[$i]['sql']);
+                $sub_queries[] = $this->calendar_levels[$i]['sql'];
             }
         }
         $period = pwg_db_concat_ws($sub_queries, '-');
