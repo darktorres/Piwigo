@@ -115,7 +115,7 @@ function mkgetdir($dir, $flags=MKGETDIR_DEFAULT)
       $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
     }
     $umask = umask(0);
-    $mkd = @mkdir($dir, $conf['chmod_value'], ($flags&MKGETDIR_RECURSIVE) ? true:false );
+    $mkd = mkdir($dir, $conf['chmod_value'], (bool) ($flags&MKGETDIR_RECURSIVE) );
     umask($umask);
     if ($mkd==false)
     {
@@ -443,13 +443,13 @@ UPDATE '.USER_INFOS_TABLE.'
     pwg_query($query);
   }
 
-  if (!do_log($image_id, $image_type))
+  if (!do_log((int) $image_id, $image_type))
   {
     return false;
   }
 
   $tags_string = null;
-  if ('tags'==@$page['section'])
+  if ('tags'==$page['section'])
   {
     $tags_string = implode(',', $page['tag_ids']);
 
@@ -540,7 +540,7 @@ INSERT INTO '.HISTORY_TABLE.'
 ;';
   pwg_query($query);
 
-  $history_id = pwg_db_insert_id(HISTORY_TABLE);
+  $history_id = pwg_db_insert_id();
   if ($history_id % 1000 == 0)
   {
     include_once(PHPWG_ROOT_PATH.'admin/include/functions_history.inc.php');
@@ -749,7 +749,7 @@ function str2DateTime($original, $format=null)
   }
   else
   {
-    $t = trim($original, '0123456789');
+    $t = trim((string) $original, '0123456789');
     if (empty($t)) // from timestamp
     {
       return new DateTime('@'.$original);
@@ -770,8 +770,8 @@ function str2DateTime($original, $format=null)
       if (!isset($ymdhms[5])) $ymdhms[5] = 0;
 
       $date = new DateTime();
-      $date->setDate($ymdhms[0], $ymdhms[1], $ymdhms[2]);
-      $date->setTime($ymdhms[3], $ymdhms[4], $ymdhms[5]);
+      $date->setDate((int) $ymdhms[0], (int) $ymdhms[1], (int) $ymdhms[2]);
+      $date->setTime((int) $ymdhms[3], (int) $ymdhms[4], (int) $ymdhms[5]);
       return $date;
     }
   }
@@ -1253,7 +1253,7 @@ function l10n($key)
 {
   global $lang, $conf;
 
-  if ( ($val=@$lang[$key]) === null)
+  if ( ($val=($lang[$key] ?? null)) === null)
   {
     if ($conf['debug_l10n'] and !isset($lang[$key]) and !empty($key))
     {
@@ -1389,6 +1389,78 @@ SELECT '.$conf['user_fields']['email'].'
   return $email;
 }
 
+function is_serialized(mixed $data, bool $strict = true): bool
+{
+  // If it isn't a string, it isn't serialized.
+  if (! is_string($data)) {
+      return false;
+  }
+
+  $data = trim($data);
+
+  if ($data === 'N;') {
+      return true;
+  }
+
+  if (strlen($data) < 4) {
+      return false;
+  }
+
+  if ($data[1] !== ':') {
+      return false;
+  }
+
+  if ($strict) {
+      $lastc = substr($data, -1);
+
+      if ($lastc !== ';' && $lastc !== '}') {
+          return false;
+      }
+  } else {
+      $semicolon = strpos($data, ';');
+      $brace = strpos($data, '}');
+
+      // Either ; or } must exist.
+      if ($semicolon === false && $brace === false) {
+          return false;
+      }
+
+      // But neither must be in the first X characters.
+      if ($semicolon !== false && $semicolon < 3) {
+          return false;
+      }
+
+      if ($brace !== false && $brace < 4) {
+          return false;
+      }
+  }
+
+  $token = $data[0];
+
+  switch ($token) {
+      case 's':
+          if ($strict) {
+              if (substr($data, -2, 1) !== '"') {
+                  return false;
+              }
+          } elseif (! str_contains($data, '"')) {
+              return false;
+          }
+          // no break
+      case 'a':
+      case 'O':
+      case 'E':
+          return (bool) preg_match(sprintf('/^%s:[0-9]+:/s', $token), $data);
+      case 'b':
+      case 'i':
+      case 'd':
+          $end = $strict ? '$' : '';
+          return (bool) preg_match(sprintf('/^%s:[0-9.E+-]+;%s/', $token, $end), $data);
+  }
+
+  return false;
+}
+
 /**
  * Add configuration parameters from database to global $conf array
  *
@@ -1459,7 +1531,7 @@ function pwg_is_dbconf_writeable()
  * @param string $value
  * @param boolean $updateGlobal update global *$conf* variable
  * @param callable $parser function to apply to the value before save in database
-      (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
+ *     (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
  */
 function conf_update_param($param, $value, $updateGlobal=false, $parser=null)
 {
@@ -1743,13 +1815,13 @@ function load_language($filename, $dirname = '', $options = array())
   global $user, $language_files;
 
   // keep trace of plugins loaded files for switch_lang_to() function
-  if (!empty($dirname) && !empty($filename) && !@$options['return']
+  if (!empty($dirname) && !empty($filename) && !($options['return'] ?? null)
     && !isset($language_files[$dirname][$filename]))
   {
     $language_files[$dirname][$filename] = $options;
   }
 
-  if (!@$options['return'])
+  if (!($options['return'] ?? null))
   {
     $filename .= '.php';
   }
@@ -1786,7 +1858,7 @@ function load_language($filename, $dirname = '', $options = array())
     }
     $languages[] = $options['force_fallback'];
   }
-  if (!@$options['no_fallback'])
+  if (!($options['no_fallback'] ?? null))
   { // default language
     $languages[] = $default_language;
   }
@@ -1798,7 +1870,7 @@ function load_language($filename, $dirname = '', $options = array())
   $selected_language = '';
   foreach ($languages as $language)
   {
-    $f = @$options['local'] ?
+    $f = ($options['local'] ?? null) ?
       $dirname.$language.'.'.$filename:
       $dirname.$language.'/'.$filename;
 
@@ -1812,18 +1884,19 @@ function load_language($filename, $dirname = '', $options = array())
   
   if (!empty($source_file))
   {
-    if (!@$options['return'])
+    if (!($options['return'] ?? null))
     {
       // load forced fallback
       if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language)
       {
-        @include(str_replace($selected_language, $options['force_fallback'], $source_file));
+        $tmp = str_replace($selected_language, $options['force_fallback'], $source_file);
+        file_exists($tmp) && include($tmp);
       }
 
       // load language content
-      @include($source_file);
-      $load_lang = @$lang;
-      $load_lang_info = @$lang_info;
+      file_exists($source_file) && include($source_file);
+      $load_lang = $lang;
+      $load_lang_info = $lang_info ?? null;
 
       // access already existing values
       global $lang, $lang_info;
@@ -1840,7 +1913,8 @@ function load_language($filename, $dirname = '', $options = array())
 
       if (!empty($parent_language) && $parent_language != $selected_language)
       {
-        @include(str_replace($selected_language, $parent_language, $source_file));
+        $tmp = str_replace($selected_language, $parent_language, $source_file);
+        file_exists($tmp) && include($tmp);
       }
 
       // merge contents
@@ -1850,7 +1924,7 @@ function load_language($filename, $dirname = '', $options = array())
     }
     else
     {
-      $content = @file_get_contents($source_file);
+      $content = file_get_contents($source_file);
       //Note: target charset is always utf-8 $content = convert_charset($content, 'utf-8', $target_charset);
       return $content;
     }
@@ -1932,7 +2006,7 @@ function verify_ephemeral_key($key, $aditionnal_data_to_hash = '')
 {
 	global $conf;
 	$time = microtime(true);
-	$key = explode( ':', @$key );
+	$key = explode( ':', $key );
 	if ( count($key)!=3
 		or $key[0]>$time-(float)$key[1] // page must have been retrieved more than X sec ago
 		or $key[0]<$time-3600 // 60 minutes expiration
@@ -2089,7 +2163,7 @@ function get_pwg_token()
   return hash_hmac('md5', session_id(), $conf['secret_key']);
 }
 
-/*
+/**
  * breaks the script execution if the given value doesn't match the given
  * pattern. This should happen only during hacking attempts.
  *
@@ -2126,7 +2200,7 @@ function check_input_parameter($param_name, $param_array, $is_array, $pattern, $
 
     foreach ($param_value as $key => $item_to_check)
     {
-      if (!preg_match(PATTERN_ID, $key) or !preg_match($pattern, $item_to_check))
+      if (!preg_match(PATTERN_ID, (string) $key) or !preg_match($pattern, $item_to_check))
       {
         fatal_error('[Hacking attempt] an item is not valid in input parameter "'.$param_name.'"');
       }

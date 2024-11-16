@@ -22,6 +22,7 @@ define('IMG_XLARGE', 'xlarge');
 define('IMG_XXLARGE', 'xxlarge');
 define('IMG_CUSTOM', 'custom');
 
+require_once(PHPWG_ROOT_PATH . 'include/functions.inc.php');
 
 /**
  * Container for watermark configuration.
@@ -124,7 +125,7 @@ final class ImageStdParams
     $key = array();
     $params->add_url_tokens($key);
     $key = implode('_',$key);
-    if ( @self::$custom[$key] < time() - 24*3600)
+    if ( (self::$custom[$key] ?? null) < time() - 24*3600)
     {
       self::$custom[$key] = time();
       self::save();
@@ -146,7 +147,7 @@ final class ImageStdParams
   static function load_from_db()
   {
     global $conf;
-    $arr = @unserialize($conf['derivatives']);
+    $arr = is_serialized($conf['derivatives'] ?? null) ? unserialize($conf['derivatives']) : false;
     if (false!==$arr)
     {
       self::$type_map = $arr['d'];
@@ -205,7 +206,7 @@ final class ImageStdParams
   static function get_default_sizes()
   {
     $arr = array(
-      IMG_SQUARE => new DerivativeParams( SizingParams::square(120,120) ),
+      IMG_SQUARE => new DerivativeParams( SizingParams::square(120) ),
       IMG_THUMB => new DerivativeParams( SizingParams::classic(144,144) ),
       IMG_XXSMALL => new DerivativeParams( SizingParams::classic(240,240) ),
       IMG_XSMALL => new DerivativeParams( SizingParams::classic(432,324) ),

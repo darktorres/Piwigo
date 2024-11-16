@@ -44,7 +44,7 @@ class updates
     $_SESSION['need_update'.PHPWG_VERSION] = null;
 
     if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches)
-      and @fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid(rand(), true)), $result))
+      and fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid((string) rand(), true)), $result))
     {
       $all_versions = @explode("\n", $result);
       $new_version = trim($all_versions[0]);
@@ -78,12 +78,12 @@ class updates
       $actual_branch = get_branch_from_version(PHPWG_VERSION);
 
       $url = PHPWG_URL.'/download/all_versions.php';
-      $url.= '?rand='.md5(uniqid(rand(), true)); // Avoid server cache
+      $url.= '?rand='.md5(uniqid((string) rand(), true)); // Avoid server cache
       $url.= '&show_requirements';
       $url.= '&origin_hash='.sha1($conf['secret_key'].get_absolute_root_url());
 
-      if (@fetchRemote($url, $result)
-          and $all_versions = @explode("\n", $result)
+      if (fetchRemote($url, $result)
+          and $all_versions = explode("\n", $result)
           and is_array($all_versions))
       {
         $new_versions['piwigo.org-checked'] = true;

@@ -389,7 +389,7 @@ SELECT COUNT(*)
       'url_name' => trigger_change('render_tag_url', $copy_name),
     )
   );
-  $destination_tag_id = pwg_db_insert_id(TAGS_TABLE);
+  $destination_tag_id = pwg_db_insert_id();
 
   pwg_activity('tag', $destination_tag_id, 'add', array('action'=>'duplicate', 'source_tag'=>$tag_id));
 

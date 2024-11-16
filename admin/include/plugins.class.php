@@ -537,7 +537,7 @@ DELETE FROM '. PLUGINS_TABLE .'
     }
     if (fetchRemote($url, $result, $get_data))
     {
-      $pem_plugins = @unserialize($result);
+      $pem_plugins = is_serialized($result) ? unserialize($result) : null;
       if (!is_array($pem_plugins))
       {
         return false;
@@ -590,7 +590,7 @@ DELETE FROM '. PLUGINS_TABLE .'
 
     if (fetchRemote($url, $result, $get_data))
     {
-      $pem_plugins = @unserialize($result);
+      $pem_plugins = is_serialized($result) ? unserialize($result) : null;
       if (!is_array($pem_plugins))
       {
         return false;

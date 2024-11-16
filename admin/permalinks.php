@@ -42,7 +42,7 @@ function parse_sort_variables(
     $url = $base_url;
     $disp = '↓'; // TODO: an small image is better
 
-    if ( $field !== @$_GET[$get_param] )
+    if ( $field !== ($_GET[$get_param] ?? null) )
     {
       if ( !isset($default_field) or $default_field!=$field )
       { // the first should be the default
@@ -94,7 +94,7 @@ DELETE FROM '.OLD_PERMALINKS_TABLE.'
   WHERE permalink=\''.pwg_db_real_escape_string($_GET['delete_permanent']).'\'
   LIMIT 1';
   $result = pwg_query($query);
-  if (pwg_db_changes($result)==0)
+  if (pwg_db_changes()==0)
   {
     $page['errors'][] = l10n('Cannot delete the old permalink !');
   }

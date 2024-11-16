@@ -225,7 +225,7 @@ if ('categories' == $page['section'])
             $page['category']['comment'],
             'main_page_category_description'
             ),
-        'title'   => get_cat_display_name($page['category']['upper_names'], '', false),
+        'title'   => get_cat_display_name($page['category']['upper_names'], ''),
         )
       );
   }
@@ -361,7 +361,7 @@ else
   {
     include_once( PHPWG_ROOT_PATH .'include/functions_search.inc.php' );
 
-    $search_result = get_search_results($page['search'], @$page['super_order_by'] );
+    $search_result = get_search_results($page['search'], ($page['super_order_by'] ?? null) );
 
     //save the details of the query search
     if ( isset($search_result['qs']) )

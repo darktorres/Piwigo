@@ -10,8 +10,8 @@ include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 include_once(PHPWG_ROOT_PATH.'admin/include/image.class.php');
 
 // add default event handler for image and thumbnail resize
-add_event_handler('upload_image_resize', 'pwg_image_resize');
-add_event_handler('upload_thumbnail_resize', 'pwg_image_resize');
+// add_event_handler('upload_image_resize', 'pwg_image_resize');
+// add_event_handler('upload_thumbnail_resize', 'pwg_image_resize');
 
 function get_upload_form_config()
 {
@@ -379,7 +379,7 @@ SELECT
 
     single_insert(IMAGES_TABLE, $insert);
 
-    $image_id = pwg_db_insert_id(IMAGES_TABLE);
+    $image_id = pwg_db_insert_id();
     pwg_activity('photo', $image_id, 'add');
   }
 
@@ -511,7 +511,7 @@ SELECT
   );
 
   single_insert(IMAGE_FORMAT_TABLE, $insert);
-  $format_id = pwg_db_insert_id(IMAGE_FORMAT_TABLE);
+  $format_id = pwg_db_insert_id();
 
   pwg_activity('photo', $format_of, 'edit', array('action'=>'add format', 'format_ext'=>$format_ext, 'format_id'=>$format_id));
 

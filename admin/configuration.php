@@ -177,7 +177,7 @@ if (isset($_POST['submit']))
           else
           {
             // limit to the number of available parameters
-            $order_by = $order_by_inside_category = array_slice($_POST['order_by'], 0, ceil(count($sort_fields)/2));
+            $order_by = $order_by_inside_category = array_slice($_POST['order_by'], 0, (int) ceil(count($sort_fields)/2));
 
             // there is no rank outside categories
             if ( ($i = array_search('rank_column ASC', $order_by)) !== false)
@@ -353,10 +353,10 @@ switch ($page['section'])
     {
       $conf = array();
       include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-      @include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
+      file_exists(PHPWG_ROOT_PATH. 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH. 'local/config/config.inc.php');
       if (isset($conf['local_dir_site']))
       {
-        @include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR. 'config/config.inc.php');
+        file_exists(PHPWG_ROOT_PATH.PWG_LOCAL_DIR. 'config/config.inc.php') && include(PHPWG_ROOT_PATH.PWG_LOCAL_DIR. 'config/config.inc.php');
       }
 
       return isset($conf['order_by']) or isset($conf['order_by_inside_category']);
@@ -376,7 +376,7 @@ switch ($page['section'])
     {
       $out = array();
       $order_by = trim($conf['order_by_inside_category']);
-      $order_by = str_replace('ORDER BY ', false, $order_by);
+      $order_by = str_replace('ORDER BY ', '', $order_by);
       $order_by = explode(', ', $order_by);
     }
 
@@ -526,7 +526,7 @@ switch ($page['section'])
 
       // derivatives = multiple size
       $enabled = ImageStdParams::get_defined_type_map();
-      $disabled = @unserialize(@$conf['disabled_derivatives']);
+      $disabled = is_serialized($conf['disabled_derivatives'] ?? null) ? unserialize($conf['disabled_derivatives']) : false;
       if ($disabled === false)
       {
         $disabled = array();

@@ -67,7 +67,7 @@ class PersistentFileCache extends PersistentCache
 
   function get($key, &$value)
   {
-    $loaded = @file_get_contents($this->dir.$key.'.cache');
+    $loaded = file_exists($this->dir.$key.'.cache') ? file_get_contents($this->dir.$key.'.cache') : false;
     if ($loaded !== false && ($loaded=unserialize($loaded)) !== false)
     {
       if ($loaded['expire'] > time())
@@ -96,13 +96,13 @@ class PersistentFileCache extends PersistentCache
         'data' => $value
       ));
 
-    if (false === @file_put_contents($this->dir.$key.'.cache', $serialized))
-    {
+    if (! file_exists($this->dir)) {
       mkgetdir($this->dir, MKGETDIR_DEFAULT&~MKGETDIR_DIE_ON_ERROR);
-      if (false === @file_put_contents($this->dir.$key.'.cache', $serialized))
-      {
-        return false;
-      }
+    }
+
+    if (false === file_put_contents($this->dir.$key.'.cache', $serialized))
+    {
+      return false;
     }
     return true;
   }
@@ -118,8 +118,10 @@ class PersistentFileCache extends PersistentCache
     $limit = time() - $this->default_lifetime;
     foreach ($files as $file)
     {
-      if ($all || @filemtime($file) < $limit)
-        @unlink($file);
+      $mtime = file_exists($file) ? filemtime($file) : false;
+
+      if ($all || $mtime < $limit)
+        unlink($file);
     }
   }
 
