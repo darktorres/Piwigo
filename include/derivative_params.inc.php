@@ -89,8 +89,8 @@ final class ImageRect
   function __construct($l)
   {
     $this->l = $this->t = 0;
-    $this->r = $l[0];
-    $this->b = $l[1];
+    $this->r = (int) $l[0];
+    $this->b = (int) $l[1];
   }
 
   /**

@@ -90,7 +90,7 @@ function pwg_set_cookie_var($var, $value, $expire=null)
   if ($value==null or $expire===0)
   {
     unset($_COOKIE['pwg_'.$var]);
-    return setcookie('pwg_'.$var, false, 0, cookie_path());
+    return setcookie('pwg_'.$var, '', 0, cookie_path());
 
   }
   else

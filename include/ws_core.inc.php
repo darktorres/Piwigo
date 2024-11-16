@@ -181,7 +181,7 @@ abstract class PwgResponseEncoder
   {
     if (is_object($value))
     {
-      $class = strtolower( @get_class($value) );
+      $class = strtolower( get_class($value) );
       if ($class == 'pwgnamedarray')
       {
         $value = $value->_content;
@@ -253,9 +253,9 @@ class PwgServer
     if ( is_null($this->_responseEncoder) )
     {
       set_status_header(400);
-      @header("Content-Type: text/plain");
+      header("Content-Type: text/plain");
       echo ("Cannot process your request. Unknown response format.
-Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseFormat."\n");
+Request format: ".$this->_requestFormat." Response format: ".$this->_responseFormat."\n");
       var_export($this);
       die(0);
     }
@@ -290,7 +290,7 @@ Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseF
     $encodedResponse = $this->_responseEncoder->encodeResponse($response);
     $contentType = $this->_responseEncoder->getContentType();
 
-    @header('Content-Type: '.$contentType.'; charset=utf-8');
+    header('Content-Type: '.$contentType.'; charset=utf-8');
     print_r($encodedResponse);
     trigger_notify('sendResponse', $encodedResponse );
   }
@@ -366,13 +366,13 @@ Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseF
 
   function getMethodDescription($methodName)
   {
-    $desc = @$this->_methods[$methodName]['description'];
+    $desc = $this->_methods[$methodName]['description'];
     return isset($desc) ? $desc : '';
   }
 
   function getMethodSignature($methodName)
   {
-    $signature = @$this->_methods[$methodName]['signature'];
+    $signature = $this->_methods[$methodName]['signature'];
     return isset($signature) ? $signature : array();
   }
   
@@ -381,7 +381,7 @@ Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseF
    */
   function getMethodOptions($methodName)
   {
-    $options = @$this->_methods[$methodName]['options'];
+    $options = $this->_methods[$methodName]['options'];
     return isset($options) ? $options : array();
   }
 
@@ -501,7 +501,7 @@ Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseF
    */
   function invoke($methodName, $params)
   {
-    $method = @$this->_methods[$methodName];
+    $method = $this->_methods[$methodName];
 
     if ( $method == null )
     {

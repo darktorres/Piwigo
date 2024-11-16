@@ -161,8 +161,8 @@ while ($row = pwg_db_fetch_assoc($result))
     array(
       'NAME' => $row['galleries_url'],
       'TYPE' => l10n( $is_remote ? 'Remote' : 'Local' ),
-      'CATEGORIES' => (int)@$sites_detail[$row['id']]['nb_categories'],
-      'IMAGES' => (int)@$sites_detail[$row['id']]['nb_images'],
+      'CATEGORIES' => $sites_detail[$row['id']]['nb_categories'] ?? 0,
+      'IMAGES' => $sites_detail[$row['id']]['nb_images'] ?? 0,
       'U_SYNCHRONIZE' => $update_url
      );
      

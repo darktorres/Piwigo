@@ -1542,7 +1542,7 @@ SELECT id, uppercats, global_rank, visible, status
 
   // we have then to add the virtual category
   single_insert(CATEGORIES_TABLE, $insert);
-  $inserted_id = pwg_db_insert_id(CATEGORIES_TABLE);
+  $inserted_id = pwg_db_insert_id();
 
   single_update(
     CATEGORIES_TABLE,
@@ -1758,7 +1758,7 @@ SELECT id
             )
           );
 
-        $page['tag_id_from_tag_name_cache'][$tag_name] = pwg_db_insert_id(TAGS_TABLE);
+        $page['tag_id_from_tag_name_cache'][$tag_name] = pwg_db_insert_id();
 
         invalidate_user_cache_nb_tags();
 
@@ -1929,7 +1929,7 @@ function fill_lounge($images, $categories)
  */
 function empty_lounge($invalidate_user_cache=true)
 {
-  global $logger;
+  global $logger, $conf;
 
   if (isset($conf['empty_lounge_running']))
   {
@@ -2338,7 +2338,7 @@ SELECT id
         )
       );
 
-    $inserted_id = pwg_db_insert_id(TAGS_TABLE);
+    $inserted_id = pwg_db_insert_id();
 
     return array(
       'info' => l10n('Tag "%s" was added', stripslashes($tag_name)),
@@ -2367,7 +2367,7 @@ function cat_admin_access($category_id)
 
   // $filter['visible_categories'] and $filter['visible_images']
   // are not used because it's not necessary (filter <> restriction)
-  if (in_array($category_id, @explode(',', $user['forbidden_categories'])))
+  if (in_array($category_id, explode(',', $user['forbidden_categories'] ?? '')))
   {
     return false;
   }
@@ -2467,6 +2467,7 @@ function fetchRemote($src, &$dest, $get_data=array(), $post_data=array(), $user_
       'http' => array(
         'method' => $method,
         'user_agent' => $user_agent,
+        'header' => str_contains($src, 'format=php') ? "Content-type: application/x-www-form-urlencoded\r\n" : '',
       )
     );
     if ($method == 'POST')
@@ -3144,7 +3145,7 @@ function deltree($path, $trash_path=null)
       {
         @mkgetdir($trash_path, MKGETDIR_RECURSIVE|MKGETDIR_DIE_ON_ERROR|MKGETDIR_PROTECT_HTACCESS);
       }
-      while ($r = $trash_path . '/' . md5(uniqid(rand(), true)))
+      while ($r = $trash_path . '/' . md5(uniqid((string) rand(), true)))
       {
         if (!is_dir($r))
         {
@@ -3471,7 +3472,8 @@ function get_cache_size_derivatives($path)
           if ($split = explode('-' ,$node))
           {
             $size_code = substr(end($split), 0, 2);
-            @$msizes[$size_code] += filesize($path.'/'.$node);
+            $msizes[$size_code] ??= 0;
+            $msizes[$size_code] += filesize($path.'/'.$node);
           }
         }
         elseif (is_dir($path.'/'.$node))
@@ -3479,7 +3481,8 @@ function get_cache_size_derivatives($path)
           $tmp_msizes = get_cache_size_derivatives($path.'/'.$node);
           foreach ($tmp_msizes as $size_key => $value)
           {
-            @$msizes[$size_key] += $value;
+            $msizes[$size_key] ??= 0;
+            $msizes[$size_key] += $value;
           }
         }
       }

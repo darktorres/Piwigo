@@ -108,7 +108,7 @@ SELECT
     '.$conf['user_fields']['id'].' AS id
   FROM '.USERS_TABLE.'
 ;';
-    $all_user_ids = query2array($query, 'id', null);
+    $all_user_ids = query2array($query, 'id');
 
     $sessions_to_delete = array();
 

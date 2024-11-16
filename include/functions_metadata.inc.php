@@ -25,7 +25,7 @@ function get_iptc_data($filename, $map, $array_sep=',')
   $result = array();
 
   $imginfo = array();
-  if (false == @getimagesize($filename, $imginfo) )
+  if (false == getimagesize($filename, $imginfo) )
   {
     return $result;
   }
@@ -134,7 +134,15 @@ function get_exif_data($filename, $map)
     die('Exif extension not available, admin should disable exif use');
   }
 
+  getimagesize($filename, $info);
+
+  // Check if the APP1 segment exists in the info array
+  if (! isset($info['APP1']) || ! str_starts_with((string) $info['APP1'], 'Exif')) {
+      return [];
+  }
+
   // Read EXIF data
+  // https://github.com/php/php-src/issues/11020
   if ($exif = @exif_read_data($filename) or $exif2 = trigger_change('format_exif_data', $exif=null, $filename, $map))
   {
     if (!empty($exif2))

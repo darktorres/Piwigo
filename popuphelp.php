@@ -23,7 +23,6 @@ $page['body_id'] = 'thePopuphelpPage';
 $title = l10n('Piwigo Help');
 $page['page_banner'] = '';
 $page['meta_robots']=array('noindex'=>1, 'nofollow'=>1);
-include(PHPWG_ROOT_PATH.'include/page_header.php');
 
 if
   (

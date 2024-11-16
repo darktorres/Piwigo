@@ -47,7 +47,7 @@ function pwg_db_connect($host, $user, $password, $database)
     list($host, $port) = explode(':', $host);
   }
   
-  $mysqli = new mysqli($host, $user, $password, '', $port, $socket);
+  $mysqli = new mysqli($host, $user, $password, '', (int) $port, $socket);
   if (mysqli_connect_error())
   {
     throw new Exception("Can't connect to server");

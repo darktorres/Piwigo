@@ -114,9 +114,9 @@ WHERE '.$where.'
           'get_categories_menu'
           ),
         'TITLE' => get_display_images_count(
-          $row['nb_images'],
-          $row['count_images'],
-          $row['count_categories'],
+          (int) $row['nb_images'],
+          (int) $row['count_images'],
+          (int) $row['count_categories'],
           false,
           ' / '
           ),
@@ -131,7 +131,7 @@ WHERE '.$where.'
       $row['icon_ts'] = get_icon($row['max_date_last'], $child_date_last);
     }
     $cats[] = $row;
-    if ($row['id']==@$page['category']['id']) //save the number of subcats for later optim
+    if ($row['id']==($page['category']['id'] ?? null)) //save the number of subcats for later optim
       $page['category']['count_categories'] = $row['count_categories'];
   }
   usort($cats, 'global_rank_compare');
@@ -736,7 +736,8 @@ function get_related_categories_menu($items, $excluded_cat_ids=array())
   {
     foreach (explode(',', $cat['uppercats']) as $uppercat)
     {
-      @$cat_ids[$uppercat]++;
+      $cat_ids[$uppercat] ??= 0;
+      $cat_ids[$uppercat]++;
     }
   }
 
@@ -796,6 +797,7 @@ SELECT
     {
       foreach (array_slice(explode(',', $cat['uppercats']), 0, -1) as $uppercat_id)
       {
+        $cats[$index_of_cat[$uppercat_id]]['count_categories'] ??= 0;
         @$cats[ $index_of_cat[ $uppercat_id ] ]['count_categories']++;
       }
     }

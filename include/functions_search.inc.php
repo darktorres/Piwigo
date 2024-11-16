@@ -1576,7 +1576,7 @@ function get_quick_search_results_no_cache($q, $options)
   // get inflections for terms
   $inflector = null;
   $lang_code = substr(get_default_language(),0,2);
-  @include_once(PHPWG_ROOT_PATH.'include/inflectors/'.$lang_code.'.php');
+  file_exists(PHPWG_ROOT_PATH.'include/inflectors/'.$lang_code.'.php') && include_once(PHPWG_ROOT_PATH.'include/inflectors/'.$lang_code.'.php');
   $class_name = 'Inflector_'.$lang_code;
   if (class_exists($class_name))
   {
@@ -1612,7 +1612,7 @@ function get_quick_search_results_no_cache($q, $options)
 
   $ids = qsearch_eval($expression, $qsr, $tmp, $search_results['qs']['unmatched_terms']);
 
-  $debug[] = "<!--\nparsed: ".htmlspecialchars($expression);
+  $debug[] = "<!--\nparsed: ".htmlspecialchars((string) $expression);
   $debug[] = count($expression->stokens).' tokens';
   for ($i=0; $i<count($expression->stokens); $i++)
   {

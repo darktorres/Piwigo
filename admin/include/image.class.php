@@ -52,11 +52,6 @@ class pwg_image
 
     trigger_notify('load_image_library', array(&$this) );
 
-    if (is_object($this->image))
-    {
-      return; // A plugin may have loaded its own library
-    }
-
     $extension = strtolower(get_extension($source_filepath));
 
     if (!in_array($extension, $conf['picture_ext']))
@@ -281,9 +276,17 @@ class pwg_image
 
     $rotation = 0;
 
+    getimagesize($source_filepath, $info);
+
+    // Check if the APP1 segment exists in the info array
+    if (! isset($info['APP1']) || ! str_starts_with((string) $info['APP1'], 'Exif')) {
+        return 0;
+    }
+
+    // https://github.com/php/php-src/issues/11020
     $exif = @exif_read_data($source_filepath);
 
-    if (isset($exif['Orientation']) and preg_match('/^\s*(\d)/', $exif['Orientation'], $matches))
+    if (isset($exif['Orientation']) and preg_match('/^\s*(\d)/', (string) $exif['Orientation'], $matches))
     {
       $orientation = $matches[1];
       if (in_array($orientation, array(3, 4)))

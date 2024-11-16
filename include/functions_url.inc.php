@@ -15,7 +15,7 @@
 function get_root_url()
 {
   global $page;
-  if ( ($root_url = @$page['root_path']) == null )
+  if ( ($root_url = ($page['root_path'] ?? null)) == null )
   {// TODO - add HERE the possibility to call PWG functions from external scripts
     $root_url = PHPWG_ROOT_PATH;
     if ( strncmp($root_url, './', 2) == 0 )
@@ -316,7 +316,7 @@ function make_section_in_url($params)
 {
   global $conf;
   $section_string = '';
-  $section = @$params['section'];
+  $section = ($params['section'] ?? null);
   if (!isset($section))
   {
     $section_of = array(

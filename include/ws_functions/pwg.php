@@ -91,7 +91,8 @@ SELECT id, path, representative_ext, width, height, rotation
         {
           continue;
         }
-        if (@filemtime($derivative->get_path())===false)
+        $mtime = file_exists($derivative->get_path()) ? filemtime($derivative->get_path()) : false;
+        if ($mtime===false)
         {
           $urls[] = $derivative->get_url().$uid;
         }
@@ -232,7 +233,8 @@ function ws_getCacheSize($params, &$service)
 
   foreach(array_keys($infos['msizes']) as $size_type)
   {
-    $infos['msizes'][$size_type] += @$msizes[derivative_to_url($size_type)];
+    $infos['msizes'][$size_type] ??= 0;
+    $infos['msizes'][$size_type] += ($msizes[derivative_to_url($size_type)] ?? null);
     $all += $infos['msizes'][$size_type];
   }
   $infos['msizes']['all'] = $all;
@@ -329,7 +331,8 @@ DELETE FROM '. RATE_TABLE .'
     $query .= ' AND element_id='.$params['image_id'];
   }
 
-  $changes = pwg_db_changes(pwg_query($query));
+  pwg_query($query);
+  $changes = pwg_db_changes();
   if ($changes)
   {
     include_once(PHPWG_ROOT_PATH.'include/functions_rate.inc.php');
@@ -760,7 +763,7 @@ function ws_history_search($param, &$service)
 
     pwg_query($query);
 
-    $search_id = pwg_db_insert_id(SEARCH_TABLE);
+    $search_id = pwg_db_insert_id();
 
     // Remove redirect for ajax //
     // redirect(
@@ -839,7 +842,7 @@ SELECT
     
     foreach ($search_details as $id_search => $rules_search)
     {
-      $rules_search = safe_unserialize($rules_search)['fields'];
+      $rules_search = is_serialized($rules_search) ? unserialize($rules_search)['fields'] : null;
       if (!empty($rules_search['tags']['words']))
       {
         $has_tags = true;
@@ -1068,7 +1071,8 @@ SELECT
       $search_detail = null;
     }
 
-    @$sorted_members[$user_name] += 1;
+    $sorted_members[$user_name] ??= 0;
+    $sorted_members[$user_name] += 1;
 
     array_push( 
       $result,

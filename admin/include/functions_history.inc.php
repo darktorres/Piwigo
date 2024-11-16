@@ -341,13 +341,13 @@ SELECT *
 
   foreach ($need_update as $time_key => $summary)
   {
-    $time_tokens = explode('-', $time_key);
+    $time_tokens = explode('-', (string) $time_key);
 
     $inserts[] = array(
       'year'     => $time_tokens[0],
-      'month'    => @$time_tokens[1],
-      'day'      => @$time_tokens[2],
-      'hour'     => @$time_tokens[3],
+      'month'    => ($time_tokens[1] ?? null),
+      'day'      => ($time_tokens[2] ?? null),
+      'hour'     => ($time_tokens[3] ?? null),
       'nb_pages' => $summary['nb_pages'],
       'history_id_from' => $summary['history_id_from'],
       'history_id_to' => $summary['history_id_to'],

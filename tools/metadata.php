@@ -75,7 +75,8 @@ else
 
 echo '<br><br><br>';
 echo 'EXIF Fields in '.$filename.'<br>';
-$exif = exif_read_data($filename);
+// https://github.com/php/php-src/issues/11020
+$exif = @exif_read_data($filename);
 echo '<pre>';
 print_r($exif);
 echo '</pre>';
