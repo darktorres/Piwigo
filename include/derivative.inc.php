@@ -42,7 +42,7 @@ final class SrcImage
 
     $this->id = $infos['id'];
     $ext = strtolower(get_extension($infos['path']));
-    $infos['file_ext'] = @strtolower(get_extension($infos['file']));
+    // $infos['file_ext'] = @strtolower(get_extension($infos['file']));
     $infos['path_ext'] = $ext;
     if (in_array($ext, $conf['picture_ext']))
     {
@@ -57,7 +57,8 @@ final class SrcImage
     {
       $this->rel_path = trigger_change('get_mimetype_location', get_themeconf('mime_icon_dir').$ext.'.png', $ext );
       $this->flags |= self::IS_MIMETYPE;
-      if ( ($size=@getimagesize(PHPWG_ROOT_PATH.$this->rel_path)) === false)
+      $size = file_exists(PHPWG_ROOT_PATH . $this->rel_path) ? getimagesize(PHPWG_ROOT_PATH . $this->rel_path) : false;
+      if ($size === false)
       {
         if ('svg' == $ext) 
         {
@@ -357,7 +358,7 @@ final class DerivativeImage
     $url_style=$conf['derivative_url_style'];
     if (!$url_style)
     {
-      $mtime = @filemtime(PHPWG_ROOT_PATH.$rel_path);
+      $mtime = file_exists(PHPWG_ROOT_PATH.$rel_path) ? filemtime(PHPWG_ROOT_PATH.$rel_path) : false;
       if ($mtime===false or $mtime < $params->last_mod_time)
       {
         $is_cached = false;

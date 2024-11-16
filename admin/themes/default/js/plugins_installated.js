@@ -438,7 +438,7 @@ const queuedManager = jQuery.manageAjax.create("queued", {
     maxRequests: 1,
   });
   
-const nb_plugins = jQuery("div.active").size();
+const nb_plugins = jQuery("div.active").length;
 const done = 0;
 
 function showInactivePlugins () {

@@ -793,7 +793,7 @@ function ws_users_preferences_set($params, &$service)
     $value = json_decode($value, true);
   }
 
-  userprefs_update_param($params['param'], $value, true);
+  userprefs_update_param($params['param'], $value);
 
   return $user['preferences'];
 }

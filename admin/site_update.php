@@ -765,7 +765,7 @@ if (isset($_POST['submit'])
         $opts['recursive'] = false;
       }
     }
-    $files = get_filelist($opts['category_id'], $site_id,
+    $files = get_filelist($opts['category_id'], (int) $site_id,
                           $opts['recursive'],
                           false);
     $template->append('footer_elements', '<!-- get_filelist : '
@@ -845,7 +845,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
     }
   }
   $start = get_moment();
-  $files = get_filelist($opts['category_id'], $site_id,
+  $files = get_filelist($opts['category_id'], (int) $site_id,
                         $opts['recursive'],
                         $opts['only_new']);
 

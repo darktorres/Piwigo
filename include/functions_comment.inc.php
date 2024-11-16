@@ -227,7 +227,7 @@ INSERT INTO '.COMMENTS_TABLE.'
   )
 ';
     pwg_query($query);
-    $comm['id'] = pwg_db_insert_id(COMMENTS_TABLE);
+    $comm['id'] = pwg_db_insert_id();
 
     invalidate_user_cache_nb_comments();
 
@@ -287,8 +287,8 @@ DELETE FROM '.COMMENTS_TABLE.'
   WHERE '.$where_clause.
 $user_where_clause.'
 ;';
-
-  if ( pwg_db_changes(pwg_query($query)) )
+  pwg_query($query);
+  if ( pwg_db_changes() )
   {
     invalidate_user_cache_nb_comments();
 
