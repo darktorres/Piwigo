@@ -177,7 +177,7 @@ function custom_notification_query($action, $type, $start=null, $end=null)
       }
       $query = 'SELECT COUNT(DISTINCT '.$field_id.') '.$query.';';
       list($count) = pwg_db_fetch_row(pwg_query($query));
-      return $count;
+      return (int) $count;
       break;
     }
 

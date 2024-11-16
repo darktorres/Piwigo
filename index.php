@@ -62,8 +62,8 @@ if (count($page['items']) > $page['nb_image_page'])
   $page['navigation_bar'] = create_navigation_bar(
     duplicate_index_url(array(), array('start')),
     count($page['items']),
-    $page['start'],
-    $page['nb_image_page'],
+    (int) $page['start'],
+    (int) $page['nb_image_page'],
     true, 'start'
     );
 }
@@ -568,8 +568,8 @@ SELECT
       !isset($page['chronology_field']) and isset($page['qsearch_details']) )
   {
     $cats = array_merge(
-        (array)@$page['qsearch_details']['matching_cats_no_images'],
-        (array)@$page['qsearch_details']['matching_cats'] );
+        $page['qsearch_details']['matching_cats_no_images'] ?? [],
+        $page['qsearch_details']['matching_cats'] ?? []);
     if (count($cats))
     {
       usort($cats, 'name_compare');

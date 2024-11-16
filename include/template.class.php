@@ -164,6 +164,20 @@ class Template
     $this->smarty->registerPlugin('modifier', 'explode', array('Template', 'mod_explode') );
     $this->smarty->registerPlugin('modifier', 'ternary', array('Template', 'mod_ternary') );
     $this->smarty->registerPlugin('modifier', 'get_extent', array($this, 'get_extent') );
+
+    $this->smarty->registerPlugin('modifier', 'l10n', 'l10n');
+    $this->smarty->registerPlugin('modifier', 'count', count(...));
+    $this->smarty->registerPlugin('modifier', 'strpos', strpos(...));
+    $this->smarty->registerPlugin('modifier', 'is_admin', is_admin(...));
+    $this->smarty->registerPlugin('modifier', 'is_null', is_null(...));
+    $this->smarty->registerPlugin('modifier', 'get_device', get_device(...));
+    $this->smarty->registerPlugin('modifier', 'str_replace', str_replace(...));
+    $this->smarty->registerPlugin('modifier', 'preg_match', preg_match(...));
+    $this->smarty->registerPlugin('modifier', 'url_is_remote', url_is_remote(...));
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    $this->smarty->registerPlugin('modifier', 'cat_admin_access', cat_admin_access(...));
+    $this->smarty->registerPlugin('modifier', 'array_key_exists', array_key_exists(...));
+
     $this->smarty->registerPlugin('block', 'html_head', array($this, 'block_html_head') );
     $this->smarty->registerPlugin('block', 'html_style', array($this, 'block_html_style') );
     $this->smarty->registerPlugin('function', 'combine_script', array($this, 'func_combine_script') );
@@ -871,9 +885,9 @@ class Template
 
     $this->scriptLoader->add( $params['id'], $load,
       empty($params['require']) ? array() : explode( ',', $params['require'] ),
-      @$params['path'],
+      ($params['path'] ?? null),
       isset($params['version']) ? $params['version'] : 0,
-      @$params['template']);
+      ($params['template'] ?? null));
   }
 
   /**
@@ -1001,7 +1015,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
       $params['id'] = md5($params['path']);
     }
 
-    $this->cssLoader->add($params['id'], $params['path'], isset($params['version']) ? $params['version'] : 0, (int)@$params['order'], (bool)@$params['template']);
+    $this->cssLoader->add($params['id'], $params['path'], isset($params['version']) ? $params['version'] : 0, (int)($params['order'] ?? null), (bool)($params['template'] ?? null));
   }
 
   /**
@@ -1339,7 +1353,7 @@ class Combinable
   /** @var string */
   public $id;
   /** @var string */
-  public $path;
+  public $path = '';
   /** @var string */
   public $version;
   /** @var bool */
@@ -1488,7 +1502,7 @@ class CssLoader
     else
     {
       $css = $this->registered_css[$id];
-      if ($css->order<$order*1000 || version_compare($css->version, $version)<0)
+      if ($css->order<$order*1000 || version_compare((string) $css->version, (string) $version)<0)
       {
         unset($this->registered_css[$id]);
         $this->add($id, $path, $version, $order, $is_template);
@@ -1626,7 +1640,7 @@ class ScriptLoader
         $script->precedents = array_unique( array_merge($script->precedents, $require) );
       }
       $script->set_path($path);
-      if ($version && version_compare($script->version, $version)<0 )
+      if ($version && version_compare((string) $script->version, (string) $version)<0 )
         $script->version = $version;
       if ($load_mode < $script->load_mode)
         $script->load_mode = $load_mode;
@@ -1658,7 +1672,7 @@ class ScriptLoader
         trigger_error("Script $id has an undefined path", E_USER_WARNING);
     }
     $this->did_head = true;
-    return self::do_combine($this->head_done_scripts, 0);
+    return self::do_combine($this->head_done_scripts);
   }
 
   /**
@@ -1694,15 +1708,14 @@ class ScriptLoader
     {
      if (!is_string($script->load_mode)) $result[$script->load_mode-1][$id] = $script;
     }
-    return array( self::do_combine($result[0],1), self::do_combine($result[1],2) );
+    return array( self::do_combine($result[0]), self::do_combine($result[1]) );
   }
 
   /**
    * @param Script[] $scripts
-   * @param int $load_mode
    * @return Combinable[]
    */
-  private static function do_combine($scripts, $load_mode)
+  private static function do_combine($scripts)
   {
     $combiner = new FileCombiner('js', $scripts);
     return $combiner->combine();
@@ -1941,7 +1954,7 @@ final class FileCombiner
       $key[] = $combinable->path;
       $key[] = $combinable->version;
       if ($conf['template_compile_check'])
-        $key[] = filemtime( PHPWG_ROOT_PATH . $combinable->path );
+        $key[] = file_exists(PHPWG_ROOT_PATH . $combinable->path) ? filemtime( PHPWG_ROOT_PATH . $combinable->path ) : false;
       $pending[] = $combinable;
     }
     $this->flush_pending($result, $pending, $key, $force);
@@ -1977,7 +1990,7 @@ final class FileCombiner
         file_put_contents( PHPWG_ROOT_PATH.$file, $output );
         @chmod(PHPWG_ROOT_PATH.$file, 0644);
       }
-      $result[] = new Combinable("combi", $file, false);
+      $result[] = new Combinable("combi", $file);
     }
     elseif ( count($pending)==1)
     {
@@ -2014,7 +2027,7 @@ final class FileCombiner
         if (!$force && file_exists(PHPWG_ROOT_PATH.$file) )
         {
           $combinable->path = $file;
-          $combinable->version = false;
+          $combinable->version = 0;
           return;
         }
       }
