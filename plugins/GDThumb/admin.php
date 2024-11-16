@@ -3,7 +3,7 @@
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
 function int_delete_gdthumb_cache($pattern) {
-  if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)):
+  if ($contents = opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)):
     while (($node = readdir($contents)) !== false):
       if ($node != '.'
           and $node != '..'
@@ -45,7 +45,7 @@ if (isset($_GET['getMissingDerivative'])) {
 
   $urls=array();
   do {
-    $result = pwg_query( str_replace('start_id', $start_id, $query_model));
+    $result = pwg_query( str_replace('start_id', (string) $start_id, $query_model));
     $is_last = pwg_db_num_rows($result) < $qlimit;
     while ($row=pwg_db_fetch_assoc($result)) {
       $start_id = $row['id'];
@@ -57,7 +57,8 @@ if (isset($_GET['getMissingDerivative'])) {
       else:
         $derivative = new DerivativeImage(ImageStdParams::get_custom(9999, $params['height']), $src_image);
       endif;
-      if (@filemtime($derivative->get_path())===false) {
+      $mtime = file_exists($derivative->get_path()) ? filemtime($derivative->get_path()) : false;
+      if ($mtime===false) {
         $urls[] = $derivative->get_url().$uid;
       }
       if (count($urls)>=$max_urls && !$is_last)
@@ -171,7 +172,7 @@ if (isset($_POST['submit'])) {
 
 // Try to find GreyDragon Theme and use Theme's styles for admin area
 $css_file = str_replace('/./', '/', dirname(dirname(dirname(__FILE__))) . '/' . GDTHEME_PATH . "admin/css/styles.css");
-if (@file_exists($css_file)):
+if (file_exists($css_file)):
   $custom_css = "yes";
 else:
   $custom_css = "no";
