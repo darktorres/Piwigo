@@ -189,11 +189,6 @@ function pwg_db_num_rows($result)
     return $result->num_rows;
 }
 
-function pwg_db_fetch_array($result)
-{
-    return $result->fetch_array();
-}
-
 function pwg_db_fetch_assoc($result)
 {
     return $result->fetch_assoc();
@@ -202,16 +197,6 @@ function pwg_db_fetch_assoc($result)
 function pwg_db_fetch_row($result)
 {
     return $result->fetch_row();
-}
-
-function pwg_db_fetch_object($result)
-{
-    return $result->fetch_object();
-}
-
-function pwg_db_free_result($result)
-{
-    return $result->free_result();
 }
 
 function pwg_db_real_escape_string($s)
@@ -226,20 +211,6 @@ function pwg_db_insert_id()
     global $mysqli;
 
     return $mysqli->insert_id;
-}
-
-function pwg_db_errno()
-{
-    global $mysqli;
-
-    return $mysqli->errno;
-}
-
-function pwg_db_error()
-{
-    global $mysqli;
-
-    return $mysqli->error;
 }
 
 function pwg_db_close()
@@ -620,11 +591,6 @@ function pwg_db_concat_ws($array, $separator)
     return "CONCAT_WS('{$separator}', {$string})";
 }
 
-function pwg_db_cast_to_text($string)
-{
-    return $string;
-}
-
 /**
  * Returns an array containing the possible values of an enum field.
  *
@@ -645,7 +611,7 @@ function get_enums($table, $field)
         }
     }
 
-    pwg_db_free_result($result);
+    $result->free_result();
     return $options;
 }
 
