@@ -674,7 +674,7 @@ function pwg_mail($to, $args=array(), $tpl=array())
   }
 
   // Bcc
-  $Bcc = get_clean_recipients_list(@$args['Bcc']);
+  $Bcc = get_clean_recipients_list($args['Bcc'] ?? null);
   if ($conf_mail['send_bcc_mail_webmaster'])
   {
     $Bcc[] = array(
@@ -727,7 +727,7 @@ function pwg_mail($to, $args=array(), $tpl=array())
   }
 
   $content_type_list = array();
-  if ($conf_mail['mail_allow_html'] and @$args['email_format'] != 'text/plain')
+  if ($conf_mail['mail_allow_html'] and ($args['email_format'] ?? null) != 'text/plain')
   {
     $content_type_list[] = 'text/html';
   }

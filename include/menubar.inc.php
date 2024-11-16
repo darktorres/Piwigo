@@ -30,7 +30,7 @@ function initialize_menu()
   }
   $menu->prepare_display();
 
-  if ( @$page['section']=='search' and isset($page['qsearch_details']) )
+  if ( ($page['section'] ?? null)=='search' and isset($page['qsearch_details']) )
   {
     $template->assign('QUERY_SEARCH', htmlspecialchars($page['qsearch_details']['q']) );
   }
@@ -143,7 +143,7 @@ function initialize_menu()
   $block = $menu->get_block('mbTags');
   if ( $block!=null and 'picture' != script_basename() )
   {
-    if ('tags'==@$page['section'])
+    if ('tags'==($page['section'] ?? null))
     {
       $tags = get_common_tags(
         $page['items'],
@@ -192,7 +192,7 @@ function initialize_menu()
     //displays only the tags available from the current thumbnails displayed
     else if ( !empty($page['items']) and ($conf['menubar_tag_cloud_content'] == 'current_only' or $conf['menubar_tag_cloud_content'] == 'all_or_current') )
     {        
-      $selection = array_slice( $page['items'], $page['start'], $page['nb_image_page'] );
+      $selection = array_slice( $page['items'], (int) $page['start'], (int) $page['nb_image_page'] );
       $tags = add_level_to_tags( get_common_tags($selection, $conf['content_tag_cloud_items_number']) );
       foreach ($tags as $tag)
       {

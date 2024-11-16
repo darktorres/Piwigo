@@ -57,7 +57,7 @@ class tabsheet
   {
     if (isset($this->sheets[$name]))
     {
-      array_splice($this->sheets, $name, 1);
+      array_splice($this->sheets, (int) $name, 1);
 
       if ($this->selected == $name)
       {

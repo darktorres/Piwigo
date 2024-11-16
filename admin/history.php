@@ -104,8 +104,8 @@ else
     pwg_get_cookie_var('display_thumbnail', 'no_display_thumbnail');
 }
 
-$form_param['ip'] = isset($_GET['filter_ip']) ? $_GET['filter_ip'] : @$form['ip'];
-$form_param['image_id'] = isset($_GET['filter_image_id']) ? $_GET['filter_image_id'] : @$form['image_id'];
+$form_param['ip'] = isset($_GET['filter_ip']) ? $_GET['filter_ip'] : ($form['ip'] ?? null);
+$form_param['image_id'] = isset($_GET['filter_image_id']) ? $_GET['filter_image_id'] : ($form['image_id'] ?? null);
 $form_param['user_id'] = isset($_GET['filter_user_id']) ? $_GET['filter_user_id'] : "-1";
 
 if (isset($_GET['filter_ip']) or isset($_GET['filter_image_id']) or isset($_GET['filter_user_id']))
@@ -128,12 +128,12 @@ if ($form_param['user_id'] != "-1") {
 $template->assign(
   array(
     'USER_ID' => $form_param['user_id'],
-    'USER_NAME' => @$form_param['user_name'],
+    'USER_NAME' => ($form_param['user_name'] ?? null),
     'IMAGE_ID' => $form_param['image_id'],
-    'FILENAME' => @$form['filename'],
+    'FILENAME' => ($form['filename'] ?? null),
     'IP' => $form_param['ip'],
-    'START' => @$form['start'],
-    'END' => @$form['end'],
+    'START' => ($form['start'] ?? null),
+    'END' => ($form['end'] ?? null),
     )
   );
 

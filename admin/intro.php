@@ -191,7 +191,7 @@ $template->assign(
     'NB_USERS' => $nb_users,
     'NB_GROUPS' => $nb_groups,
     'NB_RATES' => $nb_rates,
-    'NB_VIEWS' => number_format_human_readable($nb_views),
+    'NB_VIEWS' => number_format_human_readable((float) $nb_views),
     'NB_PLUGINS' => count($pwg_loaded_plugins),
     'STORAGE_USED' => str_replace(' ', '&nbsp;', l10n('%sGB', number_format($du_gb, $du_decimals))),
     'U_QUICK_SYNC' => PHPWG_ROOT_PATH.'admin.php?page=site_update&amp;site=1&amp;quick_sync=1&amp;pwg_token='.get_pwg_token(),
@@ -292,7 +292,8 @@ if (!isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity_
     $day_nb = $day_date->format('N');
 
     @$activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst($action['action'])] = $action['activity_counter'];
-    @$activity_last_weeks[$week][$day_nb]['number'] += $action['activity_counter'];
+    $activity_last_weeks[$week][$day_nb]['number'] ??= 0;
+    $activity_last_weeks[$week][$day_nb]['number'] += $action['activity_counter'];
     @$activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
   }
 
@@ -433,8 +434,10 @@ foreach ($file_extensions as $ext => $ext_details)
     $type = 'Other';
   }
 
-  @$data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
-  @$data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
+  $data_storage[$type]['total']['filesize'] ??= 0;
+  $data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
+  $data_storage[$type]['total']['nb_files'] ??= 0;
+  $data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
 
   @$data_storage[$type]['details'][strtoupper($ext)] = array(
     'filesize' => $ext_details['filesize'],

@@ -102,11 +102,10 @@ class ThemeMaintain
  * @param string $event the name of the event to listen to
  * @param Callable $func the callback function
  * @param int $priority greater priority will be executed at last
- * @param string $include_path file to include before executing the callback
  * @return bool false is handler already exists
  */
 function add_event_handler($event, $func,
-    $priority=EVENT_HANDLER_PRIORITY_NEUTRAL, $include_path=null)
+    $priority=EVENT_HANDLER_PRIORITY_NEUTRAL)
 {
   global $pwg_event_handlers;
 
@@ -123,7 +122,6 @@ function add_event_handler($event, $func,
 
   $pwg_event_handlers[$event][$priority][] = array(
     'function' => $func,
-    'include_path' => is_string($include_path) ? $include_path : null,
     );
 
   ksort($pwg_event_handlers[$event]);
@@ -205,12 +203,6 @@ function trigger_change($event, $data=null)
     foreach ($handlers as $handler)
     {
       $args[0] = $data;
-
-      if (!empty($handler['include_path']))
-      {
-        include_once($handler['include_path']);
-      }
-
       $data = call_user_func_array($handler['function'], $args);
     }
   }
@@ -256,11 +248,6 @@ function trigger_notify($event)
   {
     foreach ($handlers as $handler)
     {
-      if (!empty($handler['include_path']))
-      {
-        include_once($handler['include_path']);
-      }
-
       call_user_func_array($handler['function'], $args);
     }
   }

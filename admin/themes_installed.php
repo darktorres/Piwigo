@@ -71,11 +71,11 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme)
     'VERSION' => $fs_theme['version'],
     'DESC' => $fs_theme['description'],
     'AUTHOR' => $fs_theme['author'],
-    'AUTHOR_URL' => @$fs_theme['author uri'],
-    'PARENT' => @$fs_theme['parent'],
+    'AUTHOR_URL' => ($fs_theme['author uri'] ?? null),
+    'PARENT' => ($fs_theme['parent'] ?? null),
     'SCREENSHOT' => $fs_theme['screenshot'],
     'IS_MOBILE' => $fs_theme['mobile'],
-    'ADMIN_URI' => @$fs_theme['admin_uri'],
+    'ADMIN_URI' => ($fs_theme['admin_uri'] ?? null),
     );
 
   if (in_array($theme_id, $db_theme_ids))
@@ -145,8 +145,8 @@ function cmp($a, $b)
 { 
   $s = array('active' => 0, 'inactive' => 1);
   
-  if (@$a['IS_DEFAULT']) return -1;
-  if (@$b['IS_DEFAULT']) return 1;
+  if ($a['IS_DEFAULT'] ?? null) return -1;
+  if ($b['IS_DEFAULT'] ?? null) return 1;
   
   if($a['STATE'] == $b['STATE'])
     return strcasecmp($a['NAME'], $b['NAME']); 

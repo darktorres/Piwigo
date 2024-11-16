@@ -152,7 +152,7 @@ function default_picture_content($content, $element_info)
     {
       pwg_set_session_var('picture_deriv', $_COOKIE['picture_deriv']);
     }
-    setcookie('picture_deriv', false, 0, cookie_path() );
+    setcookie('picture_deriv', '', 0, cookie_path() );
   }
   $deriv_type = pwg_get_session_var('picture_deriv', $conf['derivative_default_size']);
   $selected_derivative = $element_info['derivatives'][$deriv_type];
