@@ -125,7 +125,11 @@ foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
 
     if (isset($fs_plugin['extension']) && isset($merged_extensions[$fs_plugin['extension']])) {
         // Deactivate manually plugin from database
-        $query = "UPDATE plugins SET state = 'inactive' WHERE id = '{$plugin_id}';";
+        $query = <<<SQL
+            UPDATE plugins
+            SET state = 'inactive'
+            WHERE id = '{$plugin_id}';
+            SQL;
         pwg_query($query);
 
         $tpl_plugin['STATE'] = 'merged';

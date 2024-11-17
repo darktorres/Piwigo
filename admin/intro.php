@@ -72,7 +72,11 @@ if ($nb_orphans > 0) {
 }
 
 // locked album ?
-$query = "SELECT COUNT(*) FROM categories WHERE visible = 'false';";
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM categories
+    WHERE visible = 'false';
+    SQL;
 [$locked_album] = pwg_db_fetch_row(pwg_query($query));
 if ($locked_album > 0) {
     $locked_album_url = PHPWG_ROOT_PATH . 'admin.php?page=cat_options&section=visible';
@@ -103,34 +107,65 @@ if ($conf['show_newsletter_subscription'] && userprefs_get_param('show_newslette
     );
 }
 
-$query = 'SELECT COUNT(*) FROM images;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM images;
+    SQL;
 [$nb_photos] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT COUNT(*) FROM categories;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM categories;
+    SQL;
 [$nb_categories] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT COUNT(*) FROM tags;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM tags;
+    SQL;
 [$nb_tags] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT COUNT(*) FROM image_tag;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM image_tag;
+    SQL;
 [$nb_image_tag] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT COUNT(*) FROM users;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM users;
+    SQL;
 [$nb_users] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT COUNT(*) FROM groups_table;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM groups_table;
+    SQL;
 [$nb_groups] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT COUNT(*) FROM rate;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM rate;
+    SQL;
 [$nb_rates] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT SUM(nb_pages) FROM history_summary WHERE month IS NULL;';
+$query = <<<SQL
+    SELECT SUM(nb_pages)
+    FROM history_summary
+    WHERE month IS NULL;
+    SQL;
 [$nb_views] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT SUM(filesize) FROM images;';
+$query = <<<SQL
+    SELECT SUM(filesize)
+    FROM images;
+    SQL;
 [$disk_usage] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT SUM(filesize) FROM image_format;';
+$query = <<<SQL
+    SELECT SUM(filesize)
+    FROM image_format;
+    SQL;
 [$formats_disk_usage] = pwg_db_fetch_row(pwg_query($query));
 
 $disk_usage += $formats_disk_usage;
@@ -159,7 +194,10 @@ $template->assign(
 );
 
 if ($conf['activate_comments']) {
-    $query = 'SELECT COUNT(*) FROM comments;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM comments;
+        SQL;
     [$nb_comments] = pwg_db_fetch_row(pwg_query($query));
     $template->assign('NB_COMMENTS', $nb_comments);
 } else {
@@ -222,9 +260,12 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
         $date_format_function = "TO_CHAR(occured_on, 'YYYY-MM-DD')";
     }
 
-    $query =
-    "SELECT {$date_format_function} AS activity_day, object, action, COUNT(*) AS activity_counter FROM activity
-     WHERE occured_on >= '{$date_string}' GROUP BY activity_day, object, action;";
+    $query = <<<SQL
+        SELECT {$date_format_function} AS activity_day, object, action, COUNT(*) AS activity_counter
+        FROM activity
+        WHERE occured_on >= '{$date_string}'
+        GROUP BY activity_day, object, action;
+        SQL;
     $activity_actions = query2array($query);
 
     foreach ($activity_actions as $action) {
@@ -350,17 +391,21 @@ $video_format = ['webm', 'webmv', 'ogg', 'ogv', 'mp4', 'm4v', 'mov'];
 $data_storage = [];
 
 //Select files in Image_Table
-$query = 'SELECT COUNT(*) AS ext_counter,';
 
 if (DB_ENGINE === 'MySQL') {
-    $query .= " SUBSTRING_INDEX(path,  '.',  -1) AS ext,";
+    $ext_query = "SUBSTRING_INDEX(path,  '.',  -1)";
 }
 
 if (DB_ENGINE === 'PostgreSQL') {
-    $query .= " split_part(path, '.', array_length(string_to_array(path, '.'), 1)) AS ext,";
+    $ext_query = "SPLIT_PART(path, '.', ARRAY_LENGTH(STRING_TO_ARRAY(path, '.'), 1))";
 }
 
-$query .= ' SUM(filesize) AS filesize FROM images GROUP BY ext;';
+$query = <<<SQL
+    SELECT COUNT(*) AS ext_counter, {$ext_query} AS ext, SUM(filesize) AS filesize
+    FROM images
+    GROUP BY ext;
+    SQL;
+
 $file_extensions = query2array($query, 'ext');
 
 foreach ($file_extensions as $ext => $ext_details) {
@@ -383,7 +428,12 @@ foreach ($file_extensions as $ext => $ext_details) {
 }
 
 //Select files from format table
-$query = 'SELECT COUNT(*) AS ext_counter, ext, SUM(filesize) AS filesize FROM image_format GROUP BY ext;';
+$query = <<<SQL
+    SELECT COUNT(*) AS ext_counter, ext, SUM(filesize) AS filesize
+    FROM image_format
+    GROUP BY ext;
+    SQL;
+
 $file_extensions = query2array($query, 'ext');
 foreach ($file_extensions as $ext => $ext_details) {
     $type = 'Formats';

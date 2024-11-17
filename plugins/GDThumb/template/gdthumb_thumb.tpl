@@ -88,7 +88,7 @@
   </script>{/footer_script}
 
   {html_head}
-  <style type="text/css">
+  <style>
     #thumbnails .gdthumb { margin:{$GDThumb.margin / 2}px {$GDThumb.margin / 2}px {$GDThumb.margin - $GDThumb.margin / 2}px {$GDThumb.margin - $GDThumb.margin / 2}px !important; }
   </style>
   {/html_head}

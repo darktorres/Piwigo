@@ -6,13 +6,10 @@
 /local/*
 !/local/**/index.php
 
-# Tests
-/tests/dist/pages
-
-# Composer
-/vendor/
-
 # NPM
 /node_modules/
 /tests/node_modules/
 /themes/bootstrap_darkroom/node_modules/
+
+# Composer
+/vendor/

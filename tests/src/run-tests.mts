@@ -2,13 +2,13 @@
 // https://github.com/HTMLHint/HTMLHint
 
 import puppeteer, {
-    Browser,
-    Page,
-    ConsoleMessage,
-    HTTPRequest,
+    type Browser,
+    type Page,
+    type ConsoleMessage,
+    type HTTPRequest,
 } from "puppeteer";
 import fs from "fs-extra";
-import path from "path";
+import path from "node:path";
 import { gray, cyan, magenta, red, yellow } from "colorette";
 // import { execSync } from "child_process";
 // import { MultiBar, Presets, SingleBar } from "cli-progress";
@@ -43,7 +43,7 @@ async function runPuppeteerScript(): Promise<void> {
         value: "VSCODE",
         domain: "localhost",
     });
-    page.setDefaultTimeout(10000);
+    page.setDefaultTimeout(20_000);
 
     page.on("console", handleConsoleMessage)
         .on("pageerror", ({ message }) => console.log(red(message)))
@@ -74,32 +74,56 @@ async function runPuppeteerScript(): Promise<void> {
         "#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=text]",
     );
 
-    // Database config
-    // dbuser
-    // await page.type("#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=text]", "root");
-    // dbpassword
-    // await page.type("#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(3) > td:nth-child(2) > input[type=password]", "1234");
-    // dbname
-    // await page.type("#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(4) > td:nth-child(2) > input[type=text]", "piwigo2");
+    // // Database config
+    // // dbuser
+    // await page.type(
+    //     "#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=text]",
+    //     "root",
+    // );
+    // // dbpassword
+    // await page.type(
+    //     "#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(3) > td:nth-child(2) > input[type=password]",
+    //     "1234",
+    // );
+    // // dbname
+    // await page.type(
+    //     "#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(4) > td:nth-child(2) > input[type=text]",
+    //     "piwigo2",
+    // );
 
-    // dbprefix
-    // await page.focus("#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(5) > td:nth-child(2) > input[type=text]");
+    // // dbprefix
+    // await page.focus(
+    //     "#content > form > fieldset:nth-child(2) > table > tbody > tr:nth-child(5) > td:nth-child(2) > input[type=text]",
+    // );
 
-    // Select all text and delete it
+    // // Select all text and delete it
     // await page.keyboard.down("Control");
     // await page.keyboard.press("A");
     // await page.keyboard.up("Control");
     // await page.keyboard.press("Backspace");
 
-    // Admin config
-    // await page.type("#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(1) > td:nth-child(2) > input[type=text]", "darktorres");
-    // await page.type("#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=password]", "1234");
-    // await page.type("#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(3) > td:nth-child(2) > input[type=password]", "1234");
+    // // Admin config
+    // await page.type(
+    //     "#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(1) > td:nth-child(2) > input[type=text]",
+    //     "darktorres",
+    // );
+    // await page.type(
+    //     "#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input[type=password]",
+    //     "1234",
+    // );
+    // await page.type(
+    //     "#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(3) > td:nth-child(2) > input[type=password]",
+    //     "1234",
+    // );
     // await page.type("#admin_mail", "torres.dark@gmail.com");
-    // subscribe email
-    // await page.click("#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(5) > td:nth-child(2) > label:nth-child(1) > input[type=checkbox]");
-    // send email with settings
-    // await page.click("#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(5) > td:nth-child(2) > label:nth-child(3) > input[type=checkbox]");
+    // // subscribe email
+    // await page.click(
+    //     "#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(5) > td:nth-child(2) > label:nth-child(1) > input[type=checkbox]",
+    // );
+    // // send email with settings
+    // await page.click(
+    //     "#content > form > fieldset:nth-child(3) > table > tbody > tr:nth-child(5) > td:nth-child(2) > label:nth-child(3) > input[type=checkbox]",
+    // );
 
     // install button
     await page.click("#content > form > div > input");
@@ -119,13 +143,14 @@ async function runPuppeteerScript(): Promise<void> {
     // hide subscribe to newsletter button
     await page.waitForSelector("#content > p > span > a.newsletter-hide");
     await page.click("#content > p > span > a.newsletter-hide");
-    // do a quick sync
-    await page.waitForSelector("#content > p > a");
-    await page.click("#content > p > a");
 
     const sleep = (ms: number): Promise<void> =>
         new Promise((res) => setTimeout(res, ms));
 
+    // do a quick sync
+    await page.waitForSelector("#content > p > a");
+    await page.click("#content > p > a");
+    await sleep(1500);
     // click on 'Photos' menu
     await page.waitForSelector("#menubar > dl:nth-child(2) > dt > span");
     await page.click("#menubar > dl:nth-child(2) > dt > span");
@@ -314,10 +339,21 @@ async function runPuppeteerScript(): Promise<void> {
     await page.click("#thumbnails > li:nth-child(1) > a");
     await sleep(1500);
 
-    // const pages: string[] = await readPageUrlsFromFile(path.join(import.meta.dirname, "pages.txt"));
+    // const pages: string[] = await readPageUrlsFromFile(
+    //     path.join(import.meta.dirname, "pages.txt"),
+    // );
 
     // if (parallel) {
-    //   const pageLoadPromises = pages.map(async (url) => await loadPage(browser, url, progressBar, counter, commitMessage));
+    //     const pageLoadPromises = pages.map(
+    //         async (url) =>
+    //             await loadPage(
+    //                 browser,
+    //                 url,
+    //                 progressBar,
+    //                 counter,
+    //                 commitMessage,
+    //             ),
+    //     );
     //   await Promise.all(pageLoadPromises);
     // } else {
     //   for (const url of pages) {
@@ -380,7 +416,7 @@ async function handleConsoleMessage(message: ConsoleMessage): Promise<void> {
                 const value = await arg.jsonValue();
                 console.log(value);
             } catch (error) {
-                console.log("***" + arg.toString());
+                console.log(`***${arg.toString()}`);
             }
         }
     }
@@ -419,15 +455,24 @@ async function clearDirectoryExcept(
     }
 }
 
-// async function loadPage(browser: Browser, url: string, progressBar: SingleBar, counter: number, commitMessage: string): Promise<void> {
+// async function loadPage(
+//     browser: Browser,
+//     url: string,
+//     progressBar: SingleBar,
+//     counter: number,
+//     commitMessage: string,
+// ): Promise<void> {
 //   try {
 //     const page: Page = await browser.newPage();
 
-//     page
-//       .on("console", handleConsoleMessage)
+//         page.on("console", handleConsoleMessage)
 //       .on("pageerror", ({ message }) => console.log(red(message)))
 //       //.on('response', response => console.log(green(`${response.status()} ${response.url()}`)))
-//       .on("requestfailed", (request) => console.log(magenta(`${request.failure()?.errorText} ${request.url()}`)));
+//             .on("requestfailed", (request) =>
+//                 console.log(
+//                     magenta(`${request.failure()?.errorText} ${request.url()}`),
+//                 ),
+//             );
 
 //     // console.log(`\nLoaded ${url}`);
 //     const fullUrl = `http://localhost/piwigo2/${url}`;

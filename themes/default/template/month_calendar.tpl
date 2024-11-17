@@ -50,7 +50,7 @@
 				{/foreach}
 			</tr>
 		</thead>
-		{html_style}<style type="text/css">
+		{html_style}<style>
 			.calMonth TD,
 			.calMonth .calImg {
 				width:{$chronology_calendar.month_view.CELL_WIDTH}px;height:{$chronology_calendar.month_view.CELL_HEIGHT}px

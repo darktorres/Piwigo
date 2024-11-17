@@ -38,8 +38,9 @@ function get_nb_available_tags(): int|string
  *
  * @return array [id, name, counter, url_name]
  */
-function get_available_tags(array $tag_ids = []): array
-{
+function get_available_tags(
+    array $tag_ids = []
+): array {
     // we can find top fatter tags among reachable images
     $filters_and_forbidden = get_sql_condition_FandF(
         [
@@ -63,7 +64,10 @@ function get_available_tags(array $tag_ids = []): array
         return [];
     }
 
-    $query = 'SELECT * FROM tags';
+    $query = <<<SQL
+        SELECT *
+        FROM tags;
+        SQL;
     $result = pwg_query($query);
 
     $tags = [];
@@ -86,7 +90,10 @@ function get_available_tags(array $tag_ids = []): array
  */
 function get_all_tags(): array
 {
-    $query = 'SELECT * FROM tags;';
+    $query = <<<SQL
+        SELECT *
+        FROM tags;
+        SQL;
     $result = pwg_query($query);
     $tags = [];
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -221,16 +228,33 @@ function get_common_tags(
         return [];
     }
 
-    $items_ = implode(',', $items);
-    $query = "SELECT t.*, COUNT(*) AS counter FROM image_tag INNER JOIN tags t ON tag_id = id WHERE image_id IN ({$items_})";
+    $items_list = implode(',', $items);
+    $query = <<<SQL
+        SELECT t.*, COUNT(*) AS counter
+        FROM image_tag
+        INNER JOIN tags t ON tag_id = id
+        WHERE image_id IN ({$items_list})\n
+        SQL;
+
     if ($excluded_tag_ids !== []) {
-        $excluded_tag_ids_ = implode(',', $excluded_tag_ids);
-        $query .= " AND tag_id NOT IN ({$excluded_tag_ids_})";
+        $excluded_tags = implode(',', $excluded_tag_ids);
+        $query .= <<<SQL
+            AND tag_id NOT IN ({$excluded_tags})\n
+            SQL;
     }
 
-    $query .= ' GROUP BY t.id ';
+    $query .= <<<SQL
+        GROUP BY t.id
+        ORDER BY\n
+        SQL;
+
     if ($max_tags > 0) { // TODO : why ORDER field is in the if ?
-        $query .= "ORDER BY counter DESC LIMIT {$max_tags}";
+        $query .= <<<SQL
+            counter DESC
+            LIMIT {$max_tags}\n
+            SQL;
+    } else {
+        $query .= 'NULL';
     }
 
     $result = pwg_query($query);
@@ -278,7 +302,11 @@ function find_tags(
     }
 
     $where_clauses_ = implode(' OR ', $where_clauses);
-    $query = "SELECT * FROM tags WHERE {$where_clauses_}";
+    $query = <<<SQL
+        SELECT *
+        FROM tags
+        WHERE {$where_conditions};
+        SQL;
 
     return query2array($query);
 }

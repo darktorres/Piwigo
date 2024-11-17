@@ -27,8 +27,12 @@ $selection = trigger_change('loc_index_thumbnails_selection', $selection);
 if (count($selection) > 0) {
     $rank_of = array_flip($selection);
 
-    $selection_ = implode(',', $selection);
-    $query = "SELECT * FROM images WHERE id IN ({$selection_});";
+    $implodedSelection = implode(',', $selection);
+    $query = <<<SQL
+        SELECT *
+        FROM images
+        WHERE id IN ({$implodedSelection});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $row['rank'] = $rank_of[$row['id']];
@@ -58,8 +62,14 @@ if ($pictures !== []) {
       );
 
     if ($conf['activate_comments'] && $user['show_nb_comments']) {
-        $selection_ = implode(',', $selection);
-        $query = "SELECT image_id, COUNT(*) AS nb_comments FROM comments WHERE validated = 'true' AND image_id IN ({$selection_}) GROUP BY image_id;";
+        $implodedSelection = implode(',', $selection);
+        $query = <<<SQL
+            SELECT image_id, COUNT(*) AS nb_comments
+            FROM comments
+            WHERE validated = 'true'
+                AND image_id IN ({$implodedSelection})
+            GROUP BY image_id;
+            SQL;
         $nb_comments_of = query2array($query, 'image_id', 'nb_comments');
     }
 }

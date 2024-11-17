@@ -82,13 +82,17 @@ switch ($action) {
 
     case 'history_detail':
 
-        $query = 'DELETE FROM history;';
+        $query = <<<SQL
+            DELETE FROM history;
+            SQL;
         pwg_query($query);
         break;
 
     case 'history_summary':
 
-        $query = 'DELETE FROM history_summary;';
+        $query = <<<SQL
+            DELETE FROM history_summary;
+            SQL;
         pwg_query($query);
         break;
 
@@ -97,10 +101,16 @@ switch ($action) {
         pwg_session_gc();
 
         // delete all sessions associated to invalid user ids (it should never happen)
-        $query = 'SELECT id, data FROM sessions;';
+        $query = <<<SQL
+            SELECT id, data
+            FROM sessions;
+            SQL;
         $sessions = query2array($query);
 
-        $query = "SELECT {$conf['user_fields']['id']} AS id FROM users;";
+        $query = <<<SQL
+            SELECT {$conf['user_fields']['id']} AS id
+            FROM users;
+            SQL;
         $all_user_ids = query2array($query, 'id');
 
         $sessions_to_delete = [];
@@ -112,8 +122,11 @@ switch ($action) {
         }
 
         if ($sessions_to_delete !== []) {
-            $sessions_to_delete_ = implode("','", $sessions_to_delete);
-            $query = "DELETE FROM sessions WHERE id IN ('{$sessions_to_delete_}');";
+            $sessions_to_delete_imploded = implode("','", $sessions_to_delete);
+            $query = <<<SQL
+                DELETE FROM sessions
+                WHERE id IN ('{$sessions_to_delete_imploded}');
+                SQL;
             pwg_query($query);
         }
 
@@ -121,7 +134,10 @@ switch ($action) {
 
     case 'feeds':
 
-        $query = 'DELETE FROM user_feed WHERE last_check IS NULL;';
+        $query = <<<SQL
+            DELETE FROM user_feed
+            WHERE last_check IS NULL;
+            SQL;
         pwg_query($query);
         break;
 
@@ -139,7 +155,9 @@ switch ($action) {
 
     case 'search':
 
-        $query = 'DELETE FROM search;';
+        $query = <<<SQL
+            DELETE FROM search;
+            SQL;
         pwg_query($query);
         break;
 
@@ -277,7 +295,11 @@ if ($conf['gallery_locked']) {
     );
 }
 
-$query = 'SELECT registration_date FROM user_infos WHERE user_id = 2;';
+$query = <<<SQL
+    SELECT registration_date
+    FROM user_infos
+    WHERE user_id = 2;
+    SQL;
 $users = query2array($query);
 if ($users !== []) {
     $installed_on = $users[0]['registration_date'];

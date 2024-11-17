@@ -118,7 +118,12 @@ class themes
                 $theme_maintain->activate($this->fs_themes[$theme_id]['version'], $errors);
 
                 if (empty($errors)) {
-                    $query = "INSERT INTO themes (id, version, name) VALUES('{$theme_id}', '{$this->fs_themes[$theme_id]['version']}', '{$this->fs_themes[$theme_id]['name']}');";
+                    $query = <<<SQL
+                        INSERT INTO themes
+                            (id, version, name)
+                        VALUES
+                            ('{$theme_id}', '{$this->fs_themes[$theme_id]['version']}', '{$this->fs_themes[$theme_id]['name']}');
+                        SQL;
                     pwg_query($query);
 
                     $activity_details['version'] = $this->fs_themes[$theme_id]['version'];
@@ -146,7 +151,11 @@ class themes
                     // find a random theme to replace
                     $new_theme = null;
 
-                    $query = "SELECT id FROM themes WHERE id != '{$theme_id}';";
+                    $query = <<<SQL
+                        SELECT id
+                        FROM themes
+                        WHERE id != '{$theme_id}';
+                        SQL;
                     $result = pwg_query($query);
                     if (pwg_db_num_rows($result) == 0) {
                         $new_theme = 'default';
@@ -159,7 +168,10 @@ class themes
 
                 $theme_maintain->deactivate();
 
-                $query = "DELETE FROM themes WHERE id = '{$theme_id}';";
+                $query = <<<SQL
+                    DELETE FROM themes
+                    WHERE id = '{$theme_id}';
+                    SQL;
                 pwg_query($query);
 
                 if ($this->fs_themes[$theme_id]['mobile']) {
@@ -247,7 +259,11 @@ class themes
         // first we need to know which users are using the current default theme
         $default_theme = get_default_theme();
 
-        $query = "SELECT user_id FROM user_infos WHERE theme = '{$default_theme}';";
+        $query = <<<SQL
+            SELECT user_id
+            FROM user_infos
+            WHERE theme = '{$default_theme}';
+            SQL;
         $user_ids = array_unique(
             array_merge(
                 query2array($query, null, 'user_id'),
@@ -258,26 +274,33 @@ class themes
         // $user_ids can't be empty, at least the default user has the default
         // theme
 
-        $user_ids_ = implode(',', $user_ids);
-        $query = "UPDATE user_infos SET theme = '{$theme_id}' WHERE user_id IN ({$user_ids_});";
+        $users = implode(',', $user_ids);
+        $query = <<<SQL
+            UPDATE user_infos
+            SET theme = '{$theme_id}'
+            WHERE user_id IN ({$users});
+            SQL;
         pwg_query($query);
     }
 
     public function get_db_themes(
         string $id = ''
     ): array {
-        $query = 'SELECT * FROM themes';
+        $query = <<<SQL
+            SELECT *
+            FROM themes\n
+            SQL;
 
         $clauses = [];
         if ($id !== '' && $id !== '0') {
-            $clauses[] = "id = '" . $id . "'";
+            $clauses[] = "id = '{$id}'\n";
         }
 
         if ($clauses !== []) {
-            $clauses_ = implode(' AND ', $clauses);
-            $query .= " WHERE {$clauses_}";
+            $query .= ' WHERE ' . implode(' AND ', $clauses) . "\n";
         }
 
+        $query .= ';';
         $result = pwg_query($query);
         $themes = [];
         while ($row = pwg_db_fetch_assoc($result)) {

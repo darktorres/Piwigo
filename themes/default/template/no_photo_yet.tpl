@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" type="text/css" href="themes/default/theme.css">
   <title>Piwigo, {'Welcome'|@translate}</title>
-  <style type="text/css">
+  <style>
     body {
       margin: 0;
       padding: 0;

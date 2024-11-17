@@ -57,7 +57,9 @@ function get_tables(): array
 {
     $tables = [];
 
-    $query = 'SHOW TABLES;';
+    $query = <<<SQL
+        SHOW TABLES;
+        SQL;
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_row($result)) {
@@ -78,7 +80,9 @@ function get_columns_of(
     $columns_of = [];
 
     foreach ($tables as $table) {
-        $query = "DESC {$table};";
+        $query = <<<SQL
+            DESC {$table};
+            SQL;
         $result = pwg_query($query);
 
         $columns_of[$table] = [];
@@ -219,7 +223,9 @@ $template->assign(
 
 $has_remote_site = false;
 
-$query = 'SELECT galleries_url FROM sites;';
+$query = <<<SQL
+    SELECT galleries_url FROM sites;
+    SQL;
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     if (url_is_remote($row['galleries_url'])) {
@@ -287,7 +293,10 @@ if (! in_array('param', $columns_of['config'])) {
     $current_release = '2.9.0';
 } else {
     // retrieve already applied upgrades
-    $query = 'SELECT id FROM upgrade;';
+    $query = <<<SQL
+        SELECT id
+        FROM upgrade;
+        SQL;
     $applied_upgrades = query2array($query, null, 'id');
 
     if (! in_array(159, $applied_upgrades)) {
@@ -395,7 +404,12 @@ if ((isset($_POST['submit']) || isset($_GET['now'])) && check_upgrade()) {
             $version_ = str_replace('.', '_', get_branch_from_version(PHPWG_VERSION) . '.0');
 
             if (file_exists(PHPWG_PLUGINS_PATH . 'TakeATour/tours/' . $version_ . '/config.inc.php')) {
-                $query = "REPLACE INTO plugins (id, state) VALUES ('TakeATour', 'active');";
+                $query = <<<SQL
+                    REPLACE INTO plugins
+                        (id, state)
+                    VALUES
+                        ('TakeATour', 'active');
+                    SQL;
                 pwg_query($query);
 
                 // we need the secret key for get_pwg_token()

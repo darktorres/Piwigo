@@ -101,8 +101,13 @@ function insert_user_comment(
         // if a guest try to use the name of an already existing user, he must be
         // rejected
         if ($comm['author'] != 'guest') {
-            $author_ = addslashes((string) $comm['author']);
-            $query = "SELECT COUNT(*) AS user_exists FROM users WHERE {$conf['user_fields']['username']} = '{$author_}';";
+            $author = addslashes((string) $comm['author']);
+            $query = <<<SQL
+                SELECT COUNT(*) AS user_exists
+                FROM users
+                WHERE {$conf['user_fields']['username']} = '{$author}';
+                SQL;
+
             $row = pwg_db_fetch_assoc(pwg_query($query));
             if ($row['user_exists'] == 1) {
                 $infos[] = l10n('This login is already used by another user');
@@ -165,13 +170,19 @@ function insert_user_comment(
     if ($comment_action !== 'reject' && $conf['anti-flood_time'] > 0 && ! is_admin()) { // anti-flood system
         $reference_date = pwg_db_get_flood_period_expression($conf['anti-flood_time']);
 
-        $query = "SELECT COUNT(1) FROM comments WHERE date > {$reference_date} AND author_id = {$comm['author_id']}";
+        $query = <<<SQL
+            SELECT COUNT(1) FROM comments
+            WHERE date > '{$reference_date}'
+                AND author_id = {$comm['author_id']}\n
+            SQL;
+
         if (! is_classic_user()) {
-            $query .= " AND anonymous_id LIKE '{$anonymous_id}.%'";
+            $query .= <<<SQL
+                AND anonymous_id LIKE "{$anonymous_id}.%"\n
+                SQL;
         }
 
         $query .= ';';
-
         [$counter] = pwg_db_fetch_row(pwg_query($query));
         if ($counter > 0) {
             $infos[] = l10n('Anti-flood system : please wait for a moment before trying to post another comment');
@@ -188,13 +199,19 @@ function insert_user_comment(
     );
 
     if ($comment_action != 'reject') {
-        $validate_ = ($comment_action == 'validate' ? 'true' : 'false');
-        $validate_2 = ($comment_action == 'validate' ? 'NOW()' : 'NULL');
-        $website_url_ = (empty($comm['website_url']) ? 'NULL' : "'" . $comm['website_url'] . "'");
-        $email_ = (empty($comm['email']) ? 'NULL' : "'" . $comm['email'] . "'");
-        $query =
-        "INSERT INTO comments (author, author_id, anonymous_id, content, date, validated, validation_date, image_id, website_url, email)
-         VALUES ('{$comm['author']}', {$comm['author_id']}, '{$comm['ip']}', '{$comm['content']}', NOW(), '{$validate_}', {$validate_2}, {$comm['image_id']}, {$website_url_}, {$email_});";
+        $validated = $comment_action == 'validate' ? 'true' : 'false';
+        $validation_date = $comment_action == 'validate' ? 'NOW()' : 'NULL';
+        $website_url = empty($comm['website_url']) ? 'NULL' : "'{$comm['website_url']}'";
+        $email = empty($comm['email']) ? 'NULL' : "'{$comm['email']}'";
+        $query = <<<SQL
+            INSERT INTO comments
+                (author, author_id, anonymous_id, content, date, validated, validation_date, image_id, website_url, email)
+            VALUES
+            (
+                '{$comm['author']}', {$comm['author_id']}, '{$comm['ip']}', '{$comm['content']}', NOW(),
+                '{$validated}', {$validation_date}, {$comm['image_id']}, {$website_url}, {$email}
+            );
+            SQL;
         pwg_query($query);
         $comm['id'] = pwg_db_insert_id();
 
@@ -240,14 +257,19 @@ function delete_user_comment(
 ): bool {
     $user_where_clause = '';
     if (! is_admin()) {
-        $user_where_clause = " AND author_id = '{$GLOBALS['user']['id']}'";
+        $user_where_clause = <<<SQL
+            AND author_id = '{$GLOBALS['user']['id']}'\n
+            SQL;
     }
 
     $where_clause = is_array($comment_id) ? ' id IN (' . implode(',', $comment_id) . ') ' : " id = {$comment_id} ";
 
-    $query = "DELETE FROM comments WHERE {$where_clause} {$user_where_clause};";
+    $query = <<<SQL
+        DELETE FROM comments
+        WHERE {$where_clause}
+            {$user_where_clause};
+        SQL;
     pwg_query($query);
-
     if (pwg_db_changes()) {
         invalidate_user_cache_nb_comments();
 
@@ -326,9 +348,15 @@ function update_user_comment(
         $website_url_ = (empty($comment['website_url']) ? 'NULL' : "'" . $comment['website_url'] . "'");
         $validate_ = ($comment_action == 'validate' ? 'true' : 'false');
         $validate_2 = ($comment_action == 'validate' ? 'NOW()' : 'NULL');
-        $query =
-        "UPDATE comments SET content = '{$comment['content']}', website_url = {$website_url_}, validated = '{$validate_}',
-         validation_date = {$validate_2} WHERE id = {$comment['comment_id']} {$user_where_clause};";
+        $query = <<<SQL
+            UPDATE comments
+            SET content = '{$comment['content']}',
+                website_url = {$website_url},
+                validated = '{$validated}',
+                validation_date = {$validation_date}
+            WHERE id = {$comment['comment_id']}
+                {$user_where_clause};
+            SQL;
         $result = pwg_query($query);
 
         // mail admin and ask to validate the comment
@@ -404,7 +432,11 @@ function get_comment_author_id(
     int $comment_id,
     bool $die_on_error = true
 ): int|bool {
-    $query = "SELECT author_id FROM comments WHERE id = {$comment_id};";
+    $query = <<<SQL
+        SELECT author_id
+        FROM comments
+        WHERE id = {$comment_id};
+        SQL;
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) == 0) {
         if ($die_on_error) {
@@ -429,7 +461,12 @@ function validate_user_comment(
 ): void {
     $where_clause = is_array($comment_id) ? 'id IN (' . implode(',', $comment_id) . ')' : "id = {$comment_id}";
 
-    $query = "UPDATE comments SET validated = 'true', validation_date = NOW() WHERE {$where_clause};";
+    $query = <<<SQL
+        UPDATE comments
+        SET validated = 'true',
+            validation_date = NOW()
+        WHERE {$where_clause};
+    SQL;
     pwg_query($query);
 
     invalidate_user_cache_nb_comments();
@@ -445,6 +482,9 @@ function invalidate_user_cache_nb_comments(): void
 
     unset($user['nb_available_comments']);
 
-    $query = 'UPDATE user_cache SET nb_available_comments = NULL;';
+    $query = <<<SQL
+        UPDATE user_cache
+        SET nb_available_comments = NULL;
+    SQL;
     pwg_query($query);
 }

@@ -1,6 +1,6 @@
 {if !empty($thumbnails)}
 	{*define_derivative name='derivative_params' width=160 height=90 crop=true*}
-	{html_style}<style type="text/css">
+	{html_style}<style>
 		{*Set some sizes according to maximum thumbnail width and height*}
 		.thumbnails SPAN,
 		.thumbnails .wrap2 A,

@@ -55,7 +55,12 @@ class languages
                     break;
                 }
 
-                $query = "INSERT INTO languages (id, version, name) VALUES('{$language_id}', '{$this->fs_languages[$language_id]['version']}', '{$this->fs_languages[$language_id]['name']}');";
+                $query = <<<SQL
+                    INSERT INTO languages
+                        (id, version, name)
+                    VALUES
+                        ('{$language_id}', '{$this->fs_languages[$language_id]['version']}', '{$this->fs_languages[$language_id]['name']}');
+                    SQL;
                 pwg_query($query);
                 break;
 
@@ -70,7 +75,10 @@ class languages
                     break;
                 }
 
-                $query = "DELETE FROM languages WHERE id = '{$language_id}';";
+                $query = <<<SQL
+                    DELETE FROM languages
+                    WHERE id = '{$language_id}';
+                    SQL;
                 pwg_query($query);
                 break;
 
@@ -86,15 +94,23 @@ class languages
                 }
 
                 // Set default language to user who are using this language
-                $default_language_ = get_default_language();
-                $query = "UPDATE user_infos SET language = '{$default_language_}' WHERE language = '{$language_id}';";
+                $default_language = get_default_language();
+                $query = <<<SQL
+                    UPDATE user_infos
+                    SET language = '{$default_language}'
+                    WHERE language = '{$language_id}';
+                    SQL;
                 pwg_query($query);
 
                 deltree(PHPWG_ROOT_PATH . 'language/' . $language_id, PHPWG_ROOT_PATH . 'language/trash');
                 break;
 
             case 'set_default':
-                $query = "UPDATE user_infos SET language = '{$language_id}' WHERE user_id IN ({$conf['default_user_id']}, {$conf['guest_id']});";
+                $query = <<<SQL
+                    UPDATE user_infos
+                    SET language = '{$language_id}'
+                    WHERE user_id IN ({$conf['default_user_id']}, {$conf['guest_id']});
+                    SQL;
                 pwg_query($query);
                 break;
         }
@@ -170,7 +186,11 @@ class languages
 
     public function get_db_languages(): void
     {
-        $query = 'SELECT id, name FROM languages ORDER BY name ASC;';
+        $query = <<<SQL
+            SELECT id, name
+            FROM languages
+            ORDER BY name ASC;
+            SQL;
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {

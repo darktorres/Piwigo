@@ -228,7 +228,7 @@
 
     {if $theme_config->page_header == 'fancy' && $theme_config->page_header_both_navs}
       {if empty($MENUBAR)}
-        {html_style}<style type="text/css">
+        {html_style}<style>
           .navbar-contextual {
             background-color: #000 !important;
             padding-top: 5px;

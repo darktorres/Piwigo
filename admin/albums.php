@@ -15,7 +15,10 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
-$query = 'SELECT COUNT(*) FROM categories;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM categories;
+    SQL;
 [$albums_counter] = pwg_db_fetch_row(pwg_query($query));
 
 // +-----------------------------------------------------------------------+
@@ -57,8 +60,12 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
 
     check_input_parameter('id', $_POST, false, '/^-?\d+$/');
 
-    $id_uppercat_ = ($_POST['id'] === '-1') ? 'IS NULL' : "= {$_POST['id']}";
-    $query = "SELECT id FROM categories WHERE id_uppercat {$id_uppercat_};";
+    $id_condition = ($_POST['id'] === '-1') ? 'IS NULL' : "= {$_POST['id']}";
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id_uppercat {$id_condition};
+        SQL;
     $category_ids = query2array($query, null, 'id');
 
     if (isset($_POST['recursiveAutoOrder'])) {
@@ -81,8 +88,12 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
         );
     }
 
-    $category_ids_ = implode(',', $category_ids);
-    $query = "SELECT id, name, id_uppercat FROM categories WHERE id IN ({$category_ids_});";
+    $category_ids_str = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT id, name, id_uppercat
+        FROM categories
+        WHERE id IN ({$category_ids_str});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $row['name'] = trigger_change('render_category_name', $row['name'], 'admin_cat_list');
@@ -129,7 +140,10 @@ $template->assign('POS_PREF', $conf['newcat_default_position']); //TODO use user
 // +-----------------------------------------------------------------------+
 
 //Get all albums
-$query = 'SELECT id, name, rank_column, status, visible, uppercats, lastmodified FROM categories;';
+$query = <<<SQL
+    SELECT id, name, rank_column, status, visible, uppercats, lastmodified
+    FROM categories;
+    SQL;
 
 $allAlbum = query2array($query);
 
@@ -199,11 +213,18 @@ function assocToOrderedTree(
     return $orderedTree;
 }
 
-$query = 'SELECT category_id, COUNT(*) AS nb_photos FROM image_category GROUP BY category_id;';
+$query = <<<SQL
+    SELECT category_id, COUNT(*) AS nb_photos
+    FROM image_category
+    GROUP BY category_id;
+    SQL;
 
 $nb_photos_in = query2array($query, 'category_id', 'nb_photos');
 
-$query = 'SELECT id, uppercats FROM categories;';
+$query = <<<SQL
+    SELECT id, uppercats
+    FROM categories;
+    SQL;
 $all_categories = query2array($query, 'id', 'uppercats');
 
 $subcats_of = [];
@@ -258,16 +279,24 @@ function get_categories_ref_date(
     $category_ids = get_subcat_ids($ids);
 
     // search for the reference date of each album
-    $category_ids_ = implode(',', $category_ids);
-    $query =
-    "SELECT category_id, {$minmax}({$field}) AS ref_date FROM image_category JOIN images ON image_id = id
-     WHERE category_id IN ({$category_ids_}) GROUP BY category_id;";
+    $category_ids_str = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT category_id, {$minmax}({$field}) AS ref_date
+        FROM image_category
+        JOIN images ON image_id = id
+        WHERE category_id IN ({$category_ids_str})
+        GROUP BY category_id;
+        SQL;
     $ref_dates = query2array($query, 'category_id', 'ref_date');
 
     // the iterate on all albums (having a ref_date or not) to find the
     // reference_date, with a search on sub-albums
-    $category_ids_ = implode(',', $category_ids);
-    $query = "SELECT id, uppercats FROM categories WHERE id IN {$category_ids_});";
+    $category_ids_str = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT id, uppercats
+        FROM categories
+        WHERE id IN ({$category_ids_str});
+        SQL;
     $uppercats_of = query2array($query, 'id', 'uppercats');
 
     foreach (array_keys($uppercats_of) as $cat_id) {

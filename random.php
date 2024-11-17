@@ -25,7 +25,8 @@ check_status(ACCESS_GUEST);
 // |                     generate random element list                      |
 // +-----------------------------------------------------------------------+
 
-$filters_and_forbidden = get_sql_condition_FandF(
+// Extract the function calls into variables first
+$sql_conditions = get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',
         'visible_categories' => 'category_id',
@@ -33,8 +34,17 @@ $filters_and_forbidden = get_sql_condition_FandF(
     ],
     'WHERE'
 );
-$min_ = min(50, $conf['top_number'], $user['nb_image_page']);
-$query = "SELECT id FROM images INNER JOIN image_category AS ic ON id = ic.image_id {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . " LIMIT {$min_};";
+$db_random_function = DB_RANDOM_FUNCTION;
+$limit_value = min(50, $conf['top_number'], $user['nb_image_page']);
+
+$query = <<<SQL
+    SELECT id
+    FROM images
+    INNER JOIN image_category AS ic ON id = ic.image_id
+    {$sql_conditions}
+    ORDER BY {$db_random_function}()
+    LIMIT {$limit_value};
+    SQL;
 
 // +-----------------------------------------------------------------------+
 // |                                redirect                               |

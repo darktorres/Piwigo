@@ -28,7 +28,11 @@ require PHPWG_ROOT_PATH . 'admin/include/user_tabs.inc.php';
 
 $groups = [];
 
-$query = 'SELECT id, name FROM groups_table ORDER BY name ASC;';
+$query = <<<SQL
+    SELECT id, name
+    FROM groups_table
+    ORDER BY name ASC;
+    SQL;
 $result = pwg_query($query);
 
 while ($row = pwg_db_fetch_assoc($result)) {
@@ -39,17 +43,26 @@ while ($row = pwg_db_fetch_assoc($result)) {
 // |                              Dates for filtering                      |
 // +-----------------------------------------------------------------------+
 
-$query = 'SELECT DISTINCT';
+$query = <<<SQL
+    SELECT DISTINCT\n
+    SQL;
 
 if (DB_ENGINE === 'MySQL') {
-    $query .= ' month(registration_date) AS registration_month, year(registration_date) AS registration_year, registration_date';
+    $query .= <<<SQL
+        MONTH(registration_date) AS registration_month, YEAR(registration_date) AS registration_year, registration_date\n
+        SQL;
 }
 
 if (DB_ENGINE === 'PostgreSQL') {
-    $query .= ' EXTRACT(MONTH FROM registration_date) AS registration_month, EXTRACT(YEAR FROM registration_date) AS registration_year, registration_date';
+    $query .= <<<SQL
+        EXTRACT(MONTH FROM registration_date) AS registration_month, EXTRACT(YEAR FROM registration_date) AS registration_year, registration_date\n
+        SQL;
 }
 
-$query .= ' FROM user_infos ORDER BY registration_date;';
+$query .= <<<SQL
+    FROM user_infos
+    ORDER BY registration_date;
+    SQL;
 $result = pwg_query($query);
 
 $register_dates = [];
@@ -87,7 +100,11 @@ $password_protected_users = [$conf['guest_id']];
 
 // an admin can't delete other admin/webmaster
 if ($user['status'] == 'admin') {
-    $query = "SELECT user_id FROM user_infos WHERE status IN ('webmaster', 'admin');";
+    $query = <<<SQL
+        SELECT user_id
+        FROM user_infos
+        WHERE status IN ('webmaster', 'admin');
+        SQL;
     $admin_ids = query2array($query, null, 'user_id');
 
     $protected_users = array_merge($protected_users, $admin_ids);
@@ -146,7 +163,11 @@ foreach ($conf['available_permission_levels'] as $level) {
 $template->assign('level_options', $level_options);
 $template->assign('level_selected', $default_user['level']);
 
-$query = 'SELECT id, name, is_default FROM groups_table ORDER BY name ASC;';
+$query = <<<SQL
+    SELECT id, name, is_default
+    FROM groups_table
+    ORDER BY name ASC;
+    SQL;
 $result = pwg_query($query);
 
 $groups_arr_id = [];

@@ -244,8 +244,12 @@ function sync_metadata(
     $datas = [];
     $tags_of = [];
 
-    $ids_ = wordwrap(implode(', ', $ids), 160, "\n");
-    $query = "SELECT id, path, representative_ext FROM images WHERE id IN ({$ids_});";
+    $wrapped_ids = wordwrap(implode(', ', $ids), 160, "\n");
+    $query = <<<SQL
+        SELECT id, path, representative_ext
+        FROM images
+        WHERE id IN ({$wrapped_ids});
+        SQL;
 
     $result = pwg_query($query);
     while ($data = pwg_db_fetch_assoc($result)) {
@@ -309,12 +313,23 @@ function get_filelist(
     // filling $cat_ids : all categories required
     $cat_ids = [];
 
-    $query = "SELECT id FROM categories WHERE site_id = {$site_id} AND dir IS NOT NULL";
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE site_id = {$site_id}
+            AND dir IS NOT NULL\n
+        SQL;
+
     if (is_numeric($category_id)) {
         if ($recursive) {
-            $query .= ' AND uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$category_id}(,|$)'";
+            $regex_operator = DB_REGEX_OPERATOR;
+            $query .= <<<SQL
+                AND uppercats {$regex_operator} '(^|,){$category_id}(,|$)'\n
+                SQL;
         } else {
-            $query .= " AND id = {$category_id}";
+            $query .= <<<SQL
+                AND id = {$category_id}\n
+                SQL;
         }
     }
 
@@ -328,10 +343,17 @@ function get_filelist(
         return [];
     }
 
-    $cat_ids_ = implode(',', $cat_ids);
-    $query = "SELECT id, path, representative_ext FROM images WHERE storage_category_id IN ({$cat_ids_})";
+    $imploded_cat_ids = implode(',', $cat_ids);
+    $query = <<<SQL
+        SELECT id, path, representative_ext
+        FROM images
+        WHERE storage_category_id IN ({$imploded_cat_ids})\n
+        SQL;
+
     if ($only_new) {
-        $query .= ' AND date_metadata_update IS NULL';
+        $query .= <<<SQL
+            AND date_metadata_update IS NULL\n
+            SQL;
     }
 
     $query .= ';';

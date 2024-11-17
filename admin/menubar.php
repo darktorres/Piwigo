@@ -135,9 +135,13 @@ if (isset($_POST['submit']) && is_webmaster()) {
     //var_export( $best_slice ); var_export($mb_conf);  var_export($mb_conf_db);
     // END OPTIM
     */
-    $mb_conf_db_ = addslashes(serialize($mb_conf_db));
-    $menu_id_ = addslashes($menu->get_id());
-    $query = "UPDATE config SET value = '{$mb_conf_db_}' WHERE param = 'blk_{$menu_id_}';";
+    $serialized_value = addslashes(serialize($mb_conf_db));
+    $menu_id = addslashes($menu->get_id());
+    $query = <<<SQL
+        UPDATE config
+        SET value = '{$serialized_value}'
+        WHERE param = 'blk_{$menu_id}';
+        SQL;
     pwg_query($query);
 
     $page['infos'][] = l10n('Order of menubar items has been updated successfully.');

@@ -51,16 +51,23 @@ function get_categories_ref_date(
     $category_ids = get_subcat_ids($ids);
 
     // search for the reference date of each album
-    $category_ids_ = implode(',', $category_ids);
-    $query =
-    "SELECT category_id, {$minmax} ({$field}) AS ref_date FROM image_category JOIN images ON image_id = id
-     WHERE category_id IN ({$category_ids_}) GROUP BY category_id;";
+    $categoryIds = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT category_id, {$minmax}({$field}) AS ref_date
+        FROM image_category
+        JOIN images ON image_id = id
+        WHERE category_id IN ({$categoryIds})
+        GROUP BY category_id;
+        SQL;
     $ref_dates = query2array($query, 'category_id', 'ref_date');
 
     // the iterate on all albums (having a ref_date or not) to find the
     // reference_date, with a search on sub-albums
-    $category_ids_ = implode(',', $category_ids);
-    $query = "SELECT id, uppercats FROM categories WHERE id IN ({$category_ids_});";
+    $query = <<<SQL
+        SELECT id, uppercats
+        FROM categories
+        WHERE id IN ({$categoryIds});
+        SQL;
     $uppercats_of = query2array($query, 'id', 'uppercats');
 
     foreach (array_keys($uppercats_of) as $cat_id) {
@@ -195,23 +202,34 @@ $template->assign([
 
 $categories = [];
 
-$query = 'SELECT id, name, permalink, dir, rank_column, status FROM categories';
-if (! isset($_GET['parent_id'])) {
-    $query .= ' WHERE id_uppercat IS NULL';
-} else {
-    $query .= " WHERE id_uppercat = {$_GET['parent_id']}";
-}
+$parentIdCondition = isset($_GET['parent_id'])
+    ? "WHERE id_uppercat = {$_GET['parent_id']}"
+    : 'WHERE id_uppercat IS NULL';
 
-$query .= ' ORDER BY rank_column ASC;';
+$query = <<<SQL
+    SELECT id, name, permalink, dir, rank_column, status
+    FROM categories
+    {$parentIdCondition}
+    ORDER BY rank_column ASC;
+    SQL;
 $categories = query2array($query, 'id');
 
 // get the categories containing images directly
 $categories_with_images = [];
 if ($categories !== []) {
-    $query = 'SELECT category_id, COUNT(*) AS nb_photos FROM image_category GROUP BY category_id;'; // WHERE category_id IN ('.implode(',', array_keys($categories)).')
+    $query = <<<SQL
+        SELECT category_id, COUNT(*) AS nb_photos
+        FROM image_category
+        GROUP BY category_id;
+        SQL;
+    // WHERE category_id IN ('.implode(',', array_keys($categories)).')
+
     $nb_photos_in = query2array($query, 'category_id', 'nb_photos');
 
-    $query = 'SELECT id, uppercats FROM categories;';
+    $query = <<<SQL
+        SELECT id, uppercats
+        FROM categories;
+        SQL;
     $all_categories = query2array($query, 'id', 'uppercats');
     $subcats_of = [];
 

@@ -181,7 +181,7 @@
     }
   });
 </script>{/footer_script}
-{html_style}<style type="text/css">
+{html_style}<style>
   #step-21 {
     max-width: 476px;
   }

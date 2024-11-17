@@ -110,7 +110,12 @@ if (isset($_GET['filter_ip']) || isset($_GET['filter_image_id']) || isset($_GET[
 }
 
 if ($form_param['user_id'] != '-1') {
-    $query = "SELECT username FROM users WHERE id = {$form_param['user_id']};";
+    $query = <<<SQL
+        SELECT username
+        FROM users
+        WHERE id = {$form_param['user_id']};
+        SQL;
+
     [$form_param['user_name']] = pwg_db_fetch_row(pwg_query($query));
     $form_param['user_id'] = pwg_db_fetch_row(pwg_query($query)) === false || pwg_db_fetch_row(pwg_query($query)) === [] || pwg_db_fetch_row(pwg_query($query)) === null ? '-1' : $form_param['user_id'];
 }

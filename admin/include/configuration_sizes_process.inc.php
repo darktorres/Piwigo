@@ -118,7 +118,6 @@ if (count($errors) == 0) {
 
     $enabled = ImageStdParams::get_defined_type_map();
     $disabled = $conf['disabled_derivatives'] ?? [];
-
     $changed_types = [];
 
     foreach (ImageStdParams::get_all_types() as $type) {
@@ -187,7 +186,10 @@ if (count($errors) == 0) {
 
     ImageStdParams::set_and_save($enabled_by);
     if (count($disabled) == 0) {
-        $query = "DELETE FROM config WHERE param = 'disabled_derivatives'";
+        $query = <<<SQL
+            DELETE FROM config
+            WHERE param = 'disabled_derivatives';
+            SQL;
         pwg_query($query);
     } else {
         conf_update_param('disabled_derivatives', addslashes(serialize($disabled)));

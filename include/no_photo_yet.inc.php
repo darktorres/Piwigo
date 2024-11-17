@@ -15,7 +15,10 @@ declare(strict_types=1);
 if (
     ! (defined('IN_ADMIN') && IN_ADMIN) && script_basename() !== 'identification' && script_basename() !== 'password' && script_basename() !== 'ws' && script_basename() !== 'popuphelp' && (is_a_guest() || is_admin()) && ! isset($_SESSION['no_photo_yet'])     // temporary hide
 ) {
-    $query = 'SELECT COUNT(*) FROM images;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM images;
+        SQL;
     [$nb_photos] = pwg_db_fetch_row(pwg_query($query));
     if ($nb_photos == 0) {
         // make sure we don't use the mobile theme, which is not compatible with

@@ -14,7 +14,10 @@ declare(strict_types=1);
 function get_cat_id_from_permalink(
     string $permalink
 ): mixed {
-    $query = "SELECT id FROM categories WHERE permalink = '{$permalink}';";
+    $query = <<<SQL
+        SELECT id FROM categories
+        WHERE permalink = '{$permalink}';
+        SQL;
     $ids = query2array($query, null, 'id');
     if ($ids !== []) {
         return $ids[0];
@@ -28,7 +31,13 @@ function get_cat_id_from_permalink(
 function get_cat_id_from_old_permalink(
     string $permalink
 ): mixed {
-    $query = "SELECT c.id FROM old_permalinks op INNER JOIN categories c ON op.cat_id = c.id WHERE op.permalink = '{$permalink}' LIMIT 1;";
+    $query = <<<SQL
+        SELECT c.id
+        FROM old_permalinks op
+        INNER JOIN categories c ON op.cat_id = c.id
+        WHERE op.permalink = '{$permalink}'
+        LIMIT 1;
+        SQL;
     $result = pwg_query($query);
     $cat_id = null;
     if (pwg_db_num_rows($result) !== 0) {
@@ -49,7 +58,11 @@ function delete_cat_permalink(
     bool $save
 ): bool {
     global $page, $cache;
-    $query = "SELECT permalink FROM categories WHERE id = '{$cat_id}';";
+    $query = <<<SQL
+        SELECT permalink
+        FROM categories
+        WHERE id = '{$cat_id}';
+        SQL;
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) !== 0) {
         [$permalink] = pwg_db_fetch_row($result);
@@ -72,15 +85,30 @@ function delete_cat_permalink(
         }
     }
 
-    $query = "UPDATE categories SET permalink = NULL WHERE id = {$cat_id} LIMIT 1;";
+    $query = <<<SQL
+        UPDATE categories
+        SET permalink = NULL
+        WHERE id = {$cat_id}
+        LIMIT 1;
+        SQL;
     pwg_query($query);
 
     unset($cache['cat_names']); //force regeneration
     if ($save) {
         if (isset($old_cat_id)) {
-            $query = "UPDATE old_permalinks SET date_deleted = NOW() WHERE cat_id = {$cat_id} AND permalink = '{$permalink}';";
+            $query = <<<SQL
+                UPDATE old_permalinks
+                SET date_deleted = NOW()
+                WHERE cat_id = {$cat_id}
+                    AND permalink = '{$permalink}';
+                SQL;
         } else {
-            $query = "INSERT INTO old_permalinks (permalink, cat_id, date_deleted) VALUES ('{$permalink}', {$cat_id}, NOW());";
+            $query = <<<SQL
+                INSERT INTO old_permalinks
+                    (permalink, cat_id, date_deleted)
+                VALUES
+                    ('{$permalink}', {$cat_id}, NOW());
+                SQL;
         }
 
         pwg_query($query);
@@ -146,11 +174,20 @@ function set_cat_permalink(
 
     if (isset($old_cat_id)) {// the new permalink must not be active and old at the same time
         assert($old_cat_id == $cat_id);
-        $query = "DELETE FROM old_permalinks WHERE cat_id = {$old_cat_id} AND permalink = '{$permalink}';";
+        $query = <<<SQL
+            DELETE FROM old_permalinks
+            WHERE cat_id = {$old_cat_id}
+                AND permalink = '{$permalink}';
+            SQL;
         pwg_query($query);
     }
 
-    $query = "UPDATE categories SET permalink = '{$permalink}' WHERE id = {$cat_id};"; //  LIMIT 1';
+    $query = <<<SQL
+        UPDATE categories
+        SET permalink = '{$permalink}'
+        WHERE id = {$cat_id};
+        SQL;
+    //  LIMIT 1';
     pwg_query($query);
 
     unset($cache['cat_names']); //force regeneration

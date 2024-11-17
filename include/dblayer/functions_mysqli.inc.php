@@ -227,19 +227,22 @@ function mass_updates(
         foreach ($datas as $data) {
             $is_first = true;
 
-            $query = "UPDATE {$tablename} SET ";
+            $query = <<<SQL
+                UPDATE {$tablename}
+                SET\n
+                SQL;
 
             foreach ($dbfields['update'] as $key) {
                 $separator = $is_first ? '' : ",\n    ";
 
                 if (isset($data[$key]) && $data[$key] != '') {
-                    $query .= "{$separator}{$key} = '{$data[$key]}'";
+                    $query .= "{$separator}{$key} = '{$data[$key]}'\n";
                 } else {
                     if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                         continue; // next field
                     }
 
-                    $query .= "{$separator}{$key} = NULL";
+                    $query .= "{$separator}{$key} = NULL\n";
                 }
 
                 $is_first = false;
@@ -248,16 +251,16 @@ function mass_updates(
             if (! $is_first) {// only if one field at least updated
                 $is_first = true;
 
-                $query .= ' WHERE ';
+                $query .= ' WHERE\n';
                 foreach ($dbfields['primary'] as $key) {
                     if (! $is_first) {
                         $query .= ' AND ';
                     }
 
                     if (isset($data[$key])) {
-                        $query .= "{$key} = '{$data[$key]}'";
+                        $query .= "{$key} = '{$data[$key]}'\n";
                     } else {
-                        $query .= "{$key} IS NULL'";
+                        $query .= "{$key} IS NULL\n";
                     }
 
                     $is_first = false;
@@ -269,7 +272,7 @@ function mass_updates(
     } // if count<X
     else {
         // creation of the temporary table
-        $result = pwg_query("SHOW FULL COLUMNS FROM {$tablename}");
+        $result = pwg_query("SHOW FULL COLUMNS FROM {$tablename};");
         $columns = [];
         $all_fields = array_merge($dbfields['primary'], $dbfields['update']);
 
@@ -300,9 +303,16 @@ function mass_updates(
 
         $temporary_tablename = $tablename . '_' . micro_seconds();
 
-        $columns_ = implode(",\n  ", $columns);
-        $dbfields_ = implode(',', $dbfields['primary']);
-        $query = "CREATE TABLE {$temporary_tablename} ({$columns_}, UNIQUE KEY the_key ({$dbfields_}))";
+        $columnsList = implode(",\n  ", $columns);
+        $primaryKeys = implode(',', $dbfields['primary']);
+        $query = <<<SQL
+            CREATE TABLE {$temporary_tablename}
+                (
+                    {$columnsList},
+                    UNIQUE KEY the_key ({$primaryKeys})
+                );
+            SQL;
+
         pwg_query($query);
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
@@ -313,21 +323,29 @@ function mass_updates(
         }
 
         // update of table by joining with temporary table
-        $dbfields_update_ = implode(
+        $updateFields = implode(
             "\n    , ",
             array_map($func_set, $dbfields['update'])
         );
-        $dbfields_primary_ = implode(
+
+        $primaryConditions = implode(
             "\n    AND ",
             array_map(
                 fn (string $s): string => "t1.{$s} = t2.{$s}",
                 $dbfields['primary']
             )
         );
-        $query = "UPDATE {$tablename} AS t1, {$temporary_tablename} AS t2 SET {$dbfields_update_} WHERE {$dbfields_primary_};";
+
+        $query = <<<SQL
+            UPDATE {$tablename} AS t1, {$temporary_tablename} AS t2
+            SET
+                {$updateFields}
+            WHERE
+                {$primaryConditions};
+            SQL;
         pwg_query($query);
 
-        pwg_query("DROP TABLE {$temporary_tablename}");
+        pwg_query("DROP TABLE {$temporary_tablename};");
     }
 }
 
@@ -348,19 +366,22 @@ function single_update(
 
     $is_first = true;
 
-    $query = "UPDATE {$tablename} SET ";
+    $query = <<<SQL
+        UPDATE {$tablename}
+        SET\n
+        SQL;
 
     foreach ($datas as $key => $value) {
         $separator = $is_first ? '' : ",\n    ";
 
         if (isset($value) && $value !== '') {
-            $query .= "{$separator}{$key} = '{$value}'";
+            $query .= "{$separator}{$key} = '{$value}'\n";
         } else {
             if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                 continue; // next field
             }
 
-            $query .= "{$separator}{$key} = NULL";
+            $query .= "{$separator}{$key} = NULL\n";
         }
 
         $is_first = false;
@@ -369,7 +390,7 @@ function single_update(
     if (! $is_first) {// only if one field at least updated
         $is_first = true;
 
-        $query .= ' WHERE ';
+        $query .= ' WHERE\n';
 
         foreach ($where as $key => $value) {
             if (! $is_first) {
@@ -377,14 +398,15 @@ function single_update(
             }
 
             if (isset($value)) {
-                $query .= $key . " = '{$value}'";
+                $query .= "{$key} = '{$value}'\n";
             } else {
-                $query .= $key . ' IS NULL';
+                $query .= "{$key} IS NULL\n";
             }
 
             $is_first = false;
         }
 
+        $query .= ';';
         pwg_query($query);
     }
 }
@@ -468,8 +490,12 @@ function single_insert(
     }
 
     if (count($data) != 0) {
-        $data_ = implode(',', array_keys($data));
-        $query = "INSERT {$ignore} INTO {$table_name} ({$data_}) VALUES";
+        $columns = implode(',', array_keys($data));
+        $query = <<<SQL
+            INSERT {$ignore} INTO {$table_name}
+                ({$columns})
+            VALUES\n
+            SQL;
 
         $query .= '(';
         $is_first = true;
@@ -488,6 +514,7 @@ function single_insert(
         }
 
         $query .= ');';
+
         pwg_query($query);
     }
 }
@@ -502,21 +529,28 @@ function do_maintenance_all_tables(): void
     $all_tables = [];
 
     // List all tables
-    $query = 'SHOW TABLES;';
+    $query = <<<SQL
+        SHOW TABLES;
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_row($result)) {
         $all_tables[] = $row[0];
     }
 
     // Repair all tables
-    $query = 'REPAIR TABLE ' . implode(', ', $all_tables) . ';';
+    $allTablesList = implode(', ', $all_tables);
+    $query = <<<SQL
+        REPAIR TABLE {$allTablesList};
+        SQL;
     $mysqli_rc = pwg_query($query);
 
     // Re-Order all tables
     foreach ($all_tables as $table_name) {
         $all_primary_key = [];
 
-        $query = "DESC {$table_name};";
+        $query = <<<SQL
+            DESC {$table_name};
+            SQL;
         $result = pwg_query($query);
         while ($row = pwg_db_fetch_assoc($result)) {
             if ($row['Key'] == 'PRI') {
@@ -525,14 +559,20 @@ function do_maintenance_all_tables(): void
         }
 
         if (count($all_primary_key) != 0) {
-            $all_primary_key_ = implode(', ', $all_primary_key);
-            $query = "ALTER TABLE {$table_name} ORDER BY {$all_primary_key_};";
+            $allPrimaryKeyList = implode(', ', $all_primary_key);
+            $query = <<<SQL
+                ALTER TABLE {$table_name}
+                ORDER BY {$allPrimaryKeyList};
+                SQL;
             $mysqli_rc = $mysqli_rc && pwg_query($query);
         }
     }
 
     // Optimize all tables
-    $query = 'OPTIMIZE TABLE ' . implode(', ', $all_tables) . ';';
+    $allTablesList = implode(', ', $all_tables);
+    $query = <<<SQL
+        OPTIMIZE TABLE {$allTablesList};
+        SQL;
     $mysqli_rc = $mysqli_rc && pwg_query($query);
     if ($mysqli_rc) {
         $page['infos'][] = l10n('All optimizations have been successfully completed.');
@@ -609,14 +649,19 @@ function pwg_db_get_recent_period_expression(
         $date = "'{$date}'";
     }
 
-    return "SUBDATE({$date}, INTERVAL {$period} DAY)";
+    return <<<SQL
+        SUBDATE({$date}, INTERVAL {$period} DAY)
+        SQL;
 }
 
 function pwg_db_get_recent_period(
     int|string $period,
     string $date = 'CURRENT_DATE'
 ): string {
-    $query = 'SELECT ' . pwg_db_get_recent_period_expression($period);
+    $recentPeriodExpression = pwg_db_get_recent_period_expression($period);
+    $query = <<<SQL
+        SELECT {$recentPeriodExpression};
+        SQL;
     [$d] = pwg_db_fetch_row(pwg_query($query));
 
     return $d;
@@ -625,37 +670,49 @@ function pwg_db_get_recent_period(
 function pwg_db_get_flood_period_expression(
     string $seconds
 ): string {
-    return "SUBDATE(NOW(), INTERVAL {$seconds} SECOND)";
+    return <<<SQL
+        SUBDATE(NOW(), INTERVAL {$seconds} SECOND)
+        SQL;
 }
 
 function pwg_db_get_hour(
     string $date
 ): string {
-    return "HOUR({$date})";
+    return <<<SQL
+        HOUR({$date})
+        SQL;
 }
 
 function pwg_db_get_date_YYYYMM(
     string $date
 ): string {
-    return "DATE_FORMAT({$date}, '%Y%m')";
+    return <<<SQL
+        DATE_FORMAT({$date}, '%Y%m')
+        SQL;
 }
 
 function pwg_db_get_date_MMDD(
     string $date
 ): string {
-    return "DATE_FORMAT({$date}, '%m%d')";
+    return <<<SQL
+        DATE_FORMAT({$date}, '%m%d')
+        SQL;
 }
 
 function pwg_db_get_year(
     string $date
 ): string {
-    return "YEAR({$date})";
+    return <<<SQL
+        YEAR({$date})
+        SQL;
 }
 
 function pwg_db_get_month(
     string $date
 ): string {
-    return "MONTH({$date})";
+    return <<<SQL
+        MONTH({$date})
+        SQL;
 }
 
 function pwg_db_get_week(
@@ -663,36 +720,48 @@ function pwg_db_get_week(
     int $mode = null
 ): string {
     if ($mode) {
-        return "WEEK({$date}, {$mode})";
+        return <<<SQL
+            WEEK({$date}, {$mode})
+            SQL;
     }
 
-    return "WEEK({$date})";
-
+    return <<<SQL
+        WEEK({$date})
+        SQL;
 }
 
 function pwg_db_get_dayofmonth(
     string $date
 ): string {
-    return "DAYOFMONTH({$date})";
+    return <<<SQL
+        DAYOFMONTH({$date})
+        SQL;
 }
 
 function pwg_db_get_dayofweek(
     string $date
 ): string {
-    return "DAYOFWEEK({$date})";
+    return <<<SQL
+        DAYOFWEEK({$date})
+        SQL;
 }
 
 function pwg_db_get_weekday(
     string $date
 ): string {
-    return "WEEKDAY({$date})";
+    return <<<SQL
+        WEEKDAY({$date})
+        SQL;
 }
 
 function pwg_db_date_to_ts(
     string $date
 ): string {
-    return "UNIX_TIMESTAMP({$date})";
+    return <<<SQL
+        UNIX_TIMESTAMP({$date})
+        SQL;
 }
+
 
 /**
  * Builds an data array from a SQL query.

@@ -576,7 +576,7 @@ class Template
 
             // trigger the event for eventual use of a cdn
             $href = trigger_change('combined_css', $href, $combi);
-            $content[] = '<link rel="stylesheet" type="text/css" href="' . $href . '">';
+            $content[] = '<link rel="stylesheet" href="' . $href . '">';
         }
 
         $this->output = str_replace(
@@ -592,9 +592,7 @@ class Template
             if ($pos !== false) {
                 $rep = "\n" . implode("\n", $this->html_head_elements);
                 if (strlen($this->html_style) !== 0) {
-                    // $rep .= '<style type="text/css">';
                     $rep .= $this->html_style;
-                    // $rep .=  '</style>';
                 }
 
                 $this->output = substr_replace($this->output, $rep, $pos, 0);
@@ -897,28 +895,24 @@ class Template
 
         $scripts = $this->scriptLoader->get_footer_scripts();
         foreach ($scripts[0] as $script) {
-            $content[] =
-              '<script src="'
-              . $this->make_script_src($script)
-              . '"></script>';
+            $content[] = $this->make_script_src($script);
         }
 
         if ($this->scriptLoader->inline_scripts !== []) {
-            // $content[] = '<script>';
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
-            // $content[] = '</script>';
         }
 
         if (count($scripts[1]) > 0) {
             $content[] = '<script>';
-            $content[] = '(function() {
-var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTagName(\'script\').length-1];';
+            $content[] =
+              "(function() {\n"
+              . "var s, after = document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1];\n";
             foreach ($scripts[1] as $script) {
                 $content[] =
-                  "s=document.createElement('script'); s.type='text/javascript'; s.async=true; s.src='"
+                  "s = document.createElement('script'); s.async = true; s.src = '"
                   . $this->make_script_src($script)
-                  . "';";
-                $content[] = 'after = after.parentNode.insertBefore(s, after);';
+                  . "';\n";
+                $content[] = "after = after.parentNode.insertBefore(s, after);\n";
             }
 
             $content[] = '})();';

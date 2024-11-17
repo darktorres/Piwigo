@@ -105,7 +105,10 @@ class RVTS
             null,
             '<script>
                 var RVTS = {
-                    ajaxUrlModel: String.fromCharCode(' . ord($ajax_url_model[0]) . ")+'" . substr($ajax_url_model, 1) . "',
+                    ajaxUrlModel: String.fromCharCode(' . ord($ajax_url_model[0]) . ")+'" . substr(
+                $ajax_url_model,
+                1
+            ) . "',
                     start: {$start},
                     perPage: {$per_page},
                     next: " . ($start + $per_page) . ",

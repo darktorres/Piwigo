@@ -64,7 +64,11 @@ if (isset($_POST['submit']) && ! empty($_POST['galleries_url'])) {
     }
 
     // site must not exists
-    $query = "SELECT COUNT(id) AS count FROM sites WHERE galleries_url = '{$url}';";
+    $query = <<<SQL
+        SELECT COUNT(id) AS count
+        FROM sites
+        WHERE galleries_url = '{$url}';
+        SQL;
     $row = pwg_db_fetch_assoc(pwg_query($query));
     if ($row['count'] > 0) {
         $page['errors'][] = l10n('This site already exists') . ' [' . $url . ']';
@@ -75,7 +79,12 @@ if (isset($_POST['submit']) && ! empty($_POST['galleries_url'])) {
     }
 
     if (count($page['errors']) == 0) {
-        $query = "INSERT INTO sites (galleries_url) VALUES ('{$url}');";
+        $query = <<<SQL
+            INSERT INTO sites
+                (galleries_url)
+            VALUES
+                ('{$url}');
+            SQL;
         pwg_query($query);
         $page['infos'][] = $url . ' ' . l10n('created');
     }
@@ -89,7 +98,11 @@ if (isset($_GET['site']) && is_numeric($_GET['site'])) {
 }
 
 if (isset($_GET['action']) && isset($page['site'])) {
-    $query = "SELECT galleries_url FROM sites WHERE id = {$page['site']};";
+    $query = <<<SQL
+        SELECT galleries_url
+        FROM sites
+        WHERE id = {$page['site']};
+        SQL;
     [$galleries_url] = pwg_db_fetch_row(pwg_query($query));
     if ($_GET['action'] === 'delete') {
         delete_site($page['site']);
@@ -105,12 +118,19 @@ $template->assign(
     ]
 );
 
-$query =
-'SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_images FROM categories AS c LEFT JOIN images AS i
- ON c.id = i.storage_category_id WHERE c.site_id IS NOT NULL GROUP BY c.site_id;';
+$query = <<<SQL
+    SELECT c.site_id, COUNT(DISTINCT c.id) AS nb_categories, COUNT(i.id) AS nb_images
+    FROM categories AS c
+    LEFT JOIN images AS i ON c.id = i.storage_category_id
+    WHERE c.site_id IS NOT NULL
+    GROUP BY c.site_id;
+    SQL;
 $sites_detail = query2array($query, 'site_id');
 
-$query = 'SELECT * FROM sites;';
+$query = <<<SQL
+    SELECT *
+    FROM sites;
+    SQL;
 $result = pwg_query($query);
 
 while ($row = pwg_db_fetch_assoc($result)) {

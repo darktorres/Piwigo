@@ -101,8 +101,13 @@ function get_remote_addr_session_hash(): string
 function pwg_session_read(
     string $session_id
 ): string {
-    $ip_hash_ = get_remote_addr_session_hash();
-    $query = "SELECT data FROM sessions WHERE id = '{$ip_hash_}{$session_id}';";
+    $session_hash = get_remote_addr_session_hash() . $session_id;
+    $query = <<<SQL
+        SELECT data
+        FROM sessions
+        WHERE id = '{$session_hash}';
+        SQL;
+
     $result = pwg_query($query);
     if (($row = pwg_db_fetch_assoc($result))) {
         return $row['data'];
@@ -121,19 +126,22 @@ function pwg_session_write(
     string $data
 ): bool {
     if (DB_ENGINE === 'MySQL') {
-        $query = 'REPLACE INTO sessions';
+        $query = "REPLACE INTO sessions\n";
     }
 
     if (DB_ENGINE === 'PostgreSQL') {
-        $query = 'INSERT INTO sessions';
+        $query = "INSERT INTO sessions\n";
     }
 
-    $ip_hash_ = get_remote_addr_session_hash();
-    $data_ = pwg_db_real_escape_string($data);
-    $query .= " (id, data, expiration) VALUES ('{$ip_hash_}{$session_id}', '{$data_}', NOW())";
+    $session_hash = get_remote_addr_session_hash() . $session_id;
+    $escaped_data = pwg_db_real_escape_string($data);
+    $query .= <<<SQL
+        (id, data, expiration)
+        VALUES ('{$session_hash}', '{$escaped_data}', NOW())\n
+        SQL;
 
     if (DB_ENGINE === 'PostgreSQL') {
-        $query .= ' ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, expiration = EXCLUDED.expiration';
+        $query .= "ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, expiration = EXCLUDED.expiration\n";
     }
 
     $query .= ';';
@@ -149,8 +157,11 @@ function pwg_session_write(
 function pwg_session_destroy(
     string $session_id
 ): bool {
-    $ip_hash_ = get_remote_addr_session_hash();
-    $query = "DELETE FROM sessions WHERE id = '{$ip_hash_}{$session_id}';";
+    $session_id_hash = get_remote_addr_session_hash() . $session_id;
+    $query = <<<SQL
+        DELETE FROM sessions
+        WHERE id = '{$session_id_hash}';
+        SQL;
     pwg_query($query);
     return true;
 }
@@ -164,9 +175,13 @@ function pwg_session_gc(): bool
 {
     global $conf;
 
-    $date_now_ = pwg_db_date_to_ts('NOW()');
-    $date_expiration_ = pwg_db_date_to_ts('expiration');
-    $query = "DELETE FROM sessions WHERE {$date_now_} - {$date_expiration_} > {$conf['session_length']};";
+    $now_ts = pwg_db_date_to_ts('NOW()');
+    $expiration_ts = pwg_db_date_to_ts('expiration');
+    $query = <<<SQL
+        DELETE FROM sessions
+        WHERE {$now_ts} - {$expiration_ts} > {$conf['session_length']};
+        SQL;
+
     pwg_query($query);
     return true;
 }
@@ -218,6 +233,10 @@ function pwg_unset_session_var(
 function delete_user_sessions(
     int $user_id
 ): void {
-    $query = "DELETE FROM sessions WHERE data LIKE '%pwg_uid|i:{$user_id};%';";
+    $query = <<<SQL
+        DELETE FROM sessions
+        WHERE data LIKE '%pwg_uid|i:{$user_id};%';
+        SQL;
+
     pwg_query($query);
 }

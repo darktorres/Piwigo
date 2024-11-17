@@ -109,15 +109,20 @@
                       data-src-original="{$U_HOME}{$thumbnail.PATH}" data-size-original="{$thumbnail.SIZE}" data-video="true"
                     {/if} 
                   {/if}>
+                  <img data-lazy="{$derivative->get_url()}" {$derivative->get_size_htm()} loading="lazy" decoding="async"
+                    alt="{$thumbnail.TN_ALT}" title="{if isset($thumbnail.TN_TITLE)}{$thumbnail.TN_TITLE}{/if}"
+                    class="img-fluid {if isset($thumbnail.path_ext)}path-ext-{$thumbnail.path_ext}{/if} {if isset($thumbnail.file_ext)}file-ext-{$thumbnail.file_ext}{/if}">
+                </a>
+              </div>
                 {else}
                   <div class="text-center{if $thumbnail.id eq $current.id} thumbnail-active{/if}">
                     <a href="{$thumbnail.URL}">
-                    {/if}
                     <img data-lazy="{$derivative->get_url()}" {$derivative->get_size_htm()} loading="lazy" decoding="async"
                       alt="{$thumbnail.TN_ALT}" title="{if isset($thumbnail.TN_TITLE)}{$thumbnail.TN_TITLE}{/if}"
                       class="img-fluid {if isset($thumbnail.path_ext)}path-ext-{$thumbnail.path_ext}{/if} {if isset($thumbnail.file_ext)}file-ext-{$thumbnail.file_ext}{/if}">
                   </a>
                 </div>
+            {/if}
                 {assign var=idx value=$idx+1}
               {/foreach}
           </div>
@@ -128,9 +133,9 @@
         {include file="_slick_js.tpl"}
       {/if}
     {/if}
-  </div>
+</div>
 
-  <div id="info-container" class="container{if $theme_config->fluid_width}-fluid{/if}">
+<div id="info-container" class="container{if $theme_config->fluid_width}-fluid{/if}">
     <div id="theImageInfos" class="row justify-content-center">
       {if $theme_config->picture_info == 'cards'}
         {include file='picture_info_cards.tpl'}

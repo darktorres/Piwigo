@@ -22,7 +22,7 @@
   });
 </script>{/footer_script}
 
-{html_style}<style type="text/css">
+{html_style}<style>
   .pluginBox {
     display: none;
   }

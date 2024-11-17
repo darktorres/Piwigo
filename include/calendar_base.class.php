@@ -227,7 +227,12 @@ abstract class CalendarBase
     ): void {
         global $template, $conf, $page;
 
-        $query = "SELECT DISTINCT({$this->calendar_levels[$level]['sql']}) AS period, COUNT(DISTINCT id) AS nb_images {$this->inner_sql} {$this->get_date_where($level)} GROUP BY period;";
+        $query = <<<SQL
+            SELECT DISTINCT({$this->calendar_levels[$level]['sql']}) AS period, COUNT(DISTINCT id) AS nb_images
+            {$this->inner_sql}
+            {$this->get_date_where($level)}
+            GROUP BY period;
+            SQL;
 
         $level_items = query2array($query, 'period', 'nb_images');
 
@@ -279,9 +284,13 @@ abstract class CalendarBase
             $sub_queries[] = $page['chronology_date'][$i] === 'any' ? "'any'" : $this->calendar_levels[$i]['sql'];
         }
 
-        $sub_queries_ = pwg_db_concat_ws($sub_queries, '-');
-        $query = "SELECT {$sub_queries_} AS period";
-        $query .= " {$this->inner_sql} AND {$this->date_field} IS NOT NULL GROUP BY period;";
+        $period = pwg_db_concat_ws($sub_queries, '-');
+        $query = <<<SQL
+            SELECT {$period} AS period
+            {$this->inner_sql}
+                AND {$this->date_field} IS NOT NULL
+            GROUP BY period;
+            SQL;
 
         $current = implode('-', $page['chronology_date']);
         $upper_items = query2array($query, null, 'period');

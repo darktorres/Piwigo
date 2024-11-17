@@ -6,6 +6,6 @@ parameters:
     level: 8
     paths:
         - admin
-        - inc
+        - include
         - plugins
         - themes

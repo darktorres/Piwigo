@@ -409,7 +409,12 @@ try {
     $logger->error($exception->getMessage());
 }
 
-[$conf['derivatives']] = pwg_db_fetch_row(pwg_query("SELECT value FROM config WHERE param = 'derivatives';"));
+$query = <<<SQL
+    SELECT value
+    FROM config
+    WHERE param = 'derivatives';
+    SQL;
+[$conf['derivatives']] = pwg_db_fetch_row(pwg_query($query));
 
 if (DB_ENGINE === 'PostgreSQL') {
     $conf['derivatives'] = stripslashes((string) $conf['derivatives']);
@@ -460,8 +465,13 @@ if (! str_contains($page['src_location'], '/pwg_representative/')
     && ! str_contains($page['src_location'], 'themes/')
     && ! str_contains($page['src_location'], 'plugins/')) {
     try {
-        $path_ = addslashes($page['src_location']);
-        $query = "SELECT * FROM images WHERE path = '{$path_}';";
+        // Extract the function result
+        $escaped_path = addslashes($page['src_location']);
+        $query = <<<SQL
+            SELECT *
+            FROM images
+            WHERE path = '{$escaped_path}';
+            SQL;
 
         if (($row = pwg_db_fetch_assoc(pwg_query($query)))) {
             if (isset($row['width'])) {

@@ -46,15 +46,24 @@ if (isset($_POST['falsify']) && isset($_POST['cat_true']) && count($_POST['cat_t
     // if you forbid access to a category, all sub-categories become
     // automatically forbidden
     $subcats = get_subcat_ids($_POST['cat_true']);
-    $subcats_ = implode(',', $subcats);
-    $query = "DELETE FROM group_access WHERE group_id = {$page['group']} AND cat_id IN ({$subcats_});";
+    $subcat_list = implode(',', $subcats);
+    $query = <<<SQL
+        DELETE FROM group_access
+        WHERE group_id = {$page['group']}
+            AND cat_id IN ({$subcat_list});
+        SQL;
     pwg_query($query);
 } elseif (isset($_POST['trueify']) && isset($_POST['cat_false']) && count($_POST['cat_false']) > 0) {
     $uppercats = get_uppercat_ids($_POST['cat_false']);
     $private_uppercats = [];
 
-    $uppercats_ = implode(',', $uppercats);
-    $query = "SELECT id FROM categories WHERE id IN ({$uppercats_}) AND status = 'private';";
+    $uppercat_list = implode(',', $uppercats);
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id IN ({$uppercat_list})
+            AND status = 'private';
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $private_uppercats[] = $row['id'];
@@ -65,7 +74,11 @@ if (isset($_POST['falsify']) && isset($_POST['cat_true']) && count($_POST['cat_t
     // accesible
     $authorized_ids = [];
 
-    $query = "SELECT cat_id FROM group_access WHERE group_id = {$page['group']};";
+    $query = <<<SQL
+        SELECT cat_id
+        FROM group_access
+        WHERE group_id = {$page['group']};
+        SQL;
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -114,7 +127,13 @@ $template->assign(
 );
 
 // only private categories are listed
-$query_true = "SELECT id, name, uppercats, global_rank FROM categories INNER JOIN group_access ON cat_id = id WHERE status = 'private' AND group_id = {$page['group']};";
+$query_true = <<<SQL
+    SELECT id, name, uppercats, global_rank
+    FROM categories
+    INNER JOIN group_access ON cat_id = id
+    WHERE status = 'private'
+        AND group_id = {$page['group']};
+    SQL;
 display_select_cat_wrapper($query_true, [], 'category_option_true');
 
 $result = pwg_query($query_true);
@@ -123,13 +142,20 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $authorized_ids[] = $row['id'];
 }
 
-$query_false = "SELECT id, name, uppercats, global_rank FROM categories WHERE status = 'private'";
+$query_false = <<<SQL
+    SELECT id, name, uppercats, global_rank
+    FROM categories
+    WHERE status = 'private'\n
+    SQL;
+
 if ($authorized_ids !== []) {
-    $authorized_ids_ = implode(',', $authorized_ids);
-    $query_false .= " AND id NOT IN ({$authorized_ids_})";
+    $ids_list = implode(',', $authorized_ids);
+    $query_false .= <<<SQL
+        AND id NOT IN ({$ids_list})\n
+        SQL;
 }
 
-$query_false .= ' ;';
+$query_false .= ';';
 display_select_cat_wrapper($query_false, [], 'category_option_false');
 
 $template->assign('PWG_TOKEN', get_pwg_token());

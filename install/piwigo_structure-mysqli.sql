@@ -1,10 +1,6 @@
---
--- Table structure for table `activity`
---
 DROP TABLE IF EXISTS `activity`;
 
-CREATE TABLE
-  `activity` (
+CREATE TABLE `activity` (
     `activity_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `object` VARCHAR(255) NOT NULL,
     `object_id` INT UNSIGNED NOT NULL,
@@ -16,27 +12,25 @@ CREATE TABLE
     `details` VARCHAR(255) DEFAULT NULL,
     `user_agent` VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (`activity_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `caddie`
 --
 DROP TABLE IF EXISTS `caddie`;
 
-CREATE TABLE
-  `caddie` (
+CREATE TABLE `caddie` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `element_id` INT NOT NULL DEFAULT '0',
     PRIMARY KEY (`user_id`, `element_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `categories`
 --
 DROP TABLE IF EXISTS `categories`;
 
-CREATE TABLE
-  `categories` (
+CREATE TABLE `categories` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT '',
     `id_uppercat` INT UNSIGNED DEFAULT NULL,
@@ -58,15 +52,14 @@ CREATE TABLE
     KEY `categories_i2` (`id_uppercat`),
     KEY `lastmodified` (`lastmodified`),
     FULLTEXT KEY `category_ft` (`name`, `comment`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `comments`
 --
 DROP TABLE IF EXISTS `comments`;
 
-CREATE TABLE
-  `comments` (
+CREATE TABLE `comments` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `date` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -81,52 +74,48 @@ CREATE TABLE
     PRIMARY KEY (`id`),
     KEY `comments_i2` (`validation_date`),
     KEY `comments_i1` (`image_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `config`
 --
 DROP TABLE IF EXISTS `config`;
 
-CREATE TABLE
-  `config` (
+CREATE TABLE `config` (
     `param` VARCHAR(40) NOT NULL DEFAULT '',
     `value` text,
     `comment` VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (`param`)
-  ) ENGINE = InnoDB COMMENT = 'configuration table';
+) ENGINE = InnoDB COMMENT = 'configuration table';
 
 --
 -- Table structure for table `favorites`
 --
 DROP TABLE IF EXISTS `favorites`;
 
-CREATE TABLE
-  `favorites` (
+CREATE TABLE `favorites` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
     PRIMARY KEY (`user_id`, `image_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `group_access`
 --
 DROP TABLE IF EXISTS `group_access`;
 
-CREATE TABLE
-  `group_access` (
+CREATE TABLE `group_access` (
     `group_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
     PRIMARY KEY (`group_id`, `cat_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `groups_table`
 --
 DROP TABLE IF EXISTS `groups_table`;
 
-CREATE TABLE
-  `groups_table` (
+CREATE TABLE `groups_table` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT '',
     `is_default` enum ('true', 'false') NOT NULL DEFAULT 'false',
@@ -134,15 +123,14 @@ CREATE TABLE
     PRIMARY KEY (`id`),
     UNIQUE KEY `groups_ui1` (`name`),
     KEY `lastmodified` (`lastmodified`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `history`
 --
 DROP TABLE IF EXISTS `history`;
 
-CREATE TABLE
-  `history` (
+CREATE TABLE `history` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `date` DATE NOT NULL DEFAULT '1970-01-01',
     `time` TIME NOT NULL DEFAULT '00:00:00',
@@ -167,15 +155,14 @@ CREATE TABLE
     `format_id` INT UNSIGNED DEFAULT NULL,
     `auth_key_id` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `history_summary`
 --
 DROP TABLE IF EXISTS `history_summary`;
 
-CREATE TABLE
-  `history_summary` (
+CREATE TABLE `history_summary` (
     `year` INT NOT NULL DEFAULT '0',
     `month` INT DEFAULT NULL,
     `day` INT DEFAULT NULL,
@@ -184,56 +171,52 @@ CREATE TABLE
     `history_id_from` INT UNSIGNED DEFAULT NULL,
     `history_id_to` INT UNSIGNED DEFAULT NULL,
     UNIQUE KEY history_summary_ymdh (`year`, `month`, `day`, `hour`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `image_category`
 --
 DROP TABLE IF EXISTS `image_category`;
 
-CREATE TABLE
-  `image_category` (
+CREATE TABLE `image_category` (
     `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `category_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `rank_column` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`image_id`, `category_id`),
     KEY `image_category_i1` (`category_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `image_format`
 --
 DROP TABLE IF EXISTS `image_format`;
 
-CREATE TABLE
-  `image_format` (
+CREATE TABLE `image_format` (
     `format_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `ext` VARCHAR(255) NOT NULL,
     `filesize` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`format_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `image_tag`
 --
 DROP TABLE IF EXISTS `image_tag`;
 
-CREATE TABLE
-  `image_tag` (
+CREATE TABLE `image_tag` (
     `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `tag_id` INT UNSIGNED NOT NULL DEFAULT '0',
     PRIMARY KEY (`image_id`, `tag_id`),
     KEY `image_tag_i1` (`tag_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `images`
 --
 DROP TABLE IF EXISTS `images`;
 
-CREATE TABLE
-  `images` (
+CREATE TABLE `images` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `file` VARCHAR(255) NOT NULL DEFAULT '',
     `date_available` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -268,83 +251,77 @@ CREATE TABLE
     KEY `images_i7` (`path`),
     KEY `lastmodified` (`lastmodified`),
     FULLTEXT KEY `image_ft` (`name`, `comment`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `languages`
 --
 DROP TABLE IF EXISTS `languages`;
 
-CREATE TABLE
-  `languages` (
+CREATE TABLE `languages` (
     `id` VARCHAR(64) NOT NULL DEFAULT '',
     `version` VARCHAR(64) NOT NULL DEFAULT '0',
     `name` VARCHAR(64) DEFAULT NULL,
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `lounge`
 --
 DROP TABLE IF EXISTS `lounge`;
 
-CREATE TABLE
-  `lounge` (
+CREATE TABLE `lounge` (
     `image_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `category_id` INT UNSIGNED NOT NULL DEFAULT '0',
     PRIMARY KEY (`image_id`, `category_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `old_permalinks`
 --
 DROP TABLE IF EXISTS `old_permalinks`;
 
-CREATE TABLE
-  `old_permalinks` (
+CREATE TABLE `old_permalinks` (
     `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `permalink` VARCHAR(64) NOT NULL DEFAULT '',
     `date_deleted` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
     `last_hit` datetime DEFAULT NULL,
     `hit` INT UNSIGNED NOT NULL DEFAULT '0',
     PRIMARY KEY (`permalink`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `plugins`
 --
 DROP TABLE IF EXISTS `plugins`;
 
-CREATE TABLE
-  `plugins` (
+CREATE TABLE `plugins` (
     `id` VARCHAR(64) NOT NULL DEFAULT '',
     `state` enum ('inactive', 'active') NOT NULL DEFAULT 'inactive',
     `version` VARCHAR(64) NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `rate`
 --
 DROP TABLE IF EXISTS `rate`;
 
-CREATE TABLE
-  `rate` (
+CREATE TABLE `rate` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `element_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `anonymous_id` VARCHAR(45) NOT NULL DEFAULT '',
     `rate` INT UNSIGNED NOT NULL DEFAULT '0',
     `date` DATE NOT NULL DEFAULT '1970-01-01',
     PRIMARY KEY (`element_id`, `user_id`, `anonymous_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `search`
 --
 DROP TABLE IF EXISTS `search`;
 
-CREATE TABLE
-  `search` (
+CREATE TABLE `search` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `search_uuid` CHAR(23) DEFAULT NULL,
     `created_on` DATETIME DEFAULT NULL,
@@ -352,41 +329,38 @@ CREATE TABLE
     `forked_from` INT UNSIGNED,
     `rules` text,
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `sessions`
 --
 DROP TABLE IF EXISTS `sessions`;
 
-CREATE TABLE
-  `sessions` (
+CREATE TABLE `sessions` (
     `id` VARCHAR(255) NOT NULL DEFAULT '',
     `data` mediumtext NOT NULL,
     `expiration` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `sites`
 --
 DROP TABLE IF EXISTS `sites`;
 
-CREATE TABLE
-  `sites` (
+CREATE TABLE `sites` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `galleries_url` VARCHAR(255) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`),
     UNIQUE KEY `sites_ui1` (`galleries_url`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `tags`
 --
 DROP TABLE IF EXISTS `tags`;
 
-CREATE TABLE
-  `tags` (
+CREATE TABLE `tags` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT '',
     `url_name` VARCHAR(255) NOT NULL DEFAULT '',
@@ -395,53 +369,49 @@ CREATE TABLE
     KEY `tags_i1` (`url_name`),
     KEY `lastmodified` (`lastmodified`),
     FULLTEXT KEY `tag_name_ft` (`name`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `themes`
 --
 DROP TABLE IF EXISTS `themes`;
 
-CREATE TABLE
-  `themes` (
+CREATE TABLE `themes` (
     `id` VARCHAR(64) NOT NULL DEFAULT '',
     `version` VARCHAR(64) NOT NULL DEFAULT '0',
     `name` VARCHAR(64) DEFAULT NULL,
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `upgrade`
 --
 DROP TABLE IF EXISTS `upgrade`;
 
-CREATE TABLE
-  `upgrade` (
+CREATE TABLE `upgrade` (
     `id` VARCHAR(20) NOT NULL DEFAULT '',
     `applied` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
     `description` VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_access`
 --
 DROP TABLE IF EXISTS `user_access`;
 
-CREATE TABLE
-  `user_access` (
+CREATE TABLE `user_access` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
     PRIMARY KEY (`user_id`, `cat_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_auth_keys`
 --
 DROP TABLE IF EXISTS `user_auth_keys`;
 
-CREATE TABLE
-  `user_auth_keys` (
+CREATE TABLE `user_auth_keys` (
     `auth_key_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `auth_key` VARCHAR(255) NOT NULL,
     `user_id` INT UNSIGNED NOT NULL,
@@ -449,15 +419,14 @@ CREATE TABLE
     `duration` INT UNSIGNED DEFAULT NULL,
     `expired_on` datetime NOT NULL,
     PRIMARY KEY (`auth_key_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_cache`
 --
 DROP TABLE IF EXISTS `user_cache`;
 
-CREATE TABLE
-  `user_cache` (
+CREATE TABLE `user_cache` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `need_update` enum ('true', 'false') NOT NULL DEFAULT 'true',
     `cache_update_time` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -469,15 +438,14 @@ CREATE TABLE
     `image_access_type` enum ('NOT IN', 'IN') NOT NULL DEFAULT 'NOT IN',
     `image_access_list` mediumtext DEFAULT NULL,
     PRIMARY KEY (`user_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_cache_categories`
 --
 DROP TABLE IF EXISTS `user_cache_categories`;
 
-CREATE TABLE
-  `user_cache_categories` (
+CREATE TABLE `user_cache_categories` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `cat_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `date_last` datetime DEFAULT NULL,
@@ -488,40 +456,37 @@ CREATE TABLE
     `count_categories` INT UNSIGNED DEFAULT '0',
     `user_representative_picture_id` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`user_id`, `cat_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_feed`
 --
 DROP TABLE IF EXISTS `user_feed`;
 
-CREATE TABLE
-  `user_feed` (
+CREATE TABLE `user_feed` (
     `id` VARCHAR(50) NOT NULL DEFAULT '',
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `last_check` datetime DEFAULT NULL,
     PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_group`
 --
 DROP TABLE IF EXISTS `user_group`;
 
-CREATE TABLE
-  `user_group` (
+CREATE TABLE `user_group` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `group_id` INT UNSIGNED NOT NULL DEFAULT '0',
     PRIMARY KEY (`group_id`, `user_id`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_infos`
 --
 DROP TABLE IF EXISTS `user_infos`;
 
-CREATE TABLE
-  `user_infos` (
+CREATE TABLE `user_infos` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `nb_image_page` INT UNSIGNED NOT NULL DEFAULT '15',
     `status` enum (
@@ -548,34 +513,32 @@ CREATE TABLE
     `preferences` TEXT DEFAULT NULL,
     PRIMARY KEY (`user_id`),
     KEY `lastmodified` (`lastmodified`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `user_mail_notification`
 --
 DROP TABLE IF EXISTS `user_mail_notification`;
 
-CREATE TABLE
-  `user_mail_notification` (
+CREATE TABLE `user_mail_notification` (
     `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
     `check_key` VARCHAR(16) NOT NULL DEFAULT '',
     `enabled` enum ('true', 'false') NOT NULL DEFAULT 'false',
     `last_send` datetime DEFAULT NULL,
     PRIMARY KEY (`user_id`),
     UNIQUE KEY `user_mail_notification_ui1` (`check_key`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `users`
 --
 DROP TABLE IF EXISTS `users`;
 
-CREATE TABLE
-  `users` (
+CREATE TABLE `users` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(100) NOT NULL DEFAULT '',
     `password` VARCHAR(255) DEFAULT NULL,
     `mail_address` VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `users_ui1` (`username`)
-  ) ENGINE = InnoDB;
+) ENGINE = InnoDB;

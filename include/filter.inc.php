@@ -61,12 +61,22 @@ if ($filter['enabled']) {
             $filter['visible_categories'] = -1;
         }
 
-        $query = 'SELECT distinct image_id FROM image_category INNER JOIN images ON image_id = id WHERE ';
+        $query = <<<SQL
+            SELECT DISTINCT image_id
+            FROM image_category
+            INNER JOIN images ON image_id = id
+            WHERE\n
+            SQL;
         if (isset($filter['visible_categories']) && ($filter['visible_categories'] !== '' && $filter['visible_categories'] !== '0' && $filter['visible_categories'] !== 0)) {
-            $query .= " category_id IN ({$filter['visible_categories']}) AND ";
+            $query .= <<<SQL
+                category_id IN ({$filter['visible_categories']}) AND\n
+                SQL;
         }
 
-        $query .= ' date_available >= ' . pwg_db_get_recent_period_expression($filter['recent_period']) . ';';
+        $recent_period_expression = pwg_db_get_recent_period_expression($filter['recent_period']);
+        $query .= <<<SQL
+            date_available >= {$recent_period_expression};
+            SQL;
 
         $filter['visible_images'] = implode(',', query2array($query, null, 'image_id'));
 

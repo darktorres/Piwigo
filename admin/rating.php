@@ -62,22 +62,36 @@ if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
 }
 
 $users = [];
-$query = "SELECT {$conf['user_fields']['username']} AS username, {$conf['user_fields']['id']} AS id FROM users;";
+$query = <<<SQL
+    SELECT {$conf['user_fields']['username']} AS username, {$conf['user_fields']['id']} AS id
+    FROM users;
+    SQL;
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     $users[$row['id']] = stripslashes((string) $row['username']);
 }
 
-$query = 'SELECT COUNT(DISTINCT(r.element_id)) FROM rate AS r';
+$query = <<<SQL
+    SELECT COUNT(DISTINCT(r.element_id))
+    FROM rate AS r\n
+    SQL;
 
 if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
-    $query .= ' JOIN images AS i ON r.element_id = i.id JOIN image_category AS ic ON ic.image_id = i.id';
+    $query .= <<<SQL
+        JOIN images AS i ON r.element_id = i.id
+        JOIN image_category AS ic ON ic.image_id = i.id\n
+        SQL;
 }
 
-$query .= " WHERE 1 = 1 {$page['user_filter']};";
+$query .= <<<SQL
+    WHERE 1 = 1 {$page['user_filter']};
+    SQL;
 [$nb_images] = pwg_db_fetch_row(pwg_query($query));
 
-$query = 'SELECT COUNT(*) FROM rate;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM rate;
+    SQL;
 [$nb_elements] = pwg_db_fetch_row(pwg_query($query));
 
 // +-----------------------------------------------------------------------+
@@ -133,17 +147,25 @@ $template->assign('user_options', $user_options);
 $template->assign('user_options_selected', [$_GET['users'] ?? null]);
 $template->assign('ADMIN_PAGE_TITLE', l10n('Rating'));
 
-$query =
-'SELECT i.id, i.path, i.file, i.representative_ext, i.rating_score AS score, MAX(r.date) AS recently_rated, ROUND(AVG(r.rate), 2) AS avg_rates, COUNT(r.rate) AS nb_rates,
- SUM(r.rate) AS sum_rates FROM rate AS r LEFT JOIN images AS i ON r.element_id = i.id';
+$query = <<<SQL
+    SELECT i.id, i.path, i.file, i.representative_ext, i.rating_score AS score, MAX(r.date) AS recently_rated,
+        ROUND(AVG(r.rate), 2) AS avg_rates, COUNT(r.rate) AS nb_rates, SUM(r.rate) AS sum_rates
+    FROM rate AS r
+    LEFT JOIN images AS i ON r.element_id = i.id\n
+    SQL;
 
 if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
-    $query .= ' JOIN image_category AS ic ON ic.image_id = i.id';
+    $query .= <<<SQL
+        JOIN image_category AS ic ON ic.image_id = i.id\n
+        SQL;
 }
 
-$query .=
-" WHERE 1 = 1 {$page['user_filter']} {$page['cat_filter']} GROUP BY i.id, i.path, i.file, i.representative_ext, i.rating_score, r.element_id
- ORDER BY {$available_order_by[$order_by_index][1]} LIMIT {$elements_per_page} OFFSET {$start};";
+$query .= <<<SQL
+    WHERE 1 = 1 {$page['user_filter']} {$page['cat_filter']}
+    GROUP BY i.id, i.path, i.file, i.representative_ext, i.rating_score, r.element_id
+    ORDER BY {$available_order_by[$order_by_index][1]}
+    LIMIT {$elements_per_page} OFFSET {$start};
+    SQL;
 
 $images = [];
 $result = pwg_query($query);
@@ -157,7 +179,12 @@ foreach ($images as $image) {
 
     $image_url = get_root_url() . 'admin.php?page=photo-' . $image['id'];
 
-    $query = "SELECT * FROM rate AS r WHERE r.element_id = {$image['id']} ORDER BY date DESC;";
+    $query = <<<SQL
+        SELECT *
+        FROM rate AS r
+        WHERE r.element_id = {$image['id']}
+        ORDER BY date DESC;
+        SQL;
     $result = pwg_query($query);
     $nb_rates = pwg_db_num_rows($result);
 

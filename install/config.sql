@@ -1,4 +1,5 @@
 -- initial configuration for Piwigo
+
 INSERT INTO
     config (param, value, comment)
 VALUES
@@ -230,6 +231,16 @@ VALUES
 INSERT INTO
     config (param, value, comment)
 VALUES
+  ('index_search_in_set_action', 'true', '');
+
+INSERT INTO
+  config (param, value, comment)
+VALUES
+  ('index_search_in_set_button', 'false', '');
+
+INSERT INTO
+  config (param, value, comment)
+VALUES
     ('index_sizes_icon', 'true', '');
 
 INSERT INTO
@@ -279,6 +290,24 @@ VALUES
     ('mobile_theme', 'smartpocket', '');
 
 INSERT INTO
+  config (param, value, comment)
+VALUES
+  (
+    'nb_categories_page',
+    '12',
+    'Param for categories pagination'
+  );
+
+INSERT INTO
+  config (param, value, comment)
+VALUES
+  (
+    'nb_comment_page',
+    '10',
+    'number of comments to display on each page'
+  );
+
+INSERT INTO
     config (param, value, comment)
 VALUES
     (
@@ -321,24 +350,6 @@ VALUES
         'nbm_send_recent_post_dates',
         'true',
         'Send recent post by dates for notification by mail'
-    );
-
-INSERT INTO
-    config (param, value, comment)
-VALUES
-    (
-        'nb_categories_page',
-        '12',
-        'Param for categories pagination'
-    );
-
-INSERT INTO
-    config (param, value, comment)
-VALUES
-    (
-        'nb_comment_page',
-        '10',
-        'number of comments to display on each page'
     );
 
 INSERT INTO
@@ -529,6 +540,11 @@ VALUES
 INSERT INTO
     config (param, value, comment)
 VALUES
+  ('upload_detect_duplicate', 'true', '');
+
+INSERT INTO
+  config (param, value, comment)
+VALUES
     (
         'user_can_delete_comment',
         'false',
@@ -552,21 +568,6 @@ VALUES
         'monday',
         'Monday may not be the first day of the week'
     );
-
-INSERT INTO
-    config (param, value)
-VALUES
-    ('index_search_in_set_button', 'false');
-
-INSERT INTO
-    config (param, value)
-VALUES
-    ('index_search_in_set_action', 'true');
-
-INSERT INTO
-    config (param, value)
-VALUES
-    ('upload_detect_duplicate', 'true');
 
 -- Plugin 'Admin Tools'
 

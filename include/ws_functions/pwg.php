@@ -34,7 +34,9 @@ function ws_getMissingDerivatives(
     }
 
     $max_urls = $params['max_urls'];
-    $query = 'SELECT MAX(id) + 1, COUNT(*) FROM images;';
+    $query = <<<SQL
+        SELECT MAX(id) + 1, COUNT(*) FROM images;
+        SQL;
     [$max_id, $image_count] = pwg_db_fetch_row(pwg_query($query));
 
     if ($image_count == 0) {
@@ -59,8 +61,14 @@ function ws_getMissingDerivatives(
         $where_clauses[] = 'id IN (' . implode(',', $params['ids']) . ')';
     }
 
-    $where_clauses_ = implode(' AND ', $where_clauses);
-    $query_model = "SELECT id, path, representative_ext, width, height, rotation FROM images WHERE {$where_clauses_} ORDER BY id DESC LIMIT {$qlimit};";
+    $whereClause = implode(' AND ', $where_clauses);
+    $query_model = <<<SQL
+        SELECT id, path, representative_ext, width, height, rotation
+        FROM images
+        WHERE {$whereClause}
+        ORDER BY id DESC
+        LIMIT {$qlimit};
+        SQL;
 
     $urls = [];
     do {
@@ -129,45 +137,69 @@ function ws_getInfos(
 ): array {
     $infos['version'] = PHPWG_VERSION;
 
-    $query = 'SELECT COUNT(*) FROM images;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM images;
+        SQL;
     [$infos['nb_elements']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM categories;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM categories;
+        SQL;
     [$infos['nb_categories']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM categories WHERE dir IS NULL;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM categories WHERE dir IS NULL;
+        SQL;
     [$infos['nb_virtual']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM categories WHERE dir IS NOT NULL;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM categories WHERE dir IS NOT NULL;
+        SQL;
     [$infos['nb_physical']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM image_category;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM image_category;
+        SQL;
     [$infos['nb_image_category']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM tags;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM tags;
+        SQL;
     [$infos['nb_tags']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM image_tag;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM image_tag;
+        SQL;
     [$infos['nb_image_tag']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM users;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM users;
+        SQL;
     [$infos['nb_users']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM groups_table;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM groups_table;
+        SQL;
     [$infos['nb_groups']] = pwg_db_fetch_row(pwg_query($query));
 
-    $query = 'SELECT COUNT(*) FROM comments;';
+    $query = <<<SQL
+        SELECT COUNT(*) FROM comments;
+        SQL;
     [$infos['nb_comments']] = pwg_db_fetch_row(pwg_query($query));
 
     // first element
     if ($infos['nb_elements'] > 0) {
-        $query = 'SELECT MIN(date_available) FROM images;';
+        $query = <<<SQL
+            SELECT MIN(date_available) FROM images;
+            SQL;
         [$infos['first_date']] = pwg_db_fetch_row(pwg_query($query));
     }
 
     // unvalidated comments
     if ($infos['nb_comments'] > 0) {
-        $query = "SELECT COUNT(*) FROM comments WHERE validated='false';";
+        $query = <<<SQL
+            SELECT COUNT(*) FROM comments WHERE validated = 'false';
+            SQL;
         [$infos['nb_unvalidated_comments']] = pwg_db_fetch_row(pwg_query($query));
     }
 
@@ -222,7 +254,8 @@ function ws_getCacheSize(
     $all = 0;
 
     foreach (array_keys($infos['msizes']) as $size_type) {
-        $infos['msizes'][$size_type] = ($infos['msizes'][$size_type] ?? null) + ($msizes[derivative_to_url($size_type)] ?? null);
+        $infos['msizes'][$size_type] ??= 0;
+        $infos['msizes'][$size_type] += ($msizes[derivative_to_url($size_type)] ?? null);
         $all += $infos['msizes'][$size_type];
     }
 
@@ -268,8 +301,14 @@ function ws_caddie_add(
 ): int {
     global $user;
 
-    $image_id_ = implode(',', $params['image_id']);
-    $query = "SELECT id FROM images LEFT JOIN caddie ON id = element_id AND user_id = {$user['id']} WHERE id IN ({$image_id_}) AND element_id IS NULL;";
+    $imageIdsList = implode(',', $params['image_id']);
+    $query = <<<SQL
+        SELECT id
+        FROM images
+        LEFT JOIN caddie ON id = element_id AND user_id = {$user['id']}
+        WHERE id IN ({$imageIdsList})
+            AND element_id IS NULL;
+        SQL;
     $result = query2array($query, null, 'id');
 
     $datas = [];
@@ -302,16 +341,24 @@ function ws_rates_delete(
     array $params,
     PwgServer &$service
 ): int|string {
-    $query = "DELETE FROM rate WHERE user_id = {$params['user_id']}";
+    $query = <<<SQL
+        DELETE FROM rate
+        WHERE user_id = {$params['user_id']}\n
+        SQL;
 
     if (! empty($params['anonymous_id'])) {
-        $query .= " AND anonymous_id = '{$params['anonymous_id']}'";
+        $query .= <<<SQL
+            AND anonymous_id = '{$params['anonymous_id']}'\n
+            SQL;
     }
 
     if (! empty($params['image_id'])) {
-        $query .= " AND element_id = {$params['image_id']}";
+        $query .= <<<SQL
+            AND element_id = {$params['image_id']}\n
+            SQL;
     }
 
+    $query .= ';';
     pwg_query($query);
     $changes = pwg_db_changes();
     if ($changes) {
@@ -429,19 +476,32 @@ function ws_getActivityList(
 
     $user_ids = [];
 
-    $query = "SELECT activity_id, performed_by, object, object_id, action, session_idx, ip_address, occured_on, details, user_agent FROM activity WHERE object != 'system'";
+    $admin_ids = implode(',', get_admins());
+    $query = <<<SQL
+        SELECT activity_id, performed_by, object, object_id, action, session_idx, ip_address, occured_on, details, user_agent
+        FROM activity
+        WHERE object != 'system'\n
+        SQL;
 
     if (isset($param['uid'])) {
-        $query .= " AND performed_by = {$param['uid']}";
+        $query .= <<<SQL
+            AND performed_by = {$param['uid']}\n
+            SQL;
     } elseif ($conf['activity_display_connections'] == 'none') {
-        $query .= " AND action NOT IN ('login', 'logout')";
+        $query .= <<<SQL
+            AND action NOT IN ('login', 'logout')\n
+            SQL;
     } elseif ($conf['activity_display_connections'] == 'admins_only') {
         require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-        $admins_ = implode(',', get_admins());
-        $query .= " AND NOT (action IN ('login', 'logout') AND object_id NOT IN ({$admins_}))";
+        $query .= <<<SQL
+            AND NOT (action IN ('login', 'logout') AND object_id NOT IN ({$admin_ids}))\n
+            SQL;
     }
 
-    $query .= " ORDER BY activity_id DESC LIMIT {$page_size} OFFSET {$page_offset};";
+    $query .= <<<SQL
+        ORDER BY activity_id DESC
+        LIMIT {$page_size} OFFSET {$page_offset};
+        SQL;
 
     $line_id = 0;
     $result = pwg_query($query);
@@ -496,8 +556,12 @@ function ws_getActivityList(
     $username_of = [];
     $user_id_list = [];
     if ($user_ids !== []) {
-        $user_ids_ = implode(',', array_keys($user_ids));
-        $query = "SELECT {$conf['user_fields']['id']} AS user_id, {$conf['user_fields']['username']} AS username FROM users WHERE {$conf['user_fields']['id']} IN ({$user_ids_});";
+        $imploded_user_ids = implode(',', array_keys($user_ids));
+        $query = <<<SQL
+            SELECT {$conf['user_fields']['id']} AS user_id, {$conf['user_fields']['username']} AS username
+            FROM users
+            WHERE {$conf['user_fields']['id']} IN ({$imploded_user_ids});
+            SQL;
         $username_of = query2array($query, 'user_id', 'username');
     }
 
@@ -519,9 +583,16 @@ function ws_getActivityList(
     }
 
     if (isset($param['uid'])) {
-        $query = "SELECT COUNT(*) FROM activity WHERE performed_by = {$param['uid']};";
+        $query = <<<SQL
+            SELECT count(*)
+            FROM activity
+            WHERE performed_by = {$param['uid']};
+            SQL;
     } else {
-        $query = 'SELECT COUNT(*) FROM activity;';
+        $query = <<<SQL
+            SELECT count(*)
+            FROM activity;
+            SQL;
     }
 
     $result = (pwg_db_fetch_row(pwg_query($query))[0]) / $page_size;
@@ -671,8 +742,13 @@ function ws_history_search(
     if (! empty($search)) {
         // register search rules in database, then they will be available on
         // thumbnails page and picture page.
-        $search_ = pwg_db_real_escape_string(serialize($search));
-        $query = "INSERT INTO search (rules) VALUES (' {$search_}');";
+        $escapedSearch = pwg_db_real_escape_string(serialize($search));
+        $query = <<<SQL
+            INSERT INTO search
+                (rules)
+            VALUES
+                ('{$escapedSearch}');
+            SQL;
 
         pwg_query($query);
 
@@ -687,7 +763,11 @@ function ws_history_search(
     }
 
     // what are the lines to display in reality ?
-    $query = "SELECT rules FROM search WHERE id = {$search_id};";
+    $query = <<<SQL
+        SELECT rules
+        FROM search
+        WHERE id = {$search_id};
+        SQL;
     [$serialized_rules] = pwg_db_fetch_row(pwg_query($query));
 
     $page['search'] = unserialize($serialized_rules);
@@ -731,8 +811,12 @@ function ws_history_search(
 
     // prepare reference data (users, tags, categories...)
     if ($search_ids !== []) {
-        $search_ids_ = implode(',', $search_ids);
-        $query = "SELECT id, rules FROM search WHERE id IN ({$search_ids_});";
+        $searchIds = implode(',', $search_ids);
+        $query = <<<SQL
+            SELECT id, rules
+            FROM search
+            WHERE id IN ({$searchIds});
+            SQL;
         $search_details = query2array($query, 'id', 'rules');
 
         foreach ($search_details as $id_search => $rules_search) {
@@ -759,8 +843,12 @@ function ws_history_search(
     }
 
     if ($user_ids !== []) {
-        $user_ids_ = implode(',', array_keys($user_ids));
-        $query = "SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username FROM users WHERE id IN ({$user_ids_});";
+        $userIds = implode(',', array_keys($user_ids));
+        $query = <<<SQL
+            SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username
+            FROM users
+            WHERE id IN ({$userIds});
+            SQL;
         $result = pwg_query($query);
 
         $username_of = [];
@@ -770,8 +858,12 @@ function ws_history_search(
     }
 
     if ($category_ids !== []) {
-        $category_ids_ = implode(',', array_values($category_ids));
-        $query = "SELECT id, uppercats FROM categories WHERE id IN ({$category_ids_});";
+        $categoryIds = implode(',', array_values($category_ids));
+        $query = <<<SQL
+            SELECT id, uppercats
+            FROM categories
+            WHERE id IN ({$categoryIds});
+            SQL;
         $uppercats_of = query2array($query, 'id', 'uppercats');
 
         $full_cat_path = [];
@@ -792,13 +884,20 @@ function ws_history_search(
     }
 
     if ($image_ids !== []) {
-        $image_ids_ = implode(',', array_keys($image_ids));
-        $query = "SELECT id, IF(name IS NULL, file, name) AS label, filesize, file, path, representative_ext FROM images WHERE id IN ({$image_ids_});";
+        $image_ids_imploded = implode(',', array_keys($image_ids));
+        $query = <<<SQL
+            SELECT id, IF(name IS NULL, file, name) AS label, filesize, file, path, representative_ext
+            FROM images
+            WHERE id IN ({$image_ids_imploded});
+            SQL;
         $image_infos = query2array($query, 'id');
     }
 
     if ($has_tags > 0) {
-        $query = 'SELECT id, name, url_name FROM tags';
+        $query = <<<SQL
+            SELECT id, name, url_name
+            FROM tags;
+            SQL;
 
         global $name_of_tag; // used for preg_replace
         $name_of_tag = [];
@@ -919,6 +1018,7 @@ function ws_history_search(
             $search_detail = null;
         }
 
+        $sorted_members[$user_name] ??= 0;
         ++$sorted_members[$user_name];
 
         $result[] = [

@@ -41,7 +41,12 @@ if (isset($_POST['submitEmail'])) {
     /* TODO: if $category['representative_picture_id']
       is empty find child representative_picture_id */
     if (! empty($category['representative_picture_id'])) {
-        $query = "SELECT id, file, path, representative_ext FROM images WHERE id = {$category['representative_picture_id']};";
+        $query = <<<SQL
+            SELECT id, file, path, representative_ext
+            FROM images
+            WHERE id = {$category['representative_picture_id']};
+            SQL;
+
         $result = pwg_query($query);
         if (pwg_db_num_rows($result) > 0) {
             $element = pwg_db_fetch_assoc($result);
@@ -94,10 +99,13 @@ if (isset($_POST['submitEmail'])) {
         // have access to this album. No real privacy issue here, even if we
         // send the email to a user without permission.
 
-        $users_ = implode(',', $_POST['users']);
-        $query =
-        "SELECT ui.user_id, ui.status, ui.language, u.{$conf['user_fields']['email']} AS email, u.{$conf['user_fields']['username']} AS username
-         FROM user_infos AS ui JOIN users AS u ON u.{$conf['user_fields']['id']} = ui.user_id WHERE ui.user_id IN ({$users_});";
+        $user_ids = implode(',', $_POST['users']);
+        $query = <<<SQL
+            SELECT ui.user_id, ui.status, ui.language, u.{$conf['user_fields']['email']} AS email, u.{$conf['user_fields']['username']} AS username
+            FROM user_infos AS ui
+            JOIN users AS u ON u.{$conf['user_fields']['id']} = ui.user_id
+            WHERE ui.user_id IN ({$user_ids});
+            SQL;
         $users = query2array($query);
         $usernames = [];
 
@@ -142,7 +150,11 @@ if (isset($_POST['submitEmail'])) {
 
         pwg_mail_group($_POST['group'], $args, $tpl);
 
-        $query = "SELECT name FROM groups_table WHERE id = {$_POST['group']};";
+        $query = <<<SQL
+            SELECT name
+            FROM groups_table
+            WHERE id = {$_POST['group']};
+            SQL;
         [$group_name] = pwg_db_fetch_row(pwg_query($query));
 
         $page['infos'][] = l10n('An information email was sent to group "%s"', $group_name);
@@ -187,14 +199,21 @@ if ($conf['auth_key_duration'] > 0) {
 // |                          form construction                            |
 // +-----------------------------------------------------------------------+
 
-$query = 'SELECT id AS group_id FROM groups_table;';
+$query = <<<SQL
+    SELECT id AS group_id
+    FROM groups_table;
+    SQL;
 $all_group_ids = query2array($query, null, 'group_id');
 
 if (count($all_group_ids) == 0) {
     $template->assign('no_group_in_gallery', true);
 } else {
     if ($category['status'] == 'private') {
-        $query = "SELECT group_id FROM group_access WHERE cat_id = {$category['id']};";
+        $query = <<<SQL
+            SELECT group_id
+            FROM group_access
+            WHERE cat_id = {$category['id']};
+            SQL;
         $group_ids = query2array($query, null, 'group_id');
 
         if (count($group_ids) == 0) {
@@ -205,8 +224,13 @@ if (count($all_group_ids) == 0) {
     }
 
     if ($group_ids !== []) {
-        $group_ids_ = implode(',', $group_ids);
-        $query = "SELECT id, name FROM groups_table WHERE id IN ({$group_ids_}) ORDER BY name ASC;";
+        $imploded_group_ids = implode(',', $group_ids);
+        $query = <<<SQL
+            SELECT id, name
+            FROM groups_table
+            WHERE id IN ({$imploded_group_ids})
+            ORDER BY name ASC;
+            SQL;
         $template->assign(
             'group_mail_options',
             query2array($query, 'id', 'name')
@@ -217,19 +241,31 @@ if (count($all_group_ids) == 0) {
 // all users with status != guest and permitted to this this album (for a
 // perfect search, we should also check that album is not only filled with
 // private photos)
-$query = "SELECT user_id FROM user_infos WHERE status != 'guest';";
+$query = <<<SQL
+    SELECT user_id
+    FROM user_infos
+    WHERE status != 'guest';
+    SQL;
 $all_user_ids = query2array($query, null, 'user_id');
 
 if ($category['status'] == 'private') {
     $user_ids_access_indirect = [];
 
     if (isset($group_ids) && count($group_ids) > 0) {
-        $group_ids_ = implode(',', $group_ids);
-        $query = "SELECT user_id FROM user_group WHERE group_id IN ({$group_ids_})";
+        $group_ids_list = implode(',', $group_ids);
+        $query = <<<SQL
+            SELECT user_id
+            FROM user_group
+            WHERE group_id IN ({$group_ids_list});
+            SQL;
         $user_ids_access_indirect = query2array($query, null, 'user_id');
     }
 
-    $query = "SELECT user_id FROM user_access WHERE cat_id = {$category['id']};";
+    $query = <<<SQL
+        SELECT user_id
+        FROM user_access
+        WHERE cat_id = {$category['id']};
+        SQL;
     $user_ids_access_direct = query2array($query, null, 'user_id');
 
     $user_ids_access = array_unique(array_merge($user_ids_access_direct, $user_ids_access_indirect));
@@ -240,12 +276,12 @@ if ($category['status'] == 'private') {
 }
 
 if ($user_ids !== []) {
-    $user_ids_ = implode(',', $user_ids);
-    $query = "SELECT
-    {$conf['user_fields']['id']} AS id,
-    {$conf['user_fields']['username']} AS username
-    FROM users
-    WHERE id IN ({$user_ids_});";
+    $user_ids_imploded = implode(',', $user_ids);
+    $query = <<<SQL
+        SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username
+        FROM users
+        WHERE id IN ({$user_ids_imploded});
+        SQL;
 
     $users = query2array($query, 'id', 'username');
 

@@ -52,7 +52,7 @@
 
 </ul>
 
-{html_style}<style type="text/css">
+{html_style}<style>
   .thumbnailCategories .gdthumb { margin: {$GDThumb.margin / 2}px {$GDThumb.margin / 2}px {$GDThumb.margin - $GDThumb.margin / 2}px {$GDThumb.margin - $GDThumb.margin / 2}px !important; }
 </style>{/html_style}
 

@@ -72,26 +72,3 @@ function activate_core_plugins(): void
         }
     }
 }
-
-/**
- * Connect to database during installation. Uses $_POST.
- *
- * @param array $infos - populated with infos
- * @param array $errors - populated with errors
- */
-function install_db_connect(
-    array &$infos,
-    array &$errors
-): void {
-    try {
-        pwg_db_connect(
-            $_POST['dbhost'],
-            $_POST['dbuser'],
-            $_POST['dbpasswd'],
-            $_POST['dbname']
-        );
-        pwg_db_check_version();
-    } catch (Exception $exception) {
-        $errors[] = l10n($exception->getMessage());
-    }
-}

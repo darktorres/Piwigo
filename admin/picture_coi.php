@@ -21,22 +21,26 @@ check_status(ACCESS_ADMINISTRATOR);
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 
 if (isset($_POST['submit'])) {
-    $query = 'UPDATE images';
+    $query = <<<SQL
+        UPDATE images\n
+        SQL;
     if (strlen((string) $_POST['l']) == 0) {
-        $query .= ' SET coi = NULL';
+        $query .= " SET coi = NULL\n";
     } else {
         $coi = fraction_to_char($_POST['l'])
           . fraction_to_char($_POST['t'])
           . fraction_to_char($_POST['r'])
           . fraction_to_char($_POST['b']);
-        $query .= " SET coi = '{$coi}'";
+        $query .= " SET coi = '{$coi}'\n";
     }
 
     $query .= " WHERE id = {$_GET['image_id']};";
     pwg_query($query);
 }
 
-$query = "SELECT * FROM images WHERE id = {$_GET['image_id']};";
+$query = <<<SQL
+    SELECT * FROM images WHERE id = {$_GET['image_id']};
+    SQL;
 $row = pwg_db_fetch_assoc(pwg_query($query));
 
 if (isset($_POST['submit'])) {

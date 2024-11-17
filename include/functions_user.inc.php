@@ -29,8 +29,14 @@ function validate_mail_address(
     }
 
     if (defined('PHPWG_INSTALLED') && ($mail_address !== '' && $mail_address !== '0')) {
-        $user_id_ = (is_numeric($user_id) ? "AND {$conf['user_fields']['id']} != '{$user_id}'" : '');
-        $query = "SELECT COUNT(*) FROM users WHERE UPPER({$conf['user_fields']['email']}) = UPPER('{$mail_address}') {$user_id_};";
+        $exclude_user_condition = is_numeric($user_id) ? "AND {$conf['user_fields']['id']} != '{$user_id}'" : '';
+        $query = <<<SQL
+            SELECT count(*)
+            FROM users
+            WHERE UPPER({$conf['user_fields']['email']}) = UPPER('{$mail_address}')
+                {$exclude_user_condition};
+            SQL;
+
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count != 0) {
             return l10n('this email address is already in use');
@@ -52,9 +58,13 @@ function validate_login_case(
     global $conf;
 
     if (defined('PHPWG_INSTALLED')) {
-        $username_ = stripslashes((string) $conf['user_fields']['username']);
-        $login_ = strtolower($login);
-        $query = "SELECT {$conf['user_fields']['username']} FROM users WHERE LOWER({$username_}) = '{$login_}';";
+        $escaped_username_field = stripslashes((string) $conf['user_fields']['username']);
+        $lowered_login = strtolower($login);
+        $query = <<<SQL
+            SELECT {$conf['user_fields']['username']}
+            FROM users
+            WHERE LOWER({$escaped_username_field}) = '{$lowered_login}';
+            SQL;
 
         $count = pwg_db_num_rows(pwg_query($query));
 
@@ -81,7 +91,10 @@ function search_case_username(
 
     $SCU_users = [];
 
-    $q = pwg_query("SELECT {$conf['user_fields']['username']} AS username FROM users;");
+    $q = pwg_query(<<<SQL
+        SELECT {$conf['user_fields']['username']} AS username
+        FROM users;
+        SQL);
     while ($r = pwg_db_fetch_assoc($q)) {
         $SCU_users[$r['username']] = strtolower((string) $r['username']);
     }
@@ -169,7 +182,12 @@ function register_user(
         $user_id = pwg_db_insert_id();
 
         // Assign by default groups
-        $query = "SELECT id FROM groups_table WHERE is_default = 'true' ORDER BY id ASC;";
+        $query = <<<SQL
+            SELECT id
+            FROM groups_table
+            WHERE is_default = 'true'
+            ORDER BY id ASC;
+            SQL;
         $result = pwg_query($query);
 
         $inserts = [];
@@ -299,25 +317,38 @@ function getuserdata(
     global $conf;
 
     // retrieve basic user data
-    $query = 'SELECT ';
+    $query = <<<SQL
+        SELECT\n
+        SQL;
+
     $is_first = true;
     foreach ($conf['user_fields'] as $pwgfield => $dbfield) {
         if ($is_first) {
             $is_first = false;
         } else {
-            $query .= ' , ';
+            $query .= ', ';
         }
 
-        $query .= "{$dbfield} AS {$pwgfield}";
+        $query .= "{$dbfield} AS {$pwgfield}\n";
     }
 
-    $query .= " FROM users WHERE {$conf['user_fields']['id']} = '{$user_id}'";
+    $query .= <<<SQL
+        FROM users
+        WHERE {$conf['user_fields']['id']} = {$user_id};
+        SQL;
 
     $row = pwg_db_fetch_assoc(pwg_query($query));
 
     // retrieve additional user data ?
     if ($conf['external_authentification']) {
-        $query = "SELECT COUNT(1) AS counter FROM user_infos AS ui LEFT JOIN user_cache AS uc ON ui.user_id = uc.user_id LEFT JOIN themes AS t ON t.id = ui.theme WHERE ui.user_id = {$user_id} GROUP BY ui.user_id;";
+        $query = <<<SQL
+            SELECT COUNT(1) AS counter
+            FROM user_infos AS ui
+            LEFT JOIN user_cache AS uc ON ui.user_id = uc.user_id
+            LEFT JOIN themes AS t ON t.id = ui.theme
+            WHERE ui.user_id = {$user_id}
+            GROUP BY ui.user_id;
+            SQL;
         [$counter] = pwg_db_fetch_row(pwg_query($query));
         if ($counter != 1) {
             create_user_infos($user_id);
@@ -325,7 +356,13 @@ function getuserdata(
     }
 
     // retrieve user info
-    $query = "SELECT ui.*, uc.*, t.name AS theme_name FROM user_infos AS ui LEFT JOIN user_cache AS uc ON ui.user_id = uc.user_id LEFT JOIN themes AS t ON t.id = ui.theme WHERE ui.user_id = {$user_id};";
+    $query = <<<SQL
+        SELECT ui.*, uc.*, t.name AS theme_name
+        FROM user_infos AS ui
+        LEFT JOIN user_cache AS uc ON ui.user_id = uc.user_id
+        LEFT JOIN themes AS t ON t.id = ui.theme
+        WHERE ui.user_id = {$user_id};
+        SQL;
 
     $result = pwg_query($query);
     $user_infos_row = pwg_db_fetch_assoc($result);
@@ -354,7 +391,12 @@ function getuserdata(
           calculate_permissions($userdata['id'], $userdata['status']);
         /* now we build the list of forbidden images (this list does not contain
            images that are not in at least an authorized category)*/
-        $query = "SELECT DISTINCT(id) FROM images INNER JOIN image_category ON id = image_id WHERE category_id NOT IN ({$userdata['forbidden_categories']}) AND level > {$userdata['level']}";
+        $query = <<<SQL
+                SELECT DISTINCT(id)
+                FROM images INNER JOIN image_category ON id = image_id
+                WHERE category_id NOT IN ({$userdata['forbidden_categories']})
+                    AND level > {$userdata['level']};
+                SQL;
         $forbidden_ids = query2array($query, null, 'id');
         if ($forbidden_ids === []) {
             $forbidden_ids[] = 0;
@@ -363,7 +405,12 @@ function getuserdata(
         $userdata['image_access_type'] = 'NOT IN';
         //TODO maybe later
         $userdata['image_access_list'] = implode(',', $forbidden_ids);
-        $query = "SELECT COUNT(DISTINCT(image_id)) AS total FROM image_category WHERE category_id NOT IN ({$userdata['forbidden_categories']}) AND image_id {$userdata['image_access_type']} ({$userdata['image_access_list']})";
+        $query = <<<SQL
+                SELECT COUNT(DISTINCT(image_id)) AS total
+                FROM image_category
+                WHERE category_id NOT IN ({$userdata['forbidden_categories']})
+                    AND image_id {$userdata['image_access_type']} ({$userdata['image_access_list']});
+                SQL;
         [$userdata['nb_total_images']] = pwg_db_fetch_row(pwg_query($query));
         // now we update user cache categories
         $user_cache_cats = get_computed_categories($userdata, null);

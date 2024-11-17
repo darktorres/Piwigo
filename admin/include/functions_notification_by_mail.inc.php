@@ -34,7 +34,11 @@ function find_available_check_key(): string
 {
     while (true) {
         $key = generate_key(16);
-        $query = "SELECT COUNT(*) FROM user_mail_notification WHERE check_key = '{$key}';";
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM user_mail_notification
+            WHERE check_key = '{$key}';
+            SQL;
 
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
@@ -94,29 +98,44 @@ function get_user_notifications(
             $query_and_check_key = '';
         }
 
-        $query =
-        "SELECT N.user_id, N.check_key, U.{$conf['user_fields']['username']} AS username, U.{$conf['user_fields']['email']} AS mail_address,
-         N.enabled, N.last_send, UI.status FROM user_mail_notification AS N JOIN users AS U ON N.user_id = U.{$conf['user_fields']['id']}
-         JOIN user_infos AS UI ON UI.user_id = N.user_id WHERE 1 = 1";
+        $query = <<<SQL
+            SELECT n.user_id, n.check_key, u.{$conf['user_fields']['username']} AS username, u.{$conf['user_fields']['email']} AS mail_address,
+                n.enabled, n.last_send, ui.status
+            FROM user_mail_notification AS n
+            JOIN users AS u ON n.user_id = u.{$conf['user_fields']['id']}
+            JOIN user_infos AS ui ON ui.user_id = n.user_id
+            WHERE 1 = 1\n
+        SQL;
 
         if ($action === 'send') {
             // No mail empty and all users enabled
-            $query .= " AND N.enabled = 'true' AND U.{$conf['user_fields']['email']} IS NOT NULL";
+            $query .= <<<SQL
+                AND n.enabled = 'true'
+                AND u.{$conf['user_fields']['email']} IS NOT NULL\n
+                SQL;
         }
 
         $query .= $query_and_check_key;
 
         if ($enabled_filter_value != '') {
-            $enabled_filter_value_ = boolean_to_string($enabled_filter_value);
-            $query .= " AND N.enabled = '{$enabled_filter_value_}'";
+            $filter_value = boolean_to_string($enabled_filter_value);
+            $query .= <<<SQL
+                AND n.enabled = '{$filter_value}'\n
+                SQL;
         }
 
-        $query .= ' ORDER BY';
+        $query .= <<<SQL
+            ORDER BY\n
+            SQL;
 
         if ($action === 'send') {
-            $query .= ' last_send, username;';
+            $query .= <<<SQL
+                last_send, username\n
+                SQL;
         } else {
-            $query .= ' username';
+            $query .= <<<SQL
+                username\n
+                SQL;
         }
 
         $query .= ';';

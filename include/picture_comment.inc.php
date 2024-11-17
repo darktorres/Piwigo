@@ -70,7 +70,12 @@ if ($page['show_comments'] && isset($_POST['content'])) {
 if ($page['show_comments']) {
     $validated_clause = is_admin() ? '' : " AND validated = 'true'";
     // number of comments for this picture
-    $query = "SELECT COUNT(*) AS nb_comments FROM comments WHERE image_id = {$page['image_id']} {$validated_clause};";
+    $query = <<<SQL
+        SELECT COUNT(*) AS nb_comments
+        FROM comments
+        WHERE image_id = {$page['image_id']}
+            {$validated_clause};
+        SQL;
     $row = pwg_db_fetch_assoc(pwg_query($query));
     // navigation bar creation
     if (! isset($page['start'])) {
@@ -106,9 +111,16 @@ if ($page['show_comments']) {
             'COMMENTS_ORDER_TITLE' => $comments_order == 'ASC' ? l10n('Show latest comments first') : l10n('Show oldest comments first'),
         ]);
 
-        $query =
-        "SELECT com.id, com.author, com.author_id, u.{$conf['user_fields']['email']} AS user_email, com.date, com.image_id, com.website_url, com.email, com.content, com.validated FROM comments AS com
-         LEFT JOIN users AS u ON u.{$conf['user_fields']['id']} = author_id WHERE com.image_id = {$page['image_id']} {$validated_clause} ORDER BY com.date {$comments_order} LIMIT {$conf['nb_comment_page']} OFFSET {$page['start']};";
+        $query = <<<SQL
+            SELECT c.id, c.author, c.author_id, u.{$conf['user_fields']['email']} AS user_email, c.date,
+                c.image_id, c.website_url, c.email, c.content, c.validated
+            FROM comments AS c
+            LEFT JOIN users AS u ON u.{$conf['user_fields']['id']} = author_id
+            WHERE c.image_id = {$page['image_id']}
+                {$validated_clause}
+            ORDER BY c.date {$comments_order}
+            LIMIT {$conf['nb_comment_page']} OFFSET {$page['start']};
+            SQL;
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {

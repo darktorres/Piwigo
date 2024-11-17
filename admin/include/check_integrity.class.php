@@ -142,6 +142,7 @@ class check_integrity
                     'anomaly' => $c13y['anomaly'],
                     'show_ignore_msg' => false,
                     'show_correction_success_fct' => false,
+                    'correction_error_fct' => '',
                     'show_correction_fct' => false,
                     'show_correction_bad_fct' => false,
                     'correction_msg' => '',
@@ -234,8 +235,12 @@ class check_integrity
         $conf_c13y_ignore = [];
         $conf_c13y_ignore['version'] = PHPWG_VERSION;
         $conf_c13y_ignore['list'] = $conf_ignore_list;
-        $conf_c13y_ignore_ = serialize($conf_c13y_ignore);
-        $query = "UPDATE config SET value = '{$conf_c13y_ignore_}' WHERE param = 'c13y_ignore';";
+        $serialized_conf_c13y_ignore = serialize($conf_c13y_ignore);
+        $query = <<<SQL
+            UPDATE config
+            SET value = '{$serialized_conf_c13y_ignore}'
+            WHERE param = 'c13y_ignore';
+            SQL;
         pwg_query($query);
     }
 

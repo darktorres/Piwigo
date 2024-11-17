@@ -92,11 +92,11 @@ if (isset($_GET['change_theme'])) {
 }
 
 // +-----------------------------------------------------------------------+
-// | Synchronize user informations                                         |
+// | Synchronize user information                                          |
 // +-----------------------------------------------------------------------+
 
 // sync_user() is only useful when external authentication is activated
-if ($conf['external_authentification']) {
+if ($conf['external_authentication']) {
     sync_users();
 }
 
@@ -224,7 +224,12 @@ if ($conf['activate_comments']) {
     $template->assign('U_COMMENTS', $link_start . 'comments');
 
     // pending comments
-    $query = "SELECT COUNT(*) FROM comments WHERE validated = 'false';";
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM comments
+        WHERE validated = 'false';
+        SQL;
+
     [$nb_comments] = pwg_db_fetch_row(pwg_query($query));
 
     if ($nb_comments > 0) {
@@ -234,7 +239,12 @@ if ($conf['activate_comments']) {
 }
 
 // any photo in the caddie?
-$query = "SELECT COUNT(*) FROM caddie WHERE user_id = {$user['id']};";
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM caddie
+    WHERE user_id = {$user['id']};
+    SQL;
+
 [$nb_photos_in_caddie] = pwg_db_fetch_row(pwg_query($query));
 
 if ($nb_photos_in_caddie > 0) {

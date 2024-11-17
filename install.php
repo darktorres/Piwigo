@@ -96,28 +96,24 @@ require PHPWG_ROOT_PATH . 'admin/include/functions.php';
 require PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
 $languages = new languages('utf-8');
 
-// if (isset($_GET['language']))
-// {
-//   $language = strip_tags($_GET['language']);
+if (isset($_GET['language'])) {
+    $language = strip_tags((string) $_GET['language']);
 
-//   if (!in_array($language, array_keys($languages->fs_languages)))
-//   {
-//     $language = PHPWG_DEFAULT_LANGUAGE;
-//   }
-// }
-// else
-// {
-$language = 'en_UK';
-//   // Try to get browser language
-//   foreach ($languages->fs_languages as $language_code => $fs_language)
-//   {
-//     if (substr($language_code,0,2) == substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,2))
-//     {
-//       $language = $language_code;
-//       break;
-//     }
-//   }
-// }
+    if (! in_array($language, array_keys($languages->fs_languages))) {
+        $language = PHPWG_DEFAULT_LANGUAGE;
+    }
+} else {
+    $language = 'en_UK';
+    // Try to get browser language
+    // foreach ($languages->fs_languages as $language_code => $fs_language)
+    // {
+    //   if (substr($language_code,0,2) == substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,2))
+    //   {
+    //     $language = $language_code;
+    //     break;
+    //   }
+    // }
+}
 
 if ($language === 'fr_FR') {
     define('PHPWG_DOMAIN', 'fr.piwigo.org');
@@ -205,8 +201,9 @@ if (isset($_POST['install'])) {
         $step = 2;
 
         pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], '');
-        pwg_query("DROP DATABASE IF EXISTS {$dbname}");
-        pwg_query("CREATE DATABASE {$dbname}");
+        pwg_db_check_version();
+        pwg_query("DROP DATABASE IF EXISTS {$dbname};");
+        pwg_query("CREATE DATABASE {$dbname};");
 
         pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], $_POST['dbname']);
 
@@ -221,8 +218,13 @@ if (isset($_POST['install'])) {
             $dblayer
         );
 
-        $query =
-        "INSERT INTO config (param, value, comment) VALUES ('secret_key', md5(" . DB_RANDOM_FUNCTION . "), 'a secret key specific to the gallery for internal use');";
+        $random_function = pwg_db_cast_to_text(DB_RANDOM_FUNCTION);
+        $query = <<<SQL
+            INSERT INTO config
+                (param, value, comment)
+            VALUES
+                ('secret_key', md5({$random_function}), 'a secret key specific to the gallery for internal use');
+            SQL;
         pwg_query($query);
 
         conf_update_param('piwigo_db_version', get_branch_from_version(PHPWG_VERSION));
@@ -270,7 +272,7 @@ if (isset($_POST['install'])) {
         // Available upgrades must be ignored after a fresh installation. To
         // make PWG avoid upgrading, we must tell it upgrades have already been
         // made.
-        // list($dbnow) = pwg_db_fetch_row(pwg_query("SELECT NOW();"));
+        // list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
         // define('CURRENT_DATE', $dbnow);
         // $datas = array();
         // foreach (get_available_upgrade_ids() as $upgrade_id)
@@ -287,17 +289,21 @@ if (isset($_POST['install'])) {
         //   $datas
         //   );
 
-        $file_content = "<?php\n"
-        . "\$conf['dblayer'] = '{$dblayer}';\n"
-        . "\$conf['db_base'] = '{$dbname}';\n"
-        . "\$conf['db_user'] = '{$dbuser}';\n"
-        . "\$conf['db_password'] = '{$dbpasswd}';\n"
-        . "\$conf['db_host'] = '{$dbhost}';\n"
-        . "\n"
-        . "\n"
-        . "const PHPWG_INSTALLED = true;\n"
-        . "\n"
-        . '?>';
+        $file_content =
+          "<?php\n" .
+          "\$conf['dblayer'] = '{$dblayer}';\n" .
+          "\$conf['db_base'] = '{$dbname}';\n" .
+          "\$conf['db_user'] = '{$dbuser}';\n" .
+          "\$conf['db_password'] = '{$dbpasswd}';\n" .
+          "\$conf['db_host'] = '{$dbhost}';\n" .
+          "\n" .
+          "\n" .
+          "define('PHPWG_INSTALLED', true);\n" .
+          "define('PWG_CHARSET', 'utf-8');\n" .
+          "define('DB_CHARSET', 'utf8');\n" .
+          "define('DB_COLLATE', '');\n" .
+          "\n" .
+          '?>';
 
         umask(0111);
 

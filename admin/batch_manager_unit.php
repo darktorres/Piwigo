@@ -38,8 +38,12 @@ if (isset($_POST['submit'])) {
 
     $datas = [];
 
-    $collection_ = implode(',', $collection);
-    $query = "SELECT id, date_creation FROM images WHERE id IN ({$collection_});";
+    $imploded_collection = implode(',', $collection);
+    $query = <<<SQL
+        SELECT id, date_creation
+        FROM images
+        WHERE id IN ({$imploded_collection});
+        SQL;
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -139,7 +143,10 @@ if (count($page['cat_elements_id']) > 0) {
         $conf['order_by'] = ' ORDER BY file, id';
     }
 
-    $query = 'SELECT * FROM images';
+    $query = <<<SQL
+        SELECT *
+        FROM images\n
+        SQL;
 
     if ($is_category) {
         $category_info = get_cat_info($_SESSION['bulk_manager_filter']['category']);
@@ -149,17 +156,26 @@ if (count($page['cat_elements_id']) > 0) {
             $conf['order_by'] = ' ORDER BY ' . $category_info['image_order'];
         }
 
-        $query .= ' JOIN image_category ON id = image_id';
+        $query .= <<<SQL
+            JOIN image_category ON id = image_id\n
+            SQL;
     }
 
-    $cat_elements_ids_ = implode(',', $page['cat_elements_id']);
-    $query .= " WHERE id IN ({$cat_elements_ids_})";
+    $ids = implode(',', $page['cat_elements_id']);
+    $query .= <<<SQL
+        WHERE id IN ({$ids})\n
+        SQL;
 
     if ($is_category) {
-        $query .= " AND category_id = {$_SESSION['bulk_manager_filter']['category']}";
+        $query .= <<<SQL
+            AND category_id = {$_SESSION['bulk_manager_filter']['category']}\n
+            SQL;
     }
 
-    $query .= " {$conf['order_by']} LIMIT {$page['nb_images']} OFFSET {$page['start']};";
+    $query .= <<<SQL
+        {$conf['order_by']}
+        LIMIT {$page['nb_images']} OFFSET {$page['start']};
+        SQL;
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -167,7 +183,12 @@ if (count($page['cat_elements_id']) > 0) {
 
         $src_image = new SrcImage($row);
 
-        $query = "SELECT id, name FROM image_tag AS it JOIN tags AS t ON t.id = it.tag_id WHERE image_id = {$row['id']};";
+        $query = <<<SQL
+            SELECT id, name
+            FROM image_tag AS it
+            JOIN tags AS t ON t.id = it.tag_id
+            WHERE image_id = {$row['id']};
+            SQL;
         $tag_selection = get_taglist($query);
 
         $legend = render_element_name($row);

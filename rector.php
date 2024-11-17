@@ -12,8 +12,10 @@ return RectorConfig::configure()
     ])
     ->withSkip([
         __DIR__ . '/_data',
+        __DIR__ . '/galleries',
         __DIR__ . '/node_modules',
         __DIR__ . '/tests',
+        __DIR__ . '/themes/bootstrap_darkroom/node_modules',
         __DIR__ . '/vendor',
         EncapsedStringsToSprintfRector::class,
         RemoveExtraParametersRector::class,
@@ -28,5 +30,6 @@ return RectorConfig::configure()
         instanceOf: false,
         naming: false,
         privatization: false,
-        typeDeclarations: true
-    );
+        typeDeclarations: true,
+    )
+;

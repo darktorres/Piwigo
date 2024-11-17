@@ -68,7 +68,11 @@ $clear_skins = [
     'bootswatch-yeti',
 ];
 // Get value of bootstrap theme and set themeconf to clear or leave as default (dark)
-$closure = \Closure::bind(fn &(\BootstrapDarkroom\ThemeController $controller): \BootstrapDarkroom\Config => $controller->config, null, \BootstrapDarkroom\ThemeController::class);
+$closure = \Closure::bind(
+    fn &(\BootstrapDarkroom\ThemeController $controller): \BootstrapDarkroom\Config => $controller->config,
+    null,
+    \BootstrapDarkroom\ThemeController::class
+);
 
 $config = &$closure($controller);
 

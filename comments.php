@@ -123,14 +123,13 @@ if (isset($_GET['cat']) && $_GET['cat'] != 0) {
         $category_ids = [-1];
     }
 
-    $page['where_clauses'][] =
-      'category_id IN (' . implode(',', $category_ids) . ')';
+    $imploded_category_ids = implode(',', $category_ids);
+    $page['where_clauses'][] = "category_id IN ({$imploded_category_ids})";
 }
 
 // search a particular author
 if (! empty($_GET['author'])) {
-    $page['where_clauses'][] =
-      '(u.' . $conf['user_fields']['username'] . " = '" . $_GET['author'] . "' OR author = '" . $_GET['author'] . "')";
+    $page['where_clauses'][] = "(u.{$conf['user_fields']['username']} = '{$_GET['author']}' OR author = '{$_GET['author']}')";
 }
 
 // search a specific comment (if you're coming directly from an admin
@@ -281,14 +280,19 @@ $template->assign(
 // Search in a particular category
 $blockname = 'categories';
 
-$filters_and_forbidden = get_sql_condition_FandF(
+$sql_condition = get_sql_condition_FandF(
     [
         'forbidden_categories' => 'id',
         'visible_categories' => 'id',
     ],
     'WHERE'
 );
-$query = "SELECT id, name, uppercats, global_rank FROM categories {$filters_and_forbidden};";
+
+$query = <<<SQL
+    SELECT id, name, uppercats, global_rank
+    FROM categories
+    {$sql_condition};
+    SQL;
 display_select_cat_wrapper($query, [$_GET['cat']], $blockname, true);
 
 // Filter on recent comments...
@@ -333,13 +337,23 @@ $element_ids = [];
 $category_ids = [];
 
 // todo: replace SQL_CALC_FOUND_ROWS
-$where_clauses_ = implode(' AND ', $page['where_clauses']);
-$query =
-"SELECT SQL_CALC_FOUND_ROWS com.id AS comment_id, com.image_id, ic.category_id, com.author, com.author_id, u.{$conf['user_fields']['email']} AS user_email,
- com.email, com.date, com.website_url, com.content, com.validated FROM image_category AS ic INNER JOIN comments AS com ON ic.image_id = com.image_id
- LEFT JOIN users As u ON u.{$conf['user_fields']['id']} = com.author_id WHERE {$where_clauses_} GROUP BY comment_id ORDER BY {$page['sort_by']} {$page['sort_order']}";
+$where_clauses = implode(' AND ', $page['where_clauses']);
+$query = <<<SQL
+    SELECT SQL_CALC_FOUND_ROWS com.id AS comment_id, com.image_id, ic.category_id, com.author, com.author_id,
+        u.{$conf['user_fields']['email']} AS user_email, com.email, com.date, com.website_url, com.content,
+        com.validated
+    FROM image_category AS ic
+    INNER JOIN comments AS com ON ic.image_id = com.image_id
+    LEFT JOIN users As u ON u.{$conf['user_fields']['id']} = com.author_id
+    WHERE {$where_clauses}
+    GROUP BY comment_id
+    ORDER BY {$page['sort_by']} {$page['sort_order']}\n
+    SQL;
+
 if ($page['items_number'] != 'all') {
-    $query .= "\nLIMIT {$page['items_number']} OFFSET {$start}";
+    $query .= <<<SQL
+        LIMIT {$page['items_number']} OFFSET {$start}\n
+        SQL;
 }
 
 $query .= ';';
@@ -367,13 +381,21 @@ $template->assign('navbar', $navbar);
 
 if ($comments !== []) {
     // retrieving element informations
-    $element_ids_ = implode(',', $element_ids);
-    $query = "SELECT * FROM images WHERE id IN ({$element_ids_});";
+    $element_ids_str = implode(',', $element_ids);
+    $query = <<<SQL
+        SELECT *
+        FROM images
+        WHERE id IN ({$element_ids_str});
+        SQL;
     $elements = query2array($query, 'id');
 
     // retrieving category informations
-    $category_ids_ = implode(',', $category_ids);
-    $query = "SELECT id, name, permalink, uppercats FROM categories WHERE id IN ({$category_ids_});";
+    $category_ids_str = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT id, name, permalink, uppercats
+        FROM categories
+        WHERE id IN ({$category_ids_str});
+        SQL;
     $categories = query2array($query, 'id');
 
     foreach ($comments as $comment) {

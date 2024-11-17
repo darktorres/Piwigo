@@ -52,7 +52,10 @@ function ws_users_getList(
 
     $filtered_groups = [];
     if (! empty($params['filter'])) {
-        $filter_query = "SELECT id FROM groups_table WHERE name LIKE '%" . $params['filter'] . "%';";
+        $filter_query = <<<SQL
+            SELECT id FROM groups_table
+            WHERE name LIKE '%{$params['filter']}%';
+            SQL;
         $filtered_groups_res = pwg_query($filter_query);
         while ($row = pwg_db_fetch_assoc($filtered_groups_res)) {
             $filtered_groups[] = $row['id'];
@@ -91,7 +94,7 @@ function ws_users_getList(
     if (! empty($params['status'])) {
         $params['status'] = array_intersect($params['status'], get_enums('user_infos', 'status'));
         if ($params['status'] !== []) {
-            $where_clauses[] = 'ui.status IN("' . implode('","', $params['status']) . '")';
+            $where_clauses[] = 'ui.status IN ("' . implode('","', $params['status']) . '")';
         }
     }
 
@@ -112,11 +115,11 @@ function ws_users_getList(
     }
 
     if (! empty($params['group_id'])) {
-        $where_clauses[] = 'ug.group_id IN(' . implode(',', $params['group_id']) . ')';
+        $where_clauses[] = 'ug.group_id IN (' . implode(',', $params['group_id']) . ')';
     }
 
     if (! empty($params['exclude'])) {
-        $where_clauses[] = 'u.' . $conf['user_fields']['id'] . ' NOT IN(' . implode(',', $params['exclude']) . ')';
+        $where_clauses[] = 'u.' . $conf['user_fields']['id'] . ' NOT IN (' . implode(',', $params['exclude']) . ')';
     }
 
     $display = [
@@ -178,7 +181,9 @@ function ws_users_getList(
         $params['display'] = [];
     }
 
-    $query = 'SELECT DISTINCT ';
+    $query = <<<SQL
+        SELECT DISTINCT\n
+        SQL;
 
     // ADD SQL_CALC_FOUND_ROWS if display total_count is requested
     if (isset($params['display']['total_count'])) {
@@ -193,7 +198,7 @@ function ws_users_getList(
             $first = false;
         }
 
-        $query .= "{$field} AS {$name}";
+        $query .= "{$field} AS {$name}\n";
     }
 
     if (isset($display['ui.last_visit'])) {
@@ -204,15 +209,25 @@ function ws_users_getList(
         $query .= 'ui.last_visit_from_history AS last_visit_from_history';
     }
 
-    $where_clauses_ = implode(' AND ', $where_clauses);
-    $query .=
-    " FROM users AS u INNER JOIN user_infos AS ui ON u.{$conf['user_fields']['id']} = ui.user_id LEFT JOIN user_group AS ug ON u.{$conf['user_fields']['id']} = ug.user_id
-      WHERE {$where_clauses_} ORDER BY {$params['order']}";
+    $whereClause = implode(' AND ', $where_clauses);
+
+    $query .= <<<SQL
+        FROM users AS u
+        INNER JOIN user_infos AS ui ON u.{$conf['user_fields']['id']} = ui.user_id
+        LEFT JOIN user_group AS ug ON u.{$conf['user_fields']['id']} = ug.user_id
+        WHERE
+            {$whereClause}
+        ORDER BY {$params['order']}\n
+        SQL;
+
     if ($params['per_page'] != 0 || isset($params['display']) && $params['display'] !== []) {
-        $offset_ = ($params['per_page'] * $params['page']);
-        $query .= " LIMIT {$params['per_page']} OFFSET {$offset_};";
+        $offset = $params['per_page'] * $params['page'];
+        $query .= <<<SQL
+            LIMIT {$params['per_page']} OFFSET {$offset}\n
+            SQL;
     }
 
+    $query .= ';';
     $users = [];
     $result = pwg_query($query);
 
@@ -234,8 +249,12 @@ function ws_users_getList(
     $users_id_arr = [];
     if ($users !== []) {
         if (isset($params['display']['groups'])) {
-            $users_ = implode(',', array_keys($users));
-            $query = "SELECT user_id, group_id FROM user_group WHERE user_id IN ({$users_});";
+            $user_ids = implode(',', array_keys($users));
+            $query = <<<SQL
+                SELECT user_id, group_id
+                FROM user_group
+                WHERE user_id IN ({$user_ids});
+                SQL;
             $result = pwg_query($query);
             while ($row = pwg_db_fetch_assoc($result)) {
                 $users[$row['user_id']]['groups'][] = intval($row['group_id']);
@@ -432,7 +451,11 @@ function ws_users_delete(
 
     // an admin can't delete other admin/webmaster
     if ($user['status'] == 'admin') {
-        $query = "SELECT user_id FROM user_infos WHERE status IN ('webmaster', 'admin');";
+        $query = <<<SQL
+            SELECT user_id
+            FROM user_infos
+            WHERE status IN ('webmaster', 'admin');
+            SQL;
         $protected_users = array_merge($protected_users, query2array($query, null, 'user_id'));
     }
 
@@ -521,7 +544,11 @@ function ws_users_setInfo(
             if (! is_webmaster()) {
                 $password_protected_users = [$conf['guest_id']];
 
-                $query = "SELECT user_id FROM user_infos WHERE status IN ('webmaster', 'admin');";
+                $query = <<<SQL
+                    SELECT user_id
+                    FROM user_infos
+                    WHERE status IN ('webmaster', 'admin');
+                    SQL;
                 $admin_ids = query2array($query, null, 'user_id');
 
                 // we add all admin+webmaster users BUT the user herself
@@ -553,7 +580,11 @@ function ws_users_setInfo(
 
         // an admin can't change status of other admin/webmaster
         if ($user['status'] == 'admin') {
-            $query = "SELECT user_id FROM user_infos WHERE status IN ('webmaster', 'admin');";
+            $query = <<<SQL
+                SELECT user_id
+                FROM user_infos
+                WHERE status IN ('webmaster', 'admin');
+                SQL;
             $protected_users = array_merge($protected_users, query2array($query, null, 'user_id'));
         }
 
@@ -630,8 +661,12 @@ function ws_users_setInfo(
     }
 
     if (isset($update_status) && count($params['user_id_for_status']) > 0) {
-        $user_id_for_status_ = implode(',', $params['user_id_for_status']);
-        $query = "UPDATE user_infos SET status = '{$update_status}' WHERE user_id IN({$user_id_for_status_});";
+        $userIdsForStatus = implode(',', $params['user_id_for_status']);
+        $query = <<<SQL
+            UPDATE user_infos
+            SET status = "{$update_status}"
+            WHERE user_id IN ({$userIdsForStatus});
+            SQL;
         pwg_query($query);
 
         // we delete sessions, ie disconnect, for users if status becomes "guest".
@@ -664,13 +699,20 @@ function ws_users_setInfo(
 
     // manage association to groups
     if (! empty($params['group_id'])) {
-        $user_id_ = implode(',', $params['user_id']);
-        $query = "DELETE FROM user_group WHERE user_id IN ({$user_id_});";
+        $userIds = implode(',', $params['user_id']);
+        $query = <<<SQL
+            DELETE FROM user_group
+            WHERE user_id IN ({$userIds});
+            SQL;
         pwg_query($query);
 
         // we remove all provided groups that do not really exist
-        $group_id_ = implode(',', $params['group_id']);
-        $query = "SELECT id FROM groups_table WHERE id IN ({$group_id_});";
+        $groupIds = implode(',', $params['group_id']);
+        $query = <<<SQL
+            SELECT id
+            FROM groups_table
+            WHERE id IN ({$groupIds});
+            SQL;
         $group_ids = query2array($query, null, 'id');
 
         // if only -1 (a group id that can't exist) is in the list, then no
@@ -747,7 +789,11 @@ function ws_users_favorites_add(
     }
 
     // does the image really exist?
-    $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM images
+        WHERE id = {$params['image_id']};
+        SQL;
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
@@ -784,13 +830,21 @@ function ws_users_favorites_remove(
     }
 
     // does the image really exist?
-    $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM images
+        WHERE id = {$params['image_id']};
+        SQL;
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
 
-    $query = "DELETE FROM favorites WHERE user_id = {$user['id']} AND image_id = {$params['image_id']};";
+    $query = <<<SQL
+        DELETE FROM favorites
+        WHERE user_id = {$user['id']}
+            AND image_id = {$params['image_id']};
+        SQL;
 
     pwg_query($query);
 
@@ -820,13 +874,21 @@ function ws_users_favorites_getList(
     $order_by = ws_std_image_sql_order($params, 'i.');
     $order_by = $order_by === '' || $order_by === '0' ? $conf['order_by'] : 'ORDER BY ' . $order_by;
 
-    $filters_and_forbidden = get_sql_condition_FandF(
+    $sql_condition = get_sql_condition_FandF(
         [
             'visible_images' => 'id',
         ],
         'AND'
     );
-    $query = "SELECT i.* FROM favorites INNER JOIN images i ON image_id = i.id WHERE user_id = {$user['id']} {$filters_and_forbidden} {$order_by};";
+
+    $query = <<<SQL
+        SELECT i.*
+        FROM favorites
+        INNER JOIN images i ON image_id = i.id
+        WHERE user_id = {$user['id']}
+            {$sql_condition}
+        {$order_by};
+        SQL;
     $images = [];
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {

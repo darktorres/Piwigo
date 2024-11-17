@@ -90,7 +90,11 @@ $tabsheet->assign();
 $nb_total = 0;
 $nb_pending = 0;
 
-$query = 'SELECT COUNT(*) AS counter, validated FROM comments GROUP BY validated;';
+$query = <<<SQL
+    SELECT COUNT(*) AS counter, validated
+    FROM comments
+    GROUP BY validated;
+    SQL;
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     $nb_total += $row['counter'];
@@ -120,11 +124,17 @@ if ($page['filter'] == 'pending') {
     $where_clauses[] = "validated='false'";
 }
 
-$where_clauses_ = implode(' AND ', $where_clauses);
-$query =
-"SELECT c.id, c.image_id, c.date, c.author, {$conf['user_fields']['username']} AS username, c.content, i.path, i.representative_ext, validated, c.anonymous_id
- FROM comments AS c INNER JOIN images AS i ON i.id = c.image_id LEFT JOIN users AS u ON u.{$conf['user_fields']['id']} = c.author_id
- WHERE {$where_clauses_} ORDER BY c.date DESC LIMIT {$page['start']}, {$conf['comments_page_nb_comments']};";
+$where_clause = implode(' AND ', $where_clauses);
+$query = <<<SQL
+    SELECT c.id, c.image_id, c.date, c.author, {$conf['user_fields']['username']} AS username, c.content,
+        i.path, i.representative_ext, validated, c.anonymous_id
+    FROM comments AS c
+    INNER JOIN images AS i ON i.id = c.image_id
+    LEFT JOIN users AS u ON u.{$conf['user_fields']['id']} = c.author_id
+    WHERE {$where_clause}
+    ORDER BY c.date DESC
+    LIMIT {$page['start']}, {$conf['comments_page_nb_comments']};
+    SQL;
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
     $thumb = DerivativeImage::thumb_url(

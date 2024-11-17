@@ -91,8 +91,12 @@ if (isset($_POST['set_permalink']) && $_POST['cat_id'] > 0) {
     $selected_cat = [$_POST['cat_id']];
 } elseif (isset($_GET['delete_permanent'])) {
     check_pwg_token();
-    $delete_permanent_ = pwg_db_real_escape_string($_GET['delete_permanent']);
-    $query = "DELETE FROM old_permalinks WHERE permalink = '{$delete_permanent_}' LIMIT 1;";
+    $escaped_permalink = pwg_db_real_escape_string($_GET['delete_permanent']);
+    $query = <<<SQL
+        DELETE FROM old_permalinks
+        WHERE permalink = '{$escaped_permalink}'
+        LIMIT 1;
+        SQL;
     $result = pwg_query($query);
     if (pwg_db_changes() == 0) {
         $page['errors'][] = l10n('Cannot delete the old permalink !');
@@ -108,7 +112,11 @@ $template->set_filename('permalinks', 'permalinks.tpl');
 $page['tab'] = 'permalinks';
 require PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php';
 
-$query = "SELECT id, permalink, CONCAT(id, ' - ', name, IF(permalink IS NULL, '', ' &radic;')) AS name, uppercats, global_rank FROM categories";
+$query = <<<SQL
+    SELECT id, permalink, CONCAT(id, " - ", name, IF(permalink IS NULL, "", " &radic;")) AS name, uppercats, global_rank
+    FROM categories;
+    SQL;
+
 display_select_cat_wrapper($query, $selected_cat, 'categories', false);
 
 $pwg_token = get_pwg_token();
@@ -122,13 +130,16 @@ $sort_by = parse_sort_variables(
     'SORT_'
 );
 
-$query = 'SELECT id, permalink, uppercats, global_rank FROM categories WHERE permalink IS NOT NULL ';
+$query = <<<SQL
+    SELECT id, permalink, uppercats, global_rank
+    FROM categories
+    WHERE permalink IS NOT NULL\n
+    SQL;
 if ($sort_by[0] == 'id' || $sort_by[0] == 'permalink') {
     $query .= " ORDER BY {$sort_by[0]}";
 }
 
 $query .= ';';
-
 $categories = [];
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result)) {
@@ -154,11 +165,14 @@ $sort_by = parse_sort_variables(
 );
 
 $url_del_base = get_root_url() . 'admin.php?page=permalinks';
-$query = 'SELECT * FROM old_permalinks';
+$query = <<<SQL
+    SELECT * FROM old_permalinks\n
+    SQL;
 if ($sort_by !== []) {
-    $query .= ' ORDER BY ' . $sort_by[0];
+    $query .= " ORDER BY {$sort_by[0]}";
 }
 
+$query .= ';';
 $result = pwg_query($query);
 $deleted_permalinks = [];
 while ($row = pwg_db_fetch_assoc($result)) {

@@ -64,8 +64,12 @@ function ws_add_image_category_relations(
         );
     }
 
-    $cat_ids_ = implode(',', $cat_ids);
-    $query = "SELECT id FROM categories WHERE id IN ({$cat_ids_});";
+    $category_ids = implode(',', $cat_ids);
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id IN ({$category_ids});
+        SQL;
     $db_cat_ids = query2array($query, null, 'id');
 
     $unknown_cat_ids = array_diff($cat_ids, $db_cat_ids);
@@ -79,14 +83,22 @@ function ws_add_image_category_relations(
     $to_update_cat_ids = [];
 
     // in case of replace mode, we first check the existing associations
-    $query = "SELECT category_id FROM image_category WHERE image_id = {$image_id};";
+    $query = <<<SQL
+        SELECT category_id
+        FROM image_category
+        WHERE image_id = {$image_id};
+        SQL;
     $existing_cat_ids = query2array($query, null, 'category_id');
 
     if ($replace_mode) {
         $to_remove_cat_ids = array_diff($existing_cat_ids, $cat_ids);
         if ($to_remove_cat_ids !== []) {
-            $to_remove_cat_ids_ = implode(', ', $to_remove_cat_ids);
-            $query = "DELETE FROM image_category WHERE image_id = {$image_id} AND category_id IN ({$to_remove_cat_ids_});";
+            $category_ids_to_remove = implode(', ', $to_remove_cat_ids);
+            $query = <<<SQL
+                DELETE FROM image_category
+                WHERE image_id = {$image_id}
+                    AND category_id IN ({$category_ids_to_remove});
+                SQL;
             pwg_query($query);
             update_category($to_remove_cat_ids);
         }
@@ -98,8 +110,14 @@ function ws_add_image_category_relations(
     }
 
     if ($search_current_ranks) {
-        $new_cat_ids_ = implode(',', $new_cat_ids);
-        $query = "SELECT category_id, MAX(rank_column) AS max_rank FROM image_category WHERE rank_column IS NOT NULL AND category_id IN ({$new_cat_ids_}) GROUP BY category_id;";
+        $category_ids = implode(',', $new_cat_ids);
+        $query = <<<SQL
+            SELECT category_id, MAX(rank_column) AS max_rank
+            FROM image_category
+            WHERE rank_column IS NOT NULL
+                AND category_id IN ({$category_ids})
+            GROUP BY category_id;
+            SQL;
         $current_rank_of = query2array(
             $query,
             'category_id',
@@ -256,7 +274,7 @@ function ws_images_addComment(
     array $params,
     PwgServer &$service
 ): array|PwgError {
-    $filters_and_forbidden = get_sql_condition_FandF(
+    $sql_conditions = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'id',
             'visible_categories' => 'id',
@@ -264,7 +282,15 @@ function ws_images_addComment(
         ],
         ' AND'
     );
-    $query = "SELECT DISTINCT image_id FROM image_category INNER JOIN categories ON category_id = id WHERE commentable = 'true' AND image_id = {$params['image_id']} {$filters_and_forbidden};";
+
+    $query = <<<SQL
+        SELECT DISTINCT image_id
+        FROM image_category
+        INNER JOIN categories ON category_id=id
+        WHERE commentable = "true"
+            AND image_id = {$params['image_id']}
+        {$sql_conditions};
+        SQL;
 
     if (pwg_db_num_rows(pwg_query($query)) === 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid image_id');
@@ -314,13 +340,20 @@ function ws_images_getInfo(
 ): mixed {
     global $user, $conf;
 
-    $filters_and_forbidden = get_sql_condition_FandF(
+    $sql_conditions = get_sql_condition_FandF(
         [
             'visible_images' => 'id',
         ],
         ' AND'
     );
-    $query = "SELECT * FROM images WHERE id = {$params['image_id']} {$filters_and_forbidden} LIMIT 1;";
+
+    $query = <<<SQL
+        SELECT *
+        FROM images
+        WHERE id = {$params['image_id']}
+            {$sql_conditions}
+        LIMIT 1;
+        SQL;
     $result = pwg_query($query);
 
     if (pwg_db_num_rows($result) == 0) {
@@ -331,13 +364,20 @@ function ws_images_getInfo(
     $image_row = array_merge($image_row, ws_std_get_urls($image_row));
 
     //-------------------------------------------------------- related categories
-    $filters_and_forbidden = get_sql_condition_FandF(
+    $sql_conditions = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'category_id',
         ],
         ' AND'
     );
-    $query = "SELECT id, name, permalink, uppercats, global_rank, commentable FROM image_category INNER JOIN categories ON category_id = id WHERE image_id = {$image_row['id']} {$filters_and_forbidden};";
+
+    $query = <<<SQL
+        SELECT id, name, permalink, uppercats, global_rank, commentable
+        FROM image_category
+        INNER JOIN categories ON category_id = id
+        WHERE image_id = {$image_row['id']}
+            {$sql_conditions};
+        SQL;
     $result = pwg_query($query);
 
     $is_commentable = false;
@@ -403,7 +443,11 @@ function ws_images_getInfo(
         'average' => null,
     ];
     if (isset($rating['score'])) {
-        $query = "SELECT COUNT(rate) AS count, ROUND(AVG(rate), 2) AS average FROM rate WHERE element_id = {$image_row['id']};";
+        $query = <<<SQL
+            SELECT COUNT(rate) AS count, ROUND(AVG(rate), 2) AS average
+            FROM rate
+            WHERE element_id = {$image_row['id']};
+            SQL;
         $row = pwg_db_fetch_assoc(pwg_query($query));
 
         $rating['score'] = (float) $rating['score'];
@@ -419,13 +463,23 @@ function ws_images_getInfo(
         $where_comments .= " AND validated = 'true'";
     }
 
-    $query = "SELECT COUNT(id) AS nb_comments FROM comments WHERE {$where_comments};";
+    $query = <<<SQL
+        SELECT COUNT(id) AS nb_comments
+        FROM comments
+        WHERE {$where_comments};
+        SQL;
     [$nb_comments] = query2array($query, null, 'nb_comments');
     $nb_comments = (int) $nb_comments;
 
     if ($nb_comments > 0 && $params['comments_per_page'] > 0) {
-        $offset_ = $params['comments_per_page'] * $params['comments_page'];
-        $query = "SELECT id, date, author, content FROM comments WHERE {$where_comments} ORDER BY date LIMIT {$params['comments_per_page']} OFFSET {$offset_};";
+        $offset = $params['comments_per_page'] * $params['comments_page'];
+        $query = <<<SQL
+            SELECT id, date, author, content
+            FROM comments
+            WHERE {$where_comments}
+            ORDER BY date
+            LIMIT {$params['comments_per_page']} OFFSET {$offset};
+            SQL;
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -506,14 +560,22 @@ function ws_images_rate(
     array $params,
     PwgServer &$service
 ): array|PwgError {
-    $filters_and_forbidden = get_sql_condition_FandF(
+    $sql_conditions = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'category_id',
             'forbidden_images' => 'id',
         ],
         ' AND'
     );
-    $query = "SELECT DISTINCT id FROM images INNER JOIN image_category ON id = image_id WHERE id = {$params['image_id']} {$filters_and_forbidden} LIMIT 1;";
+
+    $query = <<<SQL
+        SELECT DISTINCT id
+        FROM images
+        INNER JOIN image_category ON id = image_id
+        WHERE id = {$params['image_id']}
+            {$sql_conditions}
+        LIMIT 1;
+        SQL;
     if (pwg_db_num_rows(pwg_query($query)) == 0) {
         return new PwgError(404, 'Invalid image_id or access denied');
     }
@@ -570,8 +632,12 @@ function ws_images_search(
     );
 
     if ($image_ids !== []) {
-        $image_ids_ = implode(',', $image_ids);
-        $query = "SELECT * FROM images WHERE id IN ({$image_ids_});";
+        $image_ids_list = implode(',', $image_ids);
+        $query = <<<SQL
+            SELECT *
+            FROM images
+            WHERE id IN ({$image_ids_list});
+            SQL;
         $result = pwg_query($query);
         $image_ids = array_flip($image_ids);
         $favorite_ids = get_user_favorites();
@@ -772,8 +838,12 @@ function ws_images_setPrivacyLevel(
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid level');
     }
 
-    $image_id_ = implode(',', $params['image_id']);
-    $query = "UPDATE images SET level = {$params['level']} WHERE id IN ({$image_id_});";
+    $image_ids_list = implode(',', $params['image_id']);
+    $query = <<<SQL
+        UPDATE images
+        SET level = {$params['level']}
+        WHERE id IN ({$image_ids_list});
+        SQL;
     $result = pwg_query($query);
 
     pwg_activity('photo', $params['image_id'], 'edit');
@@ -807,7 +877,12 @@ function ws_images_setRank(
             $params['image_id']
         );
 
-        $query = "SELECT image_id FROM image_category WHERE category_id = {$params['category_id']} ORDER BY rank_column ASC;";
+        $query = <<<SQL
+            SELECT image_id
+            FROM image_category
+            WHERE category_id = {$params['category_id']}
+            ORDER BY rank_column ASC;
+            SQL;
         $image_ids = query2array($query, null, 'image_id');
 
         // return data for client
@@ -825,21 +900,34 @@ function ws_images_setRank(
     }
 
     // does the image really exist?
-    $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM images
+        WHERE id = {$params['image_id']};
+        SQL;
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
 
     // is the image associated to this category?
-    $query = "SELECT COUNT(*) FROM image_category WHERE image_id = {$params['image_id']} AND category_id = {$params['category_id']};";
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM image_category
+        WHERE image_id = {$params['image_id']}
+            AND category_id = {$params['category_id']};
+        SQL;
     [$count] = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'This image is not associated to this category');
     }
 
     // what is the current higher rank for this category?
-    $query = "SELECT MAX(rank_column) AS max_rank FROM image_category WHERE category_id = {$params['category_id']};";
+    $query = <<<SQL
+        SELECT MAX(rank_column) AS max_rank
+        FROM image_category
+        WHERE category_id = {$params['category_id']};
+        SQL;
     $row = pwg_db_fetch_assoc(pwg_query($query));
 
     if (is_numeric($row['max_rank'])) {
@@ -851,11 +939,22 @@ function ws_images_setRank(
     }
 
     // update rank for all other photos in the same category
-    $query = "UPDATE image_category SET rank_column = rank_column + 1 WHERE category_id = {$params['category_id']} AND rank_column IS NOT NULL AND rank_column >= {$params['rank_column']};";
+    $query = <<<SQL
+        UPDATE image_category
+        SET rank_column = rank_column + 1
+        WHERE category_id = {$params['category_id']}
+            AND rank_column IS NOT NULL
+            AND rank_column >= {$params['rank_column']};
+        SQL;
     pwg_query($query);
 
     // set the new rank for the photo
-    $query = "UPDATE image_category SET rank_column = {$params['rank_column']} WHERE image_id = {$params['image_id']} AND category_id = {$params['category_id']};";
+    $query = <<<SQL
+        UPDATE image_category
+        SET rank_column = {$params['rank_column']}
+        WHERE image_id = {$params['image_id']}
+            AND category_id = {$params['category_id']};
+        SQL;
     pwg_query($query);
 
     // return data for client
@@ -941,7 +1040,11 @@ function ws_images_addFile(
     $logger->debug(__FUNCTION__, $params);
 
     // what is the path and other infos about the photo?
-    $query = "SELECT path, file, md5sum, width, height, filesize FROM images WHERE id = {$params['image_id']};";
+    $query = <<<SQL
+        SELECT path, file, md5sum, width, height, filesize
+        FROM images
+        WHERE id = {$params['image_id']};
+        SQL;
     $result = pwg_query($query);
 
     if (pwg_db_num_rows($result) == 0) {
@@ -1031,7 +1134,11 @@ function ws_images_add(
     }
 
     if ($params['image_id'] > 0) {
-        $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM images
+            WHERE id = {$params['image_id']};
+            SQL;
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return new PwgError(404, 'image_id not found');
@@ -1048,7 +1155,11 @@ function ws_images_add(
             $where_clause = "file = '{$params['original_filename']}'";
         }
 
-        $query = "SELECT COUNT(*) FROM images WHERE {$where_clause};";
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM images
+            WHERE {$where_clause};
+            SQL;
         [$counter] = pwg_db_fetch_row(pwg_query($query));
         if ($counter != 0) {
             return new PwgError(500, 'file already exists');
@@ -1119,7 +1230,11 @@ function ws_images_add(
         if (preg_match('/^\d+/', (string) $params['categories'], $matches)) {
             $category_id = $matches[0];
 
-            $query = "SELECT id, name, permalink FROM categories WHERE id = {$category_id};";
+            $query = <<<SQL
+                SELECT id, name, permalink
+                FROM categories
+                WHERE id = {$category_id};
+                SQL;
             $result = pwg_query($query);
             $category = pwg_db_fetch_assoc($result);
 
@@ -1184,7 +1299,11 @@ function ws_images_addSimple(
     }
 
     if ($params['image_id'] > 0) {
-        $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM images
+            WHERE id = {$params['image_id']};
+            SQL;
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return new PwgError(404, 'image_id not found');
@@ -1247,7 +1366,11 @@ function ws_images_addSimple(
     ];
 
     if (! empty($params['category'])) {
-        $query = "SELECT id, name, permalink FROM categories WHERE id = {$params['category'][0]};";
+        $query = <<<SQL
+            SELECT id, name, permalink
+            FROM categories
+            WHERE id = {$params['category'][0]};
+            SQL;
         $result = pwg_query($query);
         $category = pwg_db_fetch_assoc($result);
 
@@ -1378,7 +1501,11 @@ function ws_images_upload(
         require_once PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php';
 
         if (isset($params['format_of'])) {
-            $query = "SELECT * FROM images WHERE id = {$params['format_of']};";
+            $query = <<<SQL
+                SELECT *
+                FROM images
+                WHERE id = {$params['format_of']};
+                SQL;
             $images = query2array($query);
             if (count($images) == 0) {
                 return new PwgError(404, __FUNCTION__ . ' : image_id not found');
@@ -1404,13 +1531,25 @@ function ws_images_upload(
             null // image_id = not provided, this is a new photo
         );
 
-        $query = "SELECT id, name, representative_ext, path FROM images WHERE id = {$image_id};";
+        $query = <<<SQL
+            SELECT id, name, representative_ext, path
+            FROM images
+            WHERE id = {$image_id};
+            SQL;
         $image_infos = pwg_db_fetch_assoc(pwg_query($query));
 
-        $query = "SELECT COUNT(*) AS nb_photos FROM image_category WHERE category_id = {$params['category'][0]};";
+        $query = <<<SQL
+            SELECT COUNT(*) AS nb_photos
+            FROM image_category
+            WHERE category_id = {$params['category'][0]};
+            SQL;
         $category_infos = pwg_db_fetch_assoc(pwg_query($query));
 
-        $query = "SELECT COUNT(*) FROM lounge WHERE category_id = {$params['category'][0]};";
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM lounge
+            WHERE category_id = {$params['category'][0]};
+            SQL;
         [$nb_photos_lounge] = pwg_db_fetch_row(pwg_query($query));
 
         $category_name = get_cat_display_name_from_id($params['category'][0], null);
@@ -1467,7 +1606,11 @@ function ws_images_uploadAsync(
     }
 
     if ($params['image_id'] > 0) {
-        $query = "SELECT COUNT(*) FROM images WHERE id = {$params['image_id']};";
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM images
+            WHERE id = {$params['image_id']};
+            SQL;
         [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return new PwgError(404, __FUNCTION__ . ' : image_id not found');
@@ -1714,8 +1857,13 @@ function ws_images_exist(
             PREG_SPLIT_NO_EMPTY
         );
 
-        $md5sums_ = implode("','", $md5sums);
-        $query = "SELECT id, md5sum FROM images WHERE md5sum IN ('{$md5sums_}');";
+        $md5sum_list = implode("','", $md5sums);
+        $query = <<<SQL
+            SELECT id, md5sum
+            FROM images
+            WHERE md5sum IN ('{$md5sum_list}');
+            SQL;
+
         $id_of_md5 = query2array($query, 'md5sum', 'id');
 
         foreach ($md5sums as $md5sum) {
@@ -1734,8 +1882,13 @@ function ws_images_exist(
             PREG_SPLIT_NO_EMPTY
         );
 
-        $filenames_ = implode("','", $filenames);
-        $query = "SELECT id, file FROM images WHERE file IN ('{$filenames_}');";
+        $filename_list = implode("','", $filenames);
+        $query = <<<SQL
+            SELECT id, file
+            FROM images
+            WHERE file IN ('{$filename_list}');
+            SQL;
+
         $id_of_filename = query2array($query, 'file', 'id');
 
         foreach ($filenames as $filename) {
@@ -1770,7 +1923,11 @@ function ws_images_formats_searchImage(
 
     $unique_filenames_db = [];
 
-    $query = 'SELECT id, file FROM images;';
+    $query = <<<SQL
+        SELECT id, file
+        FROM images;
+        SQL;
+
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $filename_wo_ext = get_filename_wo_extension($row['file']);
@@ -1862,8 +2019,12 @@ function ws_images_formats_delete(
     //Delete physical file
     $ok = true;
 
-    $format_ids_ = implode(',', $format_ids);
-    $query = "SELECT image_id, ext FROM image_format WHERE format_id IN ({$format_ids_});";
+    $format_id_list = implode(',', $format_ids);
+    $query = <<<SQL
+        SELECT image_id, ext
+        FROM image_format
+        WHERE format_id IN ({$format_id_list});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
 
@@ -1879,8 +2040,13 @@ function ws_images_formats_delete(
         return new PwgError(404, 'No format found for the id(s) given');
     }
 
-    $image_ids_ = implode(',', $image_ids);
-    $query = "SELECT id, path, representative_ext FROM images WHERE id IN ({$image_ids_});";
+    $image_id_list = implode(',', $image_ids);
+    $query = <<<SQL
+        SELECT id, path, representative_ext
+        FROM images
+        WHERE id IN ({$image_id_list});
+        SQL;
+
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         if (url_is_remote($row['path'])) {
@@ -1906,8 +2072,12 @@ function ws_images_formats_delete(
     }
 
     //Delete format in the database
-    $format_ids_ = implode(',', $format_ids);
-    $query = "DELETE FROM image_format WHERE format_id IN ({$format_ids_});";
+    $format_id_list = implode(',', $format_ids);
+    $query = <<<SQL
+        DELETE FROM image_format
+        WHERE format_id IN ({$format_id_list});
+        SQL;
+
     pwg_query($query);
 
     invalidate_user_cache();
@@ -1930,7 +2100,12 @@ function ws_images_checkFiles(
 
     $logger->debug(__FUNCTION__, $params);
 
-    $query = "SELECT path FROM images WHERE id = {$params['image_id']};";
+    $query = <<<SQL
+        SELECT path
+        FROM images
+        WHERE id = {$params['image_id']};
+        SQL;
+
     $result = pwg_query($query);
 
     if (pwg_db_num_rows($result) == 0) {
@@ -1993,7 +2168,12 @@ function ws_images_setInfo(
 
     require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
-    $query = "SELECT * FROM images WHERE id = {$params['image_id']};";
+    $query = <<<SQL
+        SELECT *
+        FROM images
+        WHERE id = {$params['image_id']};
+        SQL;
+
     $result = pwg_query($query);
 
     if (pwg_db_num_rows($result) == 0) {
@@ -2223,7 +2403,12 @@ function ws_images_uploadCompleted(
     // $image_ids (can be a subset or more image_ids from another upload too)
     $moved_from_lounge = empty_lounge();
 
-    $query = "SELECT COUNT(*) AS nb_photos FROM image_category WHERE category_id = {$params['category_id']};";
+    $query = <<<SQL
+        SELECT COUNT(*) AS nb_photos
+        FROM image_category
+        WHERE category_id = {$params['category_id']};
+        SQL;
+
     $category_infos = pwg_db_fetch_assoc(pwg_query($query));
     $category_name = get_cat_display_name_from_id($params['category_id'], null);
 
@@ -2285,8 +2470,12 @@ function ws_images_syncMetadata(
         return new PwgError(403, 'Invalid security token');
     }
 
-    $image_id_ = implode(', ', $params['image_id']);
-    $query = "SELECT id FROM images WHERE id IN ({$image_id_});";
+    $image_ids = implode(', ', $params['image_id']);
+    $query = <<<SQL
+        SELECT id
+        FROM images
+        WHERE id IN ({$image_ids});
+        SQL;
     $params['image_id'] = query2array($query, null, 'id');
 
     if (empty($params['image_id'])) {
@@ -2345,7 +2534,12 @@ function ws_images_setCategory(array $params, $service): ?\PwgError
     }
 
     // does the category really exist?
-    $query = "SELECT id FROM categories WHERE id = {$params['category_id']};";
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id = {$params['category_id']};
+        SQL;
+
     $categories = query2array($query);
 
     if (count($categories) == 0) {

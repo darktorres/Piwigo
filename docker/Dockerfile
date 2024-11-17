@@ -67,7 +67,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | b
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /root/.bashrc && \
     echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> /root/.bashrc
 
-# Add node and npm to the PATH
+# Add Node.js and NPM to the PATH
 ENV PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"
 
 # Append custom MySQL configuration

@@ -53,7 +53,11 @@ $relevant_parameters = [
     'list', /* <=> Random */
     'tags',
 ];
-$query = 'SELECT permalink FROM categories WHERE permalink IS NOT NULL';
+$query = <<<SQL
+    SELECT permalink
+    FROM categories
+    WHERE permalink IS NOT NULL;
+    SQL;
 
 /* Add active permalinks */
 $permalinks = query2array($query, null, 'permalink');
@@ -136,7 +140,11 @@ if (isset($_POST['submit'])) {
     $conf['extents_for_templates'] = serialize($replacements);
     $tpl_extension = $replacements;
     /* ecrire la nouvelle conf */
-    $query = "UPDATE config SET value = '{$conf['extents_for_templates']}' WHERE param = 'extents_for_templates';";
+    $query = <<<SQL
+        UPDATE config
+        SET value = '{$conf['extents_for_templates']}'
+        WHERE param = 'extents_for_templates';
+        SQL;
     if (pwg_query($query) !== null) {
         $page['infos'][] = l10n('Templates configuration has been recorded.');
     }

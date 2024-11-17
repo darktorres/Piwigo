@@ -258,8 +258,12 @@ if (isset($_POST['submit'])) {
                     $value = strip_tags((string) $value);
                 }
 
-                $value_ = str_replace("\'", "''", $value);
-                $query = "UPDATE config SET value = '{$value_}' WHERE param = '{$row['param']}';";
+                $escaped_value = str_replace("\'", "''", $value);
+                $query = <<<SQL
+                    UPDATE config
+                    SET value = '{$escaped_value}'
+                    WHERE param = '{$row['param']}';
+                    SQL;
                 pwg_query($query);
             }
         }
@@ -277,7 +281,10 @@ if (isset($_POST['submit'])) {
 // restore default derivatives settings
 if ($page['section'] == 'sizes' && isset($_GET['action']) && $_GET['action'] == 'restore_settings') {
     ImageStdParams::set_and_save(ImageStdParams::get_default_sizes());
-    pwg_query("DELETE FROM config WHERE param = 'disabled_derivatives';");
+    $query = <<<SQL
+        DELETE FROM config WHERE param = 'disabled_derivatives';
+        SQL;
+    pwg_query($query);
     clear_derivative_cache();
 
     $page['infos'][] = l10n('Your configuration settings are saved');
@@ -362,7 +369,10 @@ switch ($page['section']) {
         );
 
         // list of groups
-        $query = 'SELECT id, name FROM groups_table;';
+        $query = <<<SQL
+            SELECT id, name
+            FROM groups_table;
+            SQL;
         $groups = query2array($query, 'id', 'name');
         natcasesort($groups);
 

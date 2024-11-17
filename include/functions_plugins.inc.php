@@ -293,7 +293,6 @@ function get_db_plugins(
     string|null $state = '',
     string $id = ''
 ): array {
-    $query = 'SELECT * FROM plugins';
     $clauses = [];
     if ($state !== null && $state !== '' && $state !== '0') {
         $clauses[] = "state = '{$state}'";
@@ -303,9 +302,15 @@ function get_db_plugins(
         $clauses[] = "id = '{$id}'";
     }
 
+    $where_clause = '';
     if ($clauses !== []) {
-        $query .= ' WHERE ' . implode(' AND ', $clauses);
+        $where_clause = 'WHERE ' . implode(' AND ', $clauses);
     }
+
+    $query = <<<SQL
+        SELECT * FROM plugins
+        {$where_clause};
+        SQL;
 
     return query2array($query);
 }
@@ -388,7 +393,11 @@ function autoupdate_plugin(
         // update database (only on production). We want to avoid registering an "auto" to "auto" update,
         // which happens for each "version=auto" plugin on each page load.
         if ($new_version != $old_version) {
-            $query = "UPDATE plugins SET version = '{$plugin['version']}' WHERE id = '{$plugin['id']}';";
+            $query = <<<SQL
+                UPDATE plugins
+                SET version = "{$plugin['version']}"
+                WHERE id = "{$plugin['id']}";
+                SQL;
             pwg_query($query);
 
             pwg_activity('system', ACTIVITY_SYSTEM_PLUGIN, 'autoupdate', [

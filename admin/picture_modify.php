@@ -31,7 +31,11 @@ if (! isset($page['image'])) {
 }
 
 // represent
-$query = "SELECT id FROM categories WHERE representative_picture_id = {$_GET['image_id']};";
+$query = <<<SQL
+    SELECT id
+    FROM categories
+    WHERE representative_picture_id = {$_GET['image_id']};
+    SQL;
 $represented_albums = query2array($query, null, 'id');
 
 // +-----------------------------------------------------------------------+
@@ -60,7 +64,11 @@ if (isset($_GET['delete'])) {
         );
     }
 
-    $query = "SELECT category_id FROM image_category WHERE image_id = {$_GET['image_id']};";
+    $query = <<<SQL
+        SELECT category_id
+        FROM image_category
+        WHERE image_id = {$_GET['image_id']};
+        SQL;
 
     $authorizeds = array_diff(
         query2array($query, null, 'category_id'),
@@ -145,8 +153,12 @@ if (isset($_POST['submit'])) {
 
     $new_thumbnail_for = array_diff($_POST['represent'], $represented_albums);
     if ($new_thumbnail_for !== []) {
-        $new_thumbnail_for_ = implode(',', $new_thumbnail_for);
-        $query = "UPDATE categories SET representative_picture_id = {$_GET['image_id']} WHERE id IN ({$new_thumbnail_for_});";
+        $image_ids = implode(',', $new_thumbnail_for);
+        $query = <<<SQL
+            UPDATE categories
+            SET representative_picture_id = {$_GET['image_id']}
+            WHERE id IN ({$image_ids});
+            SQL;
         pwg_query($query);
     }
 
@@ -160,7 +172,12 @@ if (isset($_POST['submit'])) {
 }
 
 // tags
-$query = "SELECT id, name FROM image_tag AS it JOIN tags AS t ON t.id = it.tag_id WHERE image_id = {$_GET['image_id']};";
+$query = <<<SQL
+    SELECT id, name
+    FROM image_tag AS it
+    JOIN tags AS t ON t.id = it.tag_id
+    WHERE image_id = {$_GET['image_id']};
+    SQL;
 $tag_selection = get_taglist($query);
 
 $row = $page['image'];
@@ -242,7 +259,11 @@ $template->assign(
 );
 
 $added_by = 'N/A';
-$query = "SELECT {$conf['user_fields']['username']} AS username FROM users WHERE {$conf['user_fields']['id']} = {$row['added_by']};";
+$query = <<<SQL
+    SELECT {$conf['user_fields']['username']} AS username
+    FROM users
+    WHERE {$conf['user_fields']['id']} = {$row['added_by']};
+    SQL;
 $result = pwg_query($query);
 while ($user_row = pwg_db_fetch_assoc($result)) {
     $row['added_by'] = $user_row['username'];
@@ -263,13 +284,21 @@ $intro_vars = [
 ];
 
 if ($conf['rate'] && ! empty($row['rating_score'])) {
-    $query = "SELECT COUNT(*) FROM rate WHERE element_id = {$_GET['image_id']};";
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM rate
+        WHERE element_id = {$_GET['image_id']};
+        SQL;
     [$row['nb_rates']] = pwg_db_fetch_row(pwg_query($query));
 
     $intro_vars['stats'] .= ', ' . sprintf(l10n('Rated %d times, score : %.2f'), $row['nb_rates'], $row['rating_score']);
 }
 
-$query = "SELECT * FROM image_format WHERE image_id = {$row['id']};";
+$query = <<<SQL
+    SELECT *
+    FROM image_format
+    WHERE image_id = {$row['id']};
+    SQL;
 $formats = query2array($query);
 
 if ($formats !== []) {
@@ -298,7 +327,12 @@ $template->assign(
 );
 
 // categories
-$query = "SELECT category_id, uppercats, dir FROM image_category AS ic INNER JOIN categories AS c ON c.id = ic.category_id WHERE image_id = {$_GET['image_id']};";
+$query = <<<SQL
+    SELECT category_id, uppercats, dir
+    FROM image_category AS ic
+    INNER JOIN categories AS c ON c.id = ic.category_id
+    WHERE image_id = {$_GET['image_id']};
+SQL;
 $result = pwg_query($query);
 
 $related_categories = [];
@@ -334,7 +368,11 @@ $template->assign('related_categories_ids', $related_categories_ids);
 // 4. if no category reachable, no jumpto link
 // 5. if level is too high for current user, no jumpto link
 
-$query = "SELECT category_id FROM image_category WHERE image_id = {$_GET['image_id']};";
+$query = <<<SQL
+    SELECT category_id
+    FROM image_category
+    WHERE image_id = {$_GET['image_id']};
+    SQL;
 
 $authorizeds = array_diff(
     query2array($query, null, 'category_id'),
@@ -370,7 +408,12 @@ if (isset($url_img) && $user['level'] >= $page['image']['level']) {
 }
 
 // associate to albums
-$query = "SELECT id FROM categories INNER JOIN image_category ON id = category_id WHERE image_id = {$_GET['image_id']};";
+$query = <<<SQL
+    SELECT id
+    FROM categories
+    INNER JOIN image_category ON id = category_id
+    WHERE image_id = {$_GET['image_id']};
+    SQL;
 $associated_albums = query2array($query, null, 'id');
 
 $template->assign([

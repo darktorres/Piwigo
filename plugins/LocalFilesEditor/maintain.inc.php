@@ -26,6 +26,10 @@ declare(strict_types=1);
 
 function plugin_uninstall(): void
 {
-    $query = "DELETE FROM config WHERE param = 'LocalFilesEditor' LIMIT 1;";
+    $query = <<<SQL
+        DELETE FROM config
+        WHERE param = 'LocalFilesEditor'
+        LIMIT 1;
+        SQL;
     pwg_query($query);
 }
