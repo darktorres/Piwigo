@@ -282,17 +282,17 @@ $(document).ready(function () {
         setDisplayLine();
     }
 
-    $("#displayClassic").change(function () {
+    $("#displayClassic").on("change", function () {
         setDisplayClassic();
         set_view_selector("classic");
     });
 
-    $("#displayCompact").change(function () {
+    $("#displayCompact").on("change", function () {
         setDisplayCompact();
         set_view_selector("compact");
     });
 
-    $("#displayLine").change(function () {
+    $("#displayLine").on("change", function () {
         setDisplayLine();
         set_view_selector("line");
     });
@@ -354,7 +354,7 @@ $(document).ready(function () {
      * Activate / Deactivate
      */
     if (isWebmaster != 0) {
-        $(".switch").change(function () {
+        $(".switch").on("change", function () {
             $(".pluginMiniBox").addClass("usable");
 
             if ($(this).find("#toggleSelectionMode").is(":checked")) {
@@ -634,12 +634,12 @@ jQuery(document).ready(function () {
         }
 
         let myplugin = jQuery(this);
-        myplugin.find(".showOptions").click(function () {
+        myplugin.find(".showOptions").on("click", function () {
             myplugin.find(".PluginOptionsBlock").toggle();
         });
     });
 
-    jQuery("div.deactivate_all a").click(function () {
+    jQuery("div.deactivate_all a").on("click", function () {
         $.confirm({
             title: deactivate_all_msg,
             buttons: {
@@ -853,7 +853,7 @@ jQuery(document).ready(function () {
     }
 });
 
-$(document).mouseup(function (e) {
+$(document).on("mouseup", function (e) {
     e.stopPropagation();
     $(".pluginBox").each(function () {
         if ($(this).find(".showOptions").has(e.target).length === 0) {

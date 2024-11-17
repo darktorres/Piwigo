@@ -334,7 +334,7 @@ jQuery.fn.pwg_jconfirm_follow_href = function ({
         alert_content === ""
             ? jConfirm_confirm_options
             : jConfirm_confirm_with_content_options;
-    $(this).click(function () {
+    $(this).on("click", function () {
         $.confirm({
             content: alert_content,
             title: alert_title,

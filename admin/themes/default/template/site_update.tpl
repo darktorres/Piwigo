@@ -1,5 +1,5 @@
 {footer_script}<script>
-  $('#syncFiles label').click(function() {
+  $('#syncFiles label').on("click", function() {
     if ($("input[value='files']:checked").val()) {
       $("input[value='files']").closest("li").find("ul").show();
     } else {

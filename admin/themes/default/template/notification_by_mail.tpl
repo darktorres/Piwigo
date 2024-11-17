@@ -2,12 +2,12 @@
 {footer_script}<script>
   jQuery(document).ready(function() {
 
-    jQuery("#checkAllLink").click(function() {
+    jQuery("#checkAllLink").on("click", function() {
       jQuery("#notification_by_mail input[type=checkbox]").prop('checked', true);
       return false;
     });
 
-    jQuery("#uncheckAllLink").click(function() {
+    jQuery("#uncheckAllLink").on("click", function() {
       jQuery("#notification_by_mail input[type=checkbox]").prop('checked', false);
       return false;
     });

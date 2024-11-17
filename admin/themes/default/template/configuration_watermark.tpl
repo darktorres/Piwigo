@@ -13,13 +13,13 @@
 
     onWatermarkChange();
 
-    jQuery("#wSelect").bind("change", onWatermarkChange);
+    jQuery("#wSelect").on("change", onWatermarkChange);
 
     if (jQuery("input[name='w[position]']:checked").val() == 'custom') {
       jQuery("#positionCustomDetails").show();
     }
 
-    jQuery("input[name='w[position]']").change(function() {
+    jQuery("input[name='w[position]']").on("change", function() {
       if (jQuery(this).val() == 'custom') {
         jQuery("#positionCustomDetails").show();
       } else {
@@ -27,7 +27,7 @@
       }
     });
 
-    jQuery(".addWatermarkOpen").click(function() {
+    jQuery(".addWatermarkOpen").on("click", function() {
       jQuery("#addWatermark, #selectWatermark").toggle();
       return false;
     });
