@@ -26,7 +26,7 @@
       }
     });
 
-    jQuery("input[name=image_order_choice]").click(function() {
+    jQuery("input[name=image_order_choice]").on("click", function() {
       checkOrderOptions();
     });
 

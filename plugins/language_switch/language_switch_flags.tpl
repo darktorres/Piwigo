@@ -17,7 +17,7 @@
 </li>
 
 {footer_script require='jquery'}<script>
-  jQuery("#languageSwitchLink").click(function() {
+  jQuery("#languageSwitchLink").on("click", function() {
     var elt = jQuery("#languageSwitchBox");
     elt.css("left", Math.min(jQuery(this).offset().left, jQuery(window).width() - elt.outerWidth(true) - 5))
       .css("top", jQuery(this).offset().top + jQuery(this).outerHeight(true))
