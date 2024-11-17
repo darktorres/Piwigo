@@ -13,7 +13,7 @@
       });
     }
 
-    jQuery(".checkComment").click(function(event) {
+    jQuery(".checkComment").on("click", function(event) {
       var checkbox = jQuery(this).children("input[type=checkbox]");
       if (event.target.type !== 'checkbox') {
         jQuery(checkbox).prop('checked', !jQuery(checkbox).prop('checked'));
@@ -21,19 +21,19 @@
       highlightComments();
     });
 
-    jQuery("#commentSelectAll").click(function() {
+    jQuery("#commentSelectAll").on("click", function() {
       jQuery(".checkComment input[type=checkbox]").prop('checked', true);
       highlightComments();
       return false;
     });
 
-    jQuery("#commentSelectNone").click(function() {
+    jQuery("#commentSelectNone").on("click", function() {
       jQuery(".checkComment input[type=checkbox]").prop('checked', false);
       highlightComments();
       return false;
     });
 
-    jQuery("#commentSelectInvert").click(function() {
+    jQuery("#commentSelectInvert").on("click", function() {
       jQuery(".checkComment input[type=checkbox]").each(function() {
         jQuery(this).prop('checked', !$(this).prop('checked'));
       });

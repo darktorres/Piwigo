@@ -146,7 +146,7 @@
                     $.each(
                         value,
                         $.proxy(function (i, cat) {
-                            if ($.isNumeric(cat)) this.selectize.addItem(cat);
+                            if (typeof cat === "number" || (!isNaN(cat) && !isNaN(Number.parseFloat(cat)))) this.selectize.addItem(cat);
                             else this.selectize.addItem(cat.id);
                         }, this),
                     );
