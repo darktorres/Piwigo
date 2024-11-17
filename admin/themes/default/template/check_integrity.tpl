@@ -58,12 +58,12 @@
             <script>
               jQuery(document).ready(function() {
 
-                jQuery("#checkAllLink").click(function() {
+                jQuery("#checkAllLink").on("click", function() {
                   jQuery("#c13y input[type=checkbox]").attr('checked', true);
                   return false;
                 });
 
-                jQuery("#uncheckAllLink").click(function() {
+                jQuery("#uncheckAllLink").on("click", function() {
                   jQuery("#c13y input[type=checkbox]").attr('checked', false);
                   return false;
                 });

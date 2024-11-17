@@ -130,7 +130,7 @@
               {footer_script require='jquery'}<script>
                 var qsearch_icon = $('#navbar-menubar>#quicksearch>.fa-search');
                 var qsearch_text = $('#navbar-menubar>#quicksearch #qsearchInput');
-                $(qsearch_icon).click(function() {
+                $(qsearch_icon).on("click", function() {
                   $(qsearch_text).focus();
                 });
                 $(document).ready(function() {
@@ -147,7 +147,7 @@
           var sfactor = $(".page-header").height() - 50;
           var color = "rgba(0, 0, 0, 1)";
           var nb_main_height = $('.navbar-main').outerHeight();
-          $(window).resize(function() {
+          $(window).on("resize", function() {
             sfactor = $(".page-header").height() - 50;
           });
 

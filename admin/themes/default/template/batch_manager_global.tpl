@@ -136,7 +136,7 @@
 
     $("[id^=action_]").hide();
 
-    $("select[name=selectAction]").change(function() {
+    $("select[name=selectAction]").on("change", function() {
       $("[id^=action_]").hide();
 
       var action = $(this).prop("value");
@@ -158,7 +158,7 @@
       }
     });
 
-    $(".wrap1 label").click(function(event) {
+    $(".wrap1 label").on("click", function(event) {
       $("input[name=setSelected]").prop('checked', false).trigger('change');
 
       var li = $(this).closest("li");
@@ -175,7 +175,7 @@
       checkPermitAction();
     });
 
-    $("#selectAll").click(function() {
+    $("#selectAll").on("click", function() {
       $("input[name=setSelected]").prop('checked', false).trigger('change');
       selectPageThumbnails();
       checkPermitAction();
@@ -191,7 +191,7 @@
       });
     }
 
-    $("#selectNone").click(function() {
+    $("#selectNone").on("click", function() {
       $("input[name=setSelected]").prop('checked', false).trigger('change');
 
       $(".thumbnails label").each(function() {
@@ -207,7 +207,7 @@
       return false;
     });
 
-    $("#selectInvert").click(function() {
+    $("#selectInvert").on("click", function() {
       $("input[name=setSelected]").prop('checked', false).trigger('change');
 
       $(".thumbnails label").each(function() {
@@ -225,14 +225,14 @@
       return false;
     });
 
-    $("#selectSet").click(function() {
+    $("#selectSet").on("click", function() {
       selectPageThumbnails();
       $("input[name=setSelected]").prop('checked', true).trigger('change');
       checkPermitAction();
       return false;
     });
 
-    $("input[name=setSelected]").change(function() {
+    $("input[name=setSelected]").on("change", function() {
       $('input[name=whole_set]').val(this.checked ? all_elements.join(',') : '');
     });
 
@@ -242,11 +242,11 @@
       $("input[name=setSelected]").trigger('change');
     }
 
-    jQuery("input[name=confirm_deletion]").change(function() {
+    jQuery("input[name=confirm_deletion]").on("change", function() {
       jQuery("#confirmDel span.errors").css("visibility", "hidden");
     });
 
-    jQuery('#applyAction').click(function() {
+    jQuery('#applyAction').on("click", function() {
       var action = jQuery('[name="selectAction"]').val();
       if (action == 'delete_derivatives') {
         let d_count = $('#confirmDel input[type=checkbox]').filter(':checked').length
@@ -296,7 +296,7 @@
 
     checkPermitAction();
 
-    jQuery("select[name=filter_prefilter]").change(function() {
+    jQuery("select[name=filter_prefilter]").on("change", function() {
       jQuery("#empty_caddie").toggle(jQuery(this).val() == "caddie");
       jQuery("#duplicates_options").toggle(jQuery(this).val() == "duplicates");
       jQuery("#delete_orphans").toggle(jQuery(this).val() == "no_album");

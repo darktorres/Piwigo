@@ -1,6 +1,6 @@
 {footer_script}<script>
   jQuery(document).ready(function() {
-    jQuery("#showCreateSite a").click(function() {
+    jQuery("#showCreateSite a").on("click", function() {
       jQuery("#showCreateSite").hide();
       jQuery("#createSite").show();
     });

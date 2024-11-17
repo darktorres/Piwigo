@@ -28,7 +28,7 @@ var GDThumb = {
         GDThumb.do_merge = do_merge;
         GDThumb.big_thumb = big_thumb;
 
-        $(window).bind("RVTS_loaded", function () {
+        $(window).on("RVTS_loaded", function () {
             GDThumb.init();
         });
         GDThumb.init();
@@ -42,13 +42,13 @@ var GDThumb = {
             }
 
             GDThumb.build();
-            jQuery(window).bind("RVTS_loaded", GDThumb.build);
+            jQuery(window).on("RVTS_loaded", GDThumb.build);
 
-            mainlists.resize(GDThumb.process);
-            jQuery("ul.thumbnails .thumbLegend.overlay").click(function () {
+            mainlists.on("resize", GDThumb.process);
+            jQuery("ul.thumbnails .thumbLegend.overlay").on("click", function () {
                 window.location.href = $(this).parent().find("a").attr("href");
             });
-            jQuery("ul.thumbnails .thumbLegend.overlay-ex").click(function () {
+            jQuery("ul.thumbnails .thumbLegend.overlay-ex").on("click", function () {
                 window.location.href = $(this).parent().find("a").attr("href");
             });
         }
