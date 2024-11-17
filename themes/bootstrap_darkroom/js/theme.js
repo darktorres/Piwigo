@@ -1,6 +1,6 @@
 $(document).ready(function () {
     // Grid view button click
-    $("#btn-grid").click(function () {
+    $("#btn-grid").on("click", function () {
         if ($(this).hasClass("active")) {
             return;
         }
@@ -34,7 +34,7 @@ $(document).ready(function () {
     });
 
     // List view button click
-    $("#btn-list").click(function () {
+    $("#btn-list").on("click", function () {
         if ($(this).hasClass("active")) {
             return;
         }
@@ -77,7 +77,7 @@ $(document).ready(function () {
     var navigationButtons = $("#navigationButtons");
     if (sidebar.length && navigationButtons.length) {
         sidebar.css("top", navigationButtons.offset().top + 1 + "px");
-        $("#info-link").click(function () {
+        $("#info-link").on("click", function () {
             var sidebar = $("#sidebar");
             if (parseInt(sidebar.css("right")) < 0) {
                 sidebar.animate({ right: "+=250" }, 500);

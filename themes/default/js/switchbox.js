@@ -1,6 +1,6 @@
 (function () {
     var sbFunc = function (link, box) {
-        jQuery(link).click(function () {
+        jQuery(link).on("click", function () {
             var elt = jQuery(box);
             elt.css(
                 "left",

@@ -5,7 +5,7 @@
       if ($option_selected == 'sqlite' || $option_selected == 'pdo-sqlite') {
          $('input[name=dbhost],input[name=dbuser],input[name=dbpasswd]').parent().parent().hide();
       }
-      $('#dblayer').change(function() {
+      $('#dblayer').on("change", function() {
          $db = this;
          if ($db.value == 'sqlite' || $db.value == 'pdo-sqlite') {
             $('input[name=dbhost],input[name=dbuser],input[name=dbpasswd]').parent().parent().hide();
