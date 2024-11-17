@@ -30,14 +30,15 @@ $page['cat'] = $category['id'];
 // |                           form submission                             |
 // +-----------------------------------------------------------------------+
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
 
-    if ($category['status'] != $_POST['status'] or ($category['status'] != 'public' and isset($_POST['apply_on_sub']))) {
+    if ($category['status'] != $_POST['status'] || $category['status'] != 'public' && isset($_POST['apply_on_sub'])) {
         $cat_ids = [$page['cat']];
         if (isset($_POST['apply_on_sub'])) {
             $cat_ids = array_merge($cat_ids, get_subcat_ids([$page['cat']]));
         }
+
         set_cat_status($cat_ids, $_POST['status']);
         $category['status'] = $_POST['status'];
     }
@@ -61,7 +62,7 @@ if (! empty($_POST)) {
         // remove permissions to groups
         //
         $deny_groups = array_diff($groups_granted, $_POST['groups']);
-        if (count($deny_groups) > 0) {
+        if ($deny_groups !== []) {
             // if you forbid access to an album, all sub-albums become
             // automatically forbidden
             $imploded_deny_groups = implode(',', $deny_groups);
@@ -131,7 +132,7 @@ if (! empty($_POST)) {
         // remove permissions to users
         //
         $deny_users = array_diff($users_granted, $_POST['users']);
-        if (count($deny_users) > 0) {
+        if ($deny_users !== []) {
             // if you forbid access to an album, all sub-album become automatically
             // forbidden
             $deny_users_imploded = implode(',', $deny_users);
@@ -220,7 +221,7 @@ $user_granted_direct_ids = query2array($query, null, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 $user_granted_indirect_ids = [];
-if (count($group_granted_ids) > 0) {
+if ($group_granted_ids !== []) {
     $granted_groups = [];
 
     $group_granted_ids_imploded = implode(',', $group_granted_ids);
@@ -234,6 +235,7 @@ if (count($group_granted_ids) > 0) {
         if (! isset($granted_groups[$row['group_id']])) {
             $granted_groups[$row['group_id']] = [];
         }
+
         $granted_groups[$row['group_id']][] = $row['user_id'];
     }
 

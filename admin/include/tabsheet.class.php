@@ -11,13 +11,9 @@ declare(strict_types=1);
 
 class tabsheet
 {
-    public array $sheets;
+    public array $sheets = [];
 
-    public ?string $uniqid;
-
-    public string $name;
-
-    public string $titlename;
+    public ?string $uniqid = null;
 
     public string $selected = '';
 
@@ -26,15 +22,9 @@ class tabsheet
      * $titlename in the template is affected by $titlename value
      */
     public function __construct(
-        string $name = 'TABSHEET',
-        string $titlename = 'TABSHEET_TITLE'
-    ) {
-        $this->sheets = [];
-        $this->uniqid = null;
-        $this->name = $name;
-        $this->titlename = $titlename;
-        $this->selected = '';
-    }
+        public string $name = 'TABSHEET',
+        public string $titlename = 'TABSHEET_TITLE'
+    ) {}
 
     public function set_id(
         string $id
@@ -59,8 +49,10 @@ class tabsheet
             if ($selected) {
                 $this->selected = $name;
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -73,11 +65,13 @@ class tabsheet
         if (isset($this->sheets[$name])) {
             array_splice($this->sheets, (int) $name, 1);
 
-            if ($this->selected == $name) {
+            if ($this->selected === $name) {
                 $this->selected = '';
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -92,6 +86,7 @@ class tabsheet
             $keys = array_keys($this->sheets);
             $name = $keys[0];
         }
+
         $this->selected = $name;
     }
 
@@ -118,7 +113,7 @@ class tabsheet
      */
     public function get_selected(): mixed
     {
-        if (! empty($this->selected)) {
+        if ($this->selected !== '' && $this->selected !== '0') {
             return $this->sheets[$this->selected];
         }
 

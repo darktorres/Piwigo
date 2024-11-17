@@ -30,7 +30,7 @@ if (isset($_GET['action'])) {
 // |                                actions                                |
 // +-----------------------------------------------------------------------+
 
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = $_GET['action'] ?? '';
 
 switch ($action) {
     case 'phpinfo':
@@ -116,14 +116,12 @@ switch ($action) {
         $sessions_to_delete = [];
 
         foreach ($sessions as $session) {
-            if (preg_match('/pwg_uid\|i:(\d+);/', $session['data'], $matches)) {
-                if (! isset($all_user_ids[$matches[1]])) {
-                    $sessions_to_delete[] = $session['id'];
-                }
+            if (preg_match('/pwg_uid\|i:(\d+);/', (string) $session['data'], $matches) && ! isset($all_user_ids[$matches[1]])) {
+                $sessions_to_delete[] = $session['id'];
             }
         }
 
-        if (count($sessions_to_delete) > 0) {
+        if ($sessions_to_delete !== []) {
             $sessions_to_delete_imploded = implode("','", $sessions_to_delete);
             $query = <<<SQL
                 DELETE FROM sessions
@@ -183,7 +181,7 @@ switch ($action) {
             $versions = [
                 'current' => PHPWG_VERSION,
             ];
-            $lines = explode("\r\n", $result);
+            $lines = explode("\r\n", (string) $result);
 
             // if the current version is a BSF (development branch) build, we check
             // the first line, for stable versions, we check the second line
@@ -205,7 +203,7 @@ switch ($action) {
             }
             // concatenation needed to avoid automatic transformation by release
             // script generator
-            elseif ('%' . 'PWGVERSION' . '%' == $versions['current']) {
+            elseif ($versions['current'] == '%PWGVERSION%') {
                 $page['infos'][] = l10n('You are running on development sources, no check possible.');
             } elseif (version_compare($versions['current'], $versions['latest']) < 0) {
                 $page['infos'][] = l10n('A new version of Piwigo is available.');
@@ -238,11 +236,12 @@ $purge_urls[l10n('All')] = sprintf($url_format, 'derivatives') . '&amp;type=all'
 foreach (ImageStdParams::get_defined_type_map() as $params) {
     $purge_urls[l10n($params->type)] = sprintf($url_format, 'derivatives') . '&amp;type=' . $params->type;
 }
+
 $purge_urls[l10n(IMG_CUSTOM)] = sprintf($url_format, 'derivatives') . '&amp;type=' . IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
 $db_version = pwg_get_db_version();
-list($db_current_date) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$db_current_date] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 $template->assign(
     [
@@ -277,12 +276,9 @@ $template->assign(
     ]
 );
 
-// graphics library
-switch (pwg_image::get_library()) {
-    case 'vips':
-        $library = 'image_vips';
-        $template->assign('GRAPHICS_LIBRARY', $library);
-        break;
+if (pwg_image::get_library() === 'vips') {
+    $library = 'image_vips';
+    $template->assign('GRAPHICS_LIBRARY', $library);
 }
 
 if ($conf['gallery_locked']) {
@@ -305,7 +301,7 @@ $query = <<<SQL
     WHERE user_id = 2;
     SQL;
 $users = query2array($query);
-if (count($users) > 0) {
+if ($users !== []) {
     $installed_on = $users[0]['registration_date'];
 
     if (! empty($installed_on)) {

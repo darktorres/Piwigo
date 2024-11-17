@@ -16,12 +16,12 @@ $themeconf = [
 define('MODUS_STR_RECENT', "\xe2\x9c\xbd"); //HEAVY TEARDROP-SPOKED ASTERISK
 define('MODUS_STR_RECENT_CHILD', "\xe2\x9c\xbb"); //TEARDROP-SPOKED ASTERISK
 
-if (! empty($_GET['skin']) && ! preg_match('/[^a-zA-Z0-9_-]/', $_GET['skin'])) {
+if (! empty($_GET['skin']) && ! preg_match('/[^a-zA-Z0-9_-]/', (string) $_GET['skin'])) {
     $conf['modus_theme']['skin'] = $_GET['skin'];
 }
 
 // we're mainly interested in an override of the colorscheme
-require dirname(__FILE__) . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php';
+require __DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php';
 
 $this->assign(
     [
@@ -36,12 +36,12 @@ $this->assign(
     ]
 );
 
-if (file_exists(dirname(__FILE__) . '/skins/' . $conf['modus_theme']['skin'] . '.css')) {
+if (file_exists(__DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.css')) {
     $this->assign('MODUS_CSS_SKIN', $conf['modus_theme']['skin']);
 }
 
 if (! $conf['compiled_template_cache_language']) {
-    load_language('theme.lang', dirname(__FILE__) . '/');
+    load_language('theme.lang', __DIR__ . '/');
     load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
         'no_fallback' => true,
         'local' => true,
@@ -49,16 +49,19 @@ if (! $conf['compiled_template_cache_language']) {
 }
 
 if (isset($_COOKIE['caps'])) {
-    setcookie('caps', '', 0, cookie_path());
-    pwg_set_session_var('caps', explode('x', $_COOKIE['caps']));
+    setcookie('caps', '', [
+        'expires' => 0,
+        'path' => cookie_path(),
+    ]);
+    pwg_set_session_var('caps', explode('x', (string) $_COOKIE['caps']));
     /*file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'tmp/modus.log', implode("\t", array(
         date("Y-m-d H:i:s"), $_COOKIE['caps'], $_SERVER['HTTP_USER_AGENT']
         ))."\n", FILE_APPEND);*/
 }
 
-if (get_device() == 'mobile') {
+if (get_device() === 'mobile') {
     $conf['tag_letters_column_number'] = 1;
-} elseif (get_device() == 'tablet') {
+} elseif (get_device() === 'tablet') {
     $conf['tag_letters_column_number'] = min($conf['tag_letters_column_number'], 3);
 }
 
@@ -66,7 +69,7 @@ $this->smarty->registerFilter('pre', 'modus_smarty_prefilter_wrap');
 function modus_smarty_prefilter_wrap(
     string $source
 ): array|string|null {
-    require_once dirname(__FILE__) . '/functions.inc.php';
+    require_once __DIR__ . '/functions.inc.php';
     return modus_smarty_prefilter($source);
 }
 
@@ -80,7 +83,7 @@ function rv_cdn_prefilter(
     Smarty &$smarty
 ): string {
     $source = str_replace('src="{$ROOT_URL}{$themeconf.icon_dir}/', 'src="' . RVCDN_ROOT_URL . '{$themeconf.icon_dir}/', $source);
-    $source = str_replace('url({$' . 'ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
+    $source = str_replace('url({$ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
     return $source;
 }
 
@@ -101,6 +104,7 @@ function modus_index_prefilter_1(
     $replacement = '';
     return str_replace($search, $replacement, $content);
 }
+
 // Add pwg-icon class to search in this set icon
 
 function modus_index_prefilter_2(
@@ -118,12 +122,14 @@ function rv_cdn_combined_script(
     if (! $script->is_remote()) {
         $url = RVCDN_ROOT_URL . $script->path;
     }
+
     return $url;
 }
 
 if (defined('RVPT_JQUERY_SRC')) {
     add_event_handler('loc_begin_page_header', modus_loc_begin_page_header(...));
 }
+
 function modus_loc_begin_page_header(): void
 {
     $all = $GLOBALS['template']->scriptLoader->get_all();
@@ -137,13 +143,13 @@ function modus_combinable_preparse(
     Template $template
 ): void {
     global $conf, $template;
-    require_once dirname(__FILE__) . '/functions.inc.php';
+    require_once __DIR__ . '/functions.inc.php';
 
     if (! isset($template->smarty->registered_plugins['modifier']['cssGradient'])) {
         $template->smarty->registerPlugin('modifier', 'cssGradient', modus_css_gradient(...));
     }
 
-    require dirname(__FILE__) . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php';
+    require __DIR__ . '/skins/' . $conf['modus_theme']['skin'] . '.inc.php';
 
     $template->assign([
         'conf' => $conf,
@@ -166,22 +172,26 @@ function modus_css_resolution(
     if (! empty($base)) {
         $rules[] = $base;
     }
+
     foreach (['min', 'max'] as $type) {
         if (! empty(${$type})) {
             $rules[] = '(-webkit-' . $type . '-device-pixel-ratio:' . ${$type} . ')';
         }
     }
+
     $res = implode(' and ', $rules);
 
     $rules = [];
     if (! empty($base)) {
         $rules[] = $base;
     }
+
     foreach (['min', 'max'] as $type) {
         if (! empty(${$type})) {
             $rules[] = '(' . $type . '-resolution:' . round(96 * ${$type}, 1) . 'dpi)';
         }
     }
+
     $res .= ',' . implode(' and ', $rules);
 
     return $res;
@@ -199,14 +209,15 @@ function modus_thumbs(
     $device = get_device();
     $container_margin = 5;
 
-    if ($device == 'mobile') {
+    if ($device === 'mobile') {
         $horizontal_margin = floor(0.01 * $row_height);
         $container_margin = 0;
-    } elseif ($device == 'tablet') {
+    } elseif ($device === 'tablet') {
         $horizontal_margin = floor(0.015 * $row_height);
     } else {
         $horizontal_margin = floor(0.02 * $row_height);
     }
+
     $vertical_margin = $horizontal_margin + 1;
 
     $candidates = [$default_params];
@@ -219,13 +230,13 @@ function modus_thumbs(
         }
     }
 
-    $do_over = $device == 'desktop';
+    $do_over = $device === 'desktop';
 
     $new_icon = ' <span class=albSymbol title="' . l10n('posted on %s') . '">' . MODUS_STR_RECENT . '</span>';
 
     foreach ($smarty->getTemplateVars('thumbnails') as $item) {
         $src_image = $item['src_image'];
-        $new = ! empty($item['icon_ts']) ? sprintf($new_icon, format_date($item['date_available'])) : '';
+        $new = empty($item['icon_ts']) ? '' : sprintf($new_icon, format_date($item['date_available']));
 
         $idx = 0;
         do {
@@ -241,6 +252,7 @@ function modus_thumbs(
         } elseif ($csize[1] > $row_height) {
             $csize = $c->get_scaled_size(9999, $row_height);
         }
+
         // Create class names and styles
         $li_class = 'path-ext-' . $item['path_ext'] . ' file-ext-' . $item['file_ext'];
         $li_style = 'width:' . $csize[0] . 'px; height:' . $row_height . 'px;';
@@ -259,7 +271,8 @@ function modus_thumbs(
             </a>
         <?php if ($do_over): ?>
             <div class="overDesc"><?= $item_name . $new ?></div>
-        <?php endif; ?>
+        <?php endif;
+        ?>
         </li>
 <?php
     }
@@ -296,7 +309,7 @@ function modus_thumbs(
             });
         </script>');
 
-    $my_base_name = basename(dirname(__FILE__));
+    $my_base_name = basename(__DIR__);
     // not async to avoid visible flickering reflow
     $template->scriptLoader->add('modus.arange', 1, ['jquery'], 'themes/' . $my_base_name . '/js/thumb.arrange.js', 0);
 }
@@ -329,18 +342,17 @@ function modus_get_index_photo_derivative_params(
     global $conf;
     if (isset($conf['modus_theme']) && pwg_get_session_var('index_deriv') === null) {
         $type = $conf['modus_theme']['index_photo_deriv'];
-        if ($caps = pwg_get_session_var('caps')) {
-            if (($caps[0] >= 2 && $caps[1] >= 768) /*Ipad3 always has clientWidth 768 independently of orientation*/
-                || $caps[0] >= 3
-            ) {
-                $type = $conf['modus_theme']['index_photo_deriv_hdpi'];
-            }
+        if (($caps = pwg_get_session_var('caps')) && (($caps[0] >= 2 && $caps[1] >= 768) /*Ipad3 always has clientWidth 768 independently of orientation*/
+            || $caps[0] >= 3)) {
+            $type = $conf['modus_theme']['index_photo_deriv_hdpi'];
         }
+
         $new = ImageStdParams::get_by_type($type);
         if ($new) {
             return $new;
         }
     }
+
     return $default;
 }
 
@@ -389,6 +401,7 @@ function modus_index_category_thumbnails(
             $l = intval($wh - $dsize[0]) / 2;
             $t = intval($wh - $dsize[1]) / 2;
         }
+
         $item['modus_deriv'] = $deriv;
 
         if (! empty($item['icon_ts'])) {
@@ -403,11 +416,9 @@ function modus_index_category_thumbnails(
         if ($t < -1 || $t > 1) {
             $styles[] = 'top:' . $t . 'px';
         }
-        if (count($styles)) {
-            $styles = ' style=' . implode(';', $styles);
-        } else {
-            $styles = '';
-        }
+
+        $styles = count($styles) ? ' style=' . implode(';', $styles) : '';
+
         $item['MODUS_STYLE'] = $styles;
     }
 
@@ -426,6 +437,7 @@ function modus_loc_begin_picture(): void
     if (isset($_GET['map'])) {
         return;
     }
+
     $template->append('head_elements', '
     <script>
         if (document.documentElement.offsetWidth > 1270) {
@@ -441,7 +453,7 @@ function modus_picture_content(
 ): ?string {
     global $conf, $picture, $template;
 
-    if (! empty($content)) { // someone hooked us - so we skip;
+    if ($content !== '' && $content !== '0') { // someone hooked us - so we skip;
         return $content;
     }
 
@@ -452,25 +464,31 @@ function modus_picture_content(
         if ($type == IMG_SQUARE || $type == IMG_THUMB) {
             continue;
         }
+
         if (! array_key_exists($type, ImageStdParams::get_defined_type_map())) {
             continue;
         }
+
         $url = $derivative->get_url();
         if (isset($added[$url])) {
             continue;
         }
+
         $added[$url] = 1;
         $show_original &= ! ($derivative->same_as_source());
         $unique_derivatives[$type] = $derivative;
     }
 
     if (isset($_COOKIE['picture_deriv'])) { // ignore persistence
-        setcookie('picture_deriv', '', 0, cookie_path());
+        setcookie('picture_deriv', '', [
+            'expires' => 0,
+            'path' => cookie_path(),
+        ]);
     }
 
     $selected_derivative = null;
     if (isset($_COOKIE['phavsz'])) {
-        $available_size = explode('x', $_COOKIE['phavsz']);
+        $available_size = explode('x', (string) $_COOKIE['phavsz']);
     } elseif (($caps = pwg_get_session_var('caps')) && $caps[0] > 1) {
         $available_size = [$caps[0] * $caps[1], $caps[0] * ($caps[2] - 100), $caps[0]];
     }
@@ -482,12 +500,13 @@ function modus_picture_content(
                 break;
             }
 
-            if ($size[0] <= $available_size[0] and $size[1] <= $available_size[1]) {
+            if ($size[0] <= $available_size[0] && $size[1] <= $available_size[1]) {
                 $selected_derivative = $derivative;
             } else {
                 if ($available_size[2] > 1 || ! $selected_derivative) {
                     $selected_derivative = $derivative;
                 }
+
                 break;
             }
         }
@@ -511,20 +530,21 @@ function modus_picture_content(
             ]);
         }
 
-        if (isset($picture['next'])
-            and $picture['next']['src_image']->is_original()) {
+        if (isset($picture['next']) && $picture['next']['src_image']->is_original()) {
             $next_best = null;
             foreach ($picture['next']['derivatives'] as $derivative) {
                 $size = $derivative->get_size();
                 if (! $size) {
                     break;
                 }
-                if ($size[0] <= $available_size[0] and $size[1] <= $available_size[1]) {
+
+                if ($size[0] <= $available_size[0] && $size[1] <= $available_size[1]) {
                     $next_best = $derivative;
                 } else {
                     if ($available_size[2] > 1 || ! $next_best) {
                         $next_best = $derivative;
                     }
+
                     break;
                 }
             }

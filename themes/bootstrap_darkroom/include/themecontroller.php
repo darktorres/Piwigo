@@ -6,7 +6,7 @@ namespace BootstrapDarkroom;
 
 class ThemeController
 {
-    private \BootstrapDarkroom\Config $config;
+    private readonly \BootstrapDarkroom\Config $config;
 
     public function __construct()
     {
@@ -55,12 +55,15 @@ class ThemeController
         if (array_key_exists('bootstrap_darkroom_navbar_main_style', $conf) && ! empty($conf['bootstrap_darkroom_navbar_main_style'])) {
             $this->config->navbar_main_style = $conf['bootstrap_darkroom_navbar_main_style'];
         }
+
         if (array_key_exists('bootstrap_darkroom_navbar_main_bg', $conf) && ! empty($conf['bootstrap_darkroom_navbar_main_bg'])) {
             $this->config->navbar_main_bg = $conf['bootstrap_darkroom_navbar_main_bg'];
         }
+
         if (array_key_exists('bootstrap_darkroom_navbar_contextual_style', $conf) && ! empty($conf['bootstrap_darkroom_navbar_contextual_style'])) {
             $this->config->navbar_contextual_style = $conf['bootstrap_darkroom_navbar_contextual_style'];
         }
+
         if (array_key_exists('bootstrap_darkroom_navbar_contextual_bg', $conf) && ! empty($conf['bootstrap_darkroom_navbar_contextual_bg'])) {
             $this->config->navbar_contextual_bg = $conf['bootstrap_darkroom_navbar_contextual_bg'];
         }
@@ -94,7 +97,7 @@ class ThemeController
     {
         global $template, $page;
 
-        if (isset($page['is_homepage']) and $page['is_homepage']) {
+        if (isset($page['is_homepage']) && $page['is_homepage']) {
             $template->assign('is_homepage', true);
         } else {
             $template->assign('is_homepage', false);
@@ -141,6 +144,7 @@ class ThemeController
                 }
             }
         }
+
         return $exif;
     }
 
@@ -167,20 +171,22 @@ class ThemeController
         if (empty($title)) {
             $title = $section_title;
         }
+
         if (! empty($title)) {
-            $splt = strpos($title, '[');
+            $splt = strpos((string) $title, '[');
             if ($splt) {
-                $title_links = substr($title, 0, $splt);
+                $title_links = substr((string) $title, 0, $splt);
                 $title = $title_links;
             }
 
             $title = str_replace('<a href', '<a class="nav-breadcrumb-item" href', $title);
             $title = str_replace($l_sep, '', $title);
-            if ($page['section'] == 'recent_cats' or $page['section'] == 'favorites') {
+            if ($page['section'] == 'recent_cats' || $page['section'] == 'favorites') {
                 $title = preg_replace('/<\/a>([a-zA-Z0-9]+)/', '</a><a class="nav-breadcrumb-item" href="' . make_index_url([
                     'section' => $page['section'],
                 ]) . '">${1}', $title) . '</a>';
             }
+
             if (empty($section_title)) {
                 $template->assign('TITLE', $title);
             } else {

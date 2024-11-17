@@ -13,11 +13,11 @@ if (isset($_POST['edit'])) {
 }
 
 if (! empty($_POST['template'])) {
-    if (preg_match('#\.\./#', $_POST['template'])) {
+    if (preg_match('#\.\./#', (string) $_POST['template'])) {
         die('Hacking attempt! template extension must be in template-extension directory');
     }
 
-    if (! preg_match('#\.tpl$#', $_POST['template'])) {
+    if (! preg_match('#\.tpl$#', (string) $_POST['template'])) {
         die('Hacking attempt! template extension must be a *.tpl file');
     }
 
@@ -39,18 +39,23 @@ if (isset($_POST['create_tpl'])) {
     if (empty($filename)) {
         $page['errors'][] = l10n('locfiledit_empty_filename');
     }
-    if (get_extension($filename) != 'tpl') {
+
+    if (get_extension($filename) !== 'tpl') {
         $filename .= '.tpl';
     }
-    if (! preg_match('/^[a-zA-Z0-9-_.]+$/', $filename)) {
+
+    if (! preg_match('/^[a-zA-Z0-9-_.]+$/', (string) $filename)) {
         $page['errors'][] = l10n('locfiledit_filename_error');
     }
-    if (is_numeric($_POST['tpl_model']) and $_POST['tpl_model'] != '0') {
+
+    if (is_numeric($_POST['tpl_model']) && $_POST['tpl_model'] != '0') {
         $page['errors'][] = l10n('locfiledit_model_error');
     }
+
     if (file_exists($_POST['tpl_parent'] . '/' . $filename)) {
         $page['errors'][] = l10n('locfiledit_file_already_exists');
     }
+
     if (! empty($page['errors'])) {
         $newfile_page = true;
     } else {
@@ -61,9 +66,9 @@ if (isset($_POST['create_tpl'])) {
 }
 
 if ($newfile_page) {
-    $filename = isset($_POST['tpl_name']) ? $_POST['tpl_name'] : '';
-    $selected['model'] = isset($_POST['tpl_model']) ? $_POST['tpl_model'] : '0';
-    $selected['parent'] = isset($_POST['tpl_parent']) ? $_POST['tpl_parent'] : PHPWG_ROOT_PATH . 'template-extension';
+    $filename = $_POST['tpl_name'] ?? '';
+    $selected['model'] = $_POST['tpl_model'] ?? '0';
+    $selected['parent'] = $_POST['tpl_parent'] ?? PHPWG_ROOT_PATH . 'template-extension';
 
     // Parent directories list
     $options['parent'] = [
@@ -79,15 +84,17 @@ if ($newfile_page) {
         $options['model'][$value] = 'template-extension / ' . str_replace('/', ' / ', $pwg_template);
         $i++;
     }
+
     foreach (get_dirs($conf['themes_dir']) as $theme_id) {
-        if ($i) {
+        if ($i !== 0) {
             $options['model'][] = '----------------------';
             $i = 0;
         }
+
         $dir = $conf['themes_dir'] . '/' . $theme_id . '/template/';
-        if (is_dir($dir) and $content = opendir($dir)) {
+        if (is_dir($dir) && ($content = opendir($dir))) {
             while ($node = readdir($content)) {
-                if (is_file($dir . $node) and get_extension($node) == 'tpl') {
+                if (is_file($dir . $node) && get_extension($node) === 'tpl') {
                     $value = $dir . $node;
                     $options['model'][$value] = $theme_id . ' / ' . $node;
                     $i++;
@@ -95,9 +102,11 @@ if ($newfile_page) {
             }
         }
     }
+
     if (end($options['model']) == '----------------------') {
         array_pop($options['model']);
     }
+
     // Assign variables to template
     $template->assign(
         'create_tpl',
@@ -121,10 +130,12 @@ if ($newfile_page) {
             $selected = $value;
         }
     }
-    if ($selected == 0 and ! empty($edited_file)) {
+
+    if ($selected == 0 && ($edited_file !== '' && $edited_file !== '0')) {
         $options[$edited_file] = str_replace(['./template-extension/', '/'], ['', ' / '], $edited_file);
         $selected = $edited_file;
     }
+
     $template->assign(
         'css_lang_tpl',
         [
@@ -132,7 +143,7 @@ if ($newfile_page) {
             'OPTIONS' => $options,
             'SELECTED' => $selected,
             'NEW_FILE_URL' => $my_base_url . '-tpl&amp;newfile',
-            'NEW_FILE_CLASS' => empty($edited_file) ? '' : 'top_right',
+            'NEW_FILE_CLASS' => $edited_file === '' || $edited_file === '0' ? '' : 'top_right',
         ]
     );
 }

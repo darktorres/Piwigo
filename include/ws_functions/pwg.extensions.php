@@ -22,14 +22,11 @@ function ws_plugins_getList(
 
     $plugins = new plugins();
     $plugins->sort_fs_plugins('name');
+
     $plugin_list = [];
 
     foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
-        if (isset($plugins->db_plugins_by_id[$plugin_id])) {
-            $state = $plugins->db_plugins_by_id[$plugin_id]['state'];
-        } else {
-            $state = 'uninstalled';
-        }
+        $state = isset($plugins->db_plugins_by_id[$plugin_id]) ? $plugins->db_plugins_by_id[$plugin_id]['state'] : 'uninstalled';
 
         $plugin_list[] = [
             'id' => $plugin_id,
@@ -65,7 +62,7 @@ function ws_plugins_performAction(
         return new PwgError(403, l10n('Webmaster status is required.'));
     }
 
-    if (! $conf['enable_extensions_install'] and $params['action'] == 'delete') {
+    if (! $conf['enable_extensions_install'] && $params['action'] == 'delete') {
         return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
     }
 
@@ -82,6 +79,7 @@ function ws_plugins_performAction(
     if (in_array($params['action'], ['activate', 'deactivate'])) {
         $template->delete_compiled_templates();
     }
+
     return true;
 
 }
@@ -104,7 +102,7 @@ function ws_themes_performAction(
         return new PwgError(403, 'Invalid security token');
     }
 
-    if (! $conf['enable_extensions_install'] and $params['action'] == 'delete') {
+    if (! $conf['enable_extensions_install'] && $params['action'] == 'delete') {
         return new PwgError(401, 'Piwigo extensions install/update/delete system is disabled');
     }
 
@@ -114,13 +112,14 @@ function ws_themes_performAction(
     $themes = new themes();
     $errors = $themes->perform_action($params['action'], $params['theme']);
 
-    if (! empty($errors)) {
+    if ($errors !== []) {
         return new PwgError(500, $errors);
     }
 
     if (in_array($params['action'], ['activate', 'deactivate'])) {
         $template->delete_compiled_templates();
     }
+
     return true;
 
 }
@@ -168,8 +167,7 @@ function ws_extensions_update(
 
     if ($type == 'plugins') {
         if (
-            isset($extension->db_plugins_by_id[$extension_id])
-            and $extension->db_plugins_by_id[$extension_id]['state'] == 'active'
+            isset($extension->db_plugins_by_id[$extension_id]) && $extension->db_plugins_by_id[$extension_id]['state'] == 'active'
         ) {
             $extension->perform_action('deactivate', $extension_id);
 
@@ -186,7 +184,7 @@ function ws_extensions_update(
             );
         }
 
-        list($upgrade_status) = $extension->perform_action('update', $extension_id, [
+        [$upgrade_status] = $extension->perform_action('update', $extension_id, [
             'revision' => $revision,
         ]);
         $extension_name = $extension->fs_plugins[$extension_id]['name'];
@@ -219,22 +217,13 @@ function ws_extensions_update(
     global $template;
     $template->delete_compiled_templates();
 
-    switch ($upgrade_status) {
-        case 'ok':
-            return l10n('%s has been successfully updated.', $extension_name);
-
-        case 'temp_path_error':
-            return new PwgError(null, l10n('Can\'t create temporary file.'));
-
-        case 'dl_archive_error':
-            return new PwgError(null, l10n('Can\'t download archive.'));
-
-        case 'archive_error':
-            return new PwgError(null, l10n('Can\'t read or extract archive.'));
-
-        default:
-            return new PwgError(null, l10n('An error occurred during extraction (%s).', $upgrade_status));
-    }
+    return match ($upgrade_status) {
+        'ok' => l10n('%s has been successfully updated.', $extension_name),
+        'temp_path_error' => new PwgError(null, l10n("Can't create temporary file.")),
+        'dl_archive_error' => new PwgError(null, l10n("Can't download archive.")),
+        'archive_error' => new PwgError(null, l10n("Can't read or extract archive.")),
+        default => new PwgError(null, l10n('An error occurred during extraction (%s).', $upgrade_status)),
+    };
 }
 
 /**
@@ -265,7 +254,7 @@ function ws_extensions_ignoreupdate(
 
     // Reset ignored extension
     if ($params['reset']) {
-        if (! empty($params['type']) and isset($conf['updates_ignored'][$params['type']])) {
+        if (! empty($params['type']) && isset($conf['updates_ignored'][$params['type']])) {
             $conf['updates_ignored'][$params['type']] = [];
         } else {
             $conf['updates_ignored'] = [
@@ -280,7 +269,7 @@ function ws_extensions_ignoreupdate(
         return true;
     }
 
-    if (empty($params['id']) or empty($params['type']) or ! in_array($params['type'], ['plugins', 'themes', 'languages'])) {
+    if (empty($params['id']) || empty($params['type']) || ! in_array($params['type'], ['plugins', 'themes', 'languages'])) {
         return new PwgError(403, 'Invalid parameters');
     }
 
@@ -326,7 +315,7 @@ function ws_extensions_checkupdates(
     if (! is_array($_SESSION['extensions_need_update'])) {
         $result['ext_need_update'] = null;
     } else {
-        $result['ext_need_update'] = ! empty($_SESSION['extensions_need_update']);
+        $result['ext_need_update'] = isset($_SESSION['extensions_need_update']) && $_SESSION['extensions_need_update'] !== [];
     }
 
     return $result;

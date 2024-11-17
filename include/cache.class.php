@@ -27,6 +27,7 @@ abstract class PersistentCache
         if (is_array($key)) {
             $key = implode('&', $key);
         }
+
         $key .= $this->instance_key;
         return md5($key);
     }
@@ -66,7 +67,7 @@ abstract class PersistentCache
  */
 class PersistentFileCache extends PersistentCache
 {
-    private string $dir;
+    private readonly string $dir;
 
     public function __construct()
     {
@@ -74,20 +75,21 @@ class PersistentFileCache extends PersistentCache
         $this->dir = PHPWG_ROOT_PATH . $conf['data_location'] . 'cache/';
     }
 
+    #[\Override]
     public function get(
         string $key,
         mixed &$value
     ): bool {
         $loaded = file_exists($this->dir . $key . '.cache') ? file_get_contents($this->dir . $key . '.cache') : false;
-        if ($loaded !== false && ($loaded = unserialize($loaded)) !== false) {
-            if ($loaded['expire'] > time()) {
-                $value = $loaded['data'];
-                return true;
-            }
+        if ($loaded !== false && ($loaded = unserialize($loaded)) !== false && $loaded['expire'] > time()) {
+            $value = $loaded['data'];
+            return true;
         }
+
         return false;
     }
 
+    #[\Override]
     public function set(
         string $key,
         mixed $value,
@@ -110,17 +112,15 @@ class PersistentFileCache extends PersistentCache
             mkgetdir($this->dir, MKGETDIR_DEFAULT & ~MKGETDIR_DIE_ON_ERROR);
         }
 
-        if (file_put_contents($this->dir . $key . '.cache', $serialized) === false) {
-            return false;
-        }
-        return true;
+        return file_put_contents($this->dir . $key . '.cache', $serialized) !== false;
     }
 
+    #[\Override]
     public function purge(
         bool $all
     ): void {
         $files = glob($this->dir . '*.cache');
-        if (empty($files)) {
+        if ($files === [] || $files === false) {
             return;
         }
 

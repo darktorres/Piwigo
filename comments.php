@@ -49,7 +49,7 @@ if (! in_array($conf['comments_page_nb_comments'], $items_number)) {
     $is_inserted = false;
 
     foreach ($items_number as $number) {
-        if ($number > $conf['comments_page_nb_comments'] or ($number == 'all' and ! $is_inserted)) {
+        if ($number > $conf['comments_page_nb_comments'] || $number == 'all' && ! $is_inserted) {
             $items_number_new[] = $conf['comments_page_nb_comments'];
             $is_inserted = true;
         }
@@ -83,17 +83,13 @@ $since_options = [
 
 trigger_notify('loc_begin_comments');
 
-if (! empty($_GET['since'])) {
-    $page['since'] = intval($_GET['since']);
-} else {
-    $page['since'] = 4;
-}
+$page['since'] = empty($_GET['since']) ? 4 : intval($_GET['since']);
 
 // on which field sorting
 //
 $page['sort_by'] = 'date';
 // if the form was submitted, it overloads default behaviour
-if (isset($_GET['sort_by']) and isset($sort_by[$_GET['sort_by']])) {
+if (isset($_GET['sort_by']) && isset($sort_by[$_GET['sort_by']])) {
     $page['sort_by'] = $_GET['sort_by'];
 }
 
@@ -101,7 +97,7 @@ if (isset($_GET['sort_by']) and isset($sort_by[$_GET['sort_by']])) {
 //
 $page['sort_order'] = 'DESC';
 // if the form was submitted, it overloads default behaviour
-if (isset($_GET['sort_order']) and isset($sort_order[$_GET['sort_order']])) {
+if (isset($_GET['sort_order']) && isset($sort_order[$_GET['sort_order']])) {
     $page['sort_order'] = $_GET['sort_order'];
 }
 
@@ -111,18 +107,19 @@ $page['items_number'] = $conf['comments_page_nb_comments'];
 if (isset($_GET['items_number'])) {
     $page['items_number'] = $_GET['items_number'];
 }
-if (! is_numeric($page['items_number']) and $page['items_number'] != 'all') {
+
+if (! is_numeric($page['items_number']) && $page['items_number'] != 'all') {
     $page['items_number'] = 10;
 }
 
 $page['where_clauses'] = [];
 
 // which category to filter on?
-if (isset($_GET['cat']) and $_GET['cat'] != 0) {
+if (isset($_GET['cat']) && $_GET['cat'] != 0) {
     check_input_parameter('cat', $_GET, false, PATTERN_ID);
 
     $category_ids = get_subcat_ids([$_GET['cat']]);
-    if (empty($category_ids)) {
+    if ($category_ids === []) {
         $category_ids = [-1];
     }
 
@@ -145,7 +142,7 @@ if (! empty($_GET['comment_id'])) {
     if (! is_admin()) {
         $login_url =
           get_root_url() . 'identification.php?redirect='
-          . urlencode(urlencode($_SERVER['REQUEST_URI']))
+          . urlencode(urlencode((string) $_SERVER['REQUEST_URI']))
         ;
         redirect($login_url);
     }
@@ -160,8 +157,8 @@ if (! empty($_GET['keyword'])) {
       implode(
           ' AND ',
           array_map(
-              function ($s) {return "content LIKE '%{$s}%'"; },
-              preg_split('/[\s,;]+/', $_GET['keyword'])
+              fn ($s): string => "content LIKE '%{$s}%'",
+              preg_split('/[\s,;]+/', (string) $_GET['keyword'])
           )
       ) .
       ')';
@@ -171,7 +168,7 @@ $page['where_clauses'][] = $since_options[$page['since']]['clause'];
 
 // which status to filter on?
 if (! is_admin()) {
-    $page['where_clauses'][] = 'validated=\'true\'';
+    $page['where_clauses'][] = "validated='true'";
 }
 
 $page['where_clauses'][] = get_sql_condition_FandF(
@@ -207,19 +204,19 @@ if (isset($action)) {
     if (can_manage_comment($action, $comment_author_id)) {
         $perform_redirect = false;
 
-        if ($action == 'delete') {
+        if ($action === 'delete') {
             check_pwg_token();
             delete_user_comment($comment_id);
             $perform_redirect = true;
         }
 
-        if ($action == 'validate') {
+        if ($action === 'validate') {
             check_pwg_token();
             validate_user_comment($comment_id);
             $perform_redirect = true;
         }
 
-        if ($action == 'edit') {
+        if ($action === 'edit') {
             if (! empty($_POST['content'])) {
                 check_pwg_token();
                 $comment_action = update_user_comment(
@@ -271,8 +268,8 @@ $template->set_filenames([
 $template->assign(
     [
         'F_ACTION' => PHPWG_ROOT_PATH . 'comments.php',
-        'F_KEYWORD' => isset($_GET['keyword']) ? htmlspecialchars(stripslashes($_GET['keyword'])) : '',
-        'F_AUTHOR' => isset($_GET['author']) ? htmlspecialchars(stripslashes($_GET['author'])) : '',
+        'F_KEYWORD' => isset($_GET['keyword']) ? htmlspecialchars(stripslashes((string) $_GET['keyword'])) : '',
+        'F_AUTHOR' => isset($_GET['author']) ? htmlspecialchars(stripslashes((string) $_GET['author'])) : '',
     ]
 );
 
@@ -303,6 +300,7 @@ $tpl_var = [];
 foreach ($since_options as $id => $option) {
     $tpl_var[$id] = $option['label'];
 }
+
 $template->assign('since_options', $tpl_var);
 $template->assign('since_options_selected', $page['since']);
 
@@ -320,6 +318,7 @@ $tpl_var = [];
 foreach ($items_number as $option) {
     $tpl_var[$option] = is_numeric($option) ? $option : l10n($option);
 }
+
 $template->assign('item_number_options', $tpl_var);
 $template->assign('item_number_options_selected', $page['items_number']);
 
@@ -327,11 +326,7 @@ $template->assign('item_number_options_selected', $page['items_number']);
 // |                            navigation bar                             |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['start'])) {
-    $start = intval($_GET['start']);
-} else {
-    $start = 0;
-}
+$start = isset($_GET['start']) ? intval($_GET['start']) : 0;
 
 // +-----------------------------------------------------------------------+
 // |                        last comments display                          |
@@ -369,7 +364,8 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $element_ids[] = $row['image_id'];
     $category_ids[] = $row['category_id'];
 }
-list($counter) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
+
+[$counter] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
 $url = PHPWG_ROOT_PATH . 'comments.php'
   . get_query_string_diff(['start', 'edit', 'delete', 'validate', 'pwg_token']);
@@ -383,7 +379,7 @@ $navbar = create_navigation_bar(
 
 $template->assign('navbar', $navbar);
 
-if (count($comments) > 0) {
+if ($comments !== []) {
     // retrieving element information
     $element_ids_str = implode(',', $element_ids);
     $query = <<<SQL
@@ -461,7 +457,7 @@ if (count($comments) > 0) {
                 ]
             );
 
-            if (isset($edit_comment) and ($comment['comment_id'] == $edit_comment)) {
+            if (isset($edit_comment) && $comment['comment_id'] == $edit_comment) {
                 $tpl_comment['IN_EDIT'] = true;
                 $key = get_ephemeral_key(2, $comment['image_id']);
                 $tpl_comment['KEY'] = $key;
@@ -472,17 +468,16 @@ if (count($comments) > 0) {
             }
         }
 
-        if (can_manage_comment('validate', $comment['author_id'])) {
-            if ($comment['validated'] != 'true') {
-                $tpl_comment['U_VALIDATE'] = add_url_params(
-                    $url_self,
-                    [
-                        'validate' => $comment['comment_id'],
-                        'pwg_token' => get_pwg_token(),
-                    ]
-                );
-            }
+        if (can_manage_comment('validate', $comment['author_id']) && $comment['validated'] != 'true') {
+            $tpl_comment['U_VALIDATE'] = add_url_params(
+                $url_self,
+                [
+                    'validate' => $comment['comment_id'],
+                    'pwg_token' => get_pwg_token(),
+                ]
+            );
         }
+
         $template->append('comments', $tpl_comment);
     }
 }
@@ -492,7 +487,7 @@ $template->assign('comment_derivative_params', $derivative_params);
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theCommentsPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theCommentsPage', $themeconf['hide_menu_on'])) {
     require PHPWG_ROOT_PATH . 'include/menubar.inc.php';
 }
 
@@ -502,8 +497,9 @@ if (! isset($themeconf['hide_menu_on']) or ! in_array('theCommentsPage', $themec
 require PHPWG_ROOT_PATH . 'include/page_header.php';
 trigger_notify('loc_end_comments');
 flush_page_messages();
-if (count($comments) > 0) {
+if ($comments !== []) {
     $template->assign_var_from_handle('COMMENT_LIST', 'comment_list');
 }
+
 $template->pparse('comments');
 require PHPWG_ROOT_PATH . 'include/page_tail.php';

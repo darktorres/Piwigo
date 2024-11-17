@@ -25,7 +25,7 @@ if (! $conf['enable_synchronization']) {
 
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST) or isset($_GET['action'])) {
+if ($_POST !== [] || isset($_GET['action'])) {
     check_pwg_token();
 }
 
@@ -51,14 +51,15 @@ $tabsheet->assign();
 // +-----------------------------------------------------------------------+
 // |                        new site creation form                         |
 // +-----------------------------------------------------------------------+
-if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
+if (isset($_POST['submit']) && ! empty($_POST['galleries_url'])) {
     $is_remote = url_is_remote($_POST['galleries_url']);
     if ($is_remote) {
         fatal_error('remote sites not supported');
     }
-    $url = preg_replace('/[\/]*$/', '', $_POST['galleries_url']);
+
+    $url = preg_replace('/[\/]*$/', '', (string) $_POST['galleries_url']);
     $url .= '/';
-    if (! (strpos($url, '.') === 0)) {
+    if (! str_starts_with($url, '.')) {
         $url = './' . $url;
     }
 
@@ -72,10 +73,9 @@ if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
     if ($row['count'] > 0) {
         $page['errors'][] = l10n('This site already exists') . ' [' . $url . ']';
     }
-    if (count($page['errors']) == 0) {
-        if (! file_exists($url)) {
-            $page['errors'][] = l10n('Directory does not exist') . ' [' . $url . ']';
-        }
+
+    if (count($page['errors']) == 0 && ! file_exists($url)) {
+        $page['errors'][] = l10n('Directory does not exist') . ' [' . $url . ']';
     }
 
     if (count($page['errors']) == 0) {
@@ -93,23 +93,20 @@ if (isset($_POST['submit']) and ! empty($_POST['galleries_url'])) {
 // +-----------------------------------------------------------------------+
 // |                            actions on site                            |
 // +-----------------------------------------------------------------------+
-if (isset($_GET['site']) and is_numeric($_GET['site'])) {
+if (isset($_GET['site']) && is_numeric($_GET['site'])) {
     $page['site'] = $_GET['site'];
 }
-if (isset($_GET['action']) and isset($page['site'])) {
+
+if (isset($_GET['action']) && isset($page['site'])) {
     $query = <<<SQL
         SELECT galleries_url
         FROM sites
         WHERE id = {$page['site']};
         SQL;
-    list($galleries_url) = pwg_db_fetch_row(pwg_query($query));
-    switch ($_GET['action']) {
-        case 'delete':
-
-            delete_site($page['site']);
-            $page['infos'][] = $galleries_url . ' ' . l10n('deleted');
-            break;
-
+    [$galleries_url] = pwg_db_fetch_row(pwg_query($query));
+    if ($_GET['action'] === 'delete') {
+        delete_site($page['site']);
+        $page['infos'][] = $galleries_url . ' ' . l10n('deleted');
     }
 }
 

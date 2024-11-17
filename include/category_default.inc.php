@@ -43,7 +43,7 @@ if (count($selection) > 0) {
     unset($rank_of);
 }
 
-if (count($pictures) > 0) {
+if ($pictures !== []) {
     // define category slideshow url
     $row = reset($pictures);
     $page['cat_slideshow_url'] =
@@ -57,12 +57,11 @@ if (count($pictures) > 0) {
           ),
           [
               'slideshow' =>
-                      (isset($_GET['slideshow']) ? $_GET['slideshow']
-                                                 : ''),
+                      ($_GET['slideshow'] ?? ''),
           ]
       );
 
-    if ($conf['activate_comments'] and $user['show_nb_comments']) {
+    if ($conf['activate_comments'] && $user['show_nb_comments']) {
         $implodedSelection = implode(',', $selection);
         $query = <<<SQL
             SELECT image_id, COUNT(*) AS nb_comments
@@ -129,9 +128,11 @@ foreach ($pictures as $row) {
             if (! $user['show_nb_hits']) {
                 $name = '(' . $row['hit'] . ') ' . $name;
             }
+
             break;
 
     }
+
     $tpl_var['NAME'] = $name;
     $tpl_thumbnails_var[] = $tpl_var;
 }

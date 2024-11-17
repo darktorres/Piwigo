@@ -36,7 +36,7 @@ if (! is_writable($themes_dir)) {
 // |                       perform installation                            |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['revision']) and isset($_GET['extension'])) {
+if (isset($_GET['revision']) && isset($_GET['extension'])) {
     if (! is_webmaster()) {
         $page['errors'][] = l10n('Webmaster status is required.');
     } else {
@@ -73,24 +73,25 @@ if (isset($_GET['installstatus'])) {
                     ]
                 );
             }
+
             break;
 
         case 'temp_path_error':
-            $page['errors'][] = l10n('Can\'t create temporary file.');
+            $page['errors'][] = l10n("Can't create temporary file.");
             break;
 
         case 'dl_archive_error':
-            $page['errors'][] = l10n('Can\'t download archive.');
+            $page['errors'][] = l10n("Can't download archive.");
             break;
 
         case 'archive_error':
-            $page['errors'][] = l10n('Can\'t read or extract archive.');
+            $page['errors'][] = l10n("Can't read or extract archive.");
             break;
 
         default:
             $page['errors'][] = l10n(
                 'An error occurred during extraction (%s).',
-                htmlspecialchars($_GET['installstatus'])
+                htmlspecialchars((string) $_GET['installstatus'])
             );
     }
 }
@@ -115,14 +116,14 @@ if ($themes->get_server_themes(true)) { // only new themes
             'new_themes',
             [
                 'name' => $theme['extension_name'],
-                'thumbnail' => (key_exists('thumbnail_src', $theme)) ? $theme['thumbnail_src'] : '',
-                'screenshot' => (key_exists('screenshot_url', $theme)) ? $theme['screenshot_url'] : '',
+                'thumbnail' => (array_key_exists('thumbnail_src', $theme)) ? $theme['thumbnail_src'] : '',
+                'screenshot' => (array_key_exists('screenshot_url', $theme)) ? $theme['screenshot_url'] : '',
                 'install_url' => $url_auto_install,
             ]
         );
     }
 } else {
-    $page['errors'][] = l10n('Can\'t connect to server.');
+    $page['errors'][] = l10n("Can't connect to server.");
 }
 
 $template->assign(

@@ -16,11 +16,11 @@ if (isset($_POST['submit_smartpocket'])) {
 
     conf_update_param('smartpocket', $config_send, true);
 
-    array_push($page['infos'], l10n('Information data registered in database'));
+    $page['infos'][] = l10n('Information data registered in database');
 }
 
 $template->set_filenames([
-    'theme_admin_content' => dirname(__FILE__) . '/admin.tpl',
+    'theme_admin_content' => __DIR__ . '/admin.tpl',
 ]);
 
 $template->assign('options', $conf['smartpocket']);

@@ -61,7 +61,7 @@ function process_password_request(): bool
 
     // password request is not possible for guest/generic users
     $status = $userdata['status'];
-    if (is_a_guest($status) or is_generic($status)) {
+    if (is_a_guest($status) || is_generic($status)) {
         $page['errors'][] = l10n('Password reset is not allowed for this user');
         return false;
     }
@@ -76,7 +76,7 @@ function process_password_request(): bool
 
     $activation_key = generate_key(20);
 
-    list($expire) = pwg_db_fetch_row(pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
+    [$expire] = pwg_db_fetch_row(pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
 
     single_update(
         'user_infos',
@@ -101,7 +101,7 @@ function process_password_request(): bool
     );
     $message .= "\r\n\r\n";
     $message .= l10n('To reset your password, visit the following address:') . "\r\n";
-    $message .= get_root_url() . 'password.php?key=' . $activation_key . '-' . urlencode($userdata['email']);
+    $message .= get_root_url() . 'password.php?key=' . $activation_key . '-' . urlencode((string) $userdata['email']);
     $message .= "\r\n\r\n";
     $message .= l10n('If this was a mistake, just ignore this email and nothing will happen.') . "\r\n";
 
@@ -136,7 +136,7 @@ function check_password_reset_key(
 ): mixed {
     global $page, $conf;
 
-    list($key, $email) = explode('-', $reset_key, 2);
+    [$key, $email] = explode('-', $reset_key, 2);
 
     if (! preg_match('/^[a-z0-9]{20}$/i', $key)) {
         $page['errors'][] = l10n('Invalid key');
@@ -169,13 +169,13 @@ function check_password_reset_key(
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         if (pwg_password_verify($key, $row['activation_key'])) {
-            if (strtotime($row['dbnow']) > strtotime($row['activation_key_expire'])) {
+            if (strtotime((string) $row['dbnow']) > strtotime((string) $row['activation_key_expire'])) {
                 // key has expired
                 $page['errors'][] = l10n('Invalid key');
                 return false;
             }
 
-            if (is_a_guest($row['status']) or is_generic($row['status'])) {
+            if (is_a_guest($row['status']) || is_generic($row['status'])) {
                 $page['errors'][] = l10n('Password reset is not allowed for this user');
                 return false;
             }
@@ -242,16 +242,12 @@ function reset_password(): bool
 if (isset($_POST['submit'])) {
     check_pwg_token();
 
-    if ($_GET['action'] == 'lost') {
-        if (process_password_request()) {
-            $page['action'] = 'none';
-        }
+    if ($_GET['action'] == 'lost' && process_password_request()) {
+        $page['action'] = 'none';
     }
 
-    if ($_GET['action'] == 'reset') {
-        if (reset_password()) {
-            $page['action'] = 'none';
-        }
+    if ($_GET['action'] == 'reset' && reset_password()) {
+        $page['action'] = 'none';
     }
 }
 
@@ -260,11 +256,11 @@ if (isset($_POST['submit'])) {
 // +-----------------------------------------------------------------------+
 
 // a connected user can't reset the password from a mail
-if (isset($_GET['key']) and ! is_a_guest()) {
+if (isset($_GET['key']) && ! is_a_guest()) {
     unset($_GET['key']);
 }
 
-if (isset($_GET['key']) and ! isset($_POST['submit'])) {
+if (isset($_GET['key']) && ! isset($_POST['submit'])) {
     $user_id = check_password_reset_key($_GET['key']);
     if (is_numeric($user_id)) {
         $userdata = getuserdata($user_id, false);
@@ -287,11 +283,11 @@ if (! isset($page['action'])) {
     }
 }
 
-if ($page['action'] == 'reset' and ! isset($_GET['key']) and (is_a_guest() or is_generic())) {
+if ($page['action'] == 'reset' && ! isset($_GET['key']) && (is_a_guest() || is_generic())) {
     redirect(get_gallery_home_url());
 }
 
-if ($page['action'] == 'lost' and ! is_a_guest()) {
+if ($page['action'] == 'lost' && ! is_a_guest()) {
     redirect(get_gallery_home_url());
 }
 
@@ -304,7 +300,7 @@ if ($page['action'] == 'lost') {
     $title = l10n('Forgot your password?');
 
     if (isset($_POST['username_or_email'])) {
-        $template->assign('username_or_email', htmlspecialchars(stripslashes($_POST['username_or_email'])));
+        $template->assign('username_or_email', htmlspecialchars(stripslashes((string) $_POST['username_or_email'])));
     }
 }
 
@@ -318,14 +314,14 @@ $template->assign(
         'title' => $title,
         'form_action' => get_root_url() . 'password.php',
         'action' => $page['action'],
-        'username' => isset($page['username']) ? $page['username'] : $user['username'],
+        'username' => $page['username'] ?? $user['username'],
         'PWG_TOKEN' => get_pwg_token(),
     ]
 );
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('thePasswordPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('thePasswordPage', $themeconf['hide_menu_on'])) {
     require PHPWG_ROOT_PATH . 'include/menubar.inc.php';
 }
 

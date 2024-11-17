@@ -24,6 +24,7 @@ check_status(ACCESS_GUEST);
 if (isset($page['category'])) {
     check_restrictions($page['category']['id']);
 }
+
 if ($page['start'] > 0 && $page['start'] >= count($page['items'])) {
     page_not_found('', duplicate_index_url([
         'start' => 0,
@@ -39,6 +40,7 @@ if (isset($_GET['image_order'])) {
     } else {
         pwg_unset_session_var('image_order');
     }
+
     redirect(
         duplicate_index_url(
             [],        // nothing to redefine
@@ -46,6 +48,7 @@ if (isset($_GET['image_order'])) {
         )
     );
 }
+
 if (isset($_GET['display'])) {
     $page['meta_robots']['noindex'] = 1;
     if (array_key_exists($_GET['display'], ImageStdParams::get_defined_type_map())) {
@@ -75,17 +78,19 @@ if (isset($_GET['caddie'])) {
     redirect(duplicate_index_url());
 }
 
-if (isset($page['is_homepage']) and $page['is_homepage']) {
+if (isset($page['is_homepage']) && $page['is_homepage']) {
     $canonical_url = get_gallery_home_url();
 } else {
     $start = $page['nb_image_page'] * round($page['start'] / $page['nb_image_page']);
     if ($start > 0 && $start >= count($page['items'])) {
         $start -= $page['nb_image_page'];
     }
+
     $canonical_url = duplicate_index_url([
         'start' => $start,
     ]);
 }
+
 $template->assign('U_CANONICAL', $canonical_url);
 
 //-------------------------------------------------------------- page title
@@ -107,14 +112,14 @@ if (empty($page['is_external'])) {
     //----------------------------------------------------- template initialization
     $page['body_id'] = 'theCategoryPage';
 
-    if (isset($page['flat']) or isset($page['chronology_field'])) {
+    if (isset($page['flat']) || isset($page['chronology_field'])) {
         $template->assign(
             'U_MODE_NORMAL',
             duplicate_index_url([], ['chronology_field', 'start', 'flat'])
         );
     }
 
-    if ($conf['index_flat_icon'] and ! isset($page['flat']) and $page['section'] == 'categories') {
+    if ($conf['index_flat_icon'] && ! isset($page['flat']) && $page['section'] == 'categories') {
         $template->assign(
             'U_MODE_FLAT',
             duplicate_index_url([
@@ -135,6 +140,7 @@ if (empty($page['is_external'])) {
                 duplicate_index_url($chronology_params, ['start', 'flat'])
             );
         }
+
         if ($conf['index_posted_date_icon']) {
             $chronology_params['chronology_field'] = 'posted';
             $template->assign(
@@ -143,11 +149,8 @@ if (empty($page['is_external'])) {
             );
         }
     } else {
-        if ($page['chronology_field'] == 'created') {
-            $chronology_field = 'posted';
-        } else {
-            $chronology_field = 'created';
-        }
+        $chronology_field = $page['chronology_field'] == 'created' ? 'posted' : 'created';
+
         if ($conf['index_' . $chronology_field . '_date_icon']) {
             $url = duplicate_index_url(
                 [
@@ -165,7 +168,7 @@ if (empty($page['is_external'])) {
     // We add isset($page['search_details']) in this condition because it only
     // applies to regular search, not the legacy quicksearch. Since Piwigo 14 can still
     // be able to show an old quicksearch result, we must check this condition too.
-    if ($page['section'] == 'search' and isset($page['search_details'])) {
+    if ($page['section'] == 'search' && isset($page['search_details'])) {
         include_once(PHPWG_ROOT_PATH . 'include/functions_search.inc.php');
 
         $my_search = get_search_array($page['search']);
@@ -195,7 +198,7 @@ if (empty($page['is_external'])) {
                 // have to "force" them on the list.
                 $missing_tag_ids = array_diff($my_search['fields']['tags']['words'], array_column($filter_tags, 'id'));
 
-                if (count($missing_tag_ids) > 0) {
+                if ($missing_tag_ids !== []) {
                     $filter_tags = array_merge(get_available_tags($missing_tag_ids), $filter_tags);
                 }
             } else {
@@ -205,7 +208,7 @@ if (empty($page['is_external'])) {
 
             $template->assign('TAGS', $filter_tags);
 
-            $filter_tag_ids = count($filter_tags) > 0 ? array_column($filter_tags, 'id') : [];
+            $filter_tag_ids = $filter_tags !== [] ? array_column($filter_tags, 'id') : [];
 
             // in case the search has forbidden tags for current user, we need to filter the search rule
             $my_search['fields']['tags']['words'] = array_intersect($my_search['fields']['tags']['words'], $filter_tag_ids);
@@ -235,6 +238,7 @@ if (empty($page['is_external'])) {
             foreach ($authors as $author) {
                 $author_names[] = $author['author'];
             }
+
             $template->assign('AUTHORS', $authors);
 
             // in case the search has forbidden authors for current user, we need to filter the search rule
@@ -271,7 +275,7 @@ if (empty($page['is_external'])) {
             $dates = query2array($query);
             $pre_counters = array_fill_keys(array_keys($thresholds), []);
             foreach ($dates as $date_row) {
-                $year = date('Y', strtotime($date_row['date_available']));
+                $year = date('Y', strtotime((string) $date_row['date_available']));
                 $pre_counters['y' . $year][$date_row['image_id']] = 1;
                 foreach ($thresholds as $threshold => $date_limit) {
                     if ($date_row['date_available'] > $date_limit) {
@@ -343,7 +347,7 @@ if (empty($page['is_external'])) {
             $added_by = query2array($query);
             $user_ids = [];
 
-            if (count($added_by) > 0) {
+            if ($added_by !== []) {
                 // now let's find the usernames of added_by users
                 foreach ($added_by as $i) {
                     $user_ids[] = $i['added_by_id'];
@@ -369,7 +373,7 @@ if (empty($page['is_external'])) {
             $my_search['fields']['added_by'] = array_intersect($my_search['fields']['added_by'], $user_ids);
         }
 
-        if (isset($my_search['fields']['cat']) and ! empty($my_search['fields']['cat']['words'])) {
+        if (isset($my_search['fields']['cat']) && ! empty($my_search['fields']['cat']['words'])) {
             $fullname_of = [];
 
             $cat_words = implode(',', $my_search['fields']['cat']['words']);
@@ -426,10 +430,10 @@ if (empty($page['is_external'])) {
             ]
         );
 
-        if ($page['start'] == 0 and ! isset($page['chronology_field']) and isset($page['search_details'])) {
+        if ($page['start'] == 0 && ! isset($page['chronology_field']) && isset($page['search_details'])) {
             if (isset($page['search_details']['matching_cat_ids'])) {
                 $cat_ids = $page['search_details']['matching_cat_ids'];
-                if (count($cat_ids)) {
+                if (count($cat_ids) > 0) {
                     $cat_ids_str = implode(',', $cat_ids);
                     $query = <<<SQL
                         SELECT c.*
@@ -449,11 +453,12 @@ if (empty($page['is_external'])) {
                         );
                     }
 
-                    if (count($albums_found) > 0) {
+                    if ($albums_found !== []) {
                         $template->assign('ALBUMS_FOUND', $albums_found);
                     }
                 }
             }
+
             if (isset($page['search_details']['matching_tag_ids'])) {
                 $tag_ids = $page['search_details']['matching_tag_ids'];
 
@@ -470,7 +475,7 @@ if (empty($page['is_external'])) {
                         $tags_found[] = sprintf('<a href="%s">%s</a>', $url, $tag['name']);
                     }
 
-                    if (count($tags_found) > 0) {
+                    if ($tags_found !== []) {
                         $template->assign('TAGS_FOUND', $tags_found);
                     }
                 }
@@ -478,7 +483,7 @@ if (empty($page['is_external'])) {
         }
     }
 
-    if ($page['section'] == 'categories' and isset($page['category']) and ! isset($page['combined_categories'])) {
+    if ($page['section'] == 'categories' && isset($page['category']) && ! isset($page['combined_categories'])) {
         $template->assign(
             [
                 'SEARCH_IN_SET_BUTTON' => $conf['index_search_in_set_button'],
@@ -498,14 +503,14 @@ if (empty($page['is_external'])) {
         );
     }
 
-    if (isset($page['category']) and is_admin() and $conf['index_edit_icon']) {
+    if (isset($page['category']) && is_admin() && $conf['index_edit_icon']) {
         $template->assign(
             'U_EDIT',
             get_root_url() . 'admin.php?page=album-' . $page['category']['id']
         );
     }
 
-    if (is_admin() and ! empty($page['items']) and $conf['index_caddie_icon']) {
+    if (is_admin() && ! empty($page['items']) && $conf['index_caddie_icon']) {
         $template->assign(
             'U_CADDIE',
             add_url_params(duplicate_index_url(), [
@@ -514,18 +519,18 @@ if (empty($page['is_external'])) {
         );
     }
 
-    if ($page['section'] == 'search' and $page['start'] == 0 and
-        ! isset($page['chronology_field']) and isset($page['qsearch_details'])) {
+    if ($page['section'] == 'search' && $page['start'] == 0 && ! isset($page['chronology_field']) && isset($page['qsearch_details'])) {
         $cats = array_merge(
             $page['qsearch_details']['matching_cats_no_images'] ?? [],
             $page['qsearch_details']['matching_cats'] ?? []
         );
-        if (count($cats)) {
+        if ($cats !== []) {
             usort($cats, name_compare(...));
             $hints = [];
             foreach ($cats as $cat) {
                 $hints[] = get_cat_display_name([$cat], '');
             }
+
             $template->assign('category_search_results', $hints);
         }
 
@@ -538,25 +543,23 @@ if (empty($page['is_external'])) {
         }
 
         if (empty($page['items'])) {
-            $template->append('no_search_results', htmlspecialchars($page['qsearch_details']['q']));
+            $template->append('no_search_results', htmlspecialchars((string) $page['qsearch_details']['q']));
         } elseif (! empty($page['qsearch_details']['unmatched_terms'])) {
             $template->assign('no_search_results', array_map(htmlspecialchars(...), $page['qsearch_details']['unmatched_terms']));
         }
     }
 
     // image order
-    if ($conf['index_sort_order_input']
-        and count($page['items']) > 0
-        and $page['section'] != 'most_visited'
-        and $page['section'] != 'best_rated') {
+    if ($conf['index_sort_order_input'] && count($page['items']) > 0 && $page['section'] != 'most_visited' && $page['section'] != 'best_rated') {
         $preferred_image_orders = get_category_preferred_image_orders();
         $order_idx = pwg_get_session_var('image_order', 0);
 
         // get first order field and direction
-        $first_order = substr($conf['order_by'], 9);
+        $first_order = substr((string) $conf['order_by'], 9);
         if (($pos = strpos($first_order, ',')) !== false) {
             $first_order = substr($first_order, 0, $pos);
         }
+
         $first_order = trim($first_order);
 
         $url = add_url_params(
@@ -589,20 +592,16 @@ if (empty($page['is_external'])) {
     }
 
     // category comment
-    if (($page['start'] == 0 or $conf['album_description_on_all_pages']) and ! isset($page['chronology_field']) and ! empty($page['comment'])) {
+    if (($page['start'] == 0 || $conf['album_description_on_all_pages']) && ! isset($page['chronology_field']) && ! empty($page['comment'])) {
         $template->assign('CONTENT_DESCRIPTION', $page['comment']);
     }
 
-    if (isset($page['category']['count_categories']) and $page['category']['count_categories'] == 0) {// count_categories might be computed by menubar - if the case unassign flat link if no sub albums
+    if (isset($page['category']['count_categories']) && $page['category']['count_categories'] == 0) {// count_categories might be computed by menubar - if the case unassign flat link if no sub albums
         $template->clear_assign('U_MODE_FLAT');
     }
 
     //------------------------------------------------------ main part : thumbnails
-    if ($page['start'] == 0
-      and ! isset($page['flat'])
-      and ! isset($page['chronology_field'])
-      and ($page['section'] == 'recent_cats' or $page['section'] == 'categories')
-      and (! isset($page['category']['count_categories']) or $page['category']['count_categories'] > 0)
+    if ($page['start'] == 0 && ! isset($page['flat']) && ! isset($page['chronology_field']) && ($page['section'] == 'recent_cats' || $page['section'] == 'categories') && (! isset($page['category']['count_categories']) || $page['category']['count_categories'] > 0)
     ) {
         require PHPWG_ROOT_PATH . 'include/category_cats.inc.php';
     }
@@ -630,7 +629,7 @@ if (empty($page['is_external'])) {
                     [
                         'DISPLAY' => l10n($params->type),
                         'URL' => $url . $params->type,
-                        'SELECTED' => ($params->type == $selected_type ? true : false),
+                        'SELECTED' => ($params->type == $selected_type),
                     ]
                 );
             }

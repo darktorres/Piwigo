@@ -13,9 +13,9 @@ class c13y_internal
 {
     public function __construct()
     {
-        add_event_handler('list_check_integrity', [&$this, 'c13y_version']);
-        add_event_handler('list_check_integrity', [&$this, 'c13y_exif']);
-        add_event_handler('list_check_integrity', [&$this, 'c13y_user']);
+        add_event_handler('list_check_integrity', $this->c13y_version(...));
+        add_event_handler('list_check_integrity', $this->c13y_exif(...));
+        add_event_handler('list_check_integrity', $this->c13y_user(...));
     }
 
     /**
@@ -63,12 +63,12 @@ class c13y_internal
         global $conf;
 
         foreach (['show_exif', 'use_exif'] as $value) {
-            if (($conf[$value]) and (! function_exists('exif_read_data'))) {
+            if ($conf[$value] && ! function_exists('exif_read_data')) {
                 $c13y->add_anomaly(
-                    sprintf(l10n('%s value is not correct file because exif are not supported'), '$conf[\'' . $value . '\']'),
+                    sprintf(l10n('%s value is not correct file because exif are not supported'), '$conf[\'' . $value . "']"),
                     null,
                     null,
-                    sprintf(l10n('%s must be to set to false in your local/config/config.inc.php file'), '$conf[\'' . $value . '\']')
+                    sprintf(l10n('%s must be to set to false in your local/config/config.inc.php file'), '$conf[\'' . $value . "']")
           . '<br>' .
           $c13y->get_html_links_more_info()
                 );
@@ -129,7 +129,7 @@ class c13y_internal
                         'action' => 'creation',
                     ]
                 );
-            } elseif (! empty($data['status']) and $status[$id] != $data['status']) {
+            } elseif (isset($data['status']) && ($data['status'] !== '' && $data['status'] !== '0') && $status[$id] != $data['status']) {
                 $c13y->add_anomaly(
                     l10n($data['l10n_bad_status']),
                     'c13y_correction_user',
@@ -155,7 +155,7 @@ class c13y_internal
 
         $result = false;
 
-        if (! empty($id)) {
+        if ($id !== 0) {
             switch ($action) {
                 case 'creation':
                     if ($id == $conf['guest_id']) {
@@ -193,6 +193,7 @@ class c13y_internal
 
                         $result = true;
                     }
+
                     break;
                 case 'status':
                     if ($id == $conf['guest_id']) {
@@ -223,6 +224,7 @@ class c13y_internal
 
                         $result = true;
                     }
+
                     break;
             }
         }

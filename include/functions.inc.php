@@ -61,7 +61,7 @@ function get_elapsed_time(
 function get_extension(
     ?string $filename
 ): string {
-    return substr(strrchr($filename, '.'), 1, strlen($filename));
+    return substr(strrchr((string) $filename, '.'), 1, strlen((string) $filename));
 }
 
 /**
@@ -103,22 +103,36 @@ function mkgetdir(
         $mkd = mkdir($dir, $conf['chmod_value'], (bool) ($flags & MKGETDIR_RECURSIVE));
         umask($umask);
         if ($mkd == false) {
-            ! ($flags & MKGETDIR_DIE_ON_ERROR) or fatal_error("{$dir} " . l10n('no write access'));
+            if (($flags & MKGETDIR_DIE_ON_ERROR) !== 0) {
+                fatal_error("{$dir} " . l10n('no write access'));
+            }
+
             return false;
         }
-        if ($flags & MKGETDIR_PROTECT_HTACCESS) {
+
+        if (($flags & MKGETDIR_PROTECT_HTACCESS) !== 0) {
             $file = $dir . '/.htaccess';
-            file_exists($file) or file_put_contents($file, 'deny from all');
+            if (! file_exists($file)) {
+                file_put_contents($file, 'deny from all');
+            }
         }
-        if ($flags & MKGETDIR_PROTECT_INDEX) {
+
+        if (($flags & MKGETDIR_PROTECT_INDEX) !== 0) {
             $file = $dir . '/index.htm';
-            file_exists($file) or file_put_contents($file, 'Not allowed!');
+            if (! file_exists($file)) {
+                file_put_contents($file, 'Not allowed!');
+            }
         }
     }
+
     if (! is_writable($dir)) {
-        ! ($flags & MKGETDIR_DIE_ON_ERROR) or fatal_error("{$dir} " . l10n('no write access'));
+        if (($flags & MKGETDIR_DIE_ON_ERROR) !== 0) {
+            fatal_error("{$dir} " . l10n('no write access'));
+        }
+
         return false;
     }
+
     return true;
 }
 
@@ -134,7 +148,9 @@ function qualify_utf8(
     for ($i = 0; $i < strlen($Str); $i++) {
         if (ord($Str[$i]) < 0x80) {
             continue;
-        } # 0bbbbbbb
+        }
+
+        # 0bbbbbbb
         $ret = 1;
         if ((ord($Str[$i]) & 0xE0) == 0xC0) {
             $n = 1;
@@ -153,13 +169,16 @@ function qualify_utf8(
         } # 1111110b
         else {
             return -1;
-        } # Does not match any model
+        }
+
+        # Does not match any model
         for ($j = 0; $j < $n; $j++) { # n bytes matching 10bbbbbb follow ?
-            if ((++$i == strlen($Str)) || ((ord($Str[$i]) & 0xC0) != 0x80)) {
+            if ((++$i === strlen($Str)) || ((ord($Str[$i]) & 0xC0) != 0x80)) {
                 return -1;
             }
         }
     }
+
     return $ret;
 }
 
@@ -421,9 +440,11 @@ if (function_exists('mb_strtolower')) {
 function str2url(
     string $str
 ): array|string {
-    $str = $safe = pwg_transliterate($str);
+    $str = pwg_transliterate($str);
+    $safe = $str;
     $str = preg_replace('/[^\x80-\xffa-z0-9_\s\'\:\/\[\],-]/', '', $str);
-    $str = preg_replace('/[\s\'\:\/\[\],-]+/', ' ', trim($str));
+    $str = preg_replace('/[\s\'\:\/\[\],-]+/', ' ', trim((string) $str));
+
     $res = str_replace(' ', '_', $str);
 
     if (empty($res)) {
@@ -472,6 +493,7 @@ function do_log(
     if (is_admin()) {
         $do_log = $conf['history_admin'];
     }
+
     if (is_a_guest()) {
         $do_log = $conf['history_guest'];
     }
@@ -492,9 +514,10 @@ function pwg_log(
     global $conf, $user, $page;
 
     $update_last_visit = false;
-    if (empty($user['last_visit']) or strtotime($user['last_visit']) < time() - $conf['session_length']) {
+    if (empty($user['last_visit']) || strtotime((string) $user['last_visit']) < time() - $conf['session_length']) {
         $update_last_visit = true;
     }
+
     $update_last_visit = trigger_change('pwg_log_update_last_visit', $update_last_visit);
 
     if ($update_last_visit) {
@@ -528,8 +551,8 @@ function pwg_log(
     // It would be "cleaner" to increase length of history.IP to 50 chars, but
     // the alter table is very long on such a big table. We should plan this
     // for a future version, once history table is kept "smaller".
-    if (strpos($ip, ':') !== false and strlen($ip) > 15) {
-        $ip = substr($ip, 0, 15);
+    if (str_contains((string) $ip, ':') && strlen((string) $ip) > 15) {
+        $ip = substr((string) $ip, 0, 15);
     }
 
     // If plugin developers add their own sections, Piwigo will automatically add it in the history.section enum column
@@ -540,11 +563,10 @@ function pwg_log(
         }
 
         if (
-            in_array($page['section'], $conf['history_sections_cache'])
-            or in_array(strtolower($page['section']), array_map('strtolower', $conf['history_sections_cache']))
+            in_array($page['section'], $conf['history_sections_cache']) || in_array(strtolower((string) $page['section']), array_map('strtolower', $conf['history_sections_cache']))
         ) {
             $section = $page['section'];
-        } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', $page['section'])) {
+        } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', (string) $page['section'])) {
             $history_sections = get_enums('history', 'section');
             $history_sections[] = $page['section'];
 
@@ -586,7 +608,7 @@ function pwg_log(
         history_summarize(50000);
     }
 
-    if ($conf['history_autopurge_every'] > 0 and $history_id % $conf['history_autopurge_every'] == 0) {
+    if ($conf['history_autopurge_every'] > 0 && $history_id % $conf['history_autopurge_every'] == 0) {
         require_once PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php';
         history_autopurge();
     }
@@ -603,11 +625,11 @@ function pwg_activity(
     global $user;
 
     // in case of uploadAsync, do not log the automatic login as an independent activity
-    if (isset($_REQUEST['method']) and $_REQUEST['method'] == 'pwg.images.uploadAsync' and $action == 'login') {
+    if (isset($_REQUEST['method']) && $_REQUEST['method'] == 'pwg.images.uploadAsync' && $action === 'login') {
         return;
     }
 
-    if (isset($_REQUEST['method']) and $_REQUEST['method'] == 'pwg.plugins.performAction' and $_REQUEST['action'] != $action) {
+    if (isset($_REQUEST['method']) && $_REQUEST['method'] == 'pwg.plugins.performAction' && $_REQUEST['action'] != $action) {
         // for example, if you "restore" a plugin, the internal sequence will perform deactivate/uninstall/install/activate.
         // We only want to keep the last call to pwg_activity with the "restore" action.
         return;
@@ -623,47 +645,47 @@ function pwg_activity(
     } else {
         $details['script'] = script_basename();
 
-        if ($details['script'] == 'admin' and isset($_GET['page'])) {
+        if ($details['script'] === 'admin' && isset($_GET['page'])) {
             $details['script'] .= '/' . $_GET['page'];
         }
     }
 
-    if ($action == 'autoupdate') {
+    if ($action === 'autoupdate') {
         // autoupdate on a plugin can happen anywhere, the "script/method" is not meaningful
         unset($details['method']);
         unset($details['script']);
     }
 
     $user_agent = null;
-    if ($object == 'user' and $action == 'login' and isset($_SERVER['HTTP_USER_AGENT'])) {
-        $user_agent = strip_tags($_SERVER['HTTP_USER_AGENT']);
+    if ($object === 'user' && $action === 'login' && isset($_SERVER['HTTP_USER_AGENT'])) {
+        $user_agent = strip_tags((string) $_SERVER['HTTP_USER_AGENT']);
     }
 
-    if ($object == 'photo' and $action == 'add' and ! isset($details['sync'])) {
+    if ($object === 'photo' && $action === 'add' && ! isset($details['sync'])) {
         $details['added_with'] = 'app';
-        if (isset($_SERVER['HTTP_REFERER']) and preg_match('/page=photos_add/', $_SERVER['HTTP_REFERER'])) {
+        if (isset($_SERVER['HTTP_REFERER']) && preg_match('/page=photos_add/', (string) $_SERVER['HTTP_REFERER'])) {
             $details['added_with'] = 'browser';
         }
     }
 
-    if (in_array($object, ['album', 'photo']) and $action == 'delete' and isset($_GET['page']) and $_GET['page'] == 'site_update') {
+    if (in_array($object, ['album', 'photo']) && $action === 'delete' && isset($_GET['page']) && $_GET['page'] == 'site_update') {
         $details['sync'] = true;
     }
 
-    if ($object == 'tag' and $action == 'delete' and isset($_POST['destination_tag'])) {
+    if ($object === 'tag' && $action === 'delete' && isset($_POST['destination_tag'])) {
         $details['action'] = 'merge';
         $details['destination_tag'] = $_POST['destination_tag'];
     }
 
     $inserts = [];
     $details_insert = pwg_db_real_escape_string(serialize($details));
-    $ip_address = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
-    $session_id = ! empty(session_id()) ? session_id() : 'none';
+    $ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+    $session_id = session_id() ?: 'none';
 
     foreach ($object_ids as $loop_object_id) {
         $performed_by = $user['id'] ?? 0; // on a plugin autoupdate, $user is not yet loaded
 
-        if ($action == 'logout') {
+        if ($action === 'logout') {
             $performed_by = $loop_object_id;
         }
 
@@ -700,7 +722,7 @@ function dateDiff(
     //Make sure $date1 is earlier
     $diff->invert = $date2 < $date1;
     if ($diff->invert) {
-        list($date1, $date2) = [$date2, $date1];
+        [$date1, $date2] = [$date2, $date1];
     }
 
     //Calculate R values
@@ -711,7 +733,7 @@ function dateDiff(
     $diff->days = round(abs($date1->format('U') - $date2->format('U')) / 86400);
 
     //A leap year work around - consistent with DateInterval
-    $leap_year = $date1->format('m-d') == '02-29';
+    $leap_year = $date1->format('m-d') === '02-29';
     if ($leap_year) {
         $date1->modify('-1 day');
     }
@@ -725,7 +747,7 @@ function dateDiff(
     ];
 
     foreach ($periods as $period => &$i) {
-        if ($period == 'days' && $leap_year) {
+        if ($period === 'days' && $leap_year) {
             $date1->modify('+1 day');
         }
 
@@ -738,12 +760,12 @@ function dateDiff(
         $date1->modify('-1 ' . $period);
     }
 
-    list($diff->y, $diff->m, $diff->d, $diff->h) = array_values($periods);
+    [$diff->y, $diff->m, $diff->d, $diff->h] = array_values($periods);
 
     //Minutes, seconds
     $diff->s = round(abs($date1->format('U') - $date2->format('U')));
     $diff->i = floor($diff->s / 60);
-    $diff->s = $diff->s - $diff->i * 60;
+    $diff->s -= $diff->i * 60;
 
     return $diff;
 }
@@ -759,7 +781,7 @@ function str2DateTime(
     int|string|null $original,
     ?string $format = null
 ): bool|DateTime {
-    if (empty($original)) {
+    if ($original === 0 || ($original === '' || $original === '0') || $original === null) {
         return false;
     }
 
@@ -767,14 +789,15 @@ function str2DateTime(
         return $original;
     }
 
-    if (! empty($format) && version_compare(PHP_VERSION, '5.3.0') >= 0) {// from known date format
+    if ($format !== null && $format !== '' && $format !== '0' && version_compare(PHP_VERSION, '5.3.0') >= 0) {// from known date format
         return DateTime::createFromFormat('!' . $format, $original); // ! char to reset fields to UNIX epoch
     }
 
     $t = trim((string) $original, '0123456789');
-    if (empty($t)) { // from timestamp
+    if ($t === '' || $t === '0') { // from timestamp
         return new DateTime('@' . $original);
     }
+
     // from unknown date format (assuming something like Y-m-d H:i:s)
 
     $ymdhms = [];
@@ -787,12 +810,15 @@ function str2DateTime(
     if (count($ymdhms) < 3) {
         return false;
     }
+
     if (! isset($ymdhms[3])) {
         $ymdhms[3] = 0;
     }
+
     if (! isset($ymdhms[4])) {
         $ymdhms[4] = 0;
     }
+
     if (! isset($ymdhms[5])) {
         $ymdhms[5] = 0;
     }
@@ -880,6 +906,7 @@ function format_fromto(
     } else {
         $from_str = format_date($from, ['day_name', 'day']);
     }
+
     $to_str = format_date($to);
 
     return l10n('from %s to %s', $from_str, $to_str);
@@ -924,10 +951,10 @@ function time_since(
     // DateInterval does not contain the number of weeks
     if ($with_week) {
         $chunks['week'] = (int) floor($chunks['day'] / 7);
-        $chunks['day'] = $chunks['day'] - $chunks['week'] * 7;
+        $chunks['day'] -= $chunks['week'] * 7;
     }
 
-    $j = array_search($stop, array_keys($chunks));
+    $j = array_search($stop, array_keys($chunks), true);
 
     $print = '';
     $i = 0;
@@ -937,22 +964,26 @@ function time_since(
             if ($value != 0) {
                 $print .= ' ' . l10n_dec('%d ' . $name, '%d ' . $name . 's', $value);
             }
-            if (! empty($print) && $i >= $j) {
+
+            if ($print !== '' && $print !== '0' && $i >= $j) {
                 break;
             }
+
             $i++;
         }
     } else {
         $reversed_chunks_names = array_keys($chunks);
-        while ($print == '' && $i < count($reversed_chunks_names)) {
+        while ($print === '' && $i < count($reversed_chunks_names)) {
             $name = $reversed_chunks_names[$i];
             $value = $chunks[$name];
             if ($value != 0) {
                 $print = l10n_dec('%d ' . $name, '%d ' . $name . 's', $value);
             }
-            if (! empty($print) && $i >= $j) {
+
+            if ($print !== '' && $print !== '0' && $i >= $j) {
                 break;
             }
+
             $i++;
         }
     }
@@ -960,11 +991,7 @@ function time_since(
     $print = trim($print);
 
     if ($with_text) {
-        if ($diff->invert) {
-            $print = l10n('%s ago', $print);
-        } else {
-            $print = l10n('%s in the future', $print);
-        }
+        $print = $diff->invert ? l10n('%s ago', $print) : l10n('%s in the future', $print);
     }
 
     return $print;
@@ -983,9 +1010,10 @@ function transform_date(
     string $format_out,
     ?string $default = null
 ): string {
-    if (empty($original)) {
+    if ($original === '' || $original === '0') {
         return $default;
     }
+
     $date = str2DateTime($original, $format_in);
     return $date->format($format_out);
 }
@@ -1001,6 +1029,7 @@ function pwg_debug(
     $now = explode(' ', microtime());
     $now2 = explode('.', $now[0]);
     $now2 = $now[1] . '.' . $now2[1];
+
     $time = number_format($now2 - $t2, 3, '.', ' ') . ' s';
     $debug .= '<p>';
     $debug .= '[' . $time . ', ';
@@ -1019,6 +1048,7 @@ function redirect_http(
     if (ob_get_length() !== false) {
         ob_clean();
     }
+
     // default url is on html format
     $url = html_entity_decode($url);
     header('Request-URI: ' . $url);
@@ -1048,11 +1078,11 @@ function redirect_html(
             'local' => true,
         ]);
         $template = new Template(PHPWG_ROOT_PATH . 'themes', get_default_theme());
-    } elseif (defined('IN_ADMIN') and IN_ADMIN) {
+    } elseif (defined('IN_ADMIN') && IN_ADMIN) {
         $template = new Template(PHPWG_ROOT_PATH . 'themes', get_default_theme());
     }
 
-    if (empty($msg)) {
+    if ($msg === '' || $msg === '0') {
         $msg = nl2br(l10n('Redirection...'));
     }
 
@@ -1091,9 +1121,7 @@ function redirect(
     global $conf;
 
     // with RefreshTime <> 0, only HTML must be used
-    if ($conf['default_redirect_method'] == 'http'
-        and $refresh_time == 0
-        and ! headers_sent()
+    if ($conf['default_redirect_method'] == 'http' && $refresh_time == 0 && ! headers_sent()
     ) {
         redirect_http($url);
     } else {
@@ -1124,8 +1152,10 @@ function get_pwg_themes(
             if (! $show_mobile) {
                 continue;
             }
+
             $row['name'] .= ' (' . l10n('Mobile') . ')';
         }
+
         if (check_theme_installed($row['id'])) {
             $themes[$row['id']] = $row['name'];
         }
@@ -1186,6 +1216,7 @@ function get_element_path(
     if (! url_is_remote($path)) {
         $path = PHPWG_ROOT_PATH . $path;
     }
+
     return $path;
 }
 
@@ -1217,7 +1248,7 @@ function fill_caddie(
         ];
     }
 
-    if (count($caddiables) > 0) {
+    if ($caddiables !== []) {
         mass_inserts('caddie', ['element_id', 'user_id'], $datas);
     }
 }
@@ -1245,9 +1276,10 @@ function l10n(
     global $lang, $conf;
 
     if (($val = ($lang[$key] ?? null)) === null) {
-        if ($conf['debug_l10n'] and ! isset($lang[$key]) and ! empty($key)) {
+        if ($conf['debug_l10n'] && ! isset($lang[$key]) && ($key !== '' && $key !== '0')) {
             trigger_error('[l10n] language key "' . $key . '" not defined', E_USER_WARNING);
         }
+
         $val = $key;
     }
 
@@ -1272,7 +1304,7 @@ function l10n_dec(
 
     return sprintf(
         l10n((
-            (($decimal > 1) or ($decimal == 0 and $lang_info['zero_plural']))
+            ($decimal > 1 || $decimal == 0 && $lang_info['zero_plural'])
             ? $plural_key
             : $singular_key
         )),
@@ -1291,11 +1323,8 @@ function get_l10n_args(
     string $key,
     mixed $args = ''
 ): array {
-    if (is_array($args)) {
-        $key_arg = array_merge([$key], $args);
-    } else {
-        $key_arg = [$key, $args];
-    }
+    $key_arg = is_array($args) ? array_merge([$key], $args) : [$key, $args];
+
     return [
         'key_args' => $key_arg,
     ];
@@ -1323,7 +1352,7 @@ function l10n_args(
 
             if ($key === 'key_args') {
                 array_unshift($element, l10n(array_shift($element))); // translate the key
-                $result .= call_user_func_array('sprintf', $element);
+                $result .= sprintf(...$element);
             } else {
                 $result .= l10n_args($element, $sep);
             }
@@ -1356,7 +1385,7 @@ function get_webmaster_mail_address(): string
         FROM users
         WHERE {$conf['user_fields']['id']} = {$conf['webmaster_id']};
         SQL;
-    list($email) = pwg_db_fetch_row(pwg_query($query));
+    [$email] = pwg_db_fetch_row(pwg_query($query));
 
     $email = trigger_change('get_webmaster_mail_address', $email);
 
@@ -1445,7 +1474,7 @@ function load_conf_from_db(
 ): void {
     global $conf;
 
-    $condition = ! empty($condition) ? 'WHERE ' . $condition : '';
+    $condition = $condition === '' || $condition === '0' ? '' : 'WHERE ' . $condition;
     $query = <<<SQL
         SELECT param, value
         FROM config
@@ -1453,12 +1482,12 @@ function load_conf_from_db(
         SQL;
     $result = pwg_query($query);
 
-    if ((pwg_db_num_rows($result) == 0) and ! empty($condition)) {
+    if (pwg_db_num_rows($result) == 0 && ($condition !== '' && $condition !== '0')) {
         fatal_error('No configuration data');
     }
 
     while ($row = pwg_db_fetch_assoc($result)) {
-        $val = isset($row['value']) ? $row['value'] : '';
+        $val = $row['value'] ?? '';
 
         if ($val === 'true') {
             $val = true;
@@ -1469,6 +1498,7 @@ function load_conf_from_db(
         } elseif (is_numeric($val)) {
             $val = str_contains($val, '.') ? (float) $val : (int) $val;
         }
+
         $conf[$row['param']] = $val;
     }
 
@@ -1482,13 +1512,13 @@ function load_conf_from_db(
  */
 function pwg_is_dbconf_writeable(): bool
 {
-    list($param, $value) = ['pwg_is_dbconf_writeable_' . generate_key(12), date('c') . ' ' . generate_key(20)];
+    [$param, $value] = ['pwg_is_dbconf_writeable_' . generate_key(12), date('c') . ' ' . generate_key(20)];
 
     conf_update_param($param, $value);
     $query = <<<SQL
         SELECT value FROM config WHERE param = '{$param}';
         SQL;
-    list($dbvalue) = pwg_db_fetch_row(pwg_query($query));
+    [$dbvalue] = pwg_db_fetch_row(pwg_query($query));
 
     if ($dbvalue != $value) {
         return false;
@@ -1550,7 +1580,8 @@ function conf_delete_param(
     if (! is_array($params)) {
         $params = [$params];
     }
-    if (empty($params)) {
+
+    if ($params === []) {
         return;
     }
 
@@ -1580,11 +1611,7 @@ function conf_get_param(
     mixed $default_value = null
 ): mixed {
     global $conf;
-
-    if (isset($conf[$param])) {
-        return $conf[$param];
-    }
-    return $default_value;
+    return $conf[$param] ?? $default_value;
 }
 
 /**
@@ -1597,6 +1624,7 @@ function safe_json_decode(
     if (is_string($value)) {
         return json_decode($value, true);
     }
+
     return $value;
 }
 
@@ -1622,16 +1650,18 @@ function script_basename(): string
 
     foreach (['SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF'] as $value) {
         if (! empty($_SERVER[$value])) {
-            $filename = strtolower($_SERVER[$value]);
-            if ($conf['php_extension_in_urls'] and get_extension($filename) !== 'php') {
+            $filename = strtolower((string) $_SERVER[$value]);
+            if ($conf['php_extension_in_urls'] && get_extension($filename) !== 'php') {
                 continue;
             }
+
             $basename = basename($filename, '.php');
-            if (! empty($basename)) {
+            if ($basename !== '' && $basename !== '0') {
                 return $basename;
             }
         }
     }
+
     return '';
 }
 
@@ -1663,15 +1693,15 @@ function get_filter_page_value(
 function get_parent_language(
     ?string $lang_id = null
 ): ?string {
-    if (empty($lang_id)) {
+    if ($lang_id === null || $lang_id === '' || $lang_id === '0') {
         global $lang_info;
-        return ! empty($lang_info['parent']) ? $lang_info['parent'] : null;
+        return empty($lang_info['parent']) ? null : $lang_info['parent'];
     }
 
     $f = PHPWG_ROOT_PATH . 'language/' . $lang_id . '/common.lang.php';
     if (file_exists($f)) {
         require $f;
-        return ! empty($lang_info['parent']) ? $lang_info['parent'] : null;
+        return empty($lang_info['parent']) ? null : $lang_info['parent'];
     }
 
     return null;
@@ -1699,7 +1729,7 @@ function load_language(
     global $user, $language_files;
 
     // keep trace of plugins loaded files for switch_lang_to() function
-    if (! empty($dirname) && ! empty($filename) && ! ($options['return'] ?? null)
+    if ($dirname !== '' && $dirname !== '0' && ($filename !== '' && $filename !== '0') && ! ($options['return'] ?? null)
       && ! isset($language_files[$dirname][$filename])) {
         $language_files[$dirname][$filename] = $options;
     }
@@ -1707,12 +1737,14 @@ function load_language(
     if (! ($options['return'] ?? null)) {
         $filename .= '.php';
     }
-    if (empty($dirname)) {
+
+    if ($dirname === '' || $dirname === '0') {
         $dirname = PHPWG_ROOT_PATH;
     }
+
     $dirname .= 'language/';
 
-    $default_language = (defined('PHPWG_INSTALLED') and ! defined('UPGRADES_PATH')) ?
+    $default_language = (defined('PHPWG_INSTALLED') && ! defined('UPGRADES_PATH')) ?
         get_default_language() : PHPWG_DEFAULT_LANGUAGE;
 
     // construct list of potential languages
@@ -1720,20 +1752,25 @@ function load_language(
     if (! empty($options['language'])) { // explicit language
         $languages[] = $options['language'];
     }
+
     if (! empty($user['language'])) { // use language
         $languages[] = $user['language'];
     }
+
     if (($parent = get_parent_language()) != null) { // parent language
         // this is only for when the "child" language is missing
         $languages[] = $parent;
     }
+
     if (isset($options['force_fallback'])) { // fallback language
         // this is only for when the main language is missing
         if ($options['force_fallback'] === true) {
             $options['force_fallback'] = $default_language;
         }
+
         $languages[] = $options['force_fallback'];
     }
+
     if (! ($options['no_fallback'] ?? null)) { // default language
         $languages[] = $default_language;
     }
@@ -1755,16 +1792,21 @@ function load_language(
         }
     }
 
-    if (! empty($source_file)) {
+    if ($source_file !== '' && $source_file !== '0') {
         if (! ($options['return'] ?? null)) {
             // load forced fallback
             if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language) {
                 $tmp = str_replace($selected_language, $options['force_fallback'], $source_file);
-                file_exists($tmp) && require $tmp;
+                if (file_exists($tmp)) {
+                    require $tmp;
+                }
             }
 
             // load language content
-            file_exists($source_file) && require $source_file;
+            if (file_exists($source_file)) {
+                require $source_file;
+            }
+
             $load_lang = $lang;
             $load_lang_info = $lang_info ?? null;
 
@@ -1773,6 +1815,7 @@ function load_language(
             if (! isset($lang)) {
                 $lang = [];
             }
+
             if (! isset($lang_info)) {
                 $lang_info = [];
             }
@@ -1788,7 +1831,9 @@ function load_language(
 
             if (! empty($parent_language) && $parent_language != $selected_language) {
                 $tmp = str_replace($selected_language, $parent_language, $source_file);
-                file_exists($tmp) && require $tmp;
+                if (file_exists($tmp)) {
+                    require $tmp;
+                }
             }
 
             // merge contents
@@ -1814,21 +1859,26 @@ function convert_charset(
     string $source_charset,
     string $dest_charset
 ): array|bool|string {
-    if ($source_charset == $dest_charset) {
+    if ($source_charset === $dest_charset) {
         return $str;
     }
-    if ($source_charset == 'iso-8859-1' and $dest_charset == 'utf-8') {
-        return utf8_encode($str);
+
+    if ($source_charset === 'iso-8859-1' && $dest_charset === 'utf-8') {
+        return mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1');
     }
-    if ($source_charset == 'utf-8' and $dest_charset == 'iso-8859-1') {
-        return utf8_decode($str);
+
+    if ($source_charset === 'utf-8' && $dest_charset === 'iso-8859-1') {
+        return mb_convert_encoding($str, 'ISO-8859-1');
     }
+
     if (function_exists('iconv')) {
         return iconv($source_charset, $dest_charset . '//TRANSLIT', $str);
     }
+
     if (function_exists('mb_convert_encoding')) {
         return mb_convert_encoding($str, $dest_charset, $source_charset);
     }
+
     return $str; // TODO
 }
 
@@ -1858,8 +1908,8 @@ function get_ephemeral_key(
     return $time . ':' . $valid_after_seconds . ':'
         . hash_hmac(
             'md5',
-            $time . substr($_SERVER['REMOTE_ADDR'], 0, 5) . $valid_after_seconds . $aditionnal_data_to_hash,
-            $conf['secret_key']
+            $time . substr((string) $_SERVER['REMOTE_ADDR'], 0, 5) . $valid_after_seconds . $aditionnal_data_to_hash,
+            (string) $conf['secret_key']
         );
 }
 
@@ -1873,17 +1923,15 @@ function verify_ephemeral_key(
     global $conf;
     $time = microtime(true);
     $key = explode(':', $key);
-    if (count($key) != 3
-        or $key[0] > $time - (float) $key[1] // page must have been retrieved more than X sec ago
-        or $key[0] < $time - 3600 // 60 minutes expiration
-        or hash_hmac(
-            'md5',
-            $key[0] . substr($_SERVER['REMOTE_ADDR'], 0, 5) . $key[1] . $aditionnal_data_to_hash,
-            $conf['secret_key']
-        ) != $key[2]
+    if (count($key) != 3 || $key[0] > $time - (float) $key[1] || $key[0] < $time - 3600 || hash_hmac(
+        'md5',
+        $key[0] . substr((string) $_SERVER['REMOTE_ADDR'], 0, 5) . $key[1] . $aditionnal_data_to_hash,
+        (string) $conf['secret_key']
+    ) !== $key[2]
     ) {
         return false;
     }
+
     return true;
 }
 
@@ -1904,9 +1952,9 @@ function create_navigation_bar(
 
     $navbar = [];
     $pages_around = $conf['paginate_pages_around'];
-    $start_str = $clean_url ? '/' . $param_name . '-' : (strpos($url, '?') === false ? '?' : '&amp;') . $param_name . '=';
+    $start_str = $clean_url ? '/' . $param_name . '-' : (str_contains($url, '?') ? '&amp;' : '?') . $param_name . '=';
 
-    if (! isset($start) or ! is_numeric($start) or (is_numeric($start) and $start < 0)) {
+    if (! isset($start) || ! is_numeric($start) || is_numeric($start) && $start < 0) {
         $start = 0;
     }
 
@@ -1927,6 +1975,7 @@ function create_navigation_bar(
             $navbar['URL_FIRST'] = $url;
             $navbar['URL_PREV'] = $previous > 0 ? $url_start . $previous : $url;
         }
+
         // link on next page and last page?
         if ($cur_page != $maximum) {
             $navbar['URL_NEXT'] = $url_start . ($next < $last ? $next : $last);
@@ -1940,9 +1989,11 @@ function create_navigation_bar(
             $i < $stop; $i++) {
             $navbar['pages'][$i] = $url . $start_str . (($i - 1) * $nb_element_page);
         }
+
         $navbar['pages'][$maximum] = $url_start . $last;
         $navbar['NB_PAGE'] = $maximum;
     }
+
     return $navbar;
 }
 
@@ -1957,7 +2008,7 @@ function get_icon(
 ): array|bool {
     global $cache, $user;
 
-    if (empty($date)) {
+    if ($date === null || $date === '' || $date === '0') {
         return false;
     }
 
@@ -2010,7 +2061,7 @@ function get_pwg_token(): string
 {
     global $conf;
 
-    return hash_hmac('md5', session_id(), $conf['secret_key']);
+    return hash_hmac('md5', session_id(), (string) $conf['secret_key']);
 }
 
 /**
@@ -2034,6 +2085,7 @@ function check_input_parameter(
         if ($mandatory) {
             fatal_error('[Hacking attempt] the input parameter "' . $param_name . '" is not valid');
         }
+
         return true;
     }
 
@@ -2043,14 +2095,12 @@ function check_input_parameter(
         }
 
         foreach ($param_value as $key => $item_to_check) {
-            if (! preg_match(PATTERN_ID, (string) $key) or ! preg_match($pattern, $item_to_check)) {
+            if (! preg_match(PATTERN_ID, (string) $key) || ! preg_match($pattern, (string) $item_to_check)) {
                 fatal_error('[Hacking attempt] an item is not valid in input parameter "' . $param_name . '"');
             }
         }
-    } else {
-        if (! preg_match($pattern, $param_value)) {
-            fatal_error('[Hacking attempt] the input parameter "' . $param_name . '" is not valid');
-        }
+    } elseif (! preg_match($pattern, (string) $param_value)) {
+        fatal_error('[Hacking attempt] the input parameter "' . $param_name . '" is not valid');
     }
 
     return null;
@@ -2071,13 +2121,16 @@ function get_privacy_level_options(): array
         if ($level == 0) {
             $label = l10n('Everybody');
         } else {
-            if (strlen($label)) {
+            if (strlen($label) !== 0) {
                 $label .= ', ';
             }
+
             $label .= l10n(sprintf('Level %d', $level));
         }
+
         $options[$level] = $label;
     }
+
     return $options;
 }
 
@@ -2109,6 +2162,7 @@ function get_device(): string
         } else {
             $device = 'desktop';
         }
+
         pwg_set_session_var('device', $device);
     }
 
@@ -2134,7 +2188,7 @@ function mobile_theme(): bool
     }
 
     if ($is_mobile_theme === null) {
-        $is_mobile_theme = (get_device() == 'mobile');
+        $is_mobile_theme = (get_device() === 'mobile');
         pwg_set_session_var('mobile_theme', $is_mobile_theme);
     }
 
@@ -2147,11 +2201,11 @@ function mobile_theme(): bool
 function url_check_format(
     string $url
 ): bool {
-    if (strpos($url, '"') !== false) {
+    if (str_contains($url, '"')) {
         return false;
     }
 
-    if (strncmp($url, 'http://', 7) !== 0 and strncmp($url, 'https://', 8) !== 0) {
+    if (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://')) {
         return false;
     }
 
@@ -2178,6 +2232,7 @@ function get_nb_available_comments(): int
         if (! is_admin()) {
             $where[] = "validated = 'true'";
         }
+
         $where[] = get_sql_condition_FandF(
             [
                 'forbidden_categories' => 'category_id',
@@ -2194,7 +2249,7 @@ function get_nb_available_comments(): int
             INNER JOIN comments AS com ON ic.image_id = com.image_id
             WHERE {$whereClause};
             SQL;
-        list($user['nb_available_comments']) = pwg_db_fetch_row(pwg_query($query));
+        [$user['nb_available_comments']] = pwg_db_fetch_row(pwg_query($query));
 
         single_update(
             'user_cache',
@@ -2206,6 +2261,7 @@ function get_nb_available_comments(): int
             ]
         );
     }
+
     return $user['nb_available_comments'];
 }
 
@@ -2220,17 +2276,17 @@ function safe_version_compare(
     string $b,
     ?string $op = null
 ): bool|int {
-    $replace_chars = function ($m): int { return ord(strtolower($m[1])); };
+    $replace_chars = fn ($m): int => ord(strtolower((string) $m[1]));
 
     // add dot before groups of letters (version_compare does the same thing)
     $a = preg_replace('#([0-9]+)([a-z]+)#i', '$1.$2', $a);
     $b = preg_replace('#([0-9]+)([a-z]+)#i', '$1.$2', $b);
 
     // apply ord() to any single letter
-    $a = preg_replace_callback('#\b([a-z]{1})\b#i', $replace_chars, $a);
-    $b = preg_replace_callback('#\b([a-z]{1})\b#i', $replace_chars, $b);
+    $a = preg_replace_callback('#\b([a-z]{1})\b#i', $replace_chars, (string) $a);
+    $b = preg_replace_callback('#\b([a-z]{1})\b#i', $replace_chars, (string) $b);
 
-    if (empty($op)) {
+    if ($op === null || $op === '' || $op === '0') {
         return version_compare($a, $b);
     }
 
@@ -2247,11 +2303,11 @@ function check_lounge(): void
 {
     global $conf;
 
-    if (! isset($conf['lounge_active']) or ! $conf['lounge_active']) {
+    if (! isset($conf['lounge_active']) || ! $conf['lounge_active']) {
         return;
     }
 
-    if (isset($_REQUEST['method']) and in_array($_REQUEST['method'], ['pwg.images.upload', 'pwg.images.uploadAsync'])) {
+    if (isset($_REQUEST['method']) && in_array($_REQUEST['method'], ['pwg.images.upload', 'pwg.images.uploadAsync'])) {
         return;
     }
 
@@ -2264,9 +2320,9 @@ function check_lounge(): void
         LIMIT 1;
         SQL;
     $voyagers = query2array($query);
-    if (count($voyagers)) {
+    if ($voyagers !== []) {
         $voyager = $voyagers[0];
-        $age = strtotime($voyager['dbnow']) - strtotime($voyager['date_available']);
+        $age = strtotime((string) $voyager['dbnow']) - strtotime((string) $voyager['date_available']);
 
         if ($age > $conf['lounge_max_duration']) {
             require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
