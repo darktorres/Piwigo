@@ -19,6 +19,7 @@ class CalendarWeekly extends CalendarBase
     /**
      * Initialize the calendar
      */
+    #[\Override]
     public function initialize(
         string $inner_sql
     ): void {
@@ -58,6 +59,7 @@ class CalendarWeekly extends CalendarBase
      *
      * @return bool false indicates that thumbnails where not included
      */
+    #[\Override]
     public function generate_category_content(): bool
     {
         global $conf, $page;
@@ -65,12 +67,15 @@ class CalendarWeekly extends CalendarBase
         if (count($page['chronology_date']) == 0) {
             $this->build_nav_bar(CYEAR); // years
         }
+
         if (count($page['chronology_date']) == 1) {
             $this->build_nav_bar(CWEEK, []); // week nav bar 1-53
         }
+
         if (count($page['chronology_date']) == 2) {
             $this->build_nav_bar(CDAY); // days nav bar Mon-Sun
         }
+
         $this->build_next_prev();
         return false;
     }
@@ -80,6 +85,7 @@ class CalendarWeekly extends CalendarBase
      *
      * @param int $max_levels (e.g. 2=only year and month)
      */
+    #[\Override]
     public function get_date_where(
         int $max_levels = 3
     ): string {
@@ -88,21 +94,25 @@ class CalendarWeekly extends CalendarBase
         while (count($date) > $max_levels) {
             array_pop($date);
         }
+
         $res = '';
-        if (isset($date[CYEAR]) and $date[CYEAR] !== 'any') {
+        if (isset($date[CYEAR]) && $date[CYEAR] !== 'any') {
             $y = $date[CYEAR];
             $res = " AND {$this->date_field} BETWEEN '{$y}-01-01' AND '{$y}-12-31 23:59:59'";
         }
 
-        if (isset($date[CWEEK]) and $date[CWEEK] !== 'any') {
+        if (isset($date[CWEEK]) && $date[CWEEK] !== 'any') {
             $res .= ' AND ' . $this->calendar_levels[CWEEK]['sql'] . '=' . $date[CWEEK];
         }
-        if (isset($date[CDAY]) and $date[CDAY] !== 'any') {
+
+        if (isset($date[CDAY]) && $date[CDAY] !== 'any') {
             $res .= ' AND ' . $this->calendar_levels[CDAY]['sql'] . '=' . $date[CDAY];
         }
-        if (empty($res)) {
+
+        if ($res === '' || $res === '0') {
             $res = ' AND ' . $this->date_field . ' IS NOT NULL';
         }
+
         return $res;
     }
 }

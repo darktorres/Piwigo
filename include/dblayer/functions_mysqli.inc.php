@@ -34,18 +34,19 @@ function pwg_db_connect(
     $port = null;
     $socket = null;
 
-    if (strpos($host, '/') === 0) {
+    if (str_starts_with($host, '/')) {
         $socket = $host;
         $host = null;
-    } elseif (strpos($host, ':') !== false) {
-        list($host, $port) = explode(':', $host);
+    } elseif (str_contains($host, ':')) {
+        [$host, $port] = explode(':', $host);
     }
 
     $mysqli = new mysqli($host, $user, $password, '', (int) $port, $socket);
     if (mysqli_connect_error()) {
         throw new Exception("Can't connect to server");
     }
-    if (! empty($database) && ! $mysqli->select_db($database)) {
+
+    if ($database !== '' && $database !== '0' && ! $mysqli->select_db($database)) {
         throw new Exception('Connection to server succeed, but it was impossible to connect to database');
     }
 
@@ -54,12 +55,12 @@ function pwg_db_connect(
     // MySQL 5.7 default settings forbid to select a colum that is not in the
     // group by. We've used that in Piwigo for years. As an immediate solution,
     // we can remove this constraint in the current MySQL session.
-    list($sql_mode_current) = pwg_db_fetch_row(
+    [$sql_mode_current] = pwg_db_fetch_row(
         pwg_query('SELECT @@SESSION.sql_mode;')
     );
 
     // remove ONLY_FULL_GROUP_BY from the list
-    $sql_mode_altered = implode(',', array_diff(explode(',', $sql_mode_current), ['ONLY_FULL_GROUP_BY']));
+    $sql_mode_altered = implode(',', array_diff(explode(',', (string) $sql_mode_current), ['ONLY_FULL_GROUP_BY']));
 
     if ($sql_mode_altered != $sql_mode_current) {
         pwg_query("SET SESSION sql_mode = '{$sql_mode_altered}';");
@@ -138,14 +139,14 @@ function pwg_query(
         $output .= number_format($page['queries_time'], 3, '.', ' ') . ' s)';
         $output .= "\n" . '(total time      : ';
         $output .= number_format(($time + $start - $t2), 3, '.', ' ') . ' s)';
-        if ($result != null and preg_match('/\s*SELECT\s+/i', $query)) {
+        if ($result != null && preg_match('/\s*SELECT\s+/i', $query)) {
             $output .= "\n" . '(num rows        : ';
             $output .= pwg_db_num_rows($result) . ' )';
-        } elseif ($result != null
-          and preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i', $query)) {
+        } elseif ($result != null && preg_match('/\s*INSERT|UPDATE|REPLACE|DELETE\s+/i', $query)) {
             $output .= "\n" . '(affected rows   : ';
             $output .= pwg_db_changes() . ' )';
         }
+
         $output .= "</pre>\n";
 
         $debug .= $output;
@@ -165,7 +166,7 @@ function pwg_db_nextval(
         SELECT IF(MAX({$column}) + 1 IS NULL, 1, MAX({$column}) + 1)
         FROM {$table};
         SQL;
-    list($next) = pwg_db_fetch_row(pwg_query($query));
+    [$next] = pwg_db_fetch_row(pwg_query($query));
 
     return $next;
 }
@@ -250,14 +251,16 @@ function mass_updates(
             foreach ($dbfields['update'] as $key) {
                 $separator = $is_first ? '' : ",\n    ";
 
-                if (isset($data[$key]) and $data[$key] != '') {
+                if (isset($data[$key]) && $data[$key] != '') {
                     $query .= "{$separator}{$key} = '{$data[$key]}'\n";
                 } else {
-                    if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+                    if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                         continue; // next field
                     }
+
                     $query .= "{$separator}{$key} = NULL\n";
                 }
+
                 $is_first = false;
             }
 
@@ -269,11 +272,13 @@ function mass_updates(
                     if (! $is_first) {
                         $query .= ' AND ';
                     }
+
                     if (isset($data[$key])) {
                         $query .= "{$key} = '{$data[$key]}'\n";
                     } else {
                         $query .= "{$key} IS NULL\n";
                     }
+
                     $is_first = false;
                 }
 
@@ -293,18 +298,21 @@ function mass_updates(
                 $column .= " {$row['Type']}";
 
                 $nullable = true;
-                if (! isset($row['Null']) or $row['Null'] == '' or $row['Null'] == 'NO') {
+                if (! isset($row['Null']) || $row['Null'] == '' || $row['Null'] == 'NO') {
                     $column .= ' NOT NULL';
                     $nullable = false;
                 }
+
                 if (isset($row['Default'])) {
                     $column .= " default '{$row['Default']}'";
                 } elseif ($nullable) {
                     $column .= ' default NULL';
                 }
-                if (isset($row['Collation']) and $row['Collation'] != 'NULL') {
+
+                if (isset($row['Collation']) && $row['Collation'] != 'NULL') {
                     $column .= " collate '{$row['Collation']}'";
                 }
+
                 $columns[] = $column;
             }
         }
@@ -324,10 +332,10 @@ function mass_updates(
         pwg_query($query);
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
-        if ($flags & MASS_UPDATES_SKIP_EMPTY) {
-            $func_set = function (string $s): string { return "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})"; };
+        if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
+            $func_set = fn (string $s): string => "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})";
         } else {
-            $func_set = function (string $s): string { return "t1.{$s} = t2.{$s}"; };
+            $func_set = fn (string $s): string => "t1.{$s} = t2.{$s}";
         }
 
         // update of table by joining with temporary table
@@ -339,7 +347,7 @@ function mass_updates(
         $primaryConditions = implode(
             "\n    AND ",
             array_map(
-                function (string $s): string { return "t1.{$s} = t2.{$s}"; },
+                fn (string $s): string => "t1.{$s} = t2.{$s}",
                 $dbfields['primary']
             )
         );
@@ -381,14 +389,16 @@ function single_update(
     foreach ($datas as $key => $value) {
         $separator = $is_first ? '' : ",\n    ";
 
-        if (isset($value) and $value !== '') {
+        if (isset($value) && $value !== '') {
             $query .= "{$separator}{$key} = '{$value}'\n";
         } else {
-            if ($flags & MASS_UPDATES_SKIP_EMPTY) {
+            if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
                 continue; // next field
             }
+
             $query .= "{$separator}{$key} = NULL\n";
         }
+
         $is_first = false;
     }
 
@@ -401,11 +411,13 @@ function single_update(
             if (! $is_first) {
                 $query .= ' AND ';
             }
+
             if (isset($value)) {
                 $query .= "{$key} = '{$value}'\n";
             } else {
                 $query .= "{$key} IS NULL\n";
             }
+
             $is_first = false;
         }
 
@@ -428,7 +440,7 @@ function mass_inserts(
     array $options = []
 ): void {
     $ignore = '';
-    if (isset($options['ignore']) and $options['ignore']) {
+    if (isset($options['ignore']) && $options['ignore']) {
         $ignore = 'IGNORE';
     }
 
@@ -436,7 +448,7 @@ function mass_inserts(
         $query = <<<SQL
             SHOW VARIABLES LIKE 'max_allowed_packet';
             SQL;
-        list(, $packet_size) = pwg_db_fetch_row(pwg_query($query));
+        [, $packet_size] = pwg_db_fetch_row(pwg_query($query));
         $dbfields_ = implode(',', $dbfields);
         $queryBase = "INSERT {$ignore} INTO {$table_name} ({$dbfields_}) VALUES ";
         $query = '';
@@ -448,6 +460,7 @@ function mass_inserts(
                 if ($field_id > 0) {
                     $queryTemp .= ',';
                 }
+
                 if (! isset($insert[$dbfield]) || $insert[$dbfield] === '') {
                     $queryTemp .= 'NULL';
                 } else {
@@ -487,7 +500,7 @@ function single_insert(
     array $options = []
 ): void {
     $ignore = '';
-    if (isset($options['ignore']) and $options['ignore']) {
+    if (isset($options['ignore']) && $options['ignore']) {
         $ignore = 'IGNORE';
     }
 
@@ -515,6 +528,7 @@ function single_insert(
                 $query .= "'{$value}'";
             }
         }
+
         $query .= ');';
 
         pwg_query($query);
@@ -611,7 +625,7 @@ function get_enums(
     while ($row = pwg_db_fetch_assoc($result)) {
         if ($row['Field'] == $field) {
             // parse enum('blue','green','black')
-            $options = explode(',', substr($row['Type'], 5, -1));
+            $options = explode(',', substr((string) $row['Type'], 5, -1));
             foreach ($options as $i => $option) {
                 $options[$i] = str_replace("'", '', $option);
             }
@@ -654,7 +668,7 @@ function pwg_db_get_recent_period_expression(
     int|string $period,
     string $date = 'CURRENT_DATE'
 ): string {
-    if ($date != 'CURRENT_DATE') {
+    if ($date !== 'CURRENT_DATE') {
         $date = "'{$date}'";
     }
 
@@ -671,7 +685,7 @@ function pwg_db_get_recent_period(
     $query = <<<SQL
         SELECT {$recentPeriodExpression};
         SQL;
-    list($d) = pwg_db_fetch_row(pwg_query($query));
+    [$d] = pwg_db_fetch_row(pwg_query($query));
 
     return $d;
 }
@@ -819,15 +833,13 @@ function query2array(
                 $data[$row[$key_name]] = $row;
             }
         }
+    } elseif (isset($value_name)) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row[$value_name];
+        }
     } else {
-        if (isset($value_name)) {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row[$value_name];
-            }
-        } else {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
-            }
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
         }
     }
 

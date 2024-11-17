@@ -53,7 +53,7 @@ function ts_to_iso8601(
 
 check_input_parameter('feed', $_GET, false, '/^[0-9a-z]{50}$/i');
 
-$feed_id = isset($_GET['feed']) ? $_GET['feed'] : '';
+$feed_id = $_GET['feed'] ?? '';
 $image_only = isset($_GET['image_only']);
 
 // echo '<pre>'.generate_key(50).'</pre>';
@@ -64,9 +64,10 @@ if (! empty($feed_id)) {
         WHERE id = '{$feed_id}';
         SQL;
     $feed_row = pwg_db_fetch_assoc(pwg_query($query));
-    if (empty($feed_row)) {
+    if ($feed_row === false || $feed_row === [] || $feed_row === null) {
         page_not_found(l10n('Unknown feed identifier'));
     }
+
     if ($feed_row['user_id'] != $user['id']) { // new user
         $user = build_user($feed_row['user_id'], true);
     }
@@ -80,13 +81,13 @@ if (! empty($feed_id)) {
 // Check the status now after the user has been loaded
 check_status(ACCESS_GUEST);
 
-list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+[$dbnow] = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 set_make_full_url();
 
 $rss = new UniversalFeedCreator();
 $rss->title = $conf['gallery_title'];
-$rss->title .= ' (as ' . stripslashes($user['username']) . ')';
+$rss->title .= ' (as ' . stripslashes((string) $user['username']) . ')';
 
 $rss->link = get_gallery_home_url();
 
@@ -98,7 +99,7 @@ $news = [];
 if (! $image_only) {
     $news = news($feed_row['last_check'], $dbnow, true, true);
 
-    if (count($news) > 0) {
+    if ($news !== []) {
         $item = new FeedItem();
         $item->title = l10n('New on %s', format_date($dbnow));
         $item->link = get_gallery_home_url();
@@ -108,6 +109,7 @@ if (! $image_only) {
         foreach ($news as $line) {
             $item->description .= '<li>' . $line . '</li>';
         }
+
         $item->description .= '</ul>';
         $item->descriptionHtmlSyndicated = true;
 
@@ -126,17 +128,15 @@ if (! $image_only) {
     }
 }
 
-if (! empty($feed_id) and empty($news)) {// update the last check from time to time to avoid deletion by maintenance tasks
-    if (! isset($feed_row['last_check'])
-      or time() - datetime_to_ts($feed_row['last_check']) > 30 * 24 * 3600) {
-        $last_check_expr = pwg_db_get_recent_period_expression(-15, $dbnow);
-        $query = <<<SQL
+// update the last check from time to time to avoid deletion by maintenance tasks
+if ((! empty($feed_id) && $news === []) && (! isset($feed_row['last_check']) || time() - datetime_to_ts($feed_row['last_check']) > 30 * 24 * 3600)) {
+    $last_check_expr = pwg_db_get_recent_period_expression(-15, $dbnow);
+    $query = <<<SQL
             UPDATE user_feed
             SET last_check = {$last_check_expr}
             WHERE id = '{$feed_id}';
             SQL;
-        pwg_query($query);
-    }
+    pwg_query($query);
 }
 
 $dates = get_recent_post_dates_array($conf['recent_post_dates']['RSS']);
@@ -150,7 +150,7 @@ foreach ($dates as $date_detail) { // for each recent post date we create a feed
             'chronology_field' => 'posted',
             'chronology_style' => 'monthly',
             'chronology_view' => 'calendar',
-            'chronology_date' => explode('-', substr($date, 0, 10)),
+            'chronology_date' => explode('-', substr((string) $date, 0, 10)),
         ]
     );
 
@@ -163,7 +163,7 @@ foreach ($dates as $date_detail) { // for each recent post date we create a feed
 
     $item->date = ts_to_iso8601(datetime_to_ts($date));
     $item->author = $conf['rss_feed_author'];
-    $item->guid = sprintf('%s', 'pics-' . $date);
+    $item->guid = 'pics-' . $date;
 
     $rss->addItem($item);
 }

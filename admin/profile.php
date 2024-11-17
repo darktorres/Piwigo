@@ -17,7 +17,7 @@ check_input_parameter('user_id', $_GET, false, PATTERN_ID);
 
 $edit_user = build_user($_GET['user_id'], false);
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
 }
 

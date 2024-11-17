@@ -8,12 +8,12 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 global $template;
 
-require_once dirname(dirname(__FILE__)) . '/functions.inc.php';
+require_once dirname(__FILE__, 2) . '/functions.inc.php';
 require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 $default_conf = modus_get_default_config();
 
-load_language('theme.lang', dirname(__FILE__) . '/../');
+load_language('theme.lang', __DIR__ . '/../');
 
 $my_conf = $conf['modus_theme'];
 if (! isset($my_conf)) {
@@ -29,10 +29,11 @@ $bool_values = ['display_page_banner'];
 // *************** POST management ********************
 if (isset($_POST[$text_values[0]])) {
     foreach ($text_values as $k) {
-        $my_conf[$k] = stripslashes($_POST[$k]);
+        $my_conf[$k] = stripslashes((string) $_POST[$k]);
     }
+
     foreach ($bool_values as $k) {
-        $my_conf[$k] = isset($_POST[$k]) ? true : false;
+        $my_conf[$k] = isset($_POST[$k]);
     }
 
     if (! isset($_POST['use_album_square_thumbs'])) {
@@ -58,15 +59,11 @@ $tabs = [
 ];
 
 $tab_codes = array_map(
-    function (array $a): string { return $a['code']; },
+    fn (array $a): string => $a['code'],
     $tabs
 );
 
-if (isset($_GET['tab']) and in_array($_GET['tab'], $tab_codes)) {
-    $page['tab'] = $_GET['tab'];
-} else {
-    $page['tab'] = $tabs[0]['code'];
-}
+$page['tab'] = isset($_GET['tab']) && in_array($_GET['tab'], $tab_codes) ? $_GET['tab'] : $tabs[0]['code'];
 
 $tabsheet = new tabsheet();
 foreach ($tabs as $tab) {
@@ -76,6 +73,7 @@ foreach ($tabs as $tab) {
         'admin.php?page=theme&amp;theme=modus'
     );
 }
+
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
@@ -84,6 +82,7 @@ $tabsheet->assign();
 foreach ($text_values as $k) {
     $template->assign(strtoupper($k), $my_conf[$k]);
 }
+
 foreach ($bool_values as $k) {
     $template->assign(strtoupper($k), $my_conf[$k]);
 }
@@ -101,7 +100,7 @@ foreach (array_keys(ImageStdParams::get_defined_type_map()) as $type) {
 }
 
 $available_skins = [];
-$skin_dir = dirname(dirname(__FILE__)) . '/skins/';
+$skin_dir = dirname(__FILE__, 2) . '/skins/';
 $skin_suffix = '.inc.php';
 foreach (glob($skin_dir . '*' . $skin_suffix) as $file) {
     $skin = substr($file, strlen($skin_dir), -strlen($skin_suffix));
@@ -113,5 +112,5 @@ $template->assign([
     'available_skins' => $available_skins,
 ]);
 
-$template->set_filename('modus_content', dirname(__FILE__) . '/modus_admin.tpl');
+$template->set_filename('modus_content', __DIR__ . '/modus_admin.tpl');
 $template->assign_var_from_handle('ADMIN_CONTENT', 'modus_content');

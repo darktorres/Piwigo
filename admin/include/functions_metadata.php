@@ -25,20 +25,17 @@ function get_sync_iptc_data(
     $iptc = get_iptc_data($file, $map);
 
     foreach ($iptc as $pwg_key => $value) {
-        if (in_array($pwg_key, ['date_creation', 'date_available'])) {
-            if (preg_match('/(\d{4})(\d{2})(\d{2})/', $value, $matches)) {
-                $year = $matches[1];
-                $month = $matches[2];
-                $day = $matches[3];
-
-                if (! checkdate($month, $day, $year)) {
-                    // we suppose the year is correct
-                    $month = 1;
-                    $day = 1;
-                }
-
-                $iptc[$pwg_key] = $year . '-' . $month . '-' . $day;
+        if (in_array($pwg_key, ['date_creation', 'date_available']) && preg_match('/(\d{4})(\d{2})(\d{2})/', (string) $value, $matches)) {
+            $year = $matches[1];
+            $month = $matches[2];
+            $day = $matches[3];
+            if (! checkdate($month, $day, $year)) {
+                // we suppose the year is correct
+                $month = 1;
+                $day = 1;
             }
+
+            $iptc[$pwg_key] = $year . '-' . $month . '-' . $day;
         }
     }
 
@@ -46,8 +43,8 @@ function get_sync_iptc_data(
         $iptc['keywords'] = metadata_normalize_keywords_string($iptc['keywords']);
     }
 
-    foreach ($iptc as $pwg_key => $value) {
-        $iptc[$pwg_key] = addslashes($iptc[$pwg_key]);
+    foreach (array_keys($iptc) as $pwg_key) {
+        $iptc[$pwg_key] = addslashes((string) $iptc[$pwg_key]);
     }
 
     return $iptc;
@@ -78,7 +75,7 @@ function get_sync_exif_data(
                 if ($exif[$pwg_key] === '0000-00-00 00:00:00' || ! validateDate($exif[$pwg_key])) {
                     $exif[$pwg_key] = null;
                 }
-            } elseif (preg_match('/^(\d{4}).(\d{2}).(\d{2})/', $value, $matches)) {
+            } elseif (preg_match('/^(\d{4}).(\d{2}).(\d{2})/', (string) $value, $matches)) {
                 // YYYY-MM-DD
                 $exif[$pwg_key] = $matches[1] . '-' . $matches[2] . '-' . $matches[3];
 
@@ -165,7 +162,7 @@ function get_sync_metadata(
         if ($image_size = getimagesize($file)) {
             $type = $image_size[2];
 
-            if ($type == IMAGETYPE_TIFF_MM or $type == IMAGETYPE_TIFF_II) {
+            if ($type == IMAGETYPE_TIFF_MM || $type == IMAGETYPE_TIFF_II) {
                 // in case of TIFF files, we want to use the original file and not
                 // the representative for EXIF/IPTC, but we need the representative
                 // for width/height (to compute the multiple size dimensions)
@@ -185,13 +182,13 @@ function get_sync_metadata(
         $height = (int) $xmlattributes->height;
         $vb = (string) $xmlattributes->viewBox;
 
-        if (isset($width) and $width != '') {
+        if (isset($width) && $width != 0) {
             $infos['width'] = $width;
         } elseif (isset($vb)) {
             $infos['width'] = explode(' ', $vb)[2];
         }
 
-        if (isset($height) and $height != '') {
+        if (isset($height) && $height != 0) {
             $infos['height'] = $height;
         } elseif (isset($vb)) {
             $infos['height'] = explode(' ', $vb)[3];
@@ -260,6 +257,7 @@ function sync_metadata(
         if ($data === false) {
             continue;
         }
+
         // print_r($data);
         $id = $data['id'];
         foreach (['keywords', 'tags'] as $key) {
@@ -268,7 +266,7 @@ function sync_metadata(
                     $tags_of[$id] = [];
                 }
 
-                foreach (explode(',', $data[$key]) as $tag_name) {
+                foreach (explode(',', (string) $data[$key]) as $tag_name) {
                     $tags_of[$id][] = tag_id_from_tag_name($tag_name);
                 }
             }
@@ -279,7 +277,7 @@ function sync_metadata(
         $datas[] = $data;
     }
 
-    if (count($datas) > 0) {
+    if ($datas !== []) {
         $update_fields = get_sync_metadata_attributes();
         $update_fields[] = 'date_metadata_update';
 
@@ -380,14 +378,14 @@ function metadata_normalize_keywords_string(
     // new lines are always considered as keyword separators
     $keywords_string = str_replace(["\r\n", "\n"], ',', $keywords_string);
     $keywords_string = preg_replace('/,+/', ',', $keywords_string);
-    $keywords_string = preg_replace('/^,+|,+$/', '', $keywords_string);
+    $keywords_string = preg_replace('/^,+|,+$/', '', (string) $keywords_string);
 
     $keywords_string = implode(
         ',',
         array_unique(
             explode(
                 ',',
-                $keywords_string
+                (string) $keywords_string
             )
         )
     );

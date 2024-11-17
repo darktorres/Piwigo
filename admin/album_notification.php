@@ -84,11 +84,11 @@ if (isset($_POST['submitEmail'])) {
                     ],
                 ]
             ),
-            'CPL_CONTENT' => empty($_POST['mail_content']) ? '' : stripslashes($_POST['mail_content']),
+            'CPL_CONTENT' => empty($_POST['mail_content']) ? '' : stripslashes((string) $_POST['mail_content']),
         ],
     ];
 
-    if ($_POST['who'] == 'users' and isset($_POST['users']) and count($_POST['users']) > 0) {
+    if ($_POST['who'] == 'users' && isset($_POST['users']) && count($_POST['users']) > 0) {
         check_input_parameter('users', $_POST, true, PATTERN_ID);
 
         // TODO code very similar to function pwg_mail_group. We'd better create
@@ -145,7 +145,7 @@ if (isset($_POST['submitEmail'])) {
         $message .= ' (' . implode(', ', $usernames) . ')';
 
         $page['infos'][] = $message;
-    } elseif ($_POST['who'] == 'group' and ! empty($_POST['group'])) {
+    } elseif ($_POST['who'] == 'group' && ! empty($_POST['group'])) {
         check_input_parameter('group', $_POST, false, PATTERN_ID);
 
         pwg_mail_group($_POST['group'], $args, $tpl);
@@ -155,7 +155,7 @@ if (isset($_POST['submitEmail'])) {
             FROM groups_table
             WHERE id = {$_POST['group']};
             SQL;
-        list($group_name) = pwg_db_fetch_row(pwg_query($query));
+        [$group_name] = pwg_db_fetch_row(pwg_query($query));
 
         $page['infos'][] = l10n('An information email was sent to group "%s"', $group_name);
     }
@@ -223,7 +223,7 @@ if (count($all_group_ids) == 0) {
         $group_ids = $all_group_ids;
     }
 
-    if (count($group_ids) > 0) {
+    if ($group_ids !== []) {
         $imploded_group_ids = implode(',', $group_ids);
         $query = <<<SQL
             SELECT id, name
@@ -251,7 +251,7 @@ $all_user_ids = query2array($query, null, 'user_id');
 if ($category['status'] == 'private') {
     $user_ids_access_indirect = [];
 
-    if (isset($group_ids) and count($group_ids) > 0) {
+    if (isset($group_ids) && count($group_ids) > 0) {
         $group_ids_list = implode(',', $group_ids);
         $query = <<<SQL
             SELECT user_id
@@ -275,7 +275,7 @@ if ($category['status'] == 'private') {
     $user_ids = $all_user_ids;
 }
 
-if (count($user_ids) > 0) {
+if ($user_ids !== []) {
     $user_ids_imploded = implode(',', $user_ids);
     $query = <<<SQL
         SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username

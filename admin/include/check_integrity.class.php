@@ -11,18 +11,13 @@ declare(strict_types=1);
 
 class check_integrity
 {
-    public $ignore_list;
+    public $ignore_list = [];
 
-    public $retrieve_list;
+    public $retrieve_list = [];
 
-    public $build_ignore_list;
+    public $build_ignore_list = [];
 
-    public function __construct()
-    {
-        $this->ignore_list = [];
-        $this->retrieve_list = [];
-        $this->build_ignore_list = [];
-    }
+    public function __construct() {}
 
     /**
      * Check integrity
@@ -34,10 +29,7 @@ class check_integrity
         // Ignore list
         $conf_c13y_ignore = $conf['c13y_ignore'];
         if (
-            is_array($conf_c13y_ignore) and
-            isset($conf_c13y_ignore['version']) and
-            ($conf_c13y_ignore['version'] == PHPWG_VERSION) and
-            is_array($conf_c13y_ignore['list'])
+            is_array($conf_c13y_ignore) && isset($conf_c13y_ignore['version']) && $conf_c13y_ignore['version'] == PHPWG_VERSION && is_array($conf_c13y_ignore['list'])
         ) {
             $ignore_list_changed = false;
             $this->ignore_list = $conf_c13y_ignore['list'];
@@ -62,14 +54,11 @@ class check_integrity
         }
 
         // Treatments
-        if (isset($_POST['c13y_submit_correction']) and isset($_POST['c13y_selection'])) {
+        if (isset($_POST['c13y_submit_correction']) && isset($_POST['c13y_selection'])) {
             $corrected_count = 0;
             $not_corrected_count = 0;
-
             foreach ($this->retrieve_list as $i => $c13y) {
-                if (! empty($c13y['correction_fct']) and
-                    $c13y['is_callable'] and
-                    in_array($c13y['id'], $_POST['c13y_selection'])) {
+                if (! empty($c13y['correction_fct']) && $c13y['is_callable'] && in_array($c13y['id'], $_POST['c13y_selection'])) {
                     if (is_array($c13y['correction_fct_args'])) {
                         $args = $c13y['correction_fct_args'];
                     } elseif ($c13y['correction_fct_args'] !== null) {
@@ -77,6 +66,7 @@ class check_integrity
                     } else {
                         $args = [];
                     }
+
                     $this->retrieve_list[$i]['corrected'] = call_user_func_array($c13y['correction_fct'], $args);
 
                     if ($this->retrieve_list[$i]['corrected']) {
@@ -94,6 +84,7 @@ class check_integrity
                     $corrected_count
                 );
             }
+
             if ($not_corrected_count > 0) {
                 $page['errors'][] = l10n_dec(
                     '%d anomaly has not been corrected.',
@@ -101,33 +92,28 @@ class check_integrity
                     $not_corrected_count
                 );
             }
-        } else {
-            if (isset($_POST['c13y_submit_ignore']) and isset($_POST['c13y_selection'])) {
-                $ignored_count = 0;
-
-                foreach ($this->retrieve_list as $i => $c13y) {
-                    if (in_array($c13y['id'], $_POST['c13y_selection'])) {
-                        $this->build_ignore_list[] = $c13y['id'];
-                        $this->retrieve_list[$i]['ignored'] = true;
-                        ++$ignored_count;
-                    }
+        } elseif (isset($_POST['c13y_submit_ignore']) && isset($_POST['c13y_selection'])) {
+            $ignored_count = 0;
+            foreach ($this->retrieve_list as $i => $c13y) {
+                if (in_array($c13y['id'], $_POST['c13y_selection'])) {
+                    $this->build_ignore_list[] = $c13y['id'];
+                    $this->retrieve_list[$i]['ignored'] = true;
+                    ++$ignored_count;
                 }
+            }
 
-                if ($ignored_count > 0) {
-                    $page['infos'][] = l10n_dec(
-                        '%d anomaly has been ignored.',
-                        '%d anomalies have been ignored.',
-                        $ignored_count
-                    );
-                }
+            if ($ignored_count > 0) {
+                $page['infos'][] = l10n_dec(
+                    '%d anomaly has been ignored.',
+                    '%d anomalies have been ignored.',
+                    $ignored_count
+                );
             }
         }
 
         $ignore_list_changed =
           (
-              ($ignore_list_changed) or
-        (count(array_diff($this->ignore_list, $this->build_ignore_list)) > 0) or
-        (count(array_diff($this->build_ignore_list, $this->ignore_list)) > 0)
+              $ignore_list_changed || array_diff($this->ignore_list, $this->build_ignore_list) !== [] || array_diff($this->build_ignore_list, $this->ignore_list) !== []
           );
 
         if ($ignore_list_changed) {
@@ -146,7 +132,7 @@ class check_integrity
         $submit_automatic_correction = false;
         $submit_ignore = false;
 
-        if (isset($this->retrieve_list) and count($this->retrieve_list) > 0) {
+        if ($this->retrieve_list !== null && count($this->retrieve_list) > 0) {
             $template->set_filenames([
                 'check_integrity' => 'check_integrity.tpl',
             ]);
@@ -191,7 +177,7 @@ class check_integrity
                         $can_select = true;
                     }
 
-                    if (! empty($c13y['correction_msg']) and ! isset($c13y['corrected'])) {
+                    if (! empty($c13y['correction_msg']) && ! isset($c13y['corrected'])) {
                         $c13y_display['correction_msg'] = $c13y['correction_msg'];
                     }
                 }

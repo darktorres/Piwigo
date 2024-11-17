@@ -13,7 +13,7 @@ if (isset($_POST['edit'])) {
     $_POST['theme'] = $_POST['theme_select'];
 }
 
-if (isset($_POST['theme']) and $_POST['theme'] == '~common~') {
+if (isset($_POST['theme']) && $_POST['theme'] == '~common~') {
     $page['theme'] = $_POST['theme'];
     $edited_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'css/rules.css';
 } else {
@@ -23,7 +23,7 @@ if (isset($_POST['theme']) and $_POST['theme'] == '~common~') {
         $page['theme'] = $_POST['theme'];
     }
 
-    if (! isset($page['theme']) or ! in_array($page['theme'], array_keys($themes->fs_themes))) {
+    if (! isset($page['theme']) || ! in_array($page['theme'], array_keys($themes->fs_themes))) {
         $page['theme'] = get_default_theme();
     }
 
@@ -95,7 +95,7 @@ foreach ($active_themes as $theme) {
     }
 }
 
-if (count($active_theme_options) > 0) {
+if ($active_theme_options !== []) {
     $options[l10n('Active Themes')] = $active_theme_options;
 }
 
@@ -110,7 +110,7 @@ foreach ($inactive_themes as $theme) {
     }
 }
 
-if (count($inactive_theme_options) > 0) {
+if ($inactive_theme_options !== []) {
     $options[l10n('Inactive Themes')] = $inactive_theme_options;
 }
 

@@ -15,11 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
-if (isset($_GET['start']) and is_numeric($_GET['start'])) {
-    $page['start'] = $_GET['start'];
-} else {
-    $page['start'] = 0;
-}
+$page['start'] = isset($_GET['start']) && is_numeric($_GET['start']) ? $_GET['start'] : 0;
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -31,7 +27,7 @@ check_status(ACCESS_ADMINISTRATOR);
 // |                                actions                                |
 // +-----------------------------------------------------------------------+
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     if (empty($_POST['comments'])) {
         $page['errors'][] = l10n('Select at least one comment');
     } else {
@@ -108,13 +104,9 @@ while ($row = pwg_db_fetch_assoc($result)) {
     }
 }
 
-if (! isset($_GET['filter']) and $nb_pending > 0) {
-    $page['filter'] = 'pending';
-} else {
-    $page['filter'] = 'all';
-}
+$page['filter'] = ! isset($_GET['filter']) && $nb_pending > 0 ? 'pending' : 'all';
 
-if (isset($_GET['filter']) and $_GET['filter'] == 'pending') {
+if (isset($_GET['filter']) && $_GET['filter'] == 'pending') {
     $page['filter'] = $_GET['filter'];
 }
 
@@ -129,7 +121,7 @@ $template->assign(
 $where_clauses = ['1 = 1'];
 
 if ($page['filter'] == 'pending') {
-    $where_clauses[] = 'validated=\'false\'';
+    $where_clauses[] = "validated='false'";
 }
 
 $where_clause = implode(' AND ', $where_clauses);
@@ -152,11 +144,8 @@ while ($row = pwg_db_fetch_assoc($result)) {
             'representative_ext' => $row['representative_ext'],
         ]
     );
-    if (empty($row['author_id'])) {
-        $author_name = $row['author'];
-    } else {
-        $author_name = stripslashes($row['username']);
-    }
+    $author_name = empty($row['author_id']) ? $row['author'] : stripslashes((string) $row['username']);
+
     $template->append(
         'comments',
         [

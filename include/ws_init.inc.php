@@ -9,7 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-defined('PHPWG_ROOT_PATH') or trigger_error('Hacking attempt!', E_USER_ERROR);
+defined('PHPWG_ROOT_PATH') || trigger_error('Hacking attempt!', E_USER_ERROR);
 
 require_once PHPWG_ROOT_PATH . 'include/ws_core.inc.php';
 require_once PHPWG_ROOT_PATH . 'include/ws_functions.inc.php';
@@ -24,7 +24,7 @@ if (isset($_GET['format'])) {
     $responseFormat = $_GET['format'];
 }
 
-if (! isset($responseFormat) and isset($requestFormat)) {
+if (! isset($responseFormat) && isset($requestFormat)) {
     $responseFormat = $requestFormat;
 }
 
@@ -32,12 +32,11 @@ $service = new PwgServer();
 
 if ($requestFormat !== null) {
     $handler = null;
-    switch ($requestFormat) {
-        case 'rest':
-            require_once PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php';
-            $handler = new PwgRestRequestHandler();
-            break;
+    if ($requestFormat === 'rest') {
+        require_once PHPWG_ROOT_PATH . 'include/ws_protocols/rest_handler.php';
+        $handler = new PwgRestRequestHandler();
     }
+
     $service->setHandler($requestFormat, $handler);
 }
 
@@ -61,6 +60,7 @@ if ($responseFormat !== null) {
             $encoder = new PwgXmlRpcEncoder();
             break;
     }
+
     $service->setEncoder($responseFormat, $encoder);
 }
 

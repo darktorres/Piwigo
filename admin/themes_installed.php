@@ -27,13 +27,14 @@ $themes = new themes();
 // |                          perform actions                              |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['action']) and isset($_GET['theme'])) {
+if (isset($_GET['action']) && isset($_GET['theme'])) {
     $page['errors'] = $themes->perform_action($_GET['action'], $_GET['theme']);
 
     if (empty($page['errors'])) {
-        if ($_GET['action'] == 'activate' or $_GET['action'] == 'deactivate') {
+        if ($_GET['action'] == 'activate' || $_GET['action'] == 'deactivate') {
             $template->delete_compiled_templates();
         }
+
         redirect($base_url);
     }
 }
@@ -82,6 +83,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
             $tpl_theme['DEACTIVABLE'] = false;
             $tpl_theme['DEACTIVATE_TOOLTIP'] = l10n('Impossible to deactivate this theme, you need at least one theme.');
         }
+
         if ($tpl_theme['IS_DEFAULT']) {
             $tpl_theme['DEACTIVABLE'] = false;
             $tpl_theme['DEACTIVATE_TOOLTIP'] = l10n('Impossible to deactivate the default theme.');
@@ -90,7 +92,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
         $tpl_theme['STATE'] = 'inactive';
 
         // is the theme "activable"?
-        if (isset($fs_theme['activable']) and ! $fs_theme['activable']) {
+        if (isset($fs_theme['activable']) && ! $fs_theme['activable']) {
             $tpl_theme['ACTIVABLE'] = false;
             $tpl_theme['ACTIVABLE_TOOLTIP'] = l10n('This theme was not designed to be directly activated');
         } else {
@@ -112,7 +114,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
 
         $tpl_theme['DELETABLE'] = true;
 
-        if (count($children) > 0) {
+        if ($children !== []) {
             $tpl_theme['DELETABLE'] = false;
 
             $tpl_theme['DELETE_TOOLTIP'] = l10n(
@@ -138,16 +140,18 @@ function cmp(
     if ($a['IS_DEFAULT'] ?? null) {
         return -1;
     }
+
     if ($b['IS_DEFAULT'] ?? null) {
         return 1;
     }
 
     if ($a['STATE'] == $b['STATE']) {
-        return strcasecmp($a['NAME'], $b['NAME']);
+        return strcasecmp((string) $a['NAME'], (string) $b['NAME']);
     }
 
     return $s[$a['STATE']] >= $s[$b['STATE']] ? 1 : -1;
 }
+
 usort($tpl_themes, cmp(...));
 
 $template->assign(

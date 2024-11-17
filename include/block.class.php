@@ -14,8 +14,6 @@ declare(strict_types=1);
  */
 class BlockManager
 {
-    protected string $id;
-
     /**
      * @var RegisteredBlock[]
      */
@@ -27,10 +25,8 @@ class BlockManager
     protected $display_blocks = [];
 
     public function __construct(
-        string $id
-    ) {
-        $this->id = $id;
-    }
+        protected string $id
+    ) {}
 
     /**
      * Triggers a notice that allows plugins of menu blocks to register the blocks.
@@ -62,6 +58,7 @@ class BlockManager
         if (isset($this->registered_blocks[$block->get_id()])) {
             return false;
         }
+
         $this->registered_blocks[$block->get_id()] = $block;
         return true;
     }
@@ -75,20 +72,22 @@ class BlockManager
     {
         global $conf;
         $conf_id = 'blk_' . $this->id;
-        $mb_conf = isset($conf[$conf_id]) ? $conf[$conf_id] : [];
+        $mb_conf = $conf[$conf_id] ?? [];
         if (! is_array($mb_conf)) {
             $mb_conf = unserialize($mb_conf);
         }
 
         $idx = 1;
         foreach ($this->registered_blocks as $id => $block) {
-            $pos = isset($mb_conf[$id]) ? $mb_conf[$id] : $idx * 50;
+            $pos = $mb_conf[$id] ?? $idx * 50;
             if ($pos > 0) {
                 $this->display_blocks[$id] = new DisplayBlock($block);
                 $this->display_blocks[$id]->set_position($pos);
             }
+
             $idx++;
         }
+
         $this->sort_blocks();
         trigger_notify('blockmanager_prepare_display', [$this]);
         $this->sort_blocks();
@@ -118,10 +117,7 @@ class BlockManager
     public function get_block(
         string $block_id
     ): ?DisplayBlock {
-        if (isset($this->display_blocks[$block_id])) {
-            return $this->display_blocks[$block_id];
-        }
-        return null;
+        return $this->display_blocks[$block_id] ?? null;
     }
 
     /**
@@ -149,10 +145,11 @@ class BlockManager
         trigger_notify('blockmanager_apply', [$this]);
 
         foreach ($this->display_blocks as $id => $block) {
-            if (empty($block->raw_content) and empty($block->template)) {
+            if (empty($block->raw_content) && empty($block->template)) {
                 $this->hide_block($id);
             }
         }
+
         $this->sort_blocks();
         $template->assign('blocks', $this->display_blocks);
         $template->assign_var_from_handle($var, 'menubar');
@@ -182,21 +179,11 @@ class BlockManager
  */
 class RegisteredBlock
 {
-    protected string $id;
-
-    protected string $name;
-
-    protected string $owner;
-
     public function __construct(
-        string $id,
-        string $name,
-        string $owner
-    ) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->owner = $owner;
-    }
+        protected string $id,
+        protected string $name,
+        protected string $owner
+    ) {}
 
     public function get_id(): string
     {
@@ -227,17 +214,13 @@ class DisplayBlock
 
     public int $id;
 
-    protected RegisteredBlock $_registeredBlock;
-
     protected int $_position;
 
     protected string $_title;
 
     public function __construct(
-        RegisteredBlock $block
-    ) {
-        $this->_registeredBlock = $block;
-    }
+        protected RegisteredBlock $_registeredBlock
+    ) {}
 
     public function get_block(): RegisteredBlock
     {
@@ -257,11 +240,7 @@ class DisplayBlock
 
     public function get_title(): string
     {
-        if (isset($this->_title)) {
-            return $this->_title;
-        }
-
-        return $this->_registeredBlock->get_name();
+        return $this->_title ?? $this->_registeredBlock->get_name();
 
     }
 

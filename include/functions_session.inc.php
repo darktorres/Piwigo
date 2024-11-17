@@ -9,9 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-if (isset($conf['session_save_handler'])
-  and ($conf['session_save_handler'] == 'db')
-  and defined('PHPWG_INSTALLED')) {
+if (isset($conf['session_save_handler']) && $conf['session_save_handler'] == 'db' && defined('PHPWG_INSTALLED')) {
     session_set_save_handler(
         pwg_session_open(...),
         pwg_session_close(...),
@@ -83,12 +81,13 @@ function get_remote_addr_session_hash(): string
         return '';
     }
 
-    if (strpos($_SERVER['REMOTE_ADDR'], ':') === false) {//ipv4
+    if (! str_contains((string) $_SERVER['REMOTE_ADDR'], ':')) {//ipv4
         return vsprintf(
             '%02X%02X',
-            explode('.', $_SERVER['REMOTE_ADDR'])
+            explode('.', (string) $_SERVER['REMOTE_ADDR'])
         );
     }
+
     return ''; //ipv6 not yet
 }
 
@@ -109,6 +108,7 @@ function pwg_session_read(
     if (($row = pwg_db_fetch_assoc($result))) {
         return $row['data'];
     }
+
     return '';
 }
 
@@ -173,6 +173,7 @@ function pwg_set_session_var(
     if (! isset($_SESSION)) {
         return false;
     }
+
     $_SESSION['pwg_' . $var] = $value;
     return true;
 }
@@ -184,10 +185,7 @@ function pwg_get_session_var(
     string $var,
     mixed $default = null
 ): mixed {
-    if (isset($_SESSION['pwg_' . $var])) {
-        return $_SESSION['pwg_' . $var];
-    }
-    return $default;
+    return $_SESSION['pwg_' . $var] ?? $default;
 }
 
 /**
@@ -199,6 +197,7 @@ function pwg_unset_session_var(
     if (! isset($_SESSION)) {
         return false;
     }
+
     unset($_SESSION['pwg_' . $var]);
     return true;
 }

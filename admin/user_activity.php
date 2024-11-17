@@ -38,9 +38,9 @@ if (isset($_GET['type']) && $_GET['type'] == 'download_logs') {
         SQL;
 
     $result = pwg_query($query);
-    array_push($output_lines, ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details']);
+    $output_lines[] = ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details'];
     while ($row = pwg_db_fetch_assoc($result)) {
-        list($date, $hour) = explode(' ', $row['occurred_on']);
+        [$date, $hour] = explode(' ', (string) $row['occurred_on']);
 
         $output_lines[] = [
             'username' => $row['username'],
@@ -63,6 +63,7 @@ if (isset($_GET['type']) && $_GET['type'] == 'download_logs') {
     foreach ($output_lines as $line) {
         fputcsv($f, $line, ';');
     }
+
     fclose($f);
 
     exit();
@@ -92,7 +93,7 @@ $query = <<<SQL
 
 $nb_lines_for_user = query2array($query, 'performed_by', 'counter');
 
-if (count($nb_lines_for_user) > 0) {
+if ($nb_lines_for_user !== []) {
     $ids = implode(',', array_keys($nb_lines_for_user));
     $query = <<<SQL
         SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username
@@ -106,15 +107,13 @@ $username_of = query2array($query, 'id', 'username');
 $filterable_users = [];
 
 foreach ($nb_lines_for_user as $id => $nb_line) {
-    array_push(
-        $filterable_users,
-        [
-            'id' => $id,
-            'username' => isset($username_of[$id]) ? $username_of[$id] : 'user#' . $id,
-            'nb_lines' => $nb_line,
-        ]
-    );
+    $filterable_users[] = [
+        'id' => $id,
+        'username' => $username_of[$id] ?? 'user#' . $id,
+        'nb_lines' => $nb_line,
+    ];
 }
+
 $template->assign('ulist', $filterable_users);
 
 $query = <<<SQL
@@ -122,7 +121,7 @@ $query = <<<SQL
     FROM users;
     SQL;
 
-list($nb_users) = pwg_db_fetch_row(pwg_query($query));
+[$nb_users] = pwg_db_fetch_row(pwg_query($query));
 $template->assign('nb_users', $nb_users);
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'user_activity');

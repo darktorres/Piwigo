@@ -25,7 +25,7 @@ if (isset($_POST['submit'])) {
         UPDATE images
 
         SQL;
-    if (strlen($_POST['l']) == 0) {
+    if (strlen((string) $_POST['l']) == 0) {
         $query .= " SET coi = NULL\n";
     } else {
         $coi = fraction_to_char($_POST['l'])
@@ -34,6 +34,7 @@ if (isset($_POST['submit'])) {
           . fraction_to_char($_POST['b']);
         $query .= " SET coi = '{$coi}'\n";
     }
+
     $query .= " WHERE id = {$_GET['image_id']};";
     pwg_query($query);
 }
@@ -49,6 +50,7 @@ if (isset($_POST['submit'])) {
             delete_element_derivatives($row, $params->type);
         }
     }
+
     delete_element_derivatives($row, IMG_CUSTOM);
     $uid = '&b=' . time();
     $conf['question_mark_in_urls'] = $conf['php_extension_in_urls'] = true;

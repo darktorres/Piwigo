@@ -16,7 +16,7 @@ function global_rank_compare(
     array $a,
     array $b
 ): int {
-    return strnatcasecmp($a['global_rank'], $b['global_rank']);
+    return strnatcasecmp((string) $a['global_rank'], (string) $b['global_rank']);
 }
 
 /**
@@ -40,7 +40,7 @@ function check_restrictions(
 
     // $filter['visible_categories'] and $filter['visible_images']
     // are not used because it's not necessary (filter <> restriction)
-    if (in_array($category_id, explode(',', $user['forbidden_categories']))) {
+    if (in_array($category_id, explode(',', (string) $user['forbidden_categories']))) {
         access_denied();
     }
 }
@@ -65,11 +65,12 @@ function get_categories_menu(): array
         SQL;
 
     // Always expand when filter is activated
-    if (! $user['expand'] and ! $filter['enabled']) {
+    if (! $user['expand'] && ! $filter['enabled']) {
         $where = '(id_uppercat IS NULL';
         if (isset($page['category'])) {
             $where .= " OR id_uppercat IN ({$page['category']['uppercats']})\n";
         }
+
         $where .= ')';
     } else {
         $where = get_sql_condition_FandF(
@@ -94,7 +95,7 @@ function get_categories_menu(): array
 
     $result = pwg_query($query);
     $cats = [];
-    $selected_category = isset($page['category']) ? $page['category'] : null;
+    $selected_category = $page['category'] ?? null;
     while ($row = pwg_db_fetch_assoc($result)) {
         $child_date_last = $row['max_date_last'] > $row['date_last'];
         $row = array_merge(
@@ -115,19 +116,21 @@ function get_categories_menu(): array
                 'URL' => make_index_url([
                     'category' => $row,
                 ]),
-                'LEVEL' => substr_count($row['global_rank'], '.') + 1,
-                'SELECTED' => ($selected_category !== null && $selected_category['id'] == $row['id']) ? true : false,
-                'IS_UPPERCAT' => ($selected_category !== null && $selected_category['id_uppercat'] == $row['id']) ? true : false,
+                'LEVEL' => substr_count((string) $row['global_rank'], '.') + 1,
+                'SELECTED' => $selected_category !== null && $selected_category['id'] == $row['id'],
+                'IS_UPPERCAT' => $selected_category !== null && $selected_category['id_uppercat'] == $row['id'],
             ]
         );
         if ($conf['index_new_icon']) {
             $row['icon_ts'] = get_icon($row['max_date_last'], $child_date_last);
         }
+
         $cats[] = $row;
         if ($row['id'] == ($page['category']['id'] ?? null)) { //save the number of subcats for later optim
             $page['category']['count_categories'] = $row['count_categories'];
         }
     }
+
     usort($cats, global_rank_compare(...));
 
     // Update filtered data
@@ -150,19 +153,19 @@ function get_cat_info(
         WHERE id = {$id};
         SQL;
     $cat = pwg_db_fetch_assoc(pwg_query($query));
-    if (empty($cat)) {
+    if ($cat === [] || $cat === false || $cat === null) {
         return null;
     }
 
     foreach ($cat as $k => $v) {
         // If the field is true or false, the variable is transformed into a
         // boolean value.
-        if ($cat[$k] == 'true' or $cat[$k] == 'false') {
+        if ($cat[$k] == 'true' || $cat[$k] == 'false') {
             $cat[$k] = get_boolean($cat[$k]);
         }
     }
 
-    $upper_ids = explode(',', $cat['uppercats']);
+    $upper_ids = explode(',', (string) $cat['uppercats']);
     if (count($upper_ids) == 1) {// no need to make a query for level 1
         $cat['upper_names'] = [
             [
@@ -185,6 +188,7 @@ function get_cat_info(
             $cat['upper_names'][] = $names[$cat_id];
         }
     }
+
     return $cat;
 }
 
@@ -244,17 +248,18 @@ function display_select_categories(
         } else {
             $option = str_repeat(
                 '&nbsp;',
-                (3 * substr_count($category['global_rank'], '.'))
+                (3 * substr_count((string) $category['global_rank'], '.'))
             );
             $option .= '- ';
             $option .= strip_tags(
-                trigger_change(
+                (string) trigger_change(
                     'render_category_name',
                     $category['name'],
                     'display_select_categories'
                 )
             );
         }
+
         $tpl_cats[$category['id']] = $option;
     }
 
@@ -294,11 +299,13 @@ function get_subcat_ids(
         SQL;
 
     foreach ($ids as $num => $category_id) {
-        is_numeric($category_id)
-          or trigger_error(
-              'get_subcat_ids expecting numeric, not ' . gettype($category_id),
-              E_USER_WARNING
-          );
+        if (! is_numeric($category_id)) {
+            trigger_error(
+                'get_subcat_ids expecting numeric, not ' . gettype($category_id),
+                E_USER_WARNING
+            );
+        }
+
         if ($num > 0) {
             $query .= "\n    OR ";
         }
@@ -323,11 +330,13 @@ function get_cat_id_from_permalinks(
 ): ?int {
     $in = '';
     foreach ($permalinks as $permalink) {
-        if (! empty($in)) {
+        if ($in !== '' && $in !== '0') {
             $in .= ', ';
         }
+
         $in .= "'{$permalink}'";
     }
+
     $query = <<<SQL
         SELECT cat_id AS id, permalink, 1 AS is_old
         FROM old_permalinks
@@ -339,9 +348,10 @@ function get_cat_id_from_permalinks(
         SQL;
     $perma_hash = query2array($query, 'permalink');
 
-    if (empty($perma_hash)) {
+    if ($perma_hash === []) {
         return null;
     }
+
     for ($i = count($permalinks) - 1; $i >= 0; $i--) {
         if (isset($perma_hash[$permalinks[$i]])) {
             $idx = $i;
@@ -355,9 +365,11 @@ function get_cat_id_from_permalinks(
                     SQL;
                 pwg_query($query);
             }
+
             return $cat_id;
         }
     }
+
     return null;
 }
 
@@ -379,7 +391,7 @@ function get_display_images_count(
     $display_text = '';
 
     if ($cat_count_images > 0) {
-        if ($cat_nb_images > 0 and $cat_nb_images < $cat_count_images) {
+        if ($cat_nb_images > 0 && $cat_nb_images < $cat_count_images) {
             $display_text .= get_display_images_count($cat_nb_images, $cat_nb_images, 0, $short_message, $separator) . $separator;
             $cat_count_images -= $cat_nb_images;
             $cat_nb_images = 0;
@@ -388,7 +400,7 @@ function get_display_images_count(
         //at least one image direct or indirect
         $display_text .= l10n_dec('%d photo', '%d photos', $cat_count_images);
 
-        if ($cat_count_categories == 0 or $cat_nb_images == $cat_count_images) {
+        if ($cat_count_categories == 0 || $cat_nb_images === $cat_count_images) {
             //no descendant categories or descendants do not contain images
             if (! $short_message) {
                 $display_text .= ' ' . l10n('in this album');
@@ -449,7 +461,7 @@ function get_random_image_in_category(
             SQL;
         $result = pwg_query($query);
         if (pwg_db_num_rows($result) > 0) {
-            list($image_id) = pwg_db_fetch_row($result);
+            [$image_id] = pwg_db_fetch_row($result);
         }
     }
 
@@ -534,15 +546,17 @@ function get_computed_categories(
             $parent['count_images'] += $cat['nb_images'];
             $parent['count_categories']++;
 
-            if ((empty($parent['max_date_last'])) or ($parent['max_date_last'] < $cat['date_last'])) {
+            if (empty($parent['max_date_last']) || $parent['max_date_last'] < $cat['date_last']) {
                 $parent['max_date_last'] = $cat['date_last'];
             }
 
             if (! isset($parent['id_uppercat'])) {
                 break;
             }
+
             $parent = &$cats[$parent['id_uppercat']];
         } while (true);
+
         unset($parent);
     }
 
@@ -577,6 +591,7 @@ function remove_computed_category(
             if (! isset($cats[$parent['id_uppercat']])) {
                 break;
             }
+
             $parent = &$cats[$parent['id_uppercat']];
         } while (true);
     }
@@ -601,7 +616,7 @@ function get_image_ids_for_categories(
 ): array {
     global $conf;
 
-    if (empty($cat_ids)) {
+    if ($cat_ids === []) {
         return [];
     }
 
@@ -625,10 +640,10 @@ function get_image_ids_for_categories(
         );
     }
 
-    $query .= (empty($extra_images_where_sql) ? '' : " AND ({$extra_images_where_sql})\n");
+    $query .= ($extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " AND ({$extra_images_where_sql})\n");
     $query .= "GROUP BY id\n";
 
-    if ($mode == 'AND' and count($cat_ids) > 1) {
+    if ($mode === 'AND' && count($cat_ids) > 1) {
         $count_cat_ids = count($cat_ids);
         $query .= <<<SQL
             HAVING COUNT(DISTINCT category_id) = {$count_cat_ids}
@@ -636,7 +651,7 @@ function get_image_ids_for_categories(
             SQL;
     }
 
-    $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
+    $query .= "\n" . ($order_by === '' || $order_by === '0' ? $conf['order_by'] : $order_by);
 
     return query2array($query, null, 'id');
 }
@@ -654,7 +669,7 @@ function get_common_categories(
     array $excluded_cat_ids = [],
     bool $use_permissions = true
 ): array {
-    if (empty($items)) {
+    if ($items === []) {
         return [];
     }
 
@@ -677,7 +692,7 @@ function get_common_categories(
         );
     }
 
-    if (! empty($excluded_cat_ids)) {
+    if ($excluded_cat_ids !== []) {
         $excluded_cat_ids_imploded = implode(',', $excluded_cat_ids);
         $query .= <<<SQL
             AND category_id NOT IN ({$excluded_cat_ids_imploded})
@@ -726,7 +741,7 @@ function get_related_categories_menu(
     $cat_ids = [];
     // now we add the upper categories and useful values such as depth level and url
     foreach ($common_cats as $cat) {
-        foreach (explode(',', $cat['uppercats']) as $uppercat) {
+        foreach (explode(',', (string) $cat['uppercats']) as $uppercat) {
             $cat_ids[$uppercat] ??= 0;
             $cat_ids[$uppercat]++;
         }
@@ -745,7 +760,7 @@ function get_related_categories_menu(
 
     foreach ($cats as $idx => $cat) {
         $index_of_cat[$cat['id']] = $idx;
-        $cats[$idx]['LEVEL'] = substr_count($cat['global_rank'], '.') + 1;
+        $cats[$idx]['LEVEL'] = substr_count((string) $cat['global_rank'], '.') + 1;
         $cats[$idx]['name'] = trigger_change('render_category_name', $cat['name'], $cat);
 
         // if the category is directly linked to the items, we add a URL + counter
@@ -773,8 +788,8 @@ function get_related_categories_menu(
         // 3. number of sub-albums containing photos
         //
         // Option 3 seems more appropriate here.
-        if (! empty($cat['id_uppercat']) and $cats[$idx]['count_images'] > 0) {
-            foreach (array_slice(explode(',', $cat['uppercats']), 0, -1) as $uppercat_id) {
+        if (! empty($cat['id_uppercat']) && $cats[$idx]['count_images'] > 0) {
+            foreach (array_slice(explode(',', (string) $cat['uppercats']), 0, -1) as $uppercat_id) {
                 $cats[$index_of_cat[$uppercat_id]]['count_categories']++;
             }
         }

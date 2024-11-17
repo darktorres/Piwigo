@@ -112,7 +112,7 @@ $template->assign(
         'protected_users' => implode(',', array_unique($protected_users)),
         'password_protected_users' => implode(',', array_unique($password_protected_users)),
         'guest_user' => $conf['guest_id'],
-        'filter_group' => (isset($_GET['group']) ? $_GET['group'] : null),
+        'filter_group' => ($_GET['group'] ?? null),
         'connected_user' => $user['id'],
         'connected_user_status' => $user['status'],
         'owner' => $conf['webmaster_id'],
@@ -144,6 +144,7 @@ $template->assign('pref_status_selected', 'normal');
 foreach ($conf['available_permission_levels'] as $level) {
     $level_options[$level] = l10n(sprintf('Level %d', $level));
 }
+
 $template->assign('level_options', $level_options);
 $template->assign('level_selected', $default_user['level']);
 
@@ -174,6 +175,7 @@ if (userprefs_get_param('user-manager-view', 'line') == 'line') {
     //Show 10 users by default
     $template->assign('pagination', userprefs_get_param('user-manager-pagination', 10));
 }
+
 // +-----------------------------------------------------------------------+
 // | html code display                                                     |
 // +-----------------------------------------------------------------------+

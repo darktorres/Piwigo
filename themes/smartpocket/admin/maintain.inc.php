@@ -13,6 +13,7 @@ class smartpocket_maintain extends ThemeMaintain
         //5000 - 0
     ];
 
+    #[\Override]
     public function activate(
         string $theme_version,
         array &$errors = []
@@ -25,17 +26,20 @@ class smartpocket_maintain extends ThemeMaintain
             $conff = $conf['smartpocket'];
 
             $config = [
-                'loop' => (! empty($conff['loop'])) ? $conff['loop'] : true,
-                'autohide' => (! empty($conff['autohide'])) ? $conff['autohide'] : 5000,
+                'loop' => (empty($conff['loop'])) ? true : $conff['loop'],
+                'autohide' => (empty($conff['autohide'])) ? 5000 : $conff['autohide'],
             ];
 
             conf_update_param('smartpocket', $config, true);
         }
+
         $this->installed = true;
     }
 
+    #[\Override]
     public function deactivate(): void {}
 
+    #[\Override]
     public function delete(): void
     {
         // delete configuration

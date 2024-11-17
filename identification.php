@@ -31,14 +31,15 @@ trigger_notify('loc_begin_identification');
 // security (level 1): the redirect must occur within Piwigo, so the
 // redirect param must start with the relative home url
 if (isset($_POST['redirect'])) {
-    $_POST['redirect_decoded'] = urldecode($_POST['redirect']);
+    $_POST['redirect_decoded'] = urldecode((string) $_POST['redirect']);
 }
+
 check_input_parameter('redirect_decoded', $_POST, false, '{^' . preg_quote(cookie_path()) . '}');
 
 $redirect_to = '';
 if (! empty($_GET['redirect'])) {
-    $redirect_to = urldecode($_GET['redirect']);
-    if ($conf['guest_access'] and ! isset($_GET['hide_redirect_error'])) {
+    $redirect_to = urldecode((string) $_GET['redirect']);
+    if ($conf['guest_access'] && ! isset($_GET['hide_redirect_error'])) {
         $page['errors'][] = l10n('You are not authorized to access the requested page');
     }
 }
@@ -51,8 +52,10 @@ if (isset($_POST['login'])) {
             $_POST['username'] = search_case_username($_POST['username']);
         }
 
-        $redirect_to = isset($_POST['redirect']) ? urldecode($_POST['redirect']) : '';
-        $remember_me = isset($_POST['remember_me']) and $_POST['remember_me'] == 1;
+        $redirect_to = isset($_POST['redirect']) ? urldecode((string) $_POST['redirect']) : '';
+        if ($remember_me = isset($_POST['remember_me'])) {
+            $_POST['remember_me'] == 1;
+        }
 
         if (try_log_user($_POST['username'], $_POST['password'], $remember_me)) {
             // security (level 2): force redirect within Piwigo. We redirect to
@@ -68,7 +71,7 @@ if (isset($_POST['login'])) {
             $root_url = get_absolute_root_url();
 
             redirect(
-                empty($redirect_to)
+                $redirect_to === '' || $redirect_to === '0'
                 ? get_gallery_home_url()
                 : substr($root_url, 0, strlen($root_url) - strlen(cookie_path())) . $redirect_to
             );
@@ -108,7 +111,7 @@ if (! $conf['gallery_locked']) {
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) or ! in_array('theIdentificationPage', $themeconf['hide_menu_on']))) {
+if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) || ! in_array('theIdentificationPage', $themeconf['hide_menu_on']))) {
     require PHPWG_ROOT_PATH . 'include/menubar.inc.php';
 }
 

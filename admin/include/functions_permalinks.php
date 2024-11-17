@@ -19,9 +19,10 @@ function get_cat_id_from_permalink(
         WHERE permalink = '{$permalink}';
         SQL;
     $ids = query2array($query, null, 'id');
-    if (! empty($ids)) {
+    if ($ids !== []) {
         return $ids[0];
     }
+
     return null;
 }
 
@@ -39,9 +40,10 @@ function get_cat_id_from_old_permalink(
         SQL;
     $result = pwg_query($query);
     $cat_id = null;
-    if (pwg_db_num_rows($result)) {
-        list($cat_id) = pwg_db_fetch_row($result);
+    if (pwg_db_num_rows($result) !== 0) {
+        [$cat_id] = pwg_db_fetch_row($result);
     }
+
     return $cat_id;
 }
 
@@ -62,15 +64,17 @@ function delete_cat_permalink(
         WHERE id = '{$cat_id}';
         SQL;
     $result = pwg_query($query);
-    if (pwg_db_num_rows($result)) {
-        list($permalink) = pwg_db_fetch_row($result);
+    if (pwg_db_num_rows($result) !== 0) {
+        [$permalink] = pwg_db_fetch_row($result);
     }
+
     if (! isset($permalink)) {// no permalink; nothing to do
         return true;
     }
+
     if ($save) {
         $old_cat_id = get_cat_id_from_old_permalink($permalink);
-        if (isset($old_cat_id) and $old_cat_id != $cat_id) {
+        if (isset($old_cat_id) && $old_cat_id != $cat_id) {
             $page['errors'][] =
               sprintf(
                   l10n('Permalink %s has been previously used by album %s. Delete from the permalink history first'),
@@ -80,6 +84,7 @@ function delete_cat_permalink(
             return false;
         }
     }
+
     $query = <<<SQL
         UPDATE categories
         SET permalink = NULL
@@ -105,8 +110,10 @@ function delete_cat_permalink(
                     ('{$permalink}', {$cat_id}, NOW());
                 SQL;
         }
+
         pwg_query($query);
     }
+
     return true;
 }
 
@@ -125,10 +132,9 @@ function set_cat_permalink(
     global $page, $cache;
 
     $sanitized_permalink = preg_replace('#[^a-zA-Z0-9_/-]#', '', $permalink);
-    $sanitized_permalink = trim($sanitized_permalink, '/');
+    $sanitized_permalink = trim((string) $sanitized_permalink, '/');
     $sanitized_permalink = str_replace('//', '/', $sanitized_permalink);
-    if ($sanitized_permalink != $permalink
-        or preg_match('#^(\d)+(-.*)?$#', $permalink)) {
+    if ($sanitized_permalink != $permalink || preg_match('#^(\d)+(-.*)?$#', $permalink)) {
         $page['errors'][] = '{' . $permalink . '} ' . l10n('The permalink name must be composed of a-z, A-Z, 0-9, "-", "_" or "/". It must not be numeric or start with number followed by "-"');
         return false;
     }
@@ -152,7 +158,7 @@ function set_cat_permalink(
 
     // check if the new permalink was historically used
     $old_cat_id = get_cat_id_from_old_permalink($permalink);
-    if (isset($old_cat_id) and $old_cat_id != $cat_id) {
+    if (isset($old_cat_id) && $old_cat_id != $cat_id) {
         $page['errors'][] =
           sprintf(
               l10n('Permalink %s has been previously used by album %s. Delete from the permalink history first'),
