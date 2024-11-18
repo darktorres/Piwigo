@@ -197,11 +197,11 @@
 {if !empty($CATEGORIES)}
     <!-- Start of categories -->
 {$CATEGORIES}
-{footer_script require='jquery'}
+{footer_script require='jquery'}<script>
 $(document).ready(function() {
   $('#content .col-outer .card-body:has(> .card-title)').equalHeights();
 });
-{/footer_script}
+</script>{/footer_script}
     <!-- End of categories -->
 {/if}
 
@@ -236,7 +236,7 @@ $(document).ready(function() {
 {if !empty($THUMBNAILS)}
         <!-- Start of thumbnails -->
         <div id="thumbnails" class="row">{$THUMBNAILS}</div>
-{footer_script require='jquery'}$(document).ready(function(){ $('#content img').load(function(){ $('#content .col-inner').equalHeights() }) });{/footer_script}
+{footer_script require='jquery'}<script>$(document).ready(function(){ $('#content img').load(function(){ $('#content .col-inner').equalHeights() }) });</script>{/footer_script}
 {if $theme_config->photoswipe}
 {footer_script}
     <script type="module">
@@ -254,7 +254,7 @@ $(document).ready(function() {
     <link rel="stylesheet" href="./themes/bootstrap_darkroom/node_modules/photoswipe/dist/photoswipe.css">
 {/footer_script}
 {/if}
-{footer_script require="jquery"}
+{footer_script require="jquery"}<script>
 {if !isset($loaded_plugins['piwigo-videojs']) && (isset($GThumb) || isset($GDThumb))}
 function addVideoIndicator() {
   $('img.thumbnail[src*="pwg_representative"]').each(function() {
@@ -272,7 +272,7 @@ $('.card-thumbnail').find('img[src*="pwg_representative"]').each(function() {
   $(this).closest('div').append('<i class="fas fa-file-video fa-2x video-indicator" aria-hidden="true" style="position: absolute; top: 10px; left: 10px; z-index: 100; color: #fff;"></i>');
 });
 {/if}
-{/footer_script}
+</script>{/footer_script}
         <!-- End of thumbnails -->
 {else if !empty($SEARCH_ID)}
         <div class="mcs-no-result">
