@@ -27,11 +27,12 @@ function ws_categories_getImages($params, &$service)
 
     if (count($params['cat_id']) > 0) {
         // do the categories really exist?
-        $query = '
-SELECT id
-  FROM categories
-  WHERE id IN (' . implode(',', $params['cat_id']) . ')
-;';
+        $cat_ids_list = implode(',', $params['cat_id']);
+        $query = <<<SQL
+            SELECT id
+            FROM categories
+            WHERE id IN ({$cat_ids_list});
+            SQL;
         $db_cat_ids = query2array($query, null, 'id');
         $missing_cat_ids = array_diff($params['cat_id'], $db_cat_ids);
 
@@ -48,9 +49,9 @@ SELECT id
     $where_clauses = [];
     foreach ($params['cat_id'] as $cat_id) {
         if ($params['recursive']) {
-            $where_clauses[] = 'uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $cat_id . '(,|$)\'';
+            $where_clauses[] = 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$cat_id}(,|$)'";
         } else {
-            $where_clauses[] = 'id=' . $cat_id;
+            $where_clauses[] = "id = {$cat_id}";
         }
     }
     if (! empty($where_clauses)) {
@@ -64,13 +65,12 @@ SELECT id
         true
     );
 
-    $query = '
-SELECT
-    id,
-    image_order
-  FROM categories
-  WHERE ' . implode("\n    AND ", $where_clauses) . '
-;';
+    $where_condition = implode("\n    AND ", $where_clauses);
+    $query = <<<SQL
+        SELECT id, image_order
+        FROM categories
+        WHERE {$where_condition};
+        SQL;
     $result = pwg_query($query);
 
     $cats = [];
@@ -98,19 +98,20 @@ SELECT
         ) {
             $order_by = $cats[$params['cat_id'][0]]['image_order'];
         }
-        $order_by = empty($order_by) ? $conf['order_by'] : 'ORDER BY ' . $order_by;
+        $order_by = empty($order_by) ? $conf['order_by'] : "ORDER BY {$order_by}";
         $favorite_ids = get_user_favorites();
 
-        $query = '
-SELECT SQL_CALC_FOUND_ROWS i.*
-  FROM images i
-    INNER JOIN image_category ON i.id=image_id
-  WHERE ' . implode("\n    AND ", $where_clauses) . '
-  GROUP BY i.id
-  ' . $order_by . '
-  LIMIT ' . $params['per_page'] . '
-  OFFSET ' . ($params['per_page'] * $params['page']) . '
-;';
+        $where_condition = implode("\n    AND ", $where_clauses);
+        $offset = $params['per_page'] * $params['page'];
+        $query = <<<SQL
+            SELECT SQL_CALC_FOUND_ROWS i.*
+            FROM images i
+            INNER JOIN image_category ON i.id = image_id
+            WHERE {$where_condition}
+            GROUP BY i.id
+            {$order_by}
+            LIMIT {$params['per_page']} OFFSET {$offset};
+            SQL;
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -131,23 +132,24 @@ SELECT SQL_CALC_FOUND_ROWS i.*
             $images[] = $image;
         }
 
-        list($total_images) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+        list($total_images) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
         // let's take care of adding the related albums to each photo
         if (count($image_ids) > 0) {
             $category_ids = [];
 
             // find the complete list (given permissions) of albums linked to photos
-            $query = '
-SELECT
-    image_id,
-    category_id
-  FROM image_category
-  WHERE image_id IN (' . implode(',', $image_ids) . ')
-    AND ' . get_sql_condition_FandF([
+            $image_ids_imploded = implode(',', $image_ids);
+            $sql_condition = get_sql_condition_FandF([
                 'forbidden_categories' => 'category_id',
-            ], null, true) . '
-;';
+            ], null, true);
+
+            $query = <<<SQL
+                SELECT image_id, category_id
+                FROM image_category
+                WHERE image_id IN ({$image_ids_imploded})
+                    AND {$sql_condition};
+                SQL;
             $result = pwg_query($query);
             while ($row = pwg_db_fetch_assoc($result)) {
                 $category_ids[] = $row['category_id'];
@@ -156,14 +158,12 @@ SELECT
 
             if (count($category_ids) > 0) {
                 // find details (for URL generation) about each album
-                $query = '
-SELECT
-    id,
-    name,
-    permalink
-  FROM categories
-  WHERE id IN (' . implode(',', $category_ids) . ')
-;';
+                $category_ids_imploded = implode(',', $category_ids);
+                $query = <<<SQL
+                    SELECT id, name, permalink
+                    FROM categories
+                    WHERE id IN ({$category_ids_imploded});
+                    SQL;
                 $details_for_category = query2array($query, 'id');
             }
 
@@ -239,22 +239,18 @@ function ws_categories_getList($params, &$service)
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid thumbnail_size');
     }
 
-    $where = ['1=1'];
+    $where = ['1 = 1'];
     $join_type = 'INNER';
     $join_user = $user['id'];
 
     if (! $params['recursive']) {
         if ($params['cat_id'] > 0) {
-            $where[] = '(
-        id_uppercat = ' . (int) ($params['cat_id']) . '
-        OR id=' . (int) ($params['cat_id']) . '
-      )';
+            $where[] = "(id_uppercat = {$params['cat_id']} OR id = {$params['cat_id']})";
         } else {
             $where[] = 'id_uppercat IS NULL';
         }
     } elseif ($params['cat_id'] > 0) {
-        $where[] = 'uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' .
-          (int) ($params['cat_id']) . '(,|$)\'';
+        $where[] = 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$params['cat_id']}(,|$)'";
     }
 
     if ($params['public']) {
@@ -269,31 +265,32 @@ function ws_categories_getList($params, &$service)
         //
         // calculate_permissions does not consider empty categories as forbidden
         $forbidden_categories = calculate_permissions($user['id'], $user['status']);
-        $where[] = 'id NOT IN (' . $forbidden_categories . ')';
+        $where[] = "id NOT IN ({$forbidden_categories})";
         $join_type = 'LEFT';
     }
 
-    $query = '
-SELECT
-    id, name, comment, permalink, status,
-    uppercats, global_rank, id_uppercat,
-    nb_images, count_images AS total_nb_images,
-    representative_picture_id, user_representative_picture_id, count_images, count_categories,
-    date_last, max_date_last, count_categories AS nb_categories,
-    image_order
-  FROM categories
-    ' . $join_type . ' JOIN user_cache_categories
-    ON id=cat_id AND user_id=' . $join_user . '
-  WHERE ' . implode("\n    AND ", $where);
+    $where_clause = implode("\n    AND ", $where);
+    $query = <<<SQL
+        SELECT id, name, comment, permalink, status, uppercats, global_rank, id_uppercat, nb_images,
+            count_images AS total_nb_images, representative_picture_id, user_representative_picture_id,
+            count_images, count_categories, date_last, max_date_last, count_categories AS nb_categories,
+            image_order
+        FROM categories
+        {$join_type} JOIN user_cache_categories ON id = cat_id AND user_id = {$join_user}
+        WHERE {$where_clause}
+
+        SQL;
 
     if (isset($params['search']) and $params['search'] != '') {
-        $query .= '
-    AND name LIKE \'%' . pwg_db_real_escape_string($params['search']) . '%\'
-  LIMIT ' . $conf['linked_album_search_limit'];
+        $search_escaped = pwg_db_real_escape_string($params['search']);
+        $query .= <<<SQL
+            AND name LIKE '%{$search_escaped}%'
+            LIMIT {$conf['linked_album_search_limit']}
+
+            SQL;
     }
 
-    $query .= '
-;';
+    $query .= ';';
     $result = pwg_query($query);
 
     // management of the album thumbnail -- starts here
@@ -353,22 +350,25 @@ SELECT
             $image_id = get_random_image_in_category($row);
         } else { // searching a random representant among representant of sub-categories
             if ($row['count_categories'] > 0 and $row['count_images'] > 0) {
-                $query = '
-SELECT representative_picture_id
-  FROM categories
-    INNER JOIN user_cache_categories
-    ON id=cat_id AND user_id=' . $user['id'] . '
-  WHERE uppercats LIKE \'' . $row['uppercats'] . ',%\'
-    AND representative_picture_id IS NOT NULL
-        ' . get_sql_condition_FandF(
+                $sql_condition = get_sql_condition_FandF(
                     [
                         'visible_categories' => 'id',
                     ],
-                    "\n  AND"
-                ) . '
-  ORDER BY ' . DB_RANDOM_FUNCTION . '()
-  LIMIT 1
-;';
+                    'AND'
+                );
+
+                $random_function = DB_RANDOM_FUNCTION;
+                $query = <<<SQL
+                    SELECT representative_picture_id
+                    FROM categories
+                    INNER JOIN user_cache_categories ON id = cat_id AND user_id = {$user['id']}
+                    WHERE uppercats LIKE '{$row['uppercats']},%'
+                        AND representative_picture_id IS NOT NULL
+                        {$sql_condition}
+                    ORDER BY {$random_function}()
+                    LIMIT 1;
+                    SQL;
+
                 $subresult = pwg_query($query);
 
                 if (pwg_db_num_rows($subresult) > 0) {
@@ -402,11 +402,12 @@ SELECT representative_picture_id
         $thumbnail_src_of = [];
         $new_image_ids = [];
 
-        $query = '
-SELECT id, path, representative_ext, level
-  FROM images
-  WHERE id IN (' . implode(',', $image_ids) . ')
-;';
+        $image_ids_str = implode(',', $image_ids);
+        $query = <<<SQL
+            SELECT id, path, representative_ext, level
+            FROM images
+            WHERE id IN ({$image_ids_str});
+            SQL;
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -440,11 +441,12 @@ SELECT id, path, representative_ext, level
         }
 
         if (count($new_image_ids) > 0) {
-            $query = '
-SELECT id, path, representative_ext
-  FROM images
-  WHERE id IN (' . implode(',', $new_image_ids) . ')
-;';
+            $image_ids_str = implode(',', $new_image_ids);
+            $query = <<<SQL
+                SELECT id, path, representative_ext
+                FROM images
+                WHERE id IN ({$image_ids_str});
+                SQL;
             $result = pwg_query($query);
 
             while ($row = pwg_db_fetch_assoc($result)) {
@@ -519,30 +521,34 @@ function ws_categories_getAdminList($params, &$service)
     }
     $params['additional_output'] = array_map('trim', explode(',', $params['additional_output']));
 
-    $query = '
-SELECT category_id, COUNT(*) AS counter
-  FROM image_category
-  GROUP BY category_id
-;';
+    $query = <<<SQL
+        SELECT category_id, COUNT(*) AS counter
+        FROM image_category
+        GROUP BY category_id;
+        SQL;
     $nb_images_of = query2array($query, 'category_id', 'counter');
 
     // pwg_db_real_escape_string
 
-    $query = '
-SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, status, image_order
-  FROM categories';
+    $query = <<<SQL
+        SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, status, image_order
+        FROM categories
+
+        SQL;
 
     if (isset($params['search']) and $params['search'] != '') {
-        $query .= '
-  WHERE name LIKE \'%' . pwg_db_real_escape_string($params['search']) . '%\'
-  LIMIT ' . $conf['linked_album_search_limit'];
+        $search_term = pwg_db_real_escape_string($params['search']);
+        $query .= <<<SQL
+            WHERE name LIKE '%{$search_term}%'
+            LIMIT {$conf['linked_album_search_limit']}
+
+            SQL;
     }
 
-    $query .= '
-;';
+    $query .= ';';
     $result = pwg_query($query);
 
-    list($counter) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS()'));
+    list($counter) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
     $cats = [];
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -659,11 +665,12 @@ function ws_categories_add($params, &$service)
 function ws_categories_setRank($params, &$service)
 {
     // does the category really exist?
-    $query = '
-SELECT id, id_uppercat, rank_column
-  FROM categories
-  WHERE id IN (' . implode(',', $params['category_id']) . ')
-;';
+    $category_ids_str = implode(',', $params['category_id']);
+    $query = <<<SQL
+        SELECT id, id_uppercat, rank_column
+        FROM categories
+        WHERE id IN ({$category_ids_str});
+        SQL;
     $categories = query2array($query);
 
     if (count($categories) == 0) {
@@ -678,12 +685,13 @@ SELECT id, id_uppercat, rank_column
         $order_new_by_id = $order_new;
         sort($order_new_by_id, SORT_NUMERIC);
 
-        $query = '
-SELECT id
-  FROM categories
-  WHERE id_uppercat ' . (empty($category['id_uppercat']) ? 'IS NULL' : '= ' . $category['id_uppercat']) . '
-  ORDER BY id ASC
-;';
+        $id_uppercat_condition = empty($category['id_uppercat']) ? 'IS NULL' : "= {$category['id_uppercat']}";
+        $query = <<<SQL
+            SELECT id
+            FROM categories
+            WHERE id_uppercat {$id_uppercat_condition}
+            ORDER BY id ASC;
+            SQL;
 
         $cat_asc = query2array($query, null, 'id');
 
@@ -693,13 +701,14 @@ SELECT id
     } else {
         $params['category_id'] = implode($params['category_id']);
 
-        $query = '
-SELECT id
-  FROM categories
-  WHERE id_uppercat ' . (empty($category['id_uppercat']) ? 'IS NULL' : '= ' . $category['id_uppercat']) . '
-    AND id != ' . $params['category_id'] . '
-  ORDER BY rank_column ASC
-;';
+        $id_uppercat_condition = empty($category['id_uppercat']) ? 'IS NULL' : "= {$category['id_uppercat']}";
+        $query = <<<SQL
+            SELECT id
+            FROM categories
+            WHERE id_uppercat {$id_uppercat_condition}
+                AND id != {$params['category_id']}
+            ORDER BY rank_column ASC;
+            SQL;
 
         $order_old = query2array($query, null, 'id');
         $order_new = [];
@@ -744,11 +753,11 @@ function ws_categories_setInfo($params, &$service)
     }
 
     // does the category really exist?
-    $query = '
-SELECT *
-  FROM categories
-  WHERE id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        SELECT *
+        FROM categories
+        WHERE id = {$params['category_id']};
+        SQL;
     $categories = query2array($query);
     if (count($categories) == 0) {
         return new PwgError(404, 'category_id not found');
@@ -795,11 +804,12 @@ SELECT *
     if (isset($params['commentable']) && isset($params['apply_commentable_to_subalbums']) && $params['apply_commentable_to_subalbums']) {
         $subcats = get_subcat_ids([$params['category_id']]);
         if (count($subcats) > 0) {
-            $query = '
-UPDATE categories
-  SET commentable = \'' . $params['commentable'] . '\'
-  WHERE id IN (' . implode(',', $subcats) . ')
-;';
+            $subcats_str = implode(',', $subcats);
+            $query = <<<SQL
+                UPDATE categories
+                SET commentable = '{$params['commentable']}'
+                WHERE id IN ({$subcats_str});
+                SQL;
             pwg_query($query);
         }
     }
@@ -829,40 +839,40 @@ UPDATE categories
 function ws_categories_setRepresentative($params, &$service)
 {
     // does the category really exist?
-    $query = '
-SELECT COUNT(*)
-  FROM categories
-  WHERE id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM categories
+        WHERE id = {$params['category_id']};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'category_id not found');
     }
 
     // does the image really exist?
-    $query = '
-SELECT COUNT(*)
-  FROM images
-  WHERE id = ' . $params['image_id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM images
+        WHERE id = {$params['image_id']};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(404, 'image_id not found');
     }
 
     // apply change
-    $query = '
-UPDATE categories
-  SET representative_picture_id = ' . $params['image_id'] . '
-  WHERE id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        UPDATE categories
+        SET representative_picture_id = {$params['image_id']}
+        WHERE id = {$params['category_id']};
+        SQL;
     pwg_query($query);
 
-    $query = '
-UPDATE user_cache_categories
-  SET user_representative_picture_id = NULL
-  WHERE cat_id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        UPDATE user_cache_categories
+        SET user_representative_picture_id = NULL
+        WHERE cat_id = {$params['category_id']};
+        SQL;
     pwg_query($query);
 
     pwg_activity('album', $params['category_id'], 'edit', [
@@ -884,32 +894,32 @@ function ws_categories_deleteRepresentative($params, &$service)
     global $conf;
 
     // does the category really exist?
-    $query = '
-SELECT id
-  FROM categories
-  WHERE id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id = {$params['category_id']};
+        SQL;
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) == 0) {
         return new PwgError(404, 'category_id not found');
     }
 
-    $query = '
-SELECT COUNT(*)
-  FROM image_category
-  WHERE category_id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM image_category
+        WHERE category_id = {$params['category_id']};
+        SQL;
     list($nb_images) = pwg_db_fetch_row(pwg_query($query));
 
     if (! $conf['allow_random_representative'] and $nb_images != 0) {
         return new PwgError(401, 'not permitted');
     }
 
-    $query = '
-UPDATE categories
-  SET representative_picture_id = NULL
-  WHERE id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        UPDATE categories
+        SET representative_picture_id = NULL
+        WHERE id = {$params['category_id']};
+        SQL;
     pwg_query($query);
 
     pwg_activity('album', $params['category_id'], 'edit');
@@ -928,23 +938,22 @@ function ws_categories_refreshRepresentative($params, &$service)
     global $conf;
 
     // does the category really exist?
-    $query = '
-SELECT id
-  FROM categories
-  WHERE id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id = {$params['category_id']};
+        SQL;
     $result = pwg_query($query);
     if (pwg_db_num_rows($result) == 0) {
         return new PwgError(404, 'category_id not found');
     }
 
-    $query = '
-SELECT
-    DISTINCT category_id
-  FROM image_category
-  WHERE category_id = ' . $params['category_id'] . '
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT DISTINCT category_id
+        FROM image_category
+        WHERE category_id = {$params['category_id']}
+        LIMIT 1;
+        SQL;
     $result = pwg_query($query);
     $has_images = pwg_db_num_rows($result) > 0 ? true : false;
 
@@ -959,11 +968,11 @@ SELECT
     pwg_activity('album', $params['category_id'], 'edit');
 
     // return url of the new representative
-    $query = '
-SELECT *
-  FROM categories
-  WHERE id = ' . $params['category_id'] . '
-;';
+    $query = <<<SQL
+        SELECT *
+        FROM categories
+        WHERE id = {$params['category_id']};
+        SQL;
     $category = pwg_db_fetch_assoc(pwg_query($query));
 
     return get_category_representant_properties($category['representative_picture_id'], IMG_SMALL);
@@ -1014,11 +1023,12 @@ function ws_categories_delete($params, &$service)
         return;
     }
 
-    $query = '
-SELECT id
-  FROM categories
-  WHERE id IN (' . implode(',', $category_ids) . ')
-;';
+    $category_ids_imploded = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id IN ({$category_ids_imploded});
+        SQL;
     $category_ids = array_from_query($query, 'id');
 
     if (count($category_ids) == 0) {
@@ -1072,11 +1082,12 @@ function ws_categories_move($params, &$service)
     $categories_in_db = [];
     $update_cat_ids = [];
 
-    $query = '
-SELECT id, name, dir, uppercats
-  FROM categories
-  WHERE id IN (' . implode(',', $category_ids) . ')
-;';
+    $category_ids_imploded = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT id, name, dir, uppercats
+        FROM categories
+        WHERE id IN ({$category_ids_imploded});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $categories_in_db[$row['id']] = $row;
@@ -1136,11 +1147,12 @@ SELECT id, name, dir, uppercats
         return new PwgError(403, implode('; ', $page['errors']));
     }
 
-    $query = '
-  SELECT uppercats
-    FROM categories
-    WHERE id IN (' . implode(',', $category_ids) . ')
-  ;';
+    $category_ids_imploded = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT uppercats
+        FROM categories
+        WHERE id IN ({$category_ids_imploded});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $cat_display_name = get_cat_display_name_cache(
@@ -1150,13 +1162,11 @@ SELECT id, name, dir, uppercats
         $update_cat_ids = array_merge($update_cat_ids, array_slice(explode(',', $row['uppercats']), 0, -1));
     }
 
-    $query = '
-SELECT
-    category_id,
-    COUNT(*) AS nb_photos
-  FROM image_category
-  GROUP BY category_id
-;';
+    $query = <<<SQL
+        SELECT category_id, COUNT(*) AS nb_photos
+        FROM image_category
+        GROUP BY category_id;
+        SQL;
 
     $nb_photos_in = query2array($query, 'category_id', 'nb_photos');
 
@@ -1192,14 +1202,12 @@ function ws_categories_calculateOrphans($param, &$service)
 
     $category_id = $param['category_id'][0];
 
-    $query = '
-SELECT DISTINCT
-    category_id
-  FROM
-    image_category
-  WHERE
-    category_id = ' . $category_id . '
-  LIMIT 1';
+    $query = <<<SQL
+        SELECT DISTINCT category_id
+        FROM image_category
+        WHERE category_id = {$category_id}
+        LIMIT 1;
+        SQL;
     $result = pwg_query($query);
     $category['has_images'] = pwg_db_num_rows($result) > 0 ? true : false;
 
@@ -1209,14 +1217,12 @@ SELECT DISTINCT
     $category['nb_subcats'] = count($subcat_ids) - 1;
 
     // total number of images under this category (including sub-categories)
-    $query = '
-SELECT DISTINCT
-    (image_id)
-  FROM
-    image_category
-  WHERE
-    category_id IN (' . implode(',', $subcat_ids) . ')
-  ;';
+    $subcat_ids_list = implode(',', $subcat_ids);
+    $query = <<<SQL
+        SELECT DISTINCT (image_id)
+        FROM image_category
+        WHERE category_id IN ({$subcat_ids_list});
+        SQL;
     $image_ids_recursive = query2array($query, null, 'image_id');
 
     $category['nb_images_recursive'] = count($image_ids_recursive);
@@ -1228,20 +1234,14 @@ SELECT DISTINCT
     if ($category['nb_images_recursive'] > 0) {
         // if we don't have "too many" photos, it's faster to compute the orphans with MySQL
         if ($category['nb_images_recursive'] < 1000) {
-            $query = '
-  SELECT DISTINCT
-      (image_id)
-    FROM
-      image_category
-    WHERE
-      category_id
-    NOT IN
-      (' . implode(',', $subcat_ids) . ')
-    AND
-      image_id
-    IN
-      (' . implode(',', $image_ids_recursive) . ')
-  ;';
+            $subcat_ids_list = implode(',', $subcat_ids);
+            $image_ids_recursive_list = implode(',', $image_ids_recursive);
+            $query = <<<SQL
+                SELECT DISTINCT (image_id)
+                FROM image_category
+                WHERE category_id NOT IN ({$subcat_ids_list})
+                    AND image_id IN ({$image_ids_recursive_list});
+                SQL;
 
             $image_ids_associated_outside = query2array($query, null, 'image_id');
             $category['nb_images_associated_outside'] = count($image_ids_associated_outside);
@@ -1253,16 +1253,12 @@ SELECT DISTINCT
         else {
             $image_ids_recursive_keys = array_flip($image_ids_recursive);
 
-            $query = '
-  SELECT
-      image_id
-    FROM
-      image_category
-    WHERE
-      category_id
-    NOT IN
-      (' . implode(',', $subcat_ids) . ')
-  ;';
+            $subcat_ids_list = implode(',', $subcat_ids);
+            $query = <<<SQL
+                SELECT image_id
+                FROM image_category
+                WHERE category_id NOT IN ({$subcat_ids_list});
+                SQL;
             $image_ids_associated_outside = query2array($query, null, 'image_id');
             $image_ids_not_orphan = [];
 

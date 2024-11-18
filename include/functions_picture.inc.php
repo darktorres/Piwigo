@@ -113,11 +113,10 @@ function encode_slideshow_params($decode_params = [])
 function increase_image_visit_counter($image_id)
 {
     // avoiding auto update of "lastmodified" field
-    $query = '
-UPDATE
-  images
-  SET hit = hit+1, lastmodified = lastmodified
-  WHERE id = ' . $image_id . '
-;';
+    $query = <<<SQL
+        UPDATE images
+        SET hit = hit + 1, lastmodified = lastmodified
+        WHERE id = {$image_id};
+        SQL;
     pwg_query($query);
 }

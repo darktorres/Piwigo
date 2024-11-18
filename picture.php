@@ -27,17 +27,18 @@ $page['rank_of'] = array_flip($page['items']);
 // if this image_id doesn't correspond to this category, an error message is
 // displayed, and execution is stopped
 if (! isset($page['rank_of'][$page['image_id']])) {
-    $query = '
-SELECT id, file, level
-  FROM images
-  WHERE ';
+    $query = <<<SQL
+        SELECT id, file, level
+        FROM images
+        WHERE
+
+        SQL;
     if ($page['image_id'] > 0) {
-        $query .= 'id = ' . $page['image_id'];
-    } else {// url given by file name
+        $query .= "id = {$page['image_id']}\n";
+    } else { // URL given by file name
         assert(! empty($page['image_file']));
-        $query .= 'file LIKE \'' .
-          str_replace(['_', '%'], ['/_', '/%'], $page['image_file']) .
-          '.%\' ESCAPE \'/\' LIMIT 1';
+        $escaped_file = str_replace(['_', '%'], ['/_', '/%'], $page['image_file']);
+        $query .= "file LIKE '{$escaped_file}.%' ESCAPE '/' LIMIT 1";
     }
     if (! ($row = pwg_db_fetch_assoc(pwg_query($query)))) {// element does not exist
         page_not_found(
@@ -63,17 +64,19 @@ SELECT id, file, level
         if ($page['section'] == 'categories' and ! isset($page['category'])) {// flat view - all items
             access_denied();
         } else {// try to see if we can access it differently
-            $query = '
-SELECT id
-  FROM images INNER JOIN image_category ON id=image_id
-  WHERE id=' . $page['image_id']
-              . get_sql_condition_FandF(
-                  [
-                      'forbidden_categories' => 'category_id',
-                  ],
-                  ' AND'
-              ) . '
-  LIMIT 1';
+            $conditions = get_sql_condition_FandF(
+                [
+                    'forbidden_categories' => 'category_id',
+                ],
+                'AND'
+            );
+            $query = <<<SQL
+                SELECT id
+                FROM images
+                INNER JOIN image_category ON id = image_id
+                WHERE id = {$page['image_id']} {$conditions}
+                LIMIT 1;
+                SQL;
             if (pwg_db_num_rows(pwg_query($query)) == 0) {
                 access_denied();
             } else {
@@ -243,12 +246,12 @@ if (isset($_GET['action'])) {
     switch ($_GET['action']) {
         case 'add_to_favorites':
 
-            $query = '
-INSERT INTO favorites
-  (image_id,user_id)
-  VALUES
-  (' . $page['image_id'] . ',' . $user['id'] . ')
-;';
+            $query = <<<SQL
+                INSERT INTO favorites
+                    (image_id, user_id)
+                VALUES
+                    ({$page['image_id']}, {$user['id']});
+                SQL;
             pwg_query($query);
 
             redirect($url_self);
@@ -257,11 +260,11 @@ INSERT INTO favorites
 
         case 'remove_from_favorites':
 
-            $query = '
-DELETE FROM favorites
-  WHERE user_id = ' . $user['id'] . '
-    AND image_id = ' . $page['image_id'] . '
-;';
+            $query = <<<SQL
+                DELETE FROM favorites
+                WHERE user_id = {$user['id']}
+                    AND image_id = {$page['image_id']};
+                SQL;
             pwg_query($query);
 
             if ($page['section'] == 'favorites') {
@@ -275,11 +278,11 @@ DELETE FROM favorites
         case 'set_as_representative':
 
             if (is_admin() and isset($page['category'])) {
-                $query = '
-UPDATE categories
-  SET representative_picture_id = ' . $page['image_id'] . '
-  WHERE id = ' . $page['category']['id'] . '
-;';
+                $query = <<<SQL
+                    UPDATE categories
+                    SET representative_picture_id = {$page['image_id']}
+                    WHERE id = {$page['category']['id']};
+                    SQL;
                 pwg_query($query);
                 pwg_activity('album', $page['category']['id'], 'edit', [
                     'action' => $_GET['action'],
@@ -407,19 +410,19 @@ if (trigger_change('allow_increment_element_hit_count', $inc_hit_count, $page['i
 }
 
 //---------------------------------------------------------- related categories
-$query = '
-SELECT id,uppercats,commentable,visible,status,global_rank
-  FROM image_category
-    INNER JOIN categories ON category_id = id
-  WHERE image_id = ' . $page['image_id'] . '
-' . get_sql_condition_FandF(
+$sql_condition = get_sql_condition_FandF(
     [
         'forbidden_categories' => 'id',
         'visible_categories' => 'id',
     ],
     'AND'
-) . '
-;';
+);
+$query = <<<SQL
+    SELECT id, uppercats, commentable, visible, status, global_rank
+    FROM image_category
+    INNER JOIN categories ON category_id = id
+    WHERE image_id = {$page['image_id']} {$sql_condition};
+    SQL;
 $related_categories = array_from_query($query);
 usort($related_categories, 'global_rank_compare');
 //-------------------------first, prev, current, next & last picture management
@@ -435,11 +438,12 @@ if (isset($page['next_item'])) {
     $ids[] = $page['last_item'];
 }
 
-$query = '
-SELECT *
-  FROM images
-  WHERE id IN (' . implode(',', $ids) . ')
-;';
+$ids_list = implode(',', $ids);
+$query = <<<SQL
+    SELECT *
+    FROM images
+    WHERE id IN ({$ids_list});
+    SQL;
 
 $result = pwg_query($query);
 
@@ -601,11 +605,11 @@ if ($conf['picture_download_icon'] and ! empty($picture['current']['download_url
     ], true);
 
     if ($conf['enable_formats']) {
-        $query = '
-SELECT *
-  FROM image_format
-  WHERE image_id = ' . $picture['current']['id'] . '
-;';
+        $query = <<<SQL
+            SELECT *
+            FROM image_format
+            WHERE image_id = {$picture['current']['id']};
+            SQL;
         $formats = query2array($query);
 
         // let's add the original as a format among others. It will just have a
@@ -769,12 +773,12 @@ if (is_admin()) {
 // favorite manipulation
 if (! is_a_guest() and $conf['picture_favorite_icon']) {
     // verify if the picture is already in the favorite of the user
-    $query = '
-SELECT COUNT(*) AS nb_fav
-  FROM favorites
-  WHERE image_id = ' . $page['image_id'] . '
-    AND user_id = ' . $user['id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*) AS nb_fav
+        FROM favorites
+        WHERE image_id = {$page['image_id']}
+            AND user_id = {$user['id']};
+        SQL;
     $row = pwg_db_fetch_assoc(pwg_query($query));
     $is_favorite = $row['nb_fav'] != 0;
 
@@ -901,10 +905,12 @@ if (count($related_categories) == 1 and
         $ids = array_merge($ids, explode(',', $category['uppercats']));
     }
     $ids = array_unique($ids);
-    $query = '
-SELECT id, name, permalink
-  FROM categories
-  WHERE id IN (' . implode(',', $ids) . ')';
+    $imploded_ids = implode(',', $ids);
+    $query = <<<SQL
+        SELECT id, name, permalink
+        FROM categories
+        WHERE id IN ({$imploded_ids});
+        SQL;
     $cat_map = hash_from_query($query, 'id');
     foreach ($related_categories as $category) {
         $cats = [];
