@@ -336,6 +336,7 @@ $comments = [];
 $element_ids = [];
 $category_ids = [];
 
+// todo: replace SQL_CALC_FOUND_ROWS
 $where_clauses = implode(' AND ', $page['where_clauses']);
 $query = <<<SQL
     SELECT SQL_CALC_FOUND_ROWS com.id AS comment_id, com.image_id, ic.category_id, com.author, com.author_id,
@@ -365,6 +366,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
     $category_ids[] = $row['category_id'];
 }
 
+// todo: replace FOUND_ROWS()
 [$counter] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
 $url = PHPWG_ROOT_PATH . 'comments.php'

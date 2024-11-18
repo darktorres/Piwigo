@@ -27,7 +27,7 @@ function pwg_db_connect(
     string $host,
     string $user,
     string $password,
-    string $database
+    ?string $database = null
 ): void {
     global $mysqli;
 
@@ -46,7 +46,7 @@ function pwg_db_connect(
         throw new Exception("Can't connect to server");
     }
 
-    if ($database !== '' && $database !== '0' && ! $mysqli->select_db($database)) {
+    if ($database !== null && $database !== '' && $database !== '0' && ! $mysqli->select_db($database)) {
         throw new Exception('Connection to server succeed, but it was impossible to connect to database');
     }
 
