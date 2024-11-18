@@ -116,6 +116,7 @@ class RVTS
         $template->block_footer_script(
             null,
             <<<JS
+                <script>
                 var RVTS = {
                     ajaxUrlModel: String.fromCharCode({$ajax_url_model_0})+'{$ajax_url_model_rest}',
                     start: {$start},
@@ -128,6 +129,7 @@ class RVTS
                     ajaxLoaderImage: '{$ajax_loader_image}'
                 };
                 jQuery('.navigationBar').hide();
+                </script>
                 JS
         );
 
