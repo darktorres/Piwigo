@@ -414,8 +414,18 @@ function get_orphan_tags(): array
         FROM tags
         LEFT JOIN image_tag ON id = tag_id
         WHERE tag_id IS NULL
-            AND lastmodified < SUBDATE(NOW(), INTERVAL 1 DAY);
+
         SQL;
+
+    if (DB_ENGINE === 'MySQL') {
+        $query .= "AND lastmodified < SUBDATE(NOW(), INTERVAL 1 DAY)\n";
+    }
+
+    if (DB_ENGINE === 'PostgreSQL') {
+        $query .= "AND lastmodified < NOW() - INTERVAL '1 DAY'\n";
+    }
+
+    $query .= ';';
     return query2array($query);
 }
 
@@ -1796,6 +1806,7 @@ function empty_lounge(
     $logger->debug(__FUNCTION__ . (isset($_REQUEST['method']) ? ' (API:' . $_REQUEST['method'] . ')' : '') . ', exec=' . $exec_id . ', begins');
 
     // if lounge is already being emptied, skip
+    // todo: rewrite this to be compatible with both postgre/mysql
     $current_time = time();
     $query = <<<SQL
         INSERT IGNORE
@@ -2928,7 +2939,19 @@ function get_admin_client_cache_keys(
 
     foreach ($requested as $item) {
         $query = <<<SQL
-            SELECT CONCAT(UNIX_TIMESTAMP(MAX(lastmodified)), '_', COUNT(*))
+            SELECT CONCAT(
+            SQL;
+
+        if (DB_ENGINE === 'MySQL') {
+            $query .= 'UNIX_TIMESTAMP(MAX(lastmodified))';
+        }
+
+        if (DB_ENGINE === 'PostgreSQL') {
+            $query .= 'EXTRACT(EPOCH FROM MAX(lastmodified))::BIGINT';
+        }
+
+        $query .= <<<SQL
+            , '_', COUNT(*))
             FROM {$tables[$item]};
             SQL;
         [$keys[$item]] = pwg_db_fetch_row(pwg_query($query));

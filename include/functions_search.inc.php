@@ -1182,7 +1182,7 @@ function qsearch_get_images(
 
         $like = addslashes($token->term);
         $like = str_replace(['%', '_'], ['\\%', '\\_'], $like); // escape LIKE specials %_
-        $file_like = "CONVERT(file, CHAR) LIKE '%{$like}%\'";
+        $file_like = "CAST(file AS CHAR) LIKE '%{$like}%\'";
 
         switch ($scope_id) {
             case 'photo':

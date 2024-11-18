@@ -19,6 +19,7 @@ function execute_sqlfile(
     string $filepath,
     string $dblayer
 ): void {
+    // todo: check if file exists
     $sql_lines = file($filepath);
     $query = '';
     foreach ($sql_lines as $sql_line) {

@@ -62,6 +62,18 @@ RUN <<"EOF"
     rm -rf /var/lib/apt/lists/*
 EOF
 
+# Install PostgreSQL
+RUN <<"EOF"
+    apt-get update
+    apt-get install -y wget gnupg
+    echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+    apt-get update
+    apt-get install -y postgresql-17 postgresql-client-17
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+EOF
+
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -127,5 +139,17 @@ RUN <<"EOF"
     mysql -u root -e "CREATE USER 'www-data'@'localhost' IDENTIFIED WITH auth_socket; GRANT ALL PRIVILEGES ON *.* TO 'www-data'@'localhost'; FLUSH PRIVILEGES;"
 EOF
 
+# Setup PostgreSQL user for 'www-data'
+RUN <<"EOF"
+    # Set listen_addresses to '' in postgresql.conf to disable networking
+    sed -i "s/^#listen_addresses = 'localhost'/listen_addresses = ''/" /etc/postgresql/*/main/postgresql.conf
+
+    # Modify pg_hba.conf to allow passwordless socket authentication for 'www-data'
+    echo "local   all             www-data                                trust" >> /etc/postgresql/17/main/pg_hba.conf
+
+    service postgresql start
+    sudo -u postgres psql -c "CREATE USER \"www-data\"; ALTER USER \"www-data\" WITH SUPERUSER;"
+EOF
+
 # Start services
-CMD ["bash", "-c", "service mysql start && service php8.4-fpm start && nginx -g 'daemon off;'"]
+CMD ["bash", "-c", "service mysql start && service postgresql start && service php8.4-fpm start && nginx -g 'daemon off;'"]
