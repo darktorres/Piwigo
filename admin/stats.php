@@ -180,6 +180,7 @@ function get_month_stats(): array
         )
             AND day IS NOT NULL
             AND hour IS NULL
+        GROUP BY year, month
         ORDER BY year DESC, month DESC;
         SQL;
 

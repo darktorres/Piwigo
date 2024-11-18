@@ -252,8 +252,14 @@ $date_string = $date->format('Y-m-d');
 if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime('5 minutes ago')) {
     $start_time = get_moment();
 
+    if (DB_ENGINE === 'MySQL') {
+        $date_format_function = "DATE_FORMAT(occurred_on, '%Y-%m-%d')";
+    } elseif (DB_ENGINE === 'PostgreSQL') {
+        $date_format_function = "TO_CHAR(occurred_on, 'YYYY-MM-DD')";
+    }
+
     $query = <<<SQL
-        SELECT DATE_FORMAT(occurred_on , '%Y-%m-%d') AS activity_day, object, action, COUNT(*) AS activity_counter
+        SELECT {$date_format_function} AS activity_day, object, action, COUNT(*) AS activity_counter
         FROM activity
         WHERE occurred_on >= '{$date_string}'
         GROUP BY activity_day, object, action;
@@ -384,8 +390,17 @@ $video_format = ['webm', 'webmv', 'ogg', 'ogv', 'mp4', 'm4v', 'mov'];
 $data_storage = [];
 
 //Select files in Image_Table
+
+if (DB_ENGINE === 'MySQL') {
+    $ext_query = "SUBSTRING_INDEX(path, '.', -1)";
+}
+
+if (DB_ENGINE === 'PostgreSQL') {
+    $ext_query = "SPLIT_PART(path, '.', ARRAY_LENGTH(STRING_TO_ARRAY(path, '.'), 1))";
+}
+
 $query = <<<SQL
-    SELECT COUNT(*) AS ext_counter, SUBSTRING_INDEX(path, '.', -1) AS ext, SUM(filesize) AS filesize
+    SELECT COUNT(*) AS ext_counter, {$ext_query} AS ext, SUM(filesize) AS filesize
     FROM images
     GROUP BY ext;
     SQL;

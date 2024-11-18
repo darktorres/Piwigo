@@ -1489,6 +1489,10 @@ function load_conf_from_db(
         } elseif ($val === 'false') {
             $val = false;
         } elseif (is_serialized($val)) {
+            if (DB_ENGINE === 'PostgreSQL') {
+                $val = stripslashes((string) $val);
+            }
+
             $val = unserialize($val);
         } elseif (is_numeric($val)) {
             $val = str_contains($val, '.') ? (float) $val : (int) $val;
@@ -1548,11 +1552,18 @@ function conf_update_param(
         INSERT INTO config
             (param, value)
         VALUES
-            ('{$param}', '{$dbValue}')
-        ON DUPLICATE KEY UPDATE
-            value = '{$dbValue}';
+            ('{$param}', '{$dbValue}')\n
         SQL;
 
+    if (DB_ENGINE === 'MySQL') {
+        $query .= "ON DUPLICATE KEY UPDATE value = '{$dbValue}'\n";
+    }
+
+    if (DB_ENGINE === 'PostgreSQL') {
+        $query .= "ON CONFLICT (param) DO UPDATE SET value = EXCLUDED.value\n";
+    }
+
+    $query .= ';';
     pwg_query($query);
 
     if ($updateGlobal) {

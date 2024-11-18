@@ -44,7 +44,22 @@ while ($row = pwg_db_fetch_assoc($result)) {
 // +-----------------------------------------------------------------------+
 
 $query = <<<SQL
-    SELECT DISTINCT MONTH(registration_date) AS registration_month, YEAR(registration_date) AS registration_year
+    SELECT DISTINCT\n
+    SQL;
+
+if (DB_ENGINE === 'MySQL') {
+    $query .= <<<SQL
+        MONTH(registration_date) AS registration_month, YEAR(registration_date) AS registration_year, registration_date\n
+        SQL;
+}
+
+if (DB_ENGINE === 'PostgreSQL') {
+    $query .= <<<SQL
+        EXTRACT(MONTH FROM registration_date) AS registration_month, EXTRACT(YEAR FROM registration_date) AS registration_year, registration_date\n
+        SQL;
+}
+
+$query .= <<<SQL
     FROM user_infos
     ORDER BY registration_date;
     SQL;
