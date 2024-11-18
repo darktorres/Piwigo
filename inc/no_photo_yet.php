@@ -26,11 +26,10 @@ if (
     and (functions_user::is_a_guest() or functions_user::is_admin())          // normal users are not concerned by no_photo_yet
     and ! isset($_SESSION['no_photo_yet'])     // temporary hide
 ) {
-    $query = '
-SELECT
-    COUNT(*)
-  FROM images
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM images;
+        SQL;
     list($nb_photos) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
     if ($nb_photos == 0) {
         // make sure we don't use the mobile theme, which is not compatible with

@@ -120,17 +120,18 @@ $template->assign('message_tags', $message_tags);
 $per_page = 100;
 
 // tag counters
-$query = '
-SELECT tag_id, COUNT(image_id) AS counter
-  FROM image_tag
-  GROUP BY tag_id';
+$query = <<<SQL
+    SELECT tag_id, COUNT(image_id) AS counter
+    FROM image_tag
+    GROUP BY tag_id;
+    SQL;
 $tag_counters = functions::simple_hash_from_query($query, 'tag_id', 'counter');
 
 // all tags
-$query = '
-SELECT name, id, url_name
-  FROM tags
-;';
+$query = <<<SQL
+    SELECT name, id, url_name
+    FROM tags;
+    SQL;
 $result = functions_mysqli::pwg_query($query);
 $all_tags = [];
 while ($tag = functions_mysqli::pwg_db_fetch_assoc($result)) {

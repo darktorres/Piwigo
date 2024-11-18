@@ -233,11 +233,12 @@ if ($conf['activate_comments']) {
     $template->assign('U_COMMENTS', $link_start . 'comments');
 
     // pending comments
-    $query = '
-SELECT COUNT(*)
-  FROM comments
-  WHERE validated=\'false\'
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM comments
+        WHERE validated = 'false';
+        SQL;
+
     list($nb_comments) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
     if ($nb_comments > 0) {
@@ -247,11 +248,12 @@ SELECT COUNT(*)
 }
 
 // any photo in the caddie?
-$query = '
-SELECT COUNT(*)
-  FROM caddie
-  WHERE user_id = ' . $user['id'] . '
-;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM caddie
+    WHERE user_id = {$user['id']};
+    SQL;
+
 list($nb_photos_in_caddie) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
 if ($nb_photos_in_caddie > 0) {
@@ -282,7 +284,7 @@ if (in_array($page['page'], ['site_update', 'batch_manager'])) {
 // only calculate number of orphans on all pages if the number of images is "not huge"
 $page['nb_orphans'] = 0;
 
-list($page['nb_photos_total']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT COUNT(*) FROM images'));
+list($page['nb_photos_total']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT COUNT(*) FROM images;'));
 if ($page['nb_photos_total'] < 100000) { // 100k is already a big gallery
     $page['nb_orphans'] = functions_admin::count_orphans();
 }

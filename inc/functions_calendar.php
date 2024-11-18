@@ -260,10 +260,12 @@ class functions_calendar
             }
 
             if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
-                $query = 'SELECT DISTINCT id '
-                  . $calendar->inner_sql . '
-    ' . $calendar->get_date_where() . '
-    ' . $order_by;
+                $query = <<<SQL
+                    SELECT DISTINCT id
+                    {$calendar->inner_sql}
+                    {$calendar->get_date_where()}
+                    {$order_by};
+                    SQL;
                 $page['items'] = functions::array_from_query($query, 'id');
                 if (isset($cache_key)) {
                     $persistent_cache->set($cache_key, $page['items']);

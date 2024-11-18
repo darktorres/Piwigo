@@ -17,7 +17,7 @@ include(dirname(__FILE__) . '/config_default.php');
 $params = $conf['gdThumb'];
 
 if (isset($_GET['getMissingDerivative'])) {
-    list($max_id, $image_count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT MAX(id)+1, COUNT(*) FROM images'));
+    list($max_id, $image_count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT MAX(id) + 1, COUNT(*) FROM images;'));
     $start_id = intval($_POST['prev_page']);
     $max_urls = intval($_POST['max_urls']);
     if ($start_id <= 0) {
@@ -31,7 +31,12 @@ if (isset($_GET['getMissingDerivative'])) {
 
     $qlimit = min(5000, ceil(max($image_count / 500, $max_urls)));
 
-    $query_model = 'SELECT * FROM images WHERE id < start_id ORDER BY id DESC LIMIT ' . $qlimit;
+    $query_model = <<<SQL
+        SELECT * FROM images
+        WHERE id < start_id
+        ORDER BY id DESC
+        LIMIT {$qlimit};
+        SQL;
 
     $urls = [];
     do {

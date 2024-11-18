@@ -42,11 +42,11 @@ class pwg_permissions
         $perms = [];
 
         // direct users
-        $query = '
-  SELECT user_id, cat_id
-    FROM user_access
-    ' . $cat_filter . '
-  ;';
+        $query = <<<SQL
+            SELECT user_id, cat_id
+            FROM user_access
+            {$cat_filter};
+            SQL;
         $result = functions_mysqli::pwg_query($query);
 
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
@@ -58,13 +58,13 @@ class pwg_permissions
         }
 
         // indirect users
-        $query = '
-  SELECT ug.user_id, ga.cat_id
-    FROM user_group AS ug
-      INNER JOIN group_access AS ga
-      ON ug.group_id = ga.group_id
-    ' . $cat_filter . '
-  ;';
+        $query = <<<SQL
+            SELECT ug.user_id, ga.cat_id
+            FROM user_group AS ug
+            INNER JOIN group_access AS ga ON ug.group_id = ga.group_id
+            {$cat_filter}
+
+            SQL;
         $result = functions_mysqli::pwg_query($query);
 
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
@@ -76,11 +76,11 @@ class pwg_permissions
         }
 
         // groups
-        $query = '
-  SELECT group_id, cat_id
-    FROM group_access
-    ' . $cat_filter . '
-  ;';
+        $query = <<<SQL
+            SELECT group_id, cat_id
+            FROM group_access
+            {$cat_filter};
+            SQL;
         $result = functions_mysqli::pwg_query($query);
 
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
@@ -151,12 +151,13 @@ class pwg_permissions
                 $cat_ids = array_merge($cat_ids, functions_category::get_subcat_ids($params['cat_id']));
             }
 
-            $query = '
-  SELECT id
-    FROM categories
-    WHERE id IN (' . implode(',', $cat_ids) . ')
-      AND status = \'private\'
-  ;';
+            $cat_ids_imploded = implode(',', $cat_ids);
+            $query = <<<SQL
+                SELECT id
+                FROM categories
+                WHERE id IN ({$cat_ids_imploded})
+                    AND status = 'private';
+                SQL;
             $private_cats = functions::array_from_query($query, 'id');
 
             $inserts = [];
@@ -213,22 +214,24 @@ class pwg_permissions
         $cat_ids = functions_category::get_subcat_ids($params['cat_id']);
 
         if (! empty($params['group_id'])) {
-            $query = '
-  DELETE
-    FROM group_access
-    WHERE group_id IN (' . implode(',', $params['group_id']) . ')
-      AND cat_id IN (' . implode(',', $cat_ids) . ')
-  ;';
+            $group_ids_imploded = implode(',', $params['group_id']);
+            $cat_ids_imploded = implode(',', $cat_ids);
+            $query = <<<SQL
+                DELETE FROM group_access
+                WHERE group_id IN ({$group_ids_imploded})
+                    AND cat_id IN ({$cat_ids_imploded});
+                SQL;
             functions_mysqli::pwg_query($query);
         }
 
         if (! empty($params['user_id'])) {
-            $query = '
-  DELETE
-    FROM user_access
-    WHERE user_id IN (' . implode(',', $params['user_id']) . ')
-      AND cat_id IN (' . implode(',', $cat_ids) . ')
-  ;';
+            $user_ids_imploded = implode(',', $params['user_id']);
+            $cat_ids_imploded = implode(',', $cat_ids);
+            $query = <<<SQL
+                DELETE FROM user_access
+                WHERE user_id IN ({$user_ids_imploded})
+                    AND cat_id IN ({$cat_ids_imploded});
+                SQL;
             functions_mysqli::pwg_query($query);
         }
 

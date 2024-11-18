@@ -57,13 +57,12 @@ class languages
                     break;
                 }
 
-                $query = '
-INSERT INTO languages
-  (id, version, name)
-  VALUES(\'' . $language_id . '\',
-         \'' . $this->fs_languages[$language_id]['version'] . '\',
-         \'' . $this->fs_languages[$language_id]['name'] . '\')
-;';
+                $query = <<<SQL
+                    INSERT INTO languages
+                        (id, version, name)
+                    VALUES
+                        ('{$language_id}', '{$this->fs_languages[$language_id]['version']}', '{$this->fs_languages[$language_id]['name']}');
+                    SQL;
                 functions_mysqli::pwg_query($query);
                 break;
 
@@ -78,11 +77,10 @@ INSERT INTO languages
                     break;
                 }
 
-                $query = '
-DELETE
-  FROM languages
-  WHERE id= \'' . $language_id . '\'
-;';
+                $query = <<<SQL
+                    DELETE FROM languages
+                    WHERE id = '{$language_id}';
+                    SQL;
                 functions_mysqli::pwg_query($query);
                 break;
 
@@ -97,23 +95,24 @@ DELETE
                     break;
                 }
 
-                // Set default language to user who are using this language
-                $query = '
-UPDATE user_infos
-  SET language = \'' . functions_user::get_default_language() . '\'
-  WHERE language = \'' . $language_id . '\'
-;';
+                // Set the default language to user who is using this language
+                $default_language = functions_user::get_default_language();
+                $query = <<<SQL
+                    UPDATE user_infos
+                    SET language = '{$default_language}'
+                    WHERE language = '{$language_id}';
+                    SQL;
                 functions_mysqli::pwg_query($query);
 
                 functions_admin::deltree(PHPWG_ROOT_PATH . 'language/' . $language_id, PHPWG_ROOT_PATH . 'language/trash');
                 break;
 
             case 'set_default':
-                $query = '
-UPDATE user_infos
-  SET language = \'' . $language_id . '\'
-  WHERE user_id IN (' . $conf['default_user_id'] . ', ' . $conf['guest_id'] . ')
-;';
+                $query = <<<SQL
+                    UPDATE user_infos
+                    SET language = '{$language_id}'
+                    WHERE user_id IN ({$conf['default_user_id']}, {$conf['guest_id']});
+                    SQL;
                 functions_mysqli::pwg_query($query);
                 break;
         }
@@ -190,11 +189,11 @@ UPDATE user_infos
 
     public function get_db_languages()
     {
-        $query = '
-  SELECT id, name
-    FROM languages
-    ORDER BY name ASC
-  ;';
+        $query = <<<SQL
+            SELECT id, name
+            FROM languages
+            ORDER BY name ASC;
+            SQL;
         $result = functions_mysqli::pwg_query($query);
 
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {

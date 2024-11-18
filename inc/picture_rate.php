@@ -22,12 +22,11 @@ if ($conf['rate']) {
         'average' => null,
     ];
     if ($rate_summary['score'] != null) {
-        $query = '
-SELECT COUNT(rate) AS count
-     , ROUND(AVG(rate),2) AS average
-  FROM rate
-  WHERE element_id = ' . $picture['current']['id'] . '
-;';
+        $query = <<<SQL
+            SELECT COUNT(rate) AS count, ROUND(AVG(rate), 2) AS average
+            FROM rate
+            WHERE element_id = {$picture['current']['id']};
+            SQL;
         list($rate_summary['count'], $rate_summary['average']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
     }
 
@@ -36,10 +35,13 @@ SELECT COUNT(rate) AS count
     $user_rate = null;
     if ($conf['rate_anonymous'] or functions_user::is_autorize_status(ACCESS_CLASSIC)) {
         if ($rate_summary['count'] > 0) {
-            $query = 'SELECT rate
-      FROM rate
-      WHERE element_id = ' . $page['image_id'] . '
-      AND user_id = ' . $user['id'];
+            $query = <<<SQL
+                SELECT rate
+                FROM rate
+                WHERE element_id = {$page['image_id']}
+                    AND user_id = {$user['id']}
+
+                SQL;
 
             if (! functions_user::is_autorize_status(ACCESS_CLASSIC)) {
                 $ip_components = explode('.', $_SERVER['REMOTE_ADDR']);
@@ -48,9 +50,13 @@ SELECT COUNT(rate) AS count
                 }
 
                 $anonymous_id = implode('.', $ip_components);
-                $query .= ' AND anonymous_id = \'' . $anonymous_id . '\'';
+                $query .= <<<SQL
+                    AND anonymous_id = '{$anonymous_id}'
+
+                    SQL;
             }
 
+            $query .= ';';
             $result = functions_mysqli::pwg_query($query);
             if (functions_mysqli::pwg_db_num_rows($result) > 0) {
                 $row = functions_mysqli::pwg_db_fetch_assoc($result);

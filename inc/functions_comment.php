@@ -104,10 +104,12 @@ class functions_comment
             // if a guest try to use the name of an already existing user, he must be
             // rejected
             if ($comm['author'] != 'guest') {
-                $query = '
-  SELECT COUNT(*) AS user_exists
-    FROM users
-    WHERE ' . $conf['user_fields']['username'] . " = '" . addslashes($comm['author']) . "'";
+                $author = addslashes($comm['author']);
+                $query = <<<SQL
+                    SELECT COUNT(*) AS user_exists
+                    FROM users
+                    WHERE {$conf['user_fields']['username']} = '{$author}';
+                    SQL;
                 $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
                 if ($row['user_exists'] == 1) {
                     $infos[] = functions::l10n('This login is already used by another user');
@@ -170,17 +172,20 @@ class functions_comment
         if ($comment_action != 'reject' and $conf['anti-flood_time'] > 0 and ! functions_user::is_admin()) { // anti-flood system
             $reference_date = functions_mysqli::pwg_db_get_flood_period_expression($conf['anti-flood_time']);
 
-            $query = '
-  SELECT count(1) FROM comments
-    WHERE date > ' . $reference_date . '
-      AND author_id = ' . $comm['author_id'];
+            $query = <<<SQL
+                SELECT COUNT(1) FROM comments
+                WHERE date > '{$reference_date}'
+                    AND author_id = {$comm['author_id']}
+
+                SQL;
             if (! functions_user::is_classic_user()) {
-                $query .= '
-        AND anonymous_id LIKE "' . $anonymous_id . '.%"';
+                $query .= <<<SQL
+                    AND anonymous_id LIKE "{$anonymous_id}.%"
+
+                    SQL;
             }
 
-            $query .= '
-  ;';
+            $query .= ';';
 
             list($counter) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
             if ($counter > 0) {
@@ -198,22 +203,19 @@ class functions_comment
         );
 
         if ($comment_action != 'reject') {
-            $query = '
-  INSERT INTO comments
-    (author, author_id, anonymous_id, content, date, validated, validation_date, image_id, website_url, email)
-    VALUES (
-      \'' . $comm['author'] . '\',
-      ' . $comm['author_id'] . ',
-      \'' . $comm['ip'] . '\',
-      \'' . $comm['content'] . '\',
-      NOW(),
-      \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
-      ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . ',
-      ' . $comm['image_id'] . ',
-      ' . (! empty($comm['website_url']) ? '\'' . $comm['website_url'] . '\'' : 'NULL') . ',
-      ' . (! empty($comm['email']) ? '\'' . $comm['email'] . '\'' : 'NULL') . '
-    )
-  ';
+            $validated = $comment_action == 'validate' ? 'true' : 'false';
+            $validation_date = $comment_action == 'validate' ? 'NOW()' : 'NULL';
+            $website_url = ! empty($comm['website_url']) ? "'{$comm['website_url']}'" : 'NULL';
+            $email = ! empty($comm['email']) ? "'{$comm['email']}'" : 'NULL';
+            $query = <<<SQL
+                INSERT INTO comments
+                    (author, author_id, anonymous_id, content, date, validated, validation_date, image_id, website_url, email)
+                VALUES
+                (
+                    '{$comm['author']}', {$comm['author_id']}, '{$comm['ip']}', '{$comm['content']}', NOW(),
+                    '{$validated}', {$validation_date}, {$comm['image_id']}, {$website_url}, {$email}
+                );
+                SQL;
             functions_mysqli::pwg_query($query);
             $comm['id'] = functions_mysqli::pwg_db_insert_id('comments');
 
@@ -260,20 +262,30 @@ class functions_comment
     {
         $user_where_clause = '';
         if (! functions_user::is_admin()) {
-            $user_where_clause = '   AND author_id = \'' . $GLOBALS['user']['id'] . '\'';
+            $user_where_clause = <<<SQL
+                AND author_id = '{$GLOBALS['user']['id']}'
+
+                SQL;
         }
 
         if (is_array($comment_id)) {
-            $where_clause = 'id IN(' . implode(',', $comment_id) . ')';
+            $ids_list = implode(',', $comment_id);
+            $where_clause = <<<SQL
+                id IN ({$ids_list})
+
+                SQL;
         } else {
-            $where_clause = 'id = ' . $comment_id;
+            $where_clause = <<<SQL
+                id = {$comment_id}
+
+                SQL;
         }
 
-        $query = '
-  DELETE FROM comments
-    WHERE ' . $where_clause .
-  $user_where_clause . '
-  ;';
+        $query = <<<SQL
+            DELETE FROM comments
+            WHERE {$where_clause}
+                {$user_where_clause};
+            SQL;
 
         if (functions_mysqli::pwg_db_changes(functions_mysqli::pwg_query($query))) {
             self::invalidate_user_cache_nb_comments();
@@ -346,19 +358,21 @@ class functions_comment
         if ($comment_action != 'reject') {
             $user_where_clause = '';
             if (! functions_user::is_admin()) {
-                $user_where_clause = '   AND author_id = \'' .
-    $GLOBALS['user']['id'] . '\'';
+                $user_where_clause = " AND author_id = '{$GLOBALS['user']['id']}'";
             }
 
-            $query = '
-  UPDATE comments
-    SET content = \'' . $comment['content'] . '\',
-        website_url = ' . (! empty($comment['website_url']) ? '\'' . $comment['website_url'] . '\'' : 'NULL') . ',
-        validated = \'' . ($comment_action == 'validate' ? 'true' : 'false') . '\',
-        validation_date = ' . ($comment_action == 'validate' ? 'NOW()' : 'NULL') . '
-    WHERE id = ' . $comment['comment_id'] .
-  $user_where_clause . '
-  ;';
+            $website_url = ! empty($comment['website_url']) ? "'{$comment['website_url']}'" : 'NULL';
+            $validated = $comment_action == 'validate' ? 'true' : 'false';
+            $validation_date = $comment_action == 'validate' ? 'NOW()' : 'NULL';
+            $query = <<<SQL
+                UPDATE comments
+                SET content = '{$comment['content']}',
+                    website_url = {$website_url},
+                    validated = '{$validated}',
+                    validation_date = {$validation_date}
+                WHERE id = {$comment['comment_id']}
+                    {$user_where_clause};
+                SQL;
             $result = functions_mysqli::pwg_query($query);
 
             // mail admin and ask to validate the comment
@@ -438,12 +452,11 @@ class functions_comment
      */
     public static function get_comment_author_id($comment_id, $die_on_error = true)
     {
-        $query = '
-  SELECT
-      author_id
-    FROM comments
-    WHERE id = ' . $comment_id . '
-  ;';
+        $query = <<<SQL
+            SELECT author_id
+            FROM comments
+            WHERE id = {$comment_id};
+            SQL;
         $result = functions_mysqli::pwg_query($query);
         if (functions_mysqli::pwg_db_num_rows($result) == 0) {
             if ($die_on_error) {
@@ -471,12 +484,12 @@ class functions_comment
             $where_clause = 'id = ' . $comment_id;
         }
 
-        $query = '
-  UPDATE comments
-    SET validated = \'true\'
-      , validation_date = NOW()
-    WHERE ' . $where_clause . '
-  ;';
+        $query = <<<SQL
+            UPDATE comments
+            SET validated = 'true',
+                validation_date = NOW()
+            WHERE {$where_clause};
+            SQL;
         functions_mysqli::pwg_query($query);
 
         self::invalidate_user_cache_nb_comments();
@@ -492,10 +505,10 @@ class functions_comment
 
         unset($user['nb_available_comments']);
 
-        $query = '
-  UPDATE user_cache
-    SET nb_available_comments = NULL
-  ;';
+        $query = <<<SQL
+            UPDATE user_cache
+            SET nb_available_comments = NULL;
+            SQL;
         functions_mysqli::pwg_query($query);
     }
 }

@@ -165,7 +165,9 @@ $template->assign(
 
 $has_remote_site = false;
 
-$query = 'SELECT galleries_url FROM sites;';
+$query = <<<SQL
+    SELECT galleries_url FROM sites;
+    SQL;
 $result = functions_mysqli::pwg_query($query);
 while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
     if (functions_url::url_is_remote($row['galleries_url'])) {
@@ -239,10 +241,10 @@ if (! in_array('param', $columns_of['config'])) {
     $current_release = '2.9.0';
 } else {
     // retrieve already applied upgrades
-    $query = '
-SELECT id
-  FROM upgrade
-;';
+    $query = <<<SQL
+        SELECT id
+        FROM upgrade;
+        SQL;
     $applied_upgrades = functions::array_from_query($query, 'id');
 
     if (! in_array(159, $applied_upgrades)) {
@@ -351,11 +353,12 @@ if ((isset($_POST['submit']) or isset($_GET['now']))
             $version_ = str_replace('.', '_', functions::get_branch_from_version(PHPWG_VERSION) . '.0');
 
             if (file_exists(PHPWG_PLUGINS_PATH . 'TakeATour/tours/' . $version_ . '/config.php')) {
-                $query = '
-REPLACE INTO plugins
-  (id, state)
-  VALUES (\'TakeATour\', \'active\')
-;';
+                $query = <<<SQL
+                    REPLACE INTO plugins
+                        (id, state)
+                    VALUES
+                        ('TakeATour', 'active');
+                    SQL;
                 functions_mysqli::pwg_query($query);
 
                 // we need the secret key for get_pwg_token()
