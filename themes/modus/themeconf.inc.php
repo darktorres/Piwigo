@@ -282,11 +282,12 @@ function modus_thumbs($x, $smarty)
         '
     );
     $template->block_footer_script(null, '
+        <script>
             rvgtProcessor = new RVGThumbs({
                 hMargin: ' . $horizontal_margin . ',
                 rowHeight: ' . $row_height . '
             });
-        ');
+        </script>');
 
     $my_base_name = basename(dirname(__FILE__));
     // not async to avoid visible flickering reflow
@@ -299,6 +300,7 @@ function modus_on_end_index()
     global $template;
     if (! pwg_get_session_var('caps')) {
         $template->block_footer_script(null, '
+            <script>
                 try {
                     document.cookie = "caps=" +
                         (window.devicePixelRatio ? window.devicePixelRatio : 1) + "x" +
@@ -308,7 +310,7 @@ function modus_on_end_index()
                 } catch (er) {
                     document.cookie = "caps=1x1x1x" + er.message;
                 }
-            ');
+            </script>');
     }
 
 }
@@ -420,8 +422,7 @@ function modus_loc_begin_picture()
         if (document.documentElement.offsetWidth > 1270) {
             document.documentElement.className = \'wide\';
         }
-    </script>
-    ');
+    </script>');
 }
 
 add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL - 1);
