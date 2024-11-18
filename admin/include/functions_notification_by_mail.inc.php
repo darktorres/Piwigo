@@ -36,13 +36,11 @@ function find_available_check_key()
 {
     while (true) {
         $key = generate_key(16);
-        $query = '
-select
-  count(*)
-from
-  user_mail_notification
-where
-  check_key = \'' . $key . '\';';
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM user_mail_notification
+            WHERE check_key = '{$key}';
+            SQL;
 
         list($count) = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
@@ -91,53 +89,58 @@ function get_user_notifications($action, $check_key_list = [], $enabled_filter_v
     if (in_array($action, ['subscribe', 'send'])) {
         $quoted_check_key_list = quote_check_key_list($check_key_list);
         if (count($quoted_check_key_list) != 0) {
-            $query_and_check_key = ' and
-    check_key in (' . implode(',', $quoted_check_key_list) . ') ';
+            $query_and_check_key = ' AND check_key IN (' . implode(',', $quoted_check_key_list) . ') ';
         } else {
             $query_and_check_key = '';
         }
 
-        $query = '
-select
-  N.user_id,
-  N.check_key,
-  U.' . $conf['user_fields']['username'] . ' as username,
-  U.' . $conf['user_fields']['email'] . ' as mail_address,
-  N.enabled,
-  N.last_send,
-  UI.status
-from user_mail_notification as N
-  JOIN users as U on N.user_id =  U.' . $conf['user_fields']['id'] . '
-  JOIN user_infos as UI on UI.user_id = N.user_id
-where 1=1';
+        $query = <<<SQL
+            SELECT n.user_id, n.check_key, u.{$conf['user_fields']['username']} AS username, u.{$conf['user_fields']['email']} AS mail_address,
+                n.enabled, n.last_send, ui.status
+            FROM user_mail_notification AS n
+            JOIN users AS u ON n.user_id = u.{$conf['user_fields']['id']}
+            JOIN user_infos AS ui ON ui.user_id = n.user_id
+            WHERE 1 = 1
+
+            SQL;
 
         if ($action == 'send') {
             // No mail empty and all users enabled
-            $query .= ' and
-  N.enabled = \'true\' and
-  U.' . $conf['user_fields']['email'] . ' is not null';
+            $query .= <<<SQL
+                AND n.enabled = 'true'
+                AND u.{$conf['user_fields']['email']} IS NOT NULL
+
+                SQL;
         }
 
         $query .= $query_and_check_key;
 
         if (isset($enabled_filter_value) and ($enabled_filter_value != '')) {
-            $query .= ' and
-        N.enabled = \'' . boolean_to_string($enabled_filter_value) . '\'';
+            $filter_value = boolean_to_string($enabled_filter_value);
+            $query .= <<<SQL
+                AND n.enabled = '{$filter_value}'
+
+                SQL;
         }
 
-        $query .= '
-order by';
+        $query .= <<<SQL
+            ORDER BY
+
+            SQL;
 
         if ($action == 'send') {
-            $query .= '
-  last_send, username;';
+            $query .= <<<SQL
+                last_send, username
+
+                SQL;
         } else {
-            $query .= '
-  username';
+            $query .= <<<SQL
+                username
+
+                SQL;
         }
 
         $query .= ';';
-
         $result = pwg_query($query);
         if (! empty($result)) {
             while ($nbm_user = pwg_db_fetch_assoc($result)) {

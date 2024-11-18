@@ -53,13 +53,15 @@ function pwg_db_connect($host, $user, $password, $database)
     // MySQL 5.7 default settings forbid to select a colum that is not in the
     // group by. We've used that in Piwigo for years. As an immediate solution,
     // we can remove this constraint in the current MySQL session.
-    list($sql_mode_current) = pwg_db_fetch_row(pwg_query('SELECT @@SESSION.sql_mode'));
+    list($sql_mode_current) = pwg_db_fetch_row(
+        pwg_query('SELECT @@SESSION.sql_mode;')
+    );
 
     // remove ONLY_FULL_GROUP_BY from the list
     $sql_mode_altered = implode(',', array_diff(explode(',', $sql_mode_current), ['ONLY_FULL_GROUP_BY']));
 
     if ($sql_mode_altered != $sql_mode_current) {
-        pwg_query("SET SESSION sql_mode='" . $sql_mode_altered . "'");
+        pwg_query("SET SESSION sql_mode = '{$sql_mode_altered}';");
     }
 }
 
@@ -162,11 +164,14 @@ function pwg_query($query)
  * @param string $table
  * @param int
  */
-function pwg_db_nextval($column, $table)
-{
-    $query = '
-SELECT IF(MAX(' . $column . ')+1 IS NULL, 1, MAX(' . $column . ')+1)
-  FROM ' . $table;
+function pwg_db_nextval(
+    $column,
+    $table
+) {
+    $query = <<<SQL
+        SELECT IF(MAX({$column}) + 1 IS NULL, 1, MAX({$column}) + 1)
+        FROM {$table};
+        SQL;
     list($next) = pwg_db_fetch_row(pwg_query($query));
 
     return $next;
@@ -265,20 +270,22 @@ function mass_updates($tablename, $dbfields, $datas, $flags = 0)
         foreach ($datas as $data) {
             $is_first = true;
 
-            $query = '
-UPDATE ' . $tablename . '
-  SET ';
+            $query = <<<SQL
+                UPDATE {$tablename}
+                SET
+
+                SQL;
 
             foreach ($dbfields['update'] as $key) {
                 $separator = $is_first ? '' : ",\n    ";
 
                 if (isset($data[$key]) and $data[$key] != '') {
-                    $query .= $separator . $key . ' = \'' . $data[$key] . '\'';
+                    $query .= "{$separator}{$key} = '{$data[$key]}'\n";
                 } else {
                     if ($flags & MASS_UPDATES_SKIP_EMPTY) {
                         continue; // next field
                     }
-                    $query .= $separator . $key . ' = NULL';
+                    $query .= "{$separator}{$key} = NULL\n";
                 }
                 $is_first = false;
             }
@@ -286,16 +293,15 @@ UPDATE ' . $tablename . '
             if (! $is_first) {// only if one field at least updated
                 $is_first = true;
 
-                $query .= '
-  WHERE ';
+                $query .= " WHERE\n";
                 foreach ($dbfields['primary'] as $key) {
                     if (! $is_first) {
                         $query .= ' AND ';
                     }
                     if (isset($data[$key])) {
-                        $query .= $key . ' = \'' . $data[$key] . '\'';
+                        $query .= "{$key} = '{$data[$key]}'\n";
                     } else {
-                        $query .= $key . ' IS NULL';
+                        $query .= "{$key} IS NULL\n";
                     }
                     $is_first = false;
                 }
@@ -306,14 +312,14 @@ UPDATE ' . $tablename . '
     } // if count<X
     else {
         // creation of the temporary table
-        $result = pwg_query('SHOW FULL COLUMNS FROM ' . $tablename);
+        $result = pwg_query("SHOW FULL COLUMNS FROM {$tablename};");
         $columns = [];
         $all_fields = array_merge($dbfields['primary'], $dbfields['update']);
 
         while ($row = pwg_db_fetch_assoc($result)) {
             if (in_array($row['Field'], $all_fields)) {
                 $column = $row['Field'];
-                $column .= ' ' . $row['Type'];
+                $column .= " {$row['Type']}";
 
                 $nullable = true;
                 if (! isset($row['Null']) or $row['Null'] == '' or $row['Null'] == 'NO') {
@@ -321,12 +327,12 @@ UPDATE ' . $tablename . '
                     $nullable = false;
                 }
                 if (isset($row['Default'])) {
-                    $column .= " default '" . $row['Default'] . "'";
+                    $column .= " default '{$row['Default']}'";
                 } elseif ($nullable) {
                     $column .= ' default NULL';
                 }
                 if (isset($row['Collation']) and $row['Collation'] != 'NULL') {
-                    $column .= " collate '" . $row['Collation'] . "'";
+                    $column .= " collate '{$row['Collation']}'";
                 }
                 $columns[] = $column;
             }
@@ -334,12 +340,15 @@ UPDATE ' . $tablename . '
 
         $temporary_tablename = $tablename . '_' . micro_seconds();
 
-        $query = '
-CREATE TABLE ' . $temporary_tablename . '
-(
-  ' . implode(",\n  ", $columns) . ',
-  UNIQUE KEY the_key (' . implode(',', $dbfields['primary']) . ')
-)';
+        $columnsList = implode(",\n  ", $columns);
+        $primaryKeys = implode(',', $dbfields['primary']);
+        $query = <<<SQL
+            CREATE TABLE {$temporary_tablename}
+                (
+                    {$columnsList},
+                    UNIQUE KEY the_key ({$primaryKeys})
+                );
+            SQL;
 
         pwg_query($query);
         mass_inserts($temporary_tablename, $all_fields, $datas);
@@ -351,24 +360,27 @@ CREATE TABLE ' . $temporary_tablename . '
         }
 
         // update of table by joining with temporary table
-        $query = '
-UPDATE ' . $tablename . ' AS t1, ' . $temporary_tablename . ' AS t2
-  SET ' .
-          implode(
-              "\n    , ",
-              array_map($func_set, $dbfields['update'])
-          ) . '
-  WHERE ' .
-          implode(
-              "\n    AND ",
-              array_map(
-                  function ($s) { return "t1.{$s} = t2.{$s}"; },
-                  $dbfields['primary']
-              )
-          );
+        $updateFields = implode(
+            "\n    , ",
+            array_map($func_set, $dbfields['update'])
+        );
+
+        $primaryConditions = implode(
+            "\n    AND ",
+            array_map(
+                function ($s) { return "t1.{$s} = t2.{$s}"; },
+                $dbfields['primary']
+            )
+        );
+
+        $query = <<<SQL
+            UPDATE {$tablename} AS t1, {$temporary_tablename} AS t2
+            SET {$updateFields}
+            WHERE {$primaryConditions};
+            SQL;
         pwg_query($query);
 
-        pwg_query('DROP TABLE ' . $temporary_tablename);
+        pwg_query("DROP TABLE {$temporary_tablename};");
     }
 }
 
@@ -388,20 +400,22 @@ function single_update($tablename, $datas, $where, $flags = 0)
 
     $is_first = true;
 
-    $query = '
-UPDATE ' . $tablename . '
-  SET ';
+    $query = <<<SQL
+        UPDATE {$tablename}
+        SET
+
+        SQL;
 
     foreach ($datas as $key => $value) {
         $separator = $is_first ? '' : ",\n    ";
 
         if (isset($value) and $value !== '') {
-            $query .= $separator . $key . ' = \'' . $value . '\'';
+            $query .= "{$separator}{$key} = '{$value}'\n";
         } else {
             if ($flags & MASS_UPDATES_SKIP_EMPTY) {
                 continue; // next field
             }
-            $query .= $separator . $key . ' = NULL';
+            $query .= "{$separator}{$key} = NULL\n";
         }
         $is_first = false;
     }
@@ -409,21 +423,21 @@ UPDATE ' . $tablename . '
     if (! $is_first) {// only if one field at least updated
         $is_first = true;
 
-        $query .= '
-  WHERE ';
+        $query .= " WHERE\n";
 
         foreach ($where as $key => $value) {
             if (! $is_first) {
                 $query .= ' AND ';
             }
             if (isset($value)) {
-                $query .= $key . ' = \'' . $value . '\'';
+                $query .= "{$key} = '{$value}'\n";
             } else {
-                $query .= $key . ' IS NULL';
+                $query .= "{$key} IS NULL\n";
             }
             $is_first = false;
         }
 
+        $query .= ';';
         pwg_query($query);
     }
 }
@@ -445,7 +459,9 @@ function mass_inserts($table_name, $dbfields, $datas, $options = [])
     }
 
     if (count($datas) != 0) {
-        $query = 'SHOW VARIABLES LIKE \'max_allowed_packet\'';
+        $query = <<<SQL
+            SHOW VARIABLES LIKE 'max_allowed_packet';
+            SQL;
         list(, $packet_size) = pwg_db_fetch_row(pwg_query($query));
         $dbfields_ = implode(',', $dbfields);
         $queryBase = "INSERT {$ignore} INTO {$table_name} ({$dbfields_}) VALUES ";
@@ -501,10 +517,13 @@ function single_insert($table_name, $data, $options = [])
     }
 
     if (count($data) != 0) {
-        $query = '
-INSERT ' . $ignore . ' INTO ' . $table_name . '
-  (' . implode(',', array_keys($data)) . ')
-  VALUES';
+        $columns = implode(',', array_keys($data));
+        $query = <<<SQL
+            INSERT {$ignore} INTO {$table_name}
+                ({$columns})
+            VALUES
+
+            SQL;
 
         $query .= '(';
         $is_first = true;
@@ -518,10 +537,10 @@ INSERT ' . $ignore . ' INTO ' . $table_name . '
             if ($value === '' || $value === null) {
                 $query .= 'NULL';
             } else {
-                $query .= "'" . $value . "'";
+                $query .= "'{$value}'";
             }
         }
-        $query .= ')';
+        $query .= ');';
 
         pwg_query($query);
     }
@@ -537,21 +556,28 @@ function do_maintenance_all_tables()
     $all_tables = [];
 
     // List all tables
-    $query = 'SHOW TABLES';
+    $query = <<<SQL
+        SHOW TABLES;
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_row($result)) {
         $all_tables[] = $row[0];
     }
 
     // Repair all tables
-    $query = 'REPAIR TABLE ' . implode(', ', $all_tables);
+    $allTablesList = implode(', ', $all_tables);
+    $query = <<<SQL
+        REPAIR TABLE {$allTablesList};
+        SQL;
     $mysqli_rc = pwg_query($query);
 
     // Re-Order all tables
     foreach ($all_tables as $table_name) {
         $all_primary_key = [];
 
-        $query = 'DESC ' . $table_name . ';';
+        $query = <<<SQL
+            DESC {$table_name};
+            SQL;
         $result = pwg_query($query);
         while ($row = pwg_db_fetch_assoc($result)) {
             if ($row['Key'] == 'PRI') {
@@ -560,13 +586,20 @@ function do_maintenance_all_tables()
         }
 
         if (count($all_primary_key) != 0) {
-            $query = 'ALTER TABLE ' . $table_name . ' ORDER BY ' . implode(', ', $all_primary_key) . ';';
+            $allPrimaryKeyList = implode(', ', $all_primary_key);
+            $query = <<<SQL
+                ALTER TABLE {$table_name}
+                ORDER BY {$allPrimaryKeyList};
+                SQL;
             $mysqli_rc = $mysqli_rc && pwg_query($query);
         }
     }
 
     // Optimize all tables
-    $query = 'OPTIMIZE TABLE ' . implode(', ', $all_tables);
+    $allTablesList = implode(', ', $all_tables);
+    $query = <<<SQL
+        OPTIMIZE TABLE {$allTablesList};
+        SQL;
     $mysqli_rc = $mysqli_rc && pwg_query($query);
     if ($mysqli_rc) {
         $page['infos'][] = l10n('All optimizations have been successfully completed.');
@@ -578,13 +611,13 @@ function do_maintenance_all_tables()
 function pwg_db_concat($array)
 {
     $string = implode(',', $array);
-    return 'CONCAT(' . $string . ')';
+    return "CONCAT({$string})";
 }
 
 function pwg_db_concat_ws($array, $separator)
 {
     $string = implode(',', $array);
-    return 'CONCAT_WS(\'' . $separator . '\',' . $string . ')';
+    return "CONCAT_WS('{$separator}', {$string})";
 }
 
 function pwg_db_cast_to_text($string)
@@ -601,7 +634,7 @@ function pwg_db_cast_to_text($string)
  */
 function get_enums($table, $field)
 {
-    $result = pwg_query('DESC ' . $table);
+    $result = pwg_query("DESC {$table};");
     while ($row = pwg_db_fetch_assoc($result)) {
         if ($row['Field'] == $field) {
             // parse enum('blue','green','black')
@@ -651,16 +684,20 @@ function boolean_to_string($var)
 function pwg_db_get_recent_period_expression($period, $date = 'CURRENT_DATE')
 {
     if ($date != 'CURRENT_DATE') {
-        $date = '\'' . $date . '\'';
+        $date = "'{$date}'";
     }
 
-    return 'SUBDATE(' . $date . ',INTERVAL ' . $period . ' DAY)';
+    return <<<SQL
+        SUBDATE({$date}, INTERVAL {$period} DAY)
+        SQL;
 }
 
 function pwg_db_get_recent_period($period, $date = 'CURRENT_DATE')
 {
-    $query = '
-SELECT ' . pwg_db_get_recent_period_expression($period);
+    $recentPeriodExpression = pwg_db_get_recent_period_expression($period);
+    $query = <<<SQL
+        SELECT {$recentPeriodExpression};
+        SQL;
     list($d) = pwg_db_fetch_row(pwg_query($query));
 
     return $d;
@@ -668,62 +705,85 @@ SELECT ' . pwg_db_get_recent_period_expression($period);
 
 function pwg_db_get_flood_period_expression($seconds)
 {
-    return 'SUBDATE(NOW(), INTERVAL ' . $seconds . ' SECOND)';
+    return <<<SQL
+        SUBDATE(NOW(), INTERVAL {$seconds} SECOND)
+        SQL;
 }
 
 function pwg_db_get_hour($date)
 {
-    return 'HOUR(' . $date . ')';
+    return <<<SQL
+        HOUR({$date})
+        SQL;
 }
 
 function pwg_db_get_date_YYYYMM($date)
 {
-    return 'DATE_FORMAT(' . $date . ', \'%Y%m\')';
+    return <<<SQL
+        DATE_FORMAT({$date}, '%Y%m')
+        SQL;
 }
 
 function pwg_db_get_date_MMDD($date)
 {
-    return 'DATE_FORMAT(' . $date . ', \'%m%d\')';
+    return <<<SQL
+        DATE_FORMAT({$date}, '%m%d')
+        SQL;
 }
 
 function pwg_db_get_year($date)
 {
-    return 'YEAR(' . $date . ')';
+    return <<<SQL
+        YEAR({$date})
+        SQL;
 }
 
 function pwg_db_get_month($date)
 {
-    return 'MONTH(' . $date . ')';
+    return <<<SQL
+        MONTH({$date})
+        SQL;
 }
 
 function pwg_db_get_week($date, $mode = null)
 {
     if ($mode) {
-        return 'WEEK(' . $date . ', ' . $mode . ')';
+        return <<<SQL
+            WEEK({$date}, {$mode})
+            SQL;
     }
 
-    return 'WEEK(' . $date . ')';
-
+    return <<<SQL
+        WEEK({$date})
+        SQL;
 }
 
 function pwg_db_get_dayofmonth($date)
 {
-    return 'DAYOFMONTH(' . $date . ')';
+    return <<<SQL
+        DAYOFMONTH({$date})
+        SQL;
 }
 
 function pwg_db_get_dayofweek($date)
 {
-    return 'DAYOFWEEK(' . $date . ')';
+    return <<<SQL
+        DAYOFWEEK({$date})
+        SQL;
 }
 
 function pwg_db_get_weekday($date)
 {
-    return 'WEEKDAY(' . $date . ')';
+    return <<<SQL
+        WEEKDAY({$date})
+        SQL;
 }
 
 function pwg_db_date_to_ts($date)
 {
-    return 'UNIX_TIMESTAMP(' . $date . ')';
+    return <<<SQL
+        UNIX_TIMESTAMP({$date})
+        SQL;
 }
 
 /**

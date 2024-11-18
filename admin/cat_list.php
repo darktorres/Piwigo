@@ -46,26 +46,23 @@ function get_categories_ref_date($ids, $field = 'date_available', $minmax = 'max
     $category_ids = get_subcat_ids($ids);
 
     // search for the reference date of each album
-    $query = '
-SELECT
-    category_id,
-    ' . $minmax . '(' . $field . ') as ref_date
-  FROM image_category
-    JOIN images ON image_id = id
-  WHERE category_id IN (' . implode(',', $category_ids) . ')
-  GROUP BY category_id
-;';
+    $categoryIds = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT category_id, {$minmax}({$field}) AS ref_date
+        FROM image_category
+        JOIN images ON image_id = id
+        WHERE category_id IN ({$categoryIds})
+        GROUP BY category_id;
+        SQL;
     $ref_dates = query2array($query, 'category_id', 'ref_date');
 
     // iterate on all albums (having a ref_date or not) to find the
     // reference_date, with a search on sub-albums
-    $query = '
-SELECT
-    id,
-    uppercats
-  FROM categories
-  WHERE id IN (' . implode(',', $category_ids) . ')
-;';
+    $query = <<<SQL
+        SELECT id, uppercats
+        FROM categories
+        WHERE id IN ({$categoryIds});
+        SQL;
     $uppercats_of = query2array($query, 'id', 'uppercats');
 
     foreach (array_keys($uppercats_of) as $cat_id) {
@@ -73,7 +70,7 @@ SELECT
         $subcat_ids = [];
 
         foreach ($uppercats_of as $id => $uppercats) {
-            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', $uppercats)) {
+            if (preg_match("/(^|,){$cat_id}(,|$)/", $uppercats)) {
                 $subcat_ids[] = $id;
             }
         }
@@ -195,41 +192,34 @@ $template->assign([
 
 $categories = [];
 
-$query = '
-SELECT id, name, permalink, dir, rank_column, status
-  FROM categories';
-if (! isset($_GET['parent_id'])) {
-    $query .= '
-  WHERE id_uppercat IS NULL';
-} else {
-    $query .= '
-  WHERE id_uppercat = ' . $_GET['parent_id'];
-}
-$query .= '
-  ORDER BY rank_column ASC
-;';
+$parentIdCondition = isset($_GET['parent_id'])
+    ? "WHERE id_uppercat = {$_GET['parent_id']}"
+    : 'WHERE id_uppercat IS NULL';
+
+$query = <<<SQL
+    SELECT id, name, permalink, dir, rank_column, status
+    FROM categories
+    {$parentIdCondition}
+    ORDER BY rank_column ASC;
+    SQL;
 $categories = hash_from_query($query, 'id');
 
 // get the categories containing images directly
 $categories_with_images = [];
 if (count($categories)) {
-    $query = '
-SELECT
-    category_id,
-    COUNT(*) AS nb_photos
-  FROM image_category
-  GROUP BY category_id
-;';
+    $query = <<<SQL
+        SELECT category_id, COUNT(*) AS nb_photos
+        FROM image_category
+        GROUP BY category_id;
+        SQL;
     // WHERE category_id IN ('.implode(',', array_keys($categories)).')
 
     $nb_photos_in = query2array($query, 'category_id', 'nb_photos');
 
-    $query = '
-SELECT
-    id,
-    uppercats
-  FROM categories
-;';
+    $query = <<<SQL
+        SELECT id, uppercats
+        FROM categories;
+        SQL;
     $all_categories = query2array($query, 'id', 'uppercats');
     $subcats_of = [];
 
