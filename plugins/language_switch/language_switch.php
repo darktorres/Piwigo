@@ -49,11 +49,11 @@ function language_controler_switch()
             if (functions_user::is_a_guest() or functions_user::is_generic()) {
                 functions_session::pwg_set_session_var('lang_switch', $_GET['lang']);
             } else {
-                $query = '
-UPDATE user_infos
-  SET language = \'' . $_GET['lang'] . '\'
-  WHERE user_id = ' . $user['id'] . '
-;';
+                $query = <<<SQL
+                    UPDATE user_infos
+                    SET language = '{$_GET['lang']}'
+                    WHERE user_id = {$user['id']};
+                    SQL;
                 functions_mysqli::pwg_query($query);
             }
 

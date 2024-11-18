@@ -238,12 +238,12 @@ abstract class CalendarBase
     {
         global $template, $conf, $page;
 
-        $query = '
-SELECT DISTINCT(' . $this->calendar_levels[$level]['sql'] . ') as period,
-  COUNT(DISTINCT id) as nb_images' .
-$this->inner_sql .
-$this->get_date_where($level) . '
-  GROUP BY period;';
+        $query = <<<SQL
+            SELECT DISTINCT({$this->calendar_levels[$level]['sql']}) AS period, COUNT(DISTINCT id) AS nb_images
+            {$this->inner_sql}
+            {$this->get_date_where($level)}
+            GROUP BY period;
+            SQL;
 
         $level_items = functions_mysqli::query2array($query, 'period', 'nb_images');
 
@@ -303,10 +303,13 @@ $this->get_date_where($level) . '
                 $sub_queries[] = functions_mysqli::pwg_db_cast_to_text($this->calendar_levels[$i]['sql']);
             }
         }
-        $query = 'SELECT ' . functions_mysqli::pwg_db_concat_ws($sub_queries, '-') . ' AS period';
-        $query .= $this->inner_sql . '
-AND ' . $this->date_field . ' IS NOT NULL
-GROUP BY period';
+        $period = functions_mysqli::pwg_db_concat_ws($sub_queries, '-');
+        $query = <<<SQL
+            SELECT {$period} AS period
+            {$this->inner_sql}
+                AND {$this->date_field} IS NOT NULL
+            GROUP BY period;
+            SQL;
 
         $current = implode('-', $page['chronology_date']);
         $upper_items = functions_mysqli::query2array($query, null, 'period');
