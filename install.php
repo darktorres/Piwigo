@@ -201,7 +201,7 @@ if (isset($_POST['install'])) {
     if (count($errors) == 0) {
         $step = 2;
 
-        pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], '');
+        pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd']);
         pwg_db_check_version();
         pwg_query("DROP DATABASE IF EXISTS {$dbname};");
         pwg_query("CREATE DATABASE {$dbname};");
@@ -210,13 +210,13 @@ if (isset($_POST['install'])) {
 
         // tables creation, based on piwigo_structure.sql
         execute_sqlfile(
-            PHPWG_ROOT_PATH . 'install/piwigo_structure-mysql.sql',
-            'mysql'
+            PHPWG_ROOT_PATH . "install/piwigo_structure-{$dblayer}.sql",
+            $dblayer
         );
         // We fill the tables with basic information
         execute_sqlfile(
             PHPWG_ROOT_PATH . 'install/config.sql',
-            'mysql'
+            $dblayer
         );
 
         $random_function = DB_RANDOM_FUNCTION;
