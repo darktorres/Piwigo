@@ -100,7 +100,7 @@ class RVTS
         // the String.fromCharCode comes from google bot which somehow manage to get these urls
         $template->block_footer_script(
             null,
-            '
+            '<script>
                 var RVTS = {
                     ajaxUrlModel: String.fromCharCode(' . ord($ajax_url_model[0]) . ")+'" . substr(
                 $ajax_url_model,
@@ -116,7 +116,7 @@ class RVTS
                     ajaxLoaderImage: '{$ajax_loader_image}'
                 };
                 jQuery('.navigationBar').hide();
-            "
+            </script>"
         );
         return $thumbs;
     }
