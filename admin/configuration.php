@@ -257,7 +257,7 @@ if (isset($_POST['submit'])) {
     // updating configuration if no error found
     if (! in_array($page['section'], ['sizes', 'watermark']) and count($page['errors']) == 0 and functions_user::is_webmaster()) {
         //echo '<pre>'; print_r($_POST); echo '</pre>';
-        $result = functions_mysqli::pwg_query('SELECT param FROM config');
+        $result = functions_mysqli::pwg_query('SELECT param FROM config;');
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
             if (isset($_POST[$row['param']])) {
                 $value = $_POST[$row['param']];
@@ -268,11 +268,12 @@ if (isset($_POST['submit'])) {
                     }
                 }
 
-                $query = '
-UPDATE config
-SET value = \'' . str_replace("\'", "''", $value) . '\'
-WHERE param = \'' . $row['param'] . '\'
-;';
+                $escaped_value = str_replace("\'", "''", $value);
+                $query = <<<SQL
+                    UPDATE config
+                    SET value = '{$escaped_value}'
+                    WHERE param = '{$row['param']}';
+                    SQL;
                 functions_mysqli::pwg_query($query);
             }
         }
@@ -289,7 +290,10 @@ WHERE param = \'' . $row['param'] . '\'
 // restore default derivatives settings
 if ($page['section'] == 'sizes' and isset($_GET['action']) and $_GET['action'] == 'restore_settings') {
     ImageStdParams::set_and_save(ImageStdParams::get_default_sizes());
-    functions_mysqli::pwg_query('DELETE FROM config WHERE param = \'disabled_derivatives\'');
+    functions_mysqli::$query = <<<SQL
+        DELETE FROM config WHERE param = 'disabled_derivatives';
+        SQL;
+    pwg_query($query);
     \Piwigo\admin\inc\functions::clear_derivative_cache();
 
     $page['infos'][] = functions::l10n('Your configuration settings are saved');
@@ -369,12 +373,10 @@ switch ($page['section']) {
         );
 
         // list of groups
-        $query = '
-    SELECT
-        id,
-        name
-      FROM `groups`
-    ;';
+        $query = <<<SQL
+            SELECT id, name
+            FROM `groups`;
+            SQL;
         $groups = functions_mysqli::query2array($query, 'id', 'name');
         natcasesort($groups);
 

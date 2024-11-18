@@ -69,10 +69,10 @@ function admintools_add_public_controller()
                 ]
             );
 
-            $query = '
-SELECT element_id FROM caddie
-  WHERE element_id = ' . $page['image_id'] . '
-;';
+            $query = <<<SQL
+                SELECT element_id FROM caddie
+                WHERE element_id = {$page['image_id']};
+                SQL;
             $tpl_vars['IS_IN_CADDIE'] = functions_mysqli::pwg_db_num_rows(functions_mysqli::pwg_query($query)) > 0;
 
             if (isset($page['category'])) {
@@ -103,12 +103,12 @@ SELECT element_id FROM caddie
         // gets tags (full available list is loaded in ajax)
         include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 
-        $query = '
-SELECT id, name
-  FROM image_tag AS it
-    JOIN tags AS t ON t.id = it.tag_id
-  WHERE image_id = ' . $page['image_id'] . '
-;';
+        $query = <<<SQL
+            SELECT id, name
+            FROM image_tag AS it
+            JOIN tags AS t ON t.id = it.tag_id
+            WHERE image_id = {$page['image_id']};
+            SQL;
         $tag_selection = \Piwigo\admin\inc\functions::get_taglist($query);
 
         (! isset($picture['current']['date_creation'])) ? $picture['current']['date_creation'] = '' : false;
@@ -153,10 +153,10 @@ SELECT id, name
         ];
 
         if (! empty($page['category']['representative_picture_id'])) {
-            $query = '
-SELECT * FROM images
-  WHERE id = ' . $page['category']['representative_picture_id'] . '
-;';
+            $query = <<<SQL
+                SELECT * FROM images
+                WHERE id = {$page['category']['representative_picture_id']};
+                SQL;
             $image_infos = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
 
             $tpl_vars['QUICK_EDIT']['img'] = DerivativeImage::get_one(derivative_std_params::IMG_SQUARE, $image_infos)->get_url();
@@ -255,7 +255,11 @@ function admintools_save_picture()
         return;
     }
 
-    $query = 'SELECT added_by FROM images WHERE id = ' . $page['image_id'] . ';';
+    $query = <<<SQL
+        SELECT added_by
+        FROM images
+        WHERE id = {$page['image_id']};
+        SQL;
     list($added_by) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
     if (! $MultiView->is_admin() and $user['id'] != $added_by) {
