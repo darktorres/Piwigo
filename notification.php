@@ -25,11 +25,11 @@ function find_available_feed_id()
 {
     while (true) {
         $key = generate_key(50);
-        $query = '
-SELECT COUNT(*)
-  FROM user_feed
-  WHERE id = \'' . $key . '\'
-;';
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM user_feed
+            WHERE id = '{$key}';
+            SQL;
         list($count) = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return $key;
@@ -50,12 +50,12 @@ trigger_notify('loc_begin_notification');
 
 $page['feed'] = find_available_feed_id();
 
-$query = '
-INSERT INTO user_feed
-  (id, user_id, last_check)
-  VALUES
-  (\'' . $page['feed'] . '\', ' . $user['id'] . ', NULL)
-;';
+$query = <<<SQL
+    INSERT INTO user_feed
+        (id, user_id, last_check)
+    VALUES
+        ('{$page['feed']}', {$user['id']}, NULL);
+    SQL;
 pwg_query($query);
 
 $feed_url = PHPWG_ROOT_PATH . 'feed.php';

@@ -399,38 +399,44 @@ function pwg_mail_admins($args = [], $tpl = [], $exclude_current_user = true, $o
     }
 
     // get admins (except ourselves)
-    $query = '
-SELECT
-    i.user_id,
-    u.' . $conf['user_fields']['username'] . ' AS name,
-    u.' . $conf['user_fields']['email'] . ' AS email
-  FROM users AS u
-    JOIN user_infos AS i
-    ON i.user_id =  u.' . $conf['user_fields']['id'];
+    $user_statuses_str = implode("','", $user_statuses);
+    $query = <<<SQL
+        SELECT i.user_id, u.{$conf['user_fields']['username']} AS name, u.{$conf['user_fields']['email']} AS email
+        FROM users AS u
+        JOIN user_infos AS i ON i.user_id =  u.{$conf['user_fields']['id']}
+
+        SQL;
 
     if ($group_id !== null) {
-        $query .= '
-    JOIN user_group AS ug
-      ON ug.user_id = i.user_id';
+        $query .= <<<SQL
+            JOIN user_group AS ug ON ug.user_id = i.user_id
+
+            SQL;
     }
 
-    $query .= '
-  WHERE i.status in (\'' . implode("','", $user_statuses) . '\')
-    AND u.' . $conf['user_fields']['email'] . ' IS NOT NULL';
+    $query .= <<<SQL
+        WHERE i.status IN ('{$user_statuses_str}')
+            AND u.{$conf['user_fields']['email']} IS NOT NULL
+
+        SQL;
 
     if ($group_id !== null) {
-        $query .= '
-    AND group_id = ' . intval($group_id);
+        $query .= <<<SQL
+            AND group_id = {$group_id}
+
+            SQL;
     }
 
     if ($exclude_current_user) {
-        $query .= '
-    AND i.user_id <> ' . $user['id'];
+        $query .= <<<SQL
+            AND i.user_id <> {$user['id']}
+
+            SQL;
     }
 
-    $query .= '
-  ORDER BY name
-;';
+    $query .= <<<SQL
+        ORDER BY name;
+        SQL;
     $admins = array_from_query($query);
 
     if (empty($admins)) {
@@ -466,22 +472,24 @@ function pwg_mail_group($group_id, $args = [], $tpl = [])
     $return = true;
 
     // get distinct languages of targeted users
-    $query = '
-SELECT DISTINCT language
-  FROM user_group AS ug
-    INNER JOIN users AS u
-    ON ' . $conf['user_fields']['id'] . ' = ug.user_id
-    INNER JOIN user_infos AS ui
-    ON ui.user_id = ug.user_id
-  WHERE group_id = ' . $group_id . '
-    AND ' . $conf['user_fields']['email'] . ' <> ""';
+    $query = <<<SQL
+        SELECT DISTINCT language
+        FROM user_group AS ug
+        INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id
+        INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id
+        WHERE group_id = {$group_id}
+            AND {$conf['user_fields']['email']} <> ""
+
+        SQL;
+
     if (! empty($args['language_selected'])) {
-        $query .= '
-    AND language = \'' . $args['language_selected'] . '\'';
+        $query .= <<<SQL
+            AND language = '{$args['language_selected']}'
+
+            SQL;
     }
 
-    $query .= '
-;';
+    $query .= ';';
     $languages = array_from_query($query, 'language');
 
     if (empty($languages)) {
@@ -490,21 +498,15 @@ SELECT DISTINCT language
 
     foreach ($languages as $language) {
         // get subset of users in this group for a specific language
-        $query = '
-SELECT
-    ui.user_id,
-    ui.status,
-    u.' . $conf['user_fields']['username'] . ' AS name,
-    u.' . $conf['user_fields']['email'] . ' AS email
-  FROM user_group AS ug
-    INNER JOIN users AS u
-    ON ' . $conf['user_fields']['id'] . ' = ug.user_id
-    INNER JOIN user_infos AS ui
-    ON ui.user_id = ug.user_id
-  WHERE group_id = ' . $group_id . '
-    AND ' . $conf['user_fields']['email'] . ' <> ""
-    AND language = \'' . $language . '\'
-;';
+        $query = <<<SQL
+            SELECT ui.user_id, ui.status, u.{$conf['user_fields']['username']} AS name, u.{$conf['user_fields']['email']} AS email
+            FROM user_group AS ug
+            INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id
+            INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id
+            WHERE group_id = {$group_id}
+                AND {$conf['user_fields']['email']} <> ""
+                AND language = '{$language}';
+            SQL;
         $users = array_from_query($query);
 
         if (empty($users)) {

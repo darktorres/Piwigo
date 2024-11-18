@@ -104,28 +104,22 @@ function insert_new_data_user_mail_notification()
     global $conf, $page, $env_nbm, $base_url;
 
     // Set null mail_address empty
-    $query = '
-update
-  users
-set
-  ' . $conf['user_fields']['email'] . ' = null
-where
-  trim(' . $conf['user_fields']['email'] . ') = \'\';';
+    $query = <<<SQL
+        UPDATE users
+        SET {$conf['user_fields']['email']} = NULL
+        WHERE TRIM({$conf['user_fields']['email']}) = '';
+        SQL;
     pwg_query($query);
 
     // null mail_address are not selected in the list
-    $query = '
-select
-  u.' . $conf['user_fields']['id'] . ' as user_id,
-  u.' . $conf['user_fields']['username'] . ' as username,
-  u.' . $conf['user_fields']['email'] . ' as mail_address
-from
-  users as u left join user_mail_notification as m on u.' . $conf['user_fields']['id'] . ' = m.user_id
-where
-  u.' . $conf['user_fields']['email'] . ' is not null and
-  m.user_id is null
-order by
-  user_id;';
+    $query = <<<SQL
+        SELECT u.{$conf['user_fields']['id']} AS user_id, u.{$conf['user_fields']['username']} AS username, u.{$conf['user_fields']['email']} AS mail_address
+        FROM users AS u
+        LEFT JOIN user_mail_notification AS m ON u.{$conf['user_fields']['id']} = m.user_id
+        WHERE u.{$conf['user_fields']['email']} IS NOT NULL
+            AND m.user_id IS NULL
+        ORDER BY user_id;
+        SQL;
 
     $result = pwg_query($query);
 
@@ -167,7 +161,11 @@ order by
         if ($env_nbm['is_sendmail_timeout']) {
             $quoted_check_key_list = quote_check_key_list(array_diff($check_key_list, $check_key_treated));
             if (count($quoted_check_key_list) != 0) {
-                $query = 'delete from user_mail_notification where check_key in (' . implode(',', $quoted_check_key_list) . ');';
+                $imploded_check_key_list = implode(',', $quoted_check_key_list);
+                $query = <<<SQL
+                    DELETE FROM user_mail_notification
+                    WHERE check_key IN ({$imploded_check_key_list});
+                    SQL;
                 $result = pwg_query($query);
 
                 redirect($base_url . get_query_string_diff([], false), l10n('Operation in progress') . "\n" . l10n('Please wait...'));
@@ -456,7 +454,10 @@ switch ($page['mode']) {
 
             $updated_param_count = 0;
             // Update param
-            $result = pwg_query('select param, value from config where param like \'nbm\\_%\'');
+            $query = <<<SQL
+                SELECT param, value FROM config WHERE param LIKE 'nbm\_%';
+                SQL;
+            $result = pwg_query($query);
             while ($nbm_user = pwg_db_fetch_assoc($result)) {
                 if (isset($_POST[$nbm_user['param']])) {
                     conf_update_param($nbm_user['param'], $_POST[$nbm_user['param']], true);

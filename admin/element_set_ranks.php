@@ -67,19 +67,23 @@ if (isset($_POST['submit'])) {
     } elseif ($image_order_choice == 'rank') {
         $image_order = 'rank_column ASC';
     }
-    $query = '
-UPDATE categories
-  SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
-  WHERE id=' . $page['category_id'];
+    $image_order_value = isset($image_order) ? "'{$image_order}'" : 'NULL';
+    $query = <<<SQL
+        UPDATE categories
+        SET image_order = {$image_order_value}
+        WHERE id = {$page['category_id']};
+        SQL;
     pwg_query($query);
 
     if (isset($_POST['image_order_subcats'])) {
         $cat_info = get_cat_info($page['category_id']);
 
-        $query = '
-UPDATE categories
-  SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
-  WHERE uppercats LIKE \'' . $cat_info['uppercats'] . ',%\'';
+        $image_order_value = isset($image_order) ? "'{$image_order}'" : 'NULL';
+        $query = <<<SQL
+            UPDATE categories
+            SET image_order = {$image_order_value}
+            WHERE uppercats LIKE '{$cat_info['uppercats']},%';
+            SQL;
         pwg_query($query);
     }
 
@@ -97,11 +101,11 @@ $template->set_filenames(
 
 $base_url = get_root_url() . 'admin.php';
 
-$query = '
-SELECT *
-  FROM categories
-  WHERE id = ' . $page['category_id'] . '
-;';
+$query = <<<SQL
+    SELECT *
+    FROM categories
+    WHERE id = {$page['category_id']};
+    SQL;
 $category = pwg_db_fetch_assoc(pwg_query($query));
 
 if ($category['image_order'] == 'rank_column ASC' or $category['image_order'] == 'rank_column ASC') {
@@ -127,20 +131,13 @@ $template->assign(
 // |                              thumbnails                               |
 // +-----------------------------------------------------------------------+
 
-$query = '
-SELECT
-    id,
-    file,
-    path,
-    representative_ext,
-    width, height, rotation,
-    name,
-    rank_column
-  FROM images
+$query = <<<SQL
+    SELECT id, file, path, representative_ext, width, height, rotation, name, rank_column
+    FROM images
     JOIN image_category ON image_id = id
-  WHERE category_id = ' . $page['category_id'] . '
-  ORDER BY rank_column
-;';
+    WHERE category_id = {$page['category_id']}
+    ORDER BY rank_column;
+    SQL;
 $result = pwg_query($query);
 if (pwg_db_num_rows($result) > 0) {
     // template thumbnail initialization

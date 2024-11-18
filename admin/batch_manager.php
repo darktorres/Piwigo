@@ -36,10 +36,10 @@ check_input_parameter('display', $_REQUEST, false, '/^(\d+|all)$/');
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'empty_caddie') {
-        $query = '
-DELETE FROM caddie
-  WHERE user_id = ' . $user['id'] . '
-;';
+        $query = <<<SQL
+            DELETE FROM caddie
+            WHERE user_id = {$user['id']};
+            SQL;
         pwg_query($query);
 
         $_SESSION['page_infos'] = [
@@ -263,37 +263,38 @@ $filter_sets = [];
 if (isset($_SESSION['bulk_manager_filter']['prefilter'])) {
     switch ($_SESSION['bulk_manager_filter']['prefilter']) {
         case 'caddie':
-            $query = '
-SELECT element_id
-  FROM caddie
-  WHERE user_id = ' . $user['id'] . '
-;';
+            $query = <<<SQL
+                SELECT element_id
+                FROM caddie
+                WHERE user_id = {$user['id']};
+                SQL;
             $filter_sets[] = query2array($query, null, 'element_id');
 
             break;
 
         case 'favorites':
-            $query = '
-SELECT image_id
-  FROM favorites
-  WHERE user_id = ' . $user['id'] . '
-;';
+            $query = <<<SQL
+                SELECT image_id
+                FROM favorites
+                WHERE user_id = {$user['id']};
+                SQL;
             $filter_sets[] = query2array($query, null, 'image_id');
 
             break;
 
         case 'last_import':
-            $query = '
-SELECT MAX(date_available) AS date
-  FROM images
-;';
+            $query = <<<SQL
+                SELECT MAX(date_available) AS date
+                FROM images;
+                SQL;
             $row = pwg_db_fetch_assoc(pwg_query($query));
             if (! empty($row['date'])) {
-                $query = '
-SELECT id
-  FROM images
-  WHERE date_available BETWEEN ' . pwg_db_get_recent_period_expression(1, $row['date']) . ' AND \'' . $row['date'] . '\'
-;';
+                $recent_period = pwg_db_get_recent_period_expression(1, $row['date']);
+                $query = <<<SQL
+                    SELECT id
+                    FROM images
+                    WHERE date_available BETWEEN {$recent_period} AND '{$row['date']}';
+                    SQL;
                 $filter_sets[] = query2array($query, null, 'id');
             }
 
@@ -301,26 +302,27 @@ SELECT id
 
         case 'no_virtual_album':
             // we are searching elements not linked to any virtual category
-            $query = '
- SELECT id
-   FROM images
- ;';
+            $query = <<<SQL
+                SELECT id
+                FROM images;
+                SQL;
             $all_elements = query2array($query, null, 'id');
 
             $linked_to_virtual = [];
 
-            $query = '
- SELECT id
-   FROM categories
-   WHERE dir IS NULL
- ;';
+            $query = <<<SQL
+                SELECT id
+                FROM categories
+                WHERE dir IS NULL;
+                SQL;
             $virtual_categories = query2array($query, null, 'id');
             if (! empty($virtual_categories)) {
-                $query = '
- SELECT DISTINCT(image_id)
-   FROM image_category
-   WHERE category_id IN (' . implode(',', $virtual_categories) . ')
- ;';
+                $category_ids = implode(',', $virtual_categories);
+                $query = <<<SQL
+                    SELECT DISTINCT(image_id)
+                    FROM image_category
+                    WHERE category_id IN ({$category_ids});
+                    SQL;
                 $linked_to_virtual = query2array($query, null, 'image_id');
             }
 
@@ -336,13 +338,12 @@ SELECT id
             break;
 
         case 'no_tag':
-            $query = '
-SELECT
-    id
-  FROM images
-    LEFT JOIN image_tag ON id = image_id
-  WHERE tag_id is null
-;';
+            $query = <<<SQL
+                SELECT id
+                FROM images
+                LEFT JOIN image_tag ON id = image_id
+                WHERE tag_id is null;
+                SQL;
             $filter_sets[] = query2array($query, null, 'id');
 
             break;
@@ -372,21 +373,24 @@ SELECT
             // combination of "duplicates_on_fields" you won't get all the
             // duplicates.
 
-            $query = '
-SELECT
-    GROUP_CONCAT(id) AS ids
-  FROM images';
+            $query = <<<SQL
+                SELECT GROUP_CONCAT(id) AS ids
+                FROM images
+
+                SQL;
 
             if (in_array('md5sum', $duplicates_on_fields)) {
-                $query .= '
-  WHERE md5sum IS NOT NULL
-';
+                $query .= <<<SQL
+                    WHERE md5sum IS NOT NULL
+
+                    SQL;
             }
 
-            $query .= '
-  GROUP BY ' . implode(',', $duplicates_on_fields) . '
-  HAVING COUNT(*) > 1
-;';
+            $imploded_fields = implode(',', $duplicates_on_fields);
+            $query .= <<<SQL
+                GROUP BY {$imploded_fields}
+                HAVING COUNT(*) > 1;
+                SQL;
             $array_of_ids_string = query2array($query, null, 'ids');
 
             $ids = [];
@@ -402,10 +406,11 @@ SELECT
 
         case 'all_photos':
             if (count($_SESSION['bulk_manager_filter']) == 1) {// make the query only if this is the only filter
-                $query = '
-SELECT id
-  FROM images
-  ' . $conf['order_by'];
+                $query = <<<SQL
+                    SELECT id
+                    FROM images
+                    {$conf['order_by']};
+                    SQL;
 
                 $filter_sets[] = query2array($query, null, 'id');
             }
@@ -421,11 +426,11 @@ if (isset($_SESSION['bulk_manager_filter']['category'])) {
     $categories = [];
 
     // we need to check the category still exists (it may have been deleted since it was added in the session)
-    $query = '
-SELECT COUNT(*)
-  FROM categories
-  WHERE id = ' . $_SESSION['bulk_manager_filter']['category'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM categories
+        WHERE id = {$_SESSION['bulk_manager_filter']['category']};
+        SQL;
     list($counter) = pwg_db_fetch_row(pwg_query($query));
     if ($counter == 0) {
         unset($_SESSION['bulk_manager_filter']);
@@ -438,11 +443,12 @@ SELECT COUNT(*)
         $categories = [$_SESSION['bulk_manager_filter']['category']];
     }
 
-    $query = '
- SELECT DISTINCT(image_id)
-   FROM image_category
-   WHERE category_id IN (' . implode(',', $categories) . ')
- ;';
+    $categoriesString = implode(',', $categories);
+    $query = <<<SQL
+        SELECT DISTINCT(image_id)
+        FROM image_category
+        WHERE category_id IN ({$categoriesString});
+        SQL;
     $filter_sets[] = query2array($query, null, 'image_id');
 }
 
@@ -452,11 +458,12 @@ if (isset($_SESSION['bulk_manager_filter']['level'])) {
         $operator = '<=';
     }
 
-    $query = '
-SELECT id
-  FROM images
-  WHERE level ' . $operator . ' ' . $_SESSION['bulk_manager_filter']['level'] . '
-  ' . $conf['order_by'];
+    $query = <<<SQL
+        SELECT id
+        FROM images
+        WHERE level {$operator} {$_SESSION['bulk_manager_filter']['level']}
+        {$conf['order_by']};
+        SQL;
 
     $filter_sets[] = query2array($query, null, 'id');
 }
@@ -493,11 +500,13 @@ if (isset($_SESSION['bulk_manager_filter']['dimension'])) {
         $where_clauses[] = 'width/height < ' . ($_SESSION['bulk_manager_filter']['dimension']['max_ratio'] + 0.01);
     }
 
-    $query = '
-SELECT id
-  FROM images
-  WHERE ' . implode(' AND ', $where_clauses) . '
-  ' . $conf['order_by'];
+    $where_clauses_imploded = implode(' AND ', $where_clauses);
+    $query = <<<SQL
+        SELECT id
+        FROM images
+        WHERE {$where_clauses_imploded}
+        {$conf['order_by']};
+        SQL;
 
     $filter_sets[] = query2array($query, null, 'id');
 }
@@ -513,11 +522,13 @@ if (isset($_SESSION['bulk_manager_filter']['filesize'])) {
         $where_clauses[] = 'filesize <= ' . $_SESSION['bulk_manager_filter']['filesize']['max'] * 1024;
     }
 
-    $query = '
-SELECT id
-  FROM images
-  WHERE ' . implode(' AND ', $where_clauses) . '
-  ' . $conf['order_by'];
+    $where_clauses_imploded = implode(' AND ', $where_clauses);
+    $query = <<<SQL
+        SELECT id
+        FROM images
+        WHERE {$where_clauses_imploded}
+        {$conf['order_by']};
+        SQL;
 
     $filter_sets[] = query2array($query, null, 'id');
 }
@@ -586,13 +597,12 @@ $ratios = [];
 $dimensions = [];
 
 // get all width, height and ratios
-$query = '
-SELECT
-  DISTINCT width, height
-  FROM images
-  WHERE width IS NOT NULL
-    AND height IS NOT NULL
-;';
+$query = <<<SQL
+    SELECT DISTINCT width, height
+    FROM images
+    WHERE width IS NOT NULL
+        AND height IS NOT NULL;
+    SQL;
 $result = pwg_query($query);
 
 if (pwg_db_num_rows($result)) {
@@ -671,13 +681,12 @@ $template->assign('dimensions', $dimensions);
 $filesizes = [];
 $filesize = [];
 
-$query = '
-SELECT
-  filesize
-  FROM images
-  WHERE filesize IS NOT NULL
-  GROUP BY filesize
-;';
+$query = <<<SQL
+    SELECT filesize
+    FROM images
+    WHERE filesize IS NOT NULL
+    GROUP BY filesize;
+    SQL;
 $result = pwg_query($query);
 
 while ($row = pwg_db_fetch_assoc($result)) {

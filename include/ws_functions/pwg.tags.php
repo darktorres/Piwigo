@@ -109,13 +109,14 @@ function ws_tags_getImages($params, &$service)
     $image_tag_map = [];
     // build list of image ids with associated tags per image
     if (! empty($image_ids) and ! $params['tag_mode_and']) {
-        $query = '
-SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
-  FROM image_tag
-  WHERE tag_id IN (' . implode(',', $tag_ids) . ')
-    AND image_id IN (' . implode(',', $image_ids) . ')
-  GROUP BY image_id
-;';
+        $tagIds = implode(',', $tag_ids);
+        $imageIds = implode(',', $image_ids);
+        $query = <<<SQL
+            SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
+            FROM image_tag
+            WHERE tag_id IN ({$tagIds}) AND image_id IN ({$imageIds})
+            GROUP BY image_id;
+            SQL;
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -129,11 +130,12 @@ SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
         $rank_of = array_flip($image_ids);
         $favorite_ids = get_user_favorites();
 
-        $query = '
-SELECT *
-  FROM images
-  WHERE id IN (' . implode(',', $image_ids) . ')
-;';
+        $imageIds = implode(',', $image_ids);
+        $query = <<<SQL
+            SELECT *
+            FROM images
+            WHERE id IN ({$imageIds});
+            SQL;
         $result = pwg_query($query);
 
         while ($row = pwg_db_fetch_assoc($result)) {
@@ -218,10 +220,11 @@ function ws_tags_add($params, &$service)
 
     pwg_activity('tag', $creation_output['id'], 'add');
 
-    $query = '
-SELECT name, url_name
-FROM tags
-WHERE id = ' . $creation_output['id'] . ';';
+    $query = <<<SQL
+        SELECT name, url_name
+        FROM tags
+        WHERE id = {$creation_output['id']};
+        SQL;
 
     $new_tag = query2array($query);
 
@@ -241,11 +244,12 @@ function ws_tags_delete($params, &$service)
         return new PwgError(403, 'Invalid security token');
     }
 
-    $query = '
-SELECT COUNT(*)
-  FROM tags
-  WHERE id in (' . implode(',', $params['tag_id']) . ')
-;';
+    $tag_ids = implode(',', $params['tag_id']);
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM tags
+        WHERE id IN ({$tag_ids});
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($params['tag_id'])) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
@@ -277,21 +281,21 @@ function ws_tags_rename($params, &$service)
     $tag_name = strip_tags(stripslashes($params['new_name']));
 
     // does the tag exist?
-    $query = '
-SELECT COUNT(*)
-  FROM tags
-  WHERE id = ' . $tag_id . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM tags
+        WHERE id = {$tag_id};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
 
-    $query = '
-SELECT name
-  FROM tags
-  WHERE id != ' . $tag_id . '
-;';
+    $query = <<<SQL
+        SELECT name
+        FROM tags
+        WHERE id != {$tag_id};
+        SQL;
     $existing_names = array_from_query($query, 'name');
 
     $update = [];
@@ -316,14 +320,11 @@ SELECT name
         ]
     );
 
-    $query = '
-SELECT
-    id,
-    name,
-    url_name
-  FROM tags
-  WHERE id = ' . $tag_id . '
-;';
+    $query = <<<SQL
+        SELECT id, name, url_name
+        FROM tags
+        WHERE id = {$tag_id};
+        SQL;
 
     return query2array($query)[0];
 }
@@ -341,21 +342,21 @@ function ws_tags_duplicate($params, &$service)
     $copy_name = $params['copy_name'];
 
     // does the tag exist?
-    $query = '
-SELECT COUNT(*)
-  FROM tags
-  WHERE id = ' . $tag_id . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM tags
+        WHERE id = {$tag_id};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This tag does not exist.');
     }
 
-    $query = '
-SELECT COUNT(*)
-  FROM tags
-  WHERE name = "' . $copy_name . '"
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM tags
+        WHERE name = "{$copy_name}";
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already taken.');
@@ -375,11 +376,11 @@ SELECT COUNT(*)
         'source_tag' => $tag_id,
     ]);
 
-    $query = '
-SELECT image_id
-  FROM image_tag
-  WHERE tag_id = ' . $tag_id . '
-;';
+    $query = <<<SQL
+        SELECT image_id
+        FROM image_tag
+        WHERE tag_id = {$tag_id};
+        SQL;
     $destination_tag_image_ids = array_from_query($query, 'image_id');
 
     $inserts = [];
@@ -423,11 +424,12 @@ function ws_tags_merge($params, &$service)
     $all_tags = array_unique($all_tags);
     $merge_tag = array_diff($params['merge_tag_id'], [$params['destination_tag_id']]);
 
-    $query = '
-SELECT COUNT(*)
-  FROM tags
-  WHERE id in (' . implode(',', $all_tags) . ')
-;';
+    $all_tags_imploded = implode(',', $all_tags);
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM tags
+        WHERE id IN ({$all_tags_imploded});
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($all_tags)) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'All tags does not exist.');
@@ -437,19 +439,19 @@ SELECT COUNT(*)
     $image_in_dest = [];
     $image_to_add = [];
 
-    $query = '
-SELECT DISTINCT(image_id)
-  FROM image_tag
-  WHERE
-    tag_id IN (' . implode(',', $merge_tag) . ')
-;';
+    $merge_tag_imploded = implode(',', $merge_tag);
+    $query = <<<SQL
+        SELECT DISTINCT(image_id)
+        FROM image_tag
+        WHERE tag_id IN ({$merge_tag_imploded});
+        SQL;
     $image_in_merge_tags = query2array($query, null, 'image_id');
 
-    $query = '
-SELECT image_id
-  FROM image_tag
-  WHERE tag_id = ' . $params['destination_tag_id'] . '
-;';
+    $query = <<<SQL
+        SELECT image_id
+        FROM image_tag
+        WHERE tag_id = {$params['destination_tag_id']};
+        SQL;
 
     $image_in_dest = query2array($query, null, 'image_id');
 

@@ -82,22 +82,23 @@ if (count(get_available_tags()) > 0) {
 
 if (in_array('author', $fields)) {
     // does this Piwigo have authors for current user?
-    $query = '
-SELECT
-    id
-  FROM images AS i
-    JOIN image_category AS ic ON ic.image_id = i.id
-  ' . get_sql_condition_FandF(
+    $sql_condition = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'category_id',
             'visible_categories' => 'category_id',
             'visible_images' => 'id',
         ],
-        ' WHERE '
-    ) . '
-    AND author IS NOT NULL
-    LIMIT 1
-;';
+        'WHERE'
+    );
+
+    $query = <<<SQL
+        SELECT id
+        FROM images AS i
+        JOIN image_category AS ic ON ic.image_id = i.id
+        {$sql_condition}
+        AND author IS NOT NULL
+        LIMIT 1;
+        SQL;
     $first_author = query2array($query);
 
     if (count($first_author) > 0) {

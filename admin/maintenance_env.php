@@ -82,19 +82,17 @@ switch ($action) {
 
     case 'history_detail':
 
-        $query = '
-DELETE
-  FROM history
-;';
+        $query = <<<SQL
+            DELETE FROM history;
+            SQL;
         pwg_query($query);
         break;
 
     case 'history_summary':
 
-        $query = '
-DELETE
-  FROM history_summary
-;';
+        $query = <<<SQL
+            DELETE FROM history_summary;
+            SQL;
         pwg_query($query);
         break;
 
@@ -103,19 +101,16 @@ DELETE
         pwg_session_gc();
 
         // delete all sessions associated to invalid user ids (it should never happen)
-        $query = '
-SELECT
-    id,
-    data
-  FROM sessions
-;';
+        $query = <<<SQL
+            SELECT id, data
+            FROM sessions;
+            SQL;
         $sessions = query2array($query);
 
-        $query = '
-SELECT
-    ' . $conf['user_fields']['id'] . ' AS id
-  FROM users
-;';
+        $query = <<<SQL
+            SELECT {$conf['user_fields']['id']} AS id
+            FROM users;
+            SQL;
         $all_user_ids = query2array($query, 'id');
 
         $sessions_to_delete = [];
@@ -129,11 +124,11 @@ SELECT
         }
 
         if (count($sessions_to_delete) > 0) {
-            $query = '
-DELETE
-  FROM sessions
-  WHERE id IN (\'' . implode("','", $sessions_to_delete) . '\')
-;';
+            $sessions_to_delete_imploded = implode("','", $sessions_to_delete);
+            $query = <<<SQL
+                DELETE FROM sessions
+                WHERE id IN ('{$sessions_to_delete_imploded}');
+                SQL;
             pwg_query($query);
         }
 
@@ -141,11 +136,10 @@ DELETE
 
     case 'feeds':
 
-        $query = '
-DELETE
-  FROM user_feed
-  WHERE last_check IS NULL
-;';
+        $query = <<<SQL
+            DELETE FROM user_feed
+            WHERE last_check IS NULL;
+            SQL;
         pwg_query($query);
         break;
 
@@ -163,10 +157,9 @@ DELETE
 
     case 'search':
 
-        $query = '
-DELETE
-  FROM search
-;';
+        $query = <<<SQL
+            DELETE FROM search;
+            SQL;
         pwg_query($query);
         break;
 
@@ -249,7 +242,7 @@ $purge_urls[l10n(IMG_CUSTOM)] = sprintf($url_format, 'derivatives') . '&amp;type
 
 $php_current_timestamp = date('Y-m-d H:i:s');
 $db_version = pwg_get_db_version();
-list($db_current_date) = pwg_db_fetch_row(pwg_query('SELECT now();'));
+list($db_current_date) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 
 $template->assign(
     [
@@ -306,12 +299,11 @@ if ($conf['gallery_locked']) {
     );
 }
 
-$query = '
-SELECT
-    registration_date
-  FROM user_infos
-  WHERE user_id = 2
-;';
+$query = <<<SQL
+    SELECT registration_date
+    FROM user_infos
+    WHERE user_id = 2;
+    SQL;
 $users = query2array($query);
 if (count($users) > 0) {
     $installed_on = $users[0]['registration_date'];

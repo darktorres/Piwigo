@@ -106,10 +106,12 @@ class plugins
                 $activity_details['version'] = $this->fs_plugins[$plugin_id]['version'];
 
                 if (empty($errors)) {
-                    $query = '
-INSERT INTO plugins (id,version)
-  VALUES (\'' . $plugin_id . '\', \'' . $this->fs_plugins[$plugin_id]['version'] . '\')
-;';
+                    $query = <<<SQL
+                        INSERT INTO plugins
+                            (id, version)
+                        VALUES
+                            ('{$plugin_id}', '{$this->fs_plugins[$plugin_id]['version']}');
+                        SQL;
                     pwg_query($query);
                 } else {
                     $activity_details['result'] = 'error';
@@ -130,11 +132,11 @@ INSERT INTO plugins (id,version)
                     $plugin_maintain->update($previous_version, $new_version, $errors);
 
                     if ($new_version != 'auto') {
-                        $query = '
-UPDATE plugins
-  SET version=\'' . $new_version . '\'
-  WHERE id=\'' . $plugin_id . '\'
-;';
+                        $query = <<<SQL
+                            UPDATE plugins
+                            SET version = '{$new_version}'
+                            WHERE id = '{$plugin_id}';
+                            SQL;
                         pwg_query($query);
                     }
                 } else {
@@ -158,11 +160,11 @@ UPDATE plugins
                 }
 
                 if (empty($errors)) {
-                    $query = '
-UPDATE plugins
-  SET state=\'active\'
-  WHERE id=\'' . $plugin_id . '\'
-;';
+                    $query = <<<SQL
+                        UPDATE plugins
+                        SET state = 'active'
+                        WHERE id = '{$plugin_id}';
+                        SQL;
                     pwg_query($query);
                 } else {
                     $activity_details['result'] = 'error';
@@ -175,11 +177,11 @@ UPDATE plugins
                     break;
                 }
 
-                $query = '
-UPDATE plugins
-  SET state=\'inactive\'
-  WHERE id=\'' . $plugin_id . '\'
-;';
+                $query = <<<SQL
+                    UPDATE plugins
+                    SET state = 'inactive'
+                    WHERE id = '{$plugin_id}';
+                    SQL;
                 pwg_query($query);
 
                 $plugin_maintain->deactivate();
@@ -205,10 +207,10 @@ UPDATE plugins
                     $this->perform_action('deactivate', $plugin_id);
                 }
 
-                $query = '
-DELETE FROM plugins
-  WHERE id=\'' . $plugin_id . '\'
-;';
+                $query = <<<SQL
+                    DELETE FROM plugins
+                    WHERE id = '{$plugin_id}';
+                    SQL;
                 pwg_query($query);
 
                 $plugin_maintain->uninstall();

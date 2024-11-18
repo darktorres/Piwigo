@@ -133,13 +133,16 @@ function get_remote_addr_session_hash()
  * @param string $session_id
  * @return string
  */
-function pwg_session_read($session_id)
-{
-    $query = '
-SELECT data
-  FROM sessions
-  WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
-;';
+function pwg_session_read(
+    $session_id
+) {
+    $session_hash = get_remote_addr_session_hash() . $session_id;
+    $query = <<<SQL
+        SELECT data
+        FROM sessions
+        WHERE id = '{$session_hash}';
+        SQL;
+
     $result = pwg_query($query);
     if (($row = pwg_db_fetch_assoc($result))) {
         return $row['data'];
@@ -154,13 +157,17 @@ SELECT data
  * @param sring $data
  * @return true
  */
-function pwg_session_write($session_id, $data)
-{
-    $query = '
-REPLACE INTO sessions
-  (id,data,expiration)
-  VALUES(\'' . get_remote_addr_session_hash() . $session_id . '\',\'' . pwg_db_real_escape_string($data) . '\',now())
-;';
+function pwg_session_write(
+    $session_id,
+    $data
+) {
+    $session_hash = get_remote_addr_session_hash() . $session_id;
+    $escaped_data = pwg_db_real_escape_string($data);
+    $query = <<<SQL
+        REPLACE INTO sessions (id, data, expiration)
+        VALUES ('{$session_hash}', '{$escaped_data}', NOW());
+        SQL;
+
     pwg_query($query);
     return true;
 }
@@ -171,13 +178,14 @@ REPLACE INTO sessions
  * @param string $session_id
  * @return true
  */
-function pwg_session_destroy($session_id)
-{
-    $query = '
-DELETE
-  FROM sessions
-  WHERE id = \'' . get_remote_addr_session_hash() . $session_id . '\'
-;';
+function pwg_session_destroy(
+    $session_id
+) {
+    $session_id_hash = get_remote_addr_session_hash() . $session_id;
+    $query = <<<SQL
+        DELETE FROM sessions
+        WHERE id = '{$session_id_hash}';
+        SQL;
     pwg_query($query);
     return true;
 }
@@ -191,12 +199,13 @@ function pwg_session_gc()
 {
     global $conf;
 
-    $query = '
-DELETE
-  FROM sessions
-  WHERE ' . pwg_db_date_to_ts('NOW()') . ' - ' . pwg_db_date_to_ts('expiration') . ' > '
-    . $conf['session_length'] . '
-;';
+    $now_ts = pwg_db_date_to_ts('NOW()');
+    $expiration_ts = pwg_db_date_to_ts('expiration');
+    $query = <<<SQL
+        DELETE FROM sessions
+        WHERE {$now_ts} - {$expiration_ts} > {$conf['session_length']};
+        SQL;
+
     pwg_query($query);
     return true;
 }
@@ -253,12 +262,13 @@ function pwg_unset_session_var($var)
  * @since 2.8
  * @param int $user_id
  */
-function delete_user_sessions($user_id)
-{
-    $query = '
-DELETE
-  FROM sessions
-  WHERE data LIKE \'%pwg_uid|i:' . (int) $user_id . ';%\'
-;';
+function delete_user_sessions(
+    $user_id
+) {
+    $query = <<<SQL
+        DELETE FROM sessions
+        WHERE data LIKE '%pwg_uid|i:{$user_id};%';
+        SQL;
+
     pwg_query($query);
 }
