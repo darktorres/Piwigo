@@ -151,7 +151,7 @@ function pwg_db_nextval(
     string $table
 ): string {
     $query = <<<SQL
-        SELECT IF(MAX({$column}) + 1 IS NULL, 1, MAX({$column}) + 1)
+        SELECT COALESCE(MAX({$column}) + 1, 1)
         FROM {$table};
         SQL;
     [$next] = pwg_db_fetch_row(pwg_query($query));
