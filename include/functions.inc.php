@@ -457,11 +457,11 @@ function str2url($str)
  */
 function get_languages()
 {
-    $query = '
-SELECT id, name
-  FROM languages
-  ORDER BY name ASC
-;';
+    $query = <<<SQL
+        SELECT id, name
+        FROM languages
+        ORDER BY name ASC;
+        SQL;
     $result = pwg_query($query);
 
     $languages = [];
@@ -519,12 +519,11 @@ function pwg_log($image_id = null, $image_type = null, $format_id = null)
     $update_last_visit = trigger_change('pwg_log_update_last_visit', $update_last_visit);
 
     if ($update_last_visit) {
-        $query = '
-UPDATE user_infos
-  SET last_visit = NOW(),
-      lastmodified = lastmodified
-  WHERE user_id = ' . $user['id'] . '
-';
+        $query = <<<SQL
+            UPDATE user_infos
+            SET last_visit = NOW(), lastmodified = lastmodified
+            WHERE user_id = {$user['id']};
+            SQL;
         pwg_query($query);
     }
 
@@ -573,7 +572,12 @@ UPDATE user_infos
             $history_sections[] = $page['section'];
 
             // alter history table structure, to include a new section
-            pwg_query('ALTER TABLE history CHANGE section section enum(\'' . implode("','", array_unique($history_sections)) . '\') DEFAULT NULL;');
+            $unique_sections = implode("','", array_unique($history_sections));
+            $query = <<<SQL
+                ALTER TABLE history
+                CHANGE section section enum('{$unique_sections}') DEFAULT NULL;
+                SQL;
+            pwg_query($query);
 
             // and refresh cache
             conf_update_param('history_sections_cache', get_enums('history', 'section'), true);
@@ -582,38 +586,21 @@ UPDATE user_infos
         }
     }
 
-    $query = '
-INSERT INTO history
-  (
-    date,
-    time,
-    user_id,
-    IP,
-    section,
-    category_id,
-    search_id,
-    image_id,
-    image_type,
-    format_id,
-    auth_key_id,
-    tag_ids
-  )
-  VALUES
-  (
-    CURRENT_DATE,
-    CURRENT_TIME,
-    ' . $user['id'] . ',
-    \'' . $ip . '\',
-    ' . (isset($section) ? "'" . $section . "'" : 'NULL') . ',
-    ' . (isset($page['category']['id']) ? $page['category']['id'] : 'NULL') . ',
-    ' . (isset($page['search_id']) ? $page['search_id'] : 'NULL') . ',
-    ' . (isset($image_id) ? $image_id : 'NULL') . ',
-    ' . (isset($image_type) ? "'" . $image_type . "'" : 'NULL') . ',
-    ' . (isset($format_id) ? $format_id : 'NULL') . ',
-    ' . (isset($page['auth_key_id']) ? $page['auth_key_id'] : 'NULL') . ',
-    ' . (isset($tags_string) ? "'" . $tags_string . "'" : 'NULL') . '
-  )
-;';
+    $sectionValue = isset($section) ? "'{$section}'" : 'NULL';
+    $categoryIdValue = $page['category']['id'] ?? 'NULL';
+    $searchIdValue = $page['search_id'] ?? 'NULL';
+    $imageIdValue = $image_id ?? 'NULL';
+    $imageTypeValue = isset($image_type) ? "'{$image_type}'" : 'NULL';
+    $formatIdValue = $format_id ?? 'NULL';
+    $authKeyIdValue = $page['auth_key_id'] ?? 'NULL';
+    $tagsStringValue = isset($tags_string) ? "'{$tags_string}'" : 'NULL';
+    $query = <<<SQL
+        INSERT INTO history
+            (date, time, user_id, IP, section, category_id, search_id, image_id, image_type, format_id, auth_key_id, tag_ids)
+        VALUES
+            (CURRENT_DATE, CURRENT_TIME, {$user['id']}, '{$ip}', {$sectionValue}, {$categoryIdValue}, {$searchIdValue},
+            {$imageIdValue}, {$imageTypeValue}, {$formatIdValue}, {$authKeyIdValue}, {$tagsStringValue});
+        SQL;
     pwg_query($query);
 
     $history_id = pwg_db_insert_id();
@@ -1141,13 +1128,11 @@ function get_pwg_themes($show_mobile = false)
 
     $themes = [];
 
-    $query = '
-SELECT
-    id,
-    name
-  FROM themes
-  ORDER BY name ASC
-;';
+    $query = <<<SQL
+        SELECT id, name
+        FROM themes
+        ORDER BY name ASC;
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         if ($row['id'] == $conf['mobile_theme']) {
@@ -1234,11 +1219,11 @@ function fill_caddie($elements_id)
 {
     global $user;
 
-    $query = '
-SELECT element_id
-  FROM caddie
-  WHERE user_id = ' . $user['id'] . '
-;';
+    $query = <<<SQL
+        SELECT element_id
+        FROM caddie
+        WHERE user_id = {$user['id']};
+        SQL;
     $in_caddie = query2array($query, null, 'element_id');
 
     $caddiables = array_diff($elements_id, $in_caddie);
@@ -1392,11 +1377,11 @@ function get_webmaster_mail_address()
 {
     global $conf;
 
-    $query = '
-SELECT ' . $conf['user_fields']['email'] . '
-  FROM users
-  WHERE ' . $conf['user_fields']['id'] . ' = ' . $conf['webmaster_id'] . '
-;';
+    $query = <<<SQL
+        SELECT {$conf['user_fields']['email']}
+        FROM users
+        WHERE {$conf['user_fields']['id']} = {$conf['webmaster_id']};
+        SQL;
     list($email) = pwg_db_fetch_row(pwg_query($query));
 
     $email = trigger_change('get_webmaster_mail_address', $email);
@@ -1485,11 +1470,12 @@ function load_conf_from_db($condition = '')
 {
     global $conf;
 
-    $query = '
-SELECT param, value
- FROM config
- ' . (! empty($condition) ? 'WHERE ' . $condition : '') . '
-;';
+    $condition = ! empty($condition) ? 'WHERE ' . $condition : '';
+    $query = <<<SQL
+        SELECT param, value
+        FROM config
+        {$condition};
+        SQL;
     $result = pwg_query($query);
 
     if ((pwg_db_num_rows($result) == 0) and ! empty($condition)) {
@@ -1522,7 +1508,10 @@ function pwg_is_dbconf_writeable()
     list($param, $value) = ['pwg_is_dbconf_writeable_' . generate_key(12), date('c') . ' ' . generate_key(20)];
 
     conf_update_param($param, $value);
-    list($dbvalue) = pwg_db_fetch_row(pwg_query('SELECT value FROM config WHERE param = \'' . $param . '\''));
+    $query = <<<SQL
+        SELECT value FROM config WHERE param = '{$param}';
+        SQL;
+    list($dbvalue) = pwg_db_fetch_row(pwg_query($query));
 
     if ($dbvalue != $value) {
         return false;
@@ -1551,12 +1540,14 @@ function conf_update_param($param, $value, $updateGlobal = false, $parser = null
         $dbValue = boolean_to_string($value);
     }
 
-    $query = '
-INSERT INTO
-  config (param, value)
-  VALUES(\'' . $param . '\', \'' . $dbValue . '\')
-  ON DUPLICATE KEY UPDATE value = \'' . $dbValue . '\'
-;';
+    $query = <<<SQL
+        INSERT INTO config
+            (param, value)
+        VALUES
+            ('{$param}', '{$dbValue}')
+        ON DUPLICATE KEY UPDATE
+            value = '{$dbValue}';
+        SQL;
 
     pwg_query($query);
 
@@ -1583,10 +1574,11 @@ function conf_delete_param($params)
         return;
     }
 
-    $query = '
-DELETE FROM config
-  WHERE param IN(\'' . implode('\',\'', $params) . '\')
-;';
+    $implodedParams = implode("','", $params);
+    $query = <<<SQL
+        DELETE FROM config
+        WHERE param IN ('{$implodedParams}');
+        SQL;
     pwg_query($query);
 
     foreach ($params as $param) {
@@ -2292,7 +2284,7 @@ function get_nb_available_comments()
     if (! isset($user['nb_available_comments'])) {
         $where = [];
         if (! is_admin()) {
-            $where[] = 'validated=\'true\'';
+            $where[] = "validated = 'true'";
         }
         $where[] = get_sql_condition_FandF(
             [
@@ -2303,13 +2295,13 @@ function get_nb_available_comments()
             true
         );
 
-        $query = '
-SELECT COUNT(DISTINCT(com.id))
-  FROM image_category AS ic
-    INNER JOIN comments AS com
-    ON ic.image_id = com.image_id
-  WHERE ' . implode('
-    AND ', $where);
+        $whereClause = implode(' AND ', $where);
+        $query = <<<SQL
+            SELECT COUNT(DISTINCT(com.id))
+            FROM image_category AS ic
+            INNER JOIN comments AS com ON ic.image_id = com.image_id
+            WHERE {$whereClause};
+            SQL;
         list($user['nb_available_comments']) = pwg_db_fetch_row(pwg_query($query));
 
         single_update(
@@ -2373,16 +2365,13 @@ function check_lounge()
     }
 
     // is the oldest photo in the lounge older than lounge maximum waiting time?
-    $query = '
-SELECT
-    image_id,
-    date_available,
-    NOW() AS dbnow
-  FROM lounge
-    JOIN images ON image_id = id
-  ORDER BY image_id ASC
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT image_id, date_available, NOW() AS dbnow
+        FROM lounge
+        JOIN images ON image_id = id
+        ORDER BY image_id ASC
+        LIMIT 1;
+        SQL;
     $voyagers = query2array($query);
     if (count($voyagers)) {
         $voyager = $voyagers[0];

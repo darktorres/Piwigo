@@ -144,12 +144,12 @@ function check_password_reset_key($reset_key)
 
     $user_ids = [];
 
-    $query = '
-SELECT
-  ' . $conf['user_fields']['id'] . ' AS id
-  FROM users
-  WHERE ' . $conf['user_fields']['email'] . ' = \'' . pwg_db_real_escape_string($email) . '\'
-;';
+    $escaped_email = pwg_db_real_escape_string($email);
+    $query = <<<SQL
+        SELECT {$conf['user_fields']['id']} AS id
+        FROM users
+        WHERE {$conf['user_fields']['email']} = '{$escaped_email}';
+        SQL;
     $user_ids = query2array($query, null, 'id');
 
     if (count($user_ids) == 0) {
@@ -159,16 +159,12 @@ SELECT
 
     $user_id = null;
 
-    $query = '
-SELECT
-    user_id,
-    status,
-    activation_key,
-    activation_key_expire,
-    NOW() AS dbnow
-  FROM user_infos
-  WHERE user_id IN (' . implode(',', $user_ids) . ')
-;';
+    $imploded_user_ids = implode(',', $user_ids);
+    $query = <<<SQL
+        SELECT user_id, status, activation_key, activation_key_expire, NOW() AS dbnow
+        FROM user_infos
+        WHERE user_id IN ({$imploded_user_ids});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         if (pwg_password_verify($key, $row['activation_key'])) {

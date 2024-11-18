@@ -39,9 +39,11 @@ function get_local_dir($category_id)
     if (isset($page['plain_structure'][$category_id]['uppercats'])) {
         $uppercats = $page['plain_structure'][$category_id]['uppercats'];
     } else {
-        $query = 'SELECT uppercats';
-        $query .= ' FROM categories WHERE id = ' . $category_id;
-        $query .= ';';
+        $query = <<<SQL
+            SELECT uppercats
+            FROM categories
+            WHERE id = {$category_id};
+            SQL;
         $row = pwg_db_fetch_assoc(pwg_query($query));
         $uppercats = $row['uppercats'];
     }
@@ -49,9 +51,11 @@ function get_local_dir($category_id)
     $upper_array = explode(',', $uppercats);
 
     $database_dirs = [];
-    $query = 'SELECT id,dir';
-    $query .= ' FROM categories WHERE id IN (' . $uppercats . ')';
-    $query .= ';';
+    $query = <<<SQL
+        SELECT id, dir
+        FROM categories
+        WHERE id IN ({$uppercats});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $database_dirs[$row['id']] = $row['dir'];
@@ -69,12 +73,12 @@ function get_site_url($category_id)
 {
     global $page;
 
-    $query = '
-SELECT galleries_url
-  FROM sites AS s,categories AS c
-  WHERE s.id = c.site_id
-    AND c.id = ' . $category_id . '
-;';
+    $query = <<<SQL
+        SELECT galleries_url
+        FROM sites AS s, categories AS c
+        WHERE s.id = c.site_id
+            AND c.id = {$category_id};
+        SQL;
     $row = pwg_db_fetch_assoc(pwg_query($query));
     return $row['galleries_url'];
 }
@@ -120,10 +124,12 @@ foreach (['comment', 'dir', 'site_id', 'id_uppercat'] as $nullable) {
 
 $category['is_virtual'] = empty($category['dir']) ? true : false;
 
-$query = 'SELECT DISTINCT category_id
-  FROM image_category
-  WHERE category_id = ' . $_GET['cat_id'] . '
-  LIMIT 1';
+$query = <<<SQL
+    SELECT DISTINCT category_id
+    FROM image_category
+    WHERE category_id = {$_GET['cat_id']}
+    LIMIT 1;
+    SQL;
 $result = pwg_query($query);
 $category['has_images'] = pwg_db_num_rows($result) > 0 ? true : false;
 
@@ -201,15 +207,12 @@ if ($category['has_images']) {
         $base_url . 'batch_manager&amp;filter=album-' . $category['id']
     );
 
-    $query = '
-SELECT
-    COUNT(image_id),
-    MIN(DATE(date_available)),
-    MAX(DATE(date_available))
-  FROM images
-    JOIN image_category ON image_id = id
-  WHERE category_id = ' . $category['id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(image_id), MIN(DATE(date_available)), MAX(DATE(date_available))
+        FROM images
+        JOIN image_category ON image_id = id
+        WHERE category_id = {$category['id']};
+        SQL;
     list($image_count, $min_date, $max_date) = pwg_db_fetch_row(pwg_query($query));
 
     if ($min_date == $max_date) {
@@ -238,26 +241,24 @@ $template->assign(
 );
 
 // total number of images under this category (including subcategories)
-$query = '
-SELECT DISTINCT
-    (image_id)
-  FROM
-    image_category
-  WHERE
-    category_id IN (' . implode(',', $subcat_ids) . ')
-  ;';
+$subcat_ids_str = implode(',', $subcat_ids);
+$query = <<<SQL
+    SELECT DISTINCT (image_id)
+    FROM image_category
+    WHERE category_id IN ({$subcat_ids_str});
+    SQL;
 $image_ids_recursive = query2array($query, null, 'image_id');
 
 $category['nb_images_recursive'] = count($image_ids_recursive);
 
 // date creation
-$query = '
-SELECT occurred_on
-  FROM activity
-  WHERE object_id = ' . $category['id'] . '
-    AND object = "album"
-    AND action = "add"
-';
+$query = <<<SQL
+    SELECT occurred_on
+    FROM activity
+    WHERE object_id = {$category['id']}
+        AND object = "album"
+        AND action = "add";
+    SQL;
 $result = query2array($query);
 
 if (count($result) > 0) {
@@ -270,11 +271,11 @@ if (count($result) > 0) {
 }
 
 // Sub Albums
-$query = '
-SELECT COUNT(*)
-  FROM categories
-  WHERE id_uppercat = ' . $category['id'] . '
-';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM categories
+    WHERE id_uppercat = {$category['id']};
+    SQL;
 $result = query2array($query);
 
 $template->assign(

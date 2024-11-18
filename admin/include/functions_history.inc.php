@@ -45,12 +45,11 @@ function history_compare($a, $b)
 function get_history($data, $search, $types)
 {
     if (isset($search['fields']['filename'])) {
-        $query = '
-SELECT
-    id
-  FROM images
-  WHERE file LIKE \'' . $search['fields']['filename'] . '\'
-;';
+        $query = <<<SQL
+            SELECT id
+            FROM images
+            WHERE file LIKE '{$search['fields']['filename']}';
+            SQL;
         $search['image_ids'] = array_from_query($query, 'id');
     }
 
@@ -59,11 +58,11 @@ SELECT
     $clauses = [];
 
     if (isset($search['fields']['date-after'])) {
-        $clauses[] = "date >= '" . $search['fields']['date-after'] . "'";
+        $clauses[] = "date >= '{$search['fields']['date-after']}'";
     }
 
     if (isset($search['fields']['date-before'])) {
-        $clauses[] = "date <= '" . $search['fields']['date-before'] . "'";
+        $clauses[] = "date <= '{$search['fields']['date-before']}'";
     }
 
     if (isset($search['fields']['types'])) {
@@ -75,7 +74,7 @@ SELECT
                 if ($type == 'none') {
                     $clause .= 'IS NULL';
                 } else {
-                    $clause .= "= '" . $type . "'";
+                    $clause .= "= '{$type}'";
                 }
 
                 $local_clauses[] = $clause;
@@ -117,24 +116,15 @@ SELECT
           $clauses
       );
 
-    $query = '
-SELECT
-    date,
-    time,
-    user_id,
-    IP,
-    section,
-    category_id,
-    search_id,
-    tag_ids,
-    image_id,
-    image_type
-  FROM history
-  WHERE ' . $where_separator . '
-;';
+    $query = <<<SQL
+        SELECT date, time, user_id, IP, section, category_id, search_id, tag_ids, image_id, image_type
+        FROM history
+        WHERE {$where_separator}
+        SQL;
 
     // LIMIT '.$conf['nb_logs_page'].' OFFSET '.$page['start'].'
 
+    $query .= ';';
     $result = pwg_query($query);
 
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -152,14 +142,13 @@ SELECT
 function history_summarize($max_lines = null)
 {
     // we need to know which was the last line "summarized"
-    $query = '
-SELECT
-    *
-  FROM history_summary
-  WHERE history_id_to IS NOT NULL
-  ORDER BY history_id_to DESC
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT *
+        FROM history_summary
+        WHERE history_id_to IS NOT NULL
+        ORDER BY history_id_to DESC
+        LIMIT 1;
+        SQL;
     $summary_lines = query2array($query);
 
     $history_min_id = 0;
@@ -170,40 +159,35 @@ SELECT
         // If we have no "reference", i.e. "starting point", we need to find
         // one. And "0" is not the right answer here, because history table may
         // have been purged already.
-        $query = '
-SELECT
-    MIN(id) AS min_id
-  FROM history
-;';
+        $query = <<<SQL
+            SELECT MIN(id) AS min_id
+            FROM history;
+            SQL;
         $history_lines = query2array($query);
         if (count($history_lines) > 0) {
             $history_min_id = $history_lines[0]['min_id'] - 1;
         }
     }
 
-    $query = '
-SELECT
-    date,
-    ' . pwg_db_get_hour('time') . ' AS hour,
-    MIN(id) AS min_id,
-    MAX(id) AS max_id,
-    COUNT(*) AS nb_pages
-  FROM history
-  WHERE id > ' . $history_min_id;
+    $hourFunction = pwg_db_get_hour('time');
+    $query = <<<SQL
+        SELECT date, {$hourFunction} AS hour, MIN(id) AS min_id, MAX(id) AS max_id, COUNT(*) AS nb_pages
+        FROM history
+        WHERE id > {$history_min_id}
+
+        SQL;
 
     if (isset($max_lines)) {
-        $query .= '
-    AND id <= ' . ($history_min_id + $max_lines);
+        $idLimit = $history_min_id + $max_lines;
+        $query .= <<<SQL
+            AND id <= {$idLimit}
+            SQL;
     }
 
-    $query .= '
-  GROUP BY
-    date,
-    hour
-  ORDER BY
-    date ASC,
-    hour ASC
-;';
+    $query .= <<<SQL
+        GROUP BY date, hour
+        ORDER BY date ASC, hour ASC;
+        SQL;
     $result = pwg_query($query);
 
     $need_update = [];
@@ -269,20 +253,12 @@ SELECT
     if (isset($first_time_key)) {
         list($year, $month, $day, $hour) = explode('-', $first_time_key);
 
-        $query = '
-SELECT *
-  FROM history_summary
-  WHERE year=' . $year . '
-    AND ( month IS NULL
-      OR ( month=' . $month . '
-        AND ( day is NULL
-          OR (day=' . $day . '
-            AND (hour IS NULL OR hour=' . $hour . ')
-          )
-        )
-      )
-    )
-;';
+        $query = <<<SQL
+            SELECT *
+            FROM history_summary
+            WHERE year = {$year}
+                AND (month IS NULL OR (month = {$month} AND (day IS NULL OR (day = {$day} AND (hour IS NULL OR hour = {$hour})))));
+            SQL;
         $result = pwg_query($query);
         while ($row = pwg_db_fetch_assoc($result)) {
             $key = sprintf('%4u', $row['year']);
@@ -354,11 +330,10 @@ function history_autopurge()
 
     // we want to purge only if there are too many lines and if the lines are summarized
 
-    $query = '
-SELECT
-    COUNT(*)
-  FROM history
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM history;
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
 
     if ($count <= $conf['history_autopurge_keep_lines']) {
@@ -367,14 +342,13 @@ SELECT
     }
 
     // 1) find the last summarized history line
-    $query = '
-SELECT
-    *
-  FROM history_summary
-  WHERE history_id_to IS NOT NULL
-  ORDER BY history_id_to DESC
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT *
+        FROM history_summary
+        WHERE history_id_to IS NOT NULL
+        ORDER BY history_id_to DESC
+        LIMIT 1;
+        SQL;
     $summary_lines = query2array($query);
     if (count($summary_lines) == 0) {
         return; // lines not summarized, no purge
@@ -383,13 +357,12 @@ SELECT
     $history_id_last_summarized = $summary_lines[0]['history_id_to'];
 
     // 2) find the latest history line (and subtract the number of lines to keep)
-    $query = '
-SELECT
-    id
-  FROM history
-  ORDER BY id DESC
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT id
+        FROM history
+        ORDER BY id DESC
+        LIMIT 1;
+        SQL;
     $history_lines = query2array($query);
     if (count($history_lines) == 0) {
         return;
@@ -398,13 +371,12 @@ SELECT
     $history_id_latest = $history_lines[0]['id'];
 
     // 3) find the oldest history line (and add the number of lines to delete)
-    $query = '
-SELECT
-    id
-  FROM history
-  ORDER BY id ASC
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT id
+        FROM history
+        ORDER BY id ASC
+        LIMIT 1;
+        SQL;
     $history_lines = query2array($query);
     $history_id_oldest = $history_lines[0]['id'];
 
@@ -418,11 +390,10 @@ SELECT
 
     $logger->debug(__FUNCTION__ . ', ' . join('/', $search_min));
 
-    $query = '
-DELETE
-  FROM history
-  WHERE id < ' . $history_id_delete_before . '
-;';
+    $query = <<<SQL
+        DELETE FROM history
+        WHERE id < {$history_id_delete_before};
+        SQL;
     pwg_query($query);
 
     history_remove_summarized_column();
@@ -436,11 +407,10 @@ function history_remove_summarized_column()
         return;
     }
 
-    $query = '
-SELECT
-    COUNT(*)
-  FROM history
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM history;
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
 
     if ($count > $conf['history_autopurge_keep_lines'] + $conf['history_autopurge_blocksize']) {

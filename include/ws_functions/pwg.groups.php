@@ -22,28 +22,27 @@ function ws_groups_getList($params, &$service)
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid input parameter order');
     }
 
-    $where_clauses = ['1=1'];
+    $where_clauses = ['1 = 1'];
 
     if (! empty($params['name'])) {
         $where_clauses[] = 'LOWER(name) LIKE \'' . pwg_db_real_escape_string($params['name']) . '\'';
     }
 
     if (! empty($params['group_id'])) {
-        $where_clauses[] = 'id IN(' . implode(',', $params['group_id']) . ')';
+        $where_clauses[] = 'id IN (' . implode(',', $params['group_id']) . ')';
     }
 
-    $query = '
-SELECT
-    g.*, COUNT(user_id) AS nb_users
-  FROM groups_table AS g
-    LEFT JOIN user_group AS ug
-    ON ug.group_id = g.id
-  WHERE ' . implode(' AND ', $where_clauses) . '
-  GROUP BY id
-  ORDER BY ' . $params['order'] . '
-  LIMIT ' . $params['per_page'] . '
-  OFFSET ' . ($params['per_page'] * $params['page']) . '
-;';
+    $whereClause = implode(' AND ', $where_clauses);
+    $offset = $params['per_page'] * $params['page'];
+    $query = <<<SQL
+        SELECT g.*, COUNT(user_id) AS nb_users
+        FROM groups_table AS g
+        LEFT JOIN user_group AS ug ON ug.group_id = g.id
+        WHERE {$whereClause}
+        GROUP BY id
+        ORDER BY {$params['order']}
+        LIMIT {$params['per_page']} OFFSET {$offset};
+        SQL;
 
     $groups = array_from_query($query);
 
@@ -69,11 +68,11 @@ function ws_groups_add($params, &$service)
     $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes($params['name'])));
 
     // is the name not already used?
-    $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE name = \'' . $params['name'] . '\'
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM groups_table
+        WHERE name = '{$params['name']}';
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
@@ -142,11 +141,11 @@ function ws_groups_setInfo($params, &$service)
     $updates = [];
 
     // does the group exist?
-    $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE id = ' . $params['group_id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM groups_table
+        WHERE id = {$params['group_id']};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
@@ -156,12 +155,12 @@ SELECT COUNT(*)
         $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes($params['name'])));
 
         // is the name not already used?
-        $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE name = \'' . $params['name'] . '\'
-  AND id != ' . $params['group_id'] . '
-;';
+        $query = <<<SQL
+            SELECT COUNT(*)
+            FROM groups_table
+            WHERE name = '{$params['name']}'
+                AND id != {$params['group_id']};
+            SQL;
         list($count) = pwg_db_fetch_row(pwg_query($query));
         if ($count != 0) {
             return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
@@ -203,11 +202,11 @@ function ws_groups_addUser($params, &$service)
     }
 
     // does the group exist?
-    $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE id = ' . $params['group_id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM groups_table
+        WHERE id = {$params['group_id']};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
@@ -261,11 +260,12 @@ function ws_groups_merge($params, &$service)
         'group_id' => $params['merge_group_id'],
     ]);
 
-    $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE id in (' . implode(',', $all_groups) . ')
-;';
+    $allGroupsList = implode(',', $all_groups);
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM groups_table
+        WHERE id IN ({$allGroupsList});
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count != count($all_groups)) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'All groups does not exist.');
@@ -275,19 +275,19 @@ SELECT COUNT(*)
     $user_in_dest = [];
     $user_to_add = [];
 
-    $query = '
-SELECT DISTINCT(user_id)
-  FROM user_group
-  WHERE
-    group_id IN (' . implode(',', $merge_group) . ')
-;';
+    $mergeGroupList = implode(',', $merge_group);
+    $query = <<<SQL
+        SELECT DISTINCT(user_id)
+        FROM user_group
+        WHERE group_id IN ({$mergeGroupList});
+        SQL;
     $user_in_merge_groups = query2array($query, null, 'user_id');
 
-    $query = '
-SELECT user_id
-  FROM user_group
-  WHERE group_id = ' . $params['destination_group_id'] . '
-;';
+    $query = <<<SQL
+        SELECT user_id
+        FROM user_group
+        WHERE group_id = {$params['destination_group_id']};
+        SQL;
 
     $user_in_dest = query2array($query, null, 'user_id');
 
@@ -346,31 +346,32 @@ function ws_groups_duplicate($params, &$service)
         return new PwgError(403, 'Invalid security token');
     }
 
-    $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE name = \'' . pwg_db_real_escape_string($params['copy_name']) . '\'
-;';
+    $escapedCopyName = pwg_db_real_escape_string($params['copy_name']);
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM groups_table
+        WHERE name = '{$escapedCopyName}';
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This name is already used by another group.');
     }
 
-    $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE id = ' . $params['group_id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM groups_table
+        WHERE id = {$params['group_id']};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
-    $query = '
-SELECT is_default
-  FROM groups_table
-  WHERE id = ' . $params['group_id'] . '
-;';
+    $query = <<<SQL
+        SELECT is_default
+        FROM groups_table
+        WHERE id = {$params['group_id']};
+        SQL;
 
     list($is_default) = pwg_db_fetch_row(pwg_query($query));
 
@@ -386,11 +387,11 @@ SELECT is_default
 
     pwg_activity('group', $inserted_id, 'add');
 
-    $query = '
-  SELECT user_id
-    FROM user_group
-    WHERE group_id = ' . $params['group_id'] . '
-  ;';
+    $query = <<<SQL
+        SELECT user_id
+        FROM user_group
+        WHERE group_id = {$params['group_id']};
+        SQL;
 
     $users = query2array($query, null, 'user_id');
 
@@ -439,22 +440,22 @@ function ws_groups_deleteUser($params, &$service)
     }
 
     // does the group exist?
-    $query = '
-SELECT COUNT(*)
-  FROM groups_table
-  WHERE id = ' . $params['group_id'] . '
-;';
+    $query = <<<SQL
+        SELECT COUNT(*)
+        FROM groups_table
+        WHERE id = {$params['group_id']};
+        SQL;
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count == 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This group does not exist.');
     }
 
-    $query = '
-DELETE FROM user_group
-  WHERE
-    group_id = ' . $params['group_id'] . '
-    AND user_id IN(' . implode(',', $params['user_id']) . ')
-;';
+    $userIdsList = implode(',', $params['user_id']);
+    $query = <<<SQL
+        DELETE FROM user_group
+        WHERE group_id = {$params['group_id']}
+            AND user_id IN ({$userIdsList});
+        SQL;
     pwg_query($query);
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');

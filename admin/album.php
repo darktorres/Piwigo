@@ -23,11 +23,11 @@ check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
 
 $admin_album_base_url = get_root_url() . 'admin.php?page=album-' . $_GET['cat_id'];
 
-$query = '
-SELECT *
-  FROM categories
-  WHERE id = ' . $_GET['cat_id'] . '
-;';
+$query = <<<SQL
+    SELECT *
+    FROM categories
+    WHERE id = {$_GET['cat_id']};
+    SQL;
 $category = pwg_db_fetch_assoc(pwg_query($query));
 
 if (! isset($category['id'])) {

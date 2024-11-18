@@ -14,12 +14,11 @@ $template->assign('TAT_HAS_ORPHANS', count(get_orphans()) > 0 ? true : false);
 // category id for example of delete options. To illustrate the new
 // features, we need an album with photos.
 if (! isset($_SESSION['TAT_tour29_delete_cat_id'])) {
-    $query = '
-SELECT
-    category_id
-  FROM image_category
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT category_id
+        FROM image_category
+        LIMIT 1;
+        SQL;
     $rows = query2array($query);
     if (count($rows) == 0) {
         $_SESSION['TAT_tour29_delete_cat_id'] = -1;
@@ -32,13 +31,12 @@ if ($_SESSION['TAT_tour29_delete_cat_id'] > 0) {
 }
 
 if (! isset($_SESSION['TAT_tour29_image_id'])) {
-    $query = '
-SELECT
-    id
-  FROM images
-  ORDER BY id DESC
-  LIMIT 1
-;';
+    $query = <<<SQL
+        SELECT id
+        FROM images
+        ORDER BY id DESC
+        LIMIT 1;
+        SQL;
     $images = query2array($query);
     if (count($images) == 0) {
         $_SESSION['TAT_tour29_image_id'] = -1;
@@ -53,11 +51,10 @@ if ($_SESSION['TAT_tour29_image_id'] > 0) {
 
 $template->assign('TAT_tour29_history_url', 'admin.php?page=stats&year=' . date('Y') . '&month=' . date('n'));
 
-$query = '
-SELECT
-    COUNT(*)
-  FROM tags
-;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM tags;
+    SQL;
 list($counter) = pwg_db_fetch_row(pwg_query($query));
 if ($counter > 0) {
     $template->assign('TAT_tour29_has_tags', true);
