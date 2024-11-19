@@ -204,7 +204,7 @@ DELETE
       {
         $versions['latest'] = trim($lines[0]);
   
-        // because integer are limited to 4,294,967,296 we need to split BSF
+        // because integer is limited to 4,294,967,296, we need to split BSF
         // versions in date.time
         foreach ($versions as $key => $value)
         {

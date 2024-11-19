@@ -216,7 +216,7 @@ function merge_chunks($output_filepath, $original_sum, $type)
 
     if (!file_put_contents($output_filepath, $string, FILE_APPEND))
     {
-      return new PwgError(500, '[merge_chunks] error while writting chunks for '.$output_filepath);
+      return new PwgError(500, '[merge_chunks] error while writing chunks for '.$output_filepath);
     }
 
     unlink($chunk);
@@ -1050,7 +1050,7 @@ function ws_images_add_chunk($params, $service)
   if (false === $bytes_written)
   {
     return new PwgError(500,
-      'an error has occured while writting chunk '.$params['position'].' for '.$params['type']
+      'an error has occurred while writing chunk '.$params['position'].' for '.$params['type']
       );
   }
 }
@@ -1183,7 +1183,7 @@ SELECT COUNT(*)
     }
   }
 
-  // does the image already exists ?
+  // does the image already exist?
   if ($params['check_uniqueness'])
   {
     if ('md5sum' == $conf['uniqueness_mode'])
@@ -1307,7 +1307,7 @@ SELECT id, name, permalink
 
 /**
  * API method
- * Adds a image (simple way)
+ * Adds an image (simple way)
  * @param mixed[] $params
  *    @option int[] category
  *    @option string name (optional)
@@ -1461,7 +1461,7 @@ SELECT id, name, permalink
 
 /**
  * API method
- * Adds a image (simple way)
+ * Adds an image (simple way)
  * @param mixed[] $params
  *    @option int[] category
  *    @option string name (optional)
@@ -1945,7 +1945,7 @@ SELECT COUNT(*)
 
 /**
  * API method
- * Check if an image exists by it's name or md5 sum
+ * Check if an image exists by its name or md5 sum
  * @param mixed[] $params
  *    @option string md5sum_list (optional)
  *    @option string filename_list (optional)
@@ -2018,7 +2018,7 @@ SELECT id, file
 
 /**
  * API method
- * Check if an image exists by it's name or md5 sum
+ * Check if an image exists by its name or md5 sum
  * 
  * @since 13
  * @param mixed[] $params
@@ -2209,7 +2209,7 @@ DELETE FROM '.IMAGE_FORMAT_TABLE.'
 
 /**
  * API method
- * Check is file has been update
+ * Check if file has been updated
  * @param mixed[] $params
  *    @option int image_id
  *    @option string file_sum
@@ -2546,8 +2546,8 @@ function ws_images_uploadCompleted($params, $service)
     }
   }
 
-  // the list of images moved from the lounge might not be the same than
-  // $image_ids (canbe a subset or more image_ids from another upload too)
+  // the list of images moved from the lounge might not be the same as
+  // $image_ids (can be a subset or more image_ids from another upload too)
   $moved_from_lounge = empty_lounge();
 
   $query = '
@@ -2580,7 +2580,7 @@ SELECT
 
 /**
  * API method
- * add md5sum at photos, by block. Returns how md5sum were added and how many are remaining.
+ * add md5sum to photos, by block. Returns how md5sum were added and how many are remaining.
  * @param mixed[] $params
  *    @option int block_size
  */

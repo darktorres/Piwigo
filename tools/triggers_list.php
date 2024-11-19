@@ -283,7 +283,7 @@ array(
   'type' => 'trigger_notify',
   'vars' => array(),
   'files' => array('include\common.inc.php'),
-  'infos' => 'this action is called just after the common initialization, $conf, $user and $page (partial) variables are availables',
+  'infos' => 'this action is called just after the common initialization, $conf, $user and $page (partial) variables are available',
 ),
 array(
   'name' => 'invalidate_user_cache',
@@ -633,7 +633,7 @@ array(
   'type' => 'trigger_notify',
   'vars' => array(),
   'files' => array('include\section_init.inc.php'),
-  'infos' => 'this action is called after section initilization, $page variable is fully defined',
+  'infos' => 'this action is called after section initialization, $page variable is fully defined',
 ),
 array(
   'name' => 'loc_end_themes_installed',
@@ -821,7 +821,7 @@ array(
   'type' => 'trigger_change',
   'vars' => array('array', 'sheets', 'string', 'tabsheet_id'),
   'files' => array('include\tabsheet.class.php (tabsheet::select)'),
-  'infos' => 'New in 2.4, use this trigger to add tabs to a tabsheets',
+  'infos' => 'New in 2.4, use this trigger to add tabs to a tabsheet',
 ),
 array(
   'name' => 'trigger',

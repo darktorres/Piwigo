@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 $filename = 'sample.jpg';
-echo 'Informations are read from '.$filename.'<br><br><br>';
+echo 'Information is read from '.$filename.'<br><br><br>';
 
 /**
  * return a cleaned IPTC value

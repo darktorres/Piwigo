@@ -132,7 +132,7 @@ SELECT COUNT(*) AS user_exists
   if (!empty($comm['website_url']))
   {
     if (!$conf['comments_enable_website'])
-    { // honeypot: if the field is disabled, it should be empty !
+    { // honeypot: if the field is disabled, it should be empty!
       $comment_action='reject';
       $_POST['cr'][] = 'website_url';
     }
@@ -307,7 +307,7 @@ $user_where_clause.'
 /**
  * Tries to update a user comment
  *    only admin can update all comments
- *    users can edit their own comments if admin allow them
+ *    users can edit their own comments if admin allows them
  *
  * @param array $comment
  * @param string $post_key secret key sent back to the browser
@@ -324,7 +324,7 @@ function update_user_comment($comment, $post_key)
   {
     $comment_action='reject';
   }
-  elseif (!$conf['comments_validation'] or is_admin()) // should the updated comment must be validated
+  elseif (!$conf['comments_validation'] or is_admin()) // should the updated comment be validated?
   {
     $comment_action='validate'; //one of validate, moderate, reject
   }
@@ -345,7 +345,7 @@ function update_user_comment($comment, $post_key)
   // website
   if (!empty($comment['website_url']))
   {
-    $comm['website_url'] = strip_tags($comm['website_url']);
+    $comment['website_url'] = strip_tags($comment['website_url']);
     if (!preg_match('/^https?/i', $comment['website_url']))
     {
       $comment['website_url'] = 'http://'.$comment['website_url'];

@@ -46,8 +46,8 @@ SELECT *
 
   if (count($searches) > 0)
   {
-    // we don't want spies to be able to see the search rules of any prior search (performed
-    // by any user). We don't want them to be try index.php?/search/123 then index.php?/search/124
+    // We don't want spies to be able to see the search rules of any prior search (performed
+    // by any user). We don't want them to try index.php?/search/123 then index.php?/search/124
     // and so on. That's why we have implemented search_uuid with random characters.
     //
     // We also don't want to break old search urls with only the numeric id, so we only break if
@@ -73,7 +73,7 @@ SELECT *
 
 /**
  * Returns search rules stored into a serialized array in "search"
- * table. Each search rules set is numericaly identified.
+ * table. Each search rules set is numerically identified.
  *
  * @param int $search_id
  * @return array
@@ -137,7 +137,7 @@ function get_sql_search_clause($search)
 
   if (isset($search['fields']['allwords']) and !empty($search['fields']['allwords']['words']) and count($search['fields']['allwords']['fields']) > 0)
   {
-    // 1) we search in regular fields (ie, the ones in the piwigo_images table)
+    // 1) we search in regular fields (i.e., the ones in the piwigo_images table)
     $fields = array('file', 'name', 'comment', 'author');
 
     if (isset($search['fields']['allwords']['fields']) and count($search['fields']['allwords']['fields']) > 0)
@@ -145,11 +145,11 @@ function get_sql_search_clause($search)
       $fields = array_intersect($fields, $search['fields']['allwords']['fields']);
     }
 
-    $cat_fields_dictionnary = array(
+    $cat_fields_dictionary = array(
       'cat-title' => 'name',
       'cat-desc' => 'comment',
     );
-    $cat_fields = array_intersect(array_keys($cat_fields_dictionnary), $search['fields']['allwords']['fields']);
+    $cat_fields = array_intersect(array_keys($cat_fields_dictionary), $search['fields']['allwords']['fields']);
 
     // in the OR mode, request bust be :
     // ((field1 LIKE '%word1%' OR field2 LIKE '%word1%')
@@ -174,7 +174,7 @@ function get_sql_search_clause($search)
         $cat_field_clauses = array();
         foreach ($cat_fields as $cat_field)
         {
-          $cat_field_clauses[] = $cat_fields_dictionnary[$cat_field]." LIKE '%".$word."%'";
+          $cat_field_clauses[] = $cat_fields_dictionary[$cat_field]." LIKE '%".$word."%'";
         }
 
         // adds brackets around where clauses
@@ -591,7 +591,7 @@ class QNumericRangeScope extends QSearchScope
             $mult = 1000000;
           $val *= $mult;
           if ($i && !$range_requested)
-          {// round up the upper limit if possible - e.g 6k goes up to 6999, but 6.12k goes only up to 6129
+          {// round up the upper limit if possible - e.g., 6k goes up to 6999, but 6.12k goes only up to 6129
             if ( ($dot_pos = strpos($matches[1], '.')) !== false )
             {
               $requested_precision = strlen($matches[1]) - $dot_pos - 1;
@@ -884,7 +884,7 @@ class QMultiToken
               $crt_token .= $ch;
               break;
             }
-            // else white space go on..
+            // else white space go on...
           default:
             if (!$crt_scope || !$crt_scope->process_char($ch, $crt_token))
             {
@@ -982,7 +982,7 @@ class QMultiToken
   }
 
   /**
-  * Applies recursively a search scope to all sub single tokens. We allow 'tag:(John Bill)' but we cannot evaluate
+  * Recursively applies a search scope to all sub single tokens. We allow 'tag:(John Bill)' but we cannot evaluate
   * scopes on expressions so we rewrite as '(tag:John tag:Bill)'
   */
   private function apply_scope(QSearchScope $scope)
@@ -1032,7 +1032,7 @@ class QMultiToken
         $sub = new QMultiToken;
         $sub->tokens = array_splice($this->tokens, $i, $term_count);
 
-        // rewrite ourseleves as a (b c d)
+        // rewrite ourselves as a (b c d)
         array_splice($this->tokens, $i, 0, array($sub));
         $sub->modifier = $sub->tokens[0]->modifier & QST_OR;
         $sub->tokens[0]->modifier &= ~QST_OR;
@@ -1412,7 +1412,7 @@ SELECT image_id FROM '.IMAGE_CATEGORY_TABLE.'
     elseif (isset($token->scope) && 'category' == $token->scope->id && strlen($token->term)==0)
     {
       if ($token->modifier & QST_WILDCARD)
-      {// eg. 'category:*' returns all images associated to an album
+      {// e.g. 'category:*' returns all images associated to an album
         $qsr->cat_iids[$i] = query2array('SELECT DISTINCT image_id FROM '.IMAGE_CATEGORY_TABLE, null, 'image_id');
       }
       else
@@ -1685,7 +1685,7 @@ SELECT DISTINCT(id) FROM '.IMAGES_TABLE.' i';
  *
  * @param int $search_id
  * @param bool $super_order_by
- * @param string $images_where optional aditional restriction on images table
+ * @param string $images_where optional additional restriction on images table
  * @return array
  */
 function get_search_results($search_id, $super_order_by, $images_where='')

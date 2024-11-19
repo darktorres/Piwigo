@@ -8,7 +8,7 @@
 
 /**
  * Event handler for method invocation security check. Should return a PwgError
- * if the preconditions are not satifsied for method invocation.
+ * if the preconditions are not satisfied for method invocation.
  */
 function ws_isInvokeAllowed($res, $methodName, $params)
 {
@@ -29,7 +29,7 @@ function ws_isInvokeAllowed($res, $methodName, $params)
 }
 
 /**
- * returns a "standard" (for our web service) array of sql where clauses that
+ * returns a "standard" (for our web service) array of SQL where clauses that
  * filters the images (images table only)
  */
 function ws_std_image_sql_filter( $params, $tbl_name='' )
@@ -83,7 +83,7 @@ function ws_std_image_sql_filter( $params, $tbl_name='' )
 }
 
 /**
- * returns a "standard" (for our web service) ORDER BY sql clause for images
+ * returns a "standard" (for our web service) ORDER BY SQL clause for images
  */
 function ws_std_image_sql_order( $params, $tbl_name='' )
 {
@@ -175,8 +175,8 @@ function ws_std_get_urls($image_row)
 }
 
 /**
- * returns an array of image attributes that are to be encoded as xml attributes
- * instead of xml elements
+ * returns an array of image attributes that are to be encoded as XML attributes
+ * instead of XML elements
  */
 function ws_std_get_image_xml_attributes()
 {

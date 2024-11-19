@@ -40,7 +40,7 @@ $must_repost = false;
 // +-----------------------------------------------------------------------+
 
 /*
- * Do timeout treatment in order to finish to send mails
+ * Do timeout treatment to finish sending mails
  *
  * @param $post_keyname: key of check_key post array
  * @param check_key_treated: array of check_key treated
@@ -150,7 +150,7 @@ order by
       $inserts[] = array(
         'user_id' => $nbm_user['user_id'],
         'check_key' => $nbm_user['check_key'],
-        'enabled' => 'false' // By default if false, set to true with specific functions
+        'enabled' => 'false' // By default, if false, set to true with specific functions
         );
 
       $page['infos'][] = l10n(
@@ -195,7 +195,7 @@ function render_global_customize_mail_content($customize_mail_content)
 
   if ($conf['nbm_send_html_mail'] and !(strpos($customize_mail_content, '<') === 0))
   {
-    // On HTML mail, detects if the content are HTML format.
+    // On HTML mail, detects if the content is HTML format.
     // If it's plain text format, convert content to readable HTML
     return nl2br(htmlspecialchars($customize_mail_content));
   }
@@ -224,7 +224,7 @@ function do_action_send_mail_notification($action = 'list_to_send', $check_key_l
     // disabled and null mail_address are not selected in the list
     $data_users = get_user_notifications('send', $check_key_list);
 
-    // List all if it's define on options or on timeout
+    // List all if it's defined on options or on timeout
     $is_list_all_without_test = ($env_nbm['is_sendmail_timeout'] or $conf['nbm_list_all_enabled_users_to_send']);
 
     // Check if exist news to list user or send mails
@@ -260,13 +260,13 @@ function do_action_send_mail_notification($action = 'list_to_send', $check_key_l
         {
           if ((!$is_action_send) and check_sendmail_timeout())
           {
-            // Stop fill list on 'list_to_send', if the quota is override
+            // Stop fill list on 'list_to_send' if the quota is overridden
             $page['infos'][] = $msg_break_timeout;
             break;
           }
           if (($is_action_send) and check_sendmail_timeout())
           {
-            // Stop fill list on 'send', if the quota is override
+            // Stop fill list on 'send' if the quota is overridden
             $page['errors'][] = $msg_break_timeout;
             break;
           }
@@ -689,7 +689,7 @@ switch ($page['mode'])
       {
         if (
             (!$must_repost) or // Not timeout, normal treatment
-            (($must_repost) and in_array($nbm_user['check_key'], $_POST['send_selection']))  // Must be repost, show only user to send
+            (($must_repost) and in_array($nbm_user['check_key'], $_POST['send_selection']))  // Must be reposted, show only user to send
             )
         {
           $tpl_var['users'][] = 

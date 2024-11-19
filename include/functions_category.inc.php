@@ -28,7 +28,7 @@ function rank_compare($a, $b)
 }
 
 /**
- * Is the category accessible to the connected user ?
+ * Is the category accessible to the connected user?
  * If the user is not authorized to see this category, script exits
  *
  * @param int $category_id
@@ -146,7 +146,7 @@ WHERE '.$where.'
 }
 
 /**
- * Retrieves informations about a category.
+ * Retrieves information about a category.
  *
  * @param int $id
  * @return array
@@ -192,7 +192,7 @@ SELECT *
   ;';
     $names = query2array($query, 'id');
 
-    // category names must be in the same order than uppercats list
+    // category names must be in the same order as uppercats list
     $cat['upper_names'] = array();
     foreach ($upper_ids as $cat_id)
     {
@@ -232,9 +232,9 @@ function get_category_preferred_image_orders()
 }
 
 /**
- * Assign a template var useable with {html_options} from a list of categories
+ * Assign a template var usable with {html_options} from a list of categories
  *
- * @param array[] $categories (at least id,name,global_rank,uppercats for each)
+ * @param array[] $categories (at least id, name, global_rank, uppercats for each)
  * @param int[] $selected ids of selected items
  * @param string $blockname variable name in template
  * @param bool $fullname full breadcrumb or not
@@ -417,7 +417,7 @@ function get_display_images_count($cat_nb_images, $cat_count_images, $cat_count_
 /**
  * Find a random photo among all photos inside an album (including sub-albums)
  *
- * @param array $category (at least id,uppercats,count_images)
+ * @param array $category (at least id, uppercats, count_images)
  * @param bool $recursive
  * @return int|null
  */
@@ -609,7 +609,7 @@ function remove_computed_category(&$cats, $cat)
  *
  * @param int[] $cat_ids
  * @param string mode
- * @param string $extra_images_where_sql - optionally apply a sql where filter to retrieved images
+ * @param string $extra_images_where_sql - optionally apply a SQL where filter to retrieved images
  * @param string $order_by - optionally overwrite default photo order
  * @param bool $user_permissions
  * @return array
@@ -762,7 +762,7 @@ SELECT
     $cats[$idx]['LEVEL'] = substr_count($cat['global_rank'], '.') + 1;
     $cats[$idx]['name'] = trigger_change('render_category_name', $cat['name'], $cat);
 
-    // if the category is directly linked to the items, we add an URL + counter
+    // if the category is directly linked to the items, we add a URL + counter
     if (isset($common_cats[ $cat['id'] ]))
     {
       $cats[$idx]['count_images'] = $common_cats[ $cat['id'] ]['counter'];

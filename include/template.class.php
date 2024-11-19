@@ -295,7 +295,7 @@ class Template
   }
 
   /**
-   * Returns theme's parameter.
+   * Return theme's parameter.
    *
    * @param string $val
    * @return mixed
@@ -567,7 +567,7 @@ class Template
           }
 
           $this->output = substr_replace( $this->output, implode( "\n", $content ), $pos, strlen(self::COMBINED_SCRIPTS_TAG) );
-      } //else maybe error or warning ?
+      } //else maybe error or warning?
     }
 
     $css = $this->cssLoader->get_css();
@@ -599,7 +599,7 @@ class Template
           $rep.='<style type="text/css">'.$this->html_style.'</style>';
         }
         $this->output = substr_replace( $this->output, $rep, $pos, 0 );
-      } //else maybe error or warning ?
+      } //else maybe error or warning?
       $this->html_head_elements = array();
       $this->html_style = '';
     }
@@ -739,7 +739,7 @@ class Template
   
   /**
    * ternary variable modifier.
-   * Usage :
+   * Usage:
    *    - {$variable|ternary:'yes':'no'}
    *
    * @param mixed $param
@@ -753,7 +753,7 @@ class Template
   }
 
   /**
-   * The "html_head" block allows to add content just before
+   * The "html_head" block allows adding content just before
    * </head> element in the output after the head has been parsed.
    *
    * @param array $params (unused)
@@ -785,7 +785,7 @@ class Template
   }
 
   /**
-   * The "define_derivative" function allows to define derivative from tpl file.
+   * The "define_derivative" function allows defining derivative from tpl file.
    * It assigns a DerivativeParams object to _name_ template variable.
    *
    * @param array $params
@@ -840,8 +840,8 @@ class Template
   }
 
   /**
-   * The "combine_script" functions allows inclusion of a javascript file in the current page.
-   * The engine will combine several js files into a single one.
+   * The "combine_script" function allows inclusion of a JavaScript file in the current page.
+   * The engine will combine several JS files into a single one.
    *
    * @param array $params
    *   - id (required)
@@ -878,7 +878,7 @@ class Template
 
   /**
    * The "get_combined_scripts" function returns HTML tag of combined scripts.
-   * It can returns a placeholder for delayed JS files combination and minification.
+   * It can return a placeholder for delayed JS files combination and minification.
    *
    * @param array $params
    *    - load (required)
@@ -935,7 +935,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
   }
 
   /**
-   * Returns clean relative URL to script file.
+   * Returns a clean relative URL to the script file.
    *
    * @param Combinable $script
    * @return string
@@ -959,7 +959,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
   }
 
   /**
-   * The "footer_script" block allows to add runtime script in the HTML page.
+   * The "footer_script" block allows adding a runtime script in the HTML page.
    *
    * @param array $params
    *    - require (optional) comma separated list of script ids
@@ -979,15 +979,15 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
   }
 
   /**
-   * The "combine_css" function allows inclusion of a css file in the current page.
-   * The engine will combine several css files into a single one.
+   * The "combine_css" function allows inclusion of a CSS file in the current page.
+   * The engine will combine several CSS files into a single one.
    *
    * @param array $params
    *    - id (optional) used to deal with multiple inclusions from plugins
    *    - path (required)
    *    - version (optional) used to force a browser refresh
    *    - order (optional)
-   *    - template (optional) set to true to allow smarty syntax in the css file
+   *    - template (optional) set to true to allow smarty syntax in the CSS file
    */
   function func_combine_css($params)
   {
@@ -1479,7 +1479,7 @@ class CssLoader
   {
     if (!isset($this->registered_css[$id]))
     {
-      // costum order as an higher impact than declaration order
+      // custom order as a higher impact than declaration order
       $css = new Css($id, $path, $version, $order*1000+$this->counter);
       $css->is_template = $is_template;
       $this->registered_css[$id] = $css;
@@ -1574,7 +1574,7 @@ class ScriptLoader
           $this->load_known_required_script($id, 1) or fatal_error("inline script not found require $id");
         $s = $this->registered_scripts[$id];
         if($s->load_mode==2)
-          $s->load_mode=1; // until now the implementation does not allow executing inline script depending on another async script
+          $s->load_mode=1; // until now, the implementation does not allow executing inline script depending on another async script
       }
     }
     $this->inline_scripts[] = $code;
@@ -1854,7 +1854,7 @@ class ScriptLoader
 
 
 /**
- * Allows merging of javascript and css files into a single one.
+ * Allows merging of JavaScript and CSS files into a single one.
  */
 final class FileCombiner
 {
@@ -1920,7 +1920,7 @@ final class FileCombiner
 
     $result = array();
     $pending = array();
-    $ini_key = $this->is_css ? array(get_absolute_root_url(false)): array(); //because for css we modify bg url;
+    $ini_key = $this->is_css ? array(get_absolute_root_url(false)): array(); //because for CSS we modify bg url;
     $key = $ini_key;
 
     foreach ($this->combinables as $combinable)
@@ -2128,7 +2128,7 @@ final class FileCombiner
           )
         {
           // If anything is suspicious, don't try to process the
-          // @import. Since @import need to be first and we are
+          // @import. Since @import needs to be first, and we are
           // concatenating several CSS files, remove it from here and return
           // it through $header.
           $header .= $match[0];

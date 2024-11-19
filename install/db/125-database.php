@@ -42,7 +42,7 @@ if ($banner_orig != $banner_new)
 // Additional Pages
 //
 $is_plugin_installed = false;
-$plugin_table = $prefixeTable.'additionalpages';
+$plugin_table = $prefixTable.'additionalpages';
 
 $query = 'SHOW TABLES LIKE \''.$plugin_table.'\';';
 $result = pwg_query($query);
@@ -85,7 +85,7 @@ SELECT
 // PWG Stuffs
 // 
 $is_plugin_installed = false;
-$plugin_table = $prefixeTable.'stuffs';
+$plugin_table = $prefixTable.'stuffs';
 
 $query = 'SHOW TABLES LIKE \''.$plugin_table.'\';';
 $result = pwg_query($query);
