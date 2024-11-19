@@ -1754,9 +1754,9 @@ class ScriptLoader
     {
       $this->add($id, $load_mode, array(), null);
 
-      if ($id === 'jquery') {
-        $this->add('jquery-migrate', $load_mode, [], null);
-      }
+      // if ($id === 'jquery') {
+      //   $this->add('jquery-migrate', $load_mode, [], null);
+      // }
 
       return true;
     }
