@@ -12,7 +12,7 @@
 
 
 /**
- * Checks if an email is well formed and not already in use.
+ * Checks if an email is well-formed and not already in use.
  *
  * @param int $user_id
  * @param string $mail_address
@@ -52,7 +52,7 @@ WHERE upper('.$conf['user_fields']['email'].') = upper(\''.$mail_address.'\')
 
 /**
  * Checks if a login is not already in use.
- * Comparision is case insensitive.
+ * Comparison is case-insensitive.
  *
  * @param string $login
  * @return string|void error message or nothing
@@ -319,7 +319,7 @@ function build_user($user_id, $use_cache=true)
 }
 
 /**
- * Finds informations related to the user identifier.
+ * Finds information related to the user identifier.
  *
  * @param int $user_id
  * @param boolean $use_cache
@@ -353,7 +353,7 @@ SELECT ';
   $row = pwg_db_fetch_assoc(pwg_query($query));
 
   // retrieve additional user data ?
-  if ($conf['external_authentification'])
+  if ($conf['external_authentication'])
   {
     $query = '
 SELECT
@@ -413,7 +413,7 @@ SELECT
     {
       $userdata['cache_update_time'] = time();
 
-      // Set need update are done
+      // Set need update is done
       $userdata['need_update'] = false;
 
       $userdata['forbidden_categories'] =
@@ -447,7 +447,7 @@ SELECT COUNT(DISTINCT(image_id)) as total
       // now we update user cache categories
       $user_cache_cats = get_computed_categories($userdata, null);
       if ( !is_admin($userdata['status']) )
-      { // for non admins we forbid categories with no image (feature 1053)
+      { // for non-admins we forbid categories with no image (feature 1053)
         $forbidden_ids = array();
         foreach ($user_cache_cats as $cat)
         {
@@ -530,7 +530,7 @@ function check_user_favorites()
 
   // $filter['visible_categories'] and $filter['visible_images']
   // must be not used because filter <> restriction
-  // retrieving images allowed : belonging to at least one authorized
+  // retrieving images allowed: belonging to at least one authorized
   // category
   $query = '
 SELECT DISTINCT f.image_id
@@ -607,7 +607,7 @@ SELECT cat_id
       query2array($query,null, 'cat_id')
       );
 
-  // uniquify ids : some private categories might be authorized for the
+  // uniquify ids: some private categories might be authorized for the
   // groups and for the user
   $authorized_array = array_unique($authorized_array);
 
@@ -627,8 +627,8 @@ SELECT id
   }
 
   if ( empty($forbidden_array) )
-  {// at least, the list contains 0 value. This category does not exists so
-   // where clauses such as "WHERE category_id NOT IN(0)" will always be
+  {// At least, the list contains 0 value. This category does not exist, so
+   // where clauses such as "WHERE category_id NOT IN (0)" will always be
    // true.
     $forbidden_array[] = 0;
   }
@@ -698,9 +698,9 @@ SELECT
 }
 
 /**
- * Returns a array with default user valuees.
+ * Returns a array with default user values.
  *
- * @param convert_str ceonferts 'true' and 'false' into booleans
+ * @param convert_str converts 'true' and 'false' into booleans
  * @return array
  */
 function get_default_user_info($convert_str=true)
@@ -829,7 +829,7 @@ function get_browser_language()
     return false;
   }
 
-  // if the quality value is absent for an language, use 1 as the default
+  // if the quality value is absent for a language, use 1 as the default
   $q_values = $matches[3];  // ['0.9', '', '0.7']
   foreach ($q_values as $i => $q_value)
   {
@@ -847,7 +847,7 @@ function get_browser_language()
   );
 
   // list all enabled language codes in the Piwigo installation
-  // in both full and short forms, and case insensitive
+  // in both full and short forms, and case-insensitive
   $languages_available = array();
   foreach (get_languages() as $language_code => $language_name)
   {
@@ -867,7 +867,7 @@ function get_browser_language()
       return $languages_available[$accept_languages_full[$i]];
     }
     // only in case that an exact match was not available,
-    // should we fallback to other variants in the same language family
+    // should we fall back to other variants in the same language family
     // fr_CH => fr => fr_FR
     else if (array_key_exists($accept_languages_short[$i], $languages_available))
     {
@@ -879,7 +879,7 @@ function get_browser_language()
 }
 
 /**
- * Creates user informations based on default values.
+ * Creates user information based on default values.
  *
  * @param int|int[] $user_ids
  * @param array $override_values values used to override default user values
@@ -901,7 +901,7 @@ function create_user_infos($user_ids, $override_values=null)
     $default_user = get_default_user_info(false);
     if ($default_user === false)
     {
-      // Default on structure are used
+      // Default on structure is used
       $default_user = array();
     }
 
@@ -945,11 +945,11 @@ function create_user_infos($user_ids, $override_values=null)
 }
 
 /**
- * Returns the auto login key for an user or false if the user is not found.
+ * Returns the auto login key for a user or false if the user is not found.
  *
  * @param int $user_id
  * @param int $time
- * @param string &$username fille with corresponding username
+ * @param string &$username fill with the corresponding username
  * @return string|false
  */
 function calculate_auto_login_key($user_id, $time, &$username)
@@ -1101,7 +1101,7 @@ function pwg_password_verify($password, $hash, $user_id=null)
 
     if ($check)
     {
-      if (!isset($user_id) or $conf['external_authentification'])
+      if (!isset($user_id) or $conf['external_authentication'])
       {
         return true;
       }
@@ -1131,7 +1131,7 @@ function pwg_password_verify($password, $hash, $user_id=null)
 }
 
 /**
- * Tries to login a user given username and password (must be MySql escaped).
+ * Tries to log in a user given username and password (must be MySql escaped).
  *
  * @param string $username
  * @param string $password
@@ -1181,7 +1181,7 @@ SELECT '.$conf['user_fields']['id'].' AS id,
     $user_found = true;
   }
 
-  // If we didn't find a matching user name, we search for email address
+  // If we didn't find a matching username, we search for email address
   if (!$user_found)
   {
     $query = '
@@ -1200,8 +1200,8 @@ SELECT '.$conf['user_fields']['id'].' AS id,
 
   if ($user_found)
   {
-    // if user status is "guest" then she should not be granted to log in.
-    // The user may not exist in the user_infos table, so we consider it's a "normal" user by default
+    // If user status is "guest" then he should not be granted log in.
+    // The user may not exist in the user_infos table, so we consider it a "normal" user by default
     $status = 'normal';
 
     $query = '
@@ -1445,7 +1445,7 @@ function can_manage_comment($action, $comment_author_id)
 }
 
 /**
- * Compute sql WHERE condition with restrict and filter data.
+ * Compute SQL WHERE condition with restrict and filter data.
  * "FandF" means Forbidden and Filters.
  *
  * @param array $condition_fields one witch fields apply each filter
@@ -1548,7 +1548,7 @@ function get_sql_condition_FandF(
 }
 
 /**
- * Returns sql WHERE condition for recent photos/albums for current user.
+ * Returns SQL WHERE condition for recent photos/albums for current user.
  *
  * @param string $db_field
  * @return string
@@ -1739,7 +1739,7 @@ function deactivate_password_reset_key($user_id)
  * @since 2.9
  * @param int $user_id
  * @param boolean $save_in_user_infos to store result in user_infos.last_visit
- * @return string date & time of last visit
+ * @return string date and time of last visit
  */
 function get_user_last_visit_from_history($user_id, $save_in_user_infos=false)
 {

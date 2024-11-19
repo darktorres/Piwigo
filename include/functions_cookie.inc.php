@@ -13,9 +13,9 @@
 
 /**
  * Returns the path to use for the Piwigo cookie.
- * If Piwigo is installed on :
+ * If Piwigo is installed on:
  * http://domain.org/meeting/gallery/
- * it will return : "/meeting/gallery"
+ * it will return: "/meeting/gallery"
  *
  * @return string
  */

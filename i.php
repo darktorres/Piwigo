@@ -22,7 +22,7 @@ include(PHPWG_ROOT_PATH . 'include/Logger.class.php');
 $logger = new Logger(array(
   'directory' => PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'],
   'severity' => $conf['log_level'],
-  // we use an hashed filename to prevent direct file access, and we salt with
+  // we use a hashed filename to prevent direct file access, and we salt with
   // the db_password instead of secret_key because the log must be usable in i.php
   // (secret_key is in the database)
   'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',
@@ -247,7 +247,7 @@ function parse_request()
 
   if (is_file(PHPWG_ROOT_PATH.$req.$ext))
   {
-    $req = './'.$req; // will be used to match #iamges.path
+    $req = './'.$req; // will be used to match #images.path
   }
   elseif (is_file(PHPWG_ROOT_PATH.'../'.$req.$ext))
   {
@@ -374,8 +374,8 @@ foreach( explode(',','load,rotate,crop,scale,sharpen,watermark,save,send') as $k
 }
 
 include_once(PHPWG_ROOT_PATH .'include/dblayer/functions_'.$conf['dblayer'].'.inc.php');
-include_once( PHPWG_ROOT_PATH .'/include/derivative_params.inc.php');
-include_once( PHPWG_ROOT_PATH .'/include/derivative_std_params.inc.php');
+include_once( PHPWG_ROOT_PATH .'include/derivative_params.inc.php');
+include_once( PHPWG_ROOT_PATH .'include/derivative_std_params.inc.php');
 
 try
 {
@@ -387,7 +387,7 @@ catch (Exception $e)
   $logger->error($e->getMessage(), 'i.php');
 }
 
-list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM '.$prefixeTable.'config WHERE param=\'derivatives\''));
+list($conf['derivatives']) = pwg_db_fetch_row(pwg_query('SELECT value FROM '.$prefixTable.'config WHERE param=\'derivatives\''));
 ImageStdParams::load_from_db();
 
 
@@ -419,7 +419,7 @@ if ( isset($_GET['b']) )
   header("Cache-control: no-store, max-age=100");
 }
 elseif ( $now > (max($src_mtime, $params->last_mod_time) + 24*3600) )
-{// somehow arbitrary - if derivative params or src didn't change for the last 24 hours, we send an expire header for several days
+{// somewhat arbitrary - if derivative params or src haven't changed for the last 24 hours, we send an expire header for several days
   $expires = $now + 10*24*3600;
 }
 
@@ -446,7 +446,7 @@ if (strpos($page['src_location'], '/pwg_representative/')===false
   {
     $query = '
 SELECT *
-  FROM '.$prefixeTable.'images
+  FROM '.$prefixTable.'images
   WHERE path=\''.addslashes($page['src_location']).'\'
 ;';
 
@@ -463,7 +463,7 @@ SELECT *
         $page['rotation_angle'] = pwg_image::get_rotation_angle($page['src_path']);
 
         single_update(
-          $prefixeTable.'images',
+          $prefixTable.'images',
           array('rotation' => pwg_image::get_rotation_code_from_angle($page['rotation_angle'])),
           array('id' => $row['id'])
           );

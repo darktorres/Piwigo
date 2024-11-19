@@ -120,8 +120,8 @@ SELECT *
  * level of each tag.
  *
  * The level of each tag depends on the average count of tags. This
- * calculation method avoid having very different levels for tags having
- * nearly the same count when set are small.
+ * calculation method avoids having very different levels for tags having
+ * nearly the same count when set is small.
  *
  * @param array $tags at least [id, counter]
  * @return array [..., level]
@@ -179,7 +179,7 @@ function add_level_to_tags($tags)
  *
  * @param int[] $tag_ids
  * @param string mode
- * @param string $extra_images_where_sql - optionally apply a sql where filter to retrieved images
+ * @param string $extra_images_where_sql - optionally apply a SQL where filter to retrieved images
  * @param string $order_by - optionally overwrite default photo order
  * @param bool $user_permissions
  * @return array

@@ -6,7 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-// by default we start with guest
+// by default, we start with guest
 $user['id'] = $conf['guest_id'];
 
 if (isset($_COOKIE[session_name()]))
@@ -73,7 +73,7 @@ if (
 }
 
 $user = build_user( $user['id'],
-          ( defined('IN_ADMIN') and IN_ADMIN ) ? false : true // use cache ?
+          ( defined('IN_ADMIN') and IN_ADMIN ) ? false : true // use cache?
          );
 if ($conf['browser_language'] and (is_a_guest() or is_generic()) and $language = get_browser_language())
 {

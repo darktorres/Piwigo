@@ -161,7 +161,7 @@ $( document ).ready(function() {
     $(".CloseAddUser").click(add_user_close);   
 
 
-    //open add user pop in
+    //open 'add user' pop in
     $('.add-user-button').click(add_user_open);
 
     /* Select */
@@ -535,7 +535,7 @@ function move_to_page(page) {
     update_user_list();
 }
 
-$('.pagination-arrow.rigth').on('click', () => {
+$('.pagination-arrow.right').on('click', () => {
     move_to_page(actual_page + 1);
 })
 
@@ -618,9 +618,9 @@ function updateArrows() {
         $('.pagination-arrow.left').removeClass('unavailable');
     }   
     if (actual_page == max_page) {
-        $('.pagination-arrow.rigth').addClass('unavailable');
+        $('.pagination-arrow.right').addClass('unavailable');
     } else {
-        $('.pagination-arrow.rigth').removeClass('unavailable');
+        $('.pagination-arrow.right').removeClass('unavailable');
     }
 }
 
@@ -1121,7 +1121,7 @@ function fill_user_edit_permissions(user_to_edit, pop_in) {
     if (!is_owner(connected_user)) {
       // I'm not the owner, you need to test my permissions
       if (is_owner(user_to_edit.id)) {
-        // I want to edit the owner but I'm not the owner (No matter my status)
+        // I want to edit the owner, but I'm not the owner (No matter my status)
         pop_in.find(".delete-user-button").hide();
         pop_in.find(".user-property-password.edit-password").hide();
         pop_in.find(".user-property-email .user-property-input").attr('disabled','disabled');
@@ -1135,14 +1135,14 @@ function fill_user_edit_permissions(user_to_edit, pop_in) {
       }
       
       if (user_to_edit.status == connected_user_status && connected_user_status == "webmaster" && !is_owner(user_to_edit.id)) {
-        // I have the same status than the user I want to edit and I'm a webmaster, I can do whatever I want
+        // I have the same status as the user I want to edit, and I'm a webmaster, I can do whatever I want
         pop_in.find(".delete-user-button").show();
         pop_in.find(".user-property-password.edit-password").show();
         pop_in.find(".user-property-email .user-property-input").removeAttr('disabled');
         pop_in.find(".user-property-status .user-property-select").removeClass("notClickable");
         pop_in.find(".user-property-username .edit-username").show();
       } else if (user_to_edit.status == connected_user_status && connected_user_status == "admin") {
-        // I have the same status than the user I want to edit and I'm an admin, I can do whatever I want but edit the status
+        // I have the same status as the user I want to edit, and I'm an admin, I can do whatever I want but edit the status
         pop_in.find(".delete-user-button").hide();
         pop_in.find(".user-property-password.edit-password").show();
         pop_in.find(".user-property-email .user-property-input").removeAttr('disabled');

@@ -227,7 +227,7 @@ function end_users_env_nbm()
 }
 
 /*
- * Set user on nbm enviromnent
+ * Set user on nbm environment
  *
  * Return none
  */
@@ -247,7 +247,7 @@ function set_user_on_env_nbm(&$nbm_user, $is_action_send)
 }
 
 /*
- * Unset user on nbm enviromnent
+ * Unset user on nbm environment
  *
  * Return none
  */
@@ -393,7 +393,7 @@ function do_subscribe_unsubscribe_notification_by_mail($is_admin_request, $is_su
     {
       if (check_sendmail_timeout())
       {
-        // Stop fill list on 'send', if the quota is override
+        // Stop fill list on 'send', if the quota is overridden
         $page['errors'][] = $msg_break_timeout;
         break;
       }

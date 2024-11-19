@@ -37,7 +37,7 @@ if (!$conf['check_upgrade_feed'])
 
 prepare_conf_upgrade();
 
-define('PREFIX_TABLE', $prefixeTable);
+define('PREFIX_TABLE', $prefixTable);
 define('UPGRADES_PATH', PHPWG_ROOT_PATH.'install/db');
 
 // +-----------------------------------------------------------------------+
@@ -50,7 +50,7 @@ try
 }
 catch (Exception $e)
 {
-  my_error(l10n($e->getMessage(), true)); 
+  my_error(l10n($e->getMessage()), true); 
 }
 
 

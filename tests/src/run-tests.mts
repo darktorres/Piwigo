@@ -65,7 +65,7 @@ async function runPuppeteerScript(): Promise<void> {
         ),
     );
 
-    // Navigate to the install page
+    // Navigate to the installation page
     await page.goto("http://localhost/piwigo-fork/install.php", {
         waitUntil: "networkidle0",
     });
@@ -132,7 +132,7 @@ async function runPuppeteerScript(): Promise<void> {
     // go to homepage
     await page.waitForSelector("#content > p > a");
     await page.click("#content > p > a");
-    // deactivate empty gallery message
+    // deactivate 'empty gallery' message
     await page.waitForSelector("#deactivate > a");
     await page.click("#deactivate > a");
     // admin button
@@ -140,7 +140,7 @@ async function runPuppeteerScript(): Promise<void> {
         "#mbIdentification > dd > ul > li:nth-child(3) > a",
     );
     await page.click("#mbIdentification > dd > ul > li:nth-child(3) > a");
-    // hide subscribe to newsletter button
+    // hide 'subscribe to newsletter' button
     await page.waitForSelector("#content > p > span > a.newsletter-hide");
     await page.click("#content > p > span > a.newsletter-hide");
 

@@ -16,7 +16,7 @@ include_once( PHPWG_ROOT_PATH.'include/common.inc.php' );
 check_status(ACCESS_FREE);
 
 // but if the user is already identified, we redirect to gallery home
-// instead of displaying the log in form
+// instead of displaying the login form
 if (!is_a_guest())
 {
   redirect(get_gallery_home_url());

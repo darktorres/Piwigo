@@ -55,7 +55,7 @@ SELECT id, file, level
   $page['image_id'] = $row['id'];
   $page['image_file'] =  $row['file'];
   if ( !isset($page['rank_of'][$page['image_id']]) )
-  {// the image can still be non accessible (filter/cat perm) and/or not in the set
+  {// the image can still be non-accessible (filter/cat perm) and/or not in the set
     global $filter;
     if ( !empty($filter['visible_images']) and
       !in_array($page['image_id'], explode(',',$filter['visible_images']) ) )
@@ -108,7 +108,7 @@ SELECT id
   }
 }
 
-// There is cookie, so we must handle it at the beginning
+// There is a cookie, so we must handle it at the beginning
 if ( isset($_GET['metadata']) )
 {
   if ( pwg_get_session_var('show_metadata') == null )
@@ -126,7 +126,7 @@ add_event_handler('render_element_description', 'pwg_nl2br');
 
 /**
  * pwg_nl2br is useful for PHP 5.2 which doesn't accept more than 1
- * parameter on nl2br() (and anyway the second parameter of nl2br does not
+ * parameter on nl2br(). Anyway, the second parameter of nl2br does not
  * match what Piwigo gives.
  */
 function pwg_nl2br($string)
@@ -172,7 +172,7 @@ function default_picture_content($content, $element_info)
     $added[$url] = 1;
     $show_original &= !($derivative->same_as_source());
 
-    // in case we do not display the sizes icon, we only add the selected size to unique_derivatives
+    // in case we do not display the size icon, we only add the selected size to unique_derivatives
     if ($conf['picture_sizes_icon'] or $type == $deriv_type)
       $unique_derivatives[$type]= $derivative;
   }
@@ -206,25 +206,25 @@ function default_picture_content($content, $element_info)
 // |                            initialization                             |
 // +-----------------------------------------------------------------------+
 
-// caching first_rank, last_rank, current_rank in the displayed
+// Caching first_rank, last_rank, current_rank in the displayed
 // section. This should also help in readability.
 $page['first_rank']   = 0;
 $page['last_rank']    = count($page['items']) - 1;
 $page['current_rank'] = $page['rank_of'][ $page['image_id'] ];
 
-// caching current item : readability purpose
+// caching current item: readability purpose
 $page['current_item'] = $page['image_id'];
 
 if ($page['current_rank'] != $page['first_rank'])
 {
-  // caching first & previous item : readability purpose
+  // caching first & previous item: readability purpose
   $page['previous_item'] = $page['items'][ $page['current_rank'] - 1 ];
   $page['first_item'] = $page['items'][ $page['first_rank'] ];
 }
 
 if ($page['current_rank'] != $page['last_rank'])
 {
-  // caching next & last item : readability purpose
+  // caching next and last item: readability purpose
   $page['next_item'] = $page['items'][ $page['current_rank'] + 1 ];
   $page['last_item'] = $page['items'][ $page['last_rank'] ];
 }
@@ -419,7 +419,7 @@ if (isset($_SERVER['HTTP_X_MOZ']) and $_SERVER['HTTP_X_MOZ'] == 'prefetch')
 }
 else
 {
-  // don't increment counter if comming from the same picture (actions)
+  // don't increment counter if coming from the same picture (actions)
   if (pwg_get_session_var('referer_image_id',0) == $page['image_id'])
   {
     $inc_hit_count = false;
@@ -637,7 +637,7 @@ foreach (array('first','previous','next','last', 'current') as $which_image)
       array_merge(
         $picture[$which_image],
         array(
-          // Params slideshow was transmit to navigation buttons
+          // Params slideshow was transmitted to navigation buttons
           'U_IMG' =>
             add_url_params(
               $picture[$which_image]['url'], $slideshow_url_params),
@@ -908,7 +908,7 @@ $infos['INFO_VISITS'] = $picture['current']['hit'];
 $infos['INFO_FILE'] = $picture['current']['file'];
 
 $template->assign($infos);
-$template->assign('display_info', unserialize($conf['picture_informations']));
+$template->assign('display_info', unserialize($conf['picture_information']));
 
 // related tags
 $tags = get_common_tags( array($page['image_id']), -1);
@@ -948,7 +948,7 @@ if ( count($related_categories)==1 and
     );
 }
 else
-{ // use only 1 sql query to get names for all related categories
+{ // use only 1 SQL query to get names for all related categories
   $ids = array();
   foreach ($related_categories as $category)
   {// add all uppercats to $ids
@@ -1034,7 +1034,7 @@ else
   $template->parse_picture_buttons();
   $template->pparse('picture');
 }
-//------------------------------------------------------------ log informations
+//------------------------------------------------------------ log information
 pwg_log($picture['current']['id'], 'picture');
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
 ?>

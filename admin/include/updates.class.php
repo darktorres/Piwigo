@@ -356,13 +356,13 @@ class updates
       $ignore_list = array();
       $need_upgrade = array();
 
-      foreach($fs_ext as $ext_id => $fs_ext)
+      foreach($fs_ext as $ext_id => $ext)
       {
-        if (isset($fs_ext['extension']) and isset($server_ext[$fs_ext['extension']]))
+        if (isset($ext['extension']) and isset($server_ext[$ext['extension']]))
         {
-          $ext_info = $server_ext[$fs_ext['extension']];
+          $ext_info = $server_ext[$ext['extension']];
 
-          if (!safe_version_compare($fs_ext['version'], $ext_info['revision_name'], '>='))
+          if (!safe_version_compare($ext['version'], $ext_info['revision_name'], '>='))
           {
             if (in_array($ext_id, $conf['updates_ignored'][$type]))
             {
@@ -380,7 +380,7 @@ class updates
     conf_update_param('updates_ignored', pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
   }
 
-  // Check if extension have been upgraded since last check
+  // Check if extension has been upgraded since last check
   function check_updated_extensions()
   {
     foreach ($this->types as $type)
@@ -393,7 +393,7 @@ class updates
           if (isset($_SESSION['extensions_need_update'][$type][$ext_id])
             and safe_version_compare($fs_ext['version'], $_SESSION['extensions_need_update'][$type][$ext_id], '>='))
           {
-            // Extension have been upgraded
+            // Extension has been upgraded
             $this->check_extensions();
             break;
           }
@@ -589,7 +589,7 @@ class updates
             file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'update/log_error.txt', $error);
             
             $page['errors'][] = l10n(
-              'An error has occured during extract. Please check files permissions of your piwigo installation.<br><a href="%s">Click here to show log error</a>.',
+              'An error has occurred during extract. Please check files permissions of your piwigo installation.<br><a href="%s">Click here to show log error</a>.',
               get_root_url().$conf['data_location'].'update/log_error.txt'
               );
           }
@@ -597,7 +597,7 @@ class updates
         else
         {
           deltree(PHPWG_ROOT_PATH.$conf['data_location'].'update');
-          $page['errors'][] = l10n('An error has occured during upgrade.');
+          $page['errors'][] = l10n('An error has occurred during upgrade.');
         }
       }
       else

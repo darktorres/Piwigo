@@ -90,7 +90,7 @@ while ($row = pwg_db_fetch_assoc($result))
     $image_id = get_random_image_in_category($row);
   }
   elseif ($row['count_categories']>0 and $row['count_images']>0) // at this point, $row['count_images'] should always be >0 (used as condition in SQL)
-  { // searching a random representant among representant of sub-categories
+  { // searching a random representant among representant of subcategories
     $query = '
 SELECT representative_picture_id
   FROM '.CATEGORIES_TABLE.' INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.'

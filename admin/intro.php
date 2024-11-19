@@ -266,19 +266,19 @@ if (!isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity_
 
   $query = '
   SELECT
-      DATE_FORMAT(occured_on , \'%Y-%m-%d\') AS activity_day,
+      DATE_FORMAT(occurred_on , \'%Y-%m-%d\') AS activity_day,
       object,
       action,
       COUNT(*) AS activity_counter
     FROM '.ACTIVITY_TABLE.'
-    WHERE occured_on >= \''.$date_string.'\'
+    WHERE occurred_on >= \''.$date_string.'\'
     GROUP BY activity_day, object, action
   ;';
   $activity_actions = query2array($query);
 
   foreach ($activity_actions as $action)
   {
-    // set the time to 12:00 (midday) so that it doesn't goes to previous/next day due to timezone offset
+    // set the time to 12:00 (midday) so that it doesn't go to previous/next day due to timezone offset
     $day_date = new DateTime($action['activity_day'].' 12:00:00');
 
     $week = 0;
@@ -321,12 +321,12 @@ foreach($activity_last_weeks as $week => $i)
   }
 }
 
-// Algorithm to sort days in circle size :
-//  * Get the difference between sorted numbers of activity per day (only not null numbers)
+// Algorithm to sort days in circle size:
+//  * Get the difference between sorted amount of activity per day (only not null)
 //  * Split days max $circle_sizes time on the biggest difference (but not below 120%)
 //  * Set the sizes according to the groups created
 
-//Function to sort days by number of activity
+//Function to sort days by amount of activity
 function cmp_day($a, $b)
 {
   if ($a['x'] == $b['x']) 

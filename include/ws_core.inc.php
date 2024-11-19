@@ -58,7 +58,7 @@ class PwgError
 
 /**
  * Simple wrapper around an array (keys are consecutive integers starting at 0).
- * Provides naming clues for xml output (xml attributes vs. xml child elements?)
+ * Provides naming clues for XML output (XML attributes vs. XML child elements?)
  * Usually returned by web service function implementation.
  */
 class PwgNamedArray
@@ -72,7 +72,7 @@ class PwgNamedArray
    * @param arr array (keys must be consecutive integers starting at 0)
    * @param itemName string xml element name for values of arr (e.g. image)
    * @param xmlAttributes array of sub-item attributes that will be encoded as
-   *      xml attributes instead of xml child elements
+   *      xml attributes instead of XML child elements
    */
   function __construct($arr, $itemName, $xmlAttributes=array() )
   {
@@ -83,8 +83,8 @@ class PwgNamedArray
 }
 /**
  * Simple wrapper around a "struct" (php array whose keys are not consecutive
- * integers starting at 0). Provides naming clues for xml output (what is xml
- * attributes and what is element)
+ * integers starting at 0).
+ * Provides naming clues for XML output (what is XML attributes and what is element)
  */
 class PwgNamedStruct
 {
@@ -94,10 +94,10 @@ class PwgNamedStruct
   /**
    * Constructs a named struct (usually returned by web service function
    * implementation)
-   * @param name string - containing xml element name
+   * @param name string - containing XML element name
    * @param content array - the actual content (php array)
    * @param xmlAttributes array - name of the keys in $content that will be
-   *    encoded as xml attributes (if null - automatically prefer xml attributes
+   *    encoded as XML attributes (if null - automatically prefer XML attributes
    *    whenever possible)
    */
   function __construct($content, $xmlAttributes=null, $xmlElements=null )
@@ -130,7 +130,8 @@ class PwgNamedStruct
  */
 abstract class PwgRequestHandler
 {
-  /** Virtual abstract method. Decodes the request (GET or POST) handles the
+  /** Virtual abstract method.
+   * Decodes the request (GET or POST) and handles the
    * method invocation as well as response sending.
    */
   abstract function handleRequest(&$service);
@@ -160,7 +161,7 @@ abstract class PwgResponseEncoder
     if (is_array($data) )
     {
       if (range(0, count($data) - 1) !== array_keys($data) )
-      { # string keys, unordered, non-incremental keys, .. - whatever, make object
+      { # string keys, unordered, non-incremental keys, ... - whatever, make object
         return true;
       }
     }
@@ -168,8 +169,8 @@ abstract class PwgResponseEncoder
   }
 
   /**
-   * removes all XML formatting from $response (named array, named structs, etc)
-   * usually called by every response encoder, except rest xml.
+   * removes all XML formatting from $response (named array, named structs, etc.)
+   * usually called by every response encoder, except rest XML.
    */
   static function flattenResponse(&$value)
   {
@@ -307,7 +308,7 @@ Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseF
    *                       WS_TYPE_POSITIVE, WS_TYPE_NOTNULL
    *    @option int|float maxValue (optional)
    * @param description string - a description of the method.
-   * @param include_file string - a file to be included befaore the callback is executed
+   * @param include_file string - a file to be included before the callback is executed
    * @param options array
    *    @option bool hidden (optional) - if true, this method won't be visible by reflection.getMethodList
    *    @option bool admin_only (optional)

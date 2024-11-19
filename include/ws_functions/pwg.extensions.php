@@ -246,7 +246,7 @@ function ws_extensions_update($params, $service)
       return new PwgError(null, l10n('Can\'t read or extract archive.'));
 
     default:
-      return new PwgError(null, l10n('An error occured during extraction (%s).', $upgrade_status));
+      return new PwgError(null, l10n('An error occurred during extraction (%s).', $upgrade_status));
   }
 }
 
@@ -304,7 +304,7 @@ function ws_extensions_ignoreupdate($params, $service)
     return new PwgError(403, 'Invalid parameters');
   }
 
-  // Add or remove extension from ignore list
+  // Add or remove extension from the ignore list
   if (!in_array($params['id'], $conf['updates_ignored'][ $params['type'] ]))
   {
     $conf['updates_ignored'][ $params['type'] ][] = $params['id'];

@@ -111,7 +111,7 @@ if (isset($_POST['submit']))
     $general_failure = false;
   }
 
-  // shall we simulate only
+  // shall we simulate only?
   if (isset($_POST['simulate']) and $_POST['simulate'] == 1)
   {
     $simulate = true;
@@ -141,7 +141,7 @@ if (isset($_POST['submit'])
     and !$general_failure)
 {
   $start = get_moment();
-  // which categories to update ?
+  // which categories to update?
   $query = '
 SELECT id, uppercats, global_rank, status, visible
   FROM '.CATEGORIES_TABLE.'
@@ -164,11 +164,11 @@ SELECT id, uppercats, global_rank, status, visible
   }
   $db_categories = hash_from_query($query, 'id');
 
-  // get categort full directories in an array for comparison with file
+  // get category full directories in an array for comparison with file
   // system directory tree
   $db_fulldirs = get_fulldirs(array_keys($db_categories));
 
-  // what is the base directory to search file system sub-directories ?
+  // what is the base directory to search file system subdirectories?
   if (isset($_POST['cat']) and is_numeric($_POST['cat']))
   {
     $basedir = $db_fulldirs[$_POST['cat']];
@@ -181,7 +181,7 @@ SELECT id, uppercats, global_rank, status, visible
   // we need to have fulldirs as keys to make efficient comparison
   $db_fulldirs = array_flip($db_fulldirs);
 
-  // finding next rank for each id_uppercat. By default, each category id
+  // finding the next rank for each id_uppercat. By default, each category id
   // has 1 for next rank on its sub-categories to create
   $next_rank['NULL'] = 1;
 
@@ -213,7 +213,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
   // next category id available
   $next_id = pwg_db_nextval('id', CATEGORIES_TABLE);
 
-  // retrieve sub-directories fulldirs from the site reader
+  // retrieve subdirectories fulldirs from the site reader
   $fs_fulldirs = $site_reader->get_full_directories($basedir);
 
   // get_full_directories doesn't include the base directory, so if it's a
@@ -344,7 +344,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
             {
               $granted_grps[$row['cat_id']]=array();
             }
-            // TODO: explanaition
+            // TODO: explanation
             array_push(
               $granted_grps,
               array(
@@ -368,7 +368,7 @@ SELECT id_uppercat, MAX(rank_column)+1 AS next_rank
             {
               $granted_users[$row['cat_id']]=array();
             }
-            // TODO: explanaition
+            // TODO: explanation
             array_push(
               $granted_users,
               array(
@@ -610,7 +610,7 @@ SELECT *
         $db_formats[$row['image_id']][$row['ext']] = $row['format_id'];
       }
 
-      // first we search the formats that were removed
+      // first, we search the formats that were removed
       foreach ($db_formats as $image_id => $formats)
       {
         $image_formats_to_delete = array_diff_key($formats, $fs[ $db_elements[$image_id] ]['formats']);
@@ -830,7 +830,7 @@ if (isset($_POST['submit'])
 if (isset($_POST['submit']) and isset($_POST['sync_meta'])
          and !$general_failure)
 {
-  // sync only never synchronized files ?
+  // sync only never synchronized files?
   $opts['only_new'] = isset($_POST['meta_all']) ? false : true;
   $opts['category_id'] = '';
   $opts['recursive'] = true;

@@ -10,7 +10,7 @@
 define('PHPWG_ROOT_PATH','./');
 
 //
-// addslashes to vars if magic_quotes_gpc is off this is a security
+// addslashes to vars if magic_quotes_gpc is off, this is a security
 // precaution to prevent someone trying to break out of a SQL statement.
 //
 function sanitize_mysql_kv(&$v, $k)
@@ -40,11 +40,11 @@ define('DEFAULT_PREFIX_TABLE', 'piwigo_');
 
 if (isset($_POST['install']))
 {
-  $prefixeTable = $_POST['prefix'];
+  $prefixTable = $_POST['prefix'];
 }
 else
 {
-  $prefixeTable = DEFAULT_PREFIX_TABLE;
+  $prefixTable = DEFAULT_PREFIX_TABLE;
 }
 
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
@@ -237,19 +237,19 @@ if (isset($_POST['install']))
     execute_sqlfile(
       PHPWG_ROOT_PATH.'install/piwigo_structure-mysql.sql',
       DEFAULT_PREFIX_TABLE,
-      $prefixeTable,
+      $prefixTable,
       'mysql'
       );
-    // We fill the tables with basic informations
+    // We fill the tables with basic information
     execute_sqlfile(
       PHPWG_ROOT_PATH.'install/config.sql',
       DEFAULT_PREFIX_TABLE,
-      $prefixeTable,
+      $prefixTable,
       'mysql'
       );
 
     $query = '
-INSERT INTO '.$prefixeTable.'config (param,value,comment) 
+INSERT INTO '.$prefixTable.'config (param,value,comment) 
    VALUES (\'secret_key\',md5('.pwg_db_cast_to_text(DB_RANDOM_FUNCTION.'()').'),
    \'a secret key specific to the gallery for internal use\');';
     pwg_query($query);
@@ -325,7 +325,7 @@ INSERT INTO '.$prefixeTable.'config (param,value,comment)
       "\$conf['db_password'] = '$dbpasswd';\n" .
       "\$conf['db_host'] = '$dbhost';\n" .
       "\n" .
-      "\$prefixeTable = '$prefixeTable';\n" .
+      "\$prefixTable = '$prefixTable';\n" .
       "\n" .
       "define('PHPWG_INSTALLED', true);\n";
 
@@ -372,7 +372,7 @@ $template->assign(
     'F_DB_HOST' => $dbhost,
     'F_DB_USER' => $dbuser,
     'F_DB_NAME' => $dbname,
-    'F_DB_PREFIX' => $prefixeTable,
+    'F_DB_PREFIX' => $prefixTable,
     'F_ADMIN' => $admin_name,
     'F_ADMIN_EMAIL' => $admin_mail,
     'EMAIL' => '<span class="adminEmail">'.$admin_mail.'</span>',

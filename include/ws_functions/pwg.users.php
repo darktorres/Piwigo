@@ -292,7 +292,7 @@ SELECT DISTINCT ';
       }
     }
 
-    /* Removed for optimization above, dont go through the $users array for evert display
+    /* Removed for optimization above, don't go through the $users array for every display
     if (isset($params['display']['registration_date_string']))
     {
       foreach ($users as $cur_user)
@@ -590,7 +590,7 @@ SELECT
       $conf['webmaster_id'],
       );
 
-    // an admin can't change status of other admin/webmaster
+    // an admin can't change the status of other admin/webmaster
     if ('admin' == $user['status'])
     {
       $query = '
@@ -692,7 +692,7 @@ UPDATE '. USER_INFOS_TABLE .' SET
 ;';
     pwg_query($query);
 
-    // we delete sessions, ie disconnect, for users if status becomes "guest".
+    // We delete sessions, i.e., disconnect, for users if status becomes "guest".
     // It's like deactivating the user.
     if ('guest' == $update_status)
     {
@@ -772,7 +772,7 @@ SELECT
 
 /**
  * API method
- * Set a preferences parameter to current user
+ * Set a preference parameter to current user
  * @since 13
  * @param mixed[] $params
  *    @option string param

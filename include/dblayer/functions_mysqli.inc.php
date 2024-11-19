@@ -58,7 +58,7 @@ function pwg_db_connect($host, $user, $password, $database)
   }
 
   // MySQL 5.7 default settings forbid to select a colum that is not in the
-  // group by. We've used that in Piwigo, for years. As an immediate solution
+  // group by. We've used that in Piwigo for years. As an immediate solution,
   // we can remove this constraint in the current MySQL session.
   list($sql_mode_current) = pwg_db_fetch_row(pwg_query('SELECT @@SESSION.sql_mode'));
 
@@ -590,12 +590,12 @@ INSERT '.$ignore.' INTO '.$table_name.'
  */
 function do_maintenance_all_tables()
 {
-  global $prefixeTable, $page;
+  global $prefixTable, $page;
 
   $all_tables = array();
 
   // List all tables
-  $query = 'SHOW TABLES LIKE \''.$prefixeTable.'%\'';
+  $query = 'SHOW TABLES LIKE \''.$prefixTable.'%\'';
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_row($result))
   {
@@ -803,7 +803,7 @@ function pwg_db_date_to_ts($date)
 
 /**
  * Returns (or send to standard output) the message concerning the 
- * error occured for the last mysql query.
+ * error occurred for the last mysql query.
  */
 function my_error($header, $die)
 {
@@ -822,7 +822,7 @@ function my_error($header, $die)
 }
 
 /**
- * Builds an data array from a SQL query.
+ * Builds a data array from a SQL query.
  * Depending on $key_name and $value_name it can return :
  *
  *    - an array of arrays of all fields (key=null, value=null)

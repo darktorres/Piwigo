@@ -128,7 +128,7 @@ SELECT *
   } 
   else
   {
-    $page['errors'][] = l10n('The original picture selected dosen\'t exists.');
+    $page['errors'][] = l10n('The original picture selected doesn\'t exist.');
   }
   
 }

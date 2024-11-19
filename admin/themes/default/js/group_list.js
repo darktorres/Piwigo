@@ -162,7 +162,7 @@ var setupGroupBox = function (groupBox) {
 
   /* Change background color of group block if checked in selection mode */
   groupBox.find(".Group-checkbox input[type='checkbox']").change(function () {
-    toogleSelection(id, groupBox.find(".Group-checkbox input[type='checkbox']").is(":checked"));
+    toggleSelection(id, groupBox.find(".Group-checkbox input[type='checkbox']").is(":checked"));
   });
   groupBox.find(".Group-checkbox input[type='checkbox']").attr("checked", false)
 
@@ -224,7 +224,7 @@ var setupGroupBox = function (groupBox) {
 
 };
 
-var toogleSelection = function(group_id, toggle) {
+var toggleSelection = function(group_id, toggle) {
   groupBox = $("#group-"+group_id);
   if (toggle) {
     groupBox.find(".Group-checkbox input").attr("checked", true);
@@ -245,7 +245,7 @@ var toogleSelection = function(group_id, toggle) {
     item.appendTo(".DeleteGroupList");
     item.find("a").on("click", function () {
       groupBox.find(".Group-checkbox input").attr("checked", false);
-      toogleSelection(group_id);
+      toggleSelection(group_id);
     });
     updateSelectionPanel();
     option = $('<option value="'+group_id+'">'+groupBox.find("#group_name").html()+'</option>')
@@ -522,7 +522,7 @@ var updateSelectionPanel = function (changedState = "") {
   $(".number-Selected").html(numSelect + "");
 };
 
-/*Update the state of the panel in 5 states :
+/*Update the state of the panel in 5 states:
  NoSelection, OneSelected, ConfirmDeletion, Selection, OptionMerge
  */
 var updateStatePanel = function (newState = "Selection") {
@@ -622,7 +622,7 @@ $('.ConfirmMergeButton').on("click", function() {
             $(this).remove();
           }))
         })
-        toogleSelection(dest_grp, false)
+        toggleSelection(dest_grp, false)
         $(".DeleteGroupList").html("");
         $("#MergeOptionsChoices").html("");
 
@@ -710,7 +710,7 @@ $('.ConfirmDeleteButton').on("click", function() {
  Manage User Part
  -------*/
 
-// Initialize the research user bar
+// Initialize the search user bar
 var selectize;
 
 // Initialize the cache
@@ -729,7 +729,7 @@ var associateUserInfo = $("<div class='ValidationUserAssociated'>"
 + "<p class='icon-ok'></p>"
 + "</div>");
 
-// Setup the user research bar
+// Setup the user search bar
 $(function() {
 
   // initialize the Selectize control

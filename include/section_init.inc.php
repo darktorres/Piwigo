@@ -8,7 +8,7 @@
 
 /**
  * This included page checks section related parameter and provides
- * following informations:
+ * the following information:
  *
  * - $page['title']
  *
@@ -18,7 +18,7 @@
 
 // "index.php?/category/12-foo/start-24" or
 // "index.php/category/12-foo/start-24"
-// must return :
+// must return:
 //
 // array(
 //   'section'  => 'categories',
@@ -151,7 +151,7 @@ if ( !isset($page['section']) )
 
 $page = array_merge( $page, parse_well_known_params_url( $tokens, $next_token) );
 
-//access a picture only by id, file or id-file without given section
+//access a picture only by id, file or id-file without a given section
 if ( script_basename()=='picture' and 'categories'==$page['section'] and
       !isset($page['category']) and !isset($page['chronology_field']) )
 {
@@ -163,7 +163,7 @@ if ( script_basename()=='picture' and 'categories'==$page['section'] and
 $page['nb_image_page'] = $user['nb_image_page'];
 
 // if flat mode is active, we must consider the image set as a standard set
-// and not as a category set because we can't use the #image_category.rank :
+// and not as a category set because we can't use the #image_category.rank:
 // displayed images are not directly linked to the displayed category
 if ('categories' == $page['section'] and !isset($page['flat']))
 {
@@ -176,8 +176,8 @@ if (pwg_get_session_var('image_order',0) > 0)
 
   $orders = get_category_preferred_image_orders();
 
-  // the current session stored image_order might be not compatible with
-  // current image set, for example if the current image_order is the rank
+  // The current session stored image_order might be not compatible with
+  // the current image set, for example, if the current image_order is the rank
   // and that we are displaying images related to a tag.
   //
   // In case of incompatibility, the session stored image_order is removed.
@@ -248,7 +248,7 @@ if ('categories' == $page['section'])
   elseif
     (
       $page['startcat'] == 0 and
-      (!isset($page['chronology_field'])) and // otherwise the calendar will requery all subitems
+      (!isset($page['chronology_field'])) and // otherwise, the calendar will requery all subitems
       (
         (isset($page['category'])) or
         (isset($page['flat']))
@@ -590,7 +590,7 @@ if (isset($page['title']))
   }
 }
 
-// add meta robots noindex, nofollow to avoid unnecesary robot crawls
+// add meta robots noindex, nofollow to avoid unnecessary robot crawls
 $page['meta_robots']=array();
 if ( isset($page['chronology_field'])
       or ( isset($page['flat']) and isset($page['category']) )

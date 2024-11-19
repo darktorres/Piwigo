@@ -7,7 +7,7 @@
 
 {footer_script}
 const has_images_associated_outside = '{"delete album and all %d photos, even the %d associated to other albums"|@translate|escape:javascript}';
-const has_images_becomming_orphans = '{'delete album and the %d orphan photos'|@translate|escape:javascript}';
+const has_images_becoming_orphans = '{'delete album and the %d orphan photos'|@translate|escape:javascript}';
 const has_images_recursives = '{'delete only album, not photos'|@translate|escape:javascript}';
 const cat_nav = '{$CATEGORIES_NAV|escape:javascript}';
 const album_id = {$CAT_ID}
@@ -190,7 +190,7 @@ str_root = '{'Root'|@translate|escape:javascript}';
    </div>
    <div class="cat-modify-footer-end">
     <div class="info-message icon-ok">{'Album updated'|@translate}</div>
-    <div class="info-error icon-cancel">{'An error has occured while saving album settings'|@translate}</div>
+    <div class="info-error icon-cancel">{'An error has occurred while saving album settings'|@translate}</div>
     <span class="buttonLike" id="cat-properties-save"><i class="icon-floppy"></i> {'Save Settings'|@translate}</span>
    </div>
   </div>

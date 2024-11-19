@@ -14,13 +14,13 @@ $t2 = microtime(true);
 // @set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
 
 //
-// addslashes to vars if magic_quotes_gpc is off this is a security
+// addslashes to vars if magic_quotes_gpc is off, this is a security
 // precaution to prevent someone trying to break out of a SQL statement.
 //
 // The magic quote feature has been disabled since php 5.4
 // but function get_magic_quotes_gpc was always replying false.
-// Since php 8 the function get_magic_quotes_gpc is also removed
-// but we stil want to sanitize user input variables.
+// Since php 8 the function get_magic_quotes_gpc is also removed,
+// but we still want to sanitize user input variables.
 if(!function_exists('get_magic_quotes_gpc') or !@get_magic_quotes_gpc() )
 {
   function sanitize_mysql_kv(&$v, $k)
@@ -47,7 +47,7 @@ if ( !empty($_SERVER["PATH_INFO"]) )
 
 //
 // Define some basic configuration arrays this also prevents malicious
-// rewriting of language and otherarray values via URI params
+// rewriting of language and other array values via URI params
 //
 $conf = array();
 $page = array(
@@ -127,7 +127,7 @@ load_conf_from_db();
 $logger = new Logger(array(
   'directory' => PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'],
   'severity' => $conf['log_level'],
-  // we use an hashed filename to prevent direct file access, and we salt with
+  // we use a hashed filename to prevent direct file access, and we salt with
   // the db_password instead of secret_key because the log must be usable in i.php
   // (secret_key is in the database)
   'filename' => 'log_' . date('Y-m-d') . '_' . sha1(date('Y-m-d') . $conf['db_password']) . '.txt',

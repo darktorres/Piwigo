@@ -129,7 +129,7 @@ function ws_getVersion($params, &$service)
 
 /**
  * API method
- * Returns general informations about the installation
+ * Returns general information about the installation
  * @param mixed[] $params
  */
 function ws_getInfos($params, &$service)
@@ -309,7 +309,7 @@ SELECT id
 
 /**
  * API method
- * Deletes rates of an user
+ * Deletes rates of a user
  * @param mixed[] $params
  *    @option int user_id
  *    @option string anonymous_id (optional)
@@ -431,12 +431,12 @@ function ws_getActivityList($param, &$service)
 {
   global $conf;
 
-  /* Test Lantency */ 
+  /* Test Latency */
   // sleep(1);
   
   $output_lines = array();
   $current_key = '';
-  $page_size = 100000; //We will fetch X lines in database =/= lines displayed due to line concatenation
+  $page_size = 100000; //We will fetch X lines from the database =/= lines displayed due to line concatenation
   $page_offset = $param['page']*$page_size;
 
   $user_ids = array();
@@ -450,7 +450,7 @@ SELECT
     action,
     session_idx,
     ip_address,
-    occured_on,
+    occurred_on,
     details,
     user_agent
   FROM '.ACTIVITY_TABLE.'
@@ -508,7 +508,7 @@ SELECT
     }
     else
     {
-      list($date, $hour) = explode(' ', $row['occured_on']);
+      list($date, $hour) = explode(' ', $row['occurred_on']);
       // New line
       $output_lines[] = array(
         'id' => $line_id,
@@ -619,7 +619,7 @@ function ws_history_log($params, &$service)
     $page['tag_ids'] = explode(',', $params['tags_string']);
   }
 
-  // when visiting a photo (which is currently, in version 14, the only event registered
+  // when visiting a photo (which, in version 14, is currently the only event registered
   // by pwg.history.log) we should also increment images.hit
   if (!empty($params['image_id']))
   {
@@ -638,7 +638,7 @@ function ws_history_log($params, &$service)
 
 /**
  * API method
- * Returns lines of an history search
+ * Returns lines of a history search
  * @since 13
  */
 function ws_history_search($param, &$service)
@@ -730,7 +730,7 @@ function ws_history_search($param, &$service)
   check_input_parameter('display_thumbnail', $param, false, '/^('.implode('|', array_keys($display_thumbnails)).')$/');
 
   $search['fields']['display_thumbnail'] = $param['display_thumbnail'];
-  // Display choise are also save to one cookie
+  // Display choice is also saved to cookie
   if (!empty($param['display_thumbnail'])
       and isset($display_thumbnails[$param['display_thumbnail']]))
   {
@@ -746,7 +746,7 @@ function ws_history_search($param, &$service)
   // TODO manage inconsistency of having $_POST['image_id'] and
   // $_POST['filename'] simultaneously
 
-  // store seach in database
+  // store search in database
   if (!empty($search))
   {
     // register search rules in database, then they will be available on
@@ -772,7 +772,7 @@ function ws_history_search($param, &$service)
     $page['errors'][] = l10n('Empty query. No criteria has been entered.');
   }
 
-  // what are the lines to display in reality ?
+  // what are the lines to display in reality?
   $query = '
 SELECT rules
   FROM '.SEARCH_TABLE.'

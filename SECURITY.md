@@ -17,7 +17,7 @@ discovered a potential security issue.** Please do not create a public issue for
 - vulnerability description
 - reproduction steps
 
-You will receive a response from us within 72 hours. If the issue is confirmed we will
+You will receive a response from us within 72 hours. If the issue is confirmed, we will
 then work on fixing it and release a new fixed version of Piwigo, following these steps:
 
 - Confirm the problem and determine the affected versions.
@@ -28,9 +28,9 @@ then work on fixing it and release a new fixed version of Piwigo, following thes
 ## Responsible Disclosure
 
 1. Confirm that the vulnerability applies to a current version and is reproducible.
-2. First share the vulnerability details with us so that users are not put at risk.
+2. First, share the vulnerability details with us so that users are not put at risk.
 3. Wait before publishing details until everyone has had a chance to update.
 4. Respect the privacy of others.
 
 *Avoid activities that disrupt, degrade, or interrupt our services or compromise other
-users' data, such as spam, brute force attacks, denial of service attacks, and malicious file distribution.*
+users' data, such as spam, brute force attacks, denial-of-service attacks, and malicious file distribution.*

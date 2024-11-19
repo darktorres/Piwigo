@@ -147,7 +147,7 @@ $tabsheet->assign();
 // - false : un-commentable for comment section
 // - NA : (not applicable) for virtual categories
 //
-// for true and false status, we associates an array of category ids,
+// for true and false status, we associate an array of category ids,
 // function display_select_categories will use the given CSS class for each
 // option
 $cats_true = array();
@@ -242,7 +242,7 @@ SELECT DISTINCT id,name,uppercats,global_rank
 display_select_cat_wrapper($query_true,array(),'category_option_true');
 display_select_cat_wrapper($query_false,array(),'category_option_false');
 $template->assign('PWG_TOKEN',get_pwg_token());
-$template->assign('ADMIN_PAGE_TITLE', l10n('Properties of abums'));
+$template->assign('ADMIN_PAGE_TITLE', l10n('Properties of albums'));
 
 // +-----------------------------------------------------------------------+
 // |                           sending html code                           |

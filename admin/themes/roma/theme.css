@@ -446,12 +446,12 @@ div.token-input-dropdown ul li.token-input-selected-dropdown-item {background-co
   background: #111;
 }
 
-.disabledToggle .move-cat-toogler{
+.disabledToggle .move-cat-toggler{
   color: gray !important;
   opacity: 0.5;
   pointer-events: none;
 }
-.move-cat-container.disabledToggle:hover .move-cat-toogler{
+.move-cat-container.disabledToggle:hover .move-cat-toggler{
   opacity: 0.5;
   pointer-events: none;
 }
@@ -1464,7 +1464,7 @@ li.plupload_delete a:hover {background: url("images/cancelhover.svg")!important;
   color:#ccc;
 }
 
-.move-cat-container .move-cat-toogler{
+.move-cat-container .move-cat-toggler{
   color:#ededed;
 }
 
@@ -1726,7 +1726,7 @@ li.plupload_delete a:hover {background: url("images/cancelhover.svg")!important;
     color: #bbbbbb;
 }
 
-.acivity-time-text {
+.activity-time-text {
   font-size: 13px;
   font-weight: bold;
   color: #bbbbbb;

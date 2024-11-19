@@ -79,7 +79,7 @@ $(document).ready(() => {
   });
 
 
-  $('.pagination-arrow.rigth').on('click', () => {
+  $('.pagination-arrow.right').on('click', () => {
     current_param.pageNumber += 1;
     fillHistoryResult(current_param);
   });
@@ -373,7 +373,7 @@ function lineConstructor(line, id, imageDisplay) {
       break;
     case "search":
       // for debug
-      // console.log('search n° : ', line.SEARCH_ID, ' ', line.SEARCH_DETAILS);
+      // console.log('search n°: ', line.SEARCH_ID, ' ', line.SEARCH_DETAILS);
       const search_details = line.SEARCH_DETAILS;
       const search_icons = {
         'allwords': 'gallery-icon-search',
@@ -660,9 +660,9 @@ function updateArrows(actualPage, maxPage) {
   }
 
   if (actualPage == maxPage-1) {
-    $('.pagination-arrow.rigth').addClass('unavailable');
+    $('.pagination-arrow.right').addClass('unavailable');
   } else {
-    $('.pagination-arrow.rigth').removeClass('unavailable');
+    $('.pagination-arrow.right').removeClass('unavailable');
   }
 }
 

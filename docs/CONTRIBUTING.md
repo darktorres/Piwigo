@@ -1,13 +1,13 @@
 # Get the Piwigo project
 
 ## Prerequisites
-To contribute to project, you will need to install on your computer [Git](https://git-scm.com/) and to have a [Github account](https://github.com/join?source=header-home).
+To contribute to project, you will need to install on your computer [Git](https://git-scm.com/) and to have a [GitHub account](https://github.com/join?source=header-home).
 
 If you don't really know how to use git, I will recommend you to check this [guide](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics). If you are comfortable with git and GitHub, just go to "Create a pull request" section.
 
 ### How to configure Git
 
-To add associate your GitHub account and your Git, you will need use this command on Git Bash:
+To add associate your GitHub account and your Git, you will need to use this command on Git Bash:
 
 - Set up your name:
 `git config --global user.name "Firstname lastname"`
@@ -43,7 +43,7 @@ Update your GitHub repository:
 
 ## Create a pull request
 
-On GitHub you should see your branch (with commits) that you pushed before like this:
+On GitHub, you should see your branch (with commits) that you pushed before like this:
 
 ![Lien](HowToPullRequest.png)
 
@@ -53,7 +53,7 @@ Once you clicked the button "Compare & pull request", you have to give a name to
 
 Example name of a pull request: `Issue 965 manage group deletion`
 
-If you forget something, don't worry: you can continue to push commits on your branch and it will automatically update your pull request.
+If you forget something, don't worry: you can continue to push commits on your branch, and it will automatically update your pull request.
 
 Now the Piwigo team can review your pull request... and merge it!
 
@@ -61,11 +61,11 @@ Now the Piwigo team can review your pull request... and merge it!
 
 ##### #1
 
-If you had to update your fork because there is activity on the upstream, you can go to this link:
+If you have to update your fork because there is activity on the upstream, you can go to this link:
 [syncing a fork](https://help.github.com/articles/syncing-a-fork/)
 
 ##### #2
 
-When you finished your work and going to commit the final change. You can specify *Fixes* and the GitHub id of the original issue to help the Piwigo team. This will close automatically the pull request when this will be merged on the upstream.
+When you finished your work and going to commit the final change. You can specify *Fixes* and the GitHub id of the original issue to help the Piwigo team. This will automatically close the pull request when this is merged on the upstream.
 
 Example of a last commit: `Fixes #965 Add a new column`

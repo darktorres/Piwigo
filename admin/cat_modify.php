@@ -16,7 +16,7 @@ include_once(PHPWG_ROOT_PATH.'include/functions_mail.inc.php');
 
 // get_complete_dir returns the concatenation of get_site_url and
 // get_local_dir
-// Example : "pets > rex > 1_year_old" is on the the same site as the
+// Example: "pets > rex > 1_year_old" is on the same site as the
 // Piwigo files and this category has 22 for identifier
 // get_complete_dir(22) returns "./galleries/pets/rex/1_year_old/"
 function get_complete_dir( $category_id )
@@ -25,7 +25,7 @@ function get_complete_dir( $category_id )
 }
 
 // get_local_dir returns an array with complete path without the site url
-// Example : "pets > rex > 1_year_old" is on the the same site as the
+// Example: "pets > rex > 1_year_old" is on the same site as the
 // Piwigo files and this category has 22 for identifier
 // get_local_dir(22) returns "pets/rex/1_year_old/"
 function get_local_dir( $category_id )
@@ -67,7 +67,7 @@ function get_local_dir( $category_id )
   return $local_dir;
 }
 
-// retrieving the site url : "http://domain.com/gallery/" or
+// retrieving the site url: "http://domain.com/gallery/" or
 // simply "./galleries/"
 function get_site_url($category_id)
 {
@@ -137,7 +137,7 @@ $query = 'SELECT DISTINCT category_id
 $result = pwg_query($query);
 $category['has_images'] = pwg_db_num_rows($result)>0 ? true : false;
 
-// number of sub-categories
+// number of subcategories
 $subcat_ids = get_subcat_ids(array($category['id']));
 
 $category['nb_subcats'] = count($subcat_ids) - 1;
@@ -256,7 +256,7 @@ $template->assign(
     )
   );
 
-// total number of images under this category (including sub-categories)
+// total number of images under this category (including subcategories)
   $query = '
 SELECT DISTINCT
     (image_id)
@@ -271,7 +271,7 @@ SELECT DISTINCT
 
 // date creation
 $query = '
-SELECT occured_on
+SELECT occurred_on
   FROM '.ACTIVITY_TABLE.'
   WHERE object_id = '.$category['id'].' 
     AND object = "album"
@@ -282,8 +282,8 @@ $result = query2array($query);
 if (count($result) > 0) {
   $template->assign(
     array(
-      'INFO_CREATION_SINCE' => time_since($result[0]['occured_on'], 'day', $format=null, $with_text=true, $with_week=true, $only_last_unit=true),
-      'INFO_CREATION' => format_date($result[0]['occured_on'], array('day', 'month','year'))
+      'INFO_CREATION_SINCE' => time_since($result[0]['occurred_on'], 'day', $format=null, $with_text=true, $with_week=true, $only_last_unit=true),
+      'INFO_CREATION' => format_date($result[0]['occurred_on'], array('day', 'month','year'))
       )
     );
 }
@@ -355,17 +355,17 @@ if ($category['has_images'] or !empty($category['representative_picture_id']))
 {
   $tpl_representant = array();
 
-  // picture to display : the identified representant or the generic random
-  // representant ?
+  // picture to display: the identified representant or the generic random
+  // representant?
   if (!empty($category['representative_picture_id']))
   {
     $tpl_representant['picture'] = get_category_representant_properties($category['representative_picture_id'], IMG_MEDIUM);
   }
 
-  // can the admin choose to set a new random representant ?
+  // can the admin choose to set a new random representant?
   $tpl_representant['ALLOW_SET_RANDOM'] = ($category['has_images'] ? true : false);
 
-  // can the admin delete the current representant ?
+  // can the admin delete the current representant?
   if (
     ($category['has_images']
      and $conf['allow_random_representative'])

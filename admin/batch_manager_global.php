@@ -557,7 +557,7 @@ SELECT category_id
 
 $template->assign('filter_category_selected', $selected_category);
 
-// Dissociate from a category : categories listed for dissociation can only
+// Dissociate from a category: categories listed for dissociation can only
 // represent virtual links. We can't create orphans. Links to physical
 // categories can't be broken.
 $associated_categories = array();
@@ -721,19 +721,19 @@ SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
     $nb_thumbs_page++;
     $src_image = new SrcImage($row);
 
-    $ttitle = render_element_name($row);
-    if ($ttitle != get_name_from_file($row['file']))
+    $title = render_element_name($row);
+    if ($title != get_name_from_file($row['file']))
     {
-      $ttitle.= ' ('.$row['file'].')';
+      $title.= ' ('.$row['file'].')';
     }
 
-    $ttitle.= '<br>'.$row['width'].'&times;'.$row['height'].' pixels, '.sprintf('%.2f', $row['filesize']/1024).'MB';
+    $title.= '<br>'.$row['width'].'&times;'.$row['height'].' pixels, '.sprintf('%.2f', $row['filesize']/1024).'MB';
 
     $template->append(
       'thumbnails', array_merge($row,
       array(
         'thumb' => new DerivativeImage($thumb_params, $src_image),
-        'TITLE' => $ttitle,
+        'TITLE' => $title,
         'FILE_SRC' => DerivativeImage::url(IMG_LARGE, $src_image),
         'U_EDIT' => get_root_url().'admin.php?page=photo-'.$row['id'],
         )

@@ -100,11 +100,11 @@ if (isset($_GET['change_theme']))
 }
 
 // +-----------------------------------------------------------------------+
-// | Synchronize user informations                                         |
+// | Synchronize user information                                          |
 // +-----------------------------------------------------------------------+
 
 // sync_user() is only useful when external authentication is activated
-if ($conf['external_authentification'])
+if ($conf['external_authentication'])
 {
   sync_users();
 }
@@ -124,7 +124,7 @@ if (count($test_get) == 0 and !empty($_SERVER['QUERY_STRING']))
 }
 $change_theme_url.= 'change_theme=1';
 
-// ?page=plugin-community-pendings is an clean alias of
+// ?page=plugin-community-pendings is a clean alias of
 // ?page=plugin&section=community/admin.php&tab=pendings
 if (isset($_GET['page']) and preg_match('/^plugin-([^-]*)(?:-(.*))?$/', $_GET['page'], $matches))
 {
@@ -142,7 +142,7 @@ if (isset($_GET['page']) and preg_match('/^plugin-([^-]*)(?:-(.*))?$/', $_GET['p
   }
 }
 
-// ?page=album-134-properties is an clean alias of
+// ?page=album-134-properties is a clean alias of
 // ?page=album&cat_id=134&tab=properties
 if (isset($_GET['page']) and preg_match('/^album-(\d+)(?:-(.*))?$/', $_GET['page'], $matches))
 {
@@ -154,7 +154,7 @@ if (isset($_GET['page']) and preg_match('/^album-(\d+)(?:-(.*))?$/', $_GET['page
   }
 }
 
-// ?page=photo-1234-properties is an clean alias of
+// ?page=photo-1234-properties is a clean alias of
 // ?page=photo&image_id=1234&tab=properties
 if (isset($_GET['page']) and preg_match('/^photo-(\d+)(?:-(.*))?$/', $_GET['page'], $matches))
 {
@@ -284,7 +284,7 @@ if ($nb_photos_in_caddie > 0)
     );
 }
 
-// any photos with no md5sum ?
+// any photos with no md5sum?
 if (in_array($page['page'], array('site_update', 'batch_manager')))
 {
   $nb_no_md5sum = count(get_photos_no_md5sum());
@@ -315,7 +315,7 @@ $template->assign(
 // | Refresh permissions                                                   |
 // +-----------------------------------------------------------------------+
 
-// Only for pages witch change permissions
+// Only for pages which change permissions
 if (
     in_array($page['page'],
       array(
