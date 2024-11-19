@@ -922,7 +922,7 @@ function tagListToString(list) {
 }
 
 /*-------
- Filter research
+ Filter search
 -------*/
 
 var maxShown = 100;
@@ -936,9 +936,9 @@ $("#search-tag .search-input").on("input", function () {
     searchTimeOut = setTimeout(() => {
         updatePaginationMenu();
         if (dataTags.filter(isDataSearched).length == 0) {
-            $(".emptyResearch").show();
+            $(".emptySearch").show();
         } else {
-            $(".emptyResearch").hide();
+            $(".emptySearch").hide();
         }
     }, delaySearchInput);
 });

@@ -212,9 +212,7 @@ var setupGroupBox = function (groupBox) {
         .attr("checked", false);
 
     /* Display the option on the click on "..." */
-    groupBox
-        .find(".group-dropdown-options")
-        .on("click", function GroupOptions() {
+    groupBox.find(".group-dropdown-options").on("click", function GroupOptions() {
             $(this).find("#GroupOptions").toggle();
         });
 
@@ -948,7 +946,7 @@ $(".ConfirmDeleteButton").on("click", function () {
  Manage User Part
  -------*/
 
-// Initialize the research user bar
+// Initialize the search user bar
 var selectize;
 
 // Initialize the cache
@@ -973,7 +971,7 @@ var associateUserInfo = $(
         "</div>",
 );
 
-// Setup the user research bar
+// Setup the user search bar
 $(function () {
     // initialize the Selectize control
     $select = $(".AddUserBlock select").selectize({});

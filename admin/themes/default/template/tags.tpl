@@ -207,7 +207,7 @@
     </div>
   {/foreach}
 </div>
-<div class="emptyResearch"> {'No tag found'|@translate} </div>
+<div class="emptySearch"> {'No tag found'|@translate} </div>
 <div class="tag-pagination">
   <div class="pagination-per-page">
     <span class="thumbnailsActionsShow" style="font-weight: bold;">{'Display'|@translate}</span>

@@ -22,7 +22,6 @@ class RVTS
         // if (count($page['items']) < $page['nb_image_page'] + 3 && (! $page['start'] || script_basename() === 'picture')) {
         //     $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
         // }
-
         add_event_handler('loc_begin_index', self::on_index_begin(...), EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
     }
 

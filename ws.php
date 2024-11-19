@@ -90,7 +90,7 @@ function ws_addDefaultMethods(
         'pwg.getInfos',
         'ws_getInfos',
         null,
-        'Returns general informations.',
+        'Returns general information.',
         $ws_functions_root . 'pwg.php',
         [
             'admin_only' => true,
@@ -101,7 +101,7 @@ function ws_addDefaultMethods(
         'pwg.getCacheSize',
         'ws_getCacheSize',
         null,
-        'Returns general informations.',
+        'Returns general information.',
         $ws_functions_root . 'pwg.php',
         [
             'admin_only' => true,
@@ -121,7 +121,7 @@ function ws_addDefaultMethods(
                 'type' => WS_TYPE_INT | WS_TYPE_POSITIVE,
             ],
         ],
-        'Returns general informations.',
+        'Returns general information.',
         $ws_functions_root . 'pwg.php',
         [
             'admin_only' => true,
@@ -132,7 +132,7 @@ function ws_addDefaultMethods(
         'pwg.activity.downloadLog',
         'ws_activity_downloadLog',
         null,
-        'Returns general informations.',
+        'Returns general information.',
         $ws_functions_root . 'pwg.php',
         [
             'admin_only' => true,
@@ -565,7 +565,7 @@ function ws_addDefaultMethods(
             'original_sum' => [],
             'type' => [
                 'default' => 'file',
-                'info' => 'Must be "file", for backward compatiblity "high" and "thumb" are allowed.',
+                'info' => 'Must be "file", for backward compatibility "high" and "thumb" are allowed.',
             ],
             'position' => [],
         ],
@@ -586,7 +586,7 @@ function ws_addDefaultMethods(
             ],
             'type' => [
                 'default' => 'file',
-                'info' => 'Must be "file", for backward compatiblity "high" and "thumb" are allowed.',
+                'info' => 'Must be "file", for backward compatibility "high" and "thumb" are allowed.',
             ],
             'sum' => [],
         ],

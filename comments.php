@@ -347,12 +347,14 @@ $query = <<<SQL
     LEFT JOIN users As u ON u.{$conf['user_fields']['id']} = com.author_id
     WHERE {$where_clauses}
     GROUP BY comment_id
-    ORDER BY {$page['sort_by']} {$page['sort_order']}\n
+    ORDER BY {$page['sort_by']} {$page['sort_order']}
+
     SQL;
 
 if ($page['items_number'] != 'all') {
     $query .= <<<SQL
-        LIMIT {$page['items_number']} OFFSET {$start}\n
+        LIMIT {$page['items_number']} OFFSET {$start}
+        
         SQL;
 }
 
@@ -374,7 +376,7 @@ $navbar = create_navigation_bar(
     $url,
     $counter,
     $start,
-    $page['items_number'],
+    $page['items_number']
 );
 
 $template->assign('navbar', $navbar);

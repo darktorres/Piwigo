@@ -39,12 +39,14 @@ $query = '
 if ($page['section'] == 'recent_cats') {
     $recent_photos = get_recent_photos_sql('date_last');
     $query .= <<<SQL
-            AND {$recent_photos}\n
+        AND {$recent_photos}
+
             SQL;
 } else {
     $category_condition = isset($page['category']) ? "= {$page['category']['id']}" : 'IS NULL';
     $query .= <<<SQL
-            AND id_uppercat {$category_condition}\n
+        AND id_uppercat {$category_condition}
+
             SQL;
 }
 
@@ -60,7 +62,8 @@ $query .= ' -- after conditions ';
 
 if ($page['section'] != 'recent_cats') {
     $query .= <<<SQL
-        ORDER BY rank_column\n
+        ORDER BY rank_column
+        
         SQL;
 }
 
@@ -105,7 +108,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
             WHERE uppercats LIKE '{$row['uppercats']},%'
                 AND representative_picture_id IS NOT NULL
                 {$sql_condition}
-            ORDER BY {$random_function}()
+            ORDER BY {$random_function}
             LIMIT 1;
             SQL;
         $subresult = pwg_query($query);

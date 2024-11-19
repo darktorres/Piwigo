@@ -92,8 +92,7 @@ function get_user_notifications(
     if (in_array($action, ['subscribe', 'send'])) {
         $quoted_check_key_list = quote_check_key_list($check_key_list);
         if (count($quoted_check_key_list) != 0) {
-            $quoted_check_key_list_ = implode(',', $quoted_check_key_list);
-            $query_and_check_key = " AND check_key IN ({$quoted_check_key_list_}) ";
+            $query_and_check_key = ' AND check_key IN (' . implode(',', $quoted_check_key_list) . ') ';
         } else {
             $query_and_check_key = '';
         }
@@ -104,14 +103,16 @@ function get_user_notifications(
             FROM user_mail_notification AS n
             JOIN users AS u ON n.user_id = u.{$conf['user_fields']['id']}
             JOIN user_infos AS ui ON ui.user_id = n.user_id
-            WHERE 1 = 1\n
+            WHERE 1 = 1
+
         SQL;
 
         if ($action === 'send') {
             // No mail empty and all users enabled
             $query .= <<<SQL
                 AND n.enabled = 'true'
-                AND u.{$conf['user_fields']['email']} IS NOT NULL\n
+                AND u.{$conf['user_fields']['email']} IS NOT NULL
+
                 SQL;
         }
 
@@ -120,21 +121,25 @@ function get_user_notifications(
         if ($enabled_filter_value != '') {
             $filter_value = boolean_to_string($enabled_filter_value);
             $query .= <<<SQL
-                AND n.enabled = '{$filter_value}'\n
+                AND n.enabled = '{$filter_value}'
+
                 SQL;
         }
 
         $query .= <<<SQL
-            ORDER BY\n
+            ORDER BY
+
             SQL;
 
         if ($action === 'send') {
             $query .= <<<SQL
-                last_send, username\n
+                last_send, username
+
                 SQL;
         } else {
             $query .= <<<SQL
-                username\n
+                username
+                
                 SQL;
         }
 

@@ -173,12 +173,14 @@ function insert_user_comment(
         $query = <<<SQL
             SELECT COUNT(1) FROM comments
             WHERE date > '{$reference_date}'
-                AND author_id = {$comm['author_id']}\n
+                AND author_id = {$comm['author_id']}
+
             SQL;
 
         if (! is_classic_user()) {
             $query .= <<<SQL
-                AND anonymous_id LIKE "{$anonymous_id}.%"\n
+                AND anonymous_id LIKE "{$anonymous_id}.%"
+
                 SQL;
         }
 
@@ -258,7 +260,8 @@ function delete_user_comment(
     $user_where_clause = '';
     if (! is_admin()) {
         $user_where_clause = <<<SQL
-            AND author_id = '{$GLOBALS['user']['id']}'\n
+            AND author_id = '{$GLOBALS['user']['id']}'
+            
             SQL;
     }
 
@@ -328,8 +331,8 @@ function update_user_comment(
 
     // website
     if (! empty($comment['website_url'])) {
-        $comm['website_url'] = strip_tags((string) $comm['website_url']);
-        if (! preg_match('/^https?/i', (string) $comment['website_url'])) {
+        $comment['website_url'] = strip_tags((string) $comment['website_url']);
+        if (! preg_match('/^https?/i', $comment['website_url'])) {
             $comment['website_url'] = 'http://' . $comment['website_url'];
         }
 
@@ -345,9 +348,9 @@ function update_user_comment(
             $user_where_clause = " AND author_id = '{$GLOBALS['user']['id']}'";
         }
 
-        $website_url_ = (empty($comment['website_url']) ? 'NULL' : "'" . $comment['website_url'] . "'");
-        $validate_ = ($comment_action == 'validate' ? 'true' : 'false');
-        $validate_2 = ($comment_action == 'validate' ? 'NOW()' : 'NULL');
+        $website_url = empty($comment['website_url']) ? 'NULL' : "'{$comment['website_url']}'";
+        $validated = $comment_action == 'validate' ? 'true' : 'false';
+        $validation_date = $comment_action == 'validate' ? 'NOW()' : 'NULL';
         $query = <<<SQL
             UPDATE comments
             SET content = '{$comment['content']}',

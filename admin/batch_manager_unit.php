@@ -145,7 +145,8 @@ if (count($page['cat_elements_id']) > 0) {
 
     $query = <<<SQL
         SELECT *
-        FROM images\n
+        FROM images
+
         SQL;
 
     if ($is_category) {
@@ -157,18 +158,21 @@ if (count($page['cat_elements_id']) > 0) {
         }
 
         $query .= <<<SQL
-            JOIN image_category ON id = image_id\n
+            JOIN image_category ON id = image_id
+
             SQL;
     }
 
     $ids = implode(',', $page['cat_elements_id']);
     $query .= <<<SQL
-        WHERE id IN ({$ids})\n
+        WHERE id IN ({$ids})
+
         SQL;
 
     if ($is_category) {
         $query .= <<<SQL
-            AND category_id = {$_SESSION['bulk_manager_filter']['category']}\n
+            AND category_id = {$_SESSION['bulk_manager_filter']['category']}
+            
             SQL;
     }
 

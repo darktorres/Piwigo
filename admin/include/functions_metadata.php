@@ -182,13 +182,13 @@ function get_sync_metadata(
         $height = (int) $xmlattributes->height;
         $vb = (string) $xmlattributes->viewBox;
 
-        if (isset($width) && $width != 0) {
+        if ($width != 0) {
             $infos['width'] = $width;
         } elseif (isset($vb)) {
             $infos['width'] = explode(' ', $vb)[2];
         }
 
-        if (isset($height) && $height != 0) {
+        if ($height != 0) {
             $infos['height'] = $height;
         } elseif (isset($vb)) {
             $infos['height'] = explode(' ', $vb)[3];
@@ -306,7 +306,7 @@ function sync_metadata(
  */
 function get_filelist(
     string $category_id = '',
-    string $site_id = '1',
+    int $site_id = 1,
     bool $recursive = false,
     bool $only_new = false
 ): array {
@@ -317,20 +317,21 @@ function get_filelist(
         SELECT id
         FROM categories
         WHERE site_id = {$site_id}
-            AND dir IS NOT NULL\n
+            AND dir IS NOT NULL
+
         SQL;
 
-    if (is_numeric($category_id)) {
         if ($recursive) {
             $regex_operator = DB_REGEX_OPERATOR;
             $query .= <<<SQL
-                AND uppercats {$regex_operator} '(^|,){$category_id}(,|$)'\n
+            AND uppercats {$regex_operator} '(^|,){$category_id}(,|$)'
+
                 SQL;
         } else {
             $query .= <<<SQL
-                AND id = {$category_id}\n
+            AND id = {$category_id}
+
                 SQL;
-        }
     }
 
     $query .= ';';
@@ -347,12 +348,14 @@ function get_filelist(
     $query = <<<SQL
         SELECT id, path, representative_ext
         FROM images
-        WHERE storage_category_id IN ({$imploded_cat_ids})\n
+        WHERE storage_category_id IN ({$imploded_cat_ids})
+
         SQL;
 
     if ($only_new) {
         $query .= <<<SQL
-            AND date_metadata_update IS NULL\n
+            AND date_metadata_update IS NULL
+            
             SQL;
     }
 

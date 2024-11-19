@@ -42,7 +42,7 @@ function ws_users_getList(
 
     if (! empty($params['user_id'])) {
         $user_id_ = implode(',', $params['user_id']);
-        $where_clauses[] = "u.{$conf['user_fields']['id']} IN({$user_id_})";
+        $where_clauses[] = "u.{$conf['user_fields']['id']} IN ({$user_id_})";
     }
 
     if (! empty($params['username'])) {
@@ -182,7 +182,8 @@ function ws_users_getList(
     }
 
     $query = <<<SQL
-        SELECT DISTINCT\n
+        SELECT DISTINCT
+
         SQL;
 
     // ADD SQL_CALC_FOUND_ROWS if display total_count is requested
@@ -217,13 +218,15 @@ function ws_users_getList(
         LEFT JOIN user_group AS ug ON u.{$conf['user_fields']['id']} = ug.user_id
         WHERE
             {$whereClause}
-        ORDER BY {$params['order']}\n
+        ORDER BY {$params['order']}
+
         SQL;
 
     if ($params['per_page'] != 0 || isset($params['display']) && $params['display'] !== []) {
         $offset = $params['per_page'] * $params['page'];
         $query .= <<<SQL
-            LIMIT {$params['per_page']} OFFSET {$offset}\n
+            LIMIT {$params['per_page']} OFFSET {$offset}
+            
             SQL;
     }
 
@@ -679,21 +682,25 @@ function ws_users_setInfo(
     }
 
     if ($updates_infos !== []) {
-        $query = 'UPDATE user_infos SET ';
+        $updates = '';
 
         $first = true;
         foreach ($updates_infos as $field => $value) {
             if (! $first) {
-                $query .= ', ';
+                $updates .= ', ';
             } else {
                 $first = false;
             }
 
-            $query .= "{$field} = '{$value}'";
+            $updates .= "{$field} = '{$value}'";
         }
 
-        $user_id_ = implode(',', $params['user_id']);
-        $query .= ' WHERE user_id IN({$user_id_});';
+        $userIds = implode(',', $params['user_id']);
+        $query = <<<SQL
+            UPDATE user_infos
+            SET {$updates}
+            WHERE user_id IN ({$userIds});
+            SQL;
         pwg_query($query);
     }
 

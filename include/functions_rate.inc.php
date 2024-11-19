@@ -75,7 +75,8 @@ function rate_picture(
     $query = <<<SQL
         DELETE FROM rate
         WHERE element_id = {$image_id}
-            AND user_id = {$user['id']}\n
+            AND user_id = {$user['id']}
+            
         SQL;
     if ($user_anonymous) {
         $query .= " AND anonymous_id = '{$anonymous_id}'\n";

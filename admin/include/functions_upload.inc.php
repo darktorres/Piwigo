@@ -865,7 +865,7 @@ function is_valid_image_extension(
 function file_upload_error_message(
     string $error_code
 ): string {
-    return match ($error_code) {
+    return match ((int) $error_code) {
         UPLOAD_ERR_INI_SIZE => sprintf(
             l10n('The uploaded file exceeds the upload_max_filesize directive in php.ini: %sB'),
             get_ini_size('upload_max_filesize', false)

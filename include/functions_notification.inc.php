@@ -53,17 +53,20 @@ function custom_notification_query(
             $query = <<<SQL
                 FROM comments AS c
                 INNER JOIN image_category AS ic ON c.image_id = ic.image_id
-                WHERE 1 = 1\n
+                WHERE 1 = 1
+
                 SQL;
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= <<<SQL
-                    AND c.validation_date > '{$start}'\n
+                    AND c.validation_date > '{$start}'
+
                     SQL;
             }
 
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= <<<SQL
-                    AND c.validation_date <= '{$end}'\n
+                    AND c.validation_date <= '{$end}'
+
                     SQL;
             }
 
@@ -74,42 +77,50 @@ function custom_notification_query(
 
             $query = <<<SQL
                 FROM comments
-                WHERE 1 = 1\n
+                WHERE 1 = 1
+
                 SQL;
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= <<<SQL
-                    AND date > '{$start}'\n
+                    AND date > '{$start}'
+
                     SQL;
             }
 
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= <<<SQL
-                    AND date <= '{$end}'\n
+                    AND date <= '{$end}'
+
                     SQL;
             }
 
             $query .= <<<SQL
-                AND validated = 'false'\n
+                AND validated = 'false'
+
                 SQL;
             break;
 
         case 'new_elements':
+            // fallthorugh
         case 'updated_categories':
 
             $query = <<<SQL
                 FROM images
                 INNER JOIN image_category AS ic ON image_id = id
-                WHERE 1 = 1\n
+                WHERE 1 = 1
+
                 SQL;
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= <<<SQL
-                    AND date_available > '{$start}'\n
+                    AND date_available > '{$start}'
+
                     SQL;
             }
 
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= <<<SQL
-                    AND date_available <= '{$end}'\n
+                    AND date_available <= '{$end}'
+
                     SQL;
             }
 
@@ -120,17 +131,20 @@ function custom_notification_query(
 
             $query = <<<SQL
                 FROM user_infos
-                WHERE 1 = 1\n
+                WHERE 1 = 1
+
                 SQL;
             if ($start !== null && $start !== '' && $start !== '0') {
                 $query .= <<<SQL
-                    AND registration_date > '{$start}'\n
+                    AND registration_date > '{$start}'
+
                     SQL;
             }
 
             if ($end !== null && $end !== '' && $end !== '0') {
                 $query .= <<<SQL
-                    AND registration_date <= '{$end}'\n
+                    AND registration_date <= '{$end}'
+                    
                     SQL;
             }
 
@@ -202,7 +216,6 @@ function custom_notification_query(
  *
  * @param string $start (mysql datetime format)
  * @param string $end (mysql datetime format)
- * @return int
  */
 function nb_new_comments(
     string $start = null,
@@ -230,7 +243,6 @@ function new_comments(
  *
  * @param string $start (mysql datetime format)
  * @param string $end (mysql datetime format)
- * @return int
  */
 function nb_unvalidated_comments(
     string $start = null,
@@ -244,7 +256,6 @@ function nb_unvalidated_comments(
  *
  * @param string $start (mysql datetime format)
  * @param string $end (mysql datetime format)
- * @return int
  */
 function nb_new_elements(
     string $start = null,
@@ -272,7 +283,6 @@ function new_elements(
  *
  * @param string $start (mysql datetime format)
  * @param string $end (mysql datetime format)
- * @return int
  */
 function nb_updated_categories(
     string $start = null,
@@ -300,7 +310,6 @@ function updated_categories(
  *
  * @param string $start (mysql datetime format)
  * @param string $end (mysql datetime format)
- * @return int
  */
 function nb_new_users(
     string $start = null,
@@ -468,7 +477,7 @@ function get_recent_post_dates(
 
     $query = <<<SQL
         SELECT date_available, COUNT(DISTINCT id) AS nb_elements, COUNT(DISTINCT category_id) AS nb_cats
-        FROM images i INNER JOIN image_category AS ic ON id=image_id
+        FROM images i INNER JOIN image_category AS ic ON id = image_id
         {$where_sql}
         GROUP BY date_available
         ORDER BY date_available DESC

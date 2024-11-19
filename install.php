@@ -17,9 +17,10 @@ define('PHPWG_ROOT_PATH', './');
 // precaution to prevent someone trying to break out of a SQL statement.
 //
 function sanitize_mysql_kv(
-    string &$v
+    string &$v,
+    string $k
 ): void {
-    $v = addslashes((string) $v);
+    $v = addslashes($v);
 }
 
 array_walk_recursive($_GET, sanitize_mysql_kv(...));
@@ -218,7 +219,7 @@ if (isset($_POST['install'])) {
             $dblayer
         );
 
-        $random_function = pwg_db_cast_to_text(DB_RANDOM_FUNCTION);
+        $random_function = DB_RANDOM_FUNCTION;
         $query = <<<SQL
             INSERT INTO config
                 (param, value, comment)
@@ -291,19 +292,17 @@ if (isset($_POST['install'])) {
 
         $file_content =
           "<?php\n" .
+          "\n" .
+          "declare(strict_types=1);\n" .
+          "\n" .
           "\$conf['dblayer'] = '{$dblayer}';\n" .
           "\$conf['db_base'] = '{$dbname}';\n" .
           "\$conf['db_user'] = '{$dbuser}';\n" .
           "\$conf['db_password'] = '{$dbpasswd}';\n" .
           "\$conf['db_host'] = '{$dbhost}';\n" .
           "\n" .
-          "\n" .
           "define('PHPWG_INSTALLED', true);\n" .
-          "define('PWG_CHARSET', 'utf-8');\n" .
-          "define('DB_CHARSET', 'utf8');\n" .
-          "define('DB_COLLATE', '');\n" .
-          "\n" .
-          '?>';
+          "\n";
 
         umask(0111);
 

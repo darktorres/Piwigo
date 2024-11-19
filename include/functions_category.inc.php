@@ -60,7 +60,8 @@ function get_categories_menu(): array
     $query = <<<SQL
     SELECT id, name, permalink, nb_images, global_rank, date_last, max_date_last, count_images, count_categories
     FROM categories
-    INNER JOIN user_cache_categories ON id = cat_id AND user_id = {$user['id']}\n
+        INNER JOIN user_cache_categories ON id = cat_id AND user_id = {$user['id']}
+
     SQL;
 
     // Always expand when filter is activated
@@ -294,7 +295,8 @@ function get_subcat_ids(
     $query = <<<SQL
         SELECT DISTINCT(id)
         FROM categories
-        WHERE\n
+        WHERE
+
         SQL;
 
     foreach ($ids as $num => $category_id) {
@@ -306,10 +308,11 @@ function get_subcat_ids(
         }
 
         if ($num > 0) {
-            $query .= ' OR ';
+            $query .= "\n    OR ";
         }
 
-        $query .= 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$category_id}(,|$)'";
+        $regex_operator = DB_REGEX_OPERATOR;
+        $query .= "uppercats {$regex_operator} '(^|,){$category_id}(,|$)'\n";
     }
 
     $query .= ';';
@@ -423,7 +426,28 @@ function get_random_image_in_category(
     bool $recursive = true
 ): mixed {
     $image_id = null;
-    $filters_and_forbidden = get_sql_condition_FandF(
+    if ($category['count_images'] > 0) {
+        $query = <<<SQL
+            SELECT image_id
+            FROM categories AS c
+            INNER JOIN image_category AS ic ON ic.category_id = c.id
+            WHERE
+
+            SQL;
+
+        if ($recursive) {
+            $query .= <<<SQL
+                (c.id = {$category['id']} OR uppercats LIKE '{$category['uppercats']},%')
+
+                SQL;
+        } else {
+            $query .= <<<SQL
+                c.id = {$category['id']}
+
+                SQL;
+        }
+
+        $get_sql_condition_FandF = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'c.id',
             'visible_categories' => 'c.id',
@@ -431,15 +455,13 @@ function get_random_image_in_category(
         ],
         "\n  AND"
     );
-    if ($category['count_images'] > 0) {
-        $query = 'SELECT image_id FROM categories AS c INNER JOIN image_category AS ic ON ic.category_id = c.id WHERE ';
-        if ($recursive) {
-            $query .= " (c.id = {$category['id']} OR uppercats LIKE '{$category['uppercats']},%')";
-        } else {
-            $query .= " c.id = {$category['id']}";
-        }
 
-        $query .= " {$filters_and_forbidden} ORDER BY " . DB_RANDOM_FUNCTION . ' LIMIT 1;';
+        $db_random_function = DB_RANDOM_FUNCTION;
+        $query .= <<<SQL
+            {$get_sql_condition_FandF}
+            ORDER BY {$db_random_function}
+            LIMIT 1;
+            SQL;
         $result = pwg_query($query);
         if (pwg_db_num_rows($result) > 0) {
             [$image_id] = pwg_db_fetch_row($result);
@@ -464,7 +486,8 @@ function get_computed_categories(
         SELECT c.id AS cat_id, id_uppercat, global_rank, MAX(date_available) AS date_last, COUNT(date_available) AS nb_images
         FROM categories as c
         LEFT JOIN image_category AS ic ON ic.category_id = c.id
-        LEFT JOIN images AS i ON ic.image_id = i.id AND i.level <= {$userdata['level']}\n
+        LEFT JOIN images AS i ON ic.image_id = i.id AND i.level <= {$userdata['level']}
+
         SQL;
 
     if (isset($filter_days)) {
@@ -473,7 +496,8 @@ function get_computed_categories(
 
     if (! empty($userdata['forbidden_categories'])) {
         $query .= <<<SQL
-            WHERE c.id NOT IN ({$userdata['forbidden_categories']})\n
+            WHERE c.id NOT IN ({$userdata['forbidden_categories']})
+
             SQL;
     }
 
@@ -604,7 +628,8 @@ function get_image_ids_for_categories(
         SELECT id
         FROM images i
         INNER JOIN image_category ic ON id = ic.image_id
-        WHERE category_id IN ({$cat_ids_imploded})\n
+        WHERE category_id IN ({$cat_ids_imploded})
+
         SQL;
 
     if ($use_permissions) {
@@ -618,12 +643,14 @@ function get_image_ids_for_categories(
         );
     }
 
-    $query .= ($extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " \nAND ({$extra_images_where_sql})") . ' GROUP BY id';
+    $query .= ($extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " AND ({$extra_images_where_sql})\n");
+    $query .= "GROUP BY id\n";
 
     if ($mode === 'AND' && count($cat_ids) > 1) {
         $count_cat_ids = count($cat_ids);
         $query .= <<<SQL
-            HAVING COUNT(DISTINCT category_id) = {$count_cat_ids}\n
+            HAVING COUNT(DISTINCT category_id) = {$count_cat_ids}
+
             SQL;
     }
 
@@ -654,7 +681,8 @@ function get_common_categories(
         SELECT c.id, c.uppercats, count(*) AS counter
         FROM image_category
         INNER JOIN categories c ON category_id = id
-        WHERE image_id IN ({$items_imploded})\n
+        WHERE image_id IN ({$items_imploded})
+
         SQL;
 
     if ($use_permissions) {
@@ -670,19 +698,22 @@ function get_common_categories(
     if ($excluded_cat_ids !== []) {
         $excluded_cat_ids_imploded = implode(',', $excluded_cat_ids);
         $query .= <<<SQL
-            AND category_id NOT IN ({$excluded_cat_ids_imploded})\n
+            AND category_id NOT IN ({$excluded_cat_ids_imploded})
+
             SQL;
     }
 
     $query .= <<<SQL
         GROUP BY c.id
-        ORDER BY\n
+        ORDER BY
+
         SQL;
 
     if (isset($max)) {
         $query .= <<<SQL
             counter DESC
-            LIMIT {$max}\n
+            LIMIT {$max}
+            
             SQL;
     } else {
         $query .= 'NULL';

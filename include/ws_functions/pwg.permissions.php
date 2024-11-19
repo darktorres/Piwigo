@@ -30,7 +30,8 @@ function ws_permissions_getList(
     if (! empty($params['cat_id'])) {
         $cat_ids = implode(',', $params['cat_id']);
         $cat_filter = <<<SQL
-            WHERE cat_id IN ({$cat_ids})\n
+            WHERE cat_id IN ({$cat_ids})
+
             SQL;
     }
 
@@ -57,7 +58,8 @@ function ws_permissions_getList(
         SELECT ug.user_id, ga.cat_id
         FROM user_group AS ug
         INNER JOIN group_access AS ga ON ug.group_id = ga.group_id
-        {$cat_filter}\n
+        {$cat_filter}
+        
         SQL;
     $result = pwg_query($query);
 

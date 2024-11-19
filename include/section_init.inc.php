@@ -262,8 +262,15 @@ if ($page['section'] == 'categories') {
 
         // main query
         // FIXME: this query fetches all photos of an album everytime rvtscroller asks for few more photos on scroll
-        $query = "SELECT DISTINCT(image_id) {$column_names} FROM image_category INNER JOIN images ON id = image_id WHERE {$where_sql} {$forbidden} {$conf['order_by']};";
-        $cache_key = $query;
+        $query = <<<SQL
+            SELECT DISTINCT(image_id) {$column_names}
+            FROM image_category
+            INNER JOIN images ON id = image_id
+            WHERE {$where_sql}
+                {$forbidden}
+            {$conf['order_by']};
+            SQL;
+        $cache_key = md5($query);
 
         if (! isset($cache_key) || ! $persistent_cache->get($cache_key, $page['items'])) {
             $page['items'] = query2array($query, null, 'image_id');
@@ -302,7 +309,7 @@ if ($page['section'] == 'categories') {
 } elseif ($page['section'] == 'search') {
     require_once PHPWG_ROOT_PATH . 'include/functions_search.inc.php';
 
-    $search_result = get_search_results($page['search'], $page['super_order_by'] ?? null);
+    $search_result = get_search_results($page['search'], ($page['super_order_by'] ?? null));
 
     //save the details of the query search
     if (isset($search_result['qs'])) {
@@ -392,7 +399,6 @@ if ($page['section'] == 'categories') {
     }
 
     $recent_photos_sql = get_recent_photos_sql('date_available');
-
     $query = <<<SQL
             SELECT DISTINCT(id)
             FROM images
@@ -471,7 +477,6 @@ if ($page['section'] == 'categories') {
     );
 } elseif ($page['section'] == 'list') {
     $image_ids = implode(',', $page['list']);
-
     $query = <<<SQL
             SELECT DISTINCT(id)
             FROM images

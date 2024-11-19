@@ -25,7 +25,6 @@ check_status(ACCESS_GUEST);
 // |                     generate random element list                      |
 // +-----------------------------------------------------------------------+
 
-// Extract the function calls into variables first
 $sql_conditions = get_sql_condition_FandF(
     [
         'forbidden_categories' => 'category_id',
@@ -42,7 +41,7 @@ $query = <<<SQL
     FROM images
     INNER JOIN image_category AS ic ON id = ic.image_id
     {$sql_conditions}
-    ORDER BY {$db_random_function}()
+    ORDER BY {$db_random_function}
     LIMIT {$limit_value};
     SQL;
 

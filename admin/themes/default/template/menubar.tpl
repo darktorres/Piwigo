@@ -27,7 +27,7 @@
   });
 </script>{/footer_script}
 
-{html_style}<style type="text/css">
+{html_style}<style>
   .font-checkbox i {
     margin-left: 5px;
   }

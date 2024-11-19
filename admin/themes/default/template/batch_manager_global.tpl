@@ -14,7 +14,7 @@
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {combine_script id='jquery.progressBar' load='async' path='https://raw.githack.com/Piwigo/Piwigo/refs/heads/14.x/themes/default/js/plugins/jquery.progressbar.js'}
-{combine_script id='jquery.ajaxmanager' load='async' path='https://raw.githack.com/aFarkas/Ajaxmanager/refs/heads/master/jquery.ajaxmanager.js'}
+{combine_script id='jquery.ajaxmanager' load='async' require='jquery' path='https://raw.githack.com/aFarkas/Ajaxmanager/refs/heads/master/jquery.ajaxmanager.js'}
 
 {combine_script id='batchManagerGlobal' load='async' require='jquery,datepicker,jquery.colorbox,addAlbum,doubleSlider' path='admin/themes/default/js/batchManagerGlobal.js'}
 
@@ -236,8 +236,8 @@
       $('input[name=whole_set]').val(this.checked ? all_elements.join(',') : '');
     });
 
-    {* if the whole set is selected on page load(after a first action has been applied), *}
-    {* trigger a change to make sure input[name = whole_set] is updated *}
+    {* if the whole set is selected on page load (after a first action has been applied), *}
+    {* trigger a change to make sure input[name=whole_set] is updated *}
     if ($('input[name="setSelected"]').is(':checked')) {
       $("input[name=setSelected]").trigger('change');
     }
@@ -638,7 +638,7 @@
         </p>
 
         <ul class="thumbnails">
-          {html_style}<style type="text/css">
+          {html_style}<style>
             UL.thumbnails SPAN.wrap2 {
               width: {$thumb_params->max_width()+2}px;
             }

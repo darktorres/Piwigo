@@ -14,18 +14,13 @@ defined('PHPWG_ROOT_PATH') || trigger_error('Hacking attempt!', E_USER_ERROR);
 // determine the initial instant to indicate the generation time of this page
 $t2 = microtime(true);
 
-// set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
-
 //
-// addslashes to vars if magic_quotes_gpc is off this is a security
-// precaution to prevent someone trying to break out of a SQL statement.
+// addslashes to vars is a security precaution to prevent someone trying
+// to break out of a SQL statement.
 //
-// The magic quote feature has been disabled since php 5.4
-// but function get_magic_quotes_gpc was always replying false.
-// Since php 8 the function get_magic_quotes_gpc is also removed
-// but we stil want to sanitize user input variables.
 function sanitize_mysql_kv(
-    string &$v
+    string &$v,
+    string $k
 ): void {
     $v = addslashes($v);
 }
@@ -226,7 +221,8 @@ if ($conf['gallery_locked']) {
 if ($conf['check_upgrade_feed']) {
     require_once PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
     if (check_upgrade_feed()) {
-        $header_msgs[] = 'Some database upgrades are missing, <a href="' . get_absolute_root_url(false) . 'upgrade_feed.php">upgrade now</a>';
+        $header_msgs[] = 'Some database upgrades are missing, '
+          . '<a href="' . get_absolute_root_url(false) . 'upgrade_feed.php">upgrade now</a>';
     }
 }
 

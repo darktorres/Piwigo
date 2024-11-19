@@ -1,4 +1,4 @@
-{html_style}<style type="text/css">
+{html_style}<style>
   .graphicalCheckbox {
     font-size: 16px;
     line-height: 16px;

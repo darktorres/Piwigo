@@ -133,7 +133,8 @@ $sort_by = parse_sort_variables(
 $query = <<<SQL
     SELECT id, permalink, uppercats, global_rank
     FROM categories
-    WHERE permalink IS NOT NULL\n
+    WHERE permalink IS NOT NULL
+
     SQL;
 if ($sort_by[0] == 'id' || $sort_by[0] == 'permalink') {
     $query .= " ORDER BY {$sort_by[0]}";
@@ -166,7 +167,8 @@ $sort_by = parse_sort_variables(
 
 $url_del_base = get_root_url() . 'admin.php?page=permalinks';
 $query = <<<SQL
-    SELECT * FROM old_permalinks\n
+    SELECT * FROM old_permalinks
+    
     SQL;
 if ($sort_by !== []) {
     $query .= " ORDER BY {$sort_by[0]}";

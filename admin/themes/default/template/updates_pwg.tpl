@@ -13,7 +13,7 @@
 </script>{/footer_script}
 
 {html_head}
-<style type="text/css">
+<style>
   form {
     width: 750px;
   }
@@ -165,8 +165,8 @@
       {if !empty($missing.plugins)}
         <p><i>{'Following plugins may not be compatible with the new version of Piwigo:'|@translate}</i></p>
         <p>
-        <ul>{foreach $missing.plugins as $plugin}<li><a href="{$plugin.uri}" class="externalLink">{$plugin.name}</a></li>
-          {/foreach}</ul><br></p>
+        <ul>{foreach $missing.plugins as $plugin}<li><a href="{$plugin.uri}" class="externalLink">{$plugin.name}</a>
+          </li>{/foreach}</ul><br></p>
       {/if}
       {if !empty($missing.themes)}
         <p><i>{'Following themes may not be compatible with the new version of Piwigo:'|@translate}</i></p>

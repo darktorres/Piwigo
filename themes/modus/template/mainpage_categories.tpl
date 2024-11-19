@@ -24,7 +24,7 @@
 	{/foreach}
 </ul>
 {else}{* ================= standard mode ===*}
-{html_style}<style type="text/css">
+{html_style}<style>
 	.thumbnailCategory .illustration {
 		width:{$derivative_params->max_width()+5}px;
 	}

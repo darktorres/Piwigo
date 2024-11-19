@@ -706,7 +706,7 @@ jQuery(document).ready(function () {
         keepAlive: false,
     });
 
-    /*Add the filter research*/
+    /*Add the filter search*/
     document.onkeydown = function (e) {
         if (e.keyCode == 58) {
             jQuery(".pluginFilter input.search-input").focus();

@@ -64,7 +64,7 @@
   })();
 </script>{/footer_script}
 
-{html_style}<style type="text/css">
+{html_style}<style>
   .sizeEnable {
     width: 50px;
   }

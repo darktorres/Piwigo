@@ -29,7 +29,6 @@ $page['meta_robots'] = [
     'noindex' => 1,
     'nofollow' => 1,
 ];
-require PHPWG_ROOT_PATH . 'include/page_header.php';
 
 if (
     isset($_GET['page']) && preg_match('/^[a-z_]*$/', (string) $_GET['page'])

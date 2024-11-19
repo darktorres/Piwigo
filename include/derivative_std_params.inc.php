@@ -20,6 +20,8 @@ define('IMG_XLARGE', 'xlarge');
 define('IMG_XXLARGE', 'xxlarge');
 define('IMG_CUSTOM', 'custom');
 
+require_once(PHPWG_ROOT_PATH . 'include/functions.inc.php');
+
 /**
  * Container for watermark configuration.
  */

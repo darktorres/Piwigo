@@ -123,12 +123,12 @@ if ($form_param['user_id'] != '-1') {
 $template->assign(
     [
         'USER_ID' => $form_param['user_id'],
-        'USER_NAME' => $form_param['user_name'] ?? null,
+        'USER_NAME' => ($form_param['user_name'] ?? null),
         'IMAGE_ID' => $form_param['image_id'],
-        'FILENAME' => $form['filename'] ?? null,
+        'FILENAME' => ($form['filename'] ?? null),
         'IP' => $form_param['ip'],
-        'START' => $form['start'],
-        'END' => $form['end'],
+        'START' => ($form['start'] ?? null),
+        'END' => ($form['end'] ?? null),
     ]
 );
 

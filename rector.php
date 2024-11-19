@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
 use Rector\Config\RectorConfig;
 use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
+use Rector\Php73\Rector\String_\SensitiveHereNowDocRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -19,6 +20,7 @@ return RectorConfig::configure()
         __DIR__ . '/vendor',
         EncapsedStringsToSprintfRector::class,
         RemoveExtraParametersRector::class,
+        SensitiveHereNowDocRector::class,
     ])
     ->withRootFiles()
     ->withPhpSets()
@@ -30,6 +32,5 @@ return RectorConfig::configure()
         instanceOf: false,
         naming: false,
         privatization: false,
-        typeDeclarations: true,
-    )
-;
+        typeDeclarations: true
+    );

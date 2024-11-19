@@ -97,7 +97,7 @@ function get_sql_search_clause(
         if (isset($search['fields'][$textfield])) {
             $local_clauses = [];
             foreach ($search['fields'][$textfield]['words'] as $word) {
-                $local_clauses[] = $textfield === 'author' ? $textfield . "='" . $word . "'" : $textfield . " LIKE '%" . $word . "%'";
+                $local_clauses[] = $textfield === 'author' ? "{$textfield} = '{$word}'" : "{$textfield} LIKE '%{$word}%'";
             }
 
             if ($local_clauses !== []) {
@@ -105,7 +105,7 @@ function get_sql_search_clause(
                 $local_clauses = prepend_append_array_items($local_clauses, '(', ')');
 
                 $clauses[] = implode(
-                    ' ' . $search['fields'][$textfield]['mode'] . ' ',
+                    " {$search['fields'][$textfield]['mode']} ",
                     $local_clauses
                 );
             }
@@ -139,14 +139,14 @@ function get_sql_search_clause(
         foreach ($search['fields']['allwords']['words'] as $word) {
             $field_clauses = [];
             foreach ($fields as $field) {
-                $field_clauses[] = $field . " LIKE '%" . $word . "%'";
+                $field_clauses[] = "{$field} LIKE '%{$word}%'";
             }
 
             if ($cat_fields !== []) {
                 $cat_word_clauses = [];
                 $cat_field_clauses = [];
                 foreach ($cat_fields as $cat_field) {
-                    $cat_field_clauses[] = $cat_fields_dictionnary[$cat_field] . " LIKE '%" . $word . "%'";
+                    $cat_field_clauses[] = "{$cat_fields_dictionnary[$cat_field]} LIKE '%{$word}%'";
                 }
 
                 // adds brackets around where clauses
@@ -221,7 +221,7 @@ function get_sql_search_clause(
         }
 
         $clauses[] = "\n         " . implode(
-            "\n         " . $search['fields']['allwords']['mode'] . "\n         ",
+            "\n         {$search['fields']['allwords']['mode']}\n         ",
             $word_clauses
         );
 
@@ -246,17 +246,17 @@ function get_sql_search_clause(
 
     foreach (['date_available', 'date_creation'] as $datefield) {
         if (isset($search['fields'][$datefield])) {
-            $clauses[] = $datefield . " = '" . $search['fields'][$datefield]['date'] . "'";
+            $clauses[] = "{$datefield} = '{$search['fields'][$datefield]['date']}'";
         }
 
         foreach (['after', 'before'] as $suffix) {
-            $key = $datefield . '-' . $suffix;
+            $key = "{$datefield}-{$suffix}";
 
             if (isset($search['fields'][$key])) {
                 $clauses[] = $datefield .
                   ($suffix === 'after' ? ' >' : ' <') .
                   ($search['fields'][$key]['inc'] ? '=' : '') .
-                  " '" . $search['fields'][$key]['date'] . "'";
+                  " '{$search['fields'][$key]['date']}'";
             }
         }
     }
@@ -275,14 +275,14 @@ function get_sql_search_clause(
             $clauses[] = 'date_available > SUBDATE(NOW(), INTERVAL ' . $options[$search['fields']['date_posted']] . ')';
         } elseif (preg_match('/^y(\d+)$/', (string) $search['fields']['date_posted'], $matches)) {
             // that is for y2023 = all photos posted in 2022
-            $clauses[] = 'YEAR(date_available) = ' . $matches[1];
+            $clauses[] = "YEAR(date_available) = {$matches[1]}";
         }
     }
 
     if (! empty($search['fields']['filetypes'])) {
         $filetypes_clauses = [];
         foreach ($search['fields']['filetypes'] as $ext) {
-            $filetypes_clauses[] = "path LIKE '%." . $ext . "'";
+            $filetypes_clauses[] = "path LIKE '%.{$ext}'";
         }
 
         $clauses[] = implode(' OR ', $filetypes_clauses);
@@ -309,7 +309,7 @@ function get_sql_search_clause(
 
     $where_separator =
       implode(
-          "\n    " . $search['mode'] . ' ',
+          "\n    {$search['mode']} ",
           $clauses
       );
 
@@ -375,11 +375,13 @@ function get_regular_search_results(
             FROM images i
             INNER JOIN image_category AS ic ON id = ic.image_id
             LEFT JOIN image_tag AS it ON id = it.image_id
-            WHERE {$search_clause}\n
+            WHERE {$search_clause}
+
             SQL;
         if ($images_where !== '' && $images_where !== '0') {
             $query .= <<<SQL
-                AND {$images_where}\n
+                AND {$images_where}
+
                 SQL;
         }
 
@@ -629,19 +631,19 @@ class QDateRangeScope extends QSearchScope
     ): string {
         $clauses = [];
         if ($token->scope_data[0] != '') {
-            $clauses[] = $field . " >= '" . $token->scope_data[0] . "'";
+            $clauses[] = "{$field} >= '{$token->scope_data[0]}'";
         }
 
         if ($token->scope_data[1] != '') {
-            $clauses[] = $field . " <= '" . $token->scope_data[1] . "'";
+            $clauses[] = "{$field} <= '{$token->scope_data[1]}'";
         }
 
         if ($clauses === []) {
             if (($token->modifier & QST_WILDCARD) !== 0) {
-                return $field . ' IS NOT NULL';
+                return "{$field} IS NOT NULL";
             }
 
-            return $field . ' IS NULL';
+            return "{$field} IS NULL";
         }
 
         return '(' . implode(' AND ', $clauses) . ')';
@@ -1137,7 +1139,7 @@ function qsearch_get_text_token_search_sql(
         } else {
             $ft = $variant;
             if (($token->modifier & QST_QUOTED) !== 0) {
-                $ft = "'{$ft}'";
+                $ft = '"' . $ft . '"';
             }
 
             if (($token->modifier & QST_WILDCARD_END) !== 0) {
@@ -1163,7 +1165,13 @@ function qsearch_get_images(
 ): void {
     $qsr->images_iids = array_fill(0, count($expr->stokens), []);
 
-    $query_base = 'SELECT id from images i WHERE';
+    $query_base = <<<SQL
+        SELECT id
+        FROM images i
+        WHERE
+
+        SQL;
+
     $counter = count($expr->stokens);
     for ($i = 0; $i < $counter; $i++) {
         $token = $expr->stokens[$i];
@@ -1172,7 +1180,7 @@ function qsearch_get_images(
 
         $like = addslashes($token->term);
         $like = str_replace(['%', '_'], ['\\%', '\\_'], $like); // escape LIKE specials %_
-        $file_like = "CONVERT(file, CHAR) LIKE '%{$like}%'";
+        $file_like = "CONVERT(file, CHAR) LIKE '%{$like}%\'";
 
         switch ($scope_id) {
             case 'photo':
@@ -1228,8 +1236,7 @@ function qsearch_get_images(
         }
 
         if (! empty($clauses)) {
-            $clauses_ = implode("\n OR ", $clauses);
-            $query = "{$query_base} ({$clauses_});";
+            $query = $query_base . '(' . implode("\n OR ", $clauses) . ')';
             $qsr->images_iids[$i] = query2array($query, null, 'id');
         }
     }
@@ -1630,7 +1637,7 @@ function get_quick_search_results_no_cache(
     $where_clauses = [];
     $where_clauses[] = 'i.id IN (' . implode(',', $ids) . ')';
     if (! empty($options['images_where'])) {
-        $where_clauses[] = '(' . $options['images_where'] . ')';
+        $where_clauses[] = "({$options['images_where']})";
     }
 
     if ($permissions) {
@@ -1646,12 +1653,14 @@ function get_quick_search_results_no_cache(
 
     $whereClauses = implode("\n AND ", $where_clauses);
     $query = <<<SQL
-        SELECT DISTINCT(id) FROM images i\n
+        SELECT DISTINCT(id) FROM images i
+
         SQL;
 
     if ($permissions) {
         $query .= <<<SQL
-            INNER JOIN image_category AS ic ON id = ic.image_id\n
+            INNER JOIN image_category AS ic ON id = ic.image_id
+            
             SQL;
     }
 

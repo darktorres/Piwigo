@@ -1,5 +1,5 @@
 {if isset($comment_derivative_params)}
-	{html_style}<style type="text/css">
+	{html_style}<style>
 		.commentElement .illustration {
 			width:{$comment_derivative_params->max_width()+5}px
 		}

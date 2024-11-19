@@ -73,7 +73,6 @@ if (isset($_GET['getMissingDerivative'])) {
             }
 
             $mtime = file_exists($derivative->get_path()) ? filemtime($derivative->get_path()) : false;
-
             if ($mtime === false) {
                 $urls[] = $derivative->get_url() . $uid;
             }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 /**
+ * class DummyTheme_maintain
  * used when a theme uses the old procedural declaration of maintenance methods
  */
 class DummyTheme_maintain extends ThemeMaintain
@@ -36,7 +37,7 @@ class DummyTheme_maintain extends ThemeMaintain
     public function delete(): void
     {
         if (is_callable('theme_delete')) {
-            theme_delete();
+            theme_delete($this->theme_id);
         }
     }
 }
@@ -288,7 +289,8 @@ class themes
     ): array {
         $query = <<<SQL
             SELECT *
-            FROM themes\n
+            FROM themes
+            
             SQL;
 
         $clauses = [];

@@ -354,7 +354,6 @@ if (empty($page['is_external'])) {
                 }
 
                 $user_ids_str = implode(',', $user_ids);
-
                 $query = <<<SQL
                     SELECT {$conf['user_fields']['id']} AS id, {$conf['user_fields']['username']} AS username
                     FROM users
@@ -378,7 +377,6 @@ if (empty($page['is_external'])) {
             $fullname_of = [];
 
             $cat_words = implode(',', $my_search['fields']['cat']['words']);
-
             $query = <<<SQL
                 SELECT id, uppercats
                 FROM categories

@@ -45,7 +45,7 @@
   });
 </script>{/footer_script}
 
-{html_style}<style type="text/css">
+{html_style}<style>
   .who_option {
     margin-top: 5px;
   }

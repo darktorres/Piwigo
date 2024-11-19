@@ -45,24 +45,12 @@ var GDThumb = {
             jQuery(window).on("RVTS_loaded", GDThumb.build);
 
             mainlists.on("resize", GDThumb.process);
-            jQuery("ul.thumbnails .thumbLegend.overlay").on(
-                "click",
-                function () {
-                    window.location.href = $(this)
-                        .parent()
-                        .find("a")
-                        .attr("href");
-                },
-            );
-            jQuery("ul.thumbnails .thumbLegend.overlay-ex").on(
-                "click",
-                function () {
-                    window.location.href = $(this)
-                        .parent()
-                        .find("a")
-                        .attr("href");
-                },
-            );
+            jQuery("ul.thumbnails .thumbLegend.overlay").on("click", function () {
+                window.location.href = $(this).parent().find("a").attr("href");
+            });
+            jQuery("ul.thumbnails .thumbLegend.overlay-ex").on("click", function () {
+                window.location.href = $(this).parent().find("a").attr("href");
+            });
         }
     },
 

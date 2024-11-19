@@ -54,8 +54,6 @@ function generate_key(
 
 /**
  * Called by PHP session manager, always return true.
- *
- * @return true
  */
 function pwg_session_open(
     string $path,
@@ -66,8 +64,6 @@ function pwg_session_open(
 
 /**
  * Called by PHP session manager, always return true.
- *
- * @return true
  */
 function pwg_session_close(): bool
 {
@@ -118,8 +114,6 @@ function pwg_session_read(
 
 /**
  * Called by PHP session manager, writes data in the sessions table.
- *
- * @return true
  */
 function pwg_session_write(
     string $session_id,
@@ -151,8 +145,6 @@ function pwg_session_write(
 
 /**
  * Called by PHP session manager, deletes data in the sessions table.
- *
- * @return true
  */
 function pwg_session_destroy(
     string $session_id
@@ -168,8 +160,6 @@ function pwg_session_destroy(
 
 /**
  * Called by PHP session manager, garbage collector for expired sessions.
- *
- * @return true
  */
 function pwg_session_gc(): bool
 {

@@ -145,13 +145,15 @@ while ($row = pwg_db_fetch_assoc($result)) {
 $query_false = <<<SQL
     SELECT id, name, uppercats, global_rank
     FROM categories
-    WHERE status = 'private'\n
+    WHERE status = 'private'
+
     SQL;
 
 if ($authorized_ids !== []) {
     $ids_list = implode(',', $authorized_ids);
     $query_false .= <<<SQL
-        AND id NOT IN ({$ids_list})\n
+        AND id NOT IN ({$ids_list})
+        
         SQL;
 }
 

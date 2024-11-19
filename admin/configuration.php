@@ -325,9 +325,7 @@ switch ($page['section']) {
                 require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
             }
 
-            if (isset($conf['local_dir_site']) && file_exists(
-                PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php'
-            )) {
+            if (isset($conf['local_dir_site']) && file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php')) {
                 require PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php';
             }
 

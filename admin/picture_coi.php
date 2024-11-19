@@ -22,7 +22,8 @@ check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 
 if (isset($_POST['submit'])) {
     $query = <<<SQL
-        UPDATE images\n
+        UPDATE images
+        
         SQL;
     if (strlen((string) $_POST['l']) == 0) {
         $query .= " SET coi = NULL\n";

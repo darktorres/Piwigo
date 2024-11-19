@@ -89,7 +89,6 @@ function ws_getMissingDerivatives(
                 }
 
                 $mtime = file_exists($derivative->get_path()) ? filemtime($derivative->get_path()) : false;
-
                 if ($mtime === false) {
                     $urls[] = $derivative->get_url() . $uid;
                 }
@@ -343,18 +342,21 @@ function ws_rates_delete(
 ): int|string {
     $query = <<<SQL
         DELETE FROM rate
-        WHERE user_id = {$params['user_id']}\n
+        WHERE user_id = {$params['user_id']}
+
         SQL;
 
     if (! empty($params['anonymous_id'])) {
         $query .= <<<SQL
-            AND anonymous_id = '{$params['anonymous_id']}'\n
+            AND anonymous_id = '{$params['anonymous_id']}'
+
             SQL;
     }
 
     if (! empty($params['image_id'])) {
         $query .= <<<SQL
-            AND element_id = {$params['image_id']}\n
+            AND element_id = {$params['image_id']}
+
             SQL;
     }
 
@@ -480,21 +482,25 @@ function ws_getActivityList(
     $query = <<<SQL
         SELECT activity_id, performed_by, object, object_id, action, session_idx, ip_address, occured_on, details, user_agent
         FROM activity
-        WHERE object != 'system'\n
+        WHERE object != 'system'
+
         SQL;
 
     if (isset($param['uid'])) {
         $query .= <<<SQL
-            AND performed_by = {$param['uid']}\n
+            AND performed_by = {$param['uid']}
+
             SQL;
     } elseif ($conf['activity_display_connections'] == 'none') {
         $query .= <<<SQL
-            AND action NOT IN ('login', 'logout')\n
+            AND action NOT IN ('login', 'logout')
+
             SQL;
     } elseif ($conf['activity_display_connections'] == 'admins_only') {
         require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
         $query .= <<<SQL
-            AND NOT (action IN ('login', 'logout') AND object_id NOT IN ({$admin_ids}))\n
+            AND NOT (action IN ('login', 'logout') AND object_id NOT IN ({$admin_ids}))
+            
             SQL;
     }
 
@@ -820,10 +826,7 @@ function ws_history_search(
         $search_details = query2array($query, 'id', 'rules');
 
         foreach ($search_details as $id_search => $rules_search) {
-            if (is_serialized($rules_search)) {
-                $rules_search = unserialize($rules_search)['fields'];
-            }
-
+            $rules_search = is_serialized($rules_search) ? unserialize($rules_search)['fields'] : null;
             if (! empty($rules_search['tags']['words'])) {
                 $has_tags = true;
             }

@@ -58,7 +58,10 @@ div.ps-toolbar div div.ps-toolbar-content {
     margin-bottom: 8px;
 }
 
-/* .ui-icon-profil { background-image: url("images/profil.png"); background-color: transparent; } */
+/* .ui-icon-profil {
+    background-image: url("images/profil.png");
+    background-color: transparent;
+} */
 
 .ui-content {
     overflow: hidden;

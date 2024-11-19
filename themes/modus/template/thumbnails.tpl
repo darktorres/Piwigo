@@ -3,7 +3,7 @@
 		{modus_thumbs}
 	{else}
 		{if $smarty.const.IMG_SQUARE == $derivative_params->type}{assign var='SHOW_THUMBNAIL_CAPTION' value=false}{/if}
-		{html_style}<style type="text/css">
+		{html_style}<style>
 			{*Set some sizes according to maximum thumbnail width and height*}
 			.thumbnails SPAN,
 			.thumbnails .wrap2 A {

@@ -51,9 +51,9 @@ function ws_categories_getImages(
     $where_clauses = [];
     foreach ($params['cat_id'] as $cat_id) {
         if ($params['recursive']) {
-            $where_clauses[] = 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,)" . $cat_id . '(,|$)\'';
+            $where_clauses[] = 'uppercats ' . DB_REGEX_OPERATOR . " '(^|,){$cat_id}(,|$)'";
         } else {
-            $where_clauses[] = 'id=' . $cat_id;
+            $where_clauses[] = "id = {$cat_id}";
         }
     }
 
@@ -101,7 +101,7 @@ function ws_categories_getImages(
             $order_by = $cats[$params['cat_id'][0]]['image_order'];
         }
 
-        $order_by = empty($order_by) ? $conf['order_by'] : 'ORDER BY ' . $order_by;
+        $order_by = empty($order_by) ? $conf['order_by'] : "ORDER BY {$order_by}";
         $favorite_ids = get_user_favorites();
 
         $where_condition = implode("\n    AND ", $where_clauses);
@@ -261,8 +261,8 @@ function ws_categories_getList(
     }
 
     if ($params['public']) {
-        $where[] = "status = 'public'";
-        $where[] = "visible = 'true'";
+        $where[] = 'status = "public"';
+        $where[] = 'visible = "true"';
 
         $join_user = $conf['guest_id'];
     } elseif (is_admin()) {
@@ -284,14 +284,16 @@ function ws_categories_getList(
             image_order
         FROM categories
         {$join_type} JOIN user_cache_categories ON id = cat_id AND user_id = {$join_user}
-        WHERE {$where_clause}\n
+        WHERE {$where_clause}
+
         SQL;
 
     if (isset($params['search']) && $params['search'] != '') {
         $search_escaped = pwg_db_real_escape_string($params['search']);
         $query .= <<<SQL
             AND name LIKE '%{$search_escaped}%'
-            LIMIT {$conf['linked_album_search_limit']}\n
+            LIMIT {$conf['linked_album_search_limit']}
+
             SQL;
     }
 
@@ -529,8 +531,7 @@ function ws_categories_getAdminList(
         $params['additional_output'] = '';
     }
 
-    $additional_output_ = explode(',', (string) $params['additional_output']);
-    $params['additional_output'] = array_map(trim(...), $additional_output_);
+    $params['additional_output'] = array_map(trim(...), explode(',', (string) $params['additional_output']));
 
     $query = <<<SQL
         SELECT category_id, COUNT(*) AS counter
@@ -543,14 +544,16 @@ function ws_categories_getAdminList(
 
     $query = <<<SQL
         SELECT SQL_CALC_FOUND_ROWS id, name, comment, uppercats, global_rank, dir, status, image_order
-        FROM categories\n
+        FROM categories
+
         SQL;
 
     if (isset($params['search']) && $params['search'] != '') {
         $search_term = pwg_db_real_escape_string($params['search']);
         $query .= <<<SQL
             WHERE name LIKE '%{$search_term}%'
-            LIMIT {$conf['linked_album_search_limit']}\n
+            LIMIT {$conf['linked_album_search_limit']}
+            
             SQL;
     }
 
@@ -698,7 +701,7 @@ function ws_categories_setRank(
         $order_new_by_id = $order_new;
         sort($order_new_by_id, SORT_NUMERIC);
 
-        $id_uppercat_ = (empty($category['id_uppercat']) ? 'IS NULL' : "= {$category['id_uppercat']}");
+        $id_uppercat_condition = empty($category['id_uppercat']) ? 'IS NULL' : "= {$category['id_uppercat']}";
         $query = <<<SQL
             SELECT id
             FROM categories
@@ -714,7 +717,7 @@ function ws_categories_setRank(
     } else {
         $params['category_id'] = implode('', $params['category_id']);
 
-        $id_uppercat_ = (empty($category['id_uppercat']) ? 'IS NULL' : "= {$category['id_uppercat']}");
+        $id_uppercat_condition = empty($category['id_uppercat']) ? 'IS NULL' : "= {$category['id_uppercat']}";
         $query = <<<SQL
             SELECT id
             FROM categories
@@ -1029,7 +1032,8 @@ function ws_categories_delete(
     if (! in_array($params['photo_deletion_mode'], $modes)) {
         return new PwgError(
             500,
-            '[ws_categories_delete] invalid parameter photo_deletion_mode "' . $params['photo_deletion_mode'] . '"'
+            '[ws_categories_delete]'
+      . ' invalid parameter photo_deletion_mode "' . $params['photo_deletion_mode'] . '"'
       . ', possible values are {' . implode(', ', $modes) . '}.'
         );
     }

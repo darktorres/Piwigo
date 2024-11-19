@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset={$CONTENT_ENCODING}" />
   <title>Piwigo Mail</title>
 
-  <style type="text/css">
+  <style>
     {if isset($GLOBAL_MAIL_CSS)}{$GLOBAL_MAIL_CSS}{/if}
     {if isset($MAIL_CSS)}{$MAIL_CSS}{/if}
   </style>

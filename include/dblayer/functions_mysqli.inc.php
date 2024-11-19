@@ -150,7 +150,10 @@ function pwg_db_nextval(
     string $column,
     string $table
 ): string {
-    $query = "SELECT COALESCE(MAX({$column}) + 1, 1) FROM {$table}";
+    $query = <<<SQL
+        SELECT COALESCE(MAX({$column}) + 1, 1)
+        FROM {$table};
+        SQL;
     [$next] = pwg_db_fetch_row(pwg_query($query));
 
     return $next;
@@ -229,7 +232,8 @@ function mass_updates(
 
             $query = <<<SQL
                 UPDATE {$tablename}
-                SET\n
+                SET
+
                 SQL;
 
             foreach ($dbfields['update'] as $key) {
@@ -251,7 +255,7 @@ function mass_updates(
             if (! $is_first) {// only if one field at least updated
                 $is_first = true;
 
-                $query .= ' WHERE\n';
+                $query .= " WHERE\n";
                 foreach ($dbfields['primary'] as $key) {
                     if (! $is_first) {
                         $query .= ' AND ';
@@ -338,10 +342,8 @@ function mass_updates(
 
         $query = <<<SQL
             UPDATE {$tablename} AS t1, {$temporary_tablename} AS t2
-            SET
-                {$updateFields}
-            WHERE
-                {$primaryConditions};
+            SET {$updateFields}
+            WHERE {$primaryConditions};
             SQL;
         pwg_query($query);
 
@@ -368,7 +370,8 @@ function single_update(
 
     $query = <<<SQL
         UPDATE {$tablename}
-        SET\n
+        SET
+
         SQL;
 
     foreach ($datas as $key => $value) {
@@ -390,7 +393,7 @@ function single_update(
     if (! $is_first) {// only if one field at least updated
         $is_first = true;
 
-        $query .= ' WHERE\n';
+        $query .= " WHERE\n";
 
         foreach ($where as $key => $value) {
             if (! $is_first) {
@@ -416,7 +419,7 @@ function single_update(
  *
  * @param array $dbfields - fields from $datas which will be used
  * @param array $options
- *    - boolean ignore - use "INSERT IGNORE"
+ *    - bool ignore - use "INSERT IGNORE"
  */
 function mass_inserts(
     string $table_name,
@@ -430,11 +433,11 @@ function mass_inserts(
     }
 
     if (count($datas) != 0) {
-        [, $packet_size] = pwg_db_fetch_row(pwg_query("SHOW VARIABLES LIKE 'max_allowed_packet';"));
-        $dbfields_ = implode(
-            ',',
-            $dbfields
-        );
+        $query = <<<SQL
+            SHOW VARIABLES LIKE 'max_allowed_packet';
+            SQL;
+        [, $packet_size] = pwg_db_fetch_row(pwg_query($query));
+        $dbfields_ = implode(',', $dbfields);
         $queryBase = "INSERT {$ignore} INTO {$table_name} ({$dbfields_}) VALUES ";
         $query = '';
 
@@ -494,7 +497,8 @@ function single_insert(
         $query = <<<SQL
             INSERT {$ignore} INTO {$table_name}
                 ({$columns})
-            VALUES\n
+            VALUES
+
             SQL;
 
         $query .= '(';
@@ -579,6 +583,13 @@ function do_maintenance_all_tables(): void
     } else {
         $page['errors'][] = l10n('Optimizations have been completed with some errors.');
     }
+}
+
+function pwg_db_concat(
+    array $array
+): string {
+    $string = implode(',', $array);
+    return 'CONCAT(' . $string . ')';
 }
 
 function pwg_db_concat_ws(
@@ -761,7 +772,6 @@ function pwg_db_date_to_ts(
         UNIX_TIMESTAMP({$date})
         SQL;
 }
-
 
 /**
  * Builds an data array from a SQL query.

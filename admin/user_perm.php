@@ -118,7 +118,8 @@ $query_true = <<<SQL
     FROM categories
     INNER JOIN user_access ON cat_id = id
     WHERE status = 'private'
-        AND user_id = {$page['user']}\n
+        AND user_id = {$page['user']}
+
     SQL;
 if ($group_authorized !== []) {
     $groupAuthorizedImplode = implode(',', $group_authorized);
@@ -137,7 +138,8 @@ while ($row = pwg_db_fetch_assoc($result)) {
 $query_false = <<<SQL
     SELECT id, name, uppercats, global_rank
     FROM categories
-    WHERE status = 'private'\n
+    WHERE status = 'private'
+    
     SQL;
 if ($authorized_ids !== []) {
     $authorizedIdsImplode = implode(',', $authorized_ids);

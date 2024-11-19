@@ -1,4 +1,4 @@
-9<?php
+<?php
 
 declare(strict_types=1);
 
@@ -620,7 +620,8 @@ if (count($page['cat_elements_id']) > 0) {
 
     $query = <<<SQL
         SELECT id, path, representative_ext, file, filesize, level, name, width, height, rotation
-        FROM images\n
+        FROM images
+
         SQL;
 
     if ($is_category) {
@@ -632,18 +633,21 @@ if (count($page['cat_elements_id']) > 0) {
         }
 
         $query .= <<<SQL
-            JOIN image_category ON id = image_id\n
+            JOIN image_category ON id = image_id
+
             SQL;
     }
 
     $cat_elements_id = implode(',', $page['cat_elements_id']);
     $query .= <<<SQL
-        WHERE id IN ({$cat_elements_id})\n
+        WHERE id IN ({$cat_elements_id})
+
         SQL;
 
     if ($is_category) {
         $query .= <<<SQL
-            AND category_id = {$_SESSION['bulk_manager_filter']['category']}\n
+            AND category_id = {$_SESSION['bulk_manager_filter']['category']}
+            
             SQL;
     }
 

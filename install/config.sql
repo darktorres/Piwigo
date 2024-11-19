@@ -147,7 +147,7 @@ VALUES
     (
         'extents_for_templates',
         'a:0:{}',
-        'Actived template-extension(s)'
+        'Activated template-extension(s)'
     );
 
 INSERT INTO

@@ -32,7 +32,7 @@
     });
   </script>
 
-  <style type="text/css">
+  <style>
     body {
       font-size: 12px;
     }
@@ -244,7 +244,7 @@
               </tr>
               <tr>
                 <td style="width: 30%;" class="fieldname">{'Host:Port'|@translate}</td>
-                <td><input type="text" id="dbhost" name="dbhost" value="127.0.0.1:3306" required></td>
+                <td><input type="text" id="dbhost" name="dbhost" value="localhost:3306" required></td>
                 <td class="fielddesc">{'localhost or other, supplied by your host provider'|@translate}</td>
               </tr>
               <tr>
@@ -271,15 +271,13 @@
                 if (dbtypeElement) {
                   dbtypeElement.addEventListener('change', function() {
                     const dbType = this.value;
-                    console.log('Selected Database Type:', dbType); // Print current value to console
-
                     const dbHostInput = document.getElementById('dbhost');
                     const dbUserInput = document.getElementById('dbuser');
                     const dbPasswdInput = document.getElementById('dbpasswd');
 
                     switch (dbType) {
                       case 'mysqli':
-                        dbHostInput.value = '127.0.0.1:3306';
+                        dbHostInput.value = 'localhost:3306';
                         dbUserInput.value = 'root';
                         dbPasswdInput.value = '1234';
                         break;
@@ -289,7 +287,7 @@
                         dbPasswdInput.value = '';
                         break;
                       case 'pgsql':
-                        dbHostInput.value = '127.0.0.1:5432';
+                        dbHostInput.value = 'localhost:5432';
                         dbUserInput.value = 'postgres';
                         dbPasswdInput.value = '1234';
                         break;

@@ -332,7 +332,7 @@ $query = <<<SQL
     FROM image_category AS ic
     INNER JOIN categories AS c ON c.id = ic.category_id
     WHERE image_id = {$_GET['image_id']};
-SQL;
+    SQL;
 $result = pwg_query($query);
 
 $related_categories = [];

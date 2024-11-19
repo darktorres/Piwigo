@@ -37,7 +37,8 @@ if ($conf['rate']) {
                 SELECT rate
                 FROM rate
                 WHERE element_id = {$page['image_id']}
-                    AND user_id = {$user['id']};
+                    AND user_id = {$user['id']}
+
                 SQL;
 
             if (! is_autorize_status(ACCESS_CLASSIC)) {
@@ -49,6 +50,7 @@ if ($conf['rate']) {
                 $anonymous_id = implode('.', $ip_components);
                 $query .= <<<SQL
                     AND anonymous_id = '{$anonymous_id}'
+                    
                     SQL;
             }
 

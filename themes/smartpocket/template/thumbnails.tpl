@@ -14,7 +14,7 @@
 		var SPThumbsOpts ={ hMargin:{$hmargin},rowHeight:{$row_height}};
 	</script>{/footer_script}
 	{$thumb_picker->init($row_height)}
-	{html_style}<style type="text/css">
+	{html_style}<style>
 		.thumbnails .liEmpty {
 			display: none
 		}

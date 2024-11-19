@@ -13,3 +13,6 @@
 
 # Composer
 /vendor/
+
+# IntelliJ
+.idea

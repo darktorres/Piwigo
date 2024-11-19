@@ -124,7 +124,8 @@ if (isset($_POST['submit']) && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'f
         SELECT id, uppercats, global_rank, status, visible
         FROM categories
         WHERE dir IS NOT NULL
-            AND site_id = {$site_id}\n
+            AND site_id = {$site_id}
+
         SQL;
     if (isset($_POST['cat']) && is_numeric($_POST['cat'])) {
         if (isset($_POST['subcats-included']) && $_POST['subcats-included'] == 1) {
@@ -134,7 +135,8 @@ if (isset($_POST['submit']) && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'f
                 SQL;
         } else {
             $query .= <<<SQL
-                AND id = {$_POST['cat']}\n
+                AND id = {$_POST['cat']}
+                
                 SQL;
         }
     }
@@ -673,7 +675,7 @@ if (isset($_POST['submit']) && ($_POST['sync'] == 'dirs' || $_POST['sync'] == 'f
 
         $files = get_filelist(
             $opts['category_id'],
-            $site_id,
+            (int) $site_id,
             $opts['recursive'],
             false
         );
@@ -750,7 +752,7 @@ if (isset($_POST['submit']) && isset($_POST['sync_meta']) && ! $general_failure)
     $start = get_moment();
     $files = get_filelist(
         $opts['category_id'],
-        $site_id,
+        (int) $site_id,
         $opts['recursive'],
         $opts['only_new']
     );

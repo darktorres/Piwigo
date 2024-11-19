@@ -10,6 +10,7 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 /**
+ * class DummyPlugin_maintain
  * used when a plugin uses the old procedural declaration of maintenance methods
  */
 class DummyPlugin_maintain extends PluginMaintain
@@ -46,7 +47,7 @@ class DummyPlugin_maintain extends PluginMaintain
     public function uninstall(): void
     {
         if (is_callable('plugin_uninstall')) {
-            plugin_uninstall();
+            plugin_uninstall($this->plugin_id);
         }
     }
 
@@ -282,7 +283,6 @@ class plugins
     /**
      * Load metadata of a plugin in `fs_plugins` array
      * @from 2.7
-     * @return false|array
      */
     public function get_fs_plugin(
         string $plugin_id
@@ -480,7 +480,7 @@ class plugins
         }
 
         if (fetchRemote($url, $result, $get_data)) {
-            $pem_plugins = unserialize($result);
+            $pem_plugins = is_serialized($result) ? unserialize($result) : null;
             if (! is_array($pem_plugins)) {
                 return false;
             }

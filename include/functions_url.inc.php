@@ -28,7 +28,7 @@ function get_root_url(): string
 
 /**
  * returns the absolute url to the root of PWG
- * @param boolean $with_scheme if false - does not add http://toto.com
+ * @param bool $with_scheme if false - does not add http://toto.com
  */
 function get_absolute_root_url(
     bool $with_scheme = true
@@ -770,7 +770,7 @@ function get_gallery_home_url(): string
  * returns $_SERVER['QUERY_STRING'] whithout keys given in parameters
  *
  * @param string[] $rejects
- * @param boolean $escape escape *&* to *&amp;*
+ * @param bool $escape escape *&* to *&amp;*
  */
 function get_query_string_diff(
     array $rejects = [],

@@ -72,7 +72,7 @@ function get_tables(): array
 /**
  * list all columns of each given table
  *
- * @return array of array
+ * @return string[][]
  */
 function get_columns_of(
     array $tables

@@ -171,8 +171,8 @@ function check_upgrade_access_rights(): void
     $username = pwg_db_real_escape_string($username);
 
     if (version_compare($current_release, '2.0', '<')) {
-        $username = mb_convert_encoding($username, 'ISO-8859-1');
-        $password = mb_convert_encoding($password, 'ISO-8859-1');
+        $username = mb_convert_encoding((string) $username, 'ISO-8859-1');
+        $password = mb_convert_encoding((string) $password, 'ISO-8859-1');
     }
 
     if (version_compare($current_release, '1.5', '<')) {

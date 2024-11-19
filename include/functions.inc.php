@@ -60,8 +60,7 @@ function get_elapsed_time(
 function get_extension(
     string|null $filename
 ): string {
-    $ext = strrchr((string) $filename, '.');
-    return $ext ? substr(strrchr((string) $filename, '.'), 1, strlen((string) $filename)) : '';
+    return substr(strrchr((string) $filename, '.'), 1, strlen((string) $filename));
 }
 
 /**
@@ -486,14 +485,11 @@ function get_languages(): array
  * Does the current user must log visits in history table
  *
  * @since 14
- *
- * @param int $image_id
- * @param string $image_type
- *
- * @return bool
  */
-function do_log($image_id = null, $image_type = null): mixed
-{
+function do_log(
+    int $image_id = null,
+    string $image_type = null
+): bool {
     global $conf;
 
     $do_log = $conf['log'];
@@ -534,7 +530,7 @@ function pwg_log(
         pwg_query($query);
     }
 
-    if (! do_log($image_id, $image_type)) {
+    if (! do_log((int) $image_id, $image_type)) {
         return false;
     }
 
@@ -1650,7 +1646,7 @@ function prepend_append_array_items(
     string $prepend_str,
     string $append_str
 ): array {
-    array_walk($array, function (&$value, $key) use ($prepend_str, $append_str): void { $value = "{$prepend_str}{$value}{$append_str}"; });
+    array_walk($array, function (string &$value, string $key) use ($prepend_str, $append_str): void { $value = "{$prepend_str}{$value}{$append_str}"; });
     return $array;
 }
 
@@ -2079,7 +2075,7 @@ function get_pwg_token(): string
     return hash_hmac('md5', session_id(), (string) $conf['secret_key']);
 }
 
-/*
+/**
  * breaks the script execution if the given value doesn't match the given
  * pattern. This should happen only during hacking attempts.
  */

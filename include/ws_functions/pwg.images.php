@@ -460,7 +460,7 @@ function ws_images_getInfo(
 
     $where_comments = "image_id = {$image_row['id']}";
     if (! is_admin()) {
-        $where_comments .= " AND validated = 'true'";
+        $where_comments .= ' AND validated = "true"';
     }
 
     $query = <<<SQL
@@ -2208,7 +2208,8 @@ function ws_images_setInfo(
             } else {
                 return new PwgError(
                     500,
-                    '[ws_images_setInfo] invalid parameter single_value_mode "' . $params['single_value_mode'] . '"'
+                    '[ws_images_setInfo]'
+          . ' invalid parameter single_value_mode "' . $params['single_value_mode'] . '"'
           . ', possible values are {fill_if_empty, replace}.'
                 );
             }
@@ -2277,7 +2278,8 @@ function ws_images_setInfo(
         } else {
             return new PwgError(
                 500,
-                '[ws_images_setInfo] invalid parameter multiple_value_mode "' . $params['multiple_value_mode'] . '"'
+                '[ws_images_setInfo]'
+        . ' invalid parameter multiple_value_mode "' . $params['multiple_value_mode'] . '"'
         . ', possible values are {replace, append}.'
             );
         }

@@ -65,11 +65,13 @@ if ($filter['enabled']) {
             SELECT DISTINCT image_id
             FROM image_category
             INNER JOIN images ON image_id = id
-            WHERE\n
+            WHERE
+
             SQL;
         if (isset($filter['visible_categories']) && ($filter['visible_categories'] !== '' && $filter['visible_categories'] !== '0' && $filter['visible_categories'] !== 0)) {
             $query .= <<<SQL
-                category_id IN ({$filter['visible_categories']}) AND\n
+                category_id IN ({$filter['visible_categories']}) AND
+                
                 SQL;
         }
 

@@ -29,7 +29,7 @@
   }
 </style>
 
-{html_style}<style type="text/css">
+{html_style}<style>
   [name="permalink"] {
     width: 100%;
     max-width: 600px;

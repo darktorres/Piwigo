@@ -73,13 +73,15 @@ while ($row = pwg_db_fetch_assoc($result)) {
 
 $query = <<<SQL
     SELECT COUNT(DISTINCT(r.element_id))
-    FROM rate AS r\n
+    FROM rate AS r
+
     SQL;
 
 if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= <<<SQL
         JOIN images AS i ON r.element_id = i.id
-        JOIN image_category AS ic ON ic.image_id = i.id\n
+        JOIN image_category AS ic ON ic.image_id = i.id
+
         SQL;
 }
 
@@ -151,12 +153,14 @@ $query = <<<SQL
     SELECT i.id, i.path, i.file, i.representative_ext, i.rating_score AS score, MAX(r.date) AS recently_rated,
         ROUND(AVG(r.rate), 2) AS avg_rates, COUNT(r.rate) AS nb_rates, SUM(r.rate) AS sum_rates
     FROM rate AS r
-    LEFT JOIN images AS i ON r.element_id = i.id\n
+    LEFT JOIN images AS i ON r.element_id = i.id
+
     SQL;
 
 if (isset($page['cat_filter']) && ($page['cat_filter'] !== '' && $page['cat_filter'] !== '0')) {
     $query .= <<<SQL
-        JOIN image_category AS ic ON ic.image_id = i.id\n
+        JOIN image_category AS ic ON ic.image_id = i.id
+        
         SQL;
 }
 

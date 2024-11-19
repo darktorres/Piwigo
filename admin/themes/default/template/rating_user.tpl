@@ -1,8 +1,17 @@
 {combine_script id='jquery.dataTables' load='footer' path='node_modules/datatables/media/js/jquery.dataTables.js'}
-{html_style}<style type="text/css">
-	.sorting { background: url(node_modules/datatables/media/images/sort_both.png) no-repeat center right; cursor:pointer; }
-	.sorting_asc { background: url(node_modules/datatables/media/images/sort_asc.png) no-repeat center right; }
-	.sorting_desc { background: url(node_modules/datatables/media/images/sort_desc.png) no-repeat center right; }
+{html_style}<style>
+	.sorting {
+		background: url(node_modules/datatables/media/images/sort_both.png) no-repeat center right;
+		cursor: pointer;
+	}
+
+	.sorting_asc {
+		background: url(node_modules/datatables/media/images/sort_asc.png) no-repeat center right;
+	}
+
+	.sorting_desc {
+		background: url(node_modules/datatables/media/images/sort_desc.png) no-repeat center right;
+	}
 
 	.sorting,
 	.sorting_asc,
@@ -10,8 +19,13 @@
 		padding: 3px 18px 3px 10px;
 	}
 
-	.sorting_asc_disabled { background: url(node_modules/datatables/media/images/sort_asc_disabled.png) no-repeat center right; }
-	.sorting_desc_disabled { background: url(node_modules/datatables/media/images/sort_desc_disabled.png) no-repeat center right; }
+	.sorting_asc_disabled {
+		background: url(node_modules/datatables/media/images/sort_asc_disabled.png) no-repeat center right;
+	}
+
+	.sorting_desc_disabled {
+		background: url(node_modules/datatables/media/images/sort_desc_disabled.png) no-repeat center right;
+	}
 
 	.dtBar {
 		text-align: left;

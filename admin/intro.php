@@ -252,8 +252,6 @@ $date_string = $date->format('Y-m-d');
 if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity_last_weeks']['calculated_on'] < strtotime('5 minutes ago')) {
     $start_time = get_moment();
 
-    $date_format_function = '';
-
     if (DB_ENGINE === 'MySQL') {
         $date_format_function = "DATE_FORMAT(occured_on, '%Y-%m-%d')";
     } elseif (DB_ENGINE === 'PostgreSQL') {
@@ -282,7 +280,8 @@ if (! isset($_SESSION['cache_activity_last_weeks']) || $_SESSION['cache_activity
         $day_nb = $day_date->format('N');
 
         @$activity_last_weeks[$week][$day_nb]['details'][ucfirst((string) $action['object'])][ucfirst((string) $action['action'])] = $action['activity_counter'];
-        $activity_last_weeks[$week][$day_nb]['number'] = ($activity_last_weeks[$week][$day_nb]['number'] ?? null) + $action['activity_counter'];
+        $activity_last_weeks[$week][$day_nb]['number'] ??= 0;
+        $activity_last_weeks[$week][$day_nb]['number'] += $action['activity_counter'];
         @$activity_last_weeks[$week][$day_nb]['date'] = format_date($day_date->getTimestamp());
     }
 
@@ -418,8 +417,10 @@ foreach ($file_extensions as $ext => $ext_details) {
         $type = 'Other';
     }
 
-    $data_storage[$type]['total']['filesize'] = ($data_storage[$type]['total']['filesize'] ?? null) + $ext_details['filesize'];
-    $data_storage[$type]['total']['nb_files'] = ($data_storage[$type]['total']['nb_files'] ?? null) + $ext_details['ext_counter'];
+    $data_storage[$type]['total']['filesize'] ??= 0;
+    $data_storage[$type]['total']['filesize'] += $ext_details['filesize'];
+    $data_storage[$type]['total']['nb_files'] ??= 0;
+    $data_storage[$type]['total']['nb_files'] += $ext_details['ext_counter'];
 
     $data_storage[$type]['details'][strtoupper($ext)] = [
         'filesize' => $ext_details['filesize'],

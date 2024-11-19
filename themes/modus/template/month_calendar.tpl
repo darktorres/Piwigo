@@ -1,6 +1,6 @@
 {include file='../../default/template/month_calendar.tpl'}
 {if isset($chronology_calendar.month_view)}
-	{html_style}<style type="text/css">
+	{html_style}<style>
 		.calMonth TH {
 			max-width:{$chronology_calendar.month_view.CELL_WIDTH}px;
 			overflow: hidden;

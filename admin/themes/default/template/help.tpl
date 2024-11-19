@@ -1,5 +1,5 @@
 {if not $ENABLE_SYNCHRONIZATION}
-    {html_style}<style type="text/css">
+    {html_style}<style>
         #helpSynchro {
             display: none;
         }

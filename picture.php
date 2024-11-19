@@ -30,7 +30,8 @@ if (! isset($page['rank_of'][$page['image_id']])) {
     $query = <<<SQL
         SELECT id, file, level
         FROM images
-        WHERE\n
+        WHERE
+        
         SQL;
     if ($page['image_id'] > 0) {
         $query .= "id = {$page['image_id']}\n";

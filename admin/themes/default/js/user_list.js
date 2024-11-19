@@ -1260,8 +1260,7 @@ function fill_user_edit_update(user_to_edit, pop_in) {
     pop_in
         .find(".update-user-button")
         .off("click")
-        .on(
-            "click",
+        .on("click",
             user_to_edit.id === guest_id ? update_guest_info : update_user_info,
         );
     pop_in
@@ -1454,7 +1453,7 @@ function fill_ajax_data_from_properties(ajax_data, pop_in) {
     } else if (connected_user_status == "webmaster") {
         ajax_data["status"] = pop_in.find(".user-property-status select").val();
     }
-    // console.log(ajax_data['status']);
+    // console.log(ajax_data["status"]);
     ajax_data["level"] = pop_in.find(".user-property-level select").val();
     ajax_data["group_id"] = groups_selected.length == 0 ? -1 : groups_selected;
     ajax_data["enabled_high"] =
@@ -1873,8 +1872,7 @@ function update_user_list() {
             update_pagination_menu();
             current_users = data.result.users;
             generate_user_list();
-            $(".user-col.user-first-col.user-container-edit").on(
-                "click",
+            $(".user-col.user-first-col.user-container-edit").on("click",
                 function () {
                     let uid_index = $(this)
                         .closest(".user-container")

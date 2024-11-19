@@ -10,7 +10,6 @@ use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return ECSConfig::configure()
-    ->withPhpCsFixerSets(perCS: true, perCSRisky: true)
     ->withPaths([
         __DIR__,
     ])
@@ -24,12 +23,11 @@ return ECSConfig::configure()
         LineLengthFixer::class,
     ])
     ->withRootFiles()
-    ->withPhpCsFixerSets(perCS: true, php83Migration: true)
     ->withPreparedSets(
         cleanCode: true,
         common: true,
         psr12: true,
-        symplify: true,
+        symplify: true
     )
     ->withRules([
         DeclareStrictTypesFixer::class,

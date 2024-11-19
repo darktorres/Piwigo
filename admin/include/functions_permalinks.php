@@ -50,7 +50,7 @@ function get_cat_id_from_old_permalink(
 /** deletes the permalink associated with a category
  * returns true on success
  * @param int $cat_id the target category id
- * @param boolean $save if true, the current category-permalink association
+ * @param bool $save if true, the current category-permalink association
  * is saved in the old permalinks table in case external links hit it
  */
 function delete_cat_permalink(
@@ -121,7 +121,7 @@ function delete_cat_permalink(
  * returns true on success
  * @param int $cat_id the target category id
  * @param string $permalink the new permalink
- * @param boolean $save if true, the current category-permalink association
+ * @param bool $save if true, the current category-permalink association
  * is saved in the old permalinks table in case external links hit it
  */
 function set_cat_permalink(

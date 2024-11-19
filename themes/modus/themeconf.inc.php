@@ -276,7 +276,7 @@ function modus_thumbs(
 
     $template->block_html_style(
         null,
-        '<style type="text/css">
+        '<style>
             #thumbnails {
                 text-align: justify;
                 overflow: hidden;

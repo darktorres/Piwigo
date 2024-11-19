@@ -549,8 +549,8 @@ $conf['show_php_errors_on_frontend'] = true;
 $conf['apache_authentication'] = false;
 
 // If you decide to use external authentication
-// change conf below by $conf['external_authentification'] = true;
-$conf['external_authentification'] = false;
+// change conf below by $conf['external_authentication'] = true;
+$conf['external_authentication'] = false;
 
 // user_fields : mapping between generic field names and table specific
 // field names. For example, in PWG, the mail address is names

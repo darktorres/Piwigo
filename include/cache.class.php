@@ -108,18 +108,11 @@ class PersistentFileCache extends PersistentCache
             'data' => $value,
         ]);
 
-        if (! file_exists(dirname($this->dir . $key . '.cache'))) {
-            mkgetdir(dirname($this->dir . $key . '.cache'));
-        }
-
-        if (file_put_contents($this->dir . $key . '.cache', $serialized) === false) {
+        if (! file_exists($this->dir)) {
             mkgetdir($this->dir, MKGETDIR_DEFAULT & ~MKGETDIR_DIE_ON_ERROR);
-            if (file_put_contents($this->dir . $key . '.cache', $serialized) === false) {
-                return false;
-            }
         }
 
-        return true;
+        return file_put_contents($this->dir . $key . '.cache', $serialized) !== false;
     }
 
     #[\Override]

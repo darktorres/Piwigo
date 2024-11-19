@@ -4,7 +4,7 @@
 <head>
 	<title>{if $PAGE_TITLE=='Home'|@translate}{$GALLERY_TITLE}{else}{$PAGE_TITLE}{/if}</title>
 	<link rel="shortcut icon" type="image/x-icon" href="{$ROOT_URL}{$themeconf.icon_dir}/favicon.ico">
-	<link rel="stylesheet" type="text/css" href="{$ROOT_URL}themes/{$themeconf.id}/css/open-sans/open-sans.css">
+	<link rel="stylesheet" href="{$ROOT_URL}themes/{$themeconf.id}/css/open-sans/open-sans.css">
 	{* cannot be loaded by combine_css because it contains relative urls *}
 	{get_combined_css}
 	{combine_css path="themes/`$themeconf.id`/css/base.css.tpl" version=$MODUS_CSS_VERSION template=true order=-10}
@@ -28,9 +28,6 @@
 	{if not empty($page_refresh)}
 	<meta http-equiv="refresh" content="{$page_refresh.TIME};url={$page_refresh.U_REFRESH}">{/if}
 	{get_combined_scripts load='header'}
-	{if empty($smarty.server.HTTP_USER_AGENT) || strpos($smarty.server.HTTP_USER_AGENT, 'MSIE')}
-		<meta http-equiv=x-ua-compatible content="IE=edge">
-	{/if}
 	<meta name=viewport content="width=device-width,initial-scale=1">
 	{*combine_script id='jquery' load='footer'*}
 	{if not empty($head_elements)}

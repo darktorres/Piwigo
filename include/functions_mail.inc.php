@@ -291,7 +291,7 @@ function switch_lang_back(): void
  * Send a notification email to all administrators.
  * current user (if admin) is not notified
  *
- * @param boolean $send_technical_details - send user IP and browser
+ * @param bool $send_technical_details - send user IP and browser
  */
 function pwg_mail_notification_admins(
     string|array $subject,
@@ -379,29 +379,34 @@ function pwg_mail_admins(
     $query = <<<SQL
         SELECT i.user_id, u.{$conf['user_fields']['username']} AS name, u.{$conf['user_fields']['email']} AS email
         FROM users AS u
-        JOIN user_infos AS i ON i.user_id =  u.{$conf['user_fields']['id']}\n
+        JOIN user_infos AS i ON i.user_id =  u.{$conf['user_fields']['id']}
+
     SQL;
 
     if ($group_id !== null) {
         $query .= <<<SQL
-            JOIN user_group AS ug ON ug.user_id = i.user_id\n
+            JOIN user_group AS ug ON ug.user_id = i.user_id
+
             SQL;
     }
 
     $query .= <<<SQL
         WHERE i.status IN ('{$user_statuses_str}')
-            AND u.{$conf['user_fields']['email']} IS NOT NULL\n
+            AND u.{$conf['user_fields']['email']} IS NOT NULL
+
         SQL;
 
     if ($group_id !== null) {
         $query .= <<<SQL
-            AND group_id = {$group_id}\n
+            AND group_id = {$group_id}
+
             SQL;
     }
 
     if ($exclude_current_user) {
         $query .= <<<SQL
-            AND i.user_id <> {$user['id']}\n
+            AND i.user_id <> {$user['id']}
+
             SQL;
     }
 
@@ -450,12 +455,14 @@ function pwg_mail_group(
         INNER JOIN users AS u ON {$conf['user_fields']['id']} = ug.user_id
         INNER JOIN user_infos AS ui ON ui.user_id = ug.user_id
         WHERE group_id = {$group_id}
-            AND {$conf['user_fields']['email']} <> ""\n
+            AND {$conf['user_fields']['email']} <> ""
+
         SQL;
 
     if (! empty($args['language_selected'])) {
         $query .= <<<SQL
-            AND language = '{$args['language_selected']}'\n
+            AND language = '{$args['language_selected']}'
+            
             SQL;
     }
 

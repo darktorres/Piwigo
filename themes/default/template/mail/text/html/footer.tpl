@@ -1,9 +1,11 @@
             {* <!-- end $CONTENT --> *}
-          </td></tr>
+            </td>
+            </tr>
 
-          <tr><td id="footer">
+            <tr>
+              <td id="footer">
             {* <!-- begin FOOTER --> *}
-{* <!-- Please, do not remove this copyright. If you really want to,
+                {* <!-- Please, do not remove this copyright. If you really want to,
 contact us on http://piwigo.org to find a solution on how
 to show the origin of the script... --> *}
       
@@ -12,12 +14,16 @@ to show the origin of the script... --> *}
             {if not empty($VERSION)}{$VERSION}{/if}
             
             - {'Contact'|translate}
-            <a href="mailto:{$CONTACT_MAIL}?subject={'A comment on your site'|translate|escape:url}">{'Webmaster'|@translate}</a>
+                <a
+                  href="mailto:{$CONTACT_MAIL}?subject={'A comment on your site'|translate|escape:url}">{'Webmaster'|@translate}</a>
             {* <!-- end FOOTER --> *}
-          </td></tr>
+              </td>
+            </tr>
         </table>
 
-      </td></tr>
+            </td>
+            </tr>
     </table>
   </body>
+
 </html>

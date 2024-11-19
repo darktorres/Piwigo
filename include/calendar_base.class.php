@@ -41,7 +41,7 @@ abstract class CalendarBase
     /**
      * Generate navigation bars for category page.
      *
-     * @return boolean false indicates that thumbnails where not included
+     * @return bool false indicates that thumbnails where not included
      */
     abstract public function generate_category_content();
 
@@ -49,11 +49,10 @@ abstract class CalendarBase
      * Returns a sql WHERE subquery for the date field.
      *
      * @param int $max_levels (e.g. 2=only year and month)
-     * @return string
      */
     abstract public function get_date_where(
         int $max_levels = 3
-    );
+    ): string;
 
     /**
      * Initialize the calendar.

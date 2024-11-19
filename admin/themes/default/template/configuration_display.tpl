@@ -1,6 +1,6 @@
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 
-{html_style}<style type="text/css">
+{html_style}<style>
   /*
 .adminOnlyIcon::before {
   content:"(";

@@ -365,7 +365,7 @@ function createAlbumNode(node, li) {
     }
     title += '">';
     if (node.visible == "false" || node.parent.visible == "false") {
-        node.visble = "false";
+        node.visible = "false";
         title +=
             '<span class="tiptip icon-cone" title="' +
             tiptip_locked_album +

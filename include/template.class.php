@@ -334,7 +334,6 @@ class Template
      * Sets the template filenames for handles.
      *
      * @param string[] $filename_array hashmap of handle=>filename
-     * @return true
      */
     public function set_filenames(
         array $filename_array
@@ -410,12 +409,11 @@ class Template
      * Returns template extension if exists.
      *
      * @param string $filename should be empty!
-     * @return string
      */
     public function get_extent(
         string $filename = '',
         string $handle = ''
-    ): bool|string {
+    ): string {
         if (isset($this->extents[$handle])) {
             $filename = $this->extents[$handle];
         }
@@ -441,8 +439,6 @@ class Template
      * Defines _$varname_ as the compiled result of _$handle_.
      * This can be used to effectively include a template in another template.
      * This is equivalent to assign($varname, $this->parse($handle, true)).
-     *
-     * @return true
      */
     public function assign_var_from_handle(
         string $varname,
@@ -712,8 +708,6 @@ class Template
      * "explode" variable modifier.
      * Usage :
      *    - {assign var=valueExploded value=$value|explode:','}
-     *
-     * @return array
      */
     public static function mod_explode(
         string $text,
@@ -866,9 +860,9 @@ class Template
             $params['id'],
             $load,
             empty($params['require']) ? [] : explode(',', (string) $params['require']),
-            $params['path'] ?? null,
+            ($params['path'] ?? null),
             $params['version'] ?? 0,
-            $params['template'] ?? null
+            ($params['template'] ?? null)
         );
     }
 
@@ -895,7 +889,10 @@ class Template
 
         $scripts = $this->scriptLoader->get_footer_scripts();
         foreach ($scripts[0] as $script) {
-            $content[] = $this->make_script_src($script);
+            $content[] =
+              '<script src="'
+              . $this->make_script_src($script)
+              . '"></script>';
         }
 
         if ($this->scriptLoader->inline_scripts !== []) {
@@ -1822,7 +1819,7 @@ final class FileCombiner
             $key[] = $combinable->path;
             $key[] = $combinable->version;
             if ($conf['template_compile_check']) {
-                $key[] = filemtime(PHPWG_ROOT_PATH . $combinable->path);
+                $key[] = file_exists(PHPWG_ROOT_PATH . $combinable->path) ? filemtime(PHPWG_ROOT_PATH . $combinable->path) : false;
             }
 
             $pending[] = $combinable;
@@ -1868,6 +1865,7 @@ final class FileCombiner
             $result[] = $pending[0];
         }
 
+        $key = [];
         $pending = [];
     }
 

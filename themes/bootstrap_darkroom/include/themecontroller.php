@@ -211,8 +211,13 @@ class ThemeController
         // }
 
         // // select all pictures for this category
-        // $items_ = implode(',', $page['items']);
-        // $query = "SELECT id, file, representative_ext, name, comment, width, height, date_creation, path, rotation FROM images WHERE id IN ({$items_});";
+        // $items = implode(',', $page['items']);
+        // $query = <<<SQL
+        //     SELECT id, file, representative_ext, name, comment, width, height, date_creation, path, rotation
+        //     FROM images
+        //     WHERE id IN ({$items})
+        //     ORDER BY FIELD(id, {$items});
+        //     SQL;
 
         // $result = pwg_query($query);
 

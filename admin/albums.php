@@ -304,7 +304,7 @@ function get_categories_ref_date(
         $subcat_ids = [];
 
         foreach ($uppercats_of as $id => $uppercats) {
-            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', (string) $uppercats)) {
+            if (preg_match("/(^|,){$cat_id}(,|$)/", (string) $uppercats)) {
                 $subcat_ids[] = $id;
             }
         }

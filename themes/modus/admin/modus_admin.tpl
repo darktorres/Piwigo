@@ -3,7 +3,7 @@
 {combine_script id='jquery.ui' require='jquery'}
 {combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.css"}
 
-{html_style}<style type="text/css">
+{html_style}<style>
   .graphicalCheckbox {
     font-size: 16px;
     line-height: 16px;

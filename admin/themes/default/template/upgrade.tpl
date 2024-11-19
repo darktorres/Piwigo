@@ -18,7 +18,7 @@
   {get_combined_scripts load='header'}
   <!-- END get_combined_scripts -->
 
-  <style type="text/css">
+  <style>
     body {
       font-size: 12px;
     }

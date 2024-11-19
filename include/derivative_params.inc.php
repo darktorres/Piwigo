@@ -24,7 +24,6 @@ function derivative_to_url(
  * Formats a size array into a identifier usable in filename.
  *
  * @param int[] $s
- * @return string
  */
 function size_to_url(
     array $s
@@ -52,7 +51,7 @@ function size_equals(
  */
 function char_to_fraction(
     string $c
-): int {
+): float {
     return (ord($c) - ord('a')) / 25;
 }
 

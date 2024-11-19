@@ -29,7 +29,8 @@ function get_last(
 ): array {
     $query = <<<SQL
         SELECT year, month, day, hour, nb_pages
-        FROM history_summary\n
+        FROM history_summary
+
         SQL;
 
     if ($type === 'hour') {
@@ -39,7 +40,8 @@ function get_last(
         AND day IS NOT NULL
         AND hour IS NOT NULL
             ORDER BY year DESC, month DESC, day DESC, hour DESC
-            LIMIT {$last_number}\n
+            LIMIT {$last_number}
+
             SQL;
     } elseif ($type === 'day') {
         $query .= <<<SQL
@@ -48,7 +50,8 @@ function get_last(
         AND day IS NOT NULL
         AND hour IS NULL
             ORDER BY year DESC, month DESC, day DESC
-            LIMIT {$last_number}\n
+            LIMIT {$last_number}
+
             SQL;
     } elseif ($type === 'month') {
         $query .= <<<SQL
@@ -56,14 +59,16 @@ function get_last(
         AND month IS NOT NULL
         AND day IS NULL
             ORDER BY year DESC, month DESC
-            LIMIT {$last_number}\n
+            LIMIT {$last_number}
+
             SQL;
     } else {
         $query .= <<<SQL
             WHERE year IS NOT NULL
         AND month IS NULL
             ORDER BY year DESC
-            LIMIT {$last_number}\n
+            LIMIT {$last_number}
+
             SQL;
     }
 
@@ -87,7 +92,8 @@ function get_month_of_last_years(
         FROM history_summary
         WHERE month IS NOT NULL
             AND day IS NULL
-        ORDER BY year DESC, month DESC\n
+        ORDER BY year DESC, month DESC
+        
         SQL;
 
     if ($last !== 'all') {
@@ -225,6 +231,7 @@ function set_missing_values(
     DateTime $firstDate = null,
     DateTime $lastDate = null
 ): array {
+    $limit = count($data);
     $result = [];
     $date = $firstDate == null ? get_date_object($data[count($data) - 1]) : $firstDate;
 

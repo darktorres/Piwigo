@@ -61,11 +61,11 @@ function get_history(
     $clauses = [];
 
     if (isset($search['fields']['date-after'])) {
-        $clauses[] = "date >= '" . $search['fields']['date-after'] . "'";
+        $clauses[] = "date >= '{$search['fields']['date-after']}'";
     }
 
     if (isset($search['fields']['date-before'])) {
-        $clauses[] = "date <= '" . $search['fields']['date-before'] . "'";
+        $clauses[] = "date <= '{$search['fields']['date-before']}'";
     }
 
     if (isset($search['fields']['types'])) {
@@ -77,7 +77,7 @@ function get_history(
                 if ($type == 'none') {
                     $clause .= 'IS NULL';
                 } else {
-                    $clause .= "= '" . $type . "'";
+                    $clause .= "= '{$type}'";
                 }
 
                 $local_clauses[] = $clause;
@@ -172,6 +172,7 @@ function history_summarize(
         SELECT date, {$hourFunction} AS hour, MIN(id) AS min_id, MAX(id) AS max_id, COUNT(*) AS nb_pages
         FROM history
         WHERE id > {$history_min_id}
+        
         SQL;
 
     if (isset($max_lines)) {
@@ -280,13 +281,13 @@ function history_summarize(
     }
 
     foreach ($need_update as $time_key => $summary) {
-        $time_tokens = explode('-', (string) $time_key);
+        $time_tokens = explode('-', $time_key);
 
         $inserts[] = [
             'year' => $time_tokens[0],
-            'month' => $time_tokens[1],
-            'day' => $time_tokens[2],
-            'hour' => $time_tokens[3],
+            'month' => ($time_tokens[1] ?? null),
+            'day' => ($time_tokens[2] ?? null),
+            'hour' => ($time_tokens[3] ?? null),
             'nb_pages' => $summary['nb_pages'],
             'history_id_from' => $summary['history_id_from'],
             'history_id_to' => $summary['history_id_to'],

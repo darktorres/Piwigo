@@ -57,7 +57,10 @@ function get_available_tags(
         $query .= " AND tag_id IN ({$tag_ids_})";
     }
 
-    $query .= ' GROUP BY tag_id;';
+    $query .= <<<SQL
+        GROUP BY tag_id;
+        SQL;
+
     $tag_counters = query2array($query, 'tag_id', 'counter');
 
     if ($tag_counters === []) {
@@ -233,25 +236,29 @@ function get_common_tags(
         SELECT t.*, COUNT(*) AS counter
         FROM image_tag
         INNER JOIN tags t ON tag_id = id
-        WHERE image_id IN ({$items_list})\n
+        WHERE image_id IN ({$items_list})
+
         SQL;
 
     if ($excluded_tag_ids !== []) {
         $excluded_tags = implode(',', $excluded_tag_ids);
         $query .= <<<SQL
-            AND tag_id NOT IN ({$excluded_tags})\n
+            AND tag_id NOT IN ({$excluded_tags})
+
             SQL;
     }
 
     $query .= <<<SQL
         GROUP BY t.id
-        ORDER BY\n
+        ORDER BY
+
         SQL;
 
     if ($max_tags > 0) { // TODO : why ORDER field is in the if ?
         $query .= <<<SQL
             counter DESC
-            LIMIT {$max_tags}\n
+            LIMIT {$max_tags}
+            
             SQL;
     } else {
         $query .= 'NULL';

@@ -1184,7 +1184,7 @@ function update_path(): void
     $fulldirs = get_fulldirs($cat_ids);
 
     foreach ($cat_ids as $cat_id) {
-        $path_concat = pwg_db_concat(["'" . $fulldirs[$cat_id] . "/'", 'file']);
+        $path_concat = pwg_db_concat(["'{$fulldirs[$cat_id]}/'", 'file']);
         $query = <<<SQL
             UPDATE images
             SET path = {$path_concat}
@@ -1573,12 +1573,10 @@ function delete_tags(
 
 /**
  * Returns a tag id from its name. If nothing found, create a new tag.
- *
- * @return int
  */
 function tag_id_from_tag_name(
     string $tag_name
-): mixed {
+): int {
     global $page;
 
     $tag_name = trim($tag_name);
@@ -1793,7 +1791,7 @@ function fill_lounge(
 function empty_lounge(
     bool $invalidate_user_cache = true
 ): array|null {
-    global $logger;
+    global $logger, $conf;
 
     if (isset($conf['empty_lounge_running'])) {
         [$running_exec_id, $running_exec_start_time] = explode('-', (string) $conf['empty_lounge_running']);
@@ -1812,13 +1810,13 @@ function empty_lounge(
     $query = <<<SQL
         INSERT IGNORE
         INTO config
-        SET param = "empty_lounge_running",
-            value = "{$exec_id}-{$current_time}";
+        SET param = 'empty_lounge_running',
+            value = '{$exec_id}-{$current_time}';
         SQL;
     pwg_query($query);
 
     $query = <<<SQL
-        SELECT value FROM config WHERE param = "empty_lounge_running";
+        SELECT value FROM config WHERE param = 'empty_lounge_running';
         SQL;
     [$empty_lounge_running] = pwg_db_fetch_row(pwg_query($query));
     [$running_exec_id] = explode('-', (string) $empty_lounge_running);
@@ -1963,8 +1961,10 @@ function associate_images_to_categories(
  *
  * @param int[] $images
  */
-function dissociate_images_from_category($images, string $category): int
-{
+function dissociate_images_from_category(
+    array $images,
+    string $category
+): int {
     // physical links must not be broken, so we must first retrieve image_id
     // which create virtual links with the category to "dissociate from".
     $image_ids = implode(',', $images);
@@ -2013,13 +2013,15 @@ function move_images_to_categories(
         DELETE image_category.*
         FROM image_category
         JOIN images ON image_id = id
-        WHERE id IN ({$image_ids})\n
+        WHERE id IN ({$image_ids})
+
         SQL;
 
     if ($categories !== []) {
         $category_ids = implode(',', $categories);
         $query .= <<<SQL
-            AND category_id NOT IN ({$category_ids})\n
+            AND category_id NOT IN ({$category_ids})
+
             SQL;
     }
 
@@ -2399,12 +2401,10 @@ function fetchRemote(
 
 /**
  * Returns the groupname corresponding to the given group identifier if exists.
- *
- * @return string|false
  */
 function get_groupname(
     int $group_id
-): mixed {
+): string|bool {
     $query = <<<SQL
         SELECT name
         FROM groups_table
@@ -2514,12 +2514,10 @@ function get_newsletter_subscribe_base_url(
 
 /**
  * Return admin menu id for accordion.
- *
- * @return int
  */
 function get_active_menu(
     string $menu_page
-): mixed {
+): int {
     global $page;
 
     if (isset($page['active_menu'])) {
@@ -2576,7 +2574,7 @@ function get_active_menu(
 /**
  * Get tags list from SQL query (ids are surrounded by ~~, for get_tag_ids()).
  *
- * @param boolean $only_user_language - if true, only local name is returned for
+ * @param bool $only_user_language - if true, only local name is returned for
  *    multilingual tags (if ExtendedDescription plugin is active)
  * @return array[] ('id', 'name')
  */
@@ -2994,7 +2992,7 @@ function get_admin_client_cache_keys(
         }
 
         $query .= <<<SQL
-            , "_", COUNT(*))
+            , '_', COUNT(*))
             FROM {$tables[$item]};
             SQL;
         [$keys[$item]] = pwg_db_fetch_row(pwg_query($query));
@@ -3097,13 +3095,15 @@ function get_orphans(): array
         SELECT id
         FROM images
         LEFT JOIN image_category ON id = image_id
-        WHERE category_id IS NULL\n
+        WHERE category_id IS NULL
+
         SQL;
 
     if ($lounged_ids !== []) {
         $imploded_lounged_ids = implode(',', $lounged_ids);
         $query .= <<<SQL
-            AND id NOT IN ({$imploded_lounged_ids})\n
+            AND id NOT IN ({$imploded_lounged_ids})
+            
             SQL;
     }
 
