@@ -146,11 +146,11 @@ class TemporaryState {
     //Arrays to reverse changes
     this.attrChanges = []; //Attribute changes : {object(s), attribute, value}
     this.classChanges = []; //Class changes : {object(s), state(add:true/remove:false), class}
-    this.htmlChanges = []; //Html changes : {object(s), html}
+    this.htmlChanges = []; //HTML changes : {object(s), html}
   }
 
   /**
-   * Change temporaly an attribute of an object
+   * Temporarily change an attribute of an object
    * @param {Jquery Object(s)} obj HTML Object(s)
    * @param {String} attr Attribute
    * @param {String} tempVal Temporary value of the attribute 
@@ -167,7 +167,7 @@ class TemporaryState {
   }
 
   /**
-   * Add/remove a class temporarily
+   * Temporarily add/remove a class
    * @param {Jquery Object(s)} obj HTML Object
    * @param {Boolean} st Add (true) or Remove (false) the class
    * @param {String} loadclass Class Name
@@ -189,7 +189,7 @@ class TemporaryState {
   }
 
   /**
-   * Add temporarily a class to the object
+   * Temporarily add a class to the object
    * @param {Jquery Object(s)} obj 
    * @param {string} tempclass 
    */
@@ -198,7 +198,7 @@ class TemporaryState {
   }
 
   /**
-   * Remove temporarily a class to the object
+   * Temporarily remove a class to the object
    * @param {Jquery Object(s)} obj 
    * @param {string} tempclass 
    */
@@ -207,7 +207,7 @@ class TemporaryState {
   }
 
   /**
-   * Change temporaly the html of objects (remove event handlers on the actual content)
+   * Temporarily change the HTML of objects (remove event handlers on the actual content)
    * @param {Jquery Object(s)} obj 
    * @param {string} temphtml 
    */

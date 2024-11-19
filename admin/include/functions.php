@@ -39,7 +39,7 @@ DELETE FROM '.SITES_TABLE.'
 
 /**
  * Recursively deletes one or more categories.
- * It also deletes :
+ * It also deletes:
  *    - all the elements physically linked to the category (with delete_elements)
  *    - all the links between elements and this category
  *    - all the restrictions linked to the category
@@ -48,7 +48,7 @@ DELETE FROM '.SITES_TABLE.'
  * @param string $photo_deletion_mode
  *    - no_delete : delete no photo, may create orphans
  *    - delete_orphans : delete photos that are no longer linked to any category
- *    - force_delete : delete photos even if they are linked to another category
+ *    - force_delete: delete photos even if they are linked to another category
  */
 function delete_categories($ids, $photo_deletion_mode='no_delete')
 {
@@ -57,7 +57,7 @@ function delete_categories($ids, $photo_deletion_mode='no_delete')
     return;
   }
 
-  // add sub-category ids to the given ids : if a category is deleted, all
+  // add sub-category ids to the given ids: if a category is deleted, all
   // sub-categories must be so
   $ids = get_subcat_ids($ids);
 
@@ -247,7 +247,7 @@ SELECT
 
 /**
  * Deletes elements from database.
- * It also deletes :
+ * It also deletes:
  *    - all the comments related to elements
  *    - all the links between categories/tags and elements
  *    - all the favorites/rates associated to elements
@@ -332,7 +332,7 @@ DELETE FROM '.IMAGES_TABLE.'
 ;';
   pwg_query($query);
 
-  // are the photo used as category representant?
+  // is the photo used as category representant?
   $query = '
 SELECT
     id
@@ -377,7 +377,7 @@ function delete_user($user_id)
     FAVORITES_TABLE,
     // destruction of the caddie associated with the user
     CADDIE_TABLE,
-    // deletion of piwigo specific informations
+    // deletion of piwigo specific information
     USER_INFOS_TABLE,
     USER_AUTH_KEYS_TABLE
     );
@@ -468,7 +468,7 @@ function update_category($ids = 'all')
     $where_cats = '%s IN('.wordwrap(implode(', ', $ids), 120, "\n").')';
   }
 
-  // find all categories where the setted representative is not possible :
+  // find all categories where the set representative is not possible:
   // the picture does not exist
   $query = '
 SELECT DISTINCT c.id
@@ -577,7 +577,7 @@ DELETE
 }
 
 /**
- * Returns an array containing sub-directories which are potentially
+ * Returns an array containing subdirectories which are potentially
  * a category.
  * Directories named ".svn", "thumbnail", "pwg_high" or "pwg_representative"
  * are omitted.
@@ -669,7 +669,7 @@ function save_categories_order($categories)
 
 /**
  * Orders categories (update categories.rank and global_rank database fields)
- * so that rank field are consecutive integers starting at 1 for each child.
+ * so that rank field is consecutive integers starting at 1 for each child.
  */
 function update_global_rank()
 {
@@ -766,7 +766,7 @@ UPDATE '.CATEGORIES_TABLE.'
   WHERE id IN ('.implode(',', $cats).')';
     pwg_query($query);
   }
-  // locking a category   => all its child categories become locked
+  // locking a category => all its child categories become locked
   else
   {
     $subcats = get_subcat_ids($categories);
@@ -779,7 +779,7 @@ UPDATE '.CATEGORIES_TABLE.'
 }
 
 /**
- * Change the **status** property on a set of categories : private or public.
+ * Change the **status** property on a set of categories: private or public.
  *
  * @param int[] $categories
  * @param string $value
@@ -815,10 +815,10 @@ UPDATE '.CATEGORIES_TABLE.'
   WHERE id IN ('.implode(',', $subcats).')';
     pwg_query($query);
 
-    // We have to keep permissions consistant: a sub-album can't be
+    // We have to keep permissions consistent: a sub-album can't be
     // permitted to a user or group if its parent album is not permitted to
     // the same user or group. Let's remove all permissions on sub-albums if
-    // it is not consistant. Let's take the following example:
+    // it is not consistent. Let's take the following example:
     //
     // A1        permitted to U1,G1
     // A1/A2     permitted to U1,U2,G1,G2
@@ -828,7 +828,7 @@ UPDATE '.CATEGORIES_TABLE.'
     // A6        permitted to U4
     // A6/A7     permitted to G1
     //
-    // (we consider that it can be possible to start with inconsistant
+    // (we consider that it can be possible to start with inconsistent
     // permission, given that public albums can have hidden permissions,
     // revealed once the album returns to private status)
     //
@@ -845,7 +845,7 @@ UPDATE '.CATEGORIES_TABLE.'
     //
     // 1) we must extract "top albums": A2, A5 and A6
     // 2) for each top album, decide which album is the reference for permissions
-    // 3) remove all inconsistant permissions from sub-albums of each top-album
+    // 3) remove all inconsistent permissions from sub-albums of each top-album
 
     // step 1, search top albums
     $top_categories = array();
@@ -943,7 +943,7 @@ SELECT '.$field.'
           $ref_access[] = -1;
         }
 
-        // step 3, remove the inconsistant permissions from sub-albums
+        // step 3, remove the inconsistent permissions from sub-albums
         $query = '
 DELETE
   FROM '.$table.'
@@ -1194,7 +1194,7 @@ function get_fs($path, $recursive = true)
  * Synchronize base users list and related users list.
  *
  * Compares and synchronizes base users table (USERS_TABLE) with its child
- * tables (USER_INFOS_TABLE, USER_ACCESS, USER_CACHE, USER_GROUP) : each
+ * tables (USER_INFOS_TABLE, USER_ACCESS, USER_CACHE, USER_GROUP): each
  * base user must be present in child tables, users in child tables not
  * present in base table must be deleted.
  */
@@ -1436,7 +1436,7 @@ function create_virtual_category($category_name, $parent_id=null, $options=array
 {
   global $conf, $user;
 
-  // is the given category name only containing blank spaces ?
+  // does the given category name contain only blank spaces?
   if (preg_match('/^\s*$/', $category_name))
   {
     return array('error' => l10n('The name of an album must not be empty'));
@@ -1517,16 +1517,16 @@ SELECT id, uppercats, global_rank, visible, status
     $insert['id_uppercat'] = $parent['id'];
     $insert['global_rank'] = $parent['global_rank'].'.'.$insert['rank_column'];
 
-    // at creation, must a category be visible or not ? Warning : if the
-    // parent category is invisible, the category is automatically create
+    // At creation, must a category be visible or not? Warning: if the
+    // parent category is invisible, the category is automatically created
     // invisible. (invisible = locked)
     if ('false' == $parent['visible'])
     {
       $insert['visible'] = 'false';
     }
 
-    // at creation, must a category be public or private ? Warning : if the
-    // parent category is private, the category is automatically create
+    // At creation, must a category be public or private? Warning: if the
+    // parent category is private, the category is automatically created
     // private.
     if ('private' == $parent['status'])
     {
@@ -1594,7 +1594,7 @@ SELECT id, uppercats, global_rank, visible, status
 
 /**
  * Set tags to an image.
- * Warning: given tags are all tags associated to the image, not additionnal tags.
+ * Warning: given tags are all tags associated to the image, not additional tags.
  *
  * @param int[] $tags
  * @param int $image_id
@@ -1619,7 +1619,7 @@ function add_tags($tags, $images)
 
   $taglist_before = get_image_tag_ids($images);
 
-  // we can't insert twice the same {image_id,tag_id} so we must first
+  // we can't insert the same {image_id, tag_id} twice, so we must first
   // delete lines we'll insert later
   $query = '
 DELETE
@@ -1701,7 +1701,7 @@ DELETE
 }
 
 /**
- * Returns a tag id from its name. If nothing found, create a new tag.
+ * Returns a tag id from its name. If nothing is found, create a new tag.
  *
  * @param string $tag_name
  * @return int
@@ -1746,7 +1746,7 @@ SELECT id
       }
       
       if (count($existing_tags) == 0)
-      {// finally create the tag
+      {// finally, create the tag
         mass_inserts(
           TAGS_TABLE,
           array('name', 'url_name'),
@@ -2046,7 +2046,7 @@ SELECT
     $existing[ $row['category_id'] ][] = $row['image_id'];
   }
 
-  // get max rank of each categories
+  // get max rank of each category
   $query = '
 SELECT
     category_id,
@@ -2320,7 +2320,7 @@ function create_tag($tag_name)
   // clean the tag, no html/js allowed in tag name
   $tag_name = strip_tags($tag_name);
 
-  // does the tag already exists?
+  // does the tag already exist?
   $query = '
 SELECT id
   FROM '.TAGS_TABLE.'
@@ -2354,8 +2354,8 @@ SELECT id
 }
 
 /**
- * Is the category accessible to the (Admin) user ?
- * Note : if the user is not authorized to see this category, category jump
+ * Is the category accessible to the (Admin) user?
+ * Note: if the user is not authorized to see this category, category jump
  * will be replaced by admin cat_modify page
  *
  * @param int $category_id
@@ -2826,7 +2826,7 @@ function get_tag_ids($raw_tags, $allow_create=true)
 
 /**
  * Returns the argument_ids array with new sequenced keys based on related
- * names. Sequence is not case sensitive.
+ * names. Sequence is not case-sensitive.
  * Warning: By definition, this function breaks original keys.
  *
  * @param int[] $elements_ids
@@ -3081,7 +3081,7 @@ function delete_element_derivatives($infos, $type='all')
 }
 
 /**
- * Returns an array containing sub-directories, excluding ".svn"
+ * Returns an array containing subdirectories, excluding ".svn"
  *
  * @param string $directory
  * @return string[]
@@ -3110,7 +3110,7 @@ function get_dirs($directory)
  * Recursively delete a directory.
  *
  * @param string $path
- * @param string $trash_path, try to move the directory to this path if it cannot be delete
+ * @param string $trash_path, try to move the directory to this path if it cannot be deleted
  */
 function deltree($path, $trash_path=null)
 {
@@ -3163,10 +3163,10 @@ function deltree($path, $trash_path=null)
 /**
  * Returns keys to identify the state of main tables. A key consists of the
  * last modification timestamp and the total of items (separated by a _).
- * Additionally returns the hash of root path.
+ * Additionally, returns the hash of root path.
  * Used to invalidate LocalStorage cache on admin pages.
  *
- * @param string|string[] list of keys to retrieve (categories,groups,images,tags,users)
+ * @param string|string[] list of keys to retrieve (categories, groups, images, tags, users)
  * @return string[]
  */
 function get_admin_client_cache_keys($requested=array())
@@ -3364,7 +3364,7 @@ function update_images_lastmodified($image_ids)
 {
   if (!is_array($image_ids) and is_int($image_ids))
   {
-    $images_ids = array($image_ids);
+    $image_ids = array($image_ids);
   }
   
   if (count($image_ids) == 0)
@@ -3568,7 +3568,7 @@ SELECT
 }
 
 /**
- * Return latest news from piwigo.org.
+ * Return the latest news from piwigo.org.
  *
  * @since 13
  */

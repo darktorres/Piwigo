@@ -94,7 +94,7 @@ DELETE
           break;
         }
 
-        // Set default language to user who are using this language
+        // Set the default language to user who is using this language
         $query = '
 UPDATE '.USER_INFOS_TABLE.'
   SET language = \''.get_default_language().'\'
@@ -175,7 +175,7 @@ UPDATE '.USER_INFOS_TABLE.'
             if (is_numeric($extension)) $language['extension'] = $extension;
           }
 
-          // IMPORTANT SECURITY !
+          // IMPORTANT SECURITY!
           $language = array_map('htmlspecialchars', $language);
           $this->fs_languages[$file] = $language;
         }
@@ -375,7 +375,7 @@ UPDATE '.USER_INFOS_TABLE.'
                   foreach($old_files as $old_file)
                   {
                     $old_file = trim($old_file);
-                    $old_file = trim($old_file, '/'); // prevent path starting with a "/"
+                    $old_file = trim($old_file, '/'); // prevent paths starting with a "/"
 
                     if (empty($old_file)) // empty here means the extension itself
                     {
@@ -384,7 +384,7 @@ UPDATE '.USER_INFOS_TABLE.'
 
                     $path = $extract_path.'/'.$old_file;
 
-                    // make sure the obsolete file is withing the extension directory, prevent traversal path
+                    // make sure the obsolete file is withing the extension directory, prevent path traversal
                     $realpath = realpath($path);
                     if ($realpath === false or strpos($realpath, $extract_path_realpath) !== 0)
                     {

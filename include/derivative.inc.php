@@ -239,7 +239,7 @@ final class DerivativeImage
   /**
    * Return associative an array of all DerivativeImage for a specific image.
    * Disabled derivative types can be still found in the return, mapped to an
-   * enabled derivative (e.g. the values are not unique in the return array).
+   * enabled derivative (e.g., the values are not unique in the return array).
    * This is useful for any plugin/theme to just use $deriv[IMG_XLARGE] even if 
    * the XLARGE is disabled.
    *

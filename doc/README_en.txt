@@ -15,7 +15,7 @@ displaying the installation directory in your browser :
 http://your.domain/photos
 
 Then identify as an administrator. A new link in Identification menu of main
-page will appear : Administration. Enter the administration panel.
+page will appear: Administration. Enter the administration panel.
 
 In the administration panel, take all your time for reading instructions
 explaining how to use your gallery.
@@ -37,8 +37,8 @@ Freshmeat
 
 http://freecode.com/projects/piwigo
 
-Want to stay informed at each release, stable and development
-release. Development releases notification are not send in the newsletter.
+Want to stay informed of each release, stable and development
+release. Development releases notification is not sent in the newsletter.
 
 Bugtracker
 ----------

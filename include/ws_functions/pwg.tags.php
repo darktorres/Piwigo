@@ -290,7 +290,7 @@ function ws_tags_rename($params, &$service)
   $tag_id = $params['tag_id'];
   $tag_name = strip_tags(stripslashes($params['new_name']));
 
-  // does the tag exist ?
+  // does the tag exist?
   $query = '
 SELECT COUNT(*)
   FROM '. TAGS_TABLE .'
@@ -358,7 +358,7 @@ function ws_tags_duplicate($params, &$service)
   $tag_id = $params['tag_id'];
   $copy_name = $params['copy_name'];
 
-  // does the tag exist ?
+  // does the tag exist?
   $query = '
 SELECT COUNT(*)
   FROM '. TAGS_TABLE .'

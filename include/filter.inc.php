@@ -100,7 +100,7 @@ WHERE ';
   }
   else
   {
-    // Read only data
+    // Read-only data
     $filter['categories'] = unserialize(pwg_get_session_var('filter_categories', serialize(array())));
     $filter['visible_categories'] = pwg_get_session_var('filter_visible_categories', '');
     $filter['visible_images'] = pwg_get_session_var('filter_visible_images', '');

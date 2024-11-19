@@ -12,7 +12,7 @@
 
 
 /**
- * Get standard sql where in order to restrict and filter categories and images.
+ * Get standard SQL where to restrict and filter categories and images.
  * IMAGE_CATEGORY_TABLE must be named "ic" in the query
  *
  * @param string $prefix_condition
@@ -377,7 +377,7 @@ function add_news_line(&$news, $count, $singular_key, $plural_key, $url='', $add
  * @param string $start (mysql datetime format)
  * @param string $end (mysql datetime format)
  * @param bool $exclude_img_cats if true, no info about new images/categories
- * @param bool $add_url add html link around news
+ * @param bool $add_url add HTML link around news
  * @return array
  */
 function news($start=null, $end=null, $exclude_img_cats=false, $add_url=false, $auth_key=null)
@@ -524,7 +524,7 @@ function get_recent_post_dates_array($args)
 
 
 /**
- * Returns html description about recently published elements grouped by post date.
+ * Returns HTML description about recently published elements grouped by post date.
  * @todo clean up HTML output, currently messy and invalid !
  *
  * @param array $date_detail returned value of get_recent_post_dates()

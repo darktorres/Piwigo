@@ -11,7 +11,7 @@ CREATE TABLE `piwigo_activity` (
   `performed_by` INT UNSIGNED NOT NULL,
   `session_idx` VARCHAR(255) NOT NULL,
   `ip_address` VARCHAR(50) DEFAULT NULL,
-  `occured_on` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `occurred_on` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `details` VARCHAR(255) DEFAULT NULL,
   `user_agent` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`activity_id`)

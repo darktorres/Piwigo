@@ -34,9 +34,9 @@ jQuery(document).ready(function() {
 });
 jQuery(document).ready(function() {
 jQuery('.thumbnail').tipTip({
-'delay' : 0,
-'fadeIn' : 200,
-'fadeOut' : 200
+'delay': 0,
+'fadeIn': 200,
+'fadeOut': 200
 });
 }); 
 {/footer_script}

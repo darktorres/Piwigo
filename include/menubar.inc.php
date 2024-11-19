@@ -362,8 +362,8 @@ function initialize_menu()
       $template->assign('U_PROFILE', get_root_url().'profile.php');
     }
 
-    // the logout link has no meaning with Apache authentication : it is not
-    // possible to logout with this kind of authentication.
+    // the logout link has no meaning with Apache authentication: it is not
+    // possible to log out with this kind of authentication.
     if (!$conf['apache_authentication'])
     {
       $template->assign('U_LOGOUT', get_root_url().'?act=logout');

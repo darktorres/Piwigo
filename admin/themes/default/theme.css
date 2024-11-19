@@ -937,7 +937,7 @@ LI.menuLi {
   margin: 5px;
 }
 
-.pagination-arrow.rigth {
+.pagination-arrow.right {
   -moz-transform: scale(-1, 1);
   -webkit-transform: scale(-1, 1);
   -o-transform: scale(-1, 1);
@@ -2230,7 +2230,7 @@ h2:lang(en) { text-transform:capitalize; }
 #helpContent P.nextStepLink {text-align:center; font-weight:bold; margin-bottom:20px;}
 
 /**
- * Informations box in administration
+ * Information box in administration
  */
 .infos, .errors, .warnings, .messages {
   text-align: left;
@@ -2296,7 +2296,7 @@ h2:lang(en) { text-transform:capitalize; }
 #checkActions {text-align:left; margin:0 0 20px 0;}
 .ActionUserList #checkActions {margin: 20px 0 20px 0;}
 
-.emptyResearch {opacity: 0.3;text-align: center;left: 45%;font-weight: bold;font-size: 30px; position: absolute; display: none;}
+.emptySearch {opacity: 0.3;text-align: center;left: 45%;font-weight: bold;font-size: 30px; position: absolute; display: none;}
 
 /* Plugin */
 
@@ -4459,7 +4459,7 @@ FORM#categoryOrdering p.albumActions .userSeparator {margin:0 5px;}
   display: flex !important;
 }
 
-.move-cat-container .move-cat-toogler {
+.move-cat-container .move-cat-toggler {
   display: flex;
   color: #FFBD4D;
   margin-left: 5px;
@@ -4469,10 +4469,10 @@ FORM#categoryOrdering p.albumActions .userSeparator {margin:0 5px;}
   font-weight: 600;
 }
 
-.move-cat-container .move-cat-toogler .icon-left-open{
+.move-cat-container .move-cat-toggler .icon-left-open{
   transform: rotate(180deg);
 }
-.move-cat-container .move-cat-toogler{
+.move-cat-container .move-cat-toggler{
   color: #ff7700;
   transform: scale(1.4);
 }
@@ -5000,11 +5000,11 @@ input:checked + .slider:before, input:checked + .slider::after {
   }
 }
 
-.notUsable input:checked + .slider.desactivate_disabled:before {
-  animation: desactivate_disabled .4s linear;
+.notUsable input:checked + .slider.deactivate_disabled:before {
+  animation: deactivate_disabled .4s linear;
 }
 
-@keyframes desactivate_disabled {
+@keyframes deactivate_disabled {
   50% {
     -webkit-transform: translateX(28px);
     -ms-transform: translateX(28px);
@@ -6312,7 +6312,7 @@ li.plupload_delete a:hover {background: url("images/cancelhover.svg")!important;
   font-weight:600;
 }
 
-.disabledToggle .move-cat-toogler{
+.disabledToggle .move-cat-toggler{
   color: gray;
   opacity: 0.5;
   pointer-events: none;
@@ -6648,7 +6648,7 @@ color:#FF7B00;
     white-space: nowrap;
 }
 
-.acivity-time-text {
+.activity-time-text {
   font-size: 13px;
   font-weight: bold;
 }

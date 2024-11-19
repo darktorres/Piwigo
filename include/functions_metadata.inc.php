@@ -12,7 +12,7 @@
 
 
 /**
- * returns informations from IPTC metadata, mapping is done in this function.
+ * returns information from IPTC metadata, mapping is done in this function.
  *
  * @param string $filename
  * @param array $map
@@ -58,7 +58,7 @@ function get_iptc_data($filename, $map, $array_sep=',')
             {
               // in case the origin of the photo is unsecure (user upload), we
               // remove HTML tags to avoid XSS (malicious execution of
-              // javascript)
+              // JavaScript)
               $result[$pwg_key] = strip_tags($result[$pwg_key]);
             }
           }
@@ -87,8 +87,8 @@ function clean_iptc_value($value)
 
   if ( preg_match('/[\x80-\xff]/', $value) )
   {
-    // apparently mac uses some MacRoman crap encoding. I don't know
-    // how to detect it so a plugin should do the trick.
+    // apparently, Mac uses some MacRoman crap encoding. I don't know
+    // how to detect it, so a plugin should do the trick.
     $value = trigger_change('clean_iptc_value', $value);
     if ( ($qual = qualify_utf8($value)) != 0)
     {// has non ascii chars
@@ -101,11 +101,11 @@ function clean_iptc_value($value)
         $input_encoding = 'iso-8859-1';
         if (function_exists('iconv') or function_exists('mb_convert_encoding'))
         {
-          // using windows-1252 because it supports additional characters
+          // Using windows-1252 because it supports additional characters
           // such as "oe" in a single character (ligature). About the
           // difference between Windows-1252 and ISO-8859-1: the characters
           // 0x80-0x9F will not convert correctly. But these are control
-          // characters which are almost never used.
+          // characters that are almost never used.
           $input_encoding = 'windows-1252';
         }
       }
@@ -117,7 +117,7 @@ function clean_iptc_value($value)
 }
 
 /**
- * returns informations from EXIF metadata, mapping is done in this function.
+ * returns information from EXIF metadata, mapping is done in this function.
  *
  * @param string $filename
  * @param array $map
@@ -196,7 +196,7 @@ function get_exif_data($filename, $map)
     foreach ($result as $key => $value)
     {
       // in case the origin of the photo is unsecure (user upload), we remove
-      // HTML tags to avoid XSS (malicious execution of javascript)
+      // HTML tags to avoid XSS (malicious execution of JavaScript)
       if (is_array($value))
       {
         array_walk_recursive($value, 'strip_html_in_metadata');

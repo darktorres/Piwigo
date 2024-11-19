@@ -206,7 +206,7 @@ SELECT
       die('['.__FUNCTION__.'] this photo does not exist in the database');
     }
 
-    // delete all physical files related to the photo (thumbnail, web site, HD)
+    // delete all physical files related to the photo (thumbnail, website, HD)
     delete_element_files(array($image_id));
   }
   else
@@ -548,7 +548,7 @@ function upload_file_pdf($representative_ext, $file_path)
   $ext = conf_get_param('pdf_representative_ext', 'jpg');
   $jpg_quality = conf_get_param('pdf_jpg_quality', 90);
 
-  // move the uploaded file to pwg_representative sub-directory
+  // move the uploaded file to pwg_representative subdirectory
   $representative_file_path = original_to_representative($file_path, $ext);
   prepare_directory(dirname($representative_file_path));
 
@@ -595,7 +595,7 @@ function upload_file_heic($representative_ext, $file_path)
 
   $ext = 'jpg';
 
-  // move the uploaded file to pwg_representative sub-directory
+  // move the uploaded file to pwg_representative subdirectory
   $representative_file_path = original_to_representative($file_path, $ext);
   prepare_directory(dirname($representative_file_path));
 
@@ -642,7 +642,7 @@ function upload_file_tiff($representative_ext, $file_path)
     return $representative_ext;
   }
 
-  // move the uploaded file to pwg_representative sub-directory
+  // move the uploaded file to pwg_representative subdirectory
   $representative_file_path = dirname($file_path).'/pwg_representative/';
   $representative_file_path.= get_filename_wo_extension(basename($file_path)).'.';
 
@@ -744,7 +744,7 @@ function upload_file_video($representative_ext, $file_path)
     $logger->debug($FO[0]);
   }
 
-  // Did we generate the file ?
+  // Did we generate the file?
   if (!file_exists($representative_file_path))
   {
     // Let's try with avconv if ffmpeg unavailable
@@ -758,7 +758,7 @@ function upload_file_video($representative_ext, $file_path)
     }
   }
 
-  // Did we finally generate the file ?
+  // Did we finally generate the file?
   if (!file_exists($representative_file_path))
   {
     return null;
@@ -789,7 +789,7 @@ function upload_file_psd($representative_ext, $file_path)
     return $representative_ext;
   }
 
-  // move the uploaded file to pwg_representative sub-directory
+  // move the uploaded file to pwg_representative subdirectory
   $representative_file_path = dirname($file_path).'/pwg_representative/';
   $representative_file_path.= get_filename_wo_extension(basename($file_path)).'.';
 
@@ -854,7 +854,7 @@ function upload_file_eps($representative_ext, $file_path)
   // if the representative is "jpg", the derivatives are ugly. With "png" it's fine.
   $ext = 'png';
 
-  // move the uploaded file to pwg_representative sub-directory
+  // move the uploaded file to pwg_representative subdirectory
   $representative_file_path = original_to_representative($file_path, $ext);
   prepare_directory(dirname($representative_file_path));
 

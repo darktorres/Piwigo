@@ -27,7 +27,7 @@ function __construct($url)
 }
 
 /**
- * Is this local site ok ?
+ * Is this local site ok?
  *
  * @return true on success, false otherwise
  */
@@ -116,7 +116,7 @@ function get_elements($path)
 }
 
 // returns the name of the attributes that are supported for
-// files update/synchronization
+// file update/synchronization
 function get_update_attributes()
 {
   return array('representative_ext');
@@ -149,7 +149,7 @@ function get_metadata_attributes()
   return get_sync_metadata_attributes();
 }
 
-// returns a hash of attributes (metadata+filesize+width,...) for file
+// returns a hash of attributes (metadata+filesize+width, ...) for file
 function get_element_metadata($infos)
 {
   return get_sync_metadata($infos);

@@ -21,6 +21,6 @@ $q="UPDATE ".CATEGORIES_TABLE." SET image_order=REPLACE(image_order, 'average_ra
 pwg_query($q);
 
 $q="UPDATE ".CONFIG_TABLE." SET value=REPLACE(value, 'average_rate', 'rating_score')
-WHERE param IN ('picture_informations', 'order_by', 'order_by_inside_category')";
+WHERE param IN ('picture_information', 'order_by', 'order_by_inside_category')";
 pwg_query($q);
 ?>
