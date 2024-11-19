@@ -50,7 +50,7 @@ require_once PHPWG_ROOT_PATH . 'vendor/autoload.php';
  *
  * Why having some parameters in config table and others in
  * config_*.inc.php? Modifying config_*.inc.php is a "hard" task for low
- * skilled users, they need a GUI for this : admin/configuration. But only
+ * skilled users, they need a GUI for this: admin/configuration. But only
  * parameters that might be modified by low skilled users are in config
  * table, other parameters are in config_*.inc.php
  */
@@ -59,21 +59,21 @@ require_once PHPWG_ROOT_PATH . 'vendor/autoload.php';
 // |                                 misc                                  |
 // +-----------------------------------------------------------------------+
 
-// order_by_custom and order_by_inside_category_custom : for non common pattern
+// order_by_custom and order_by_inside_category_custom: for non-common pattern
 // you can define special ORDER configuration
 //
 // $conf['order_by_custom'] = ' ORDER BY date_available DESC, file ASC, id ASC';
 
-// order_by_inside_category : inside a category, images can also be ordered
+// order_by_inside_category: inside a category, images can also be ordered
 // by rank. A manually defined rank on each image for the category.
 //
 // $conf['order_by_inside_category_custom'] = $conf['order_by_custom'];
 
-// picture_ext : file extensions for picture file, must be a subset of
+// picture_ext: file extensions for picture file, must be a subset of
 // file_ext
 $conf['picture_ext'] = array('jpg','jpeg','png','gif','webp');
 
-// file_ext : file extensions (case sensitive) authorized
+// file_ext: file extensions (case-sensitive) authorized
 //
 // * if you enable "eps" file extension, make sure you have this file type
 //   authorized in your ImageMagick policy
@@ -85,15 +85,15 @@ $conf['file_ext'] = array_merge(
 // enable_formats: should Piwigo search for multiple formats?
 $conf['enable_formats'] = false;
 
-// format_ext : file extensions for formats, ie additional versions of a
-// photo (or nay other file). Formats are in sub-directory pwg_format.
+// format_ext: file extensions for formats, i.e., additional versions of a
+// photo (or any other file). Formats are in subdirectory pwg_format.
 $conf['format_ext'] = array('cr2', 'tif', 'tiff', 'nef', 'dng', 'ai', 'psd');
 
-// top_number : number of element to display for "best rated" and "most
+// top_number: number of elements to display for "best rated" and "most
 // visited" categories
 $conf['top_number'] = 15;
 
-// anti-flood_time : number of seconds between 2 comments : 0 to disable
+// anti-flood_time: number of seconds between 2 comments: 0 to disable
 $conf['anti-flood_time'] = 60;
 
 // qualified spam comments are not registered (false will register them
@@ -103,57 +103,57 @@ $conf['comment_spam_reject'] = true;
 // maximum number of links in a comment before it is qualified spam
 $conf['comment_spam_max_links'] = 3;
 
-// calendar_datefield : date field of table "images" used for calendar
+// calendar_datefield: date field of table "images" used for calendar
 // catgory
 $conf['calendar_datefield'] = 'date_creation';
 
-// calendar_show_any : the calendar shows an additional 'any' button in the
+// calendar_show_any: the calendar shows an additional 'any' button in the
 // year/month/week/day navigation bars
 $conf['calendar_show_any'] = true;
 
-// calendar_show_empty : the calendar shows month/weeks/days even if there are
+// calendar_show_empty: the calendar shows month/weeks/days even if there are
 //no elements for these
 $conf['calendar_show_empty'] = true;
 
-// newcat_default_commentable : at creation, must a category be commentable
-// or not ?
+// newcat_default_commentable: at creation, must a category be commentable
+// or not?
 $conf['newcat_default_commentable'] = true;
 
-// newcat_default_visible : at creation, must a category be visible or not ?
-// Warning : if the parent category is invisible, the category is
-// automatically create invisible. (invisible = locked)
+// newcat_default_visible: at creation, must a category be visible or not?
+// Warning: if the parent category is invisible, the category is
+// automatically created invisible. (invisible = locked)
 $conf['newcat_default_visible'] = true;
 
-// newcat_default_status : at creation, must a category be public or private
-// ? Warning : if the parent category is private, the category is
-// automatically create private.
+// newcat_default_status: at creation, must a category be public or private?
+// Warning: if the parent category is private, the category is
+// automatically created private.
 $conf['newcat_default_status'] = 'public';
 
-// newcat_default_position : at creation, should the album appear at the first or last position ?
+// newcat_default_position: at creation, should the album appear at the first or last position?
 $conf['newcat_default_position'] = 'first';
 
 // above which number of albums should Piwigo use the lighter album manager
 $conf['light_album_manager_threshold'] = 10000;
 
-// level_separator : character string used for separating a category level
-// to the sub level. Suggestions : ' / ', ' &raquo; ', ' &rarr; ', ' - ',
+// level_separator: character string used for separating a category level
+// to the sublevel. Suggestions: ' / ', ' &raquo; ', ' &rarr; ', ' - ',
 // ' &gt;'
 $conf['level_separator'] = ' / ';
 
-// paginate_pages_around : on paginate navigation bar, how many pages
-// display before and after the current page ?
+// paginate_pages_around: on paginate navigation bar, how many pages
+// display before and after the current page?
 $conf['paginate_pages_around'] = 2;
 
-// show_version : shall the version of Piwigo be displayed at the
-// bottom of each page ?
+// show_version: shall the version of Piwigo be displayed at the
+// bottom of each page?
 $conf['show_version'] = false;
 
 // meta_ref to reference multiple sets of incorporated pages or elements
 // Set it false to avoid referencing in Google, and other search engines.
 $conf['meta_ref'] = true;
 
-// links : list of external links to add in the menu. An example is the best
-// than a long explanation :
+// links: list of external links to add in the menu. An example is better
+// than a long explanation:
 //
 // Simple use:
 //  for each link is associated a label
@@ -163,7 +163,7 @@ $conf['meta_ref'] = true;
 //    );
 //
 // Advanced use:
-//  You can also used special options. Instead to pass a string like parameter value
+//  You can also use special options. Instead to pass a string like parameter value
 //  you can pass a array with different optional parameter values
 //  $conf['links'] = array(
 //    'http://piwigo.org' => array('label' => 'PWG website', 'new_window' => false, 'eval_visible' => 'return true;'),
@@ -202,7 +202,7 @@ $conf['meta_ref'] = true;
 $conf['links'] = array();
 
 // random_index_redirect: list of 'internal' links to use when no section is defined on index.php.
-// An example is the best than a long explanation :
+// An example is better than a long explanation:
 //
 //  for each link is associated a php condition
 //  '' condition is equivalent to 'return true;'
@@ -215,22 +215,22 @@ $conf['links'] = array();
 $conf['random_index_redirect'] = array();
 
 // List of notes to display on all header page
-// example $conf['header_notes']  = array('Test', 'Hello');
+// example $conf['header_notes'] = array('Test', 'Hello');
 $conf['header_notes']  = array();
 
-// show_thumbnail_caption : on thumbnails page, show thumbnail captions ?
+// show_thumbnail_caption: on thumbnails page, show thumbnail captions?
 $conf['show_thumbnail_caption'] = true;
 
-// allow_random_representative : do you wish Piwigo to search among
-// categories elements a new representative at each reload ?
+// allow_random_representative: do you wish Piwigo to search among
+// categories elements a new representative at each reload?
 //
 // If false, an element is randomly or manually chosen to represent its
 // category and remains the representative as long as an admin does not
 // change it.
 //
-// Warning : setting this parameter to true is CPU consuming. Each time you
+// Warning: setting this parameter to true is CPU consuming. Each time you
 // change the value of this parameter from false to true, an administrator
-// must update categories informations in screen [Admin > General >
+// must update category information in screen [Admin > General >
 // Maintenance].
 $conf['allow_random_representative'] = false;
 
@@ -246,14 +246,14 @@ $conf['representative_cache_on_level'] = true;
 // "slightly" consuming SQL query on next page refresh?
 $conf['representative_cache_on_subcats'] = true;
 
-// allow_html_descriptions : authorize administrators to use HTML in
+// allow_html_descriptions: authorize administrators to use HTML in
 // category and element description.
 $conf['allow_html_descriptions'] = true;
 
 // image level permissions available in the admin interface
 $conf['available_permission_levels'] = array(0,1,2,4,8);
 
-// check_upgrade_feed: check if there are database upgrade required. Set to
+// check_upgrade_feed: check if there are database upgrades required. Set to
 // true, a message will strongly encourage you to upgrade your database if
 // needed.
 //
@@ -270,7 +270,7 @@ $conf['default_redirect_method'] = 'http';
 // Define using double password type in admin's users management panel
 $conf['double_password_type_in_admin'] = false;
 
-// Define if logins must be case sensitive or not of user's registration. ie :
+// Define if logins must be case-sensitive or not of user's registration. ie:
 // If set true, the login "user" will equal "User" or "USER" or "user",
 // etc. ... And it will be impossible to use such login variation to create a
 // new user account.
@@ -299,7 +299,7 @@ $conf['comments_page_nb_comments'] = 10;
 // 0 to disable.
 $conf['update_notify_check_period'] = 24*60*60;
 
-// how often should be remind of new versions available? For example a first
+// how often should be reminded of new versions available? For example a first
 // notification was sent on May 5th 2017 for 2.9.1, after how many seconds
 // we send it again? 0 to disable.
 $conf['update_notify_reminder_period'] = 7*24*60*60;
@@ -343,7 +343,7 @@ $conf['mail_allow_html'] = true;
 //  if null, regular mail function is used
 //   format: hoststring[:port]
 //   exemple: smtp.pwg.net:21
-// smtp_user/smtp_password: user & password for smtp authentication
+// smtp_user/smtp_password: user and password for SMTP authentication
 $conf['smtp_host'] = '';
 $conf['smtp_user'] = '';
 $conf['smtp_password'] = '';
@@ -358,14 +358,14 @@ $conf['smtp_secure'] = null;
 // show_iptc: Show IPTC metadata on picture.php if asked by user
 $conf['show_iptc'] = false;
 
-// show_iptc_mapping : is used for showing IPTC metadata on picture.php
+// show_iptc_mapping: is used for showing IPTC metadata on picture.php
 // page. For each key of the array, you need to have the same key in the
 // $lang array. For example, if my first key is 'iptc_keywords' (associated
 // to '2#025') then you need to have $lang['iptc_keywords'] set in
 // language/$user['language']/common.lang.php. If you don't have the lang
 // var set, the key will be simply displayed
 //
-// To know how to associated iptc_field with their meaning, use
+// To know how to associate iptc_field with their meaning, use
 // tools/metadata.php
 $conf['show_iptc_mapping'] = array(
   'iptc_keywords'        => '2#025',
@@ -378,8 +378,8 @@ $conf['show_iptc_mapping'] = array(
 // metadata
 $conf['use_iptc'] = false;
 
-// use_iptc_mapping : in which IPTC fields will Piwigo find image
-// information ? This setting is used during metadata synchronisation. It
+// use_iptc_mapping: in which IPTC fields will Piwigo find image
+// information? This setting is used during metadata synchronization. It
 // associates a piwigo_images column name to a IPTC key
 $conf['use_iptc_mapping'] = array(
   'keywords'        => '2#025',
@@ -393,16 +393,16 @@ $conf['use_iptc_mapping'] = array(
 // available)
 $conf['show_exif'] = true;
 
-// show_exif_fields : in EXIF fields, you can choose to display fields in
+// show_exif_fields: in EXIF fields, you can choose to display fields in
 // sub-arrays, for example ['COMPUTED']['ApertureFNumber']. for this, add
 // 'COMPUTED;ApertureFNumber' in $conf['show_exif_fields']
 //
 // The key displayed in picture.php will be $lang['exif_field_Make'] for
 // example and if it exists. For compound fields, only take into account the
-// last part : for key 'COMPUTED;ApertureFNumber', you need
+// last part: for key 'COMPUTED;ApertureFNumber', you need
 // $lang['exif_field_ApertureFNumber']
 //
-// for PHP version newer than 4.1.2 :
+// for PHP version newer than 4.1.2:
 // $conf['show_exif_fields'] = array('CameraMake','CameraModel','DateTime');
 //
 $conf['show_exif_fields'] = array(
@@ -416,14 +416,14 @@ $conf['show_exif_fields'] = array(
 // metadata
 $conf['use_exif'] = true;
 
-// use_exif_mapping: same behaviour as use_iptc_mapping
+// use_exif_mapping: same behavior as use_iptc_mapping
 $conf['use_exif_mapping'] = array(
   'date_creation' => 'DateTimeOriginal'
   );
 
 // allow_html_in_metadata: in case the origin of the photo is unsecure (user
 // upload), we remove HTML tags to avoid XSS (malicious execution of
-// javascript)
+// JavaScript)
 $conf['allow_html_in_metadata'] = false;
 
 // decide which characters can be used as keyword separators (works in EXIF
@@ -452,18 +452,18 @@ $conf['session_name'] = 'pwg_id';
 // to use file handler for sessions.
 $conf['session_save_handler'] = 'db';
 
-// authorize_remembering : permits user to stay logged for a long time. It
+// authorize_remembering: permits user to stay logged for a long time. It
 // creates a cookie on client side.
 $conf['authorize_remembering'] = true;
 
 // remember_me_name: specifies the name of the cookie used to stay logged
 $conf['remember_me_name'] = 'pwg_remember';
 
-// remember_me_length : time of validity for "remember me" cookies, in
+// remember_me_length: time of validity for "remember me" cookies, in
 // seconds.
 $conf['remember_me_length'] = 5184000;
 
-// session_length : time of validity for normal session, in seconds.
+// session_length: time of validity for normal session, in seconds.
 $conf['session_length'] = 3600;
 
 // session_use_ip_address: avoid session hijacking by using a part of the IP
@@ -491,13 +491,13 @@ $conf['lounge_activate_threshold'] = 1;
 // 5 minutes by default.
 $conf['lounge_max_duration'] = 5*60;
 
-// show_queries : for debug purpose, show queries and execution times
+// show_queries: for debug purpose, show queries and execution times
 $conf['show_queries'] = false;
 
-// show_gt : display generation time at the bottom of each page
+// show_gt: display generation time at the bottom of each page
 $conf['show_gt'] = false;
 
-// debug_l10n : display a warning message each time an unset language key is
+// debug_l10n: display a warning message each time an unset language key is
 // accessed
 $conf['debug_l10n'] = false;
 
@@ -546,8 +546,8 @@ $conf['show_php_errors_on_frontend'] = true;
 // |                            authentication                             |
 // +-----------------------------------------------------------------------+
 
-// apache_authentication : use Apache authentication as reference instead of
-// users table ?
+// apache_authentication: use Apache authentication as reference instead of
+// users table?
 $conf['apache_authentication'] = false;
 
 // users_table: which table is the reference for users? Can be a different
@@ -567,21 +567,21 @@ $conf['apache_authentication'] = false;
 // delete from piwigo_caddie;
 // delete from piwigo_favorites;
 //
-// All informations contained in these tables and column are related to
+// All information contained in these tables and column are related to
 // piwigo_users table.
 $conf['users_table'] = null;
 
 // If you decide to use external authentication
-// change conf below by $conf['external_authentification'] = true;
-$conf['external_authentification'] = false;
+// change conf below by $conf['external_authentication'] = true;
+$conf['external_authentication'] = false;
 
-// Other tables can be changed, if you define associated constants
+// Other tables can be changed if you define associated constants
 // Example:
 //   define('USER_INFOS_TABLE', 'pwg_main'.'user_infos');
 
-// user_fields : mapping between generic field names and table specific
-// field names. For example, in PWG, the mail address is names
-// "mail_address" and in punbb, it's called "email".
+// user_fields: mapping between generic field names and table specific
+// field names. For example, in PWG, the mail address is named
+// "mail_address" and in PunBB, it's called "email".
 $conf['user_fields'] = array(
   'id' => 'id',
   'username' => 'username',
@@ -594,35 +594,35 @@ $conf['user_fields'] = array(
 $conf['password_hash'] = 'pwg_password_hash';
 
 // password_verify: function that checks the password against its hash. The
-// function takes 2 mandatory parameter : clear password, hashed password +
+// function takes 2 mandatory parameters: clear password, hashed password +
 // an optional parameter user_id. The user_id is used to update the password
 // with the new hash introduced in Piwigo 2.5. See function
 // pwg_password_verify in include/functions_user.inc.php
 $conf['password_verify'] = 'pwg_password_verify';
 
-// guest_id : id of the anonymous user
+// guest_id: id of the anonymous user
 $conf['guest_id'] = 2;
 
-// default_user_id : id of user used for default value
+// default_user_id: id of user used for default value
 $conf['default_user_id'] = $conf['guest_id'];
 
 // Registering process and guest/generic members get language from the browser
 // if language isn't available PHPWG_DEFAULT_LANGUAGE is used as previously
 $conf['browser_language'] = true;
 
-// webmaster_id : webmaster'id.
+// webmaster_id: webmaster'id.
 $conf['webmaster_id'] = 1;
 
-// does the guest have access ?
+// does the guest have access?
 // (not a security feature, set your categories "private" too)
-// If false it'll be redirected from index.php to identification.php
+// If false, it'll be redirected from index.php to identification.php
 $conf['guest_access'] = true;
 
 // +-----------------------------------------------------------------------+
 // |                               history                                 |
 // +-----------------------------------------------------------------------+
 
-// nb_logs_page :  how many logs to display on a page
+// nb_logs_page: how many logs to display on a page
 $conf['nb_logs_page'] = 300;
 
 // Every X new line in history, perform an automatic purge. The more often,
@@ -639,43 +639,43 @@ $conf['history_autopurge_blocksize'] = 50000;
 // |                                 urls                                  |
 // +-----------------------------------------------------------------------+
 
-// gallery_url : you can set a specific URL for the home page of your
+// gallery_url: you can set a specific URL for the home page of your
 // gallery. This is for very specific use and you don't need to change this
 // setting when move your gallery to a new directory or a new domain name.
 $conf['gallery_url'] = null;
 
-// question_mark_in_urls : the generated urls contain a ? sign. This can be
+// question_mark_in_urls: the generated urls contain a "?" sign. This can be
 // changed to false only if the server translates PATH_INFO variable
 // (depends on the server AcceptPathInfo directive configuration)
 $conf['question_mark_in_urls'] = true;
 
-// php_extension_in_urls : if false, the urls generated for picture and
+// php_extension_in_urls: if false, the urls generated for picture and
 // category will not contain the .php extension. This will work only if
 // .htaccess defines Options +MultiViews parameter or url rewriting rules
 // are active.
 $conf['php_extension_in_urls'] = true;
 
-// category_url_style : one of 'id' (default) or 'id-name'. 'id-name'
-// means that an simplified ascii representation of the category name will
+// category_url_style: one of 'id' (default) or 'id-name'. 'id-name'
+// means that a simplified ascii representation of the category name will
 // appear in the url
 $conf['category_url_style'] = 'id';
 
-// picture_url_style : one of 'id' (default), 'id-file' or 'file'. 'id-file'
+// picture_url_style: one of 'id' (default), 'id-file' or 'file'. 'id-file'
 // or 'file' mean that the file name (without extension will appear in the
-// url). Note that one additional sql query will occur if 'file' is chosen.
+// url). Note that one additional SQL query will occur if 'file' is chosen.
 // Note that you might experience navigation issues if you choose 'file'
 // and your file names are not unique
 $conf['picture_url_style'] = 'id';
 
-// tag_url_style : one of 'id-tag' (default), 'id' or 'tag'.
+// tag_url_style: one of 'id-tag' (default), 'id' or 'tag'.
 // Note that if you choose 'tag' and the url (ascii) representation of your
 // tags is not unique, all tags with the same url representation will be shown
 $conf['tag_url_style'] = 'id-tag';
 
 // force an explicit port in the url (like ":80" or ":443")
-// * 'none' : do not add any port, whatever protocol is detected
-// * 'auto' : tries to smartly add a port based on $_SERVER variables
-// * 123 : adds ":123" next to url host
+// * 'none': do not add any port, whatever protocol is detected
+// * 'auto': tries to smartly add a port based on $_SERVER variables
+// * 123: adds ":123" next to url host
 $conf['url_port'] = 'none';
 
 // +-----------------------------------------------------------------------+
@@ -765,7 +765,7 @@ $conf['auth_key_duration'] = 3*24*60*60;
 
 $conf['admin_theme'] = 'clear';
 
-// should we load the active plugins ? true=Yes, false=No
+// should we load the active plugins? true=Yes, false=No
 $conf['enable_plugins']=true;
 
 // Web services are allowed (true) or completely forbidden (false)
@@ -811,7 +811,7 @@ $conf['add_cache_to_storage_chart'] = true;
 // +-----------------------------------------------------------------------+
 // | Filter                                                                |
 // +-----------------------------------------------------------------------+
-// $conf['filter_pages'] contains configuration for each pages
+// $conf['filter_pages'] contains configuration for each page
 //   o If values are not defined for a specific page, default value are used
 //   o Array is composed by the basename of each page without extension
 //   o List of value names:
@@ -848,7 +848,7 @@ $conf['filter_pages'] = array
 // +-----------------------------------------------------------------------+
 // | Slideshow                                                             |
 // +-----------------------------------------------------------------------+
-// slideshow_period : waiting time in seconds before loading a new page
+// slideshow_period: waiting time in seconds before loading a new page
 // during automated slideshow
 // slideshow_period_min, slideshow_period_max are bounds of slideshow_period
 // slideshow_period_step is the step of navigation between min and max
@@ -857,7 +857,7 @@ $conf['slideshow_period_max'] = 10;
 $conf['slideshow_period_step'] = 1;
 $conf['slideshow_period'] = 4;
 
-// slideshow_repeat : slideshow loops on pictures
+// slideshow_repeat: slideshow loops on pictures
 $conf['slideshow_repeat'] = true;
 
 // $conf['light_slideshow'] indicates to use slideshow.tpl in state of
@@ -897,7 +897,7 @@ $conf['enable_extensions_install'] = true;
 // Do not add the ' U+0027 single quote apostrophe character, it WILL make some
 // SQL queries fail. URI reserved characters (see
 // https://tools.ietf.org/html/rfc3986#section-2.2 ) MAY make things fail, this
-// is known for example for the & character leading to a query parameter
+// is known for example for the and character leading to a query parameter
 // separator if the resulting URI path is not urlencoded. Adding accented
 // characters or characters of Unicode letter or digit classes in the basic
 // plane *usually* are fine iff the file system's names *and* the config file
@@ -952,7 +952,7 @@ $conf['chmod_value']= substr_compare(PHP_SAPI, 'apa', 0, 3)==0 ? 0777 : 0755;
 // 'small', 'medium' or 'large'
 $conf['derivative_default_size'] = 'medium';
 
-// below which size (in pixels, ie width*height) do we remove metadata
+// below which size (in pixels, i.e., width*height) do we remove metadata
 // EXIF/IPTC... from derivative?
 $conf['derivatives_strip_metadata_threshold'] = 256000;
 
@@ -968,9 +968,9 @@ $conf['max_requests']=3;
 $conf['original_url_protection'] = '';
 
 
-// Default behaviour when a new album is created: should the new album inherit the group/user
+// Default behavior when a new album is created: should the new album inherit the group/user
 // permissions from its parent? Note that config is only used for Ftp synchro,
-// and if that option is not explicitly transmit when the album is created.
+// and if that option is not explicitly transmitted when the album is created.
 $conf['inheritance_by_default'] = false;
 
 // 'png' or 'jpg': your uploaded TIF photos will have a representative in

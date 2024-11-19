@@ -11,7 +11,7 @@
  */
 
 
-include_once(PHPWG_ROOT_PATH.'/include/functions_metadata.inc.php');
+include_once(PHPWG_ROOT_PATH.'include/functions_metadata.inc.php');
 
 
 /**
@@ -249,7 +249,7 @@ function get_sync_metadata($infos)
 
 /**
  * Sync all metadata of a list of images.
- * Metadata are fetched from original files and saved in database.
+ * Metadata is fetched from original files and saved in database.
  *
  * @param int[] $ids
  */

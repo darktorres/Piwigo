@@ -12,7 +12,7 @@
 
 
 /**
- * Formats a size name into a 2 chars identifier usable in filename.
+ * Formats a size name into a 2-char identifier usable in filename.
  *
  * @param string $t one of IMG_*
  * @return string
@@ -23,7 +23,7 @@ function derivative_to_url($t)
 }
 
 /**
- * Formats a size array into a identifier usable in filename.
+ * Formats a size array into an identifier usable in filename.
  *
  * @param int[] $s
  * @return string
@@ -324,7 +324,7 @@ final class SizingParams
 
 
 /**
- * All needed parameters to generate a derivative image.
+ * All necessary parameters to generate a derivative image.
  */
 final class DerivativeParams
 {

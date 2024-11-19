@@ -114,7 +114,7 @@ function get_user_activity(page, uid) {
         beforeSend: () => {
           $('.tab').contents(':not(#-1):not(.loading)').remove();
           $(".loading").show();
-          $('.pagination-arrow.rigth').addClass('unavailable');
+          $('.pagination-arrow.right').addClass('unavailable');
           $('.pagination-arrow.left').addClass('unavailable');
           $(".pagination-item-container").hide();
           $(".user-update-spinner").addClass("icon-spin6");
@@ -157,7 +157,7 @@ function lineConstructor(line) {
     {* Determines wich string need to be placed in the line constructed *}
 
     if (line.counter > 1) {
-        // pluriel
+        // plural
         switch (line.action) {
             case "edit":
             newLine.find(".action-type").addClass("icon-blue");
@@ -344,7 +344,7 @@ function lineConstructor(line) {
             break;
         }
     } else {
-        // singulier
+        // singular
         switch (line.action) {
             case "edit":
             newLine.find(".action-type").addClass("icon-blue");
@@ -599,7 +599,7 @@ function move_to_page(page) {
     get_user_activity(page, uid_filter);
 }
 
-$('.pagination-arrow.rigth').on('click', () => {
+$('.pagination-arrow.right').on('click', () => {
     move_to_page(actual_page + 1);
 })
 
@@ -625,9 +625,9 @@ function updateArrows() {
         $('.pagination-arrow.left').removeClass('unavailable');
     }   
     if (actual_page == max_page) {
-        $('.pagination-arrow.rigth').addClass('unavailable');
+        $('.pagination-arrow.right').addClass('unavailable');
     } else {
-        $('.pagination-arrow.rigth').removeClass('unavailable');
+        $('.pagination-arrow.right').removeClass('unavailable');
     }
 }
 
@@ -701,12 +701,12 @@ $(document).ready(function () {
             
             <span class="icon-cancel cancel-icon"> </span>
         </div>
-        <div class="acivity-time">
-            <span class="acivity-time-text"> {'Activity time from'|translate}</span>
+        <div class="activity-time">
+            <span class="activity-time-text"> {'Activity time from'|translate}</span>
             <span class="start-date">
                 <span class="icon-spin6 animate-spin"></span>
             </span>
-            <span class="acivity-time-text"> {'to'|translate}</span>
+            <span class="activity-time-text"> {'to'|translate}</span>
             <span class="end-date">
                 <span class="icon-spin6 animate-spin"></span>
             </span>
@@ -723,7 +723,7 @@ $(document).ready(function () {
       <div class="pagination-item-container">
       </div>
       <div class="user-update-spinner icon-spin6 animate-spin"></div>
-      <div class="pagination-arrow rigth">
+      <div class="pagination-arrow right">
         <span class="icon-left-open"></span>
       </div>
     </div>
@@ -766,8 +766,8 @@ $(document).ready(function () {
 
             <div class="date-section">
                 <span class="icon-clock"> </span>
-                <span class="date-day">1 Janvier 1970</span>
-                <span class="date-hour">a 00:00</span>
+                <span class="date-day">1 January 1970</span>
+                <span class="date-hour">at 12:00 AM</span>
             </div> 
 
             <div class="user-section">
@@ -950,7 +950,7 @@ $(document).ready(function () {
     margin-right: 20px;
 }
 
-.acivity-time {
+.activity-time {
     margin: 0 25px;
 }
 

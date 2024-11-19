@@ -285,7 +285,7 @@ $template->assign_var_from_handle('ADMIN_CONTENT', 'albums');
 function get_categories_ref_date($ids, $field='date_available', $minmax='max')
 {
   // we need to work on the whole tree under each category, even if we don't
-  // want to sort sub categories
+  // want to sort subcategories
   $category_ids = get_subcat_ids($ids);
 
   // search for the reference date of each album
@@ -300,7 +300,7 @@ SELECT
 ;';
   $ref_dates = query2array($query, 'category_id', 'ref_date');
 
-  // the iterate on all albums (having a ref_date or not) to find the
+  // iterate on all albums (having a ref_date or not) to find the
   // reference_date, with a search on sub-albums
   $query = '
 SELECT
@@ -343,7 +343,7 @@ SELECT
     }
   }
 
-  // only return the list of $ids, not the sub-categories
+  // only return the list of $ids, not the subcategories
   $return = array();
   foreach ($ids as $id)
   {

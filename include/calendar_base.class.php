@@ -39,7 +39,7 @@ abstract class CalendarBase
   abstract function generate_category_content();
 
   /**
-   * Returns a sql WHERE subquery for the date field.
+   * Returns a SQL WHERE subquery for the date field.
    *
    * @param int $max_levels (e.g. 2=only year and month)
    * @return string
@@ -149,7 +149,7 @@ abstract class CalendarBase
    * Creates a calendar navigation bar.
    *
    * @param array $date_components
-   * @param array $items - hash of items to put in the bar (e.g. 2005,2006)
+   * @param array $items - hash of items to put in the bar (e.g., 2005,2006)
    * @param bool $show_any - adds any link to the end of the bar
    * @param bool $show_empty - shows all labels even those without items
    * @param array $labels - optional labels for items (e.g. Jan,Feb,...)
@@ -280,8 +280,8 @@ $this->get_date_where($level).'
   }
 
   /**
-   * Assigns the next/previous link to the template with regards to
-   * the currently choosen date.
+   * Assigns the next/previous link to the template in regard to
+   * the currently chosen date.
    */
   protected function build_next_prev()
   {

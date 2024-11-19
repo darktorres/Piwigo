@@ -240,7 +240,7 @@ DELETE
         break;
 
       case 'set_default':
-        // first we need to know which users are using the current default theme
+        // first, we need to know which users are using the current default theme
         $this->set_default_theme($theme_id);
         break;
     }
@@ -291,7 +291,7 @@ DELETE
   {
     global $conf;
 
-    // first we need to know which users are using the current default theme
+    // first, we need to know which users are using the current default theme
     $default_theme = get_default_theme();
 
     $query = '
@@ -442,7 +442,7 @@ SELECT
             $theme['admin_uri'] = get_root_url().'admin.php?page=theme&theme='.$file;
           }
 
-          // IMPORTANT SECURITY !
+          // IMPORTANT SECURITY!
           $theme = array_map('htmlspecialchars', $theme);
           $this->fs_themes[$file] = $theme;
         }
@@ -474,7 +474,7 @@ SELECT
   }
 
   /**
-   * Retrieve PEM server datas to $server_themes
+   * Retrieve PEM server data to $server_themes
    */
   function get_server_themes($new=false)
   {

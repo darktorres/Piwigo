@@ -89,7 +89,7 @@ if (count(get_available_tags()) > 0)
 
 if (in_array('author', $fields))
 {
-  // does this Piwigo has authors for current user?
+  // does this Piwigo have authors for current user?
   $query = '
 SELECT
     id

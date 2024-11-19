@@ -1122,7 +1122,7 @@
         return 0;
       }
 
-      // ----- Read the central directory informations
+      // ----- Read the central directory information
       $v_central_dir = array();
       if (($v_result = $this->privReadEndCentralDir($v_central_dir)) != 1)
       {
@@ -2185,7 +2185,7 @@
       return $v_result;
     }
 
-    // ----- Read the central directory informations
+    // ----- Read the central directory information
     $v_central_dir = array();
     if (($v_result = $this->privReadEndCentralDir($v_central_dir)) != 1)
     {
@@ -2628,7 +2628,7 @@
         $v_result = 1;
       }
 
-      // ----- Update the informations
+      // ----- Update the information
       // Only some fields can be modified
       if ($p_header['stored_filename'] != $v_local_header['stored_filename']) {
         $p_header['stored_filename'] = PclZipUtilPathReduction($v_local_header['stored_filename']);
@@ -2781,7 +2781,7 @@
         $v_result = 1;
       }
 
-      // ----- Update the informations
+      // ----- Update the information
       // Nothing can be modified
     }
 
@@ -3167,7 +3167,7 @@
       return PclZip::errorCode();
     }
 
-    // ----- Read the central directory informations
+    // ----- Read the central directory information
     $v_central_dir = array();
     if (($v_result = $this->privReadEndCentralDir($v_central_dir)) != 1)
     {
@@ -3218,7 +3218,7 @@
   // --------------------------------------------------------------------------------
   // Function : privConvertHeader2FileInfo()
   // Description :
-  //   This function takes the file informations from the central directory
+  //   This function takes the file information from the central directory
   //   entries and extract the interesting parameters that will be given back.
   //   The resulting file infos are set in the array $p_info
   //     $p_info['filename'] : Filename with full path. Given by user (add),
@@ -3311,7 +3311,7 @@
       return $v_result;
     }
 
-    // ----- Read the central directory informations
+    // ----- Read the central directory information
     $v_central_dir = array();
     if (($v_result = $this->privReadEndCentralDir($v_central_dir)) != 1)
     {
@@ -3712,7 +3712,7 @@
       	$v_result = PCLZIP_ERR_USER_ABORTED;
       }
 
-      // ----- Update the informations
+      // ----- Update the information
       // Only some fields can be modified
       $p_entry['filename'] = $v_local_header['filename'];
     }
@@ -4080,7 +4080,7 @@
       	$v_result = PCLZIP_ERR_USER_ABORTED;
       }
 
-      // ----- Update the informations
+      // ----- Update the information
       // Only some fields can be modified
       $p_entry['filename'] = $v_local_header['filename'];
     }
@@ -4195,7 +4195,7 @@
       	$v_result = PCLZIP_ERR_USER_ABORTED;
       }
 
-      // ----- Update the informations
+      // ----- Update the information
       // Only some fields can be modified
       $p_entry['filename'] = $v_local_header['filename'];
     }
@@ -4692,7 +4692,7 @@
       return $v_result;
     }
 
-    // ----- Read the central directory informations
+    // ----- Read the central directory information
     $v_central_dir = array();
     if (($v_result = $this->privReadEndCentralDir($v_central_dir)) != 1)
     {
@@ -5078,7 +5078,7 @@
       return $v_result;
     }
 
-    // ----- Read the central directory informations
+    // ----- Read the central directory information
     $v_central_dir = array();
     if (($v_result = $this->privReadEndCentralDir($v_central_dir)) != 1)
     {
@@ -5098,7 +5098,7 @@
       return $v_result;
     }
 
-    // ----- Read the central directory informations
+    // ----- Read the central directory information
     $v_central_dir_to_add = array();
     if (($v_result = $p_archive_to_add->privReadEndCentralDir($v_central_dir_to_add)) != 1)
     {

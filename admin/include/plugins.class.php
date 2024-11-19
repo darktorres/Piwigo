@@ -396,7 +396,7 @@ DELETE FROM '. PLUGINS_TABLE .'
         if (is_numeric($extension)) $plugin['extension'] = $extension;
       }
 
-      // IMPORTANT SECURITY !
+      // IMPORTANT SECURITY!
       $plugin = array_map('htmlspecialchars', $plugin);
       $this->fs_plugins[$plugin_id] = $plugin;
 
@@ -429,7 +429,7 @@ DELETE FROM '. PLUGINS_TABLE .'
   }
 
   // Retrieve PEM versions
-  // Beta test : return last version on PEM if the current version isn't known or else return the current and the last version
+  // Beta test: return last version on PEM if the current version isn't known or else return the current and the last version
   function get_versions_to_check($beta_test=false, $version=PHPWG_VERSION)
   {
     global $conf;
@@ -440,7 +440,7 @@ DELETE FROM '. PLUGINS_TABLE .'
     {
       $i = 0;
 
-      // If the actual version exist, put the PEM id in $versions_to_check
+      // If the actual version exists, put the PEM id in $versions_to_check
       while ($i < count($pem_versions) && count($versions_to_check) == 0) 
       {
         if (get_branch_from_version($pem_versions[$i]['name']) == get_branch_from_version($version))
@@ -490,7 +490,7 @@ DELETE FROM '. PLUGINS_TABLE .'
   }
 
   /**
-   * Retrieve PEM server datas to $server_plugins
+   * Retrieve PEM server data to $server_plugins
    * $beta_test parameter add plugins compatible with the previous version
    */
   function get_server_plugins($new=false, $beta_test=false)
@@ -731,7 +731,7 @@ DELETE FROM '. PLUGINS_TABLE .'
 
                   $path = $extract_path.'/'.$old_file;
 
-                  // make sure the obsolete file is withing the extension directory, prevent traversal path
+                  // make sure the obsolete file is withing the extension directory, prevent path traversal
                   $realpath = realpath($path);
                   if ($realpath === false or strpos($realpath, $extract_path_realpath) !== 0)
                   {

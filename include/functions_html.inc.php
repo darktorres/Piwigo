@@ -14,15 +14,15 @@
 /**
  * Generates breadcrumb from categories list.
  * Categories string returned contains categories as given in the input
- * array $cat_informations. $cat_informations array must be an array
+ * array $cat_information. $cat_information array must be an array
  * of array( id=>?, name=>?, permalink=>?). If url input parameter is null,
  * returns only the categories name without links.
  *
- * @param array $cat_informations
+ * @param array $cat_information
  * @param string|null $url
  * @return string
  */
-function get_cat_display_name($cat_informations, $url='')
+function get_cat_display_name($cat_information, $url='')
 {
   global $conf;
 
@@ -30,7 +30,7 @@ function get_cat_display_name($cat_informations, $url='')
   $output = '';
   $is_first=true;
 
-  foreach ($cat_informations as $cat)
+  foreach ($cat_information as $cat)
   {
     is_array($cat) or trigger_error(
         'get_cat_display_name wrong type for category ', E_USER_WARNING
@@ -193,7 +193,7 @@ function get_cat_display_name_from_id($cat_id, $url = '')
  * _word_ becomes underline
  * /word/ becomes italic
  * *word* becomes bolded
- * urls becomes a tags
+ * URLs becomes a tags
  *
  * @param string $content
  * @return string
@@ -382,7 +382,7 @@ $btrace_msg
   echo $display.str_repeat( ' ', 300); //IE6 doesn't error output if below a size
 
   if ( function_exists('ini_set') )
-  {// if possible turn off error display (we display it)
+  {// if possible, turn off error display (we display it)
     ini_set('display_errors', false);
   }
   error_reporting( E_ALL );
@@ -493,7 +493,7 @@ function get_combined_categories_content_title()
 }
 
 /**
- * Sets the http status header (200,401,...)
+ * Sets the http status header (200, 401, ...)
  * @param int $code
  * @param string $text for exotic http codes
  */
@@ -525,7 +525,7 @@ function set_status_header($code, $text='')
 }
 
 /**
- * Returns the category comment for rendering in html textual mode (subcatify)
+ * Returns the category comment for rendering in HTML textual mode (subcatify)
  * This method is called by a trigger_notify()
  *
  * @param string $desc

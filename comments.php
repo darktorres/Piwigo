@@ -31,13 +31,13 @@ $sort_order = array(
   'ASC'  => l10n('ascending')
   );
 
-// sort_by : database fields proposed for sorting comments list
+// sort_by: database fields proposed for sorting comments list
 $sort_by = array(
   'date' => l10n('comment date'),
   'image_id' => l10n('photo')
   );
 
-// items_number : list of number of items to display per page
+// items_number: list of number of items to display per page
 $items_number = array(5,10,20,50,'all');
 
 // if the default value is not in the expected values, we add it in the $items_number array
@@ -61,7 +61,7 @@ if (!in_array($conf['comments_page_nb_comments'], $items_number))
   $items_number = $items_number_new;
 }
 
-// since when display comments ?
+// since when display comments?
 //
 $since_options = array(
   1 => array('label' => l10n('today'),
@@ -117,7 +117,7 @@ if ( !is_numeric($page['items_number']) and $page['items_number']!='all' )
 
 $page['where_clauses'] = array();
 
-// which category to filter on ?
+// which category to filter on?
 if (isset($_GET['cat']) and 0 != $_GET['cat'])
 {
   check_input_parameter('cat', $_GET, false, PATTERN_ID);
@@ -175,7 +175,7 @@ if (!empty($_GET['keyword']))
 
 $page['where_clauses'][] = $since_options[$page['since']]['clause'];
 
-// which status to filter on ?
+// which status to filter on?
 if ( !is_admin() )
 {
   $page['where_clauses'][] = 'validated=\'true\'';
@@ -413,7 +413,7 @@ $template->assign('navbar', $navbar);
 
 if (count($comments) > 0)
 {
-  // retrieving element informations
+  // retrieving element information
   $query = '
 SELECT *
   FROM '.IMAGES_TABLE.'
@@ -421,7 +421,7 @@ SELECT *
 ;';
   $elements = query2array($query, 'id');
 
-  // retrieving category informations
+  // retrieving category information
   $query = 'SELECT id, name, permalink, uppercats
   FROM '.CATEGORIES_TABLE.'
   WHERE id IN ('.implode(',', $category_ids).')';

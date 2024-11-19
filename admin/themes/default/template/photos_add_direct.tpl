@@ -136,7 +136,7 @@ jQuery(document).ready(function(){
 			max_file_size : '{/literal}{$max_file_size}{literal}mb',
 			// Specify what files to browse for
 			mime_types: [
-				{title : "Image files", extensions : formatMode ? format_ext : file_ext}
+				{title: "Image files", extensions: formatMode ? format_ext : file_ext}
 			]
 		},
 
@@ -184,7 +184,7 @@ jQuery(document).ready(function(){
       },
 
       FilesAdded: async function(up, files) {
-        // Création de la liste avec plupload_id : image_name
+        // Creation of the list with plupload_id: image_name
         fileNames = {};
         files.forEach((file) => {
           fileNames[file.id] = file.name;
@@ -194,7 +194,7 @@ jQuery(document).ready(function(){
           // If no original image is specified
           if (!haveFormatsOriginal) {
             const images_search = await new Promise((res, rej) => {
-              //ajax qui renvois les id des images dans la gallerie.
+              //Ajax that returns the IDs of the images in the gallery.
               jQuery.ajax({
                 url: "ws.php?format=json&method=pwg.images.formats.searchImage",
                 type: "POST",
@@ -245,7 +245,7 @@ jQuery(document).ready(function(){
 
               $.alert({
                 title: str_format_warning,
-                content : (notFound.length ? `<p>${str_format_warning_notFound.replace('%s', notFoundStr.join(', '))}</p>` : "")
+                content: (notFound.length ? `<p>${str_format_warning_notFound.replace('%s', notFoundStr.join(', '))}</p>` : "")
                   +(multiple.length ? `<p>${str_format_warning_multiple.replace('%s', multStr.join(', '))}</p>` : ""),
                 ...jConfirm_warning_options
               })

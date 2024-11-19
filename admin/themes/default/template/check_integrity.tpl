@@ -69,9 +69,9 @@
 				});
 
 			});
-			function DeselectAll( formulaire )
+			function DeselectAll( form )
 			{
-				var elts = formulaire.elements;
+				var elts = form.elements;
 				for(var i=0; i <elts.length; i++)
 				{
 					if (elts[i].type=='checkbox')

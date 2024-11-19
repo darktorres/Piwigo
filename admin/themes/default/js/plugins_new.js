@@ -15,7 +15,7 @@ $(function () {
 
     let betaTestPlugins = $('#showBetaTestPlugin')[0].hasAttribute('checked');
 
-    // object that remember filters states (initialized later)
+    // object that remembers filters states (initialized later)
     let filters = {};
 
     // toggle advanced filter's panel
@@ -144,7 +144,7 @@ $(function () {
         }
     });
 
-    // All the slider values and it's corresponding month's number and label
+    // All the slider values, and it's corresponding month's number and label
     function value_to_month(val) {
         switch (val) {
             case 6:
@@ -166,12 +166,12 @@ $(function () {
                 return [60, str_x_years.replace('%d', 5)];
                 break;
             default:
-                return [Number.MAX_SAFE_INTEGER, str_from_begining];
+                return [Number.MAX_SAFE_INTEGER, str_from_beginning];
                 break;
         }
     }
 
-    // The certification filter dosen't include incompatible if the beta-test option is not checked
+    // The certification filter doesn't include incompatible if the beta-test option is not checked
     let minCertification = betaTestPlugins ? -1 : 0;
 
     $('.certification-filter-slider').slider({
@@ -185,7 +185,7 @@ $(function () {
         }
     });
 
-    // Diffrence between two dates, in months
+    // Difference between two dates, in months
     function monthDiff(d1, d2) {
         var months;
         months = (d2.getFullYear() - d1.getFullYear()) * 12;
@@ -243,7 +243,7 @@ $(function () {
 
     // <-- Apply advanced filters -->
 
-    // object that remember filters states
+    // object that remembers filters states
     filters = {
         "search": $('#search').val(),
         "author": '',
@@ -293,7 +293,7 @@ $(function () {
         $('.pluginBox').show();
     }
 
-    // Crop the names of plugins if there are too long
+    // Crop the names of plugins if they are too long
     $('.pluginName span').each((i,el) => {
         let name = $(el)
         if (name.html().length > 30) {

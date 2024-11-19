@@ -86,7 +86,7 @@ if ( isset($_POST['submit']) and is_webmaster())
   }
   make_consecutive( $mb_conf );
 
-  // BEGIN OPTIM - DONT ASK ABOUT THIS ALGO - but optimizes the size of the array we save in DB
+  // BEGIN OPTIM - DON'T ASK ABOUT THIS ALGO - but optimizes the size of the array we save in DB
   /* !!! OPTIM DISABLED UNTIL IT HAS BEEN FIXED !!!
   $reg_keys = array_keys($reg_blocks);
   $cnf_keys = array_keys($mb_conf);

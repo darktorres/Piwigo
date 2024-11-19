@@ -99,7 +99,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme)
   {
     $tpl_theme['STATE'] = 'inactive';
     
-    // is the theme "activable" ?
+    // is the theme "activable"?
     if (isset($fs_theme['activable']) and !$fs_theme['activable'])
     {
       $tpl_theme['ACTIVABLE'] = false;

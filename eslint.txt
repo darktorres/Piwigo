@@ -147,7 +147,7 @@
   553:48  error  'add_album_root_title' is not defined           no-undef
   579:9   error  'rename_item' is not defined                    no-undef
   615:25  error  'has_images_associated_outside' is not defined  no-undef
-  625:25  error  'has_images_becomming_orphans' is not defined   no-undef
+  625:25  error  'has_images_becoming_orphans' is not defined   no-undef
   643:5   error  'node' is not defined                           no-undef
   644:9   error  'node' is not defined                           no-undef
   646:13  error  'delete_album_with_name' is not defined         no-undef
@@ -843,7 +843,7 @@
   175:17  error  Unreachable code                       no-unreachable
   177:29  error  'str_x_years' is not defined           no-undef
   178:17  error  Unreachable code                       no-unreachable
-  180:50  error  'str_from_begining' is not defined     no-undef
+  180:50  error  'str_from_beginning' is not defined     no-undef
   181:17  error  Unreachable code                       no-unreachable
   248:34  error  'strs_certification' is not defined    no-undef
   258:10  error  '_' is not defined                     no-undef

@@ -47,7 +47,7 @@ if (isset($_GET['installstatus']))
   switch ($_GET['installstatus'])
   {
     case 'ok':
-      // since Piwigo 12, you need to be on the page of installed plugins to active a plugin with
+      // since Piwigo 12, you need to be on the page of installed plugins to activate a plugin with
       // a JS action, no need to provide plugin_id in URL, just link to the page of installed
       // plugins, filtered on deactivated plugins. The webmaster will have to find its newly
       // installed plugin and click on the activation switch.
@@ -83,7 +83,7 @@ if (isset($_GET['installstatus']))
       break;
 
     default:
-      $page['errors'][] = l10n('An error occured during extraction (%s).', htmlspecialchars($_GET['installstatus']));
+      $page['errors'][] = l10n('An error occurred during extraction (%s).', htmlspecialchars($_GET['installstatus']));
       $page['errors'][] = l10n('Please check "plugins" folder and sub-folders permissions (CHMOD).');
   }  
 }
@@ -101,7 +101,7 @@ $template->assign('order_options',
 // |                     start template output                             |
 // +-----------------------------------------------------------------------+
 
-// Beta test : show plugins of last version on PEM if the current version isn't present
+// Beta test: show plugins of last version on PEM if the current version isn't present
 // If the current version in known, give the current and last version's compatible plugins
 $beta_test = false;
 
@@ -157,11 +157,11 @@ if ($plugins->get_server_plugins(true, $beta_test))
     if (!$has_compatible_version) {
       $certification = -1;
     }
-    elseif ($last_revision_diff->days < 90) // if the last revision is new of 3 month or less
+    elseif ($last_revision_diff->days < 90) // if the last revision is 3 months or less
     {
       $certification = 3;
     }
-    elseif ($last_revision_diff->days < 180) // 6 month or less
+    elseif ($last_revision_diff->days < 180) // 6 months or less
     {
       $certification = 2;
     }
@@ -169,7 +169,7 @@ if ($plugins->get_server_plugins(true, $beta_test))
     {
       $certification = 0;
     }
-    // Between 6 month and 3 years : certification = 1
+    // Between 6 months and 3 years: certification = 1
 
     $template->append('plugins', array(
       'ID' => $plugin['extension_id'],

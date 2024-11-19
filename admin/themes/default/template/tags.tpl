@@ -213,7 +213,7 @@ if (!$.cookie("pwg_tags_per_page")) {
   </div>
   {/foreach}
 </div>
-<div class="emptyResearch"> {'No tag found'|@translate} </div>
+<div class="emptySearch"> {'No tag found'|@translate} </div>
 <div class="tag-pagination">
   <div class="pagination-per-page">
     <span class="thumbnailsActionsShow" style="font-weight: bold;">{'Display'|@translate}</span>
@@ -245,7 +245,7 @@ if (!$.cookie("pwg_tags_per_page")) {
     </div>
     <div class="pagination-item-container">
     </div>
-    <div class="pagination-arrow rigth">
+    <div class="pagination-arrow right">
       <span class="icon-left-open"></span>
     </div>
   </div>

@@ -355,16 +355,16 @@ SELECT
         )
       );
 
-    // management of the album thumbnail -- starts here
+    // Management of the album thumbnail -- starts here
     //
     // on branch 2.3, the algorithm is duplicated from
     // include/category_cats, but we should use a common code for Piwigo 2.4
     //
-    // warning : if the API method is called with $params['public'], the
+    // warning: if the API method is called with $params['public'], the
     // album thumbnail may be not accurate. The thumbnail can be viewed by
     // the connected user, but maybe not by the guest. Changing the
     // filtering method would be too complicated for now. We will simply
-    // avoid to persist the user_representative_picture_id in the database
+    // avoid persisting the user_representative_picture_id in the database
     // if $params['public']
     if (!empty($row['user_representative_picture_id']))
     {
@@ -732,7 +732,7 @@ SELECT id, id_uppercat, rank_column
 
   $category = $categories[0];
 
-  //check the number of category given by the user
+  //check the number of categories given by the user
   if(count($params['category_id']) > 1)
   {
     $order_new = $params['category_id'];
@@ -1207,7 +1207,7 @@ SELECT id, name, dir, uppercats
       );
   }
 
-  // does this parent exists? This check should be made in the
+  // does this parent exist? This check should be made in the
   // move_categories function, not here
   // 0 as parent means "move categories at gallery root"
   if (0 != $params['parent'])

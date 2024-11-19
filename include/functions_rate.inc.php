@@ -49,7 +49,7 @@ function rate_picture($image_id, $rate)
     $save_anonymous_id = pwg_get_cookie_var('anonymous_rater', $anonymous_id);
 
     if ($anonymous_id != $save_anonymous_id)
-    { // client has changed his IP adress or he's trying to fool us
+    { // client has changed his IP address, or he's trying to fool us
       $query = '
 SELECT element_id
   FROM '.RATE_TABLE.'

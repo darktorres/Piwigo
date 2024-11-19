@@ -17,7 +17,7 @@ $upgrade_description = 'Add blk_menubar config';
 // |                            Upgrade content                            |
 // +-----------------------------------------------------------------------+
 
-$query = 'DROP TABLE IF EXISTS '.$prefixeTable.'ws_access';
+$query = 'DROP TABLE IF EXISTS '.$prefixTable.'ws_access';
 pwg_query($query);
 
 $upgrade_description = $query;

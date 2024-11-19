@@ -6,9 +6,10 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-// right after the overwrite of previous version files by the unzip in the administration,
-// PHP engine might still have old files in cache. We do not want to use the cache and
-// force reload of all application files. Thus we disable opcache.
+// Right after overwriting the previous version files by unzipping in the administration,
+// the PHP engine might still have old files in the cache.
+// We do not want to use the cache and force reload of all application files.
+// Thus, we disable opcache.
 if (function_exists('ini_set'))
 {
   @ini_set('opcache.enable', 0);
@@ -36,9 +37,9 @@ if ($php_end_tag === false)
 include($config_file);
 
 // $conf is not used for users tables - define cannot be re-defined
-define('USERS_TABLE', $prefixeTable.'users');
+define('USERS_TABLE', $Table.'users');
 include_once(PHPWG_ROOT_PATH.'include/constants.php');
-define('PREFIX_TABLE', $prefixeTable);
+define('PREFIX_TABLE', $prefixTable);
 define('UPGRADES_PATH', PHPWG_ROOT_PATH.'install/db');
 
 include_once(PHPWG_ROOT_PATH.'include/functions.inc.php');
@@ -428,7 +429,7 @@ if ((isset($_POST['submit']) or isset($_GET['now']))
       }
     }
 
-    // Deactivate non standard extensions
+    // Deactivate non-standard extensions
     deactivate_non_standard_plugins();
     deactivate_non_standard_themes();
     deactivate_templates();
@@ -486,7 +487,7 @@ REPLACE INTO '.PLUGINS_TABLE.'
         $template->assign(
           array(
             'button_label' => l10n('Discover what\'s new in Piwigo %s', get_branch_from_version(PHPWG_VERSION)),
-            'button_link' => 'admin.php?submited_tour_path=tours/'.$version_.'&amp;pwg_token='.get_pwg_token(),
+            'button_link' => 'admin.php?submitted_tour_path=tours/'.$version_.'&amp;pwg_token='.get_pwg_token(),
             )
           );
       }
@@ -496,7 +497,7 @@ REPLACE INTO '.PLUGINS_TABLE.'
     invalidate_user_cache(true);
     $template->delete_compiled_templates();
 
-    // Restore $page['infos'] in order to hide informations messages from functions calles
+    // Restore $page['infos'] in order to hide information messages from functions callers
     // errors messages are not hide
     $page['infos'] = $page['infos_sav'];
 

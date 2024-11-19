@@ -37,9 +37,9 @@ function micro_seconds()
 }
 
 /**
- * returns a float value coresponding to the number of seconds since
+ * returns a float value corresponding to the number of seconds since
  * the unix epoch (1st January 1970) and the microseconds are precised
- * e.g. 1052343429.89276600
+ * e.g., 1052343429.89276600
  *
  * @return float
  */
@@ -142,7 +142,7 @@ function mkgetdir($dir, $flags=MKGETDIR_DEFAULT)
 }
 
 /**
- * finds out if a string is in ASCII, UTF-8 or other encoding
+ * finds out if a string is in ASCII, UTF-8 or another encoding
  *
  * @param string $str
  * @return int *0* if _$str_ is ASCII, *1* if UTF-8, *-1* otherwise
@@ -170,7 +170,7 @@ function qualify_utf8($Str)
 }
 
 /**
- * Remove accents from a UTF-8 or ISO-8859-1 string (from wordpress)
+ * Remove accents from a UTF-8 or ISO-8859-1 string (from WordPress)
  *
  * @param string $string
  * @return string
@@ -339,7 +339,7 @@ else
 }
 
 /**
- * simplify a string to insert it into an URL
+ * simplify a string to insert it into a URL
  *
  * @param string $str
  * @return string
@@ -386,7 +386,7 @@ SELECT id, name
 }
 
 /**
- * Does the current user must log visits in history table
+ * Must the current user log visits in history table?
  *
  * @since 14
  *
@@ -560,7 +560,7 @@ function pwg_activity($object, $object_id, $action, $details=array())
 {
   global $user;
 
-  // in case of uploadAsync, do not log the automatic login as an independant activity
+  // in case of uploadAsync, do not log the automatic login as an independent activity
   if (isset($_REQUEST['method']) and 'pwg.images.uploadAsync' == $_REQUEST['method'] and 'login' == $action)
   {
     return;
@@ -595,7 +595,7 @@ function pwg_activity($object, $object_id, $action, $details=array())
 
   if ('autoupdate' == $action)
   {
-    // autoupdate on a plugin can happen anywhere, the "script/method" is not meaningfull
+    // autoupdate on a plugin can happen anywhere, the "script/method" is not meaningful
     unset($details['method']);
     unset($details['script']);
   }
@@ -673,7 +673,7 @@ function dateDiff($date1, $date2)
 
   $diff = new stdClass();
 
-  //Make sure $date1 is ealier
+  //Make sure $date1 is earlier
   $diff->invert = $date2 < $date1;
   if ($diff->invert)
   {
@@ -994,7 +994,7 @@ function pwg_debug( $string )
 
 /**
  * Redirects to the given URL (HTTP method).
- * once this function called, the execution doesn't go further
+ * Once this function is called, the execution doesn't go further
  * (presence of an exit() instruction.
  *
  * @param string $url
@@ -1016,7 +1016,7 @@ function redirect_http( $url )
 
 /**
  * Redirects to the given URL (HTML method).
- * once this function called, the execution doesn't go further
+ * Once this function is called, the execution doesn't go further
  * (presence of an exit() instruction.
  *
  * @param string $url
@@ -1066,7 +1066,7 @@ function redirect_html( $url , $msg = '', $refresh_time = 0)
 
 /**
  * Redirects to the given URL (automatically choose HTTP or HTML method).
- * once this function called, the execution doesn't go further
+ * once this function is called, the execution doesn't go further
  * (presence of an exit() instruction.
  *
  * @param string $url
@@ -1078,7 +1078,7 @@ function redirect( $url , $msg = '', $refresh_time = 0)
 {
   global $conf;
 
-  // with RefeshTime <> 0, only html must be used
+  // with RefreshTime <> 0, only HTML must be used
   if ($conf['default_redirect_method']=='http'
       and $refresh_time==0
       and !headers_sent()
@@ -1128,14 +1128,14 @@ SELECT
     }
   }
 
-  // plugins want remove some themes based on user status maybe?
+  // plugins want to remove some themes based on user status maybe?
   $themes = trigger_change('get_pwg_themes', $themes);
 
   return $themes;
 }
 
 /**
- * check if a theme is installed (directory exsists)
+ * check if a theme is installed (directory exists)
  *
  * @param string $theme_id
  * @return bool
@@ -1298,7 +1298,7 @@ function l10n_dec($singular_key, $plural_key, $decimal)
  *
  * @param string $key translation key
  * @param mixed $args arguments to use on sprintf($key, args)
- *   if args is a array, each values are used on sprintf
+ *   if args is an array, each value is used on sprintf
  * @return string
  */
 function get_l10n_args($key, $args='')
@@ -1316,11 +1316,11 @@ function get_l10n_args($key, $args='')
 
 /**
  * returns a string formated with l10n elements.
- * it is usefull to "prepare" a text and translate it later
+ * it is useful to "prepare" a text and translate it later
  * @see get_l10n_args()
  *
  * @param array $key_args one l10n_args element or array of l10n_args elements
- * @param string $sep used when translated elements are concatened
+ * @param string $sep used when translated elements are concatenated
  * @return string
  */
 function l10n_args($key_args, $sep = "\n")
@@ -1430,7 +1430,7 @@ SELECT param, value
 }
 
 /**
- * Is the config table currentable writeable?
+ * Is the config table currently writeable?
  *
  * @since 14
  *
@@ -1591,7 +1591,7 @@ function prepend_append_array_items($array, $prepend_str, $append_str)
 }
 
 /**
- * creates an simple hashmap based on a SQL query.
+ * creates a simple hashmap based on a SQL query.
  * choose one to be the key, another one to be the value.
  * @deprecated 2.6
  *
@@ -1622,7 +1622,7 @@ function hash_from_query($query, $keyname)
 /**
  * creates a numeric array based on a SQL query.
  * if _$fieldname_ is empty the returned value will be an array of arrays
- * if _$fieldname_ is provided the returned value will be a one dimension array
+ * if _$fieldname_ is provided the returned value will be a one-dimension array
  * @deprecated 2.6
  *
  * @param string $query
@@ -1733,7 +1733,7 @@ function get_parent_language($lang_id=null)
  *     @option string language - language to load
  *     @option bool return - if true the file content is returned
  *     @option bool no_fallback - if true do not load default language
- *     @option bool|string force_fallback - force pre-loading of another language
+ *     @option bool|string force_fallback - force preloading of another language
  *        default language if *true* or specified language
  *     @option bool local - if true load file from local directory
  * @return boolean|string
@@ -1890,7 +1890,7 @@ function convert_charset($str, $source_charset, $dest_charset)
 }
 
 /**
- * makes sure a index.htm protects the directory from browser file listing
+ * makes sure an index.htm protects the directory from browser file listing
  *
  * @param string $dir
  */
@@ -1970,7 +1970,7 @@ function create_navigation_bar($url, $nb_element, $start, $nb_element_page, $cle
     $start = 0;
   }
 
-  // navigation bar useful only if more than one page to display !
+  // navigation bar useful only if more than one page to display!
   if ($nb_element > $nb_element_page)
   {
     $url_start = $url.$start_str;
@@ -2056,9 +2056,9 @@ function get_icon($date, $is_child_date = false)
 }
 
 /**
- * check token comming from form posted or get params to prevent csrf attacks.
+ * check token coming from form posted or get params to prevent csrf attacks.
  * if pwg_token is empty action doesn't require token
- * else pwg_token is compare to server token
+ * else pwg_token is compared to server token
  *
  * @return void access denied if token given is not equal to server token
  */
@@ -2173,16 +2173,16 @@ function get_privacy_level_options()
 
 
 /**
- * return the branch from the version. For example version 11.1.2 is on branch 11
+ * Return the branch from the version. For example, version 11.1.2 is on branch 11
  *
  * @param string $version
  * @return string
  */
 function get_branch_from_version($version)
 {
-  // the algorithm is a bit complicated to just retrieve the first digits before
+  // The algorithm is a bit complicated to just retrieve the first digits before
   // the first ".". It's because before version 11.0.0, we used to take the 2 first
-  // digits, ie version 2.2.4 was on branch 2.2
+  // digits, i.e., version 2.2.4 was on branch 2.2
   return implode('.', array_slice(explode('.', $version), 0, 1));
 }
 

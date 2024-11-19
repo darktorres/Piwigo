@@ -68,7 +68,7 @@ function ws_groups_add($params, &$service)
 {
   $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes($params['name'])));
 
-  // is the name not already used ?
+  // is the name not already used?
   $query = '
 SELECT COUNT(*)
   FROM '.GROUPS_TABLE.'
@@ -142,7 +142,7 @@ function ws_groups_setInfo($params, &$service)
 
   $updates = array();
 
-  // does the group exist ?
+  // does the group exist?
   $query = '
 SELECT COUNT(*)
   FROM '. GROUPS_TABLE .'
@@ -158,7 +158,7 @@ SELECT COUNT(*)
   {
     $params['name'] = pwg_db_real_escape_string(strip_tags(stripslashes($params['name'])));
 
-    // is the name not already used ?
+    // is the name not already used?
     $query = '
 SELECT COUNT(*)
   FROM '. GROUPS_TABLE .'
@@ -204,7 +204,7 @@ function ws_groups_addUser($params, &$service)
     return new PwgError(403, 'Invalid security token');
   }
 
-  // does the group exist ?
+  // does the group exist?
   $query = '
 SELECT COUNT(*)
   FROM '. GROUPS_TABLE .'
@@ -435,7 +435,7 @@ function ws_groups_deleteUser($params, &$service)
     return new PwgError(403, 'Invalid security token');
   }
 
-  // does the group exist ?
+  // does the group exist?
   $query = '
 SELECT COUNT(*)
   FROM '. GROUPS_TABLE .'

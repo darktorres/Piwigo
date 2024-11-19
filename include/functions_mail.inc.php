@@ -227,7 +227,7 @@ function get_strict_email_list($email_list)
 }
 
 /**
- * Return an new mail template.
+ * Return a new mail template.
  *
  * @param string $email_format - text/html or text/plain
  * @return Template
@@ -265,7 +265,7 @@ function switch_lang_to($language)
   // $switch_lang['initialisation'] allow to know if it's first call
 
   // Treatment with current user
-  // Language of current user is saved (it's considered OK on firt call)
+  // Language of current user is saved (it's considered OK on first call)
   if (!isset($switch_lang['initialisation']) and !isset($switch_lang['language'][$user['language']]))
   {
     $switch_lang['initialisation'] = true;
@@ -405,7 +405,7 @@ function pwg_mail_notification_admins($subject, $content, $send_technical_detail
 }
 
 /**
- * Send a email to all administrators.
+ * Email all administrators.
  * current user (if admin) is excluded
  * @see pwg_mail()
  * @since 2.6
@@ -430,7 +430,7 @@ function pwg_mail_admins($args=array(), $tpl=array(), $exclude_current_user=true
     $user_statuses[] = 'admin';
   }
 
-  // get admins (except ourself)
+  // get admins (except ourselves)
   $query = '
 SELECT
     i.user_id,
@@ -483,7 +483,7 @@ SELECT
 }
 
 /**
- * Send an email to a group.
+ * Email a group.
  * @see pwg_mail()
  *
  * @param int $group_id
@@ -589,7 +589,7 @@ SELECT
 }
 
 /**
- * Sends an email, using Piwigo specific informations.
+ * Sends an email, using Piwigo specific information.
  *
  * @param string|array $to
  * @param array $args
@@ -639,7 +639,7 @@ function pwg_mail($to, $args=array(), $tpl=array())
   $mail->WordWrap = 76;
   $mail->CharSet = 'UTF-8';
   
-  // Compute root_path in order have complete path
+  // Compute root_path to have a complete path
   set_make_full_url();
 
   if (empty($args['from']))
@@ -745,7 +745,7 @@ function pwg_mail($to, $args=array(), $tpl=array())
 
     if (!isset($conf_mail[$cache_key]))
     {
-      // instanciate a new Template
+      // instantiate a new Template
       if (!isset($conf_mail[$cache_key]['theme']))
       {
         $conf_mail[$cache_key]['theme'] = get_mail_template($content_type);
@@ -802,10 +802,10 @@ function pwg_mail($to, $args=array(), $tpl=array())
 
     // Content
     // Stored in a temp variable, if a content template is used it will be assigned
-    // to the $CONTENT template variable, otherwise it will be appened to the mail
+    // to the $CONTENT template variable, otherwise it will be appended to the mail
     if ($args['content_format'] == 'text/plain' and $content_type == 'text/html')
     {
-      // convert plain text to html
+      // convert plain text to HTML
       $mail_content =
         '<p>'.
         nl2br(
@@ -819,7 +819,7 @@ function pwg_mail($to, $args=array(), $tpl=array())
     }
     else if ($args['content_format'] == 'text/html' and $content_type == 'text/plain')
     {
-      // convert html text to plain text
+      // convert HTML text to plain text
       $mail_content = strip_tags($args['content']);
     }
     else

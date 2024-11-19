@@ -53,7 +53,7 @@ $tags = get_available_tags();
 // +-----------------------------------------------------------------------+
 
 if ($page['display_mode'] == 'letters') {
-  // we want tags diplayed in alphabetic order
+  // we want tags displayed in alphabetic order
   usort($tags, 'tag_alpha_compare');
 
   $current_letter = null;
@@ -74,7 +74,7 @@ if ($page['display_mode'] == 'letters') {
       $letter['TITLE'] = $tag_letter;
     }
 
-    //lettre precedente differente de la lettre suivante
+    //Previous letter different from the next letter
     if ($tag_letter !== $current_letter)
     {
       if ($current_column<$conf['tag_letters_column_number']

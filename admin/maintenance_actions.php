@@ -45,7 +45,7 @@ switch ($action)
     update_category('all');
     update_global_rank();
     invalidate_user_cache(true);
-    $page['infos'][] = sprintf('%s : %s', l10n('Update albums informations'), l10n('action successfully performed.'));
+    $page['infos'][] = sprintf('%s : %s', l10n('Update albums information'), l10n('action successfully performed.'));
     break;
   }
   case 'images' :
@@ -209,7 +209,7 @@ DELETE
       {
         $versions['latest'] = trim($lines[0]);
   
-        // because integer are limited to 4,294,967,296 we need to split BSF
+        // because integer is limited to 4,294,967,296, we need to split BSF
         // versions in date.time
         foreach ($versions as $key => $value)
         {

@@ -43,7 +43,7 @@ $my_base_url = get_root_url().'admin.php?page=';
 
 $tabsheet = new tabsheet();
 $tabsheet->set_id('site_update');
-$tabsheet->select('site_maager');
+$tabsheet->select('site_manager');
 $tabsheet->assign();  
 
 // +-----------------------------------------------------------------------+
@@ -63,7 +63,7 @@ if (isset($_POST['submit']) and !empty($_POST['galleries_url']))
     $url = './' . $url;
   }
 
-  // site must not exists
+  // site must not exist
   $query = '
 SELECT COUNT(id) AS count
   FROM '.SITES_TABLE.'

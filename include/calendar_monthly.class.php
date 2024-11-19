@@ -109,7 +109,7 @@ class CalendarMonthly extends CalendarBase
   }
 
   /**
-   * Returns a sql WHERE subquery for the date field.
+   * Returns a SQL WHERE subquery for the date field.
    *
    * @param int $max_levels (e.g. 2=only year and month)
    * @return string
@@ -415,7 +415,7 @@ class CalendarMonthly extends CalendarBase
         $dow = ($first_day_dow + $day-1)%7;
         if ($dow==0 and $day!=1)
         {
-          $tpl_weeks[]    = $tpl_crt_week; // add finished week to week list
+          $tpl_weeks[]    = $tpl_crt_week; // add finished week-to-week list
           $tpl_crt_week   = array(); // start new week
         }
 

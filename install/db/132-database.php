@@ -10,11 +10,11 @@ defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
 
 $upgrade_description = 'Enlarge #users.password to increase security.';
 
-global $prefixeTable;
+global $prefixTable;
 
 // we don't use USERS_TABLE because it might be an external table, here we
 // want to change to users table specific to Piwigo
-$query = 'ALTER TABLE '.$prefixeTable.'users CHANGE password password varchar(255) default NULL';
+$query = 'ALTER TABLE '.$prefixTable.'users CHANGE password password varchar(255) default NULL';
 pwg_query($query);
 
 echo "\n".$upgrade_description."\n";

@@ -9,7 +9,7 @@
 {/if}
 
 {assign var="timepicker_language" value="themes/default/js/ui/i18n/jquery.ui.timepicker-`$lang_info.jquery_code`.js"}
-{if "PHPWG_ROOT_PATH"|@constant|@cat:$datepicker_language|@file_exists}
+{if "PHPWG_ROOT_PATH"|@constant|@cat:$timepicker_language|@file_exists}
 {combine_script id="jquery.ui.timepicker-`$lang_info.jquery_code`" load=$load_mode require='jquery.ui.timepicker-addon' path=$timepicker_language}
 {$require=$require|cat:",jquery.ui.timepicker-`$lang_info.jquery_code`"}
 {/if}

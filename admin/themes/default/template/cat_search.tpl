@@ -7,9 +7,9 @@ $(document).ready(() => {
 var data = {json_encode($data_cat)};
 /* 
   Here data is an associative array id => category under this form 
-  [0] : name
-  [1] : array of id, path to find this album (root to album)
-  [2] : 1 = private or 0 = public
+  [0]: name
+  [1]: array of id, path to find this album (root to album)
+  [2]: 1 = private or 0 = public
 */
 
 // Numeric array of all categories
@@ -120,7 +120,7 @@ function getHtmlPath (cat) {
   }
   html += '<a href="' + editLink + cat[1][cat[1].length - 1] + '">' + cat[0] + '</a>';
 
-  return html
+  return html;
 }
 
 // Make the results appear one after one [and limit results to 100]
@@ -150,7 +150,7 @@ $('.search-input').focus();
 </div>
 
 <div class="search-album-ghost">
-  <span>{'No research in progress'|@translate}</span>
+  <span>{'No search in progress'|@translate}</span>
 </div>
 
 <div class="search-album-elem-template" style="display:none">

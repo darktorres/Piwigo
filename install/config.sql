@@ -138,7 +138,7 @@ VALUES
   (
     'email_admin_on_new_user',
     'none',
-    'Send an email to theadministrators when a user registers'
+    'Send an email to the administrators when a user registers'
   );
 
 INSERT INTO
@@ -147,7 +147,7 @@ VALUES
   (
     'extents_for_templates',
     'a:0:{}',
-    'Actived template-extension(s)'
+    'Activated template-extension(s)'
   );
 
 INSERT INTO
@@ -440,7 +440,7 @@ INSERT INTO
   piwigo_config (param, value, comment)
 VALUES
   (
-    'picture_informations',
+    'picture_information',
     'a:11:{s:6:"author";b:1;s:10:"created_on";b:1;s:9:"posted_on";b:1;s:10:"dimensions";b:0;s:4:"file";b:0;s:8:"filesize";b:0;s:4:"tags";b:1;s:10:"categories";b:1;s:6:"visits";b:1;s:12:"rating_score";b:1;s:13:"privacy_level";b:1;}',
     'Information displayed on picture page'
   );

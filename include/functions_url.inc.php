@@ -787,7 +787,7 @@ function get_element_url($element_info)
 
 
 /**
- * Indicate to build url with full path
+ * Indicate to build URL with full path
  *
  * @param null
  * @return null
@@ -812,7 +812,7 @@ function set_make_full_url()
 }
 
 /**
- * Restore old parameter to build url with full path
+ * Restore old parameter to build URL with full path
  *
  * @param null
  * @return null

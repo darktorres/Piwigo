@@ -21,9 +21,9 @@ check_status(ACCESS_ADMINISTRATOR);
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
 
-// retrieving direct information about picture. This may have been already
-// done on admin/photo.php but this page can also be accessed without
-// photo.php as proxy.
+// Retrieving direct information about the picture. This may have already been
+// done on admin/photo.php, but this page can also be accessed without
+// photo.php as a proxy.
 if (!isset($page['image']))
 {
   $page['image'] = get_image_infos($_GET['image_id'], true);
@@ -100,7 +100,7 @@ if (isset($_GET['sync_metadata']))
   $page['infos'][] = l10n('Metadata synchronized from file');
 }
 
-//--------------------------------------------------------- update informations
+//--------------------------------------------------------- update information
 if (isset($_POST['submit']))
 {
   check_pwg_token();
@@ -181,7 +181,7 @@ UPDATE '.CATEGORIES_TABLE.'
 
   $represented_albums = $_POST['represent'];
 
-  $page['infos'][] = l10n('Photo informations updated');
+  $page['infos'][] = l10n('Photo information updated');
   pwg_activity('photo', $_GET['image_id'], 'edit');
 
   // refresh page cache
@@ -392,9 +392,9 @@ $template->assign('related_categories_ids', $related_categories_ids);
 //
 // 1. find all linked categories that are reachable for the current user.
 // 2. if a category is available in the URL, use it if reachable
-// 3. if URL category not available or reachable, use the first reachable
+// 3. if the URL category is not available or reachable, use the first reachable
 //    linked category
-// 4. if no category reachable, no jumpto link
+// 4. if no category is reachable, no jumpto link
 // 5. if level is too high for current user, no jumpto link
 
 $query = '
