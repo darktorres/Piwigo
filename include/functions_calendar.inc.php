@@ -156,7 +156,7 @@ WHERE id IN (' . implode(',',$page['items']) .')';
     if ($page['chronology_date'][$i] == 'any')
     {
       if ($page['chronology_view'] == CAL_VIEW_CALENDAR)
-      {// we dont allow any in calendar view
+      {// we don't allow any in calendar view
         while ($i < count($page['chronology_date']))
         {
           array_pop($page['chronology_date']);

@@ -174,9 +174,9 @@ if ( empty($page['is_external']) )
     }
   }
 
-  // we add isset($page['search_details']) in this condition because it only
-  // applies to regular search, not the legacy qsearch. As Piwigo 14 will still
-  // be able to show an old quicksearch result, we must check this condtion too.
+  // We add isset($page['search_details']) in this condition because it only
+  // applies to regular search, not the legacy quicksearch. Since Piwigo 14 can still
+  // be able to show an old quicksearch result, we must check this condition too.
   if ('search' == $page['section'] and isset($page['search_details']))
   {
     include_once(PHPWG_ROOT_PATH.'include/functions_search.inc.php');
@@ -208,10 +208,10 @@ if ( empty($page['is_external']) )
       {
         $filter_tags = get_common_tags($search_items, 0);
 
-        // the user may have started a search on 2 or more tags that have no
+        // The user may have started a search on 2 or more tags that have no
         // intersection. In this case, $search_items is empty and get_common_tags
         // returns nothing. We should still display the list of selected tags. We
-        // have to "force" them in the list.
+        // have to "force" them on the list.
         $missing_tag_ids = array_diff($my_search['fields']['tags']['words'], array_column($filter_tags, 'id'));
 
         if (count($missing_tag_ids) > 0)
@@ -698,7 +698,7 @@ SELECT
   }
 
   // slideshow
-  // execute after init thumbs in order to have all picture informations
+  // execute after init thumbs to have all picture information
   if (!empty($page['cat_slideshow_url']))
   {
     if (isset($_GET['slideshow']))
@@ -719,7 +719,7 @@ flush_page_messages();
 $template->parse_index_buttons();
 $template->pparse('index');
 
-//------------------------------------------------------------ log informations
+//------------------------------------------------------------ log information
 pwg_log();
 include(PHPWG_ROOT_PATH.'include/page_tail.php');
 ?>

@@ -16,7 +16,7 @@
  *
  * "Optional URL keywords" are those you can find after the module name in URLs.
  *
- * Therefore "Optional URL keywords" can be an active "permalink" 
+ * Therefore, "Optional URL keywords" can be an active "permalink"
  * (see permalinks in our documentation for further explanation).
  */
 
@@ -126,7 +126,7 @@ if (isset($_POST['submit']))
   }
   $conf['extents_for_templates'] = serialize($replacements);
   $tpl_extension = $replacements;
-  /* ecrire la nouvelle conf */
+  /* Write the new config */
   $query = '
 UPDATE '.CONFIG_TABLE.'
   SET value = \''. $conf['extents_for_templates'] .'\'

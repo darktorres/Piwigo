@@ -119,7 +119,7 @@ function save_profile_from_post($userdata, &$errors)
       $errors[] = l10n('The number of photos per page must be a not null scalar');
     }
 
-    // periods must be integer values, they represents number of days
+    // periods must be integer values, they represent number of days
     if (!preg_match($int_pattern, $_POST['recent_period'])
         or $_POST['recent_period'] < 0)
     {
@@ -139,7 +139,7 @@ function save_profile_from_post($userdata, &$errors)
 
   if (isset($_POST['mail_address']))
   {
-    // if $_POST and $userdata have are same email
+    // if $_POST and $userdata have same email
     // validate_mail_address allows, however, to check email
     $mail_error = validate_mail_address($userdata['id'], $_POST['mail_address']);
     if (!empty($mail_error))
@@ -181,7 +181,7 @@ function save_profile_from_post($userdata, &$errors)
 
     if (isset($_POST['mail_address']))
     {
-      // update common user informations
+      // update common user information
       $fields = array($conf['user_fields']['email']);
 
       $data = array();
@@ -253,7 +253,7 @@ function save_profile_from_post($userdata, &$errors)
 
     if ($conf['allow_user_customization'] or defined('IN_ADMIN'))
     {
-      // update user "additional" informations (specific to Piwigo)
+      // update user "additional" information (specific to Piwigo)
       $fields = array(
         'nb_image_page', 'language',
         'expand', 'show_nb_hits', 'recent_period', 'theme'
@@ -299,7 +299,7 @@ function save_profile_from_post($userdata, &$errors)
  * @param string $url_redirect
  * @param array $userdata
  */
-function load_profile_in_template($url_action, $url_redirect, $userdata, $template_prefixe=null)
+function load_profile_in_template($url_action, $url_redirect, $userdata, $template_prefix=null)
 {
   global $template, $conf;
 
@@ -310,17 +310,17 @@ function load_profile_in_template($url_action, $url_redirect, $userdata, $templa
 
   $template->assign(
     array(
-      $template_prefixe.'USERNAME'=>stripslashes($userdata['username']),
-      $template_prefixe.'EMAIL'=>@$userdata['email'],
-      $template_prefixe.'ALLOW_USER_CUSTOMIZATION'=>$conf['allow_user_customization'],
-      $template_prefixe.'ACTIVATE_COMMENTS'=>$conf['activate_comments'],
-      $template_prefixe.'NB_IMAGE_PAGE'=>$userdata['nb_image_page'],
-      $template_prefixe.'RECENT_PERIOD'=>$userdata['recent_period'],
-      $template_prefixe.'EXPAND' =>$userdata['expand'] ? 'true' : 'false',
-      $template_prefixe.'NB_COMMENTS'=>$userdata['show_nb_comments'] ? 'true' : 'false',
-      $template_prefixe.'NB_HITS'=>$userdata['show_nb_hits'] ? 'true' : 'false',
-      $template_prefixe.'REDIRECT' => $url_redirect,
-      $template_prefixe.'F_ACTION'=>$url_action,
+      $template_prefix.'USERNAME'=>stripslashes($userdata['username']),
+      $template_prefix.'EMAIL'=>@$userdata['email'],
+      $template_prefix.'ALLOW_USER_CUSTOMIZATION'=>$conf['allow_user_customization'],
+      $template_prefix.'ACTIVATE_COMMENTS'=>$conf['activate_comments'],
+      $template_prefix.'NB_IMAGE_PAGE'=>$userdata['nb_image_page'],
+      $template_prefix.'RECENT_PERIOD'=>$userdata['recent_period'],
+      $template_prefix.'EXPAND' =>$userdata['expand'] ? 'true' : 'false',
+      $template_prefix.'NB_COMMENTS'=>$userdata['show_nb_comments'] ? 'true' : 'false',
+      $template_prefix.'NB_HITS'=>$userdata['show_nb_hits'] ? 'true' : 'false',
+      $template_prefix.'REDIRECT' => $url_redirect,
+      $template_prefix.'F_ACTION'=>$url_action,
       ));
 
   $template->assign('template_selection', $userdata['theme']);

@@ -66,7 +66,7 @@ function ws_addDefaultMethods( $arr )
       'pwg.getInfos',
       'ws_getInfos',
       null,
-      'Returns general informations.',
+      'Returns general information.',
       $ws_functions_root . 'pwg.php',
       array('admin_only'=>true)
     );
@@ -75,7 +75,7 @@ function ws_addDefaultMethods( $arr )
       'pwg.getCacheSize',
       'ws_getCacheSize',
       null,
-      'Returns general informations.',
+      'Returns general information.',
       $ws_functions_root . 'pwg.php',
       array('admin_only'=>true)
     );
@@ -89,7 +89,7 @@ function ws_addDefaultMethods( $arr )
       'uid' => array('default'=>NULL,
                      'type'=>WS_TYPE_INT|WS_TYPE_POSITIVE),
       ),
-    'Returns general informations.',
+    'Returns general information.',
     $ws_functions_root . 'pwg.php',
     array('admin_only'=>true)
   );
@@ -98,7 +98,7 @@ function ws_addDefaultMethods( $arr )
     'pwg.activity.downloadLog',
     'ws_activity_downloadLog',
     null,
-    'Returns general informations.',
+    'Returns general information.',
     $ws_functions_root . 'pwg.php',
     array('admin_only'=>true)
   );
@@ -327,7 +327,7 @@ function ws_addDefaultMethods( $arr )
       'pwg.session.getStatus',
       'ws_session_getStatus',
       null,
-      'Gets information about the current session. Also provides a token useable with admin methods.',
+      'Gets information about the current session. Also provides a token usable with admin methods.',
       $ws_functions_root . 'pwg.php'
     );
 
@@ -394,7 +394,7 @@ function ws_addDefaultMethods( $arr )
         'data' =>         array(),
         'original_sum' => array(),
         'type' =>         array('default'=>'file',
-                                'info'=>'Must be "file", for backward compatiblity "high" and "thumb" are allowed.'),
+                                'info'=>'Must be "file", for backward compatibility "high" and "thumb" are allowed.'),
         'position' =>     array()
         ),
       'Add a chunk of a file.',
@@ -408,7 +408,7 @@ function ws_addDefaultMethods( $arr )
       array(
         'image_id' => array('type'=>WS_TYPE_ID),
         'type' =>     array('default'=>'file',
-                            'info'=>'Must be "file", for backward compatiblity "high" and "thumb" are allowed.'),
+                            'info'=>'Must be "file", for backward compatibility "high" and "thumb" are allowed.'),
         'sum' =>      array(),
         ),
       'Add or update a file for an existing photo.
@@ -568,7 +568,7 @@ function ws_addDefaultMethods( $arr )
                             'flags'=>WS_PARAM_FORCE_ARRAY),
         'pwg_token' =>  array(),
         ),
-      'Sync metadatas, by blocks. Returns how many images were synchronized',
+      'Sync metadata, by blocks. Returns how many images were synchronized',
       $ws_functions_root . 'pwg.images.php',
       array('admin_only'=>true, 'post_only'=>true)
     );
@@ -603,7 +603,7 @@ function ws_addDefaultMethods( $arr )
       array(
         'search' => array('default' => null),
         'additional_output' =>    array('default'=>null,
-                              'info'=>'Comma saparated list (see method description)'),
+                              'info'=>'Comma separated list (see method description)'),
       ),
       'Get albums list as displayed on admin page. <br>
       <b>additional_output</b> controls which data are returned, possible values are:<br>
@@ -825,7 +825,7 @@ function ws_addDefaultMethods( $arr )
         'pwg_token' => array(),
         'category_id' => array('type'=>WS_TYPE_ID),
         ),
-      'Notifiy Piwigo you have finished to upload a set of photos. It will empty the lounge, if any.',
+      'Notify Piwigo you have finished to upload a set of photos. It will empty the lounge, if any.',
       $ws_functions_root . 'pwg.images.php',
       array('admin_only'=>true)
     );
@@ -964,7 +964,7 @@ function ws_addDefaultMethods( $arr )
         'id' =>         array('default'=>null),
         'reset' =>      array('default'=>false,
                               'type'=>WS_TYPE_BOOL,
-                              'info'=>'If true, all ignored extensions will be reinitilized.'),
+                              'info'=>'If true, all ignored extensions will be reinitialized.'),
         'pwg_token' =>  array(),
       ),
       '<b>Webmaster only.</b> Ignores an extension if it needs update.',
@@ -1125,7 +1125,7 @@ function ws_addDefaultMethods( $arr )
                               'type'=>WS_TYPE_ID,
                               'info'=>'Expects a user_id as value.'),
         'display' =>    array('default'=>'basics',
-                              'info'=>'Comma saparated list (see method description)'),
+                              'info'=>'Comma separated list (see method description)'),
         'filter' =>     array('flags'=>WS_PARAM_OPTIONAL,
                               'info'=>'Filter by username, email, group'),
         'min_register' => array('flags'=>WS_PARAM_OPTIONAL,
@@ -1204,7 +1204,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
         'language' =>         array('flags'=>WS_PARAM_OPTIONAL),
         'theme' =>            array('flags'=>WS_PARAM_OPTIONAL),
         'group_id' => array('flags'=>WS_PARAM_OPTIONAL|WS_PARAM_FORCE_ARRAY, 'type'=>WS_TYPE_INT),
-        // bellow are parameters removed in a future version
+        // below are parameters removed in a future version
         'nb_image_page' =>    array('flags'=>WS_PARAM_OPTIONAL,
                                     'type'=>WS_TYPE_INT|WS_TYPE_POSITIVE|WS_TYPE_NOTNULL),
         'recent_period' =>    array('flags'=>WS_PARAM_OPTIONAL,

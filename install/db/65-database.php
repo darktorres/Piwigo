@@ -148,7 +148,7 @@ SELECT language FROM '.USER_INFOS_TABLE.'
   $upgrade_log .= ">>mysql_ver\t".$mysql_version."\n";
 
   $all_tables = array();
-  $query = 'SHOW TABLES LIKE "'.$prefixeTable.'%"';
+  $query = 'SHOW TABLES LIKE "'.$prefixTable.'%"';
   $result = pwg_query($query);
   while ( $row=pwg_db_fetch_row($result) )
   {
@@ -209,7 +209,7 @@ ALTER TABLE t1 CHANGE c1 c1 TEXT CHARACTER SET utf8;
     $db_charset = 'utf8';
     foreach($all_tables as $table)
     {
-      if ( !isset($safe_tables[ substr($table, strlen($prefixeTable)) ]) )
+      if ( !isset($safe_tables[ substr($table, strlen($prefixTable)) ]) )
         upgrade65_change_table_to_blob($table, $all_tables_definition[$table] );
       upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'utf8' );
       $query = 'ALTER TABLE '.$table.' DEFAULT CHARACTER SET utf8';
@@ -224,7 +224,7 @@ ALTER TABLE t1 CHANGE c1 c1 TEXT CHARACTER SET utf8;
     $db_charset = 'utf8';
     foreach($all_tables as $table)
     {
-      if ( !isset($safe_tables[ substr($table, strlen($prefixeTable)) ]) )
+      if ( !isset($safe_tables[ substr($table, strlen($prefixTable)) ]) )
       {
         upgrade65_change_table_to_blob($table, $all_tables_definition[$table] );
         upgrade65_change_table_to_charset($table, $all_tables_definition[$table], 'latin2' );

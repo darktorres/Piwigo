@@ -10,7 +10,7 @@
 // |                           Image Interface                             |
 // +-----------------------------------------------------------------------+
 
-// Define all needed methods for image class
+// Define all necessary methods for image class
 interface imageInterface
 {
   function get_width();
@@ -54,7 +54,7 @@ class pwg_image
 
     if (is_object($this->image))
     {
-      return; // A plugin may have load its own library
+      return; // A plugin may have loaded its own library
     }
 
     $extension = strtolower(get_extension($source_filepath));
@@ -73,7 +73,7 @@ class pwg_image
     $this->image = new $class($source_filepath);
   }
 
-  // Unknow methods will be redirected to image object
+  // Unknown methods will be redirected to image object
   function __call($method, $arguments)
   {
     return call_user_func_array(array($this->image, $method), $arguments);
@@ -108,7 +108,7 @@ class pwg_image
 
     if ($strip_metadata)
     {
-      // we save a few kilobytes. For example a thumbnail with metadata weights 25KB, without metadata 7KB.
+      // We save a few kilobytes. For example, a thumbnail with metadata weights 25KB, without metadata 7KB.
       $this->image->strip();
     }
 
@@ -328,7 +328,7 @@ class pwg_image
   /** Returns a normalized convolution kernel for sharpening*/
   static function get_sharpen_matrix($amount)
   {
-    // Amount should be in the range of 48-10
+    // The amount should be in the range of 48-10
     $amount = round(abs(-48 + ($amount * 0.38)), 2);
 
     $matrix = array(
@@ -402,7 +402,7 @@ class pwg_image
       $library = $conf['graphics_library'];
     }
 
-    // Choose image library
+    // Choose the image library
     switch (strtolower($library))
     {
       case 'auto':
@@ -424,7 +424,7 @@ class pwg_image
       default:
         if ($library != 'auto')
         {
-          // Requested library not available. Try another library
+          // The requested library is not available. Try another library
           return self::get_library('auto', $extension);
         }
     }
@@ -451,7 +451,7 @@ class image_imagick implements imageInterface
 
   function __construct($source_filepath)
   {
-    // A bug cause that Imagick class can not be extended
+    // A bug cause that Imagick class cannot be extended
     $this->image = new Imagick($source_filepath);
   }
 
@@ -642,7 +642,7 @@ class image_ext_imagick implements imageInterface
 
     if ($this->is_animated_webp)
     {
-      // in cas of animated WebP, we need to maximize quality to 70 to avoid
+      // in case of animated WebP, we need to maximize quality to 70 to avoid
       // heavy thumbnails (or square or whatever is displayed on the thumbnails
       // page)
       $quality = min($quality, $conf['animated_webp_compression_quality']);

@@ -318,7 +318,7 @@ function removeTag(id, name) {
             updateSearchInfo();
             updatePaginationMenu();
           } else {
-            showError('A problem has occured')
+            showError('A problem has occurred')
           }
         }
       })
@@ -790,7 +790,7 @@ function tagListToString(list) {
 }
 
 /*-------
- Filter research
+ Filter search
 -------*/
 
 var maxShown = 100;
@@ -804,9 +804,9 @@ $("#search-tag .search-input").on("input", function() {
   searchTimeOut = setTimeout(() => {
     updatePaginationMenu();
     if (dataTags.filter(isDataSearched).length == 0) {
-      $('.emptyResearch').show();
+      $('.emptySearch').show();
     } else {
-      $('.emptyResearch').hide();
+      $('.emptySearch').hide();
     }
   }, delaySearchInput);
 });
@@ -860,7 +860,7 @@ var updateAsk = false;
 
 var actualPage = 1;
 
-//Avoid 2 update at the same time
+//Avoid 2 updates at the same time
 function askUpdatePage() {
   if (!promisePending) {
     promisePending = true;
@@ -941,9 +941,9 @@ function updateArrows() {
   }
 
   if (actualPage == getNumberPages()) {
-    $('.pagination-arrow.rigth').addClass('unavailable');
+    $('.pagination-arrow.right').addClass('unavailable');
   } else {
-    $('.pagination-arrow.rigth').removeClass('unavailable');
+    $('.pagination-arrow.right').removeClass('unavailable');
   }
 }
 
@@ -952,9 +952,9 @@ function getNumberPages() {
   return Math.floor((dataVisible - 1) / per_page) + 1;
 }
 
-function movePage(toRigth = true) {
+function movePage(toRight = true) {
   $(".tag-box").removeClass("edit-name");
-  if (toRigth) {
+  if (toRight) {
     if (actualPage < getNumberPages()) {
       actualPage++;
       updatePaginationMenu();
@@ -1023,7 +1023,7 @@ function tagToDisplay() {
       .slice((actualPage-1)*per_page, (actualPage)*per_page);
 } 
 
-$('.pagination-arrow.rigth').on('click', () => {
+$('.pagination-arrow.right').on('click', () => {
   movePage();
 })
 

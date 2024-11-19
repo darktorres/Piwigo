@@ -97,7 +97,7 @@ foreach($plugins->fs_plugins as $plugin_id => $fs_plugin)
   if (isset($_SESSION['incompatible_plugins'][$plugin_id])
     and $fs_plugin['version'] != $_SESSION['incompatible_plugins'][$plugin_id])
   {
-    // Incompatible plugins must be reinitilized
+    // Incompatible plugins must be reinitialized
     unset($_SESSION['incompatible_plugins']);
   }
 
@@ -191,7 +191,7 @@ function cmp($a, $b)
     return $s[$a['STATE']] >= $s[$b['STATE']]; 
 }
 
-// Stoped plugin sorting for new plugin manager
+// Stopped plugin sorting for new plugin manager
 // usort($tpl_plugins, 'cmp');
 
 $template->assign(

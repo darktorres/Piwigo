@@ -118,7 +118,7 @@ if ($opt{action} eq 'pwg.images.add') {
     }
     else {
         print Dumper($response);
-        warn 'A problem has occured during upload', "\n";
+        warn 'A problem has occurred during upload', "\n";
         warn $response->decoded_content, "\n";
         die $response->status_line;
     }
@@ -182,7 +182,7 @@ if ($opt{action} eq 'pwg.images.addFile') {
     }
     else {
         print Dumper($response);
-        warn 'A problem has occured during upload', "\n";
+        warn 'A problem has occurred during upload', "\n";
         warn $response->decoded_content, "\n";
         die $response->status_line;
     }

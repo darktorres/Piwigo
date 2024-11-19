@@ -18,16 +18,16 @@ The [piwigo.org](https://piwigo.org) website introduces you to Piwigo. You'll fi
 ### NetInstall
 
  * Download the [NetInstall script](https://piwigo.org/download/dlcounter.php?code=netinstall)
- * Transfer the script to your web space with any FTP client
- * Open the script in you web browser (for example http://example.com/piwigo-netinstall.php) and follow the steps
+ * Transfer the script to your server with any FTP client
+ * Open the script in your web browser (for example, http://example.com/piwigo-netinstall.php) and follow the steps
 
 [More information](https://piwigo.org/guides/install/netinstall)
 
 ### Manual
 
  * Download the [latest stable version](https://piwigo.org/download/dlcounter.php?code=latest) and unzip it
- * Transfer everything to your web space with any FTP client
- * Open your website (for example http://example.com/piwigo) and follow the steps
+ * Transfer everything to your server with any FTP client
+ * Open your website (for example, http://example.com/piwigo) and follow the steps
 
 [More information](https://piwigo.org/guides/install/manual)
 

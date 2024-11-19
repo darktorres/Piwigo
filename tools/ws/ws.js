@@ -282,7 +282,7 @@ $(() => {
                 if (param.type.match(/notnull/)) subtype += '<span class="type-badge" title="Not null"><span style="transform:translateY(-3px)">&oslash;</span></span>';
 
 
-                // if an array is direclty printed, the delimiter is a comma where we use a pipe
+                // if an array is directly printed, the delimiter is a comma where we use a pipe
                 if (typeof defaultValue == 'object') {
                     defaultValue = defaultValue.join('|');
                 }

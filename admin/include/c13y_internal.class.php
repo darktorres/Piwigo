@@ -49,7 +49,7 @@ class c13y_internal
           null,
           l10n('You need to upgrade your system to take full advantage of the application else the application will not work correctly, or not at all')
           .'<br>'.
-          $c13y->get_htlm_links_more_info());
+          $c13y->get_html_links_more_info());
       }
     }
   }
@@ -74,7 +74,7 @@ class c13y_internal
           null,
           sprintf(l10n('%s must be to set to false in your local/config/config.inc.php file'), '$conf[\''.$value.'\']')
           .'<br>'.
-          $c13y->get_htlm_links_more_info());
+          $c13y->get_html_links_more_info());
       }
     }
   }

@@ -320,7 +320,7 @@ $(document).ready(function() {
       <div class="user-header-col user-header-status">
         <span>{'Status'|@translate}</span>
       </div>
-      <!-- email adress -->
+      <!-- email address -->
       <div class="user-header-col user-header-email not-in-selection-mode">
         <span>{'Email Adress'|@translate}</span>
       </div>
@@ -357,7 +357,7 @@ $(document).ready(function() {
         <div class="pagination-item-container">
         </div>
         <div class="user-update-spinner icon-spin6 animate-spin"></div> 
-        <div class="pagination-arrow rigth">
+        <div class="pagination-arrow right">
           <span class="icon-left-open"></span>
         </div>
       </div>
@@ -631,7 +631,7 @@ $(document).ready(function() {
           </div>
           <div class="user-property-username">
             <span class="edit-username-title"><!-- Name (Jessy Pinkman) --></span>
-            <span class="edit-username-specifier"><!-- You specifire (you) --></span>
+            <span class="edit-username-specifier"><!-- You specifier (you) --></span>
             <span class="edit-username icon-pencil"></span>
           </div>
           <div class="user-property-username-change">

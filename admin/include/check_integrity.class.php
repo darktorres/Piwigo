@@ -20,7 +20,7 @@ class check_integrity
   }
 
   /**
-   * Check integrities
+   * Check integrity
    *
    * @param void
    * @return void
@@ -210,7 +210,7 @@ class check_integrity
               }
               else
               {
-                $c13y_display['correction_error_fct'] = $this->get_htlm_links_more_info();
+                $c13y_display['correction_error_fct'] = $this->get_html_links_more_info();
               }
             }
             else if ($c13y['is_callable'])
@@ -308,19 +308,19 @@ class check_integrity
   }
 
   /**
-   * Returns links more informations
+   * Returns links more information
    *
    * @param void
    * @return html links
    */
-  function get_htlm_links_more_info()
+  function get_html_links_more_info()
   {
     $pwg_links = pwg_URL();
     $link_fmt = '<a href="%s" onclick="window.open(this.href, \'\'); return false;">%s</a>';
     return
       sprintf
       (
-        l10n('Go to %s or %s for more informations'),
+        l10n('Go to %s or %s for more information'),
         sprintf($link_fmt, $pwg_links['FORUM'], l10n('the forum')),
         sprintf($link_fmt, $pwg_links['WIKI'], l10n('the wiki'))
       );

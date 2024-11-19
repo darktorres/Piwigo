@@ -188,7 +188,7 @@ SELECT
   }
   else
   {
-    // if we have no "reference", ie "starting point", we need to find
+    // If we have no "reference", i.e. "starting point", we need to find
     // one. And "0" is not the right answer here, because history table may
     // have been purged already.
     $query = '
@@ -422,7 +422,7 @@ SELECT
 
   $history_id_last_summarized = $summary_lines[0]['history_id_to'];
 
-  // 2) find the latest history line (and substract the number of lines to keep)
+  // 2) find the latest history line (and subtract the number of lines to keep)
   $query = '
 SELECT
     id
