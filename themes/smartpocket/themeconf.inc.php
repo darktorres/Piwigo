@@ -117,7 +117,7 @@ function sp_end_section_init()
   $template->assign(
     'smartpocket_log_history',
     array(
-      'cat_id' => @$page['category']['id'],
+      'cat_id' => @$page['category']['id'] ?? null,
       'section' => @$page['section'],
       'tags_string' => (isset($page['tag_ids']) ? implode(',', $page['tag_ids']) : ''),
       )
@@ -143,7 +143,6 @@ function mobile_link()
 
 if ( !function_exists( 'add_menu_on_public_pages' ) ) { 
   if ( defined('IN_ADMIN') and IN_ADMIN ) return false; 
-  add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20); 
 
   function  add_menu_on_public_pages() { 
     if ( function_exists( 'initialize_menu') ) return false; # The current page has already the menu  
@@ -158,7 +157,9 @@ if ( !function_exists( 'add_menu_on_public_pages' ) ) {
     }
      
      
-  } 
+  }
+  
+  add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20);  
 } 
 
 
