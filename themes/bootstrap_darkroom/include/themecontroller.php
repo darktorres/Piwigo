@@ -40,12 +40,6 @@ class ThemeController
         add_event_handler('format_exif_data', $this->exifReplacements(...));
         add_event_handler('loc_end_picture', $this->registerPictureTemplates(...), 1000);
         add_event_handler('loc_begin_index_thumbnails', $this->returnPageStart(...));
-
-        if ($this->config->slick_enabled === true || $this->config->photoswipe === true) {
-            add_event_handler('loc_end_picture', $this->getAllThumbnailsInCategory(...));
-            // also needed on index.tpl for compatibility with GThumb+/GDThumb
-            add_event_handler('loc_end_index', $this->getAllThumbnailsInCategory(...));
-        }
     }
 
     public function assignConfig(): void
@@ -193,81 +187,5 @@ class ThemeController
                 $template->assign('SECTION_TITLE', $title);
             }
         }
-    }
-
-    public function getAllThumbnailsInCategory(): void
-    {
-        global $template, $conf, $user, $page;
-
-        if (! $page['items'] || ($page['section'] == 'categories' && ! isset($page['category']) && ! isset($page['chronology_field']) && ! isset($page['flat']))) {
-            return;
-        }
-
-        // if (count($page['items']) > 1000)
-        // {
-        //   $this->config->slick_enabled = false;
-        //   $this->config->photoswipe = false;
-
-        //   return;
-        // }
-
-        // select all pictures for this category
-        $items = implode(',', $page['items']);
-        $query = <<<SQL
-            SELECT id, file, representative_ext, name, comment, width, height, date_creation, path, rotation
-            FROM images
-            WHERE id IN ({$items})
-            ORDER BY FIELD(id, {$items});
-            SQL;
-
-        $result = pwg_query($query);
-
-        $pictures = [];
-        while ($row = pwg_db_fetch_assoc($result)) {
-            $pictures[] = $row;
-        }
-
-        $tpl_thumbnails_var = [];
-
-        $theme_config = $template->get_template_vars('theme_config');
-
-        foreach ($pictures as $row) {
-            $url = duplicate_picture_url(
-                [
-                    'image_id' => $row['id'],
-                    'image_file' => $row['file'],
-                ],
-                ['start']
-            );
-
-            $name = render_element_name($row);
-            $desc = render_element_description($row, 'main_page_element_description');
-
-            $tpl_var = array_merge($row, [
-                'NAME' => $name,
-                'TN_ALT' => htmlspecialchars(strip_tags($name)),
-                'URL' => $url,
-                'DESCRIPTION' => htmlspecialchars(strip_tags($desc)),
-                'src_image' => new \SrcImage($row),
-                'SIZE' => $row['width'] . 'x' . $row['height'],
-                'PATH' => $row['path'],
-                'DATE_CREATED' => $row['date_creation'],
-                'file_ext' => strtolower(get_extension($row['file'])),
-                'path_ext' => strtolower(get_extension($row['path'])),
-            ]);
-
-            $tpl_thumbnails_var[] = $tpl_var;
-        }
-
-        $template->assign('thumbnails', $tpl_thumbnails_var);
-
-        $template->assign([
-            'derivative_params_square' => trigger_change('get_index_derivative_params', \ImageStdParams::get_by_type(IMG_SQUARE)),
-            'derivative_params_medium' => trigger_change('get_index_derivative_params', \ImageStdParams::get_by_type(IMG_MEDIUM)),
-            'derivative_params_large' => trigger_change('get_index_derivative_params', \ImageStdParams::get_by_type(IMG_LARGE)),
-            'derivative_params_xxlarge' => trigger_change('get_index_derivative_params', \ImageStdParams::get_by_type(IMG_XXLARGE)),
-        ]);
-
-        unset($tpl_thumbnails_var, $pictures);
     }
 }
