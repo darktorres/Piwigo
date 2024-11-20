@@ -273,7 +273,7 @@ class MultiView
         $out['users'] = query2array($query);
 
         // get themes
-        include_once(PHPWG_ROOT_PATH . 'admin/include/themes.class.php');
+        require_once PHPWG_ROOT_PATH . 'admin/include/themes.class.php';
         $themes = new themes();
         foreach (array_keys($themes->db_themes_by_id) as $theme) {
             if (! empty($theme)) {

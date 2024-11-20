@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -60,7 +60,7 @@ $infos = [];
 if ($site_is_remote) {
     fatal_error('remote sites not supported');
 } else {
-    include_once(PHPWG_ROOT_PATH . 'admin/site_reader_local.php');
+    require_once PHPWG_ROOT_PATH . 'admin/site_reader_local.php';
     $site_reader = new LocalSiteReader($site_url);
 }
 
@@ -72,7 +72,7 @@ if (isset($page['no_md5sum_number'])) {
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 $my_base_url = get_root_url() . 'admin.php?page=';
 
 $tabsheet = new tabsheet();

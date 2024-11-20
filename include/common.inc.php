@@ -57,17 +57,17 @@ $header_msgs = [];
 $header_notes = [];
 $filter = [];
 
-include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
+file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 
 defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 
-file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php') && include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php') && require PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php';
 if (! defined('PHPWG_INSTALLED')) {
     header('Location: install.php');
     exit;
 }
-include(PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php');
+require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
 
 if (isset($conf['show_php_errors']) && ! empty($conf['show_php_errors'])) {
     ini_set('error_reporting', $conf['show_php_errors']);
@@ -81,10 +81,10 @@ if ($conf['session_gc_probability'] > 0) {
     ini_set('session.gc_probability', min((int) $conf['session_gc_probability'], 100));
 }
 
-include(PHPWG_ROOT_PATH . 'include/constants.php');
-include(PHPWG_ROOT_PATH . 'include/functions.inc.php');
-include(PHPWG_ROOT_PATH . 'include/template.class.php');
-include(PHPWG_ROOT_PATH . 'include/cache.class.php');
+require PHPWG_ROOT_PATH . 'include/constants.php';
+require PHPWG_ROOT_PATH . 'include/functions.inc.php';
+require PHPWG_ROOT_PATH . 'include/template.class.php';
+require PHPWG_ROOT_PATH . 'include/cache.class.php';
 
 $persistent_cache = new PersistentFileCache();
 
@@ -136,7 +136,7 @@ if (isset($conf['order_by_inside_category_custom'])) {
 
 check_lounge();
 
-include(PHPWG_ROOT_PATH . 'include/user.inc.php');
+require PHPWG_ROOT_PATH . 'include/user.inc.php';
 
 if (in_array(substr($user['language'], 0, 2), ['fr', 'it', 'de', 'es', 'pl', 'ru', 'nl', 'tr', 'da'])) {
     define('PHPWG_DOMAIN', substr($user['language'], 0, 2) . '.piwigo.org');
@@ -193,7 +193,7 @@ if (defined('IN_ADMIN') and IN_ADMIN) {// Admin template
 }
 
 if (! isset($conf['no_photo_yet'])) {
-    include(PHPWG_ROOT_PATH . 'include/no_photo_yet.inc.php');
+    require PHPWG_ROOT_PATH . 'include/no_photo_yet.inc.php';
 }
 
 if (isset($user['internal_status']['guest_must_be_guest'])
@@ -216,7 +216,7 @@ if ($conf['gallery_locked']) {
 }
 
 if ($conf['check_upgrade_feed']) {
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
     if (check_upgrade_feed()) {
         $header_msgs[] = 'Some database upgrades are missing, '
           . '<a href="' . get_absolute_root_url(false) . 'upgrade_feed.php">upgrade now</a>';
@@ -229,7 +229,7 @@ if (count($header_msgs) > 0) {
 }
 
 if (! empty($conf['filter_pages']) and get_filter_page_value('used')) {
-    include(PHPWG_ROOT_PATH . 'include/filter.inc.php');
+    require PHPWG_ROOT_PATH . 'include/filter.inc.php';
 } else {
     $filter['enabled'] = false;
 }

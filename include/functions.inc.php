@@ -9,17 +9,17 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'include/functions_plugins.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_user.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_session.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_category.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_html.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_tag.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/functions_url.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative_params.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative_std_params.inc.php');
-include_once(PHPWG_ROOT_PATH . 'include/derivative.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/functions_plugins.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions_user.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions_session.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions_category.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions_html.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions_tag.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/functions_url.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/derivative_params.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/derivative_std_params.inc.php';
+require_once PHPWG_ROOT_PATH . 'include/derivative.inc.php';
 
 /**
  * returns the current microsecond since Unix epoch
@@ -582,12 +582,12 @@ function pwg_log(
 
     $history_id = pwg_db_insert_id();
     if ($history_id % 1000 == 0) {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
+        require_once PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php';
         history_summarize(50000);
     }
 
     if ($conf['history_autopurge_every'] > 0 and $history_id % $conf['history_autopurge_every'] == 0) {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php');
+        require_once PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php';
         history_autopurge();
     }
 
@@ -1064,7 +1064,7 @@ function redirect_html(
         'redirect' => 'redirect.tpl',
     ]);
 
-    include(PHPWG_ROOT_PATH . 'include/page_header.php');
+    require PHPWG_ROOT_PATH . 'include/page_header.php';
 
     $template->set_filenames([
         'redirect' => 'redirect.tpl',
@@ -1073,7 +1073,7 @@ function redirect_html(
 
     $template->parse('redirect');
 
-    include(PHPWG_ROOT_PATH . 'include/page_tail.php');
+    require PHPWG_ROOT_PATH . 'include/page_tail.php';
 
     exit();
 }
@@ -1670,7 +1670,7 @@ function get_parent_language(
 
     $f = PHPWG_ROOT_PATH . 'language/' . $lang_id . '/common.lang.php';
     if (file_exists($f)) {
-        include($f);
+        require $f;
         return ! empty($lang_info['parent']) ? $lang_info['parent'] : null;
     }
 
@@ -1760,11 +1760,11 @@ function load_language(
             // load forced fallback
             if (isset($options['force_fallback']) && $options['force_fallback'] != $selected_language) {
                 $tmp = str_replace($selected_language, $options['force_fallback'], $source_file);
-                file_exists($tmp) && include($tmp);
+                file_exists($tmp) && require $tmp;
             }
 
             // load language content
-            file_exists($source_file) && include($source_file);
+            file_exists($source_file) && require $source_file;
             $load_lang = $lang;
             $load_lang_info = $lang_info ?? null;
 
@@ -1788,7 +1788,7 @@ function load_language(
 
             if (! empty($parent_language) && $parent_language != $selected_language) {
                 $tmp = str_replace($selected_language, $parent_language, $source_file);
-                file_exists($tmp) && include($tmp);
+                file_exists($tmp) && require $tmp;
             }
 
             // merge contents
@@ -2269,7 +2269,7 @@ function check_lounge(): void
         $age = strtotime($voyager['dbnow']) - strtotime($voyager['date_available']);
 
         if ($age > $conf['lounge_max_duration']) {
-            include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+            require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
             empty_lounge();
         }
     }

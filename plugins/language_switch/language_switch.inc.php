@@ -35,7 +35,7 @@ function language_controler_switch(): void
     $same = $user['language'];
 
     if (isset($_GET['lang'])) {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/languages.class.php');
+        require_once PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
         $languages = new languages();
         if (! in_array($_GET['lang'], array_keys($languages->fs_languages))) {
             $_GET['lang'] = PHPWG_DEFAULT_LANGUAGE;

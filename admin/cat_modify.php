@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
 
 // get_complete_dir returns the concatenation of get_site_url and
 // get_local_dir
