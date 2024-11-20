@@ -8,8 +8,8 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 // Includes
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
-require_once(PHPWG_THEMES_PATH . 'bootstrap_darkroom/include/config.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
+require_once PHPWG_THEMES_PATH . 'bootstrap_darkroom/include/config.php';
 
 load_language('theme.lang', PHPWG_THEMES_PATH . 'bootstrap_darkroom/');
 

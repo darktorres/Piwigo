@@ -10,8 +10,8 @@ Theme URI: http://piwigo.org/ext/extension_view.php?eid=831
 Author: Thomas Kuther
 Author URI: https://github.com/tkuther/piwigo-bootstrap-darkroom
 */
-require_once(PHPWG_THEMES_PATH . 'bootstrap_darkroom/include/themecontroller.php');
-require_once(PHPWG_THEMES_PATH . 'bootstrap_darkroom/include/config.php');
+require_once PHPWG_THEMES_PATH . 'bootstrap_darkroom/include/themecontroller.php';
+require_once PHPWG_THEMES_PATH . 'bootstrap_darkroom/include/config.php';
 
 $themeconf = [
     'name' => 'bootstrap_darkroom',

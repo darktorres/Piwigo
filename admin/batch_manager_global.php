@@ -18,7 +18,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -561,7 +561,7 @@ $template->assign(
 );
 
 // metadata
-include_once(PHPWG_ROOT_PATH . 'admin/site_reader_local.php');
+require_once PHPWG_ROOT_PATH . 'admin/site_reader_local.php';
 $site_reader = new LocalSiteReader('./');
 $used_metadata = implode(', ', $site_reader->get_metadata_attributes());
 

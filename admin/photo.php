@@ -40,7 +40,7 @@ if (isset($_GET['cat_id'])) {
 // | Tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 $page['tab'] = 'properties';
 
@@ -64,11 +64,11 @@ $template->assign(
 // +-----------------------------------------------------------------------+
 
 if ($page['tab'] == 'properties') {
-    include(PHPWG_ROOT_PATH . 'admin/picture_modify.php');
+    require PHPWG_ROOT_PATH . 'admin/picture_modify.php';
 } elseif ($page['tab'] == 'coi') {
-    include(PHPWG_ROOT_PATH . 'admin/picture_coi.php');
+    require PHPWG_ROOT_PATH . 'admin/picture_coi.php';
 } elseif ($page['tab'] == 'formats' && $conf['enable_formats']) {
-    include(PHPWG_ROOT_PATH . 'admin/picture_formats.php');
+    require PHPWG_ROOT_PATH . 'admin/picture_formats.php';
 } else {
-    include(PHPWG_ROOT_PATH . 'admin/photo_' . $page['tab'] . '.php');
+    require PHPWG_ROOT_PATH . 'admin/photo_' . $page['tab'] . '.php';
 }
