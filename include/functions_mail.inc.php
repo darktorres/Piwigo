@@ -13,10 +13,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 /**
  * Returns the name of the mail sender
- *
- * @return string
  */
-function get_mail_sender_name()
+function get_mail_sender_name(): string
 {
     global $conf;
 
@@ -27,9 +25,8 @@ function get_mail_sender_name()
  * Returns the email of the mail sender
  *
  * @since 2.6
- * @return string
  */
-function get_mail_sender_email()
+function get_mail_sender_email(): string
 {
     global $conf;
 
@@ -47,10 +44,8 @@ function get_mail_sender_email()
  * - smtp_secure
  * - email_webmaster
  * - name_webmaster
- *
- * @return array
  */
-function get_mail_configuration()
+function get_mail_configuration(): array
 {
     global $conf;
 
@@ -75,13 +70,11 @@ function get_mail_configuration()
  * Can return either:
  *    - email@domain.com
  *    - name <email@domain.com>
- *
- * @param string $name
- * @param string $email
- * @return string
  */
-function format_email($name, $email)
-{
+function format_email(
+    string $name,
+    string $email
+): string {
     $cvt_email = trim(preg_replace('#[\n\r]+#s', '', $email));
     $cvt_name = trim(preg_replace('#[\n\r]+#s', '', $name));
 
@@ -104,8 +97,9 @@ function format_email($name, $email)
  * @param string|string[] $input - if is an array must contain email[, name]
  * @return array email, name
  */
-function unformat_email($input)
-{
+function unformat_email(
+    string|array $input
+): array {
     if (is_array($input)) {
         if (! isset($input['name'])) {
             $input['name'] = '';
@@ -136,11 +130,11 @@ function unformat_email($input)
  *    - array of incomplete hashmaps
  * @since 2.6
  *
- * @param mixed $data
  * @return string[][]
  */
-function get_clean_recipients_list($data)
-{
+function get_clean_recipients_list(
+    mixed $data
+): array {
     if (empty($data)) {
         return [];
     } elseif (is_array($data)) {
@@ -182,33 +176,30 @@ function get_clean_recipients_list($data)
  * Return a new mail template.
  *
  * @param string $email_format - text/html or text/plain
- * @return Template
  */
-function &get_mail_template($email_format)
-{
+function &get_mail_template(
+    string $email_format
+): Template {
     $template = new Template(PHPWG_ROOT_PATH . 'themes', 'default', 'template/mail/' . $email_format);
     return $template;
 }
 
 /**
  * Return string email format (text/html or text/plain).
- *
- * @param bool $is_html
- * @return string
  */
-function get_str_email_format($is_html)
-{
+function get_str_email_format(
+    bool $is_html
+): string {
     return $is_html ? 'text/html' : 'text/plain';
 }
 
 /**
  * Switch language to specified language.
  * All entries are push on language stack
- *
- * @param string $language
  */
-function switch_lang_to($language)
-{
+function switch_lang_to(
+    string $language
+): void {
     global $switch_lang, $user, $lang, $lang_info, $language_files;
 
     // explanation of switch_lang
@@ -278,7 +269,7 @@ function switch_lang_to($language)
  * @see switch_lang_to()
  * Language files are not reloaded
  */
-function switch_lang_back()
+function switch_lang_back(): void
 {
     global $switch_lang, $user, $lang, $lang_info;
 
@@ -299,13 +290,14 @@ function switch_lang_back()
  * Send a notification email to all administrators.
  * current user (if admin) is not notified
  *
- * @param string|array $subject
- * @param string|array $content
- * @param boolean $send_technical_details - send user IP and browser
- * @return boolean
+ * @param bool $send_technical_details - send user IP and browser
  */
-function pwg_mail_notification_admins($subject, $content, $send_technical_details = true, $group_id = null)
-{
+function pwg_mail_notification_admins(
+    string|array $subject,
+    string|array $content,
+    bool $send_technical_details = true,
+    ?string $group_id = null
+): bool {
     if (empty($subject) or empty($content)) {
         return false;
     }
@@ -360,10 +352,14 @@ function pwg_mail_notification_admins($subject, $content, $send_technical_detail
  *
  * @param array $args - as in pwg_mail()
  * @param array $tpl - as in pwg_mail()
- * @return boolean
  */
-function pwg_mail_admins($args = [], $tpl = [], $exclude_current_user = true, $only_webmasters = false, $group_id = null)
-{
+function pwg_mail_admins(
+    array $args = [],
+    array $tpl = [],
+    bool $exclude_current_user = true,
+    bool $only_webmasters = false,
+    ?string $group_id = null
+): bool {
     if (empty($args['content']) and empty($tpl)) {
         return false;
     }
@@ -434,14 +430,15 @@ function pwg_mail_admins($args = [], $tpl = [], $exclude_current_user = true, $o
  * Email a group.
  * @see pwg_mail()
  *
- * @param int $group_id
  * @param array $args - as in pwg_mail()
  *       o language_selected: filters users of the group by language [default value empty]
  * @param array $tpl - as in pwg_mail()
- * @return boolean
  */
-function pwg_mail_group($group_id, $args = [], $tpl = [])
-{
+function pwg_mail_group(
+    int $group_id,
+    array $args = [],
+    array $tpl = []
+): bool {
     if (empty($group_id) or (empty($args['content']) and empty($tpl))) {
         return false;
     }
@@ -530,7 +527,6 @@ function pwg_mail_group($group_id, $args = [], $tpl = [])
 /**
  * Sends an email, using Piwigo specific information.
  *
- * @param string|array $to
  * @param array $args
  *       o from: sender [default value webmaster email]
  *       o Cc: array of carbon copy receivers of the mail. [default value empty]
@@ -547,11 +543,12 @@ function pwg_mail_group($group_id, $args = [], $tpl = [])
  *       o filename
  *       o dirname (optional)
  *       o assign (optional)
- *
- * @return boolean
  */
-function pwg_mail($to, $args = [], $tpl = [])
-{
+function pwg_mail(
+    string|array $to,
+    array $args = [],
+    array $tpl = []
+): bool {
     global $conf, $conf_mail, $lang_info, $page;
 
     if (empty($to) and empty($args['Cc']) and empty($args['Bcc'])) {
@@ -816,24 +813,21 @@ function pwg_mail($to, $args = [], $tpl = [])
  * Moves CSS rules contained in the <style> tag to inline CSS.
  * Used for compatibility with Gmail and such clients
  * @since 2.6
- *
- * @param string $content
- * @return string
  */
-function move_css_to_body($content)
-{
+function move_css_to_body(
+    string $content
+): string {
     return Pelago\Emogrifier\CssInliner::fromHtml($content)->inlineCss()->render();
 }
 
 /**
  * Saves a copy of the mail if _data/tmp.
- *
- * @param boolean $success
- * @param PHPMailer $mail
- * @param array $args
  */
-function pwg_send_mail_test($success, $mail, $args)
-{
+function pwg_send_mail_test(
+    bool $success,
+    PHPMailer $mail,
+    array $args
+): void {
     global $conf, $user, $lang_info;
 
     $dir = PHPWG_ROOT_PATH . $conf['data_location'] . 'tmp';

@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 class check_integrity
 {
-    public $ignore_list;
+    public array $ignore_list;
 
-    public $retrieve_list;
+    public array $retrieve_list;
 
-    public $build_ignore_list;
+    public array $build_ignore_list;
 
     public function __construct()
     {
@@ -26,10 +26,8 @@ class check_integrity
 
     /**
      * Check integrity
-     *
-     * @param void
      */
-    public function check()
+    public function check(): void
     {
         global $page, $header_notes, $conf;
 
@@ -139,10 +137,8 @@ class check_integrity
 
     /**
      * Display anomalies list
-     *
-     * @param void
      */
-    public function display()
+    public function display(): void
     {
         global $template;
 
@@ -219,10 +215,14 @@ class check_integrity
     /**
      * Add anomaly data
      *
-     * @param arguments $anomaly
+     * @param string $anomaly arguments
      */
-    public function add_anomaly($anomaly, $correction_fct = null, $correction_fct_args = null, $correction_msg = null)
-    {
+    public function add_anomaly(
+        string $anomaly,
+        ?callable $correction_fct = null,
+        mixed $correction_fct_args = null,
+        ?string $correction_msg = null
+    ): void {
         $id = md5($anomaly . $correction_fct . serialize($correction_fct_args) . $correction_msg);
 
         if (in_array($id, $this->ignore_list)) {
@@ -243,10 +243,11 @@ class check_integrity
     /**
      * Update table config
      *
-     * @param ignore $conf_ignore_list list array
+     * @param array $conf_ignore_list list array
      */
-    public function update_conf($conf_ignore_list = [])
-    {
+    public function update_conf(
+        array $conf_ignore_list = []
+    ): void {
         $conf_c13y_ignore = [];
         $conf_c13y_ignore['version'] = PHPWG_VERSION;
         $conf_c13y_ignore['list'] = $conf_ignore_list;
@@ -261,10 +262,8 @@ class check_integrity
 
     /**
      * Apply maintenance
-     *
-     * @param void
      */
-    public function maintenance()
+    public function maintenance(): void
     {
         $this->update_conf();
     }
@@ -272,10 +271,9 @@ class check_integrity
     /**
      * Returns links more information
      *
-     * @param void
-     * @return html links
+     * @return string html links
      */
-    public function get_html_links_more_info()
+    public function get_html_links_more_info(): string
     {
         $pwg_links = pwg_URL();
         $link_fmt = '<a href="%s" onclick="window.open(this.href, \'\'); return false;">%s</a>';

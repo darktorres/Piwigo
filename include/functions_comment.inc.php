@@ -16,11 +16,12 @@ add_event_handler('user_comment_check', 'user_comment_check');
  * This method is called by a trigger_change()
  *
  * @param string $action before check
- * @param array $comment
  * @return string validate, moderate, reject
  */
-function user_comment_check($action, $comment)
-{
+function user_comment_check(
+    string $action,
+    array $comment
+): string {
     global $conf,$user;
 
     if ($action == 'reject') {
@@ -58,13 +59,15 @@ function user_comment_check($action, $comment)
 /**
  * Tries to insert a user comment and returns action to perform.
  *
- * @param array $comm
  * @param string $key secret key sent back to the browser
  * @param array $infos output array of error messages
  * @return string validate, moderate, reject
  */
-function insert_user_comment(&$comm, $key, &$infos)
-{
+function insert_user_comment(
+    array &$comm,
+    string $key,
+    array &$infos
+): string {
     global $conf, $user;
 
     $comm = array_merge(
@@ -247,8 +250,9 @@ function insert_user_comment(&$comm, $key, &$infos)
  * @param int|int[] $comment_id
  * @return bool false if nothing deleted
  */
-function delete_user_comment($comment_id)
-{
+function delete_user_comment(
+    int|array $comment_id
+): bool {
     $user_where_clause = '';
     if (! is_admin()) {
         $user_where_clause = <<<SQL
@@ -299,13 +303,14 @@ function delete_user_comment($comment_id)
  *    only admin can update all comments
  *    users can edit their own comments if admin allows them
  *
- * @param array $comment
  * @param string $post_key secret key sent back to the browser
  * @return string validate, moderate, reject
  */
 
-function update_user_comment($comment, $post_key)
-{
+function update_user_comment(
+    array $comment,
+    string $post_key
+): string {
     global $conf, $page;
 
     $comment_action = 'validate';
@@ -399,10 +404,11 @@ function update_user_comment($comment, $post_key)
  * Only used when no validation is needed, otherwise pwg_mail_notification_admins() is used.
  *
  * @param string $action edit, delete
- * @param array $comment
  */
-function email_admin($action, $comment)
-{
+function email_admin(
+    string $action,
+    array $comment
+): void {
     global $conf;
 
     if (! in_array($action, ['edit', 'delete'])
@@ -432,15 +438,11 @@ function email_admin($action, $comment)
 
 /**
  * Returns the author id of a comment
- *
- * @param int $comment_id
- * @param bool $die_on_error
- * @return int
  */
 function get_comment_author_id(
-    $comment_id,
-    $die_on_error = true
-) {
+    int $comment_id,
+    bool $die_on_error = true
+): int|bool {
     $query = <<<SQL
         SELECT author_id
         FROM comments
@@ -465,8 +467,9 @@ function get_comment_author_id(
  *
  * @param int|int[] $comment_id
  */
-function validate_user_comment($comment_id)
-{
+function validate_user_comment(
+    int|array $comment_id
+): void {
     if (is_array($comment_id)) {
         $where_clause = 'id IN (' . implode(',', $comment_id) . ')';
     } else {
@@ -488,7 +491,7 @@ function validate_user_comment($comment_id)
 /**
  * Clears cache of nb comments for all users
  */
-function invalidate_user_cache_nb_comments()
+function invalidate_user_cache_nb_comments(): void
 {
     global $user;
 

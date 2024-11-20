@@ -16,7 +16,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
 // add_event_handler('upload_image_resize', 'pwg_image_resize');
 // add_event_handler('upload_thumbnail_resize', 'pwg_image_resize');
 
-function get_upload_form_config()
+function get_upload_form_config(): array
 {
     // default configuration for upload
     $upload_form_config = [
@@ -56,8 +56,11 @@ function get_upload_form_config()
     return $upload_form_config;
 }
 
-function save_upload_form_config($data, &$errors = [], &$form_errors = [])
-{
+function save_upload_form_config(
+    array $data,
+    array &$errors = [],
+    array &$form_errors = []
+): bool {
     if (! is_array($data) or empty($data)) {
         return false;
     }
@@ -122,8 +125,14 @@ function save_upload_form_config($data, &$errors = [], &$form_errors = [])
     return false;
 }
 
-function add_uploaded_file($source_filepath, $original_filename = null, $categories = null, $level = null, $image_id = null, $original_md5sum = null)
-{
+function add_uploaded_file(
+    string $source_filepath,
+    ?string $original_filename = null,
+    ?array $categories = null,
+    ?int $level = null,
+    ?string $image_id = null,
+    ?string $original_md5sum = null
+): int|string {
     // 1) move uploaded file to upload/2010/01/22/20100122003814-449ada00.jpg
     //
     // 2) keep/resize original
@@ -393,8 +402,11 @@ function add_uploaded_file_add_to_categories($image_id, $categories)
     }
 }
 
-function add_format($source_filepath, $format_ext, $format_of)
-{
+function add_format(
+    string $source_filepath,
+    string $format_ext,
+    string $format_of
+): int|string {
     // 1) find infos about the extended image
     //
     // 2) move uploaded file to upload/2022/05/16/pwg_format/20100122003814-449ada00.cr2
@@ -459,8 +471,10 @@ function add_format($source_filepath, $format_ext, $format_of)
 }
 
 add_event_handler('upload_file', 'upload_file_pdf');
-function upload_file_pdf($representative_ext, $file_path)
-{
+function upload_file_pdf(
+    ?string $representative_ext,
+    string $file_path
+): mixed {
     global $logger, $conf;
 
     $logger->info(__FUNCTION__ . ', $file_path = ' . $file_path . ', $representative_ext = ' . $representative_ext);
@@ -554,8 +568,10 @@ function upload_file_heic($representative_ext, $file_path)
 }
 
 add_event_handler('upload_file', 'upload_file_tiff');
-function upload_file_tiff($representative_ext, $file_path)
-{
+function upload_file_tiff(
+    ?string $representative_ext,
+    string $file_path
+): ?string {
     global $logger, $conf;
 
     $logger->info(__FUNCTION__ . ', $file_path = ' . $file_path . ', $representative_ext = ' . $representative_ext);
@@ -622,8 +638,10 @@ function upload_file_tiff($representative_ext, $file_path)
 }
 
 add_event_handler('upload_file', 'upload_file_video');
-function upload_file_video($representative_ext, $file_path)
-{
+function upload_file_video(
+    ?string $representative_ext,
+    string $file_path
+): ?string {
     global $logger, $conf;
 
     $logger->info(__FUNCTION__ . ', $file_path = ' . $file_path . ', $representative_ext = ' . $representative_ext);
@@ -783,8 +801,9 @@ function upload_file_eps($representative_ext, $file_path)
     return $representative_ext;
 }
 
-function prepare_directory($directory)
-{
+function prepare_directory(
+    string $directory
+): void {
     if (! is_dir($directory)) {
         umask(0000);
         $recursive = true;
@@ -805,8 +824,11 @@ function prepare_directory($directory)
     secure_directory($directory);
 }
 
-function need_resize($image_filepath, $max_width, $max_height)
-{
+function need_resize(
+    string $image_filepath,
+    int $max_width,
+    int $max_height
+): bool {
     // TODO : the resize check should take the orientation into account. If a
     // rotation must be applied to the resized photo, then we should test
     // invert width and height.
@@ -819,8 +841,9 @@ function need_resize($image_filepath, $max_width, $max_height)
     return false;
 }
 
-function pwg_image_infos($path)
-{
+function pwg_image_infos(
+    string $path
+): array {
     list($width, $height) = getimagesize($path);
     $filesize = floor(filesize($path) / 1024);
 
@@ -831,8 +854,9 @@ function pwg_image_infos($path)
     ];
 }
 
-function is_valid_image_extension($extension)
-{
+function is_valid_image_extension(
+    string $extension
+): array {
     global $conf;
 
     if (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types']) {
@@ -844,8 +868,9 @@ function is_valid_image_extension($extension)
     return array_unique(array_map('strtolower', $extensions));
 }
 
-function file_upload_error_message($error_code)
-{
+function file_upload_error_message(
+    string $error_code
+): string {
     switch ($error_code) {
         case UPLOAD_ERR_INI_SIZE:
             return sprintf(
@@ -869,8 +894,10 @@ function file_upload_error_message($error_code)
     }
 }
 
-function get_ini_size($ini_key, $in_bytes = true)
-{
+function get_ini_size(
+    string $ini_key,
+    bool $in_bytes = true
+): mixed {
     $size = ini_get($ini_key);
 
     if ($in_bytes) {
@@ -880,8 +907,9 @@ function get_ini_size($ini_key, $in_bytes = true)
     return $size;
 }
 
-function convert_shorthand_notation_to_bytes($value)
-{
+function convert_shorthand_notation_to_bytes(
+    string $value
+): int|string {
     $suffix = substr($value, -1);
     $multiply_by = null;
 
@@ -901,12 +929,14 @@ function convert_shorthand_notation_to_bytes($value)
     return $value;
 }
 
-function add_upload_error($upload_id, $error_message)
-{
+function add_upload_error(
+    string $upload_id,
+    string $error_message
+): void {
     $_SESSION['uploads_error'][$upload_id][] = $error_message;
 }
 
-function ready_for_upload_message()
+function ready_for_upload_message(): ?string
 {
     global $conf;
 
