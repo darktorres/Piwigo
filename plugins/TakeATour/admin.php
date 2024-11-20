@@ -12,7 +12,7 @@ load_language('plugin.lang', PHPWG_PLUGINS_PATH . 'TakeATour/', [
     'force_fallback' => 'en_UK',
 ]);
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 $page['tab'] = 'list';
 
 $tabsheet = new tabsheet();

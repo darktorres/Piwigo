@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 $my_base_url = get_root_url() . 'admin.php?page=themes';
 
@@ -29,8 +29,8 @@ $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
 if ($page['tab'] == 'update') {
-    include(PHPWG_ROOT_PATH . 'admin/updates_ext.php');
+    require PHPWG_ROOT_PATH . 'admin/updates_ext.php';
     $template->assign('ADMIN_PAGE_TITLE', l10n('Themes'));
 } else {
-    include(PHPWG_ROOT_PATH . 'admin/themes_' . $page['tab'] . '.php');
+    require PHPWG_ROOT_PATH . 'admin/themes_' . $page['tab'] . '.php';
 }
