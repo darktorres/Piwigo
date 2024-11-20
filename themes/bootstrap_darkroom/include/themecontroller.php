@@ -6,14 +6,14 @@ namespace BootstrapDarkroom;
 
 class ThemeController
 {
-    private $config;
+    private \BootstrapDarkroom\Config $config;
 
     public function __construct()
     {
         $this->config = new Config();
     }
 
-    public function init()
+    public function init(): void
     {
         load_language('theme.lang', PHPWG_THEMES_PATH . 'bootstrap_darkroom/');
         load_language('lang', PHPWG_ROOT_PATH . 'local/', [
@@ -42,7 +42,7 @@ class ThemeController
         add_event_handler('loc_begin_index_thumbnails', [$this, 'returnPageStart']);
     }
 
-    public function assignConfig()
+    public function assignConfig(): void
     {
         global $template, $conf;
 
@@ -62,28 +62,29 @@ class ThemeController
         $template->assign('theme_config', $this->config);
     }
 
-    public function showUpgradeWarning()
+    public function showUpgradeWarning(): void
     {
         global $page;
         $page['errors'][] = l10n('Your selected color style has been reset to "bootstrap-darkroom". You can select a different color style in the admin section.');
     }
 
-    public function hideMenus($menus)
-    {
+    public function hideMenus(
+        array $menus
+    ): void {
         $menu = &$menus[0];
 
         $mbMenu = $menu->get_block('mbMenu');
         unset($mbMenu->data['comments']);
     }
 
-    public function returnPageStart()
+    public function returnPageStart(): void
     {
         global $page, $template;
 
         $template->assign('START_ID', $page['start']);
     }
 
-    public function checkIfHomepage()
+    public function checkIfHomepage(): void
     {
         global $template, $page;
 
@@ -94,7 +95,7 @@ class ThemeController
         }
     }
 
-    public function setInitValues()
+    public function setInitValues(): void
     {
         global $template, $pwg_loaded_plugins, $conf;
 
@@ -122,8 +123,9 @@ class ThemeController
         }
     }
 
-    public function exifReplacements($exif)
-    {
+    public function exifReplacements(
+        ?array $exif
+    ): ?array {
         global $conf;
 
         if (array_key_exists('bootstrap_darkroom_ps_exif_replacements', $conf)) {
@@ -137,7 +139,7 @@ class ThemeController
     }
 
     // register additional template files
-    public function registerPictureTemplates()
+    public function registerPictureTemplates(): void
     {
         global $template;
 
@@ -149,7 +151,7 @@ class ThemeController
         $template->assign_var_from_handle('PICTURE_NAV', 'picture_nav');
     }
 
-    public function stripBreadcrumbs()
+    public function stripBreadcrumbs(): void
     {
         global $page, $template;
 

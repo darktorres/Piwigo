@@ -14,12 +14,10 @@ include_once(PHPWG_ROOT_PATH . 'include/functions_metadata.inc.php');
 /**
  * Returns IPTC metadata to sync from a file, depending on IPTC mapping.
  * @toto : clean code (factorize foreach)
- *
- * @param string $file
- * @return array
  */
-function get_sync_iptc_data($file)
-{
+function get_sync_iptc_data(
+    string $file
+): array {
     global $conf;
 
     $map = $conf['use_iptc_mapping'];
@@ -57,12 +55,10 @@ function get_sync_iptc_data($file)
 
 /**
  * Returns EXIF metadata to sync from a file, depending on EXIF mapping.
- *
- * @param string $file
- * @return array
  */
-function get_sync_exif_data($file)
-{
+function get_sync_exif_data(
+    string $file
+): array {
     global $conf;
 
     $exif = get_exif_data($file, $conf['use_exif_mapping']);
@@ -118,7 +114,7 @@ function validateDate($date, $format = 'Y-m-d H:i:s'): bool
  *
  * @return string[]
  */
-function get_sync_metadata_attributes()
+function get_sync_metadata_attributes(): array
 {
     global $conf;
 
@@ -148,10 +144,11 @@ function get_sync_metadata_attributes()
  * Get all metadata of a file.
  *
  * @param array $infos - (path[, representative_ext])
- * @return array - includes data provided in $infos
+ * @return array|bool - includes data provided in $infos
  */
-function get_sync_metadata($infos)
-{
+function get_sync_metadata(
+    array $infos
+): array|bool {
     global $conf;
     $file = PHPWG_ROOT_PATH . $infos['path'];
     $fs = filesize($file);
@@ -238,8 +235,9 @@ function get_sync_metadata($infos)
  *
  * @param int[] $ids
  */
-function sync_metadata($ids)
-{
+function sync_metadata(
+    array $ids
+): void {
     global $conf;
 
     if (! defined('CURRENT_DATE')) {
@@ -307,19 +305,13 @@ function sync_metadata($ids)
 /**
  * Returns an array associating element id (images.id) with its complete
  * path in the filesystem
- *
- * @param string $category_id
- * @param int $site_id
- * @param boolean $recursive
- * @param boolean $only_new
- * @return array
  */
 function get_filelist(
-    $category_id = '',
-    $site_id = 1,
-    $recursive = false,
-    $only_new = false
-) {
+    string $category_id = '',
+    int $site_id = 1,
+    bool $recursive = false,
+    bool $only_new = false
+): array {
     // filling $cat_ids : all categories required
     $cat_ids = [];
 
@@ -378,12 +370,10 @@ function get_filelist(
 /**
  * Returns the list of keywords (future tags) correctly separated with
  * commas. Other separators are converted into commas.
- *
- * @param string $keywords_string
- * @return string
  */
-function metadata_normalize_keywords_string($keywords_string)
-{
+function metadata_normalize_keywords_string(
+    string $keywords_string
+): string {
     global $conf;
 
     $keywords_string = preg_replace($conf['metadata_keyword_separator_regex'], ',', $keywords_string);

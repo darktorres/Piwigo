@@ -9,22 +9,13 @@ defined('ADMINTOOLS_PATH') or die('Hacking attempt!');
  */
 class MultiView
 {
-    /**
-     * @var bool
-     */
-    private $is_admin = false;
+    private bool $is_admin = false;
 
-    /**
-     * @var array
-     */
-    private $data = [];
+    private array $data = [];
 
-    private $data_url_params = [];
+    private array $data_url_params = [];
 
-    /**
-     * @var array
-     */
-    private $user = [];
+    private array $user = [];
 
     /**
      * Constructor, load $data from session
@@ -48,29 +39,20 @@ class MultiView
         );
 
         $this->data_url_params = array_keys($this->data);
-        $this->data_url_params = array_map(function ($d) { return 'ato_' . $d; }, $this->data_url_params);
+        $this->data_url_params = array_map(function (string $d) { return 'ato_' . $d; }, $this->data_url_params);
     }
 
-    /**
-     * @return bool
-     */
-    public function is_admin()
+    public function is_admin(): bool
     {
         return $this->is_admin;
     }
 
-    /**
-     * @return array
-     */
-    public function get_data()
+    public function get_data(): array
     {
         return $this->data;
     }
 
-    /**
-     * @return array
-     */
-    public function get_user()
+    public function get_user(): array
     {
         return $this->user;
     }
@@ -79,10 +61,10 @@ class MultiView
      * Returns the current url minus MultiView params
      *
      * @param bool $with_amp - adds ? or & at the end of the url
-     * @return string
      */
-    public function get_clean_url($with_amp = false)
-    {
+    public function get_clean_url(
+        bool $with_amp = false
+    ): string {
         if (script_basename() == 'picture') {
             $url = duplicate_picture_url([], $this->data_url_params);
         } elseif (script_basename() == 'index') {
@@ -102,10 +84,10 @@ class MultiView
      * Returns the current url minus MultiView params
      *
      * @param bool $with_amp - adds ? or & at the end of the url
-     * @return string
      */
-    public function get_clean_admin_url($with_amp = false)
-    {
+    public function get_clean_admin_url(
+        bool $with_amp = false
+    ): string {
         $url = PHPWG_ROOT_PATH . 'admin.php';
 
         $get = $_GET;
@@ -124,7 +106,7 @@ class MultiView
     /**
      * Triggered on "user_init", change current view depending of URL params.
      */
-    public function user_init()
+    public function user_init(): void
     {
         global $user, $conf;
 
@@ -205,7 +187,7 @@ class MultiView
                 $this->data['no_history'] = (bool) $_GET['ato_no_history'];
             }
             if ($this->data['no_history']) {
-                $ret_false = function () {return false; };
+                $ret_false = function (): bool {return false; };
                 add_event_handler('pwg_log_allowed', $ret_false);
                 add_event_handler('pwg_log_update_last_visit', $ret_false);
             }
@@ -218,7 +200,7 @@ class MultiView
      * Returns the language of the current user if different from the current language
      * false otherwise
      */
-    public function get_user_language()
+    public function get_user_language(): string|bool
     {
         if (isset($this->user['language']) && isset($this->data['lang'])
             && $this->user['language'] != $this->data['lang']
@@ -231,7 +213,7 @@ class MultiView
     /**
      * Triggered on "init", in order to clean template files (not initialized on "user_init")
      */
-    public function init()
+    public function init(): void
     {
         if ($this->is_admin) {
             if (isset($_GET['ato_purge_template'])) {
@@ -245,7 +227,7 @@ class MultiView
     /**
      * Mark browser session cache for deletion
      */
-    public static function invalidate_cache()
+    public static function invalidate_cache(): void
     {
         global $conf;
         conf_update_param('multiview_invalidate_cache', true, true);
@@ -254,8 +236,9 @@ class MultiView
     /**
      * Register custom API methods
      */
-    public static function register_ws($arr)
-    {
+    public static function register_ws(
+        array $arr
+    ): void {
         $service = &$arr[0];
 
         $service->addMethod(
@@ -275,8 +258,9 @@ class MultiView
      * API method
      * Return full list of users, themes and languages
      */
-    public static function ws_get_data($params)
-    {
+    public static function ws_get_data(
+        array $params
+    ) {
         global $conf;
 
         // get users
@@ -313,7 +297,7 @@ class MultiView
     /**
      * Save $data in session
      */
-    private function save()
+    private function save(): void
     {
         pwg_set_session_var('multiview', $this->data);
     }

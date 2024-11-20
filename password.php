@@ -37,7 +37,7 @@ check_input_parameter('action', $_GET, false, '/^(lost|reset|none)$/');
  *
  * @return bool (true if email was sent, false otherwise)
  */
-function process_password_request()
+function process_password_request(): bool
 {
     global $page, $conf;
 
@@ -131,8 +131,9 @@ function process_password_request()
  *
  * @return mixed (user_id if OK, false otherwise)
  */
-function check_password_reset_key($reset_key)
-{
+function check_password_reset_key(
+    string $reset_key
+): mixed {
     global $page, $conf;
 
     list($key, $email) = explode('-', $reset_key, 2);
@@ -197,7 +198,7 @@ function check_password_reset_key($reset_key)
  *
  * @return bool (true if password was reset, false otherwise)
  */
-function reset_password()
+function reset_password(): bool
 {
     global $page, $conf;
 

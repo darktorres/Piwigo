@@ -11,17 +11,18 @@ declare(strict_types=1);
 
 class languages
 {
-    public $fs_languages = [];
+    public array $fs_languages = [];
 
-    public $db_languages = [];
+    public array $db_languages = [];
 
-    public $server_languages = [];
+    public array $server_languages = [];
 
     /**
      * Initialize $fs_languages and $db_languages
      */
-    public function __construct($target_charset = null)
-    {
+    public function __construct(
+        ?string $target_charset = null
+    ) {
         $this->get_fs_languages($target_charset);
     }
 
@@ -31,8 +32,10 @@ class languages
      * @param string $language_id - language id
      * @param array - errors
      */
-    public function perform_action($action, $language_id)
-    {
+    public function perform_action(
+        string $action,
+        string $language_id
+    ): array {
         global $conf;
 
         if (! $conf['enable_extensions_install'] and $action == 'delete') {
@@ -116,8 +119,9 @@ class languages
     /**
      *  Get languages defined in the language directory
      */
-    public function get_fs_languages($target_charset = null)
-    {
+    public function get_fs_languages(
+        ?string $target_charset = null
+    ): void {
         if (empty($target_charset)) {
             $target_charset = 'utf-8';
         }
@@ -173,7 +177,7 @@ class languages
         uasort($this->fs_languages, 'name_compare');
     }
 
-    public function get_db_languages()
+    public function get_db_languages(): void
     {
         $query = <<<SQL
             SELECT id, name
@@ -190,8 +194,9 @@ class languages
     /**
      * Retrieve PEM server datas to $server_languages
      */
-    public function get_server_languages($new = false)
-    {
+    public function get_server_languages(
+        bool $new = false
+    ): bool {
         global $user, $conf;
 
         $get_data = [
@@ -268,8 +273,11 @@ class languages
      * @param string $revision - remote revision identifier (numeric)
      * @param string $dest - language id or extension id
      */
-    public function extract_language_files($action, $revision, $dest = '')
-    {
+    public function extract_language_files(
+        string $action,
+        string $revision,
+        string $dest = ''
+    ): mixed {
         global $logger;
 
         if ($archive = tempnam(PHPWG_ROOT_PATH . 'language', 'zip')) {
@@ -384,8 +392,10 @@ class languages
     /**
      * Sort functions
      */
-    public function extension_name_compare($a, $b)
-    {
+    public function extension_name_compare(
+        array $a,
+        array $b
+    ): int {
         return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
     }
 }

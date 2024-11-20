@@ -67,8 +67,9 @@ if (get_device() == 'mobile') {
 }
 
 $this->smarty->registerFilter('pre', 'modus_smarty_prefilter_wrap');
-function modus_smarty_prefilter_wrap($source)
-{
+function modus_smarty_prefilter_wrap(
+    string $source
+): array|string|null {
     include_once(dirname(__FILE__) . '/functions.inc.php');
     return modus_smarty_prefilter($source);
 }
@@ -78,8 +79,10 @@ if (! defined('IN_ADMIN') && defined('RVCDN')) {
     add_event_handler('combined_script', 'rv_cdn_combined_script');
 }
 
-function rv_cdn_prefilter($source, &$smarty)
-{
+function rv_cdn_prefilter(
+    string $source,
+    \Smarty\Template &$smarty
+): string {
     $source = str_replace('src="{$ROOT_URL}{$themeconf.icon_dir}/', 'src="' . RVCDN_ROOT_URL . '{$themeconf.icon_dir}/', $source);
     $source = str_replace('url({$' . 'ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
     return $source;
@@ -88,30 +91,34 @@ function rv_cdn_prefilter($source, &$smarty)
 // Add prefilter to remove fontello loaded by piwigo 14 search,
 // this avoids conflicts of loading 2 fontellos
 add_event_handler('loc_begin_index', 'modus_loc_begin_index', 60);
-function modus_loc_begin_index()
+function modus_loc_begin_index(): void
 {
     global $template;
     $template->set_prefilter('index', 'modus_index_prefilter_1');
     $template->set_prefilter('index', 'modus_index_prefilter_2');
 }
 
-function modus_index_prefilter_1($content)
-{
+function modus_index_prefilter_1(
+    string $content
+): array|string {
     $search = '{combine_css path="themes/default/fontello/css/fontello.css" order=-10}';
     $replacement = '';
     return str_replace($search, $replacement, $content);
 }
 // Add pwg-icon class to search in this set icon
 
-function modus_index_prefilter_2($content)
-{
+function modus_index_prefilter_2(
+    string $content
+): array|string {
     $search = '<span class="pwg-icon-search-folder"></span>';
     $replacement = '<span class="pwg-icon pwg-icon-search-folder"></span>';
     return str_replace($search, $replacement, $content);
 }
 
-function rv_cdn_combined_script($url, $script)
-{
+function rv_cdn_combined_script(
+    string $url,
+    Script $script
+): string {
     if (! $script->is_remote()) {
         $url = RVCDN_ROOT_URL . $script->path;
     }
@@ -121,7 +128,7 @@ function rv_cdn_combined_script($url, $script)
 if (defined('RVPT_JQUERY_SRC')) {
     add_event_handler('loc_begin_page_header', 'modus_loc_begin_page_header');
 }
-function modus_loc_begin_page_header()
+function modus_loc_begin_page_header(): void
 {
     $all = $GLOBALS['template']->scriptLoader->get_all();
     if (($jq = $all['jquery'])) {
@@ -130,8 +137,9 @@ function modus_loc_begin_page_header()
 }
 
 add_event_handler('combinable_preparse', 'modus_combinable_preparse');
-function modus_combinable_preparse($template)
-{
+function modus_combinable_preparse(
+    Template $template
+): void {
     global $conf, $template;
     include_once(dirname(__FILE__) . '/functions.inc.php');
 
@@ -151,8 +159,9 @@ function modus_combinable_preparse($template)
 }
 
 $this->smarty->registerPlugin('function', 'cssResolution', 'modus_css_resolution');
-function modus_css_resolution($params)
-{
+function modus_css_resolution(
+    array $params
+): string {
     $base = $params['base'] ?? null;
     $min = $params['min'] ?? null;
     $max = $params['max'] ?? null;
@@ -183,8 +192,10 @@ function modus_css_resolution($params)
 }
 
 $this->smarty->registerPlugin('function', 'modus_thumbs', 'modus_thumbs');
-function modus_thumbs($x, $smarty)
-{
+function modus_thumbs(
+    array $x,
+    \Smarty\Template $smarty
+): void {
     global $template, $page, $conf;
 
     $default_params = $smarty->getTemplateVars('derivative_params');
@@ -295,7 +306,7 @@ function modus_thumbs($x, $smarty)
 }
 
 add_event_handler('loc_end_index', 'modus_on_end_index');
-function modus_on_end_index()
+function modus_on_end_index(): void
 {
     global $template;
     if (! pwg_get_session_var('caps')) {
@@ -316,8 +327,9 @@ function modus_on_end_index()
 }
 
 add_event_handler('get_index_derivative_params', 'modus_get_index_photo_derivative_params', EVENT_HANDLER_PRIORITY_NEUTRAL + 1);
-function modus_get_index_photo_derivative_params($default)
-{
+function modus_get_index_photo_derivative_params(
+    DerivativeParams|string $default
+): DerivativeParams|string {
     global $conf;
     if (isset($conf['modus_theme']) && pwg_get_session_var('index_deriv') === null) {
         $type = $conf['modus_theme']['index_photo_deriv'];
@@ -337,8 +349,9 @@ function modus_get_index_photo_derivative_params($default)
 }
 
 add_event_handler('loc_end_index_category_thumbnails', 'modus_index_category_thumbnails');
-function modus_index_category_thumbnails($items)
-{
+function modus_index_category_thumbnails(
+    array $items
+): array {
     global $page, $template, $conf;
 
     if ($page['section'] != 'categories' || ! ($wh = $conf['modus_theme']['album_thumb_size'])) {
@@ -406,7 +419,7 @@ function modus_index_category_thumbnails($items)
 }
 
 add_event_handler('loc_begin_picture', 'modus_loc_begin_picture');
-function modus_loc_begin_picture()
+function modus_loc_begin_picture(): void
 {
     global $conf, $template;
     if (isset($_GET['slideshow'])) {
@@ -426,8 +439,10 @@ function modus_loc_begin_picture()
 }
 
 add_event_handler('render_element_content', 'modus_picture_content', EVENT_HANDLER_PRIORITY_NEUTRAL - 1);
-function modus_picture_content($content, $element_info)
-{
+function modus_picture_content(
+    string $content,
+    array $element_info
+): ?string {
     global $conf, $picture, $template;
 
     if (! empty($content)) { // someone hooked us - so we skip;

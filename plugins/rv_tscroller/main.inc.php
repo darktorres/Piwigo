@@ -15,7 +15,7 @@ define('RVTS_VERSION', '12.a');
 
 class RVTS
 {
-    public static function on_end_section_init()
+    public static function on_end_section_init(): void
     {
         // global $page;
         // $page['nb_image_page'] *= pwg_get_session_var('rvts_mult', 1);
@@ -27,7 +27,7 @@ class RVTS
         add_event_handler('loc_begin_index', ['RVTS', 'on_index_begin'], EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
     }
 
-    public static function on_index_begin()
+    public static function on_index_begin(): void
     {
         global $page;
         $is_ajax = isset($_GET['rvts']);
@@ -57,8 +57,9 @@ class RVTS
         }
     }
 
-    public static function on_index_thumbnails($thumbs)
-    {
+    public static function on_index_thumbnails(
+        array $thumbs
+    ): array {
         global $page, $template;
         $total = count($page['items']);
         if (count($thumbs) >= $total) {
@@ -121,8 +122,9 @@ class RVTS
         return $thumbs;
     }
 
-    public static function on_index_thumbnails_ajax($thumbs)
-    {
+    public static function on_index_thumbnails_ajax(
+        array $thumbs
+    ): void {
         global $template;
         $template->assign('thumbnails', $thumbs);
         header('Content-Type: text/html; charset=utf-8');
@@ -130,7 +132,7 @@ class RVTS
         exit;
     }
 
-    public static function on_end_index()
+    public static function on_end_index(): void
     {
         global $template;
         $req = null;

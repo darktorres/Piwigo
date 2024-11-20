@@ -15,7 +15,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
  * Init tabsheet for history pages
  * @ignore
  */
-function history_tabsheet()
+function history_tabsheet(): void
 {
     global $page, $link_start;
 
@@ -29,8 +29,10 @@ function history_tabsheet()
 /**
  * Callback used to sort history entries
  */
-function history_compare($a, $b)
-{
+function history_compare(
+    array $a,
+    array $b
+): int {
     return strcmp($a['date'] . $a['time'], $b['date'] . $b['time']);
 }
 
@@ -38,12 +40,13 @@ function history_compare($a, $b)
  * Perform history search.
  *
  * @param array $data  - used in trigger_change
- * @param array $search
  * @param string[] $types
- * @param array
  */
-function get_history($data, $search, $types)
-{
+function get_history(
+    array $data,
+    array $search,
+    array $types
+): array {
     if (isset($search['fields']['filename'])) {
         $query = <<<SQL
             SELECT id
@@ -139,8 +142,9 @@ function get_history($data, $search, $types)
  *
  * @param int $max_lines - to only compute the next X lines, not the whole remaining lines
  */
-function history_summarize($max_lines = null)
-{
+function history_summarize(
+    ?int $max_lines = null
+): void {
     // we need to know which was the last line "summarized"
     $query = <<<SQL
         SELECT *
@@ -320,7 +324,7 @@ function history_summarize($max_lines = null)
  *
  * @since 2.9
  */
-function history_autopurge()
+function history_autopurge(): void
 {
     global $conf, $logger;
 
@@ -399,7 +403,7 @@ function history_autopurge()
     history_remove_summarized_column();
 }
 
-function history_remove_summarized_column()
+function history_remove_summarized_column(): void
 {
     global $conf;
 

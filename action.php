@@ -16,8 +16,9 @@ include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
 
-function guess_mime_type($ext)
-{
+function guess_mime_type(
+    string $ext
+): string {
     switch (strtolower($ext)) {
         case 'jpe': case 'jpeg':
         case 'jpg': $ctype = 'image/jpeg';
@@ -49,8 +50,10 @@ function guess_mime_type($ext)
     return $ctype;
 }
 
-function do_error($code, $str)
-{
+function do_error(
+    int $code,
+    string $str
+): void {
     set_status_header($code);
     echo $str;
     exit();

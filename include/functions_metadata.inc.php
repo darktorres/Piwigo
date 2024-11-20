@@ -11,13 +11,12 @@ declare(strict_types=1);
 
 /**
  * returns information from IPTC metadata, mapping is done in this function.
- *
- * @param string $filename
- * @param array $map
- * @return array
  */
-function get_iptc_data($filename, $map, $array_sep = ',')
-{
+function get_iptc_data(
+    string $filename,
+    array $map,
+    string $array_sep = ','
+): array {
     global $conf;
 
     $result = [];
@@ -61,12 +60,10 @@ function get_iptc_data($filename, $map, $array_sep = ',')
 
 /**
  * return a cleaned IPTC value.
- *
- * @param string $value
- * @return string
  */
-function clean_iptc_value($value)
-{
+function clean_iptc_value(
+    string $value
+): string {
     // strip leading zeros (weird Kodak Scanner software)
     while (isset($value[0]) and $value[0] == chr(0)) {
         $value = substr($value, 1);
@@ -101,13 +98,11 @@ function clean_iptc_value($value)
 
 /**
  * returns information from EXIF metadata, mapping is done in this function.
- *
- * @param string $filename
- * @param array $map
- * @return array
  */
-function get_exif_data($filename, $map)
-{
+function get_exif_data(
+    string $filename,
+    array $map
+): array {
     global $conf, $logger;
 
     $result = [];
@@ -196,8 +191,10 @@ function strip_html_in_metadata(&$v, $k)
  * @param string $ref 'S', 'N', 'E', 'W'. eg: 'N'
  * @return float eg: 41.905468
  */
-function parse_exif_gps_data($raw, $ref)
-{
+function parse_exif_gps_data(
+    array $raw,
+    string $ref
+): float {
     foreach ($raw as &$i) {
         $i = explode('/', $i);
         $i = $i[1] == 0 ? 0 : $i[0] / $i[1];

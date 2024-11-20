@@ -14,10 +14,8 @@ declare(strict_types=1);
  * - period
  * - repeat
  * - play
- *
- * @return array
  */
-function get_default_slideshow_params()
+function get_default_slideshow_params(): array
 {
     global $conf;
 
@@ -30,12 +28,10 @@ function get_default_slideshow_params()
 
 /**
  * Checks and corrects slideshow params
- *
- * @param array $params
- * @return array
  */
-function correct_slideshow_params($params = [])
-{
+function correct_slideshow_params(
+    array $params = []
+): array {
     global $conf;
 
     if ($params['period'] < $conf['slideshow_period_min']) {
@@ -49,12 +45,10 @@ function correct_slideshow_params($params = [])
 
 /**
  * Decodes slideshow string params into array
- *
- * @param string $encode_params
- * @return array
  */
-function decode_slideshow_params($encode_params = null)
-{
+function decode_slideshow_params(
+    ?string $encode_params = null
+): array {
     global $conf;
 
     $result = get_default_slideshow_params();
@@ -83,12 +77,10 @@ function decode_slideshow_params($encode_params = null)
 
 /**
  * Encodes slideshow array params into a string
- *
- * @param array $decode_params
- * @return string
  */
-function encode_slideshow_params($decode_params = [])
-{
+function encode_slideshow_params(
+    array $decode_params = []
+): string {
     global $conf;
 
     $params = array_diff_assoc(correct_slideshow_params($decode_params), get_default_slideshow_params());
