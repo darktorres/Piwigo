@@ -15,12 +15,14 @@ declare(strict_types=1);
 
 /**
  * Sets associations of an image
- * @param int $image_id
  * @param string $categories_string - "cat_id[,rank];cat_id[,rank]"
  * @param bool $replace_mode - removes old associations
  */
-function ws_add_image_category_relations($image_id, $categories_string, $replace_mode = false)
-{
+function ws_add_image_category_relations(
+    int $image_id,
+    string $categories_string,
+    bool $replace_mode = false
+): bool|PwgError|null {
     // let's add links between the image and the categories
     //
     // $params['categories'] should look like 123,12;456,auto;789 which means:
@@ -150,16 +152,18 @@ function ws_add_image_category_relations($image_id, $categories_string, $replace
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
     update_category($new_cat_ids);
+
+    return null;
 }
 
 /**
  * Merge chunks added by pwg.images.addChunk
- * @param string $output_filepath
- * @param string $original_sum
- * @param string $type
  */
-function merge_chunks($output_filepath, $original_sum, $type)
-{
+function merge_chunks(
+    string $output_filepath,
+    string $original_sum,
+    string $type
+): ?PwgError {
     global $conf, $logger;
 
     $logger->debug('[merge_chunks] input parameter $output_filepath : ' . $output_filepath);
@@ -211,11 +215,12 @@ function merge_chunks($output_filepath, $original_sum, $type)
     if (function_exists('memory_get_usage')) {
         $logger->debug('[merge_chunks] memory_get_usage after loading chunks: ' . memory_get_usage());
     }
+
+    return null;
 }
 
 /**
  * Deletes chunks added with pwg.images.addChunk
- * @param string $original_sum
  * @param string $type
  *
  * Function introduced for Piwigo 2.4 and the new "multiple size"
@@ -225,8 +230,10 @@ function merge_chunks($output_filepath, $original_sum, $type)
  * will be the biggest (we could remove the thumb, but let's use the same
  * algorithm)
  */
-function remove_chunks($original_sum, $type)
-{
+function remove_chunks(
+    string $original_sum,
+    string $type
+): void {
     global $conf;
 
     $upload_dir = $conf['upload_dir'] . '/buffer';
@@ -261,9 +268,9 @@ function remove_chunks($original_sum, $type)
  *    @option string key
  */
 function ws_images_addComment(
-    $params,
-    $service
-) {
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     $sql_conditions = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'id',
@@ -324,8 +331,10 @@ function ws_images_addComment(
  *    @option int comments_page
  *    @option int comments_per_page
  */
-function ws_images_getInfo($params, $service)
-{
+function ws_images_getInfo(
+    array $params,
+    PwgServer &$service
+): mixed {
     global $user, $conf;
 
     $sql_conditions = get_sql_condition_FandF(
@@ -544,9 +553,9 @@ function ws_images_getInfo($params, $service)
  *    @option float rate
  */
 function ws_images_rate(
-    $params,
-    $service
-) {
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     $sql_conditions = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'category_id',
@@ -586,8 +595,10 @@ function ws_images_rate(
  *    @option int page
  *    @option string order (optional)
  */
-function ws_images_search($params, $service)
-{
+function ws_images_search(
+    array $params,
+    PwgServer &$service
+): array {
     include_once(PHPWG_ROOT_PATH . 'include/functions_search.inc.php');
 
     $images = [];
@@ -805,8 +816,10 @@ function ws_images_filteredSearch_create($params, $service)
  *    @option int image_id
  *    @option int level
  */
-function ws_images_setPrivacyLevel($params, $service)
-{
+function ws_images_setPrivacyLevel(
+    array $params,
+    PwgServer &$service
+): int|PwgError|string {
     global $conf;
 
     if (! in_array($params['level'], $conf['available_permission_levels'])) {
@@ -839,8 +852,10 @@ function ws_images_setPrivacyLevel($params, $service)
  *    @option int category_id
  *    @option int rank
  */
-function ws_images_setRank($params, $service)
-{
+function ws_images_setRank(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     if (count($params['image_id']) > 1) {
         include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
@@ -946,8 +961,10 @@ function ws_images_setRank($params, $service)
  *    @option string type = 'file'
  *    @option int position
  */
-function ws_images_add_chunk($params, $service)
-{
+function ws_images_add_chunk(
+    array $params,
+    PwgServer &$service
+): ?PwgError {
     global $conf, $logger;
 
     foreach ($params as $param_key => $param_value) {
@@ -989,6 +1006,8 @@ function ws_images_add_chunk($params, $service)
             'an error has occurred while writing chunk ' . $params['position'] . ' for ' . $params['type']
         );
     }
+
+    return null;
 }
 
 /**
@@ -999,8 +1018,10 @@ function ws_images_add_chunk($params, $service)
  *    @option string type = 'file'
  *    @option string sum
  */
-function ws_images_addFile($params, $service)
-{
+function ws_images_addFile(
+    array $params,
+    PwgServer &$service
+): bool|PwgError|null {
     global $conf, $logger;
 
     $logger->debug(__FUNCTION__, $params);
@@ -1065,6 +1086,8 @@ function ws_images_addFile($params, $service)
         $params['image_id'],
         $image['md5sum'] // we force the md5sum to remain the same
     );
+
+    return null;
 }
 
 /**
@@ -1083,8 +1106,10 @@ function ws_images_addFile($params, $service)
  *    @option bool check_uniqueness
  *    @option int image_id (optional)
  */
-function ws_images_add($params, $service)
-{
+function ws_images_add(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $conf, $user, $logger;
 
     foreach ($params as $param_key => $param_value) {
@@ -1232,8 +1257,10 @@ function ws_images_add($params, $service)
  *    @option string|string[] tags
  *    @option int image_id (optional)
  */
-function ws_images_addSimple($params, $service)
-{
+function ws_images_addSimple(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $conf, $logger;
 
     if (! isset($_FILES['image'])) {
@@ -1376,8 +1403,10 @@ function ws_images_addSimple($params, $service)
  *    @option string|string[] tags
  *    @option int image_id (optional)
  */
-function ws_images_upload($params, $service)
-{
+function ws_images_upload(
+    array $params,
+    PwgServer &$service
+): array|PwgError|null {
     global $conf;
 
     if (get_pwg_token() != $params['pwg_token']) {
@@ -1541,6 +1570,8 @@ function ws_images_upload($params, $service)
             ],
         ];
     }
+
+    return null;
 }
 
 /**
@@ -1564,8 +1595,10 @@ function ws_images_upload($params, $service)
  *    @option string tag_ids (optional) - "tag_id,tag_id"
  *    @option int image_id (optional)
  */
-function ws_images_uploadAsync($params, &$service)
-{
+function ws_images_uploadAsync(
+    array $params,
+    PwgServer &$service
+): mixed {
     global $conf, $user, $logger;
 
     // the username/password parameters have been used in include/user.inc.php
@@ -1807,8 +1840,10 @@ function ws_images_uploadAsync($params, &$service)
  *    @option string md5sum_list (optional)
  *    @option string filename_list (optional)
  */
-function ws_images_exist($params, $service)
-{
+function ws_images_exist(
+    array $params,
+    PwgServer &$service
+): array {
     global $conf, $logger;
 
     $logger->debug(__FUNCTION__, $params);
@@ -1879,8 +1914,10 @@ function ws_images_exist($params, $service)
  *    @option string category_id (optional)
  *    @option string filename_list
  */
-function ws_images_formats_searchImage($params, $service)
-{
+function ws_images_formats_searchImage(
+    array $params,
+    PwgServer &$service
+): array {
     global $conf, $logger;
 
     $logger->debug(__FUNCTION__, $params);
@@ -1901,7 +1938,7 @@ function ws_images_formats_searchImage($params, $service)
     }
 
     // we want "long" format extensions first to match "cmyk.jpg" before "jpg" for example
-    usort($conf['format_ext'], function ($a, $b) {
+    usort($conf['format_ext'], function (string $a, string $b): int {
         return strlen($b) - strlen($a);
     });
 
@@ -1953,8 +1990,10 @@ function ws_images_formats_searchImage($params, $service)
  *    @option int format_id
  *    @option string pwg_token
  */
-function ws_images_formats_delete($params, $service)
-{
+function ws_images_formats_delete(
+    array $params,
+    PwgServer &$service
+): bool|PwgError {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -2057,8 +2096,10 @@ function ws_images_formats_delete($params, $service)
  *    @option int image_id
  *    @option string file_sum
  */
-function ws_images_checkFiles($params, $service)
-{
+function ws_images_checkFiles(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     global $logger;
 
     $logger->debug(__FUNCTION__, $params);
@@ -2123,8 +2164,10 @@ function ws_images_checkFiles($params, $service)
  *    @option string single_value_mode
  *    @option string multiple_value_mode
  */
-function ws_images_setInfo($params, $service)
-{
+function ws_images_setInfo(
+    array $params,
+    PwgServer &$service
+): ?PwgError {
     global $conf;
 
     if (isset($params['pwg_token']) and get_pwg_token() != $params['pwg_token']) {
@@ -2251,6 +2294,8 @@ function ws_images_setInfo($params, $service)
     }
 
     invalidate_user_cache();
+
+    return null;
 }
 
 /**
@@ -2260,8 +2305,10 @@ function ws_images_setInfo($params, $service)
  *    @option int|int[] image_id
  *    @option string pwg_token
  */
-function ws_images_delete($params, $service)
-{
+function ws_images_delete(
+    array $params,
+    PwgServer &$service
+): int|PwgError {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -2295,8 +2342,10 @@ function ws_images_delete($params, $service)
  * Checks if Piwigo is ready for upload
  * @param mixed[] $params
  */
-function ws_images_checkUpload($params, $service)
-{
+function ws_images_checkUpload(
+    array $params,
+    PwgServer &$service
+): array {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php');
 
     $ret['message'] = ready_for_upload_message();
@@ -2314,8 +2363,10 @@ function ws_images_checkUpload($params, $service)
  * @since 12
  * @param mixed[] $params
  */
-function ws_images_emptyLounge($params, $service)
-{
+function ws_images_emptyLounge(
+    array $params,
+    PwgServer &$service
+): array {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     $ret = [
@@ -2331,8 +2382,10 @@ function ws_images_emptyLounge($params, $service)
  * @since 12
  * @param mixed[] $params
  */
-function ws_images_uploadCompleted($params, $service)
-{
+function ws_images_uploadCompleted(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
     if (get_pwg_token() != $params['pwg_token']) {
@@ -2394,8 +2447,10 @@ function ws_images_uploadCompleted($params, $service)
  * @param mixed[] $params
  *    @option int block_size
  */
-function ws_images_setMd5sum($params, $service)
-{
+function ws_images_setMd5sum(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -2422,8 +2477,10 @@ function ws_images_setMd5sum($params, $service)
  * @param mixed[] $params
  *    @option int image_id
  */
-function ws_images_syncMetadata($params, $service)
-{
+function ws_images_syncMetadata(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }
@@ -2455,8 +2512,10 @@ function ws_images_syncMetadata($params, $service)
  * @param mixed[] $params
  *    @option int block_size
  */
-function ws_images_deleteOrphans($params, $service)
-{
+function ws_images_deleteOrphans(
+    array $params,
+    PwgServer &$service
+): array|PwgError {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');
     }

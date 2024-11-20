@@ -100,7 +100,7 @@ class Config
 
     public const KEY_CUSTOM_CSS = 'custom_css';
 
-    private $defaults = [
+    private array $defaults = [
         self::KEY_FLUID_WIDTH => false,
         self::KEY_FLUID_WIDTH_COL_XXL => true,
         self::KEY_BOOTSTRAP_THEME => 'material-darkroom',
@@ -143,7 +143,7 @@ class Config
         self::KEY_CUSTOM_CSS => null,
     ];
 
-    private $types = [
+    private array $types = [
         self::KEY_FLUID_WIDTH => self::TYPE_BOOL,
         self::KEY_FLUID_WIDTH_COL_XXL => self::TYPE_BOOL,
         self::KEY_BOOTSTRAP_THEME => self::TYPE_STRING,
@@ -188,7 +188,7 @@ class Config
 
     private $config = [];
 
-    private $files = [];
+    private array $files = [];
 
     public function __construct()
     {
@@ -220,8 +220,10 @@ class Config
         $this->save();
     }
 
-    public function __set($key, $value)
-    {
+    public function __set(
+        string $key,
+        string|bool|null $value
+    ): void {
         if (array_key_exists($key, $this->defaults)) {
             switch ($this->types[$key]) {
                 case self::TYPE_STRING:
@@ -240,8 +242,9 @@ class Config
         }
     }
 
-    public function __get($key)
-    {
+    public function __get(
+        string $key
+    ): bool|string|null {
         if (array_key_exists($key, $this->defaults)) {
             switch ($this->types[$key]) {
                 case self::TYPE_STRING:
@@ -251,36 +254,38 @@ class Config
                 case self::TYPE_FILE:
                     return $this->loadFile($key);
             }
-        } else {
-            return null;
         }
+
+        return null;
     }
 
-    public function fromPost(array $post)
-    {
+    public function fromPost(
+        array $post
+    ): void {
         foreach (array_keys($this->defaults) as $key) {
             $this->__set($key, isset($post[$key]) ? stripslashes($post[$key]) : null);
         }
     }
 
-    public function save()
+    public function save(): void
     {
         conf_update_param(self::CONF_PARAM, json_encode($this->config));
     }
 
-    private function initFiles()
+    private function initFiles(): void
     {
         $this->files[self::KEY_CUSTOM_CSS] = PHPWG_ROOT_PATH . 'local/bootstrap_darkroom/custom.css';
     }
 
-    private function createDefaultConfig()
+    private function createDefaultConfig(): void
     {
         $this->config = $this->defaults;
         $this->config[self::KEY_VERSION] = self::CONF_VERSION;
     }
 
-    private function populateConfig(array $config)
-    {
+    private function populateConfig(
+        array $config
+    ): void {
         foreach (array_keys($this->defaults) as $key) {
             if (isset($config[$key])) {
                 $this->config[$key] = $config[$key];
@@ -288,8 +293,10 @@ class Config
         }
     }
 
-    private function saveFile($key, $content)
-    {
+    private function saveFile(
+        int|string $key,
+        string $content
+    ): void {
         $file = $this->files[$key];
         $dir = dirname($file);
         if (! file_exists($dir)) {
@@ -302,8 +309,9 @@ class Config
         }
     }
 
-    private function loadFile($key)
-    {
+    private function loadFile(
+        int|string $key
+    ): string|false|null {
         $file = $this->files[$key];
         if (file_exists($file)) {
             return file_get_contents($file);

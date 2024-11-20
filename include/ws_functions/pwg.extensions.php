@@ -14,8 +14,10 @@ declare(strict_types=1);
  * Returns the list of all plugins
  * @param mixed[] $params
  */
-function ws_plugins_getList($params, $service)
-{
+function ws_plugins_getList(
+    array $params,
+    PwgServer $service
+): array {
     include_once(PHPWG_ROOT_PATH . 'admin/include/plugins.class.php');
 
     $plugins = new plugins();
@@ -49,8 +51,10 @@ function ws_plugins_getList($params, $service)
  *    @option string plugin
  *    @option string pwg_token
  */
-function ws_plugins_performAction($params, $service)
-{
+function ws_plugins_performAction(
+    array $params,
+    PwgServer $service
+): bool|PwgError {
     global $template, $conf;
 
     if (get_pwg_token() != $params['pwg_token']) {
@@ -90,8 +94,10 @@ function ws_plugins_performAction($params, $service)
  *    @option string theme
  *    @option string pwg_token
  */
-function ws_themes_performAction($params, $service)
-{
+function ws_themes_performAction(
+    array $params,
+    PwgServer $service
+): bool|PwgError {
     global $template, $conf;
 
     if (get_pwg_token() != $params['pwg_token']) {
@@ -129,8 +135,10 @@ function ws_themes_performAction($params, $service)
  *    @option string pwg_token
  *    @option bool reactivate (optional - undocumented)
  */
-function ws_extensions_update($params, $service)
-{
+function ws_extensions_update(
+    array $params,
+    PwgServer $service
+): PwgError|string {
     global $conf;
 
     if (! $conf['enable_extensions_install']) {
@@ -238,8 +246,10 @@ function ws_extensions_update($params, $service)
  *    @option bool reset
  *    @option string pwg_token
  */
-function ws_extensions_ignoreupdate($params, $service)
-{
+function ws_extensions_ignoreupdate(
+    array $params,
+    PwgServer $service
+): bool|PwgError {
     global $conf;
 
     define('IN_ADMIN', true);
@@ -291,8 +301,10 @@ function ws_extensions_ignoreupdate($params, $service)
  * Checks for updates (core and extensions)
  * @param mixed[] $params
  */
-function ws_extensions_checkupdates($params, $service)
-{
+function ws_extensions_checkupdates(
+    array $params,
+    PwgServer $service
+): array {
     global $conf;
 
     include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');

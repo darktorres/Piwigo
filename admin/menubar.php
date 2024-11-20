@@ -17,13 +17,17 @@ if (! is_webmaster()) {
     $page['warnings'][] = str_replace('%s', l10n('user_status_webmaster'), l10n('%s status is required to edit parameters.'));
 }
 
-function abs_fn_cmp($a, $b)
-{
+function abs_fn_cmp(
+    float|int $a,
+    float|int $b
+): float {
     return abs($a) - abs($b);
 }
 
-function make_consecutive(&$orders, $step = 50)
-{
+function make_consecutive(
+    array &$orders,
+    int $step = 50
+): void {
     uasort($orders, 'abs_fn_cmp');
     $crt = 1;
     foreach ($orders as $id => $pos) {

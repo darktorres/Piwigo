@@ -15,35 +15,37 @@ declare(strict_types=1);
  */
 class DummyTheme_maintain extends ThemeMaintain
 {
-    public function activate($theme_version, &$errors = [])
-    {
+    public function activate(
+        string $theme_version,
+        array &$errors = []
+    ): void {
         if (is_callable('theme_activate')) {
-            return theme_activate($this->theme_id, $theme_version, $errors);
+            theme_activate($this->theme_id, $theme_version, $errors);
         }
     }
 
-    public function deactivate()
+    public function deactivate(): void
     {
         if (is_callable('theme_deactivate')) {
-            return theme_deactivate($this->theme_id);
+            theme_deactivate($this->theme_id);
         }
     }
 
-    public function delete()
+    public function delete(): void
     {
         if (is_callable('theme_delete')) {
-            return theme_delete($this->theme_id);
+            theme_delete($this->theme_id);
         }
     }
 }
 
 class themes
 {
-    public $fs_themes = [];
+    public array $fs_themes = [];
 
-    public $db_themes_by_id = [];
+    public array $db_themes_by_id = [];
 
-    public $server_themes = [];
+    public array $server_themes = [];
 
     /**
      * Initialize $fs_themes and $db_themes_by_id
@@ -63,8 +65,10 @@ class themes
      * @param string $theme_id - theme id
      * @param array - errors
      */
-    public function perform_action($action, $theme_id)
-    {
+    public function perform_action(
+        string $action,
+        string $theme_id
+    ): array {
         global $conf;
 
         if (! $conf['enable_extensions_install'] and $action == 'delete') {
@@ -210,8 +214,9 @@ class themes
         return $errors;
     }
 
-    public function missing_parent_theme($theme_id)
-    {
+    public function missing_parent_theme(
+        string $theme_id
+    ): mixed {
         if (! isset($this->fs_themes[$theme_id]['parent'])) {
             return null;
         }
@@ -229,8 +234,9 @@ class themes
         return $this->missing_parent_theme($parent);
     }
 
-    public function get_children_themes($theme_id)
-    {
+    public function get_children_themes(
+        string $theme_id
+    ): array {
         $children = [];
 
         foreach ($this->fs_themes as $test_child) {
@@ -242,8 +248,9 @@ class themes
         return $children;
     }
 
-    public function set_default_theme($theme_id)
-    {
+    public function set_default_theme(
+        string $theme_id
+    ): void {
         global $conf;
 
         // first, we need to know which users are using the current default theme
@@ -273,8 +280,9 @@ class themes
         pwg_query($query);
     }
 
-    public function get_db_themes($id = '')
-    {
+    public function get_db_themes(
+        string $id = ''
+    ): array {
         $query = <<<SQL
             SELECT *
             FROM themes
@@ -301,7 +309,7 @@ class themes
     /**
      *  Get themes defined in the theme directory
      */
-    public function get_fs_themes()
+    public function get_fs_themes(): void
     {
         $dir = opendir(PHPWG_THEMES_PATH);
 
@@ -391,8 +399,9 @@ class themes
     /**
      * Sort fs_themes
      */
-    public function sort_fs_themes($order = 'name')
-    {
+    public function sort_fs_themes(
+        string $order = 'name'
+    ): void {
         switch ($order) {
             case 'name':
                 uasort($this->fs_themes, 'name_compare');
@@ -412,8 +421,9 @@ class themes
     /**
      * Retrieve PEM server data to $server_themes
      */
-    public function get_server_themes($new = false)
-    {
+    public function get_server_themes(
+        bool $new = false
+    ): bool {
         global $user, $conf;
 
         $get_data = [
@@ -483,8 +493,9 @@ class themes
     /**
      * Sort $server_themes
      */
-    public function sort_server_themes($order = 'date')
-    {
+    public function sort_server_themes(
+        string $order = 'date'
+    ): void {
         switch ($order) {
             case 'date':
                 krsort($this->server_themes);
@@ -511,8 +522,12 @@ class themes
      * @param string $revision - remote revision identifier (numeric)
      * @param string $dest - theme id or extension id
      */
-    public function extract_theme_files($action, $revision, $dest, &$theme_id = null)
-    {
+    public function extract_theme_files(
+        string $action,
+        string $revision,
+        string $dest,
+        ?string &$theme_id = null
+    ): mixed {
         global $logger;
 
         if ($archive = tempnam(PHPWG_THEMES_PATH, 'zip')) {
@@ -619,21 +634,27 @@ class themes
     /**
      * Sort functions
      */
-    public function extension_revision_compare($a, $b)
-    {
+    public function extension_revision_compare(
+        array $a,
+        array $b
+    ): int {
         if ($a['revision_date'] < $b['revision_date']) {
             return 1;
         }
         return -1;
     }
 
-    public function extension_name_compare($a, $b)
-    {
+    public function extension_name_compare(
+        array $a,
+        array $b
+    ): int {
         return strcmp(strtolower($a['extension_name']), strtolower($b['extension_name']));
     }
 
-    public function extension_author_compare($a, $b)
-    {
+    public function extension_author_compare(
+        array $a,
+        array $b
+    ): int {
         $r = strcasecmp($a['author_name'], $b['author_name']);
         if ($r == 0) {
             return $this->extension_name_compare($a, $b);
@@ -641,8 +662,10 @@ class themes
         return $r;
     }
 
-    public function theme_author_compare($a, $b)
-    {
+    public function theme_author_compare(
+        array $a,
+        array $b
+    ): int {
         $r = strcasecmp($a['author'], $b['author']);
         if ($r == 0) {
             return name_compare($a, $b);
@@ -650,15 +673,17 @@ class themes
         return $r;
     }
 
-    public function extension_downloads_compare($a, $b)
-    {
+    public function extension_downloads_compare(
+        array $a,
+        array $b
+    ): int {
         if ($a['extension_nb_downloads'] < $b['extension_nb_downloads']) {
             return 1;
         }
         return -1;
     }
 
-    public function sort_themes_by_state()
+    public function sort_themes_by_state(): void
     {
         uasort($this->fs_themes, 'name_compare');
 
@@ -680,10 +705,10 @@ class themes
     /**
      * Returns the maintain class of a theme
      * or build a new class with the procedural methods
-     * @param string $theme_id
      */
-    private static function build_maintain_class($theme_id)
-    {
+    private static function build_maintain_class(
+        string $theme_id
+    ): DummyTheme_maintain|ThemeMaintain {
         $file_to_include = PHPWG_THEMES_PATH . '/' . $theme_id . '/admin/maintain.inc.php';
         $classname = $theme_id . '_maintain';
 

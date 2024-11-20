@@ -12,17 +12,12 @@ declare(strict_types=1);
 /**
  * Get standard SQL where to restrict and filter categories and images.
  * image_category must be named "ic" in the query
- *
- * @param string $prefix_condition
- * @param string $img_field
- * @param bool $force_one_condition
- * @return string
  */
 function get_std_sql_where_restrict_filter(
-    $prefix_condition,
-    $img_field = 'ic.image_id',
-    $force_one_condition = false
-) {
+    string $prefix_condition,
+    string $img_field = 'ic.image_id',
+    bool $force_one_condition = false
+): string {
     return get_sql_condition_FandF(
         [
             'forbidden_categories' => 'ic.category_id',
@@ -40,12 +35,16 @@ function get_std_sql_where_restrict_filter(
  *
  * @param string $action 'count', 'info'
  * @param string $type 'new_comments', 'unvalidated_comments', 'new_elements', 'updated_categories', 'new_users'
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
- * @return int|array int for action count array for info
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
+ * @return int|array|null int for action count, array for info
  */
-function custom_notification_query($action, $type, $start = null, $end = null)
-{
+function custom_notification_query(
+    string $action,
+    string $type,
+    ?string $start = null,
+    ?string $end = null
+): int|array|null {
     global $user;
 
     switch ($type) {
@@ -229,108 +228,121 @@ function custom_notification_query($action, $type, $start = null, $end = null)
 /**
  * Returns number of new comments between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
- * @return int
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  */
-function nb_new_comments($start = null, $end = null)
-{
+function nb_new_comments(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('count', 'new_comments', $start, $end);
 }
 
 /**
  * Returns new comments between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  * @return int[] comment ids
  */
-function new_comments($start = null, $end = null)
-{
+function new_comments(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('info', 'new_comments', $start, $end);
 }
 
 /**
  * Returns number of unvalidated comments between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
- * @return int
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  */
-function nb_unvalidated_comments($start = null, $end = null)
-{
+function nb_unvalidated_comments(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('count', 'unvalidated_comments', $start, $end);
 }
 
 /**
  * Returns number of new photos between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
- * @return int
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  */
-function nb_new_elements($start = null, $end = null)
-{
+function nb_new_elements(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('count', 'new_elements', $start, $end);
 }
 
 /**
  * Returns new photos between two dates.es
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  * @return int[] photos ids
  */
-function new_elements($start = null, $end = null)
-{
+function new_elements(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('info', 'new_elements', $start, $end);
 }
 
 /**
  * Returns number of updated categories between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
- * @return int
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  */
-function nb_updated_categories($start = null, $end = null)
-{
+function nb_updated_categories(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('count', 'updated_categories', $start, $end);
 }
 
 /**
  * Returns updated categories between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  * @return int[] categories ids
  */
-function updated_categories($start = null, $end = null)
-{
+function updated_categories(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('info', 'updated_categories', $start, $end);
 }
 
 /**
  * Returns number of new users between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
- * @return int
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  */
-function nb_new_users($start = null, $end = null)
-{
+function nb_new_users(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('count', 'new_users', $start, $end);
 }
 
 /**
  * Returns new users between two dates.
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  * @return int[] user ids
  */
-function new_users($start = null, $end = null)
-{
+function new_users(
+    ?string $start = null,
+    ?string $end = null
+): array|int {
     return custom_notification_query('info', 'new_users', $start, $end);
 }
 
@@ -342,12 +354,13 @@ function new_users($start = null, $end = null)
  * unvalidated comments, number of new users.
  * @todo number of unvalidated elements
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
- * @return boolean
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  */
-function news_exists($start = null, $end = null)
-{
+function news_exists(
+    ?string $start = null,
+    ?string $end = null
+): bool {
     return (nb_new_comments($start, $end) > 0) or
             (nb_new_elements($start, $end) > 0) or
             (nb_updated_categories($start, $end) > 0) or
@@ -357,16 +370,15 @@ function news_exists($start = null, $end = null)
 
 /**
  * Formats a news line and adds it to the array (e.g. '5 new elements')
- *
- * @param array $news
- * @param int $count
- * @param string $singular_key
- * @param string $plural_key
- * @param string $url
- * @param bool $add_url
  */
-function add_news_line(&$news, $count, $singular_key, $plural_key, $url = '', $add_url = false)
-{
+function add_news_line(
+    array &$news,
+    int $count,
+    string $singular_key,
+    string $plural_key,
+    string $url = '',
+    bool $add_url = false
+): void {
     if ($count > 0) {
         $line = l10n_dec($singular_key, $plural_key, $count);
         if ($add_url and ! empty($url)) {
@@ -384,14 +396,18 @@ function add_news_line(&$news, $count, $singular_key, $plural_key, $url = '', $a
  * unvalidated comments, number of new users.
  * @todo number of unvalidated elements
  *
- * @param string $start (mysql datetime format)
- * @param string $end (mysql datetime format)
+ * @param ?string $start (mysql datetime format)
+ * @param ?string $end (mysql datetime format)
  * @param bool $exclude_img_cats if true, no info about new images/categories
  * @param bool $add_url add HTML link around news
- * @return array
  */
-function news($start = null, $end = null, $exclude_img_cats = false, $add_url = false, $auth_key = null)
-{
+function news(
+    ?string $start = null,
+    ?string $end = null,
+    bool $exclude_img_cats = false,
+    bool $add_url = false,
+    ?string $auth_key = null
+): array {
     $news = [];
 
     $add_url_params = [];
@@ -461,10 +477,12 @@ function news($start = null, $end = null, $exclude_img_cats = false, $add_url = 
  * @param int $max_dates maximum number of recent dates
  * @param int $max_elements maximum number of elements per date
  * @param int $max_cats maximum number of categories per date
- * @return array
  */
-function get_recent_post_dates($max_dates, $max_elements, $max_cats)
-{
+function get_recent_post_dates(
+    int $max_dates,
+    int $max_elements,
+    int $max_cats
+): array {
     global $conf, $user, $persistent_cache;
 
     $cache_key = $persistent_cache->make_key('recent_posts' . $user['id'] . $user['cache_update_time'] . $max_dates . $max_elements . $max_cats);
@@ -522,12 +540,10 @@ function get_recent_post_dates($max_dates, $max_elements, $max_cats)
  * Returns information about recently published elements grouped by post date.
  * Same as get_recent_post_dates() but parameters as an indexed array.
  * @see get_recent_post_dates()
- *
- * @param array $args
- * @return array
  */
-function get_recent_post_dates_array($args)
-{
+function get_recent_post_dates_array(
+    array $args
+): array {
     return get_recent_post_dates(
         (empty($args['max_dates']) ? 3 : $args['max_dates']),
         (empty($args['max_elements']) ? 3 : $args['max_elements']),
@@ -540,10 +556,11 @@ function get_recent_post_dates_array($args)
  * @todo clean up HTML output, currently messy and invalid !
  *
  * @param array $date_detail returned value of get_recent_post_dates()
- * @return string
  */
-function get_html_description_recent_post_date($date_detail, $auth_key = null)
-{
+function get_html_description_recent_post_date(
+    array $date_detail,
+    ?string $auth_key = null
+): string {
     global $conf;
 
     $add_url_params = [];
@@ -605,10 +622,10 @@ function get_html_description_recent_post_date($date_detail, $auth_key = null)
  * Returns title about recently published elements grouped by post date.
  *
  * @param array $date_detail returned value of get_recent_post_dates()
- * @return string
  */
-function get_title_recent_post_date($date_detail)
-{
+function get_title_recent_post_date(
+    array $date_detail
+): string {
     global $lang;
 
     $title = l10n_dec('%d new photo', '%d new photos', $date_detail['nb_elements']);
