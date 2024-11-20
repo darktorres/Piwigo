@@ -47,7 +47,7 @@ class updates
         $this->default_plugins = ['AdminTools', 'TakeATour', 'language_switch', 'LocalFilesEditor'];
 
         foreach ($this->types as $type) {
-            include_once(PHPWG_ROOT_PATH . 'admin/include/' . $type . '.class.php');
+            require_once PHPWG_ROOT_PATH . 'admin/include/' . $type . '.class.php';
             $this->{$type} = new $type();
         }
     }
@@ -186,7 +186,7 @@ class updates
 
         if ($notify) {
             // send email
-            include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+            require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
 
             switch_lang_to(get_default_language());
 

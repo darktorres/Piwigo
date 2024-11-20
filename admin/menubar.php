@@ -36,13 +36,13 @@ function make_consecutive(
     }
 }
 
-include_once(PHPWG_ROOT_PATH . 'include/block.class.php');
+require_once PHPWG_ROOT_PATH . 'include/block.class.php';
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 $my_base_url = get_root_url() . 'admin.php?page=';
 

@@ -39,7 +39,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 define('LANGUAGE_SWITCH_PATH', PHPWG_PLUGINS_PATH . basename(dirname(__FILE__)) . '/');
 
-include_once(LANGUAGE_SWITCH_PATH . 'language_switch.inc.php');
+require_once LANGUAGE_SWITCH_PATH . 'language_switch.inc.php';
 
 add_event_handler('loading_lang', language_controler_switch(...), 5);
 add_event_handler('loc_end_index', language_controler_flags(...), 95);

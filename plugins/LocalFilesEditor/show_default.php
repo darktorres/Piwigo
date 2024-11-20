@@ -26,8 +26,8 @@ declare(strict_types=1);
 
 define('PHPWG_ROOT_PATH', '../../');
 define('IN_ADMIN', true);
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
-include_once(LOCALEDIT_PATH . 'include/functions.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/common.inc.php';
+require_once LOCALEDIT_PATH . 'include/functions.inc.php';
 load_language('plugin.lang', LOCALEDIT_PATH);
 check_status(ACCESS_WEBMASTER);
 
@@ -53,9 +53,9 @@ if (isset($_GET['file'])) {
 
     $page['body_id'] = 'thePopuphelpPage';
 
-    include(PHPWG_ROOT_PATH . 'include/page_header.php');
+    require PHPWG_ROOT_PATH . 'include/page_header.php';
 
     $template->pparse('show_default');
 
-    include(PHPWG_ROOT_PATH . 'include/page_tail.php');
+    require PHPWG_ROOT_PATH . 'include/page_tail.php';
 }

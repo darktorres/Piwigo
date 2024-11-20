@@ -27,7 +27,7 @@ function admintools_add_public_controller(): void
         $tpl_vars['DELETE_CACHE'] = isset($conf['multiview_invalidate_cache']);
 
         if (($admin_lang = $MultiView->get_user_language()) !== false) {
-            include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+            require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
             switch_lang_to($admin_lang);
         }
     } elseif ($conf['AdminTools']['public_quick_edit'] and
@@ -95,7 +95,7 @@ function admintools_add_public_controller(): void
         );
 
         // gets tags (full available list is loaded in ajax)
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+        require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
         $query = <<<SQL
             SELECT id, name
@@ -187,7 +187,7 @@ function admintools_add_admin_controller(): void
     $tpl_vars['U_SELF'] = $MultiView->get_clean_admin_url(true);
 
     if (($admin_lang = $MultiView->get_user_language()) !== false) {
-        include_once(PHPWG_ROOT_PATH . 'include/functions_mail.inc.php');
+        require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
         switch_lang_to($admin_lang);
     }
 
@@ -263,7 +263,7 @@ function admintools_save_picture(): void
     }
 
     if (isset($_GET['delete']) and get_pwg_token() == $_GET['pwg_token']) {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+        require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
         delete_elements([$page['image_id']], true);
         invalidate_user_cache();
@@ -284,7 +284,7 @@ function admintools_save_picture(): void
     }
 
     if ($_POST['action'] == 'quick_edit') {
-        include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+        require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
         check_pwg_token();
 

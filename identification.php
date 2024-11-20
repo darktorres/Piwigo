@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
-include_once(PHPWG_ROOT_PATH . 'include/common.inc.php');
+require_once PHPWG_ROOT_PATH . 'include/common.inc.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -109,12 +109,12 @@ if (! $conf['gallery_locked']) {
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
 if (! $conf['gallery_locked'] && (! isset($themeconf['hide_menu_on']) or ! in_array('theIdentificationPage', $themeconf['hide_menu_on']))) {
-    include(PHPWG_ROOT_PATH . 'include/menubar.inc.php');
+    require PHPWG_ROOT_PATH . 'include/menubar.inc.php';
 }
 
 //----------------------------------------------------------- html code display
-include(PHPWG_ROOT_PATH . 'include/page_header.php');
+require PHPWG_ROOT_PATH . 'include/page_header.php';
 trigger_notify('loc_end_identification');
 flush_page_messages();
 $template->pparse('identification');
-include(PHPWG_ROOT_PATH . 'include/page_tail.php');
+require PHPWG_ROOT_PATH . 'include/page_tail.php';

@@ -13,7 +13,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
 if (isset($_GET['start']) and is_numeric($_GET['start'])) {
     $page['start'] = $_GET['start'];
@@ -35,7 +35,7 @@ if (! empty($_POST)) {
     if (empty($_POST['comments'])) {
         $page['errors'][] = l10n('Select at least one comment');
     } else {
-        include_once(PHPWG_ROOT_PATH . 'include/functions_comment.inc.php');
+        require_once PHPWG_ROOT_PATH . 'include/functions_comment.inc.php';
         check_input_parameter('comments', $_POST, true, PATTERN_ID);
 
         if (isset($_POST['validate'])) {
@@ -78,7 +78,7 @@ $template->assign(
 // | Tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 $my_base_url = get_root_url() . 'admin.php?page=';
 

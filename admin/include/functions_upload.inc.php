@@ -9,8 +9,8 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/image.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/include/image.class.php';
 
 // add default event handler for image and thumbnail resize
 // add_event_handler('upload_image_resize', pwg_image_resize(...));
