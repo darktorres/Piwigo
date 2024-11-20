@@ -30,7 +30,7 @@ declare(strict_types=1);
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 check_status(ACCESS_ADMINISTRATOR);
 
 $tpl_extension = $conf['extents_for_templates'] ?? [];

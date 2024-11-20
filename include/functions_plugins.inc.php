@@ -320,7 +320,7 @@ function load_plugin(
         autoupdate_plugin($plugin);
         global $pwg_loaded_plugins;
         $pwg_loaded_plugins[$plugin['id']] = $plugin;
-        include_once($file_name);
+        require_once $file_name;
     }
 }
 
@@ -371,7 +371,7 @@ function autoupdate_plugin(
             global $page;
 
             // call update method
-            include_once($maintain_file);
+            require_once $maintain_file;
 
             $classname = $plugin['id'] . '_maintain';
 

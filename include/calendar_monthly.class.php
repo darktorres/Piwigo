@@ -9,7 +9,7 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH . 'include/calendar_base.class.php');
+require_once PHPWG_ROOT_PATH . 'include/calendar_base.class.php';
 
 /**
  * Monthly calendar style (composed of years/months and days)

@@ -118,7 +118,7 @@ function ws_groups_delete(
         return new PwgError(403, 'Invalid security token');
     }
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
     $groupnames = array_values(delete_groups($params['group_id']));
 
     invalidate_user_cache();
@@ -236,7 +236,7 @@ function ws_groups_addUser(
         $inserts
     );
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
     invalidate_user_cache();
 
     pwg_activity('group', $params['group_id'], 'edit');
@@ -322,7 +322,7 @@ function ws_groups_merge(
         ]
     );
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
     invalidate_user_cache();
 
     pwg_activity('group', $params['destination_group_id'], 'edit');
@@ -332,7 +332,7 @@ function ws_groups_merge(
         ]);
     }
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
     delete_groups($merge_group);
 
@@ -426,7 +426,7 @@ function ws_groups_duplicate(
         ]
     );
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
     invalidate_user_cache();
 
     foreach ($users as $user_id) {
@@ -474,7 +474,7 @@ function ws_groups_deleteUser(
         SQL;
     pwg_query($query);
 
-    include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
+    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
     invalidate_user_cache();
 
     pwg_activity('group', $params['group_id'], 'edit');

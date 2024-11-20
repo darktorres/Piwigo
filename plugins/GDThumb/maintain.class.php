@@ -12,7 +12,7 @@ class GDThumb_maintain extends PluginMaintain
         string $plugin_version,
         array &$errors = []
     ): void {
-        include(dirname(__FILE__) . '/config_default.inc.php');
+        require dirname(__FILE__) . '/config_default.inc.php';
         global $conf;
         if (empty($conf['gdThumb'])) {
             conf_update_param('gdThumb', $config_default, true);

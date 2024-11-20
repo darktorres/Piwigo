@@ -17,9 +17,9 @@ if (! is_webmaster()) {
     $page['warnings'][] = str_replace('%s', l10n('user_status_webmaster'), l10n('%s status is required to edit parameters.'));
 }
 
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php');
-include_once(PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php');
+require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -203,12 +203,12 @@ if (isset($_POST['submit'])) {
 
         case 'watermark':
 
-            include(PHPWG_ROOT_PATH . 'admin/include/configuration_watermark_process.inc.php');
+            require PHPWG_ROOT_PATH . 'admin/include/configuration_watermark_process.inc.php';
             break;
 
         case 'sizes':
 
-            include(PHPWG_ROOT_PATH . 'admin/include/configuration_sizes_process.inc.php');
+            require PHPWG_ROOT_PATH . 'admin/include/configuration_sizes_process.inc.php';
             break;
 
         case 'comments':
@@ -323,10 +323,10 @@ switch ($page['section']) {
         function order_by_is_local(): bool
         {
             $conf = [];
-            include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
-            file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
+            require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
+            file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
             if (isset($conf['local_dir_site'])) {
-                file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php') && include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php');
+                file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php') && require PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php';
             }
 
             return isset($conf['order_by']) or isset($conf['order_by_inside_category']);
@@ -416,7 +416,7 @@ switch ($page['section']) {
     case 'default':
 
         $edit_user = build_user($conf['guest_id'], false);
-        include_once(PHPWG_ROOT_PATH . 'profile.php');
+        require_once PHPWG_ROOT_PATH . 'profile.php';
 
         $errors = [];
         if (save_profile_from_post($edit_user, $errors)) {
