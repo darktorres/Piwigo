@@ -28,7 +28,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-function language_controler_switch()
+function language_controler_switch(): void
 {
     global $user;
 
@@ -88,7 +88,7 @@ function language_controler_switch()
     }
 }
 
-function language_controler_flags()
+function language_controler_flags(): void
 {
     global $user, $template, $conf, $page;
 

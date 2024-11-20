@@ -41,15 +41,16 @@ $must_repost = false;
 // | functions                                                             |
 // +-----------------------------------------------------------------------+
 
-/*
+/**
  * Do timeout treatment to finish sending mails
  *
  * @param $post_keyname: key of check_key post array
  * @param $check_key_treated: array of check_key treated
- * @return none
  */
-function do_timeout_treatment($post_keyname, $check_key_treated = [])
-{
+function do_timeout_treatment(
+    int|string $post_keyname,
+    array $check_key_treated = []
+): void {
     global $env_nbm, $base_url, $page, $must_repost;
 
     if ($env_nbm['is_sendmail_timeout']) {
@@ -74,12 +75,13 @@ function do_timeout_treatment($post_keyname, $check_key_treated = [])
 
 }
 
-/*
+/**
  * Get the authorized_status for each tab
  * return corresponding status
  */
-function get_tab_status($mode)
-{
+function get_tab_status(
+    string $mode
+): int {
     $result = ACCESS_WEBMASTER;
     switch ($mode) {
         case 'param':
@@ -96,10 +98,10 @@ function get_tab_status($mode)
     return $result;
 }
 
-/*
+/**
  * Inserting News users
  */
-function insert_new_data_user_mail_notification()
+function insert_new_data_user_mail_notification(): void
 {
     global $conf, $page, $env_nbm, $base_url;
 
@@ -174,12 +176,13 @@ function insert_new_data_user_mail_notification()
     }
 }
 
-/*
+/**
  * Apply global functions to mail content
  * return customize mail content rendered
  */
-function render_global_customize_mail_content($customize_mail_content)
-{
+function render_global_customize_mail_content(
+    string $customize_mail_content
+): string {
     global $conf;
 
     if ($conf['nbm_send_html_mail'] and ! (strpos($customize_mail_content, '<') === 0)) {
@@ -192,13 +195,16 @@ function render_global_customize_mail_content($customize_mail_content)
 
 }
 
-/*
+/**
  * Send mail for notification to all users
  * Return list of "selected" users for 'list_to_send'
  * Return list of "treated" check_key for 'send'
  */
-function do_action_send_mail_notification($action = 'list_to_send', $check_key_list = [], $customize_mail_content = '')
-{
+function do_action_send_mail_notification(
+    string $action = 'list_to_send',
+    array $check_key_list = [],
+    string $customize_mail_content = ''
+): array {
     global $conf, $page, $user, $lang_info, $lang, $env_nbm;
     $return_list = [];
 

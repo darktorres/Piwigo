@@ -11,8 +11,10 @@ declare(strict_types=1);
 
 class PwgRestRequestHandler extends PwgRequestHandler
 {
-    public function handleRequest(&$service)
-    {
+    #[\Override]
+    public function handleRequest(
+        PwgServer &$service
+    ): void {
         $params = [];
 
         $param_array = $service->isPost() ? $_POST : $_GET;

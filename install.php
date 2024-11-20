@@ -16,8 +16,10 @@ define('PHPWG_ROOT_PATH', './');
 // addslashes to vars if magic_quotes_gpc is off, this is a security
 // precaution to prevent someone trying to break out of a SQL statement.
 //
-function sanitize_mysql_kv(&$v, $k)
-{
+function sanitize_mysql_kv(
+    string &$v,
+    string $k
+): void {
     $v = addslashes($v);
 }
 if (is_array($_GET)) {
