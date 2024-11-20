@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 class smartpocket_maintain extends ThemeMaintain
 {
-    private $installed = false;
+    private bool $installed = false;
 
-    private $default_conf = [
+    private array $default_conf = [
         'loop' => true,
         //true - false
         'autohide' => 5000,
         //5000 - 0
     ];
 
-    public function activate($theme_version, &$errors = [])
-    {
+    public function activate(
+        string $theme_version,
+        array &$errors = []
+    ): void {
         global $conf;
 
         if (empty($conf['smartpocket'])) {
@@ -32,9 +34,9 @@ class smartpocket_maintain extends ThemeMaintain
         $this->installed = true;
     }
 
-    public function deactivate() {}
+    public function deactivate(): void {}
 
-    public function delete()
+    public function delete(): void
     {
         // delete configuration
         conf_delete_param('smartpocket');

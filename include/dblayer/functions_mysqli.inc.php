@@ -22,12 +22,13 @@ define('DB_RANDOM_FUNCTION', 'RAND()');
  *    - localhost
  *    - 1.2.3.4:3405
  *    - /path/to/socket
- * @param string $user
- * @param string $password
- * @param string $database
  */
-function pwg_db_connect($host, $user, $password, $database)
-{
+function pwg_db_connect(
+    string $host,
+    string $user,
+    string $password,
+    string $database
+): void {
     global $mysqli;
 
     $port = null;
@@ -68,7 +69,7 @@ function pwg_db_connect($host, $user, $password, $database)
 /**
  * Check MySQL version. Can call fatal_error().
  */
-function pwg_db_check_version()
+function pwg_db_check_version(): void
 {
     $current_mysql = pwg_get_db_version();
     if (version_compare($current_mysql, REQUIRED_MYSQL_VERSION, '<')) {
@@ -84,10 +85,8 @@ function pwg_db_check_version()
 
 /**
  * Get Mysql Version.
- *
- * @return string
  */
-function pwg_get_db_version()
+function pwg_get_db_version(): string
 {
     global $mysqli;
 
@@ -96,12 +95,10 @@ function pwg_get_db_version()
 
 /**
  * Execute a query
- *
- * @param string $query
- * @return mysqli_result|bool
  */
-function pwg_query($query)
-{
+function pwg_query(
+    string $query
+): bool|mysqli_result|null {
     global $mysqli, $conf, $page, $debug, $t2;
 
     $start = microtime(true);
@@ -159,15 +156,11 @@ function pwg_query($query)
 
 /**
  * Get max value plus one of a particular column.
- *
- * @param string $column
- * @param string $table
- * @param int
  */
 function pwg_db_nextval(
-    $column,
-    $table
-) {
+    string $column,
+    string $table
+): string {
     $query = <<<SQL
         SELECT IF(MAX({$column}) + 1 IS NULL, 1, MAX({$column}) + 1)
         FROM {$table};
@@ -177,43 +170,47 @@ function pwg_db_nextval(
     return $next;
 }
 
-function pwg_db_changes()
+function pwg_db_changes(): int|string
 {
     global $mysqli;
 
     return $mysqli->affected_rows;
 }
 
-function pwg_db_num_rows($result)
-{
+function pwg_db_num_rows(
+    mysqli_result $result
+): int|string {
     return $result->num_rows;
 }
 
-function pwg_db_fetch_assoc($result)
-{
+function pwg_db_fetch_assoc(
+    mysqli_result $result
+): array|bool|null {
     return $result->fetch_assoc();
 }
 
-function pwg_db_fetch_row($result)
-{
+function pwg_db_fetch_row(
+    mysqli_result $result
+): array|bool|null {
     return $result->fetch_row();
 }
 
-function pwg_db_real_escape_string($s)
-{
+function pwg_db_real_escape_string(
+    ?string $s
+): ?string {
     global $mysqli;
 
     return isset($s) ? $mysqli->real_escape_string($s) : null;
 }
 
-function pwg_db_insert_id()
+function pwg_db_insert_id(): int|string
 {
     global $mysqli;
 
     return $mysqli->insert_id;
 }
 
-function pwg_db_close()
+function pwg_db_close(): bool
 {
     global $mysqli;
 
@@ -225,13 +222,16 @@ define('MASS_UPDATES_SKIP_EMPTY', 1);
 /**
  * Updates multiple lines in a table.
  *
- * @param string $tablename
  * @param array $dbfields - contains 'primary' and 'update' arrays
  * @param array $datas - indexed by column names
  * @param int $flags - if MASS_UPDATES_SKIP_EMPTY, empty values do not overwrite existing ones
  */
-function mass_updates($tablename, $dbfields, $datas, $flags = 0)
-{
+function mass_updates(
+    string $tablename,
+    array $dbfields,
+    array $datas,
+    int $flags = 0
+): void {
     if (count($datas) == 0) {
         return;
     }
@@ -325,9 +325,9 @@ function mass_updates($tablename, $dbfields, $datas, $flags = 0)
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
         if ($flags & MASS_UPDATES_SKIP_EMPTY) {
-            $func_set = function ($s) { return "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})"; };
+            $func_set = function (string $s): string { return "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})"; };
         } else {
-            $func_set = function ($s) { return "t1.{$s} = t2.{$s}"; };
+            $func_set = function (string $s): string { return "t1.{$s} = t2.{$s}"; };
         }
 
         // update of table by joining with temporary table
@@ -339,7 +339,7 @@ function mass_updates($tablename, $dbfields, $datas, $flags = 0)
         $primaryConditions = implode(
             "\n    AND ",
             array_map(
-                function ($s) { return "t1.{$s} = t2.{$s}"; },
+                function (string $s): string { return "t1.{$s} = t2.{$s}"; },
                 $dbfields['primary']
             )
         );
@@ -358,13 +358,14 @@ function mass_updates($tablename, $dbfields, $datas, $flags = 0)
 /**
  * Updates one line in a table.
  *
- * @param string $tablename
- * @param array $datas
- * @param array $where
  * @param int $flags - if MASS_UPDATES_SKIP_EMPTY, empty values do not overwrite existing ones
  */
-function single_update($tablename, $datas, $where, $flags = 0)
-{
+function single_update(
+    string $tablename,
+    array $datas,
+    array $where,
+    int $flags = 0
+): void {
     if (count($datas) == 0) {
         return;
     }
@@ -416,14 +417,16 @@ function single_update($tablename, $datas, $where, $flags = 0)
 /**
  * Inserts multiple lines in a table.
  *
- * @param string $table_name
  * @param array $dbfields - fields from $datas which will be used
- * @param array $datas
  * @param array $options
- *    - boolean ignore - use "INSERT IGNORE"
+ *    - bool ignore - use "INSERT IGNORE"
  */
-function mass_inserts($table_name, $dbfields, $datas, $options = [])
-{
+function mass_inserts(
+    string $table_name,
+    array $dbfields,
+    array $datas,
+    array $options = []
+): void {
     $ignore = '';
     if (isset($options['ignore']) and $options['ignore']) {
         $ignore = 'IGNORE';
@@ -475,13 +478,14 @@ function mass_inserts($table_name, $dbfields, $datas, $options = [])
 /**
  * Inserts one line in a table.
  *
- * @param string $table_name
- * @param array $data
  * @param array $options
- *    - boolean ignore - use "INSERT IGNORE"
+ *    - bool ignore - use "INSERT IGNORE"
  */
-function single_insert($table_name, $data, $options = [])
-{
+function single_insert(
+    string $table_name,
+    array $data,
+    array $options = []
+): void {
     $ignore = '';
     if (isset($options['ignore']) and $options['ignore']) {
         $ignore = 'IGNORE';
@@ -520,7 +524,7 @@ function single_insert($table_name, $data, $options = [])
 /**
  * Do maintenance on all Piwigo tables
  */
-function do_maintenance_all_tables()
+function do_maintenance_all_tables(): void
 {
     global $page;
 
@@ -579,14 +583,17 @@ function do_maintenance_all_tables()
     }
 }
 
-function pwg_db_concat($array)
-{
+function pwg_db_concat(
+    array $array
+): string {
     $string = implode(',', $array);
     return "CONCAT({$string})";
 }
 
-function pwg_db_concat_ws($array, $separator)
-{
+function pwg_db_concat_ws(
+    array $array,
+    string $separator
+): string {
     $string = implode(',', $array);
     return "CONCAT_WS('{$separator}', {$string})";
 }
@@ -594,12 +601,12 @@ function pwg_db_concat_ws($array, $separator)
 /**
  * Returns an array containing the possible values of an enum field.
  *
- * @param string $table
- * @param string $field
  * @return string[]
  */
-function get_enums($table, $field)
-{
+function get_enums(
+    string $table,
+    string $field
+): array|bool {
     $result = pwg_query("DESC {$table};");
     while ($row = pwg_db_fetch_assoc($result)) {
         if ($row['Field'] == $field) {
@@ -617,12 +624,10 @@ function get_enums($table, $field)
 
 /**
  * Checks if a variable is equivalent to true or false.
- *
- * @param mixed $input
- * @return bool
  */
-function get_boolean($input)
-{
+function get_boolean(
+    string $input
+): bool {
     if (strtolower($input) === 'false') {
         return false;
     }
@@ -631,14 +636,12 @@ function get_boolean($input)
 }
 
 /**
- * Returns string 'true' or 'false' if the given var is boolean.
+ * Returns string 'true' or 'false' if the given var is bool.
  * If the input is another type, it is not changed.
- *
- * @param mixed $var
- * @return mixed
  */
-function boolean_to_string($var)
-{
+function boolean_to_string(
+    string|bool|int $var
+): mixed {
     if (is_bool($var)) {
         return $var ? 'true' : 'false';
     }
@@ -647,8 +650,10 @@ function boolean_to_string($var)
 
 }
 
-function pwg_db_get_recent_period_expression($period, $date = 'CURRENT_DATE')
-{
+function pwg_db_get_recent_period_expression(
+    int|string $period,
+    string $date = 'CURRENT_DATE'
+): string {
     if ($date != 'CURRENT_DATE') {
         $date = "'{$date}'";
     }
@@ -658,8 +663,10 @@ function pwg_db_get_recent_period_expression($period, $date = 'CURRENT_DATE')
         SQL;
 }
 
-function pwg_db_get_recent_period($period, $date = 'CURRENT_DATE')
-{
+function pwg_db_get_recent_period(
+    int|string $period,
+    string $date = 'CURRENT_DATE'
+): string {
     $recentPeriodExpression = pwg_db_get_recent_period_expression($period);
     $query = <<<SQL
         SELECT {$recentPeriodExpression};
@@ -669,50 +676,58 @@ function pwg_db_get_recent_period($period, $date = 'CURRENT_DATE')
     return $d;
 }
 
-function pwg_db_get_flood_period_expression($seconds)
-{
+function pwg_db_get_flood_period_expression(
+    string $seconds
+): string {
     return <<<SQL
         SUBDATE(NOW(), INTERVAL {$seconds} SECOND)
         SQL;
 }
 
-function pwg_db_get_hour($date)
-{
+function pwg_db_get_hour(
+    string $date
+): string {
     return <<<SQL
         HOUR({$date})
         SQL;
 }
 
-function pwg_db_get_date_YYYYMM($date)
-{
+function pwg_db_get_date_YYYYMM(
+    string $date
+): string {
     return <<<SQL
         DATE_FORMAT({$date}, '%Y%m')
         SQL;
 }
 
-function pwg_db_get_date_MMDD($date)
-{
+function pwg_db_get_date_MMDD(
+    string $date
+): string {
     return <<<SQL
         DATE_FORMAT({$date}, '%m%d')
         SQL;
 }
 
-function pwg_db_get_year($date)
-{
+function pwg_db_get_year(
+    string $date
+): string {
     return <<<SQL
         YEAR({$date})
         SQL;
 }
 
-function pwg_db_get_month($date)
-{
+function pwg_db_get_month(
+    string $date
+): string {
     return <<<SQL
         MONTH({$date})
         SQL;
 }
 
-function pwg_db_get_week($date, $mode = null)
-{
+function pwg_db_get_week(
+    string $date,
+    ?int $mode = null
+): string {
     if ($mode) {
         return <<<SQL
             WEEK({$date}, {$mode})
@@ -724,29 +739,33 @@ function pwg_db_get_week($date, $mode = null)
         SQL;
 }
 
-function pwg_db_get_dayofmonth($date)
-{
+function pwg_db_get_dayofmonth(
+    string $date
+): string {
     return <<<SQL
         DAYOFMONTH({$date})
         SQL;
 }
 
-function pwg_db_get_dayofweek($date)
-{
+function pwg_db_get_dayofweek(
+    string $date
+): string {
     return <<<SQL
         DAYOFWEEK({$date})
         SQL;
 }
 
-function pwg_db_get_weekday($date)
-{
+function pwg_db_get_weekday(
+    string $date
+): string {
     return <<<SQL
         WEEKDAY({$date})
         SQL;
 }
 
-function pwg_db_date_to_ts($date)
-{
+function pwg_db_date_to_ts(
+    string $date
+): string {
     return <<<SQL
         UNIX_TIMESTAMP({$date})
         SQL;
@@ -781,14 +800,12 @@ function pwg_db_date_to_ts($date)
  *          )
  *
  * @since 2.6
- *
- * @param string $query
- * @param string $key_name
- * @param string $value_name
- * @return array
  */
-function query2array($query, $key_name = null, $value_name = null)
-{
+function query2array(
+    string $query,
+    ?string $key_name = null,
+    ?string $value_name = null
+): array {
     $result = pwg_query($query);
     $data = [];
 

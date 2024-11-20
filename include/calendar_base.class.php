@@ -26,22 +26,22 @@ abstract class CalendarBase
     /**
      * db column on which this calendar works
      */
-    public $date_field;
+    public string $date_field;
 
     /**
      * used for queries (INNER JOIN or normal)
      */
-    public $inner_sql;
+    public string $inner_sql;
 
     /**
      * used to store db fields
      */
-    public $calendar_levels;
+    public array $calendar_levels;
 
     /**
      * Generate navigation bars for category page.
      *
-     * @return boolean false indicates that thumbnails where not included
+     * @return bool false indicates that thumbnails where not included
      */
     abstract public function generate_category_content();
 
@@ -49,17 +49,17 @@ abstract class CalendarBase
      * Returns a SQL WHERE subquery for the date field.
      *
      * @param int $max_levels (e.g. 2=only year and month)
-     * @return string
      */
-    abstract public function get_date_where($max_levels = 3);
+    abstract public function get_date_where(
+        int $max_levels = 3
+    ): string;
 
     /**
      * Initialize the calendar.
-     *
-     * @param string $inner_sql
      */
-    public function initialize($inner_sql)
-    {
+    public function initialize(
+        string $inner_sql
+    ): void {
         global $page;
         if ($page['chronology_field'] == 'posted') {
             $this->date_field = 'date_available';
@@ -71,10 +71,8 @@ abstract class CalendarBase
 
     /**
      * Returns the calendar title (with HTML).
-     *
-     * @return string
      */
-    public function get_display_name()
+    public function get_display_name(): string
     {
         global $conf, $page;
         $res = '';
@@ -105,11 +103,11 @@ abstract class CalendarBase
 
     /**
      * Returns a display name for a date component optionally using labels.
-     *
-     * @return string
      */
-    protected function get_date_component_label($level, $date_component)
-    {
+    protected function get_date_component_label(
+        int $level,
+        int|string $date_component
+    ): string|int {
         $label = $date_component;
         if (isset($this->calendar_levels[$level]['labels'][$date_component])) {
             $label = $this->calendar_levels[$level]['labels'][$date_component];
@@ -121,12 +119,10 @@ abstract class CalendarBase
 
     /**
      * Gets a nice display name for a date to be shown in previous/next links
-     *
-     * @param string $date
-     * @return string
      */
-    protected function get_date_nice_name($date)
-    {
+    protected function get_date_nice_name(
+        string $date
+    ): string {
         $date_components = explode('-', $date);
         $res = '';
         for ($i = count($date_components) - 1; $i >= 0; $i--) {
@@ -144,20 +140,18 @@ abstract class CalendarBase
     /**
      * Creates a calendar navigation bar.
      *
-     * @param array $date_components
      * @param array $items - hash of items to put in the bar (e.g., 2005,2006)
      * @param bool $show_any - adds any link to the end of the bar
      * @param bool $show_empty - shows all labels even those without items
      * @param array $labels - optional labels for items (e.g. Jan,Feb,...)
-     * @return string
      */
     protected function get_nav_bar_from_items(
-        $date_components,
-        $items,
-        $show_any,
-        $show_empty = false,
-        $labels = null
-    ) {
+        array $date_components,
+        array $items,
+        bool $show_any,
+        bool $show_empty = false,
+        ?array $labels = null
+    ): array {
         global $conf, $page, $template;
 
         $nav_bar_datas = [];
@@ -221,8 +215,10 @@ abstract class CalendarBase
      *
      * @param int $level - 0-year, 1-month/week, 2-day
      */
-    protected function build_nav_bar($level, $labels = null)
-    {
+    protected function build_nav_bar(
+        int $level,
+        ?array $labels = null
+    ): void {
         global $template, $conf, $page;
 
         $query = <<<SQL
@@ -272,7 +268,7 @@ abstract class CalendarBase
      * Assigns the next/previous link to the template in regard to
      * the currently chosen date.
      */
-    protected function build_next_prev()
+    protected function build_next_prev(): void
     {
         global $template, $page;
 
