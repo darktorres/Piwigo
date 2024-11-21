@@ -186,7 +186,7 @@ function trigger_change(
     $args = func_get_args();
     array_shift($args);
 
-    foreach ($pwg_event_handlers[$event] as $priority => $handlers) {
+    foreach ($pwg_event_handlers[$event] as $handlers) {
         foreach ($handlers as $handler) {
             $args[0] = $data;
             $data = call_user_func_array($handler['function'], $args);
@@ -236,7 +236,7 @@ function trigger_notify(
     $args = func_get_args();
     array_shift($args);
 
-    foreach ($pwg_event_handlers[$event] as $priority => $handlers) {
+    foreach ($pwg_event_handlers[$event] as $handlers) {
         foreach ($handlers as $handler) {
             call_user_func_array($handler['function'], $args);
         }

@@ -83,11 +83,10 @@ function modus_smarty_prefilter(
     $re = preg_quote('<img title="{$thumbnail.icon_ts.TITLE}" src="', '/')
         . '[^>]+'
         . preg_quote('/recent.png" alt="(!)">', '/');
-    $source = preg_replace(
+
+    return preg_replace(
         '/' . $re . '/',
         '<span class=albSymbol title="{$thumbnail.icon_ts.TITLE}">' . MODUS_STR_RECENT . '</span>',
         (string) $source
     );
-
-    return $source;
 }

@@ -49,7 +49,7 @@ function get_mail_configuration(): array
 {
     global $conf;
 
-    $conf_mail = [
+    return [
         'send_bcc_mail_webmaster' => $conf['send_bcc_mail_webmaster'],
         'mail_allow_html' => $conf['mail_allow_html'],
         'mail_theme' => $conf['mail_theme'],
@@ -61,8 +61,6 @@ function get_mail_configuration(): array
         'email_webmaster' => get_mail_sender_email(),
         'name_webmaster' => get_mail_sender_name(),
     ];
-
-    return $conf_mail;
 }
 
 /**
@@ -611,10 +609,8 @@ function pwg_mail(
         ];
     }
 
-    if ($Bcc !== []) {
-        foreach ($Bcc as $recipient) {
-            $mail->addBCC($recipient['email'], $recipient['name']);
-        }
+    foreach ($Bcc as $recipient) {
+        $mail->addBCC($recipient['email'], $recipient['name']);
     }
 
     // theme

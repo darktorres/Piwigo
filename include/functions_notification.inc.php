@@ -101,30 +101,7 @@ function custom_notification_query(
             break;
 
         case 'new_elements':
-
-            $query = <<<SQL
-                FROM images
-                INNER JOIN image_category AS ic ON image_id = id
-                WHERE 1 = 1
-
-                SQL;
-            if ($start !== null && $start !== '' && $start !== '0') {
-                $query .= <<<SQL
-                    AND date_available > '{$start}'
-
-                    SQL;
-            }
-
-            if ($end !== null && $end !== '' && $end !== '0') {
-                $query .= <<<SQL
-                    AND date_available <= '{$end}'
-
-                    SQL;
-            }
-
-            $query .= get_std_sql_where_restrict_filter('AND', 'id');
-            break;
-
+            // fallthorugh
         case 'updated_categories':
 
             $query = <<<SQL
@@ -203,7 +180,6 @@ function custom_notification_query(
                 SQL;
             [$count] = pwg_db_fetch_row(pwg_query($query));
             return (int) $count;
-            break;
 
         case 'info':
 
@@ -228,9 +204,7 @@ function custom_notification_query(
             $query = <<<SQL
                 SELECT DISTINCT {$field_id} {$query};
                 SQL;
-            $infos = query2array($query);
-            return $infos;
-            break;
+            return query2array($query);
 
         default:
             return null; // stop and return nothing
@@ -626,9 +600,7 @@ function get_html_description_recent_post_date(
 
     $description .= '</ul>';
 
-    $description .= '</ul>';
-
-    return $description;
+    return $description . '</ul>';
 }
 
 /**

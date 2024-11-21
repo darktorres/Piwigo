@@ -882,28 +882,26 @@ $template->assign('display_info', $conf['picture_information']);
 
 // related tags
 $tags = get_common_tags([$page['image_id']], -1);
-if ($tags !== []) {
-    foreach ($tags as $tag) {
-        $template->append(
-            'related_tags',
-            array_merge(
-                $tag,
-                [
-                    'URL' => make_index_url(
-                        [
-                            'tags' => [$tag],
-                        ]
-                    ),
-                    'U_TAG_IMAGE' => duplicate_picture_url(
-                        [
-                            'section' => 'tags',
-                            'tags' => [$tag],
-                        ]
-                    ),
-                ]
-            )
-        );
-    }
+foreach ($tags as $tag) {
+    $template->append(
+        'related_tags',
+        array_merge(
+            $tag,
+            [
+                'URL' => make_index_url(
+                    [
+                        'tags' => [$tag],
+                    ]
+                ),
+                'U_TAG_IMAGE' => duplicate_picture_url(
+                    [
+                        'section' => 'tags',
+                        'tags' => [$tag],
+                    ]
+                ),
+            ]
+        )
+    );
 }
 
 // related categories

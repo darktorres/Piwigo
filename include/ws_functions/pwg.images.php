@@ -2362,11 +2362,9 @@ function ws_images_emptyLounge(
 ): array {
     require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
-    $ret = [
+    return [
         'rows' => empty_lounge(),
     ];
-
-    return $ret;
 }
 
 /**

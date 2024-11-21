@@ -182,13 +182,13 @@ function get_sync_metadata(
         $height = (int) $xmlattributes->height;
         $vb = (string) $xmlattributes->viewBox;
 
-        if (isset($width) && $width != 0) {
+        if ($width != 0) {
             $infos['width'] = $width;
         } elseif (isset($vb)) {
             $infos['width'] = explode(' ', $vb)[2];
         }
 
-        if (isset($height) && $height != 0) {
+        if ($height != 0) {
             $infos['height'] = $height;
         } elseif (isset($vb)) {
             $infos['height'] = explode(' ', $vb)[3];
@@ -380,7 +380,7 @@ function metadata_normalize_keywords_string(
     $keywords_string = preg_replace('/,+/', ',', $keywords_string);
     $keywords_string = preg_replace('/^,+|,+$/', '', (string) $keywords_string);
 
-    $keywords_string = implode(
+    return implode(
         ',',
         array_unique(
             explode(
@@ -389,6 +389,4 @@ function metadata_normalize_keywords_string(
             )
         )
     );
-
-    return $keywords_string;
 }

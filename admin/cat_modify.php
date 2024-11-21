@@ -96,8 +96,7 @@ function get_min_local_dir($local_dir)
 
     $start = $full_dir[0] . '/' . $full_dir[1];
     $end = end($full_dir);
-    $concat = $start . '/&hellip;/' . $end;
-    return $concat;
+    return $start . '/&hellip;/' . $end;
 
 }
 

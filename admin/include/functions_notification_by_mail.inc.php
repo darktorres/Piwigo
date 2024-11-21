@@ -118,7 +118,7 @@ function get_user_notifications(
 
         $query .= $query_and_check_key;
 
-        if (isset($enabled_filter_value) && $enabled_filter_value != '') {
+        if ($enabled_filter_value != '') {
             $filter_value = boolean_to_string($enabled_filter_value);
             $query .= <<<SQL
                 AND n.enabled = '{$filter_value}'

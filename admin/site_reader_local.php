@@ -53,8 +53,7 @@ class LocalSiteReader
     public function get_full_directories(
         string $basedir
     ): array {
-        $fs_fulldirs = get_fs_directories($basedir);
-        return $fs_fulldirs;
+        return get_fs_directories($basedir);
     }
 
     /**

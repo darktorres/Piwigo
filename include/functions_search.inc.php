@@ -229,7 +229,7 @@ function get_sql_search_clause(
 
         if ($cat_ids_by_word !== []) {
             $matching_cat_ids = null;
-            foreach ($cat_ids_by_word as $idx => $cat_ids) {
+            foreach ($cat_ids_by_word as $cat_ids) {
                 $matching_cat_ids = $matching_cat_ids === null ? $cat_ids : array_merge($matching_cat_ids, $cat_ids);
             }
 
@@ -238,7 +238,7 @@ function get_sql_search_clause(
 
         if ($tag_ids_by_word !== []) {
             $matching_tag_ids = null;
-            foreach ($tag_ids_by_word as $idx => $tag_ids) {
+            foreach ($tag_ids_by_word as $tag_ids) {
                 $matching_tag_ids = $matching_tag_ids === null ? $tag_ids : array_merge($matching_tag_ids, $tag_ids);
             }
 
@@ -501,7 +501,6 @@ class QNumericRangeScope extends QSearchScope
             } elseif (preg_match('/^(-?[0-9.]+)([km])?/i', $val, $matches)) {
                 $val = floatval($matches[1]);
                 if (isset($matches[2])) {
-                    $mult = 1;
                     $mult = $matches[2] === 'k' || $matches[2] === 'K' ? 1000 : 1000000;
 
                     $val *= $mult;

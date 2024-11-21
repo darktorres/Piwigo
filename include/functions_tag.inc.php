@@ -60,7 +60,7 @@ function get_available_tags(
 
         SQL;
 
-    if (is_array($tag_ids) && $tag_ids !== []) {
+    if ($tag_ids !== []) {
         $tags_list = implode(',', $tag_ids);
         $query .= <<<SQL
             AND tag_id IN ({$tags_list})

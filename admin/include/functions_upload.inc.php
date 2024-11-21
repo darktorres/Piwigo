@@ -61,7 +61,7 @@ function save_upload_form_config(
     array &$errors = [],
     array &$form_errors = []
 ): bool {
-    if (! is_array($data) || $data === []) {
+    if ($data === []) {
         return false;
     }
 
@@ -247,7 +247,7 @@ function add_uploaded_file(
     // pwg_representative file.
     $representative_ext = trigger_change('upload_file', null, $file_path);
 
-    $logger->info('Handling ' . (string) $file_path . ' got ' . (string) $representative_ext);
+    $logger->info('Handling ' . $file_path . ' got ' . $representative_ext);
 
     // If it is set to either true (the file didn't need a
     // representative generated) or false (the generation of the
