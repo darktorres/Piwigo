@@ -76,8 +76,7 @@ function get_absolute_root_url(
         }
     }
 
-    $url .= cookie_path();
-    return $url;
+    return $url . cookie_path();
 }
 
 /**
@@ -246,8 +245,7 @@ function make_picture_url(
     }
 
     $url .= make_section_in_url($params);
-    $url = add_well_known_params_in_url($url, $params);
-    return $url;
+    return add_well_known_params_in_url($url, $params);
 }
 
 /**

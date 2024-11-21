@@ -28,8 +28,7 @@ function micro_seconds(): string
 {
     $t1 = explode(' ', microtime());
     $t2 = explode('.', $t1[0]);
-    $t2 = $t1[1] . substr($t2[1], 0, 6);
-    return $t2;
+    return $t1[1] . substr($t2[1], 0, 6);
 }
 
 /**
@@ -498,9 +497,7 @@ function do_log(
         $do_log = $conf['history_guest'];
     }
 
-    $do_log = trigger_change('pwg_log_allowed', $do_log, $image_id, $image_type);
-
-    return $do_log;
+    return trigger_change('pwg_log_allowed', $do_log, $image_id, $image_type);
 }
 
 /**
@@ -1387,9 +1384,7 @@ function get_webmaster_mail_address(): string
         SQL;
     [$email] = pwg_db_fetch_row(pwg_query($query));
 
-    $email = trigger_change('get_webmaster_mail_address', $email);
-
-    return $email;
+    return trigger_change('get_webmaster_mail_address', $email);
 }
 
 function is_serialized(mixed $data, bool $strict = true): bool
@@ -1842,9 +1837,8 @@ function load_language(
             return true;
         }
 
-        $content = file_get_contents($source_file);
         //Note: target charset is always utf-8 $content = convert_charset($content, 'utf-8', $target_charset);
-        return $content;
+        return file_get_contents($source_file);
 
     }
 
@@ -1954,7 +1948,7 @@ function create_navigation_bar(
     $pages_around = $conf['paginate_pages_around'];
     $start_str = $clean_url ? '/' . $param_name . '-' : (str_contains($url, '?') ? '&amp;' : '?') . $param_name . '=';
 
-    if (! isset($start) || ! is_numeric($start) || is_numeric($start) && $start < 0) {
+    if ($start < 0) {
         $start = 0;
     }
 

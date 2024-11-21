@@ -76,13 +76,11 @@ function do_timeout_treatment(
 function get_tab_status(
     string $mode
 ): int {
-    $result = ACCESS_WEBMASTER;
-    $result = match ($mode) {
+    return match ($mode) {
         'param', 'subscribe' => ACCESS_WEBMASTER,
         'send' => ACCESS_ADMINISTRATOR,
         default => ACCESS_WEBMASTER,
     };
-    return $result;
 }
 
 /**
@@ -408,7 +406,7 @@ trigger_notify('nbm_event_handler_added');
 // +-----------------------------------------------------------------------+
 // | Insert new users with mails                                           |
 // +-----------------------------------------------------------------------+
-if (! isset($_POST) || count($_POST) == 0) {
+if (count($_POST) == 0) {
     // No insert data in post mode
     insert_new_data_user_mail_notification();
 }
@@ -583,22 +581,20 @@ switch ($page['mode']) {
             ? stripslashes((string) $_POST['send_customize_mail_content'])
             : $conf['nbm_complementary_mail_content'];
 
-        if ($data_users !== []) {
-            foreach ($data_users as $nbm_user) {
-                if (
-                    ! $must_repost || $must_repost && in_array($nbm_user['check_key'], $_POST['send_selection'])  // Must be reposted, show only user to send
-                ) {
-                    $tpl_var['users'][] =
-                      [
-                          'ID' => $nbm_user['check_key'],
-                          'CHECKED' => ( // not check if not selected,  on init select<all
-                              isset($_POST['send_selection']) && ! in_array($nbm_user['check_key'], $_POST['send_selection']) // not selected
-                          ) ? '' : 'checked="checked"',
-                          'USERNAME' => stripslashes((string) $nbm_user['username']),
-                          'EMAIL' => $nbm_user['mail_address'],
-                          'LAST_SEND' => $nbm_user['last_send'],
-                      ];
-                }
+        foreach ($data_users as $nbm_user) {
+            if (
+                ! $must_repost || $must_repost && in_array($nbm_user['check_key'], $_POST['send_selection'])  // Must be reposted, show only user to send
+            ) {
+                $tpl_var['users'][] =
+                  [
+                      'ID' => $nbm_user['check_key'],
+                      'CHECKED' => ( // not check if not selected,  on init select<all
+                          isset($_POST['send_selection']) && ! in_array($nbm_user['check_key'], $_POST['send_selection']) // not selected
+                      ) ? '' : 'checked="checked"',
+                      'USERNAME' => stripslashes((string) $nbm_user['username']),
+                      'EMAIL' => $nbm_user['mail_address'],
+                      'LAST_SEND' => $nbm_user['last_send'],
+                  ];
             }
         }
 

@@ -83,8 +83,7 @@ function rv_cdn_prefilter(
     \Smarty\Template &$smarty
 ): string {
     $source = str_replace('src="{$ROOT_URL}{$themeconf.icon_dir}/', 'src="' . RVCDN_ROOT_URL . '{$themeconf.icon_dir}/', $source);
-    $source = str_replace('url({$ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
-    return $source;
+    return str_replace('url({$ROOT_URL}', 'url(' . RVCDN_ROOT_URL, $source);
 }
 
 // Add prefilter to remove fontello loaded by piwigo 14 search,
@@ -191,9 +190,7 @@ function modus_css_resolution(
         }
     }
 
-    $res .= ',' . implode(' and ', $rules);
-
-    return $res;
+    return $res . (',' . implode(' and ', $rules));
 }
 
 $this->smarty->registerPlugin('function', 'modus_thumbs', modus_thumbs(...));

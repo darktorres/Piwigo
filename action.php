@@ -19,7 +19,7 @@ check_status(ACCESS_GUEST);
 function guess_mime_type(
     string $ext
 ): string {
-    $ctype = match (strtolower($ext)) {
+    return match (strtolower($ext)) {
         'jpe', 'jpeg', 'jpg' => 'image/jpeg',
         'png' => 'image/png',
         'gif' => 'image/gif',
@@ -33,7 +33,6 @@ function guess_mime_type(
         'ogg' => 'application/ogg',
         default => 'application/octet-stream',
     };
-    return $ctype;
 }
 
 function do_error(
