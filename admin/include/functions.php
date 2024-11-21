@@ -921,7 +921,7 @@ function set_cat_status(
 function get_uppercat_ids(
     array $cat_ids
 ): array {
-    if (! is_array($cat_ids) || count($cat_ids) < 1) {
+    if (count($cat_ids) < 1) {
         return [];
     }
 
@@ -941,9 +941,7 @@ function get_uppercat_ids(
         );
     }
 
-    $uppercats = array_unique($uppercats);
-
-    return $uppercats;
+    return array_unique($uppercats);
 }
 
 function get_category_representant_properties(
@@ -2009,7 +2007,7 @@ function move_images_to_categories(
 
         SQL;
 
-    if (is_array($categories) && $categories !== []) {
+    if ($categories !== []) {
         $category_ids = implode(',', $categories);
         $query .= <<<SQL
             AND category_id NOT IN ({$category_ids})
@@ -2022,7 +2020,7 @@ function move_images_to_categories(
         SQL;
     pwg_query($query);
 
-    if (is_array($categories) && $categories !== []) {
+    if ($categories !== []) {
         associate_images_to_categories($images, $categories);
     }
 
@@ -2064,7 +2062,7 @@ function associate_categories_to_categories(
  */
 function pwg_URL(): array
 {
-    $urls = [
+    return [
         'HOME' => PHPWG_URL,
         'WIKI' => PHPWG_URL . '/doc',
         'DEMO' => PHPWG_URL . '/demo',
@@ -2072,7 +2070,6 @@ function pwg_URL(): array
         'BUGS' => PHPWG_URL . '/bugs',
         'EXTENSIONS' => PHPWG_URL . '/ext',
     ];
-    return $urls;
 }
 
 /**
@@ -3304,7 +3301,7 @@ function fs_quick_check(): void
         SQL;
     $fsqc_paths = query2array($query, 'id', 'path');
 
-    foreach ($fsqc_paths as $id => $path) {
+    foreach ($fsqc_paths as $path) {
         if (! file_exists($path)) {
             global $template;
 

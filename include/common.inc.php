@@ -25,17 +25,11 @@ function sanitize_mysql_kv(
     $v = addslashes($v);
 }
 
-if (is_array($_GET)) {
-    array_walk_recursive($_GET, sanitize_mysql_kv(...));
-}
+array_walk_recursive($_GET, sanitize_mysql_kv(...));
 
-if (is_array($_POST)) {
-    array_walk_recursive($_POST, sanitize_mysql_kv(...));
-}
+array_walk_recursive($_POST, sanitize_mysql_kv(...));
 
-if (is_array($_COOKIE)) {
-    array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
-}
+array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
 
 if (! empty($_SERVER['PATH_INFO'])) {
     $_SERVER['PATH_INFO'] = addslashes((string) $_SERVER['PATH_INFO']);

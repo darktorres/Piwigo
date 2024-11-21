@@ -108,7 +108,7 @@ function sp_select_all_categories(
 $type = IMG_LARGE;
 if (! empty($_COOKIE['screen_size'])) {
     $screen_size = explode('x', (string) $_COOKIE['screen_size']);
-    foreach (ImageStdParams::get_all_type_map() as $type => $map) {
+    foreach (ImageStdParams::get_all_type_map() as $map) {
         if (max($map->sizing->ideal_size) >= max($screen_size) && min($map->sizing->ideal_size) >= min($screen_size)) {
             break;
         }

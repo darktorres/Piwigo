@@ -893,8 +893,7 @@ function calculate_auto_login_key(
         $row = pwg_db_fetch_assoc($result);
         $username = stripslashes((string) $row['username']);
         $data = $time . $user_id . $username;
-        $key = base64_encode(hash_hmac('sha1', $data, $conf['secret_key'] . $row['password'], true));
-        return $key;
+        return base64_encode(hash_hmac('sha1', $data, $conf['secret_key'] . $row['password'], true));
     }
 
     return false;
@@ -1147,7 +1146,7 @@ function get_access_type_status(
 ): int {
     global $conf;
 
-    $access_type_status = match (get_user_status($user_status)) {
+    return match (get_user_status($user_status)) {
         'guest' => $conf['guest_access'] ? ACCESS_GUEST : ACCESS_FREE,
         'generic' => ACCESS_GUEST,
         'normal' => ACCESS_CLASSIC,
@@ -1155,8 +1154,6 @@ function get_access_type_status(
         'webmaster' => ACCESS_WEBMASTER,
         default => ACCESS_FREE,
     };
-
-    return $access_type_status;
 }
 
 /**
@@ -1343,7 +1340,6 @@ function get_sql_condition_FandF(
             default:
 
                 die('Unknow condition');
-                break;
 
         }
     }

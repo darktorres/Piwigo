@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 class smartpocket_maintain extends ThemeMaintain
 {
-    private bool $installed = false;
-
     private array $default_conf = [
         'loop' => true,
         //true - false
@@ -32,8 +30,6 @@ class smartpocket_maintain extends ThemeMaintain
 
             conf_update_param('smartpocket', $config, true);
         }
-
-        $this->installed = true;
     }
 
     #[\Override]
