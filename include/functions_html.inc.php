@@ -190,11 +190,10 @@ function render_comment_content(
     // replace /word/ by an italic word
     $pattern = "/\/(\S*)\/(\s)/";
     $replacement = '<span style="font-style:italic;">$1$2</span>';
-    $content = preg_replace($pattern, $replacement, (string) $content);
 
     // TODO : add a trigger
 
-    return $content;
+    return preg_replace($pattern, $replacement, (string) $content);
 }
 
 /**
@@ -620,9 +619,8 @@ function get_thumbnail_title(
     }
 
     $title = htmlspecialchars(strip_tags($title));
-    $title = trigger_change('get_thumbnail_title', $title, $info);
 
-    return $title;
+    return trigger_change('get_thumbnail_title', $title, $info);
 }
 
 /**

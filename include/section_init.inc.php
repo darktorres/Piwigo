@@ -40,7 +40,7 @@ if ($conf['question_mark_in_urls'] == false && isset($_SERVER['PATH_INFO']) && !
     $page['root_path'] = PHPWG_ROOT_PATH . str_repeat('../', $path_count - 1);
 } else {
     $rewritten = '';
-    foreach (array_keys($_GET) as $keynum => $key) {
+    foreach (array_keys($_GET) as $key) {
         $rewritten = $key;
         break;
     }
