@@ -8,7 +8,7 @@ $first = true;
 
 echo '<div class="changelog">';
 
-foreach ($lines as $line_num => $line) {
+foreach ($lines as $line) {
     if (trim($line) !== '' && trim($line) !== '0') {
         if ($show) {
             if (str_starts_with($line, 'version')) {

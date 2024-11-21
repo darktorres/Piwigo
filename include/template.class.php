@@ -668,8 +668,7 @@ class Template
                     $ret = 'sprintf(';
                     $ret .= self::modcompiler_translate([$params[0]]);
                     $ret .= ',' . implode(',', array_slice($params, 1));
-                    $ret .= ')';
-                    return $ret;
+                    return $ret . ')';
                 }
 
                 return 'l10n(' . $params[0] . ',' . implode(',', array_slice($params, 1)) . ')';
@@ -699,8 +698,7 @@ class Template
             $ret .= ':';
             $ret .= self::modcompiler_translate([$params[1]]);
             $ret .= ',$tmp';
-            $ret .= ')';
-            return $ret;
+            return $ret . ')';
         }
 
         return 'l10n_dec(' . $params[1] . ',' . $params[2] . ',' . $params[0] . ')';
@@ -906,7 +904,7 @@ class Template
             $content[] =
               "(function() {\n"
               . "var s, after = document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1];\n";
-            foreach ($scripts[1] as $id => $script) {
+            foreach ($scripts[1] as $script) {
                 $content[] =
                   "s = document.createElement('script'); s.async = true; s.src = '"
                   . $this->make_script_src($script)
@@ -1090,8 +1088,7 @@ class Template
             $regex[] = "#^[ \t]+({$ldq}{$tag}" . "[^{$ld}{$rd}]*{$rdq})\s*$#m";
         }
 
-        $source = preg_replace($regex, '$1', $source);
-        return $source;
+        return preg_replace($regex, '$1', $source);
     }
 
     /**
@@ -1187,7 +1184,7 @@ class Template
         if ($this->picture_buttons !== []) {
             ksort($this->picture_buttons);
             $buttons = [];
-            foreach ($this->picture_buttons as $k => $row) {
+            foreach ($this->picture_buttons as $row) {
                 $buttons = array_merge($buttons, $row);
             }
 
@@ -1211,7 +1208,7 @@ class Template
         if ($this->index_buttons !== []) {
             ksort($this->index_buttons);
             $buttons = [];
-            foreach ($this->index_buttons as $k => $row) {
+            foreach ($this->index_buttons as $row) {
                 $buttons = array_merge($buttons, $row);
             }
 
@@ -1480,17 +1477,15 @@ class ScriptLoader
             trigger_error('Attempt to add inline script but the footer has been written', E_USER_WARNING);
         }
 
-        if ($require !== []) {
-            foreach ($require as $id) {
-                if (! isset($this->registered_scripts[$id]) && ! $this->load_known_required_script($id, 1)) {
-                    fatal_error("inline script not found require {$id}");
-                }
-
-                $s = $this->registered_scripts[$id];
-                if ($s->load_mode == 2) {
-                    $s->load_mode = 1;
-                } // until now, the implementation does not allow executing inline script depending on another async script
+        foreach ($require as $id) {
+            if (! isset($this->registered_scripts[$id]) && ! $this->load_known_required_script($id, 1)) {
+                fatal_error("inline script not found require {$id}");
             }
+
+            $s = $this->registered_scripts[$id];
+            if ($s->load_mode == 2) {
+                $s->load_mode = 1;
+            } // until now, the implementation does not allow executing inline script depending on another async script
         }
 
         $this->inline_scripts[] = $code;
@@ -1630,7 +1625,7 @@ class ScriptLoader
         global $conf;
         do {
             $changed = false;
-            foreach ($scripts as $id => $script) {
+            foreach ($scripts as $script) {
                 $load = $script->load_mode;
                 foreach ($script->precedents as $precedent) {
                     if (! isset($scripts[$precedent])) {
@@ -1976,8 +1971,7 @@ final class FileCombiner
             $css = $cssMin->run($css);
         }
 
-        $css = trigger_change('combined_css_postfilter', $css);
-        return $css;
+        return trigger_change('combined_css_postfilter', $css);
     }
 
     /**

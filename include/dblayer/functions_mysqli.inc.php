@@ -515,7 +515,7 @@ function single_insert(
 
         $query .= '(';
         $is_first = true;
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             if (! $is_first) {
                 $query .= ',';
             } else {

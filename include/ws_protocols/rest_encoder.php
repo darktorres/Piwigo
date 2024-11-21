@@ -23,8 +23,6 @@ class PwgXmlWriter
 
     public string $_encodedXml = '';
 
-    public function __construct() {}
-
     public function &getOutput(): string
     {
         return $this->_encodedXml;
@@ -67,7 +65,6 @@ class PwgXmlWriter
         string $value
     ): void {
         $this->_end_prev(false);
-        $value = (string) $value;
         $this->_output(htmlspecialchars($value));
     }
 
@@ -81,7 +78,7 @@ class PwgXmlWriter
     public function encode_attribute(
         string $value
     ): string {
-        return htmlspecialchars((string) $value);
+        return htmlspecialchars($value);
     }
 
     public function _end_prev(
@@ -136,22 +133,20 @@ class PwgRestEncoder extends PwgResponseEncoder
         array|bool|string|PwgError|null $response
     ): string {
         if ($response instanceof PwgError) {
-            $ret = '<?xml version="1.0"?>
+            return '<?xml version="1.0"?>
 <rsp stat="fail">
 	<err code="' . $response->code() . '" msg="' . htmlspecialchars($response->message()) . '" />
 </rsp>';
-            return $ret;
         }
 
         $this->_writer = new PwgXmlWriter();
         $this->encode($response);
         $ret = $this->_writer->getOutput();
-        $ret = '<?xml version="1.0" encoding="utf-8" ?>
+
+        return '<?xml version="1.0" encoding="utf-8" ?>
 <rsp stat="ok">
 ' . $ret . '
 </rsp>';
-
-        return $ret;
     }
 
     #[\Override]
