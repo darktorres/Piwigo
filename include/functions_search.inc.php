@@ -1090,7 +1090,8 @@ function qsearch_get_text_token_search_sql($token, $fields)
             $post = ($token->modifier & QST_WILDCARD_END) ? '' : ($page['use_regexp_ICU'] ? '\\\\b' : '[[:>:]]');
             foreach ($fields as $field) {
                 $variant_ = addslashes(preg_quote((string) $variant));
-                $clauses[] = "{$field} REGEXP '{$pre}{$variant_}{$post}'";
+                $regex = DB_REGEX_OPERATOR;
+                $clauses[] = "{$field} {$regex} '{$pre}{$variant_}{$post}'";
             }
         } else {
             $ft = $variant;
