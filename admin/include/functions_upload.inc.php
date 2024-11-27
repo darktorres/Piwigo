@@ -786,9 +786,6 @@ function upload_file_eps($representative_ext, $file_path)
 function prepare_directory($directory)
 {
     if (! is_dir($directory)) {
-        if (substr(PHP_OS, 0, 3) == 'WIN') {
-            $directory = str_replace('/', DIRECTORY_SEPARATOR, $directory);
-        }
         umask(0000);
         $recursive = true;
         if (! mkdir($directory, 0777, $recursive)) {
