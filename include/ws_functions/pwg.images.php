@@ -1433,7 +1433,7 @@ function ws_images_upload($params, $service)
     // extension. Function add_uploaded_file will eventually clean the mess.
     $fileName = md5($fileName);
 
-    $filePath = $upload_dir . DIRECTORY_SEPARATOR . $fileName;
+    $filePath = $upload_dir . '/' . $fileName;
 
     // Chunking might be enabled
     $chunk = isset($_REQUEST['chunk']) ? intval($_REQUEST['chunk']) : 0;
