@@ -233,6 +233,7 @@ function initialize_calendar(): void
         } else {
             $order = count($page['chronology_date']) == 0 || in_array('any', $page['chronology_date']) ? ' DESC, ' : ' ASC, ';
 
+            // TODO: fix duplicated ORDER BY => 'ORDER BY date_creation DESC' => 'ORDER BY date_creation DESC, date_creation DESC'
             $order_by = str_replace(
                 'ORDER BY ',
                 "ORDER BY {$calendar->date_field}{$order}",

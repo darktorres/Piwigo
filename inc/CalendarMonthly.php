@@ -215,7 +215,7 @@ class CalendarMonthly extends CalendarBase
             {$this->inner_sql}
             {$this->get_date_where()}
             GROUP BY period
-            ORDER BY {$year} DESC, {$month} ASC;
+            ORDER BY period;
             SQL;
 
         $result = pwg_query($query);
