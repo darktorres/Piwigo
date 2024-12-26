@@ -9,39 +9,6 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-/**
- * class DummyTheme_maintain
- * used when a theme uses the old procedural declaration of maintenance methods
- */
-class DummyTheme_maintain extends ThemeMaintain
-{
-    #[\Override]
-    public function activate(
-        string $theme_version,
-        array &$errors = []
-    ): void {
-        if (is_callable('theme_activate')) {
-            theme_activate($this->theme_id, $theme_version, $errors);
-        }
-    }
-
-    #[\Override]
-    public function deactivate(): void
-    {
-        if (is_callable('theme_deactivate')) {
-            theme_deactivate($this->theme_id);
-        }
-    }
-
-    #[\Override]
-    public function delete(): void
-    {
-        if (is_callable('theme_delete')) {
-            theme_delete($this->theme_id);
-        }
-    }
-}
-
 class themes
 {
     public array $fs_themes = [];

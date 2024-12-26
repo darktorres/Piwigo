@@ -364,7 +364,6 @@ if ($step == 1) {
     if (isset($error_copy)) {
         $errors[] = $error_copy;
     } else {
-        require_once PHPWG_ROOT_PATH . 'include/PwgSessionHandler.php';
         $handler = new PwgSessionHandler();
         session_set_save_handler($handler, true);
 

@@ -10,7 +10,6 @@ declare(strict_types=1);
 // +-----------------------------------------------------------------------+
 
 if (isset($conf['session_save_handler']) && $conf['session_save_handler'] == 'db' && defined('PHPWG_INSTALLED')) {
-    require_once PHPWG_ROOT_PATH . 'include/PwgSessionHandler.php';
     $handler = new PwgSessionHandler();
     session_set_save_handler($handler, true);
 

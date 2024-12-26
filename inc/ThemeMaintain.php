@@ -9,15 +9,24 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('IMG_SQUARE', 'square');
-define('IMG_THUMB', 'thumb');
-define('IMG_XXSMALL', '2small');
-define('IMG_XSMALL', 'xsmall');
-define('IMG_SMALL', 'small');
-define('IMG_MEDIUM', 'medium');
-define('IMG_LARGE', 'large');
-define('IMG_XLARGE', 'xlarge');
-define('IMG_XXLARGE', 'xxlarge');
-define('IMG_CUSTOM', 'custom');
+/**
+ * Used to declare maintenance methods of a theme.
+ */
+class ThemeMaintain
+{
+    public function __construct(
+        protected string $theme_id
+    ) {}
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+    /**
+     * @param array $errors - used to return error messages
+     */
+    public function activate(
+        string $theme_version,
+        array &$errors = []
+    ): void {}
+
+    public function deactivate(): void {}
+
+    public function delete(): void {}
+}

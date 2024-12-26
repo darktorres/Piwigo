@@ -9,15 +9,25 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('IMG_SQUARE', 'square');
-define('IMG_THUMB', 'thumb');
-define('IMG_XXSMALL', '2small');
-define('IMG_XSMALL', 'xsmall');
-define('IMG_SMALL', 'small');
-define('IMG_MEDIUM', 'medium');
-define('IMG_LARGE', 'large');
-define('IMG_XLARGE', 'xlarge');
-define('IMG_XXLARGE', 'xxlarge');
-define('IMG_CUSTOM', 'custom');
+/**
+ * Container for watermark configuration.
+ */
+final class WatermarkParams
+{
+    public string $file = '';
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+    /**
+     * @var int[]
+     */
+    public $min_size = [500, 500];
+
+    public int $xpos = 50;
+
+    public int $ypos = 50;
+
+    public int $xrepeat = 0;
+
+    public int $yrepeat = 0;
+
+    public int $opacity = 100;
+}

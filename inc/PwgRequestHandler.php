@@ -9,15 +9,16 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('IMG_SQUARE', 'square');
-define('IMG_THUMB', 'thumb');
-define('IMG_XXSMALL', '2small');
-define('IMG_XSMALL', 'xsmall');
-define('IMG_SMALL', 'small');
-define('IMG_MEDIUM', 'medium');
-define('IMG_LARGE', 'large');
-define('IMG_XLARGE', 'xlarge');
-define('IMG_XXLARGE', 'xxlarge');
-define('IMG_CUSTOM', 'custom');
-
-require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+/**
+ * Abstract base class for request handlers.
+ */
+abstract class PwgRequestHandler
+{
+    /** Virtual abstract method.
+     * Decodes the request (GET or POST) and handles the
+     * method invocation as well as response sending.
+     */
+    abstract public function handleRequest(
+        PwgServer &$service
+    );
+}

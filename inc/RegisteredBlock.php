@@ -9,15 +9,29 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('IMG_SQUARE', 'square');
-define('IMG_THUMB', 'thumb');
-define('IMG_XXSMALL', '2small');
-define('IMG_XSMALL', 'xsmall');
-define('IMG_SMALL', 'small');
-define('IMG_MEDIUM', 'medium');
-define('IMG_LARGE', 'large');
-define('IMG_XLARGE', 'xlarge');
-define('IMG_XXLARGE', 'xxlarge');
-define('IMG_CUSTOM', 'custom');
+/**
+ * Represents a menu block registered in a BlockManager object.
+ */
+class RegisteredBlock
+{
+    public function __construct(
+        protected string $id,
+        protected string $name,
+        protected string $owner
+    ) {}
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+    public function get_id(): string
+    {
+        return $this->id;
+    }
+
+    public function get_name(): string
+    {
+        return $this->name;
+    }
+
+    public function get_owner(): string
+    {
+        return $this->owner;
+    }
+}

@@ -9,15 +9,24 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-define('IMG_SQUARE', 'square');
-define('IMG_THUMB', 'thumb');
-define('IMG_XXSMALL', '2small');
-define('IMG_XSMALL', 'xsmall');
-define('IMG_SMALL', 'small');
-define('IMG_MEDIUM', 'medium');
-define('IMG_LARGE', 'large');
-define('IMG_XLARGE', 'xlarge');
-define('IMG_XXLARGE', 'xxlarge');
-define('IMG_CUSTOM', 'custom');
+/**
+ * Structure of results being filled from different tables
+ */
+class QResults
+{
+    public $all_tags;
 
-require_once(PHPWG_ROOT_PATH . 'inc/functions.inc.php');
+    public $tag_ids;
+
+    public $tag_iids;
+
+    public $all_cats;
+
+    public $cat_ids;
+
+    public $cat_iids;
+
+    public $images_iids;
+
+    public $iids;
+}
