@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\plugins\rv_tscroller;
+
 class RVTS
 {
     public static function on_end_section_init(): void

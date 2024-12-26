@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\plugins\AdminTools\inc;
+
 defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 /**

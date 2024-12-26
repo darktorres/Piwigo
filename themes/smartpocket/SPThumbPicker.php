@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\themes\smartpocket;
+
 class SPThumbPicker
 {
     public array $candidates;

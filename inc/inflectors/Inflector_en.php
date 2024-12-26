@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Piwigo\inc\inflectors;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

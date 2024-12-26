@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BootstrapDarkroom;
+namespace Piwigo\themes\bootstrap_darkroom\inc;
 
 class ThemeController
 {
