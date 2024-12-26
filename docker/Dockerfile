@@ -22,20 +22,20 @@ RUN <<"EOF"
         sudo \
         unzip \
         wget \
-        php8.3-cli \
-        php8.3-curl \
-        php8.3-ffi \
-        php8.3-fileinfo \
-        php8.3-gd \
-        php8.3-intl \
-        php8.3-fpm \
-        php8.3-mbstring \
-        php8.3-exif \
-        php8.3-mysqli \
-        php8.3-pgsql \
-        php8.3-xdebug \
-        php8.3-xml \
-        php8.3-zip
+        php8.4-cli \
+        php8.4-curl \
+        php8.4-ffi \
+        php8.4-fileinfo \
+        php8.4-gd \
+        php8.4-intl \
+        php8.4-fpm \
+        php8.4-mbstring \
+        php8.4-exif \
+        php8.4-mysqli \
+        php8.4-pgsql \
+        php8.4-xdebug \
+        php8.4-xml \
+        php8.4-zip
     apt-get clean
     rm -rf /var/lib/apt/lists/*
 EOF
@@ -84,14 +84,14 @@ RUN cat /tmp/custom-nginx.conf >> /etc/nginx/conf.d/nginx.conf && rm /tmp/custom
 
 # Append to PHP-FPM pool config
 COPY php-fpm.conf /tmp/custom-php-fpm.conf
-RUN cat /tmp/custom-php-fpm.conf >> /etc/php/8.3/fpm/pool.d/www.conf && rm /tmp/custom-php-fpm.conf
+RUN cat /tmp/custom-php-fpm.conf >> /etc/php/8.4/fpm/pool.d/www.conf && rm /tmp/custom-php-fpm.conf
 
 # Append custom PHP configuration
 COPY custom-php.ini /tmp/custom-php.ini
-RUN cat /tmp/custom-php.ini >> /etc/php/8.3/fpm/php.ini && rm /tmp/custom-php.ini
+RUN cat /tmp/custom-php.ini >> /etc/php/8.4/fpm/php.ini && rm /tmp/custom-php.ini
 
 # Comment out opcache.jit=off in the opcache.ini file
-RUN sed -i 's/^opcache.jit=off/;opcache.jit=off/' /etc/php/8.3/mods-available/opcache.ini
+RUN sed -i 's/^opcache.jit=off/;opcache.jit=off/' /etc/php/8.4/mods-available/opcache.ini
 
 # Create opcache file cache folder
 RUN mkdir /var/www/php_opcache
@@ -116,4 +116,4 @@ RUN <<"EOF"
 EOF
 
 # Start services
-CMD ["bash", "-c", "service mysql start && service php8.3-fpm start && nginx -g 'daemon off;'"]
+CMD ["bash", "-c", "service mysql start && service php8.4-fpm start && nginx -g 'daemon off;'"]
