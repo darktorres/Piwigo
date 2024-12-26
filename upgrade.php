@@ -20,7 +20,7 @@ if (function_exists('ini_set')) {
 define('PHPWG_ROOT_PATH', './');
 
 // load config file
-require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
+require PHPWG_ROOT_PATH . 'inc/config_default.inc.php';
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
     require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 }
@@ -38,12 +38,12 @@ if ($php_end_tag === false) {
 
 require $config_file;
 
-require_once PHPWG_ROOT_PATH . 'include/constants.php';
+require_once PHPWG_ROOT_PATH . 'inc/constants.php';
 define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 
-require_once PHPWG_ROOT_PATH . 'include/functions.inc.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-require_once PHPWG_ROOT_PATH . 'include/template.class.php';
+require_once PHPWG_ROOT_PATH . 'inc/functions.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
+require_once PHPWG_ROOT_PATH . 'inc/template.class.php';
 
 // +-----------------------------------------------------------------------+
 // |                              functions                                |
@@ -122,7 +122,7 @@ function print_time(
 // +-----------------------------------------------------------------------+
 // |                             language                                  |
 // +-----------------------------------------------------------------------+
-require PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
+require PHPWG_ROOT_PATH . 'admin/inc/languages.class.php';
 $languages = new languages('utf-8');
 if (isset($_GET['language'])) {
     $language = strip_tags((string) $_GET['language']);
@@ -193,8 +193,8 @@ load_language('upgrade.lang', '', [
 // +-----------------------------------------------------------------------+
 // |                          database connection                          |
 // +-----------------------------------------------------------------------+
-require_once PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
-require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions_upgrade.php';
+require PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
 
 upgrade_db_connect();
 
@@ -233,7 +233,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 if ($has_remote_site) {
-    require_once PHPWG_ROOT_PATH . 'admin/include/updates.class.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/updates.class.php';
 
     $page['errors'] = [];
     $step = 3;
@@ -438,7 +438,7 @@ if ((isset($_POST['submit']) || isset($_GET['now'])) && check_upgrade()) {
 // |                          start template output                        |
 // +-----------------------------------------------------------------------+
 else {
-    require_once PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/languages.class.php';
     $languages = new languages();
 
     foreach ($languages->fs_languages as $language_code => $fs_language) {

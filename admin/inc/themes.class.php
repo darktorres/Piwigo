@@ -203,7 +203,7 @@ class themes
 
                 $theme_maintain->delete();
 
-                require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+                require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
                 deltree(PHPWG_THEMES_PATH . $theme_id, PHPWG_THEMES_PATH . 'trash');
                 break;
 

@@ -13,14 +13,14 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
 check_status(ACCESS_ADMINISTRATOR);
 
 if (empty($_GET['theme'])) {
     die('Invalid theme URL');
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/include/themes.class.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/themes.class.php';
 $themes = new themes();
 if (! in_array($_GET['theme'], array_keys($themes->fs_themes))) {
     die('Invalid theme');

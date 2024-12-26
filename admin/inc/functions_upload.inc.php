@@ -9,8 +9,8 @@ declare(strict_types=1);
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/image.class.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/image.class.php';
 
 // add default event handler for image and thumbnail resize
 // add_event_handler('upload_image_resize', pwg_image_resize(...));
@@ -355,7 +355,7 @@ function add_uploaded_file(
 
     set_make_full_url();
     // in case we are on uploadify.php, we have to replace the false path
-    $derivative_url = preg_replace('#admin/include/i#', 'i', DerivativeImage::url(IMG_MEDIUM, $src_image));
+    $derivative_url = preg_replace('#admin/inc/i#', 'i', DerivativeImage::url(IMG_MEDIUM, $src_image));
     unset_make_full_url();
 
     $logger->info(__FUNCTION__ . ' : force cache generation, derivative_url = ' . $derivative_url);

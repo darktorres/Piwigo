@@ -225,7 +225,7 @@
 	{/if}
 
 	{if !empty($SEARCH_ID)}
-		{include file='themes/default/template/include/search_filters.inc.tpl'}
+		{include file='themes/default/template/inc/search_filters.inc.tpl'}
 	{/if}
 
 	{if !empty($THUMBNAILS)}

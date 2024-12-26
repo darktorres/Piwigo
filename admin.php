@@ -16,10 +16,10 @@ declare(strict_types=1);
 define('PHPWG_ROOT_PATH', './');
 define('IN_ADMIN', true);
 
-require_once PHPWG_ROOT_PATH . 'include/common.inc.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/functions_plugins.inc.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/add_core_tabs.inc.php';
+require_once PHPWG_ROOT_PATH . 'inc/common.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions_plugins.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/add_core_tabs.inc.php';
 
 trigger_notify('loc_begin_admin');
 
@@ -168,7 +168,7 @@ check_input_parameter('tab', $_GET, false, '/^[a-zA-Z\d_-]+$/');
 // | Template init                                                         |
 // +-----------------------------------------------------------------------+
 
-$title = l10n('Piwigo Administration'); // for include/page_header.php
+$title = l10n('Piwigo Administration'); // for inc/page_header.php
 $page['page_banner'] = '<h1>' . l10n('Piwigo Administration') . '</h1>';
 $page['body_id'] = 'theAdminPage';
 
@@ -329,7 +329,7 @@ $template->assign('ACTIVE_MENU', get_active_menu($page['page']));
 // Add the Piwigo Official menu
 $template->assign('pwgmenu', pwg_URL());
 
-require PHPWG_ROOT_PATH . 'include/page_header.php';
+require PHPWG_ROOT_PATH . 'inc/page_header.php';
 
 trigger_notify('loc_end_admin');
 
@@ -337,4 +337,4 @@ flush_page_messages();
 
 $template->pparse('admin');
 
-require PHPWG_ROOT_PATH . 'include/page_tail.php';
+require PHPWG_ROOT_PATH . 'inc/page_tail.php';

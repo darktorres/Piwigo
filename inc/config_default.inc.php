@@ -570,7 +570,7 @@ $conf['password_hash'] = 'pwg_password_hash';
 // function takes 2 mandatory parameters: clear password, hashed password +
 // an optional parameter user_id. The user_id is used to update the password
 // with the new hash introduced in Piwigo 2.5. See function
-// pwg_password_verify in include/functions_user.inc.php
+// pwg_password_verify in inc/functions_user.inc.php
 $conf['password_verify'] = 'pwg_password_verify';
 
 // guest_id: id of the anonymous user

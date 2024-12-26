@@ -17,7 +17,7 @@ if (! $conf['enable_extensions_install']) {
     die('Piwigo extensions install/update system is disabled');
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/include/plugins.class.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php';
 
 $template->set_filenames([
     'plugins' => 'plugins_new.tpl',

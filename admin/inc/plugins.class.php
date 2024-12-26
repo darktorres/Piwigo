@@ -255,7 +255,7 @@ class plugins
 
                 $activity_details['fs_version'] = $this->fs_plugins[$plugin_id]['version'];
 
-                require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+                require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
                 deltree(PHPWG_PLUGINS_PATH . $plugin_id, PHPWG_PLUGINS_PATH . 'trash');
                 break;
         }

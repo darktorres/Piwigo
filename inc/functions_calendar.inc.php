@@ -111,7 +111,7 @@ function initialize_calendar(): void
     $cal_style = $page['chronology_style'];
     $classname = $styles[$cal_style]['classname'];
 
-    require PHPWG_ROOT_PATH . 'include/' . $styles[$cal_style]['include'];
+    require PHPWG_ROOT_PATH . 'inc/' . $styles[$cal_style]['include'];
     $calendar = new $classname();
 
     // Retrieve view

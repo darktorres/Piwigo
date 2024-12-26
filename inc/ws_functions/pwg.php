@@ -243,7 +243,7 @@ function ws_getCacheSize(
         }
     }
 
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
     // Multiples sizes size
     $path_msizes = $conf['data_location'] . 'i';
     $msizes = get_cache_size_derivatives($path_msizes);
@@ -364,7 +364,7 @@ function ws_rates_delete(
     pwg_query($query);
     $changes = pwg_db_changes();
     if ($changes) {
-        require_once PHPWG_ROOT_PATH . 'include/functions_rate.inc.php';
+        require_once PHPWG_ROOT_PATH . 'inc/functions_rate.inc.php';
         update_rating_score();
     }
 
@@ -497,7 +497,7 @@ function ws_getActivityList(
 
             SQL;
     } elseif ($conf['activity_display_connections'] == 'admins_only') {
-        require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+        require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
         $query .= <<<SQL
             AND NOT (action IN ('login', 'logout') AND object_id NOT IN ({$admin_ids}))
 
@@ -638,7 +638,7 @@ function ws_history_log(
     // when visiting a photo (which, in version 14, is currently the only event registered
     // by pwg.history.log) we should also increment images.hit
     if (! empty($params['image_id'])) {
-        include_once(PHPWG_ROOT_PATH . 'include/functions_picture.inc.php');
+        include_once(PHPWG_ROOT_PATH . 'inc/functions_picture.inc.php');
         increase_image_visit_counter($params['image_id']);
     }
 
@@ -660,8 +660,8 @@ function ws_history_search(
     PwgServer &$service
 ): array {
 
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions_history.inc.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions_history.inc.php';
 
     global $conf;
 

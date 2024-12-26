@@ -18,7 +18,7 @@ $template->assign(
     'show_default',
     [
         [
-            'URL' => LOCALEDIT_PATH . 'show_default.php?file=include/config_default.inc.php',
+            'URL' => LOCALEDIT_PATH . 'show_default.php?file=inc/config_default.inc.php',
             'FILE' => 'config_default.inc.php',
         ],
     ]

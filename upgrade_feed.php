@@ -16,17 +16,17 @@ if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
 
 define('PHPWG_ROOT_PATH', './');
 
-require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
+require PHPWG_ROOT_PATH . 'inc/config_default.inc.php';
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
     require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 }
 
 require PHPWG_ROOT_PATH . 'local/config/database.inc.php';
-require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
+require PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
 
-require_once PHPWG_ROOT_PATH . 'include/functions.inc.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
+require_once PHPWG_ROOT_PATH . 'inc/functions.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions_upgrade.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when it is not ok                               |

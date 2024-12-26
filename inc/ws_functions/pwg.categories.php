@@ -340,7 +340,7 @@ function ws_categories_getList(
         // Management of the album thumbnail -- starts here
         //
         // on branch 2.3, the algorithm is duplicated from
-        // include/category_cats, but we should use a common code for Piwigo 2.4
+        // inc/category_cats, but we should use a common code for Piwigo 2.4
         //
         // warning: if the API method is called with $params['public'], the
         // album thumbnail may be not accurate. The thumbnail can be viewed by
@@ -462,7 +462,7 @@ function ws_categories_getList(
         }
     }
 
-    // compared to code in include/category_cats, we only persist the new
+    // compared to code in inc/category_cats, we only persist the new
     // user_representative if we have used $user['id'] and not the guest id,
     // or else the real guest may see thumbnail that he should not
     if (! $params['public'] && count($user_representative_updates_for)) {
@@ -632,7 +632,7 @@ function ws_categories_add(
     array $params,
     PwgServer &$service
 ): array|PwgError {
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
 
     global $conf;
 
@@ -746,7 +746,7 @@ function ws_categories_setRank(
     }
 
     // include function to set the global rank
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
     save_categories_order($order_new);
 
     return null;
@@ -793,7 +793,7 @@ function ws_categories_setInfo(
         }
 
         if ($params['status'] != $category['status']) {
-            require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+            require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
             set_cat_status([$params['category_id']], $params['status']);
         }
     }
@@ -809,7 +809,7 @@ function ws_categories_setInfo(
     }
 
     if (! empty($params['visible']) && $params['visible'] != $category['visible']) {
-        require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+        require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
         set_cat_visible([$params['category_id']], $params['visible']);
     }
 
@@ -995,7 +995,7 @@ function ws_categories_refreshRepresentative(
         return new PwgError(401, 'not permitted');
     }
 
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
 
     set_random_representant([$params['category_id']]);
 
@@ -1072,7 +1072,7 @@ function ws_categories_delete(
         return null;
     }
 
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
     delete_categories($category_ids, $params['photo_deletion_mode']);
     update_global_rank();
     invalidate_user_cache();
@@ -1181,7 +1181,7 @@ function ws_categories_move(
     $page['infos'] = [];
     $page['errors'] = [];
 
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
     move_categories($category_ids, $params['parent']);
     invalidate_user_cache();
 

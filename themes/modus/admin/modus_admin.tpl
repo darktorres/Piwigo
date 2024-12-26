@@ -1,4 +1,4 @@
-{include file='include/colorbox.inc.tpl'}
+{include file='inc/colorbox.inc.tpl'}
 {combine_script id='common' load='footer' path='admin/themes/default/js/common.js'}
 {combine_script id='jquery.ui' require='jquery'}
 {combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.css"}

@@ -444,7 +444,7 @@ function ws_users_delete(
 
     global $conf, $user;
 
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
 
     $protected_users = [
         $user['id'],
@@ -513,7 +513,7 @@ function ws_users_setInfo(
 
     global $conf, $user;
 
-    require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+    require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
     $updates = [];
     $updates_infos = [];
     $update_status = null;

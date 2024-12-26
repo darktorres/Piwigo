@@ -241,7 +241,7 @@
       </div>
     </div>
   </div>
-  {include file='admin/themes/default/template/include/album_selector.inc.tpl' 
+  {include file='admin/themes/default/template/inc/album_selector.inc.tpl' 
     title={'Search in albums'|@translate}
   searchPlaceholder={'Search'|@translate}
   show_root_btn=false

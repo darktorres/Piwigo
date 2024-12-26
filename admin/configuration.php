@@ -17,9 +17,9 @@ if (! is_webmaster()) {
     $page['warnings'][] = str_replace('%s', l10n('user_status_webmaster'), l10n('%s status is required to edit parameters.'));
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/functions_upload.inc.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions_upload.inc.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -199,12 +199,12 @@ if (isset($_POST['submit'])) {
 
         case 'watermark':
 
-            require PHPWG_ROOT_PATH . 'admin/include/configuration_watermark_process.inc.php';
+            require PHPWG_ROOT_PATH . 'admin/inc/configuration_watermark_process.inc.php';
             break;
 
         case 'sizes':
 
-            require PHPWG_ROOT_PATH . 'admin/include/configuration_sizes_process.inc.php';
+            require PHPWG_ROOT_PATH . 'admin/inc/configuration_sizes_process.inc.php';
             break;
 
         case 'comments':
@@ -320,7 +320,7 @@ switch ($page['section']) {
         function order_by_is_local(): bool
         {
             $conf = [];
-            require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
+            require PHPWG_ROOT_PATH . 'inc/config_default.inc.php';
             if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
                 require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
             }

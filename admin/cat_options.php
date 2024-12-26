@@ -13,8 +13,8 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
-require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |

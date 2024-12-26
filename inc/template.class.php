@@ -184,7 +184,7 @@ class Template
         $this->smarty->registerPlugin('modifier', 'str_replace', str_replace(...));
         $this->smarty->registerPlugin('modifier', 'preg_match', preg_match(...));
         $this->smarty->registerPlugin('modifier', 'url_is_remote', url_is_remote(...));
-        require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
+        require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
         $this->smarty->registerPlugin('modifier', 'cat_admin_access', cat_admin_access(...));
         $this->smarty->registerPlugin('modifier', 'array_key_exists', array_key_exists(...));
         $this->smarty->registerPlugin('block', 'html_head', $this->block_html_head(...));

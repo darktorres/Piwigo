@@ -17,7 +17,7 @@ if (! $conf['enable_extensions_install'] && ! $conf['enable_core_update']) {
     die('update system is disabled');
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/include/tabsheet.class.php';
+require_once PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php';
 
 $my_base_url = get_root_url() . 'admin.php?page=updates';
 

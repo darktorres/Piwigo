@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
-require_once PHPWG_ROOT_PATH . 'include/common.inc.php';
-require_once PHPWG_ROOT_PATH . 'include/functions_search.inc.php';
+require_once PHPWG_ROOT_PATH . 'inc/common.inc.php';
+require_once PHPWG_ROOT_PATH . 'inc/functions_search.inc.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |

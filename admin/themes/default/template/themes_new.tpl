@@ -1,4 +1,4 @@
-{include file='include/colorbox.inc.tpl'}
+{include file='inc/colorbox.inc.tpl'}
 {footer_script}<script>
   $(window).on("load", function() {
     $('.themeBox').each(function() {

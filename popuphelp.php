@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 define('PHPWG_ROOT_PATH', './');
 define('PWG_HELP', true);
-require_once PHPWG_ROOT_PATH . 'include/common.inc.php';
+require_once PHPWG_ROOT_PATH . 'inc/common.inc.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -65,4 +65,4 @@ $template->assign(
 
 $template->pparse('popuphelp');
 
-require PHPWG_ROOT_PATH . 'include/page_tail.php';
+require PHPWG_ROOT_PATH . 'inc/page_tail.php';

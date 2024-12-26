@@ -14,8 +14,8 @@ declare(strict_types=1);
 
 //--------------------------------------------------------------------- include
 define('PHPWG_ROOT_PATH', './');
-require_once PHPWG_ROOT_PATH . 'include/common.inc.php';
-require PHPWG_ROOT_PATH . 'include/section_init.inc.php';
+require_once PHPWG_ROOT_PATH . 'inc/common.inc.php';
+require PHPWG_ROOT_PATH . 'inc/section_init.inc.php';
 
 // Check Access and exit when user status is not ok
 check_status(ACCESS_GUEST);
@@ -101,7 +101,7 @@ $template->assign('TITLE', $template_title);
 $template->assign('NB_ITEMS', $nb_items);
 
 //-------------------------------------------------------------- menubar
-require PHPWG_ROOT_PATH . 'include/menubar.inc.php';
+require PHPWG_ROOT_PATH . 'inc/menubar.inc.php';
 
 $template->set_filename('index', 'index.tpl');
 
@@ -169,7 +169,7 @@ if (empty($page['is_external'])) {
     // applies to regular search, not the legacy quicksearch. Since Piwigo 14 can still
     // be able to show an old quicksearch result, we must check this condition too.
     if ($page['section'] == 'search' && isset($page['search_details'])) {
-        include_once(PHPWG_ROOT_PATH . 'include/functions_search.inc.php');
+        include_once(PHPWG_ROOT_PATH . 'inc/functions_search.inc.php');
 
         $my_search = get_search_array($page['search']);
 
@@ -603,11 +603,11 @@ if (empty($page['is_external'])) {
     //------------------------------------------------------ main part : thumbnails
     if ($page['start'] == 0 && ! isset($page['flat']) && ! isset($page['chronology_field']) && ($page['section'] == 'recent_cats' || $page['section'] == 'categories') && (! isset($page['category']['count_categories']) || $page['category']['count_categories'] > 0)
     ) {
-        require PHPWG_ROOT_PATH . 'include/category_cats.inc.php';
+        require PHPWG_ROOT_PATH . 'inc/category_cats.inc.php';
     }
 
     if (! empty($page['items'])) {
-        require PHPWG_ROOT_PATH . 'include/category_default.inc.php';
+        require PHPWG_ROOT_PATH . 'inc/category_default.inc.php';
 
         if ($conf['index_sizes_icon']) {
             $url = add_url_params(
@@ -648,7 +648,7 @@ if (empty($page['is_external'])) {
 }
 
 //------------------------------------------------------------ end
-require PHPWG_ROOT_PATH . 'include/page_header.php';
+require PHPWG_ROOT_PATH . 'inc/page_header.php';
 trigger_notify('loc_end_index');
 flush_page_messages();
 $template->parse_index_buttons();
@@ -656,4 +656,4 @@ $template->pparse('index');
 
 //------------------------------------------------------------ log information
 pwg_log();
-require PHPWG_ROOT_PATH . 'include/page_tail.php';
+require PHPWG_ROOT_PATH . 'inc/page_tail.php';

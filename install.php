@@ -35,13 +35,13 @@ if (! empty($_SERVER['PATH_INFO'])) {
 
 //----------------------------------------------------- variable initialization
 
-require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
+require PHPWG_ROOT_PATH . 'inc/config_default.inc.php';
 if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
     require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 }
 
-require PHPWG_ROOT_PATH . 'include/functions.inc.php';
-require PHPWG_ROOT_PATH . 'include/template.class.php';
+require PHPWG_ROOT_PATH . 'inc/functions.inc.php';
+require PHPWG_ROOT_PATH . 'inc/template.class.php';
 
 // download database config file if exists
 check_input_parameter('dl', $_GET, false, '/^[a-f0-9]{32}$/');
@@ -89,10 +89,10 @@ if (file_exists($config_file)) {
     }
 }
 
-require PHPWG_ROOT_PATH . 'include/constants.php';
-require PHPWG_ROOT_PATH . 'admin/include/functions.php';
+require PHPWG_ROOT_PATH . 'inc/constants.php';
+require PHPWG_ROOT_PATH . 'admin/inc/functions.php';
 
-require PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
+require PHPWG_ROOT_PATH . 'admin/inc/languages.class.php';
 $languages = new languages('utf-8');
 
 if (isset($_GET['language'])) {
@@ -171,9 +171,9 @@ if (! isset($step)) {
 }
 
 //---------------------------------------------------------------- form analyze
-require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $dblayer . '.inc.php';
-require PHPWG_ROOT_PATH . 'admin/include/functions_install.inc.php';
-require PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
+require PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $dblayer . '.inc.php';
+require PHPWG_ROOT_PATH . 'admin/inc/functions_install.inc.php';
+require PHPWG_ROOT_PATH . 'admin/inc/functions_upgrade.php';
 
 if (isset($_POST['install'])) {
     $webmaster = trim((string) preg_replace('/\s{2,}/', ' ', (string) $admin_name));
@@ -398,7 +398,7 @@ if ($step == 1) {
 
         // email notification
         if (isset($_POST['send_credentials_by_mail'])) {
-            require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
+            require_once PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php';
 
             $keyargs_content = [
                 get_l10n_args('Hello %s,', $admin_name),
