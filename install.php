@@ -396,13 +396,42 @@ else
   }
   else
   {
-    session_set_save_handler('pwg_session_open',
-      'pwg_session_close',
-      'pwg_session_read',
-      'pwg_session_write',
-      'pwg_session_destroy',
-      'pwg_session_gc'
-    );
+    class PwgSessionHandler implements SessionHandlerInterface
+    {
+        public function open(string $save_path, string $name): bool
+        {
+            return pwg_session_open($save_path, $name);
+        }
+
+        public function close(): bool
+        {
+            return pwg_session_close();
+        }
+
+        public function read(string $session_id): string|false
+        {
+            return pwg_session_read($session_id);
+        }
+
+        public function write(string $session_id, string $session_data): bool
+        {
+            return pwg_session_write($session_id, $session_data);
+        }
+
+        public function destroy(string $session_id): bool
+        {
+            return pwg_session_destroy($session_id);
+        }
+
+        public function gc(int $max_lifetime): int|false
+        {
+            return pwg_session_gc();
+        }
+    }
+
+    $handler = new PwgSessionHandler();
+    session_set_save_handler($handler, true);
+
     if ( function_exists('ini_set') )
     {
       ini_set('session.use_cookies', $conf['session_use_cookies']);
