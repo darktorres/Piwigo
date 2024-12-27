@@ -15,14 +15,9 @@ if (isset($conf['session_save_handler'])
   and ($conf['session_save_handler'] == 'db')
   and defined('PHPWG_INSTALLED'))
 {
-  session_set_save_handler(
-    'pwg_session_open',
-    'pwg_session_close',
-    'pwg_session_read',
-    'pwg_session_write',
-    'pwg_session_destroy',
-    'pwg_session_gc'
-  );
+  require_once PHPWG_ROOT_PATH . 'include/PwgSessionHandler.php';
+  $handler = new PwgSessionHandler();
+  session_set_save_handler($handler, true);
 
   if (function_exists('ini_set'))
   {
@@ -130,11 +125,8 @@ SELECT data
   WHERE id = \''.get_remote_addr_session_hash().$session_id.'\'
 ;';
   $result = pwg_query($query);
-  if ( ($row = pwg_db_fetch_assoc($result)) )
-  {
-    return $row['data'];
-  }
-  return '';
+  $row = pwg_db_fetch_assoc($result);
+  return $row ? $row['data'] : '';
 }
 
 /**
@@ -175,7 +167,7 @@ DELETE
 /**
  * Called by PHP session manager, garbage collector for expired sessions.
  *
- * @return true
+ * @return int|false
  */
 function pwg_session_gc()
 {
@@ -187,8 +179,15 @@ DELETE
   WHERE '.pwg_db_date_to_ts('NOW()').' - '.pwg_db_date_to_ts('expiration').' > '
   .$conf['session_length'].'
 ;';
-  pwg_query($query);
-  return true;
+  $result = pwg_query($query);
+
+  if ($result === false) {
+    return false;
+  }
+
+  $affected_rows = pwg_db_changes();
+
+  return $affected_rows;
 }
 
 /**

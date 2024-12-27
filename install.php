@@ -396,13 +396,10 @@ else
   }
   else
   {
-    session_set_save_handler('pwg_session_open',
-      'pwg_session_close',
-      'pwg_session_read',
-      'pwg_session_write',
-      'pwg_session_destroy',
-      'pwg_session_gc'
-    );
+    require_once PHPWG_ROOT_PATH . 'include/PwgSessionHandler.php';
+    $handler = new PwgSessionHandler();
+    session_set_save_handler($handler, true);
+
     if ( function_exists('ini_set') )
     {
       ini_set('session.use_cookies', $conf['session_use_cookies']);
