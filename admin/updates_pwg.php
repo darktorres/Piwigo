@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\updates;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\PwgSessionHandler;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

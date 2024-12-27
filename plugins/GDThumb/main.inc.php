@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+
 /*
 Plugin Name: gdThumb
 Version: 1.0.26

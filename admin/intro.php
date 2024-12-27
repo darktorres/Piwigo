@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\c13y_internal;
+use Piwigo\admin\inc\check_integrity;
+use Piwigo\admin\inc\tabsheet;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Piwigo\themes\bootstrap_darkroom\inc\Config;
+use Piwigo\themes\bootstrap_darkroom\inc\ThemeController;
+
 /*
 Theme Name: Bootstrap Darkroom
 Version: 2.5.22

@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\BlockManager;
+use Piwigo\inc\RegisteredBlock;
+use Piwigo\inc\SrcImage;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

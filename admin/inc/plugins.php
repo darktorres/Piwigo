@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\PluginMaintain;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

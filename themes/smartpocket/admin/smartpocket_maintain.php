@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Piwigo\themes\smartpocket\admin;
 
+use Piwigo\inc\ThemeMaintain;
+
 class smartpocket_maintain extends ThemeMaintain
 {
     private array $default_conf = [

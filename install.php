@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\languages;
+use Piwigo\inc\PwgSessionHandler;
+use Piwigo\inc\Template;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

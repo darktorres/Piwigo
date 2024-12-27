@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Piwigo\plugins\rv_tscroller\RVTS;
+
 /*
 Plugin Name: RV Thumb Scroller
 Version: 12.a

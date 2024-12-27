@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

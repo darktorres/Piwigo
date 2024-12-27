@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Piwigo\inc\ws_protocols;
 
+use Piwigo\inc\PwgError;
+use Piwigo\inc\PwgRequestHandler;
+use Piwigo\inc\PwgServer;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

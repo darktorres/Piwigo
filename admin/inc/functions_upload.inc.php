@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\pwg_image;
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

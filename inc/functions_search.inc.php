@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\QDateRangeScope;
+use Piwigo\inc\QExpression;
+use Piwigo\inc\QMultiToken;
+use Piwigo\inc\QNumericRangeScope;
+use Piwigo\inc\QResults;
+use Piwigo\inc\QSearchScope;
+use Piwigo\inc\QSingleToken;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

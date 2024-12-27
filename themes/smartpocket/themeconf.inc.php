@@ -11,6 +11,9 @@ Author: P@t
 Author URI: http://piwigo.org
 */
 
+use Piwigo\inc\ImageStdParams;
+use Piwigo\themes\smartpocket\SPThumbPicker;
+
 $themeconf = [
     'mobile' => true,
 ];

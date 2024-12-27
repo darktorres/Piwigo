@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\tabsheet;
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

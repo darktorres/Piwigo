@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\PwgError;
+use Piwigo\inc\PwgNamedArray;
+use Piwigo\inc\SrcImage;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

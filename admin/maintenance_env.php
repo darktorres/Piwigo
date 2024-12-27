@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\check_integrity;
+use Piwigo\admin\inc\pwg_image;
+use Piwigo\inc\FileCombiner;
+use Piwigo\inc\ImageStdParams;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\DerivativeImage;
+
 defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 /**

@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\PersistentFileCache;
+use Piwigo\inc\Template;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

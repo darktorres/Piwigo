@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\tabsheet;
+use Piwigo\themes\bootstrap_darkroom\inc\Config;
+
 // Check whether we are indeed included by Piwigo.
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');

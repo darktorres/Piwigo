@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Piwigo\plugins\AdminTools\inc\MultiView;
+
 /*
 Plugin Name: Admin Tools
 Version: 14.5.0

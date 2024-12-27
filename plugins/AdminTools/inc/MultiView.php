@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Piwigo\plugins\AdminTools\inc;
 
+use Piwigo\admin\inc\themes;
+use Piwigo\inc\FileCombiner;
+
 defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 /**

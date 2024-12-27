@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\PwgError;
+use Piwigo\inc\PwgNamedArray;
+use Piwigo\inc\PwgServer;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

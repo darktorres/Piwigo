@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\tabsheet;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }

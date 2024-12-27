@@ -1,4 +1,12 @@
 <?php
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\DerivativeParams;
+use Piwigo\inc\ImageRect;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\Script;
+use Piwigo\inc\Template;
+
 /*
 Theme Name: modus
 Version: 14.5.0.1

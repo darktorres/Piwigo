@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }

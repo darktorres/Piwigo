@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Piwigo\themes\smartpocket;
 
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\DerivativeParams;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SrcImage;
+
 class SPThumbPicker
 {
     public array $candidates;

@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\PwgServer;
+use Piwigo\inc\ws_protocols\PwgJsonEncoder;
+use Piwigo\inc\ws_protocols\PwgRestEncoder;
+use Piwigo\inc\ws_protocols\PwgRestRequestHandler;
+use Piwigo\inc\ws_protocols\PwgSerialPhpEncoder;
+use Piwigo\inc\ws_protocols\PwgXmlRpcEncoder;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

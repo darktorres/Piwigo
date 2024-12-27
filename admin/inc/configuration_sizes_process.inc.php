@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Piwigo\inc\DerivativeParams;
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\SizingParams;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |

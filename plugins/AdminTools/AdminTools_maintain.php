@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Piwigo\plugins\AdminTools;
 
+use Piwigo\inc\PluginMaintain;
+
 defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class AdminTools_maintain extends PluginMaintain

@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Piwigo\admin\inc\plugins;
+use Piwigo\admin\inc\themes;
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
