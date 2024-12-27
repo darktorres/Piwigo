@@ -18,11 +18,12 @@ $template->assign('TAT_index', make_index_url([
 $template->assign('TAT_search', get_root_url() . 'search.php');
 
 //picture id
-if (isset($_GET['page']) and preg_match('/^photo-(\d+)(?:-(.*))?$/', $_GET['page'], $matches)) {
+if (isset($_GET['page']) && preg_match('/^photo-(\d+)(?:-(.*))?$/', (string) $_GET['page'], $matches)) {
     $_GET['image_id'] = $matches[1];
 }
+
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
-if (isset($_GET['image_id']) and pwg_get_session_var('TAT_image_id') == null) {
+if (isset($_GET['image_id']) && pwg_get_session_var('TAT_image_id') == null) {
     $template->assign('TAT_image_id', $_GET['image_id']);
     pwg_set_session_var('TAT_image_id', $_GET['image_id']);
 } elseif (is_numeric(pwg_get_session_var('TAT_image_id'))) {

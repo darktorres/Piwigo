@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-defined('ADMINTOOLS_PATH') or die('Hacking attempt!');
+defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 /**
  * Class managing multi views system
@@ -39,7 +39,7 @@ class MultiView
         );
 
         $this->data_url_params = array_keys($this->data);
-        $this->data_url_params = array_map(function (string $d) { return 'ato_' . $d; }, $this->data_url_params);
+        $this->data_url_params = array_map(fn (string $d): string => 'ato_' . $d, $this->data_url_params);
     }
 
     public function is_admin(): bool
@@ -65,16 +65,16 @@ class MultiView
     public function get_clean_url(
         bool $with_amp = false
     ): string {
-        if (script_basename() == 'picture') {
+        if (script_basename() === 'picture') {
             $url = duplicate_picture_url([], $this->data_url_params);
-        } elseif (script_basename() == 'index') {
+        } elseif (script_basename() === 'index') {
             $url = duplicate_index_url([], $this->data_url_params);
         } else {
             $url = get_query_string_diff($this->data_url_params);
         }
 
         if ($with_amp) {
-            $url .= strpos($url, '?') !== false ? '&' : '?';
+            $url .= str_contains($url, '?') ? '&' : '?';
         }
 
         return $url;
@@ -92,12 +92,12 @@ class MultiView
 
         $get = $_GET;
         unset($get['page'], $get['section'], $get['tag']);
-        if (count($get) == 0 and ! empty($_SERVER['QUERY_STRING'])) {
+        if (count($get) == 0 && ! empty($_SERVER['QUERY_STRING'])) {
             $url .= '?' . str_replace('&', '&amp;', $_SERVER['QUERY_STRING']);
         }
 
         if ($with_amp) {
-            $url .= strpos($url, '?') !== false ? '&' : '?';
+            $url .= str_contains($url, '?') ? '&' : '?';
         }
 
         return $url;
@@ -120,19 +120,22 @@ class MultiView
         ];
 
         // inactive on ws.php to allow AJAX admin tasks
-        if ($this->is_admin && script_basename() != 'ws') {
+        if ($this->is_admin && script_basename() !== 'ws') {
             // show_queries
             if (isset($_GET['ato_show_queries'])) {
                 $this->data['show_queries'] = (bool) $_GET['ato_show_queries'];
             }
+
             $conf['show_queries'] = $this->data['show_queries'];
 
             if ($this->data['view_as'] == 0) {
                 $this->data['view_as'] = $user['id'];
             }
+
             if (empty($this->data['lang'])) {
                 $this->data['lang'] = $user['language'];
             }
+
             if (empty($this->data['theme'])) {
                 $this->data['theme'] = $user['theme'];
             }
@@ -142,6 +145,7 @@ class MultiView
                 if (isset($_GET['ato_view_as'])) {
                     $this->data['view_as'] = (int) $_GET['ato_view_as'];
                 }
+
                 if ($this->data['view_as'] != $user['id']) {
                     $user = build_user($this->data['view_as'], true);
                     if (isset($_GET['ato_view_as'])) {
@@ -155,6 +159,7 @@ class MultiView
             if (isset($_GET['ato_theme'])) {
                 $this->data['theme'] = $_GET['ato_theme'];
             }
+
             $user['theme'] = $this->data['theme'];
 
             // lang
@@ -162,32 +167,37 @@ class MultiView
                 check_input_parameter('ato_lang', $_GET, false, '/^[a-z]{2,3}_[A-Z]{2}$/');
                 $this->data['lang'] = $_GET['ato_lang'];
             }
+
             $user['language'] = $this->data['lang'];
 
             // debug_l10n
             if (isset($_GET['ato_debug_l10n'])) {
                 $this->data['debug_l10n'] = (bool) $_GET['ato_debug_l10n'];
             }
+
             $conf['debug_l10n'] = $this->data['debug_l10n'];
 
             // debug_template
             if (isset($_GET['ato_debug_template'])) {
                 $this->data['debug_template'] = (bool) $_GET['ato_debug_template'];
             }
+
             $conf['debug_template'] = $this->data['debug_template'];
 
             // template_combine_files
             if (isset($_GET['ato_template_combine_files'])) {
                 $this->data['template_combine_files'] = (bool) $_GET['ato_template_combine_files'];
             }
+
             $conf['template_combine_files'] = $this->data['template_combine_files'];
 
             // no_history
             if (isset($_GET['ato_no_history'])) {
                 $this->data['no_history'] = (bool) $_GET['ato_no_history'];
             }
+
             if ($this->data['no_history']) {
-                $ret_false = function (): bool {return false; };
+                $ret_false = (fn (): bool => false);
                 add_event_handler('pwg_log_allowed', $ret_false);
                 add_event_handler('pwg_log_update_last_visit', $ret_false);
             }
@@ -207,6 +217,7 @@ class MultiView
         ) {
             return $this->user['language'];
         }
+
         return false;
     }
 
@@ -215,12 +226,10 @@ class MultiView
      */
     public function init(): void
     {
-        if ($this->is_admin) {
-            if (isset($_GET['ato_purge_template'])) {
-                global $template;
-                $template->delete_compiled_templates();
-                FileCombiner::clear_combined_files();
-            }
+        if ($this->is_admin && isset($_GET['ato_purge_template'])) {
+            global $template;
+            $template->delete_compiled_templates();
+            FileCombiner::clear_combined_files();
         }
     }
 
@@ -276,7 +285,7 @@ class MultiView
         require_once PHPWG_ROOT_PATH . 'admin/include/themes.class.php';
         $themes = new themes();
         foreach (array_keys($themes->db_themes_by_id) as $theme) {
-            if (! empty($theme)) {
+            if ($theme !== 0 && ($theme !== '' && $theme !== '0')) {
                 $out['themes'][] = $theme;
             }
         }

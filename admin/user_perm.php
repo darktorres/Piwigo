@@ -20,7 +20,7 @@ require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 // +-----------------------------------------------------------------------+
 check_status(ACCESS_ADMINISTRATOR);
 
-if (! empty($_POST)) {
+if ($_POST !== []) {
     check_pwg_token();
     check_input_parameter('cat_true', $_POST, true, PATTERN_ID);
     check_input_parameter('cat_false', $_POST, true, PATTERN_ID);
@@ -30,7 +30,7 @@ if (! empty($_POST)) {
 // |                            variables init                             |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['user_id']) and is_numeric($_GET['user_id'])) {
+if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
     $page['user'] = $_GET['user_id'];
 } else {
     die('user_id URL parameter is missing');
@@ -40,9 +40,7 @@ if (isset($_GET['user_id']) and is_numeric($_GET['user_id'])) {
 // |                                updates                                |
 // +-----------------------------------------------------------------------+
 
-if (isset($_POST['falsify'])
-    and isset($_POST['cat_true'])
-    and count($_POST['cat_true']) > 0) {
+if (isset($_POST['falsify']) && isset($_POST['cat_true']) && count($_POST['cat_true']) > 0) {
     // if you forbid access to a category, all sub-categories become
     // automatically forbidden
     $subcats = get_subcat_ids($_POST['cat_true']);
@@ -53,9 +51,7 @@ if (isset($_POST['falsify'])
             AND cat_id IN ({$subcat_ids});
         SQL;
     pwg_query($query);
-} elseif (isset($_POST['trueify'])
-    and isset($_POST['cat_false'])
-    and count($_POST['cat_false']) > 0) {
+} elseif (isset($_POST['trueify']) && isset($_POST['cat_false']) && count($_POST['cat_false']) > 0) {
     add_permission_on_category($_POST['cat_false'], $page['user']);
 }
 
@@ -105,6 +101,7 @@ if (pwg_db_num_rows($result) > 0) {
         $cats[] = $row;
         $group_authorized[] = $row['cat_id'];
     }
+
     usort($cats, global_rank_compare(...));
 
     foreach ($cats as $category) {
@@ -124,10 +121,11 @@ $query_true = <<<SQL
         AND user_id = {$page['user']}
 
     SQL;
-if (count($group_authorized) > 0) {
+if ($group_authorized !== []) {
     $groupAuthorizedImplode = implode(',', $group_authorized);
     $query_true .= " AND cat_id NOT IN ({$groupAuthorizedImplode})\n";
 }
+
 $query_true .= ';';
 display_select_cat_wrapper($query_true, [], 'category_option_true');
 
@@ -143,14 +141,16 @@ $query_false = <<<SQL
     WHERE status = 'private'
 
     SQL;
-if (count($authorized_ids) > 0) {
+if ($authorized_ids !== []) {
     $authorizedIdsImplode = implode(',', $authorized_ids);
     $query_false .= " AND id NOT IN ({$authorizedIdsImplode})\n";
 }
-if (count($group_authorized) > 0) {
+
+if ($group_authorized !== []) {
     $groupAuthorizedImplode = implode(',', $group_authorized);
     $query_false .= " AND id NOT IN ({$groupAuthorizedImplode})\n";
 }
+
 $query_false .= ';';
 display_select_cat_wrapper($query_false, [], 'category_option_false');
 

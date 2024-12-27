@@ -42,7 +42,7 @@ if ($theme_about !== false) {
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (! isset($themeconf['hide_menu_on']) or ! in_array('theAboutPage', $themeconf['hide_menu_on'])) {
+if (! isset($themeconf['hide_menu_on']) || ! in_array('theAboutPage', $themeconf['hide_menu_on'])) {
     require PHPWG_ROOT_PATH . 'include/menubar.inc.php';
 }
 

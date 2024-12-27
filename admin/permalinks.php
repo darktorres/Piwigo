@@ -21,14 +21,14 @@ function parse_sort_variables(
 ): array {
     global $template;
 
-    $url_components = parse_url($_SERVER['REQUEST_URI']);
+    $url_components = parse_url((string) $_SERVER['REQUEST_URI']);
 
     $base_url = $url_components['path'];
 
     parse_str($url_components['query'], $vars);
     $is_first = true;
     foreach ($vars as $key => $value) {
-        if (! in_array($key, $get_rejects) and $key != $get_param) {
+        if (! in_array($key, $get_rejects) && $key != $get_param) {
             $base_url .= $is_first ? '?' : '&amp;';
             $is_first = false;
 
@@ -46,11 +46,11 @@ function parse_sort_variables(
         $disp = '↓'; // TODO: an small image is better
 
         if ($field !== ($_GET[$get_param] ?? null)) {
-            if (! isset($default_field) or $default_field != $field) { // the first should be the default
+            if (! isset($default_field) || $default_field != $field) { // the first should be the default
                 $url = add_url_params($url, [
                     $get_param => $field,
                 ]);
-            } elseif (isset($default_field) and ! isset($_GET[$get_param])) {
+            } elseif (isset($default_field) && ! isset($_GET[$get_param])) {
                 $ret[] = $field;
                 $disp = '<em>' . $disp . '</em>';
             }
@@ -58,13 +58,15 @@ function parse_sort_variables(
             $ret[] = $field;
             $disp = '<em>' . $disp . '</em>';
         }
+
         if (isset($template_var)) {
             $template->assign(
-                $template_var . strtoupper($field),
+                $template_var . strtoupper((string) $field),
                 '<a href="' . $url . $anchor . '" title="' . l10n('Sort order') . '">' . $disp . '</a>'
             );
         }
     }
+
     return $ret;
 }
 
@@ -77,7 +79,7 @@ require_once PHPWG_ROOT_PATH . 'admin/include/functions_permalinks.php';
 check_input_parameter('cat_id', $_POST, false, PATTERN_ID);
 
 $selected_cat = [];
-if (isset($_POST['set_permalink']) and $_POST['cat_id'] > 0) {
+if (isset($_POST['set_permalink']) && $_POST['cat_id'] > 0) {
     check_pwg_token();
     $permalink = $_POST['permalink'];
     if (empty($permalink)) {
@@ -85,6 +87,7 @@ if (isset($_POST['set_permalink']) and $_POST['cat_id'] > 0) {
     } else {
         set_cat_permalink($_POST['cat_id'], $permalink, isset($_POST['save']));
     }
+
     $selected_cat = [$_POST['cat_id']];
 } elseif (isset($_GET['delete_permanent'])) {
     check_pwg_token();
@@ -133,9 +136,10 @@ $query = <<<SQL
     WHERE permalink IS NOT NULL
 
     SQL;
-if ($sort_by[0] == 'id' or $sort_by[0] == 'permalink') {
+if ($sort_by[0] == 'id' || $sort_by[0] == 'permalink') {
     $query .= " ORDER BY {$sort_by[0]}";
 }
+
 $query .= ';';
 $categories = [];
 $result = pwg_query($query);
@@ -147,6 +151,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
 if ($sort_by[0] == 'name') {
     usort($categories, global_rank_compare(...));
 }
+
 $template->assign('permalinks', $categories);
 
 // --- generate display of old permalinks --------------------------------------
@@ -165,9 +170,10 @@ $query = <<<SQL
     SELECT * FROM old_permalinks
 
     SQL;
-if (count($sort_by)) {
+if ($sort_by !== []) {
     $query .= " ORDER BY {$sort_by[0]}";
 }
+
 $query .= ';';
 $result = pwg_query($query);
 $deleted_permalinks = [];

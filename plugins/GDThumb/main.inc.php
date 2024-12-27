@@ -27,14 +27,14 @@ if (mobile_theme()) {
 // | Plugin constants                                               |
 // +-----------------------------------------------------------------------+
 define('GDTHUMB_VERSION', '1.0.26');
-define('GDTHUMB_ID', basename(dirname(__FILE__)));
+define('GDTHUMB_ID', basename(__DIR__));
 define('GDTHUMB_PATH', PHPWG_PLUGINS_PATH . GDTHUMB_ID . '/');
 if (! defined('GDTHEME_PATH')) {
     define('GDTHEME_PATH', PHPWG_THEMES_PATH . 'greydragon/');
 }
 
 if (! isset($conf['gdThumb'])) {
-    require dirname(__FILE__) . '/config_default.inc.php';
+    require __DIR__ . '/config_default.inc.php';
     conf_update_param('gdThumb', $config_default);
     load_conf_from_db();
 }
@@ -75,9 +75,10 @@ function GDThumb_endsWith(
     string $needles,
     string $haystack
 ): bool {
-    if (empty($needles) || empty($haystack)) {
+    if ($needles === '' || $needles === '0' || ($haystack === '' || $haystack === '0')) {
         return false;
     }
+
     $arr_needles = explode(',', $needles);
 
     foreach ((array) $arr_needles as $needle) {
@@ -85,6 +86,7 @@ function GDThumb_endsWith(
             return true;
         }
     }
+
     return false;
 
 }
@@ -101,18 +103,23 @@ function GDThumb_media_type(
     if (GDThumb_endsWith('webm,webmv,ogv,m4v,flv,mp4', $file)) {
         return 'video';
     }
+
     if (GDThumb_endsWith('mp3,ogg,oga,m4a,webma,fla,wav', $file)) {
         return 'music';
     }
+
     if (GDThumb_endsWith('pdf', $file)) {
         return 'pdf';
     }
+
     if (GDThumb_endsWith('doc,docx,odt', $file)) {
         return 'doc';
     }
+
     if (GDThumb_endsWith('xls,xlsx,ods', $file)) {
         return 'xls';
     }
+
     if (GDThumb_endsWith('ppt,pptx,odp', $file)) {
         return 'ppt';
     }
@@ -132,7 +139,7 @@ function GDThumb_process_thumb(
         $confTemp['normalize_title'] = 'on';
     }
 
-    $template->set_filename('index_thumbnails', dirname(__FILE__) . '/template/gdthumb_thumb.tpl');
+    $template->set_filename('index_thumbnails', __DIR__ . '/template/gdthumb_thumb.tpl');
     $template->assign('GDThumb', $confTemp);
     if (($confTemp['method'] == 'slide') || ($confTemp['method'] == 'square')) {
         $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom($confTemp['height'], 9999));
@@ -140,12 +147,13 @@ function GDThumb_process_thumb(
         $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom(9999, $confTemp['height']));
     }
 
-    if ($confTemp['big_thumb'] and ! empty($tpl_vars[0])) {
+    if ($confTemp['big_thumb'] && ! empty($tpl_vars[0])) {
         if (($confTemp['method'] == 'slide') || ($confTemp['method'] == 'square')) {
             $derivative_params = ImageStdParams::get_custom(2 * $confTemp['height'] + $confTemp['margin'], 9999);
         } else {
             $derivative_params = ImageStdParams::get_custom(9999, 2 * $confTemp['height'] + $confTemp['margin']);
         }
+
         $template->assign('GDThumb_big', new DerivativeImage($derivative_params, $tpl_vars[0]['src_image']));
     }
 
@@ -161,7 +169,7 @@ function GDThumb_process_category(
     $confTemp['GDTHUMB_ROOT'] = 'plugins/' . GDTHUMB_ID;
     $confTemp['big_thumb_noinpw'] = isset($confTemp['big_thumb_noinpw']) ? 1 : 0;
 
-    $template->set_filename('index_category_thumbnails', dirname(__FILE__) . '/template/gdthumb_cat.tpl');
+    $template->set_filename('index_category_thumbnails', __DIR__ . '/template/gdthumb_cat.tpl');
     $template->assign('GDThumb', $confTemp);
     if (($confTemp['method'] == 'slide') || ($confTemp['method'] == 'square')) {
         $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom($confTemp['height'], 9999));
@@ -169,7 +177,7 @@ function GDThumb_process_category(
         $template->assign('GDThumb_derivative_params', ImageStdParams::get_custom(9999, $confTemp['height']));
     }
 
-    if ($confTemp['big_thumb'] and ! empty($tpl_vars[0])) {
+    if ($confTemp['big_thumb'] && ! empty($tpl_vars[0])) {
         $id = $tpl_vars[0]['representative_picture_id'];
         if (($id) && ($rep = $tpl_vars[0]['representative'])) {
             if (($confTemp['method'] == 'slide') || ($confTemp['method'] == 'square')) {
@@ -177,6 +185,7 @@ function GDThumb_process_category(
             } else {
                 $derivative_params = ImageStdParams::get_custom(9999, 2 * $confTemp['height'] + $confTemp['margin']);
             }
+
             $template->assign('GDThumb_big', new DerivativeImage($derivative_params, $rep['src_image']));
         }
     }
@@ -196,13 +205,10 @@ function GDThumb_prefilter(
 function GDThumb_admin_menu(
     array $menu
 ): array|string {
-    array_push(
-        $menu,
-        [
-            'NAME' => 'gdThumb',
-            'URL' => get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__)),
-        ]
-    );
+    $menu[] = [
+        'NAME' => 'gdThumb',
+        'URL' => get_root_url() . 'admin.php?page=plugin-' . basename(__DIR__),
+    ];
     return $menu;
 }
 

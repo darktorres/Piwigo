@@ -31,6 +31,7 @@ function size_to_url(
     if ($s[0] == $s[1]) {
         return $s[0];
     }
+
     return $s[0] . 'x' . $s[1];
 }
 
@@ -68,9 +69,9 @@ function fraction_to_char(
  */
 final class ImageRect
 {
-    public int|float $l;
+    public int|float $l = 0;
 
-    public int|float $t;
+    public int|float $t = 0;
 
     public int|float $r;
 
@@ -82,7 +83,6 @@ final class ImageRect
     public function __construct(
         array $l
     ) {
-        $this->l = $this->t = 0;
         $this->r = (int) $l[0];
         $this->b = (int) $l[1];
     }
@@ -110,9 +110,10 @@ final class ImageRect
         if ($this->width() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
-        if (! empty($coi)) {
+        if ($coi !== null && $coi !== '' && $coi !== '0') {
             $coil = floor($this->r * char_to_fraction($coi[0]));
             $coir = ceil($this->r * char_to_fraction($coi[2]));
             $availableL = $coil > $this->l ? $coil - $this->l : 0;
@@ -125,6 +126,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->l += $tlcrop;
         $this->r -= $pixels - $tlcrop;
     }
@@ -142,9 +144,10 @@ final class ImageRect
         if ($this->height() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
-        if (! empty($coi)) {
+        if ($coi !== null && $coi !== '' && $coi !== '0') {
             $coit = floor($this->b * char_to_fraction($coi[1]));
             $coib = ceil($this->b * char_to_fraction($coi[3]));
             $availableT = $coit > $this->t ? $coit - $this->t : 0;
@@ -157,6 +160,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->t += $tlcrop;
         $this->b -= $pixels - $tlcrop;
     }
@@ -169,32 +173,16 @@ final class ImageRect
 final class SizingParams
 {
     /**
-     * @var int[]
-     */
-    public array $ideal_size;
-
-    public float $max_crop;
-
-    /**
-     * @var int[]
-     */
-    public ?array $min_size;
-
-    /**
      * @param int[] $ideal_size - two element array of maximum output dimensions (width, height)
      * @param float $max_crop - from 0=no cropping to 1= max cropping (100% of width/height);
      *    expressed as a factor of the input width/height
      * @param int[] $min_size - (used only if _$max_crop_ !=0) two element array of output dimensions (width, height)
      */
     public function __construct(
-        array $ideal_size,
-        float $max_crop = 0,
-        ?array $min_size = null
-    ) {
-        $this->ideal_size = $ideal_size;
-        $this->max_crop = $max_crop;
-        $this->min_size = $min_size;
-    }
+        public array $ideal_size,
+        public float $max_crop = 0,
+        public ?array $min_size = null
+    ) {}
 
     /**
      * Returns a simple SizingParams object.
@@ -298,8 +286,6 @@ final class SizingParams
  */
 final class DerivativeParams
 {
-    public SizingParams $sizing;
-
     /**
      * among IMG_*
      */
@@ -318,10 +304,8 @@ final class DerivativeParams
     public float $sharpen = 0;
 
     public function __construct(
-        SizingParams $sizing
-    ) {
-        $this->sizing = $sizing;
-    }
+        public SizingParams $sizing
+    ) {}
 
     public function __sleep(): array
     {
@@ -360,14 +344,9 @@ final class DerivativeParams
     /**
      * @todo : description of DerivativeParams::is_identity
      */
-    public function is_identity(
-        array $in_size
-    ): bool {
-        if ($in_size[0] > $this->sizing->ideal_size[0] or
-            $in_size[1] > $this->sizing->ideal_size[1]) {
-            return false;
-        }
-        return true;
+    public function is_identity(array $in_size): bool
+    {
+        return $in_size[0] <= $this->sizing->ideal_size[0] && $in_size[1] <= $this->sizing->ideal_size[1];
     }
 
     public function will_watermark(
@@ -378,6 +357,7 @@ final class DerivativeParams
             return $min_size[0] <= $out_size[0]
               || $min_size[1] <= $out_size[1];
         }
+
         return false;
     }
 }

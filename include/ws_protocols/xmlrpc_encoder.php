@@ -29,6 +29,7 @@ function xmlrpc_encode(
                 foreach ($data as $item) {
                     $return .= '  <value>' . xmlrpc_encode($item) . "</value>\n";
                 }
+
                 $return .= '</data></array>';
             } else {
                 $return = '<struct>' . "\n";
@@ -37,8 +38,10 @@ function xmlrpc_encode(
                     $return .= "  <member><name>{$name}</name><value>";
                     $return .= xmlrpc_encode($value) . "</value></member>\n";
                 }
+
                 $return .= '</struct>';
             }
+
             return $return;
     }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
+defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class AdminTools_maintain extends PluginMaintain
 {

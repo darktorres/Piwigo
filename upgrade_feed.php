@@ -17,7 +17,9 @@ if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
 define('PHPWG_ROOT_PATH', './');
 
 require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
-file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
+    require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
+}
 
 require PHPWG_ROOT_PATH . 'local/config/database.inc.php';
 require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $conf['dblayer'] . '.inc.php';
