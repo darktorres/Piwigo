@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-defined('ADMINTOOLS_PATH') or die('Hacking attempt!');
+defined('ADMINTOOLS_PATH') || die('Hacking attempt!');
 
 /**
  * Add main toolbar to current page
@@ -12,7 +12,7 @@ function admintools_add_public_controller(): void
 {
     global $MultiView, $conf, $template, $page, $user, $picture;
 
-    if (script_basename() == 'picture' and empty($picture['current'])) {
+    if (script_basename() === 'picture' && empty($picture['current'])) {
         return;
     }
 
@@ -30,8 +30,7 @@ function admintools_add_public_controller(): void
             require_once PHPWG_ROOT_PATH . 'include/functions_mail.inc.php';
             switch_lang_to($admin_lang);
         }
-    } elseif ($conf['AdminTools']['public_quick_edit'] and
-        script_basename() == 'picture' and $picture['current']['added_by'] == $user['id'] and ! is_a_guest()
+    } elseif ($conf['AdminTools']['public_quick_edit'] && script_basename() === 'picture' && $picture['current']['added_by'] == $user['id'] && ! is_a_guest()
     ) { // only "edit" button for photo owner
     } else {
         return;
@@ -42,7 +41,7 @@ function admintools_add_public_controller(): void
     $tpl_vars['U_SELF'] = $MultiView->get_clean_url(true);
 
     // photo page
-    if (script_basename() == 'picture') {
+    if (script_basename() === 'picture') {
         $url_self = duplicate_picture_url();
         $tpl_vars['IS_PICTURE'] = true;
 
@@ -105,20 +104,23 @@ function admintools_add_public_controller(): void
             SQL;
         $tag_selection = get_taglist($query);
 
-        (! isset($picture['current']['date_creation'])) ? $picture['current']['date_creation'] = '' : false;
+        if (! isset($picture['current']['date_creation'])) {
+            $picture['current']['date_creation'] = '';
+        }
+
         $tpl_vars['QUICK_EDIT'] = [
             'img' => $picture['current']['derivatives']['square']->get_url(),
             'name' => $picture['current']['name'],
             'comment' => $picture['current']['comment'],
             'author' => $picture['current']['author'],
             'level' => $picture['current']['level'],
-            'date_creation' => substr($picture['current']['date_creation'], 0, 10),
-            'date_creation_time' => substr($picture['current']['date_creation'], 11, 8),
+            'date_creation' => substr((string) $picture['current']['date_creation'], 0, 10),
+            'date_creation_time' => substr((string) $picture['current']['date_creation'], 11, 8),
             'tag_selection' => $tag_selection,
         ];
     }
     // album page (admin only)
-    elseif ($MultiView->is_admin() and ($page['section'] ?? null) == 'categories' and isset($page['category'])) {
+    elseif ($MultiView->is_admin() && ($page['section'] ?? null) == 'categories' && isset($page['category'])) {
         $url_self = duplicate_index_url();
 
         $tpl_vars['IS_CATEGORY'] = true;
@@ -243,7 +245,7 @@ function admintools_save_picture(): void
 {
     global $page, $conf, $MultiView, $user, $picture;
 
-    if (! isset($_GET['delete']) and ! isset($_POST['action']) or $_POST['action'] != 'quick_edit') {
+    if (! isset($_GET['delete']) && ! isset($_POST['action']) || $_POST['action'] != 'quick_edit') {
         return;
     }
 
@@ -256,13 +258,13 @@ function admintools_save_picture(): void
         FROM images
         WHERE id = {$page['image_id']};
         SQL;
-    list($added_by) = pwg_db_fetch_row(pwg_query($query));
+    [$added_by] = pwg_db_fetch_row(pwg_query($query));
 
-    if (! $MultiView->is_admin() and $user['id'] != $added_by) {
+    if (! $MultiView->is_admin() && $user['id'] != $added_by) {
         return;
     }
 
-    if (isset($_GET['delete']) and get_pwg_token() == $_GET['pwg_token']) {
+    if (isset($_GET['delete']) && get_pwg_token() == $_GET['pwg_token']) {
         require_once PHPWG_ROOT_PATH . 'admin/include/functions.php';
 
         delete_elements([$page['image_id']], true);
@@ -289,21 +291,21 @@ function admintools_save_picture(): void
         check_pwg_token();
 
         $data = [
-            'name' => (is_admin() and $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags($_POST['name']),
-            'author' => (is_admin() and $conf['allow_html_descriptions']) ? $_POST['author'] : strip_tags($_POST['author']),
+            'name' => (is_admin() && $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags((string) $_POST['name']),
+            'author' => (is_admin() && $conf['allow_html_descriptions']) ? $_POST['author'] : strip_tags((string) $_POST['author']),
         ];
 
         if ($MultiView->is_admin()) {
             $data['level'] = $_POST['level'];
         }
 
-        if (is_admin() and $conf['allow_html_descriptions']) {
+        if (is_admin() && $conf['allow_html_descriptions']) {
             $data['comment'] = $_POST['comment'];
         } else {
-            $data['comment'] = strip_tags($_POST['comment']);
+            $data['comment'] = strip_tags((string) $_POST['comment']);
         }
 
-        if (! empty($_POST['date_creation']) and strtotime($_POST['date_creation']) !== false) {
+        if (! empty($_POST['date_creation']) && strtotime((string) $_POST['date_creation']) !== false) {
             $data['date_creation'] = $_POST['date_creation'] . ' ' . $_POST['date_creation_time'];
         }
 
@@ -319,6 +321,7 @@ function admintools_save_picture(): void
         if (! empty($_POST['tags'])) {
             $tag_ids = get_tag_ids($_POST['tags']);
         }
+
         set_tags($tag_ids, $page['image_id']);
     }
 }
@@ -339,13 +342,13 @@ function admintools_save_category(): void
         check_pwg_token();
 
         $data = [
-            'name' => (is_admin() and $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags($_POST['name']),
+            'name' => (is_admin() && $conf['allow_html_descriptions']) ? $_POST['name'] : strip_tags((string) $_POST['name']),
         ];
 
-        if (is_admin() and $conf['allow_html_descriptions']) {
+        if (is_admin() && $conf['allow_html_descriptions']) {
             $data['comment'] = $_POST['comment'];
         } else {
-            $data['comment'] = strip_tags($_POST['comment']);
+            $data['comment'] = strip_tags((string) $_POST['comment']);
         }
 
         single_update(

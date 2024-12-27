@@ -27,6 +27,7 @@ function get_nb_available_tags(): int|string
             ]
         );
     }
+
     return $user['nb_available_tags'];
 }
 
@@ -59,7 +60,7 @@ function get_available_tags(
 
         SQL;
 
-    if (is_array($tag_ids) and count($tag_ids) > 0) {
+    if (is_array($tag_ids) && $tag_ids !== []) {
         $tags_list = implode(',', $tag_ids);
         $query .= <<<SQL
             AND tag_id IN ({$tags_list})
@@ -73,7 +74,7 @@ function get_available_tags(
 
     $tag_counters = query2array($query, 'tag_id', 'counter');
 
-    if (empty($tag_counters)) {
+    if ($tag_counters === []) {
         return [];
     }
 
@@ -86,12 +87,13 @@ function get_available_tags(
     $tags = [];
     while ($row = pwg_db_fetch_assoc($result)) {
         $counter = intval($tag_counters[$row['id']]);
-        if ($counter) {
+        if ($counter !== 0) {
             $row['counter'] = $counter;
             $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
             $tags[] = $row;
         }
     }
+
     return $tags;
 }
 
@@ -166,6 +168,7 @@ function add_level_to_tags(
             }
         }
     }
+
     unset($tag);
 
     return $tags;
@@ -187,7 +190,7 @@ function get_image_ids_for_tags(
     bool $use_permissions = true
 ): array {
     global $conf;
-    if (empty($tag_ids)) {
+    if ($tag_ids === []) {
         return [];
     }
 
@@ -201,9 +204,9 @@ function get_image_ids_for_tags(
     ) : '';
 
     $tags_list = implode(',', $tag_ids);
-    $extra_conditions = ! empty($extra_images_where_sql) ? " AND ({$extra_images_where_sql})" : '';
+    $extra_conditions = $extra_images_where_sql === '' || $extra_images_where_sql === '0' ? '' : " AND ({$extra_images_where_sql})";
     $having_clause = ($mode === 'AND' && count($tag_ids) > 1) ? 'HAVING COUNT(DISTINCT tag_id) = ' . count($tag_ids) : '';
-    $order_clause = ! empty($order_by) ? $order_by : $conf['order_by'];
+    $order_clause = $order_by === '' || $order_by === '0' ? $conf['order_by'] : $order_by;
     $query = <<<SQL
         SELECT id
         FROM images i
@@ -226,7 +229,7 @@ function get_image_ids_for_tags(
 
         SQL;
 
-    if (! empty($having_clause)) {
+    if ($having_clause !== '' && $having_clause !== '0') {
         $query .= <<<SQL
             {$having_clause}
 
@@ -252,9 +255,10 @@ function get_common_tags(
     int $max_tags,
     array $excluded_tag_ids = []
 ): array {
-    if (empty($items)) {
+    if ($items === []) {
         return [];
     }
+
     $items_list = implode(',', $items);
     $query = <<<SQL
         SELECT t.*, COUNT(*) AS counter
@@ -264,7 +268,7 @@ function get_common_tags(
 
         SQL;
 
-    if (! empty($excluded_tag_ids)) {
+    if ($excluded_tag_ids !== []) {
         $excluded_tags = implode(',', $excluded_tag_ids);
         $query .= <<<SQL
             AND tag_id NOT IN ({$excluded_tags})
@@ -294,6 +298,7 @@ function get_common_tags(
         $row['name'] = trigger_change('render_tag_name', $row['name'], $row);
         $tags[] = $row;
     }
+
     usort($tags, tag_alpha_compare(...));
     return $tags;
 }
@@ -312,19 +317,22 @@ function find_tags(
     array $names = []
 ): array {
     $where_clauses = [];
-    if (! empty($ids)) {
+    if ($ids !== []) {
         $ids_ = implode(',', $ids);
         $where_clauses[] = "id IN ({$ids_})";
     }
-    if (! empty($url_names)) {
+
+    if ($url_names !== []) {
         $url_names_ = implode("', '", $url_names);
         $where_clauses[] = "url_name IN ('{$url_names_}')";
     }
-    if (! empty($names)) {
+
+    if ($names !== []) {
         $names_ = implode("', '", $names);
         $where_clauses[] = "name IN ('{$names_}')";
     }
-    if (empty($where_clauses)) {
+
+    if ($where_clauses === []) {
         return [];
     }
 

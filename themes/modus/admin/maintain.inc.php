@@ -9,7 +9,7 @@ function theme_activate(
 ): void {
     global $conf;
 
-    require_once dirname(dirname(__FILE__)) . '/functions.inc.php';
+    require_once dirname(__FILE__, 2) . '/functions.inc.php';
     $default_conf = modus_get_default_config();
 
     $my_conf = $conf['modus_theme'];

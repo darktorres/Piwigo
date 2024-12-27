@@ -22,23 +22,29 @@ function sanitize_mysql_kv(
 ): void {
     $v = addslashes($v);
 }
+
 if (is_array($_GET)) {
     array_walk_recursive($_GET, sanitize_mysql_kv(...));
 }
+
 if (is_array($_POST)) {
     array_walk_recursive($_POST, sanitize_mysql_kv(...));
 }
+
 if (is_array($_COOKIE)) {
     array_walk_recursive($_COOKIE, sanitize_mysql_kv(...));
 }
+
 if (! empty($_SERVER['PATH_INFO'])) {
-    $_SERVER['PATH_INFO'] = addslashes($_SERVER['PATH_INFO']);
+    $_SERVER['PATH_INFO'] = addslashes((string) $_SERVER['PATH_INFO']);
 }
 
 //----------------------------------------------------- variable initialization
 
 require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
-file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
+    require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
+}
 
 require PHPWG_ROOT_PATH . 'include/functions.inc.php';
 require PHPWG_ROOT_PATH . 'include/template.class.php';
@@ -59,18 +65,18 @@ if (! empty($_GET['dl']) && file_exists(PHPWG_ROOT_PATH . $conf['data_location']
 }
 
 // Obtain various vars
-$dbhost = (! empty($_POST['dbhost'])) ? $_POST['dbhost'] : '';
-$dbuser = (! empty($_POST['dbuser'])) ? $_POST['dbuser'] : '';
-$dbpasswd = (! empty($_POST['dbpasswd'])) ? $_POST['dbpasswd'] : '';
-$dbname = (! empty($_POST['dbname'])) ? $_POST['dbname'] : '';
+$dbhost = (empty($_POST['dbhost'])) ? '' : $_POST['dbhost'];
+$dbuser = (empty($_POST['dbuser'])) ? '' : $_POST['dbuser'];
+$dbpasswd = (empty($_POST['dbpasswd'])) ? '' : $_POST['dbpasswd'];
+$dbname = (empty($_POST['dbname'])) ? '' : $_POST['dbname'];
 
 // dblayer
 $dblayer = (empty($_POST['dbtype'])) ? 'mysqli' : str_replace('-socket', '', $_POST['dbtype']);
 
-$admin_name = (! empty($_POST['admin_name'])) ? $_POST['admin_name'] : '';
-$admin_pass1 = (! empty($_POST['admin_pass1'])) ? $_POST['admin_pass1'] : '';
-$admin_pass2 = (! empty($_POST['admin_pass2'])) ? $_POST['admin_pass2'] : '';
-$admin_mail = (! empty($_POST['admin_mail'])) ? $_POST['admin_mail'] : '';
+$admin_name = (empty($_POST['admin_name'])) ? '' : $_POST['admin_name'];
+$admin_pass1 = (empty($_POST['admin_pass1'])) ? '' : $_POST['admin_pass1'];
+$admin_pass2 = (empty($_POST['admin_pass2'])) ? '' : $_POST['admin_pass2'];
+$admin_mail = (empty($_POST['admin_mail'])) ? '' : $_POST['admin_mail'];
 
 $is_newsletter_subscribe = true;
 if (isset($_POST['install'])) {
@@ -96,7 +102,7 @@ require PHPWG_ROOT_PATH . 'admin/include/languages.class.php';
 $languages = new languages('utf-8');
 
 if (isset($_GET['language'])) {
-    $language = strip_tags($_GET['language']);
+    $language = strip_tags((string) $_GET['language']);
 
     if (! in_array($language, array_keys($languages->fs_languages))) {
         $language = PHPWG_DEFAULT_LANGUAGE;
@@ -114,31 +120,32 @@ if (isset($_GET['language'])) {
     // }
 }
 
-if ($language == 'fr_FR') {
+if ($language === 'fr_FR') {
     define('PHPWG_DOMAIN', 'fr.piwigo.org');
-} elseif ($language == 'it_IT') {
+} elseif ($language === 'it_IT') {
     define('PHPWG_DOMAIN', 'it.piwigo.org');
-} elseif ($language == 'de_DE') {
+} elseif ($language === 'de_DE') {
     define('PHPWG_DOMAIN', 'de.piwigo.org');
-} elseif ($language == 'es_ES') {
+} elseif ($language === 'es_ES') {
     define('PHPWG_DOMAIN', 'es.piwigo.org');
-} elseif ($language == 'pl_PL') {
+} elseif ($language === 'pl_PL') {
     define('PHPWG_DOMAIN', 'pl.piwigo.org');
-} elseif ($language == 'zh_CN') {
+} elseif ($language === 'zh_CN') {
     define('PHPWG_DOMAIN', 'cn.piwigo.org');
-} elseif ($language == 'ru_RU') {
+} elseif ($language === 'ru_RU') {
     define('PHPWG_DOMAIN', 'ru.piwigo.org');
-} elseif ($language == 'nl_NL') {
+} elseif ($language === 'nl_NL') {
     define('PHPWG_DOMAIN', 'nl.piwigo.org');
-} elseif ($language == 'tr_TR') {
+} elseif ($language === 'tr_TR') {
     define('PHPWG_DOMAIN', 'tr.piwigo.org');
-} elseif ($language == 'da_DK') {
+} elseif ($language === 'da_DK') {
     define('PHPWG_DOMAIN', 'da.piwigo.org');
-} elseif ($language == 'pt_BR') {
+} elseif ($language === 'pt_BR') {
     define('PHPWG_DOMAIN', 'br.piwigo.org');
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
 }
+
 define('PHPWG_URL', 'https://' . PHPWG_DOMAIN);
 
 load_language('common.lang', '', [
@@ -168,26 +175,29 @@ $template->set_filenames([
 if (! isset($step)) {
     $step = 1;
 }
+
 //---------------------------------------------------------------- form analyze
 require PHPWG_ROOT_PATH . 'include/dblayer/functions_' . $dblayer . '.inc.php';
 require PHPWG_ROOT_PATH . 'admin/include/functions_install.inc.php';
 require PHPWG_ROOT_PATH . 'admin/include/functions_upgrade.php';
 
 if (isset($_POST['install'])) {
-    $webmaster = trim(preg_replace('/\s{2,}/', ' ', $admin_name));
-    if (empty($webmaster)) {
+    $webmaster = trim((string) preg_replace('/\s{2,}/', ' ', (string) $admin_name));
+    if ($webmaster === '' || $webmaster === '0') {
         $errors[] = l10n('enter a login for webmaster');
     } elseif (preg_match('/[\'"]/', $webmaster)) {
         $errors[] = l10n('webmaster login can\'t contain characters \' or "');
     }
+
     if ($admin_pass1 != $admin_pass2 || empty($admin_pass1)) {
         $errors[] = l10n('please enter your password again');
     }
+
     if (empty($admin_mail)) {
         $errors[] = l10n('mail address must be like xxx@yyy.eee (example : jack@altern.org)');
     } else {
         $error_mail_address = validate_mail_address(null, $admin_mail);
-        if (! empty($error_mail_address)) {
+        if ($error_mail_address !== null && $error_mail_address !== '' && $error_mail_address !== '0') {
             $errors[] = $error_mail_address;
         }
     }
@@ -305,7 +315,7 @@ if (isset($_POST['install'])) {
             secure_directory(PHPWG_ROOT_PATH . $conf['data_location']);
             $tmp_filename = md5(uniqid((string) time()));
             $fh = fopen(PHPWG_ROOT_PATH . $conf['data_location'] . 'pwg_' . $tmp_filename, 'w');
-            fputs($fh, $file_content, strlen($file_content));
+            fwrite($fh, $file_content, strlen($file_content));
             fclose($fh);
             $template->assign(
                 [
@@ -316,7 +326,7 @@ if (isset($_POST['install'])) {
             );
         }
 
-        fputs($fp, $file_content, strlen($file_content));
+        fwrite($fp, $file_content, strlen($file_content));
         fclose($fp);
     }
 }
@@ -326,8 +336,10 @@ foreach ($languages->fs_languages as $language_code => $fs_language) {
     if ($language == $language_code) {
         $template->assign('language_selection', $language_code);
     }
+
     $languages_options[$language_code] = $fs_language['name'];
 }
+
 $template->assign('language_options', $languages_options);
 
 $template->assign(
@@ -368,6 +380,7 @@ if ($step == 1) {
             ini_set('session.use_trans_sid', intval($conf['session_use_trans_sid']));
             ini_set('session.cookie_httponly', 1);
         }
+
         session_name($conf['session_name']);
         session_set_cookie_params(0, cookie_path());
         register_shutdown_function(session_write_close(...));
@@ -404,7 +417,7 @@ if ($step == 1) {
                 get_l10n_args('Password: ********** (no copy by email)', ''),
                 get_l10n_args('Email: %s', $admin_mail),
                 get_l10n_args('', ''),
-                get_l10n_args('Don\'t hesitate to consult our forums for any help: %s', PHPWG_URL),
+                get_l10n_args("Don't hesitate to consult our forums for any help: %s", PHPWG_URL),
             ];
 
             pwg_mail(
@@ -418,6 +431,7 @@ if ($step == 1) {
         }
     }
 }
+
 if (count($errors) != 0) {
     $template->assign('errors', $errors);
 }

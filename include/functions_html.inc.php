@@ -27,10 +27,12 @@ function get_cat_display_name(
     $is_first = true;
 
     foreach ($cat_information as $cat) {
-        is_array($cat) or trigger_error(
-            'get_cat_display_name wrong type for category ',
-            E_USER_WARNING
-        );
+        if (! is_array($cat)) {
+            trigger_error(
+                'get_cat_display_name wrong type for category ',
+                E_USER_WARNING
+            );
+        }
 
         $cat['name'] = trigger_change(
             'render_category_name',
@@ -46,7 +48,7 @@ function get_cat_display_name(
 
         if (! isset($url)) {
             $output .= $cat['name'];
-        } elseif ($url == '') {
+        } elseif ($url === '') {
             $output .= '<a href="'
                   . make_index_url(
                       [
@@ -60,6 +62,7 @@ function get_cat_display_name(
             $output .= $cat['name'] . '</a>';
         }
     }
+
     return $output;
 }
 
@@ -97,8 +100,10 @@ function get_cat_display_name_cache(
         if (isset($link_class)) {
             $output .= ' class="' . $link_class . '"';
         }
+
         $output .= '>';
     }
+
     $is_first = true;
     foreach (explode(',', $uppercats) as $category_id) {
         $cat = $cache['cat_names'][$category_id];
@@ -115,9 +120,9 @@ function get_cat_display_name_cache(
             $output .= '<span>' . $conf['level_separator'] . '</span>';
         }
 
-        if (! isset($url) or $single_link) {
+        if (! isset($url) || $single_link) {
             $output .= $cat['name'];
-        } elseif ($url == '') {
+        } elseif ($url === '') {
             $output .= '
 <a href="'
             . add_url_params(
@@ -135,7 +140,7 @@ function get_cat_display_name_cache(
         }
     }
 
-    if ($single_link and isset($single_url)) {
+    if ($single_link && isset($single_url)) {
         $output .= '</a>';
     }
 
@@ -170,7 +175,7 @@ function render_comment_content(
     $replacement = '<a href="$1" rel="nofollow">$1</a>';
     $content = preg_replace($pattern, $replacement, $content);
 
-    $content = nl2br($content);
+    $content = nl2br((string) $content);
 
     // replace _word_ by an underlined word
     $pattern = '/\b_(\S*)_\b/';
@@ -180,12 +185,12 @@ function render_comment_content(
     // replace *word* by a bolded word
     $pattern = '/\b\*(\S*)\*\b/';
     $replacement = '<span style="font-weight:bold;">$1</span>';
-    $content = preg_replace($pattern, $replacement, $content);
+    $content = preg_replace($pattern, $replacement, (string) $content);
 
     // replace /word/ by an italic word
     $pattern = "/\/(\S*)\/(\s)/";
     $replacement = '<span style="font-style:italic;">$1$2</span>';
-    $content = preg_replace($pattern, $replacement, $content);
+    $content = preg_replace($pattern, $replacement, (string) $content);
 
     // TODO : add a trigger
 
@@ -199,7 +204,7 @@ function name_compare(
     array $a,
     array $b
 ): int {
-    return strcmp(strtolower($a['name']), strtolower($b['name']));
+    return strcmp(strtolower((string) $a['name']), strtolower((string) $b['name']));
 }
 
 /**
@@ -217,7 +222,7 @@ function tag_alpha_compare(
         }
     }
 
-    return strcmp($cache[__FUNCTION__][$a['name']], $cache[__FUNCTION__][$b['name']]);
+    return strcmp((string) $cache[__FUNCTION__][$a['name']], (string) $cache[__FUNCTION__][$b['name']]);
 }
 
 /**
@@ -229,9 +234,9 @@ function access_denied(): never
 
     $login_url =
         get_root_url() . 'identification.php?redirect='
-        . urlencode(urlencode($_SERVER['REQUEST_URI']));
+        . urlencode(urlencode((string) $_SERVER['REQUEST_URI']));
 
-    if (isset($user) and ! is_a_guest()) {
+    if (isset($user) && ! is_a_guest()) {
         set_status_header(401);
 
         echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
@@ -240,7 +245,7 @@ function access_denied(): never
         echo '<a href="' . make_index_url() . '">' . l10n('Home') . '</a></div>';
         echo str_repeat(' ', 512); //IE6 doesn't error output if below a size
         exit();
-    } elseif (! $conf['guest_access'] and is_a_guest()) {
+    } elseif (! $conf['guest_access'] && is_a_guest()) {
         redirect_http($login_url);
     } else {
         redirect_html($login_url);
@@ -261,6 +266,7 @@ function page_forbidden(
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
     }
+
     redirect_html(
         $alternate_url,
         '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -284,6 +290,7 @@ function bad_request(
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
     }
+
     redirect_html(
         $alternate_url,
         '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -307,6 +314,7 @@ function page_not_found(
     if ($alternate_url == null) {
         $alternate_url = make_index_url();
     }
+
     redirect_html(
         $alternate_url,
         '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -325,17 +333,19 @@ function fatal_error(
     ?string $title = null,
     bool $show_trace = true
 ): never {
-    if (empty($title)) {
+    if ($title === null || $title === '' || $title === '0') {
         $title = l10n('Piwigo encountered a non recoverable error');
     }
 
     $btrace_msg = '';
-    if ($show_trace and function_exists('debug_backtrace')) {
+    if ($show_trace && function_exists('debug_backtrace')) {
         $bt = debug_backtrace();
-        for ($i = 1; $i < count($bt); $i++) {
+        $counter = count($bt);
+        for ($i = 1; $i < $counter; $i++) {
             $class = isset($bt[$i]['class']) ? ($bt[$i]['class'] . '::') : '';
             $btrace_msg .= "#{$i}\t" . $class . $bt[$i]['function'] . ' ' . $bt[$i]['file'] . '(' . $bt[$i]['line'] . ")\n";
         }
+
         $btrace_msg = trim($btrace_msg);
         $msg .= "\n";
     }
@@ -353,6 +363,7 @@ function fatal_error(
     if (function_exists('ini_set')) {// if possible, turn off error display (we display it)
         ini_set('display_errors', false);
     }
+
     error_reporting(E_ALL);
     trigger_error(strip_tags($msg) . $btrace_msg, E_USER_ERROR);
     die(0); // just in case
@@ -367,8 +378,9 @@ function get_tags_content_title(): string
     $title = '<a href="' . get_root_url() . 'tags.php" title="' . l10n('display available tags') . '">'
       . l10n(count($page['tags']) > 1 ? 'Tags' : 'Tag')
       . '</a> ';
+    $counter = count($page['tags']);
 
-    for ($i = 0; $i < count($page['tags']); $i++) {
+    for ($i = 0; $i < $counter; $i++) {
         $title .= $i > 0 ? ' + ' : '';
 
         $title .=
@@ -404,6 +416,7 @@ function get_tags_content_title(): string
               . '</a>';
         }
     }
+
     return $title;
 }
 
@@ -432,9 +445,10 @@ function get_combined_categories_content_title(): string
                 'category' => array_shift($other_cats),
             ];
 
-            if (count($other_cats) > 0) {
+            if ($other_cats !== []) {
                 $params['combined_categories'] = $other_cats;
             }
+
             $remove_url = make_index_url($params);
 
             $title .=
@@ -459,7 +473,7 @@ function set_status_header(
     int $code,
     string $text = ''
 ): void {
-    if (empty($text)) {
+    if ($text === '' || $text === '0') {
         switch ($code) {
             case 200: $text = 'OK';
                 break;
@@ -485,6 +499,7 @@ function set_status_header(
                 break;
         }
     }
+
     $protocol = $_SERVER['SERVER_PROTOCOL'];
     if (($protocol != 'HTTP/1.1') && ($protocol != 'HTTP/1.0')) {
         $protocol = 'HTTP/1.0';
@@ -501,7 +516,10 @@ function set_status_header(
 function render_category_literal_description(
     ?string $desc
 ): string {
-    ! isset($desc) ? $desc = '' : false;
+    if (! isset($desc)) {
+        $desc = '';
+    }
+
     return strip_tags($desc, '<span><p><a><br><b><i><small><big><strong><em>');
 }
 
@@ -518,6 +536,7 @@ function register_default_menubar_blocks(
     if ($menu->get_id() != 'menubar') {
         return;
     }
+
     $menu->register_block(new RegisteredBlock('mbLinks', 'Links', 'piwigo'));
     $menu->register_block(new RegisteredBlock('mbCategories', 'Albums', 'piwigo'));
     $menu->register_block(new RegisteredBlock('mbTags', 'Related tags', 'piwigo'));
@@ -527,7 +546,7 @@ function register_default_menubar_blocks(
 
     // We hide the quick identification menu on the identification page. It
     // would be confusing.
-    if (script_basename() != 'identification') {
+    if (script_basename() !== 'identification') {
         $menu->register_block(new RegisteredBlock('mbIdentification', 'Identification', 'piwigo'));
     }
 }
@@ -544,6 +563,7 @@ function render_element_name(
     if (! empty($info['name'])) {
         return trigger_change('render_element_name', $info['name'], $info);
     }
+
     return get_name_from_file($info['file']);
 }
 
@@ -560,6 +580,7 @@ function render_element_description(
     if (! empty($info['comment'])) {
         return trigger_change('render_element_description', $info['comment'], $param);
     }
+
     return '';
 }
 
@@ -581,19 +602,19 @@ function get_thumbnail_title(
         $details[] = l10n('%d visits', $info['hit']);
     }
 
-    if ($conf['rate'] and ! empty($info['rating_score'])) {
+    if ($conf['rate'] && ! empty($info['rating_score'])) {
         $details[] = l10n('rating score %s', $info['rating_score']);
     }
 
-    if (isset($info['nb_comments']) and $info['nb_comments'] != 0) {
+    if (isset($info['nb_comments']) && $info['nb_comments'] != 0) {
         $details[] = l10n_dec('%d comment', '%d comments', $info['nb_comments']);
     }
 
-    if (count($details) > 0) {
+    if ($details !== []) {
         $title .= ' (' . implode(', ', $details) . ')';
     }
 
-    if (! empty($comment)) {
+    if ($comment !== '' && $comment !== '0') {
         $comment = strip_tags($comment);
         $title .= ' ' . substr($comment, 0, 100) . (strlen($comment) > 100 ? '...' : '');
     }
@@ -611,7 +632,7 @@ function get_src_image_url_protection_handler(
     string $url,
     SrcImage $src_image
 ): string {
-    return get_action_url($src_image->id, $src_image->is_original() ? 'e' : 'r', false);
+    return get_action_url($src_image->id, $src_image->is_original() !== 0 ? 'e' : 'r', false);
 }
 
 /**
@@ -630,6 +651,7 @@ function get_element_url_protection_handler(
             return $url;
         }
     }
+
     return get_action_url($infos['id'], 'e', false);
 }
 

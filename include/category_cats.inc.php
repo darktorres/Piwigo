@@ -63,7 +63,7 @@ $query .= <<<SQL
 $query = trigger_change('loc_begin_index_category_thumbnails_query', $query);
 
 $result = pwg_query($query);
-list($page['total_categories']) = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
+[$page['total_categories']] = pwg_db_fetch_row(pwg_query('SELECT FOUND_ROWS();'));
 
 $categories = [];
 $category_ids = [];
@@ -79,7 +79,7 @@ while ($row = pwg_db_fetch_assoc($result)) {
         $image_id = $row['representative_picture_id'];
     } elseif ($conf['allow_random_representative']) { // searching a random representant among elements in sub-categories
         $image_id = get_random_image_in_category($row);
-    } elseif ($row['count_categories'] > 0 and $row['count_images'] > 0) { // at this point, $row['count_images'] should always be >0 (used as condition in SQL)
+    } elseif ($row['count_categories'] > 0 && $row['count_images'] > 0) { // at this point, $row['count_images'] should always be >0 (used as condition in SQL)
         // searching a random representant among representant of subcategories
         $sql_condition = get_sql_condition_FandF(
             [
@@ -101,12 +101,12 @@ while ($row = pwg_db_fetch_assoc($result)) {
             SQL;
         $subresult = pwg_query($query);
         if (pwg_db_num_rows($subresult) > 0) {
-            list($image_id) = pwg_db_fetch_row($subresult);
+            [$image_id] = pwg_db_fetch_row($subresult);
         }
     }
 
     if (isset($image_id)) {
-        if ($conf['representative_cache_on_subcats'] and $row['user_representative_picture_id'] != $image_id) {
+        if ($conf['representative_cache_on_subcats'] && $row['user_representative_picture_id'] != $image_id) {
             $user_representative_updates_for[$row['id']] = $image_id;
         }
 
@@ -123,21 +123,20 @@ while ($row = pwg_db_fetch_assoc($result)) {
             )
         );
     }
+
     unset($image_id);
 }
 
-if ($conf['display_fromto']) {
-    if (count($category_ids) > 0) {
-        $category_ids_list = implode(',', $category_ids);
-        $sql_condition = get_sql_condition_FandF(
-            [
-                'visible_categories' => 'category_id',
-                'visible_images' => 'id',
-            ],
-            'AND'
-        );
-
-        $query = <<<SQL
+if ($conf['display_fromto'] && $category_ids !== []) {
+    $category_ids_list = implode(',', $category_ids);
+    $sql_condition = get_sql_condition_FandF(
+        [
+            'visible_categories' => 'category_id',
+            'visible_images' => 'id',
+        ],
+        'AND'
+    );
+    $query = <<<SQL
             SELECT category_id, MIN(date_creation) AS from, MAX(date_creation) AS to
             FROM image_category
             INNER JOIN images ON image_id = id
@@ -145,15 +144,14 @@ if ($conf['display_fromto']) {
                 {$sql_condition}
             GROUP BY category_id;
             SQL;
-        $dates_of_category = query2array($query, 'category_id');
-    }
+    $dates_of_category = query2array($query, 'category_id');
 }
 
 if ($page['section'] == 'recent_cats') {
     usort($categories, global_rank_compare(...));
 }
 
-if (count($categories) > 0) {
+if ($categories !== []) {
     $infos_of_image = [];
     $new_image_ids = [];
 
@@ -181,7 +179,7 @@ if (count($categories) > 0) {
                     // searching a random representant among elements in sub-categories
                     $image_id = get_random_image_in_category($category);
 
-                    if (isset($image_id) and ! in_array($image_id, $image_ids)) {
+                    if (isset($image_id) && ! in_array($image_id, $image_ids)) {
                         $new_image_ids[] = $image_id;
                     }
 
@@ -192,11 +190,12 @@ if (count($categories) > 0) {
                     $category['representative_picture_id'] = $image_id;
                 }
             }
+
             unset($category);
         }
     }
 
-    if (count($new_image_ids) > 0) {
+    if ($new_image_ids !== []) {
         $image_ids_list = implode(',', $new_image_ids);
         $query = <<<SQL
             SELECT *
@@ -212,10 +211,11 @@ if (count($categories) > 0) {
     foreach ($infos_of_image as &$info) {
         $info['src_image'] = new SrcImage($info);
     }
+
     unset($info);
 }
 
-if (count($user_representative_updates_for)) {
+if ($user_representative_updates_for !== []) {
     $updates = [];
 
     foreach ($user_representative_updates_for as $cat_id => $image_id) {
@@ -237,7 +237,7 @@ if (count($user_representative_updates_for)) {
     );
 }
 
-if (count($categories) > 0) {
+if ($categories !== []) {
     // Update filtered data
     if (function_exists('update_cats_with_filtered_data')) {
         update_cats_with_filtered_data($categories);
@@ -271,7 +271,7 @@ if (count($categories) > 0) {
         $tpl_var = array_merge($category, [
             'ID' => $category['id'] /*obsolete*/,
             'representative' => $representative_infos,
-            'TN_ALT' => strip_tags($category['name']),
+            'TN_ALT' => strip_tags((string) $category['name']),
 
             'URL' => make_index_url(
                 [
@@ -300,14 +300,11 @@ if (count($categories) > 0) {
             $tpl_var['icon_ts'] = get_icon($category['max_date_last'], $category['is_child_date_last']);
         }
 
-        if ($conf['display_fromto']) {
-            if (isset($dates_of_category[$category['id']])) {
-                $from = $dates_of_category[$category['id']]['from'];
-                $to = $dates_of_category[$category['id']]['to'];
-
-                if (! empty($from)) {
-                    $tpl_var['INFO_DATES'] = format_fromto($from, $to);
-                }
+        if ($conf['display_fromto'] && isset($dates_of_category[$category['id']])) {
+            $from = $dates_of_category[$category['id']]['from'];
+            $to = $dates_of_category[$category['id']]['to'];
+            if (! empty($from)) {
+                $tpl_var['INFO_DATES'] = format_fromto($from, $to);
             }
         }
 

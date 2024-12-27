@@ -19,8 +19,8 @@ define('PHPWG_DEFAULT_LANGUAGE', 'en_UK');
 define('PHPWG_DEFAULT_TEMPLATE', 'modus');
 
 define('PHPWG_THEMES_PATH', $conf['themes_dir'] . '/');
-defined('PWG_COMBINED_DIR') or define('PWG_COMBINED_DIR', $conf['data_location'] . 'combined/');
-defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
+defined('PWG_COMBINED_DIR') || define('PWG_COMBINED_DIR', $conf['data_location'] . 'combined/');
+defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
 // Required versions
 define('REQUIRED_PHP_VERSION', '8.4.3');

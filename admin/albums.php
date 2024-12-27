@@ -19,7 +19,7 @@ $query = <<<SQL
     SELECT COUNT(*)
     FROM categories;
     SQL;
-list($albums_counter) = pwg_db_fetch_row(pwg_query($query));
+[$albums_counter] = pwg_db_fetch_row(pwg_query($query));
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -57,6 +57,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     if (! in_array($_POST['order'], $sort_orders)) {
         die('Invalid sort order');
     }
+
     check_input_parameter('id', $_POST, false, '/^-?\d+$/');
 
     $id_condition = ($_POST['id'] === '-1') ? 'IS NULL' : "= {$_POST['id']}";
@@ -74,16 +75,16 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     $categories = [];
     $sort = [];
 
-    list($order_by_field, $order_by_asc) = explode(' ', $_POST['order']);
+    [$order_by_field, $order_by_asc] = explode(' ', (string) $_POST['order']);
 
     $order_by_date = false;
-    if (strpos($order_by_field, 'date_') === 0) {
+    if (str_starts_with($order_by_field, 'date_')) {
         $order_by_date = true;
 
         $ref_dates = get_categories_ref_date(
             $category_ids,
             $order_by_field,
-            $order_by_asc == 'ASC' ? 'min' : 'max'
+            $order_by_asc === 'ASC' ? 'min' : 'max'
         );
     }
 
@@ -97,11 +98,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     while ($row = pwg_db_fetch_assoc($result)) {
         $row['name'] = trigger_change('render_category_name', $row['name'], 'admin_cat_list');
 
-        if ($order_by_date) {
-            $sort[] = $ref_dates[$row['id']];
-        } else {
-            $sort[] = remove_accents($row['name']);
-        }
+        $sort[] = $order_by_date ? $ref_dates[$row['id']] : remove_accents($row['name']);
 
         $categories[] = [
             'id' => $row['id'],
@@ -112,7 +109,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     array_multisort(
         $sort,
         $order_by_field === 'natural_order' ? SORT_NATURAL : SORT_REGULAR,
-        $order_by_asc == 'ASC' ? SORT_ASC : SORT_DESC,
+        $order_by_asc === 'ASC' ? SORT_ASC : SORT_DESC,
         $categories
     );
 
@@ -157,11 +154,13 @@ foreach ($allAlbum as $album) {
     $album['name'] = trigger_change('render_category_name', $album['name'], 'admin_cat_list');
     $album['lastmodified'] = time_since($album['lastmodified'], 'year');
 
-    $parents = explode(',', $album['uppercats']);
+    $parents = explode(',', (string) $album['uppercats']);
     $the_place = &$associatedTree[strval($parents[0])];
-    for ($i = 1; $i < count($parents); $i++) {
+    $counter = count($parents);
+    for ($i = 1; $i < $counter; $i++) {
         $the_place = &$the_place['children'][strval($parents[$i])];
     }
+
     $the_place['cat'] = $album;
 }
 
@@ -177,10 +176,7 @@ function cmpCat(
     array $a,
     array $b
 ): int {
-    if ($a['rank_column'] == $b['rank_column']) {
-        return 0;
-    }
-    return ($a['rank_column'] < $b['rank_column']) ? -1 : 1;
+    return $a['rank_column'] <=> $b['rank_column'];
 }
 
 /**
@@ -200,17 +196,19 @@ function assocToOrderedTree(
         $orderedCat['status'] = $cat['cat']['status'];
         $orderedCat['id'] = $cat['cat']['id'];
         $orderedCat['visible'] = $cat['cat']['visible'];
-        $orderedCat['nb_images'] = isset($nb_photos_in[$cat['cat']['id']]) ? $nb_photos_in[$cat['cat']['id']] : 0;
+        $orderedCat['nb_images'] = $nb_photos_in[$cat['cat']['id']] ?? 0;
         $orderedCat['last_updates'] = $cat['cat']['lastmodified'];
         $orderedCat['has_not_access'] = isset($is_forbidden[$cat['cat']['id']]);
-        $orderedCat['nb_sub_photos'] = isset($nb_sub_photos[$cat['cat']['id']]) ? $nb_sub_photos[$cat['cat']['id']] : 0;
+        $orderedCat['nb_sub_photos'] = $nb_sub_photos[$cat['cat']['id']] ?? 0;
         if (isset($cat['children'])) {
             //Does not update when moving a node
             $orderedCat['nb_subcats'] = count($cat['children']);
             $orderedCat['children'] = assocToOrderedTree($cat['children']);
         }
-        array_push($orderedTree, $orderedCat);
+
+        $orderedTree[] = $orderedCat;
     }
+
     usort($orderedTree, cmpCat(...));
     return $orderedTree;
 }
@@ -232,7 +230,7 @@ $all_categories = query2array($query, 'id', 'uppercats');
 $subcats_of = [];
 
 foreach ($all_categories as $id => $uppercats) {
-    foreach (array_slice(explode(',', $uppercats), 0, -1) as $uppercat_id) {
+    foreach (array_slice(explode(',', (string) $uppercats), 0, -1) as $uppercat_id) {
         $subcats_of[$uppercat_id][] = $id;
     }
 }
@@ -306,7 +304,7 @@ function get_categories_ref_date(
         $subcat_ids = [];
 
         foreach ($uppercats_of as $id => $uppercats) {
-            if (preg_match("/(^|,){$cat_id}(,|$)/", $uppercats)) {
+            if (preg_match("/(^|,){$cat_id}(,|$)/", (string) $uppercats)) {
                 $subcat_ids[] = $id;
             }
         }
@@ -318,8 +316,8 @@ function get_categories_ref_date(
             }
         }
 
-        if (count($to_compare) > 0) {
-            $ref_dates[$cat_id] = $minmax == 'max' ? max($to_compare) : min($to_compare);
+        if ($to_compare !== []) {
+            $ref_dates[$cat_id] = $minmax === 'max' ? max($to_compare) : min($to_compare);
         } else {
             $ref_dates[$cat_id] = null;
         }

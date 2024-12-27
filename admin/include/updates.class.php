@@ -15,7 +15,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 class updates
 {
-    public array $types = [];
+    public array $types = ['plugins', 'themes', 'languages'];
 
     public plugins $plugins;
 
@@ -38,11 +38,10 @@ class updates
     public function __construct(
         string $page = 'updates'
     ) {
-        $this->types = ['plugins', 'themes', 'languages'];
-
         if (in_array($page, $this->types)) {
             $this->types = [$page];
         }
+
         $this->default_themes = ['modus', 'elegant', 'smartpocket'];
         $this->default_plugins = ['AdminTools', 'TakeATour', 'language_switch', 'LocalFilesEditor'];
 
@@ -56,8 +55,7 @@ class updates
     {
         $_SESSION['need_update' . PHPWG_VERSION] = null;
 
-        if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches)
-          and fetchRemote(PHPWG_URL . '/download/all_versions.php?rand=' . md5(uniqid((string) mt_rand(), true)), $result)) {
+        if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches) && fetchRemote(PHPWG_URL . '/download/all_versions.php?rand=' . md5(uniqid((string) mt_rand(), true)), $result)) {
             $all_versions = explode("\n", $result);
             $new_version = trim($all_versions[0]);
             $_SESSION['need_update' . PHPWG_VERSION] = version_compare(PHPWG_VERSION, $new_version, '<');
@@ -93,17 +91,15 @@ class updates
             $url .= '&show_requirements';
             $url .= '&origin_hash=' . sha1($conf['secret_key'] . get_absolute_root_url());
 
-            if (fetchRemote($url, $result)
-                and $all_versions = explode("\n", $result)
-                and is_array($all_versions)) {
+            if (fetchRemote($url, $result) && $all_versions = explode("\n", $result) && is_array($all_versions)) {
                 $new_versions['piwigo.org-checked'] = true;
                 $last_version = trim($all_versions[0]);
-                list($last_version_number, $last_version_php) = explode('/', trim($all_versions[0]));
+                [$last_version_number, $last_version_php] = explode('/', trim($all_versions[0]));
 
                 if (version_compare(PHPWG_VERSION, $last_version_number, '<')) {
                     $last_branch = get_branch_from_version($last_version_number);
 
-                    if ($last_branch == $actual_branch) {
+                    if ($last_branch === $actual_branch) {
                         $new_versions['minor'] = $last_version_number;
                         $new_versions['minor_php'] = $last_version_php;
                     } else {
@@ -112,14 +108,15 @@ class updates
 
                         // Check if new version exists in same branch
                         foreach ($all_versions as $version) {
-                            list($version_number, $version_php) = explode('/', trim($version));
+                            [$version_number, $version_php] = explode('/', trim($version));
                             $branch = get_branch_from_version($version_number);
 
-                            if ($branch == $actual_branch) {
+                            if ($branch === $actual_branch) {
                                 if (version_compare(PHPWG_VERSION, $version_number, '<')) {
                                     $new_versions['minor'] = $version_number;
                                     $new_versions['minor_php'] = $version_php;
                                 }
+
                                 break;
                             }
                         }
@@ -127,6 +124,7 @@ class updates
                 }
             }
         }
+
         return $new_versions;
     }
 
@@ -151,7 +149,7 @@ class updates
             return;
         }
 
-        $new_versions_string = join(
+        $new_versions_string = implode(
             ' & ',
             array_intersect_key(
                 $new_versions,
@@ -159,7 +157,7 @@ class updates
             )
         );
 
-        if (empty($new_versions_string)) {
+        if ($new_versions_string === '' || $new_versions_string === '0') {
             return;
         }
 
@@ -177,8 +175,7 @@ class updates
             if ($new_versions_string != $conf['update_notify_last_notification']['version']) {
                 $notify = true;
             } elseif (
-                $conf['update_notify_reminder_period'] > 0
-                and strtotime($last_notification) < strtotime($conf['update_notify_reminder_period'] . ' seconds ago')
+                $conf['update_notify_reminder_period'] > 0 && strtotime((string) $last_notification) < strtotime($conf['update_notify_reminder_period'] . ' seconds ago')
             ) {
                 $notify = true;
             }
@@ -237,18 +234,20 @@ class updates
         // Retrieve PEM versions
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) and $pem_versions = unserialize($result)) {
+        if (fetchRemote($url, $result, $get_data) && $pem_versions = unserialize($result)) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
+
             $branch = get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
-                if (strpos($pem_version['name'], $branch) === 0) {
+                if (str_starts_with((string) $pem_version['name'], $branch)) {
                     $versions_to_check[] = $pem_version['id'];
                 }
             }
         }
-        if (empty($versions_to_check)) {
+
+        if ($versions_to_check === []) {
             return false;
         }
 
@@ -270,13 +269,13 @@ class updates
             [
                 'last_revision_only' => 'true',
                 'version' => implode(',', $versions_to_check),
-                'lang' => substr($user['language'], 0, 2),
+                'lang' => substr((string) $user['language'], 0, 2),
                 'get_nb_downloads' => 'true',
             ]
         );
 
         $post_data = [];
-        if (! empty($ext_to_check)) {
+        if ($ext_to_check !== []) {
             $post_data['extension_include'] = implode(',', array_keys($ext_to_check));
         }
 
@@ -311,6 +310,7 @@ class updates
             $this->check_missing_extensions($ext_to_check);
             return true;
         }
+
         return false;
     }
 
@@ -335,7 +335,7 @@ class updates
             $need_upgrade = [];
 
             foreach ($fs_ext as $ext_id => $ext) {
-                if (isset($ext['extension']) and isset($server_ext[$ext['extension']])) {
+                if (isset($ext['extension']) && isset($server_ext[$ext['extension']])) {
                     $ext_info = $server_ext[$ext['extension']];
 
                     if (! safe_version_compare($ext['version'], $ext_info['revision_name'], '>=')) {
@@ -347,8 +347,10 @@ class updates
                     }
                 }
             }
+
             $conf['updates_ignored'][$type] = $ignore_list;
         }
+
         conf_update_param('updates_ignored', pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
 
         return null;
@@ -361,8 +363,7 @@ class updates
             if (! empty($_SESSION['extensions_need_update'][$type])) {
                 $fs = 'fs_' . $type;
                 foreach ($this->{$type}->{$fs} as $ext_id => $fs_ext) {
-                    if (isset($_SESSION['extensions_need_update'][$type][$ext_id])
-                      and safe_version_compare($fs_ext['version'], $_SESSION['extensions_need_update'][$type][$ext_id], '>=')) {
+                    if (isset($_SESSION['extensions_need_update'][$type][$ext_id]) && safe_version_compare($fs_ext['version'], $_SESSION['extensions_need_update'][$type][$ext_id], '>=')) {
                         // Extension has been upgraded
                         $this->check_extensions();
                         break;
@@ -379,9 +380,7 @@ class updates
             $fs = 'fs_' . $type;
             $default = 'default_' . $type;
             foreach ($this->{$type}->{$fs} as $ext_id => $ext) {
-                if (isset($ext['extension']) and $id == $ext['extension']
-                  and ! in_array($ext_id, $this->{$default})
-                  and ! in_array($ext['extension'], $this->merged_extensions)) {
+                if (isset($ext['extension']) && $id == $ext['extension'] && ! in_array($ext_id, $this->{$default}) && ! in_array($ext['extension'], $this->merged_extensions)) {
                     $this->missing[$type][] = $ext;
                     break;
                 }
@@ -395,11 +394,9 @@ class updates
         if (fetchRemote($this->merged_extension_url, $result)) {
             $rows = explode("\n", $result);
             foreach ($rows as $row) {
-                if (preg_match('/^(\d+\.\d+): *(.*)$/', $row, $match)) {
-                    if (version_compare($version, $match[1], '>=')) {
-                        $extensions = explode(',', trim($match[2]));
-                        $this->merged_extensions = array_merge($this->merged_extensions, $extensions);
-                    }
+                if (preg_match('/^(\d+\.\d+): *(.*)$/', $row, $match) && version_compare($version, $match[1], '>=')) {
+                    $extensions = explode(',', trim($match[2]));
+                    $this->merged_extensions = array_merge($this->merged_extensions, $extensions);
                 }
             }
         }
@@ -408,9 +405,7 @@ class updates
     public static function process_obsolete_list(
         string $file
     ): void {
-        if (file_exists(PHPWG_ROOT_PATH . $file)
-          and $old_files = file(PHPWG_ROOT_PATH . $file, FILE_IGNORE_NEW_LINES)
-          and ! empty($old_files)) {
+        if (file_exists(PHPWG_ROOT_PATH . $file) && $old_files = file(PHPWG_ROOT_PATH . $file, FILE_IGNORE_NEW_LINES) && $old_files !== []) {
             $old_files[] = $file;
             foreach ($old_files as $old_file) {
                 $path = PHPWG_ROOT_PATH . $old_file;
@@ -430,10 +425,10 @@ class updates
     ): void {
         global $page, $conf, $template;
 
-        if ($check_current_version and ! version_compare($upgrade_to, PHPWG_VERSION, '>')) {
+        if ($check_current_version && ! version_compare($upgrade_to, PHPWG_VERSION, '>')) {
             // TODO why redirect to a plugin page? maybe a remaining code from when
             // the update system was provided as a plugin?
-            redirect(get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__)));
+            redirect(get_root_url() . 'admin.php?page=plugin-' . basename(__DIR__));
         }
 
         $obsolete_list = null;
@@ -462,16 +457,17 @@ class updates
 
             while (! $end) {
                 $chunk_num++;
-                if (fetchRemote(PHPWG_URL . '/download/dlcounter.php?code=' . $dl_code . '&chunk_num=' . $chunk_num, $result)
-                  and $input = unserialize($result)) {
+                if (fetchRemote(PHPWG_URL . '/download/dlcounter.php?code=' . $dl_code . '&chunk_num=' . $chunk_num, $result) && $input = unserialize($result)) {
                     if ($input['remaining'] == 0) {
                         $end = true;
                     }
-                    fwrite($zip, base64_decode($input['data']));
+
+                    fwrite($zip, base64_decode((string) $input['data']));
                 } else {
                     $end = true;
                 }
             }
+
             fclose($zip);
 
             if (filesize($filename)) {
@@ -490,20 +486,17 @@ class updates
                     foreach ($result as $extract) {
                         if (! in_array($extract['status'], ['ok', 'filtered', 'already_a_directory'])) {
                             // Try to change chmod and extract
-                            if (chmod(PHPWG_ROOT_PATH . $extract['filename'], 0777)
-                              and ($res = $zip->extract(
-                                  PCLZIP_OPT_BY_NAME,
-                                  $remove_path . '/' . $extract['filename'],
-                                  PCLZIP_OPT_PATH,
-                                  PHPWG_ROOT_PATH,
-                                  PCLZIP_OPT_REMOVE_PATH,
-                                  $remove_path,
-                                  PCLZIP_OPT_SET_CHMOD,
-                                  0755,
-                                  PCLZIP_OPT_REPLACE_NEWER
-                              ))
-                              and isset($res[0]['status'])
-                              and $res[0]['status'] == 'ok') {
+                            if (chmod(PHPWG_ROOT_PATH . $extract['filename'], 0777) && $res = $zip->extract(
+                                PCLZIP_OPT_BY_NAME,
+                                $remove_path . '/' . $extract['filename'],
+                                PCLZIP_OPT_PATH,
+                                PHPWG_ROOT_PATH,
+                                PCLZIP_OPT_REMOVE_PATH,
+                                $remove_path,
+                                PCLZIP_OPT_SET_CHMOD,
+                                0755,
+                                PCLZIP_OPT_REPLACE_NEWER
+                            ) && isset($res[0]['status']) && $res[0]['status'] == 'ok') {
                                 continue;
                             }
 
@@ -512,8 +505,8 @@ class updates
                         }
                     }
 
-                    if (empty($error)) {
-                        if (! empty($obsolete_list)) {
+                    if ($error === '' || $error === '0') {
+                        if ($obsolete_list !== null && $obsolete_list !== '' && $obsolete_list !== '0') {
                             self::process_obsolete_list($obsolete_list);
                         }
 

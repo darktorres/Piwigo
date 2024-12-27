@@ -41,8 +41,8 @@ function language_controler_switch(): void
             $_GET['lang'] = PHPWG_DEFAULT_LANGUAGE;
         }
 
-        if (! empty($_GET['lang']) and file_exists(PHPWG_ROOT_PATH . 'language/' . $_GET['lang'] . '/common.lang.php')) {
-            if (is_a_guest() or is_generic()) {
+        if (! empty($_GET['lang']) && file_exists(PHPWG_ROOT_PATH . 'language/' . $_GET['lang'] . '/common.lang.php')) {
+            if (is_a_guest() || is_generic()) {
                 pwg_set_session_var('lang_switch', $_GET['lang']);
             } else {
                 $query = <<<SQL
@@ -59,7 +59,7 @@ function language_controler_switch(): void
         if (isset($_GET['redirect_to_home'])) {
             redirect(get_absolute_root_url());
         }
-    } elseif ((is_a_guest() or is_generic())) {
+    } elseif ((is_a_guest() || is_generic())) {
         $user['language'] = pwg_get_session_var('lang_switch', $user['language']);
     }
 
@@ -79,7 +79,7 @@ function language_controler_switch(): void
             ]
         );
 
-        if (defined('IN_ADMIN') and IN_ADMIN) {
+        if (defined('IN_ADMIN') && IN_ADMIN) {
             // Never currently
             load_language('admin.lang', '', [
                 'language' => $user['language'],
@@ -100,10 +100,10 @@ function language_controler_flags(): void
 
     $url_starting = get_query_string_diff(['lang']);
 
-    if (isset($page['section']) and $page['section'] == 'additional_page' and isset($page['additional_page'])) {
+    if (isset($page['section']) && $page['section'] == 'additional_page' && isset($page['additional_page'])) {
         $base_url = make_index_url([
             'section' => 'page',
-        ]) . '/' . (isset($page['additional_page']['permalink']) ? $page['additional_page']['permalink'] : $page['additional_page']['id']);
+        ]) . '/' . ($page['additional_page']['permalink'] ?? $page['additional_page']['id']);
     } else {
         $base_url = duplicate_index_url();
     }
@@ -141,7 +141,7 @@ function language_controler_flags(): void
         'LANGUAGE_SWITCH_LOAD_STYLE' => ! in_array($user['theme'], $safe_themes),
     ]);
 
-    $template->set_template_dir(realpath(dirname(__FILE__)));
+    $template->set_template_dir(realpath(__DIR__));
     $template->set_filename('language_flags', 'language_switch_flags.tpl');
     $template->concat('PLUGIN_INDEX_ACTIONS', $template->parse('language_flags', true));
     $template->clear_assign('lang_switch');

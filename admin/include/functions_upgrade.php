@@ -14,6 +14,7 @@ function check_upgrade(): bool
     if (defined('PHPWG_IN_UPGRADE')) {
         return PHPWG_IN_UPGRADE;
     }
+
     return false;
 }
 
@@ -29,7 +30,7 @@ function deactivate_non_standard_plugins(): void
         'LocalFilesEditor',
     ];
 
-    $implodedStandardPlugins = implode('\',\'', $standard_plugins);
+    $implodedStandardPlugins = implode("','", $standard_plugins);
     $query = <<<SQL
         SELECT id
         FROM plugins
@@ -43,8 +44,8 @@ function deactivate_non_standard_plugins(): void
         $plugins[] = $row['id'];
     }
 
-    if (! empty($plugins)) {
-        $implodedPlugins = implode('\',\'', $plugins);
+    if ($plugins !== []) {
+        $implodedPlugins = implode("','", $plugins);
         $query = <<<SQL
             UPDATE plugins
             SET state = 'inactive'
@@ -82,7 +83,7 @@ function deactivate_non_standard_themes(): void
         $theme_names[] = $row['name'];
     }
 
-    if (! empty($theme_ids)) {
+    if ($theme_ids !== []) {
         $implodedThemeIds = implode("','", $theme_ids);
         $query = <<<SQL
             DELETE FROM themes
@@ -99,7 +100,7 @@ function deactivate_non_standard_themes(): void
             FROM user_infos
             WHERE user_id = {$conf['default_user_id']};
             SQL;
-        list($default_theme) = pwg_db_fetch_row(pwg_query($query));
+        [$default_theme] = pwg_db_fetch_row(pwg_query($query));
 
         // if the default theme has just been deactivated, let's set another core theme as default
         if (in_array($default_theme, $theme_ids)) {
@@ -110,7 +111,7 @@ function deactivate_non_standard_themes(): void
                 FROM themes
                 WHERE id = '{$defaultTemplate}';
                 SQL;
-            list($counter) = pwg_db_fetch_row(pwg_query($query));
+            [$counter] = pwg_db_fetch_row(pwg_query($query));
             if ($counter < 1) {
                 // we need to activate theme first
                 require_once PHPWG_ROOT_PATH . 'admin/include/themes.class.php';
@@ -141,7 +142,7 @@ function check_upgrade_access_rights(): void
 {
     global $conf, $page, $current_release;
 
-    if (version_compare($current_release, '2.0', '>=') and isset($_COOKIE[session_name()])) {
+    if (version_compare($current_release, '2.0', '>=') && isset($_COOKIE[session_name()])) {
         // Check if user is already connected as webmaster
         session_start();
         if (! empty($_SESSION['pwg_uid'])) {
@@ -153,14 +154,14 @@ function check_upgrade_access_rights(): void
             pwg_query($query);
 
             $row = pwg_db_fetch_assoc(pwg_query($query));
-            if (isset($row['status']) and $row['status'] == 'webmaster') {
+            if (isset($row['status']) && $row['status'] == 'webmaster') {
                 define('PHPWG_IN_UPGRADE', true);
                 return;
             }
         }
     }
 
-    if (! isset($_POST['username']) or ! isset($_POST['password'])) {
+    if (! isset($_POST['username']) || ! isset($_POST['password'])) {
         return;
     }
 
@@ -170,8 +171,8 @@ function check_upgrade_access_rights(): void
     $username = pwg_db_real_escape_string($username);
 
     if (version_compare($current_release, '2.0', '<')) {
-        $username = utf8_decode($username);
-        $password = utf8_decode($password);
+        $username = mb_convert_encoding((string) $username, 'ISO-8859-1');
+        $password = mb_convert_encoding((string) $password, 'ISO-8859-1');
     }
 
     if (version_compare($current_release, '1.5', '<')) {
@@ -188,11 +189,12 @@ function check_upgrade_access_rights(): void
             WHERE {$conf['user_fields']['username']} = '{$username}';
             SQL;
     }
+
     $row = pwg_db_fetch_assoc(pwg_query($query));
 
     if (! $conf['password_verify']($password, $row['password'])) {
         $page['errors'][] = l10n('Invalid password!');
-    } elseif ($row['status'] != 'admin' and $row['status'] != 'webmaster') {
+    } elseif ($row['status'] != 'admin' && $row['status'] != 'webmaster') {
         $page['errors'][] = l10n('You do not have access rights to run upgrade');
     } else {
         define('PHPWG_IN_UPGRADE', true);
@@ -241,7 +243,7 @@ function check_upgrade_feed(): bool
     $existing = get_available_upgrade_ids();
 
     // which upgrades need to be applied?
-    return count(array_diff($existing, $applied)) > 0;
+    return array_diff($existing, $applied) !== [];
 }
 
 function upgrade_db_connect(): void

@@ -26,6 +26,7 @@ function execute_sqlfile(
         if (preg_match('/(^--|^$)/', $sql_line)) {
             continue;
         }
+
         $query .= ' ' . $sql_line;
         // if we reached the end of query, we execute it and reinitialize the
         // variable "query"
@@ -35,6 +36,7 @@ function execute_sqlfile(
             if (! preg_match('/^DROP TABLE/i', $query)) {
                 pwg_query($query);
             }
+
             $query = '';
         }
     }
@@ -47,7 +49,7 @@ function activate_core_themes(): void
 {
     require_once PHPWG_ROOT_PATH . 'admin/include/themes.class.php';
     $themes = new themes();
-    foreach ($themes->fs_themes as $theme_id => $fs_theme) {
+    foreach (array_keys($themes->fs_themes) as $theme_id) {
         if (in_array($theme_id, ['modus', 'smartpocket'])) {
             $themes->perform_action('activate', $theme_id);
         }
@@ -63,7 +65,7 @@ function activate_core_plugins(): void
 
     $plugins = new plugins();
 
-    foreach ($plugins->fs_plugins as $plugin_id => $fs_plugin) {
+    foreach (array_keys($plugins->fs_plugins) as $plugin_id) {
         if (in_array($plugin_id, [])) {
             $plugins->perform_action('activate', $plugin_id);
         }

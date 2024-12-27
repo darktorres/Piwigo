@@ -55,6 +55,7 @@ function get_iptc_data(
             }
         }
     }
+
     return $result;
 }
 
@@ -65,9 +66,10 @@ function clean_iptc_value(
     string $value
 ): string {
     // strip leading zeros (weird Kodak Scanner software)
-    while (isset($value[0]) and $value[0] == chr(0)) {
+    while (isset($value[0]) && $value[0] === chr(0)) {
         $value = substr($value, 1);
     }
+
     // remove binary nulls
     $value = str_replace(chr(0x00), ' ', $value);
 
@@ -80,7 +82,7 @@ function clean_iptc_value(
                 $input_encoding = 'utf-8';
             } else {
                 $input_encoding = 'iso-8859-1';
-                if (function_exists('iconv') or function_exists('mb_convert_encoding')) {
+                if (function_exists('iconv') || function_exists('mb_convert_encoding')) {
                     // Using windows-1252 because it supports additional characters
                     // such as "oe" in a single character (ligature). About the
                     // difference between Windows-1252 and ISO-8859-1: the characters
@@ -93,6 +95,7 @@ function clean_iptc_value(
             $value = convert_charset($value, $input_encoding, 'utf-8');
         }
     }
+
     return $value;
 }
 
@@ -120,21 +123,16 @@ function get_exif_data(
 
     // Read EXIF data
     // https://github.com/php/php-src/issues/11020
-    if ($exif = @exif_read_data($filename) or $exif2 = trigger_change('format_exif_data', $exif = null, $filename, $map)) {
-        if (! empty($exif2)) {
-            $exif = $exif2;
-        } else {
-            $exif = trigger_change('format_exif_data', $exif, $filename, $map);
-        }
-
+    if ($exif = @exif_read_data($filename) || $exif2 = trigger_change('format_exif_data', $exif = null, $filename, $map)) {
+        $exif = empty($exif2) ? trigger_change('format_exif_data', $exif, $filename, $map) : $exif2;
         // configured fields
         foreach ($map as $key => $field) {
-            if (strpos($field, ';') === false) {
+            if (! str_contains((string) $field, ';')) {
                 if (isset($exif[$field])) {
                     $result[$key] = $exif[$field];
                 }
             } else {
-                $tokens = explode(';', $field);
+                $tokens = explode(';', (string) $field);
                 if (isset($exif[$tokens[0]][$tokens[1]])) {
                     $result[$key] = $exif[$tokens[0]][$tokens[1]];
                 }
@@ -143,20 +141,14 @@ function get_exif_data(
 
         // GPS data
         $gps_exif = array_intersect_key($exif, array_flip(['GPSLatitudeRef', 'GPSLatitude', 'GPSLongitudeRef', 'GPSLongitude']));
-        if (count($gps_exif) == 4) {
-            if (
-                is_array($gps_exif['GPSLatitude']) and in_array($gps_exif['GPSLatitudeRef'], ['S', 'N']) and
-                is_array($gps_exif['GPSLongitude']) and in_array($gps_exif['GPSLongitudeRef'], ['W', 'E'])
-            ) {
-                $latitude = parse_exif_gps_data($gps_exif['GPSLatitude'], $gps_exif['GPSLatitudeRef']);
-                $longitude = parse_exif_gps_data($gps_exif['GPSLongitude'], $gps_exif['GPSLongitudeRef']);
-
-                if ($latitude >= -90.0 && $latitude <= 90.0 && $longitude >= -180.0 && $longitude <= 180.0) {
-                    $result['latitude'] = $latitude;
-                    $result['longitude'] = $longitude;
-                } else {
-                    $logger->info('[' . __FUNCTION__ . '][filename=' . $filename . '] invalid GPS coordinates, latitude=' . $latitude . ' longitude=' . $longitude);
-                }
+        if (count($gps_exif) == 4 && (is_array($gps_exif['GPSLatitude']) && in_array($gps_exif['GPSLatitudeRef'], ['S', 'N']) && is_array($gps_exif['GPSLongitude']) && in_array($gps_exif['GPSLongitudeRef'], ['W', 'E']))) {
+            $latitude = parse_exif_gps_data($gps_exif['GPSLatitude'], $gps_exif['GPSLatitudeRef']);
+            $longitude = parse_exif_gps_data($gps_exif['GPSLongitude'], $gps_exif['GPSLongitudeRef']);
+            if ($latitude >= -90.0 && $latitude <= 90.0 && $longitude >= -180.0 && $longitude <= 180.0) {
+                $result['latitude'] = $latitude;
+                $result['longitude'] = $longitude;
+            } else {
+                $logger->info('[' . __FUNCTION__ . '][filename=' . $filename . '] invalid GPS coordinates, latitude=' . $latitude . ' longitude=' . $longitude);
             }
         }
     }
@@ -168,7 +160,7 @@ function get_exif_data(
             if (is_array($value)) {
                 array_walk_recursive($value, 'strip_html_in_metadata');
             } else {
-                $result[$key] = strip_tags($value);
+                $result[$key] = strip_tags((string) $value);
             }
         }
     }
@@ -176,9 +168,9 @@ function get_exif_data(
     return $result;
 }
 
-function strip_html_in_metadata(&$v, $k)
+function strip_html_in_metadata(&$v, $k): void
 {
-    $v = strip_tags($v);
+    $v = strip_tags((string) $v);
 }
 
 /**
@@ -200,12 +192,13 @@ function parse_exif_gps_data(
         $i = explode('/', $i);
         $i = $i[1] == 0 ? 0 : $i[0] / $i[1];
     }
+
     unset($i);
 
     $v = $raw[0] + $raw[1] / 60 + $raw[2] / 3600;
 
     $ref = strtoupper($ref);
-    if ($ref == 'S' or $ref == 'W') {
+    if ($ref === 'S' || $ref === 'W') {
         $v = -$v;
     }
 
