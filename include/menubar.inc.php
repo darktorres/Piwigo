@@ -34,7 +34,7 @@ function initialize_menu(): void
     }
 
     //--------------------------------------------------------------- external links
-    if ($block = $menu->get_block('mbLinks') && ! empty($conf['links'])) {
+    if (($block = $menu->get_block('mbLinks')) && ! empty($conf['links'])) {
         $block->data = [];
         foreach ($conf['links'] as $url => $url_data) {
             if (! is_array($url_data)) {

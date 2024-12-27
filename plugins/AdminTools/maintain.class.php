@@ -12,6 +12,7 @@ class AdminTools_maintain extends PluginMaintain
         'public_quick_edit' => true,
     ];
 
+    #[\Override]
     public function install(
         string $plugin_version,
         array &$errors = []
@@ -23,6 +24,7 @@ class AdminTools_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function update(
         string $old_version,
         string $new_version,
@@ -31,6 +33,7 @@ class AdminTools_maintain extends PluginMaintain
         $this->install($new_version, $errors);
     }
 
+    #[\Override]
     public function uninstall(): void
     {
         conf_delete_param('AdminTools');

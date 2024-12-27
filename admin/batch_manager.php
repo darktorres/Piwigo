@@ -611,7 +611,7 @@ $query = <<<SQL
     SQL;
 $result = pwg_query($query);
 
-if (pwg_db_num_rows($result)) {
+if (pwg_db_num_rows($result) !== 0) {
     while ($row = pwg_db_fetch_assoc($result)) {
         if ($row['width'] > 0 && $row['height'] > 0) {
             $widths[] = $row['width'];

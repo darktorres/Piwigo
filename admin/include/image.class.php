@@ -249,15 +249,15 @@ class pwg_image
                 return [
                     'type' => 'VP8L',
                     'has-animation' => false,
-                    'has-transparent' => (bool) ((bool) ord($buf[24]) & 0x00000010),
+                    'has-transparent' => (ord($buf[24]) & 0x10) !== 0,
                 ];
 
             case $buf[15] === 'X':
                 // Extended File Format
                 return [
                     'type' => 'VP8X',
-                    'has-animation' => (bool) ((bool) ord($buf[20]) & 0x00000002),
-                    'has-transparent' => (bool) ((bool) ord($buf[20]) & 0x00000010),
+                    'has-animation' => (ord($buf[20]) & 0x2) !== 0,
+                    'has-transparent' => (ord($buf[20]) & 0x10) !== 0,
                 ];
 
             default:
@@ -355,7 +355,7 @@ class pwg_image
 
     public static function is_vips(): bool
     {
-        return class_exists('image_vips');
+        return class_exists(image_vips::class);
     }
 
     public static function get_library(

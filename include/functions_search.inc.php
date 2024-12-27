@@ -713,6 +713,7 @@ class QMultiToken implements \Stringable
 
     public $tokens = []; // the actual array of QSingleToken or QMultiToken
 
+    #[\Override]
     public function __toString(): string
     {
         $s = '';

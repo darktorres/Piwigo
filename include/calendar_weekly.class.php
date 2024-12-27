@@ -59,6 +59,7 @@ class CalendarWeekly extends CalendarBase
      *
      * @return bool false indicates that thumbnails where not included
      */
+    #[\Override]
     public function generate_category_content(): bool
     {
         global $conf, $page;
@@ -84,6 +85,7 @@ class CalendarWeekly extends CalendarBase
      *
      * @param int $max_levels (e.g. 2=only year and month)
      */
+    #[\Override]
     public function get_date_where(
         int $max_levels = 3
     ): string {

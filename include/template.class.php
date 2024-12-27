@@ -899,7 +899,7 @@ class Template
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
         }
 
-        if (count($scripts[1])) {
+        if (count($scripts[1]) > 0) {
             $content[] = '<script>';
             $content[] =
               "(function() {\n"

@@ -418,7 +418,7 @@ function history_remove_summarized_column(): void
     }
 
     $result = pwg_query('SHOW COLUMNS FROM history LIKE "summarized";');
-    if (pwg_db_num_rows($result)) {
+    if (pwg_db_num_rows($result) !== 0) {
         pwg_query('ALTER TABLE history DROP COLUMN summarized;');
     }
 

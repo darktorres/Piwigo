@@ -15,6 +15,7 @@ declare(strict_types=1);
  */
 class DummyTheme_maintain extends ThemeMaintain
 {
+    #[\Override]
     public function activate(
         string $theme_version,
         array &$errors = []
@@ -24,6 +25,7 @@ class DummyTheme_maintain extends ThemeMaintain
         }
     }
 
+    #[\Override]
     public function deactivate(): void
     {
         if (is_callable('theme_deactivate')) {
@@ -31,6 +33,7 @@ class DummyTheme_maintain extends ThemeMaintain
         }
     }
 
+    #[\Override]
     public function delete(): void
     {
         if (is_callable('theme_delete')) {
@@ -446,7 +449,7 @@ class themes
         $version = PHPWG_VERSION;
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) && $pem_versions = unserialize($result)) {
+        if (fetchRemote($url, $result, $get_data) && ($pem_versions = unserialize($result))) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
@@ -554,7 +557,7 @@ class themes
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if ($handle = fopen($archive, 'wb') && fetchRemote($url, $handle, $get_data)) {
+            if (($handle = fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 $zip = new PclZip($archive);
                 if ($list = $zip->listContent()) {
@@ -594,7 +597,7 @@ class themes
                                 }
                             }
 
-                            if (file_exists($extract_path . '/obsolete.list') && $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES) && $old_files !== []) {
+                            if (file_exists($extract_path . '/obsolete.list') && ($old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)) && $old_files !== []) {
                                 $old_files[] = 'obsolete.list';
 
                                 $logger->debug(__FUNCTION__ . ', $old_files = {' . implode('},{', $old_files) . '}');

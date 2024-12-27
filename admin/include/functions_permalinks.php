@@ -40,7 +40,7 @@ function get_cat_id_from_old_permalink(
         SQL;
     $result = pwg_query($query);
     $cat_id = null;
-    if (pwg_db_num_rows($result)) {
+    if (pwg_db_num_rows($result) !== 0) {
         [$cat_id] = pwg_db_fetch_row($result);
     }
 
@@ -64,7 +64,7 @@ function delete_cat_permalink(
         WHERE id = '{$cat_id}';
         SQL;
     $result = pwg_query($query);
-    if (pwg_db_num_rows($result)) {
+    if (pwg_db_num_rows($result) !== 0) {
         [$permalink] = pwg_db_fetch_row($result);
     }
 

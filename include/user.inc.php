@@ -56,7 +56,7 @@ $user = build_user(
     $user['id'],
     (defined('IN_ADMIN') && IN_ADMIN) ? false : true // use cache?
 );
-if ($conf['browser_language'] && (is_a_guest() || is_generic()) && $language = get_browser_language()) {
+if ($conf['browser_language'] && (is_a_guest() || is_generic()) && ($language = get_browser_language())) {
     $user['language'] = $language;
 }
 

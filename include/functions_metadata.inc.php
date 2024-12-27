@@ -123,7 +123,7 @@ function get_exif_data(
 
     // Read EXIF data
     // https://github.com/php/php-src/issues/11020
-    if ($exif = @exif_read_data($filename) || $exif2 = trigger_change('format_exif_data', $exif = null, $filename, $map)) {
+    if (($exif = @exif_read_data($filename)) || ($exif2 = trigger_change('format_exif_data', $exif = null, $filename, $map))) {
         $exif = empty($exif2) ? trigger_change('format_exif_data', $exif, $filename, $map) : $exif2;
         // configured fields
         foreach ($map as $key => $field) {

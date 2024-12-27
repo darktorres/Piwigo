@@ -8,6 +8,7 @@ class GDThumb_maintain extends PluginMaintain
 {
     private bool $installed = false;
 
+    #[\Override]
     public function install(
         string $plugin_version,
         array &$errors = []
@@ -21,6 +22,7 @@ class GDThumb_maintain extends PluginMaintain
         $this->installed = true;
     }
 
+    #[\Override]
     public function update(
         string $old_version,
         string $new_version,
@@ -29,6 +31,7 @@ class GDThumb_maintain extends PluginMaintain
         $this->install($new_version, $errors);
     }
 
+    #[\Override]
     public function activate(
         string $plugin_version,
         array &$errors = []
@@ -39,6 +42,7 @@ class GDThumb_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function uninstall(): void
     {
         $this->cleanUp();

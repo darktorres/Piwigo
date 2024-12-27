@@ -292,7 +292,7 @@ function ws_images_addComment(
             {$sql_conditions};
         SQL;
 
-    if (! pwg_db_num_rows(pwg_query($query))) {
+    if (pwg_db_num_rows(pwg_query($query)) === 0) {
         return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid image_id');
     }
 

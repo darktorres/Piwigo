@@ -442,7 +442,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
             } elseif (self::hasFlag($type, WS_TYPE_FLOAT)) {
                 foreach ($param as &$value) {
                     if (
-                        $value = filter_var($value, FILTER_VALIDATE_FLOAT) === false || isset($opts['options']['min_range']) && $value < $opts['options']['min_range']
+                        ($value = filter_var($value, FILTER_VALIDATE_FLOAT)) === false || isset($opts['options']['min_range']) && $value < $opts['options']['min_range']
                     ) {
                         return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must only contain' . $msg . ' floats');
                     }
@@ -461,7 +461,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                 }
             } elseif (self::hasFlag($type, WS_TYPE_FLOAT)) {
                 if (
-                    $param = filter_var($param, FILTER_VALIDATE_FLOAT) === false || isset($opts['options']['min_range']) && $param < $opts['options']['min_range']
+                    ($param = filter_var($param, FILTER_VALIDATE_FLOAT)) === false || isset($opts['options']['min_range']) && $param < $opts['options']['min_range']
                 ) {
                     return new PwgError(WS_ERR_INVALID_PARAM, $name . ' must be a' . $msg . ' float');
                 }
@@ -536,7 +536,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                     self::makeArrayParam($the_param);
                 }
 
-                if ($options['type'] > 0 && $ret = self::checkType($the_param, $options['type'], $name) instanceof \PwgError) {
+                if ($options['type'] > 0 && ($ret = self::checkType($the_param, $options['type'], $name)) instanceof \PwgError) {
                     return $ret;
                 }
 

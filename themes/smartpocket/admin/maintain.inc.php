@@ -13,6 +13,7 @@ class smartpocket_maintain extends ThemeMaintain
         //5000 - 0
     ];
 
+    #[\Override]
     public function activate(
         string $theme_version,
         array &$errors = []
@@ -35,8 +36,10 @@ class smartpocket_maintain extends ThemeMaintain
         $this->installed = true;
     }
 
+    #[\Override]
     public function deactivate(): void {}
 
+    #[\Override]
     public function delete(): void
     {
         // delete configuration
