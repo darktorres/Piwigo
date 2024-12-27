@@ -162,8 +162,8 @@ if (count($errors) == 0) {
 
         if (! $changed && $params->use_watermark) {
             // if thresholds change and before/after the threshold is lower than the corresponding derivative side -> some derivatives might switch the watermark
-            $changed |= $watermark->min_size[0] != $old_watermark->min_size[0] && ($watermark->min_size[0] < $params->max_width() || $old_watermark->min_size[0] < $params->max_width());
-            $changed |= $watermark->min_size[1] != $old_watermark->min_size[1] && ($watermark->min_size[1] < $params->max_height() || $old_watermark->min_size[1] < $params->max_height());
+            $changed |= ($watermark->min_size[0] != $old_watermark->min_size[0]) && ($watermark->min_size[0] < $params->max_width() || $old_watermark->min_size[0] < $params->max_width());
+            $changed |= ($watermark->min_size[1] != $old_watermark->min_size[1]) && ($watermark->min_size[1] < $params->max_height() || $old_watermark->min_size[1] < $params->max_height());
         }
 
         if ($changed) {

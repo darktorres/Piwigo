@@ -203,7 +203,7 @@ function register_user(
         }
 
         $override = [];
-        if ($conf['browser_language'] && $language = get_browser_language()) {
+        if ($conf['browser_language'] && ($language = get_browser_language())) {
             $override['language'] = $language;
         }
 

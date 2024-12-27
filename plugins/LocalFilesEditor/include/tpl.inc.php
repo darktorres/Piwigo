@@ -92,7 +92,7 @@ if ($newfile_page) {
         }
 
         $dir = $conf['themes_dir'] . '/' . $theme_id . '/template/';
-        if (is_dir($dir) && $content = opendir($dir)) {
+        if (is_dir($dir) && ($content = opendir($dir))) {
             while ($node = readdir($content)) {
                 if (is_file($dir . $node) && get_extension($node) === 'tpl') {
                     $value = $dir . $node;

@@ -75,12 +75,13 @@ class PersistentFileCache extends PersistentCache
         $this->dir = PHPWG_ROOT_PATH . $conf['data_location'] . 'cache/';
     }
 
+    #[\Override]
     public function get(
         string $key,
         mixed &$value
     ): bool {
         $loaded = file_exists($this->dir . $key . '.cache') ? file_get_contents($this->dir . $key . '.cache') : false;
-        if ($loaded !== false && $loaded = unserialize($loaded) !== false && $loaded['expire'] > time()) {
+        if ($loaded !== false && ($loaded = unserialize($loaded)) !== false && $loaded['expire'] > time()) {
             $value = $loaded['data'];
             return true;
         }
@@ -88,6 +89,7 @@ class PersistentFileCache extends PersistentCache
         return false;
     }
 
+    #[\Override]
     public function set(
         string $key,
         mixed $value,
@@ -113,6 +115,7 @@ class PersistentFileCache extends PersistentCache
         return file_put_contents($this->dir . $key . '.cache', $serialized) !== false;
     }
 
+    #[\Override]
     public function purge(
         bool $all
     ): void {
