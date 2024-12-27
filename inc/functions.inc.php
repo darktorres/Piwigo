@@ -21,7 +21,6 @@ require_once PHPWG_ROOT_PATH . 'inc/functions_tag.inc.php';
 require_once PHPWG_ROOT_PATH . 'inc/functions_url.inc.php';
 require_once PHPWG_ROOT_PATH . 'inc/derivative_params.inc.php';
 require_once PHPWG_ROOT_PATH . 'inc/derivative_std_params.inc.php';
-require_once PHPWG_ROOT_PATH . 'inc/derivative.inc.php';
 
 /**
  * returns the current microsecond since Unix epoch

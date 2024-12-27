@@ -15,8 +15,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php';
-
 $template->set_filenames([
     'plugins' => 'plugins_installed.tpl',
 ]);

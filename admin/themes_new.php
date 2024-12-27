@@ -19,8 +19,6 @@ if (! $conf['enable_extensions_install']) {
     die('Piwigo extensions install/update system is disabled');
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/inc/themes.class.php';
-
 $base_url = get_root_url() . 'admin.php?page=' . $page['page'] . '&tab=' . $page['tab'];
 
 $themes = new themes();

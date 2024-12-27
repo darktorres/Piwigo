@@ -40,7 +40,6 @@ $service = new PwgServer();
 if ($requestFormat !== null) {
     $handler = null;
     if ($requestFormat === 'rest') {
-        require_once PHPWG_ROOT_PATH . 'inc/ws_protocols/rest_handler.php';
         $handler = new PwgRestRequestHandler();
     }
 
@@ -51,19 +50,15 @@ if ($responseFormat !== null) {
     $encoder = null;
     switch ($responseFormat) {
         case 'rest':
-            require_once PHPWG_ROOT_PATH . 'inc/ws_protocols/rest_encoder.php';
             $encoder = new PwgRestEncoder();
             break;
         case 'php':
-            require_once PHPWG_ROOT_PATH . 'inc/ws_protocols/php_encoder.php';
             $encoder = new PwgSerialPhpEncoder();
             break;
         case 'json':
-            require_once PHPWG_ROOT_PATH . 'inc/ws_protocols/json_encoder.php';
             $encoder = new PwgJsonEncoder();
             break;
         case 'xmlrpc':
-            require_once PHPWG_ROOT_PATH . 'inc/ws_protocols/xmlrpc_encoder.php';
             $encoder = new PwgXmlRpcEncoder();
             break;
     }

@@ -153,7 +153,6 @@ switch ($action) {
 
     case 'c13y':
 
-        require_once PHPWG_ROOT_PATH . 'admin/inc/check_integrity.class.php';
         $c13y = new check_integrity();
         $c13y->maintenance();
         $page['infos'][] = sprintf('%s : %s', l10n('Reinitialize check integrity'), l10n('action successfully performed.'));

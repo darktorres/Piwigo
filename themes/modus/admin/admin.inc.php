@@ -12,7 +12,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
 global $template;
 
 require_once dirname(__FILE__, 2) . '/functions.inc.php';
-require_once PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php';
 
 $default_conf = modus_get_default_config();
 

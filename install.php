@@ -96,7 +96,6 @@ if (file_exists($config_file)) {
 require PHPWG_ROOT_PATH . 'inc/constants.php';
 require PHPWG_ROOT_PATH . 'admin/inc/functions.php';
 
-require PHPWG_ROOT_PATH . 'admin/inc/languages.class.php';
 $languages = new languages('utf-8');
 
 if (isset($_GET['language'])) {

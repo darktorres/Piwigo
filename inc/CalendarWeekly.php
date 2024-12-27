@@ -11,8 +11,6 @@ namespace Piwigo\inc;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once PHPWG_ROOT_PATH . 'inc/calendar_base.class.php';
-
 /**
  * Weekly calendar style (composed of years/week in years and days in week)
  */

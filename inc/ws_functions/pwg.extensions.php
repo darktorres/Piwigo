@@ -24,7 +24,6 @@ function ws_plugins_getList(
     array $params,
     PwgServer $service
 ): array {
-    require_once PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php';
 
     $plugins = new plugins();
     $plugins->sort_fs_plugins('name');
@@ -73,7 +72,6 @@ function ws_plugins_performAction(
     }
 
     define('IN_ADMIN', true);
-    require_once PHPWG_ROOT_PATH . 'admin/inc/plugins.class.php';
 
     $plugins = new plugins();
     $errors = $plugins->perform_action($params['action'], $params['plugin']);
@@ -113,7 +111,6 @@ function ws_themes_performAction(
     }
 
     define('IN_ADMIN', true);
-    require_once PHPWG_ROOT_PATH . 'admin/inc/themes.class.php';
 
     $themes = new themes();
     $errors = $themes->perform_action($params['action'], $params['theme']);
@@ -301,7 +298,6 @@ function ws_extensions_checkupdates(
     global $conf;
 
     require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
-    require_once PHPWG_ROOT_PATH . 'admin/inc/updates.class.php';
 
     $update = new updates();
     $result = [];

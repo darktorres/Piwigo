@@ -11,8 +11,6 @@ namespace Piwigo\inc;
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-require_once PHPWG_ROOT_PATH . 'inc/calendar_base.class.php';
-
 /**
  * Monthly calendar style (composed of years/months and days)
  */

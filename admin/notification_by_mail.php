@@ -21,7 +21,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
 require_once PHPWG_ROOT_PATH . 'admin/inc/functions_notification_by_mail.inc.php';
-require_once PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php';
 require_once PHPWG_ROOT_PATH . 'inc/common.inc.php';
 require_once PHPWG_ROOT_PATH . 'inc/functions_notification.inc.php';
 require_once PHPWG_ROOT_PATH . 'inc/functions_mail.inc.php';

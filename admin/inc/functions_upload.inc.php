@@ -15,7 +15,6 @@ use Piwigo\inc\SrcImage;
 // +-----------------------------------------------------------------------+
 
 require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
-require_once PHPWG_ROOT_PATH . 'admin/inc/image.class.php';
 
 // add default event handler for image and thumbnail resize
 // add_event_handler('upload_image_resize', pwg_image_resize(...));

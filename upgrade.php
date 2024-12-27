@@ -126,7 +126,6 @@ function print_time(
 // +-----------------------------------------------------------------------+
 // |                             language                                  |
 // +-----------------------------------------------------------------------+
-require PHPWG_ROOT_PATH . 'admin/inc/languages.class.php';
 $languages = new languages('utf-8');
 if (isset($_GET['language'])) {
     $language = strip_tags((string) $_GET['language']);
@@ -237,8 +236,6 @@ while ($row = pwg_db_fetch_assoc($result)) {
 }
 
 if ($has_remote_site) {
-    require_once PHPWG_ROOT_PATH . 'admin/inc/updates.class.php';
-
     $page['errors'] = [];
     $step = 3;
     updates::upgrade_to('2.3.4', $step, false);
@@ -442,7 +439,6 @@ if ((isset($_POST['submit']) || isset($_GET['now'])) && check_upgrade()) {
 // |                          start template output                        |
 // +-----------------------------------------------------------------------+
 else {
-    require_once PHPWG_ROOT_PATH . 'admin/inc/languages.class.php';
     $languages = new languages();
 
     foreach ($languages->fs_languages as $language_code => $fs_language) {

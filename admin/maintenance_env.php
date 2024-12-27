@@ -19,7 +19,6 @@ if (! defined('PHPWG_ROOT_PATH')) {
 }
 
 require_once PHPWG_ROOT_PATH . 'admin/inc/functions.php';
-require_once PHPWG_ROOT_PATH . 'admin/inc/image.class.php';
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -153,7 +152,6 @@ switch ($action) {
 
     case 'c13y':
 
-        require_once PHPWG_ROOT_PATH . 'admin/inc/check_integrity.class.php';
         $c13y = new check_integrity();
         $c13y->maintenance();
         break;

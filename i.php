@@ -457,7 +457,6 @@ if (! $need_generate) {
     exit;
 }
 
-require_once PHPWG_ROOT_PATH . 'admin/inc/image.class.php';
 $page['coi'] = null;
 if (! str_contains($page['src_location'], '/pwg_representative/')
     && ! str_contains($page['src_location'], 'themes/')

@@ -42,8 +42,6 @@ if (isset($_GET['cat_id'])) {
 // | Tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-require_once PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php';
-
 $page['tab'] = 'properties';
 
 if (isset($_GET['tab'])) {

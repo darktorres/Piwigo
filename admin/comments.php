@@ -77,8 +77,6 @@ $template->assign(
 // | Tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-require_once PHPWG_ROOT_PATH . 'admin/inc/tabsheet.class.php';
-
 $my_base_url = get_root_url() . 'admin.php?page=';
 
 $tabsheet = new tabsheet();

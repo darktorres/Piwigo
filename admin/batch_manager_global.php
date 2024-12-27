@@ -561,7 +561,6 @@ $template->assign(
 );
 
 // metadata
-require_once PHPWG_ROOT_PATH . 'admin/site_reader_local.php';
 $site_reader = new LocalSiteReader('./');
 $used_metadata = implode(', ', $site_reader->get_metadata_attributes());
 
