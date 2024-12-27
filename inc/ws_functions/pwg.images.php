@@ -693,7 +693,7 @@ function ws_images_search(
  * @param mixed[] $params
  *    @option string query
  */
-function ws_images_filteredSearch_create($params, $service): \PwgError|array
+function ws_images_filteredSearch_create($params, $service): PwgError|array
 {
     global $user;
 
@@ -2541,7 +2541,7 @@ function ws_images_deleteOrphans(
  *    @option string action
  *    @option string pwg_token
  */
-function ws_images_setCategory(array $params, $service): ?\PwgError
+function ws_images_setCategory(array $params, $service): ?PwgError
 {
     if (get_pwg_token() != $params['pwg_token']) {
         return new PwgError(403, 'Invalid security token');

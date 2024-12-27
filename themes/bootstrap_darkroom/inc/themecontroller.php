@@ -6,7 +6,7 @@ namespace Piwigo\themes\bootstrap_darkroom\inc;
 
 class ThemeController
 {
-    private readonly \BootstrapDarkroom\Config $config;
+    private readonly Config $config;
 
     public function __construct()
     {

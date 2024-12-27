@@ -60,7 +60,7 @@ class PwgServer
      */
     public function run(): void
     {
-        if (! $this->_responseEncoder instanceof \PwgResponseEncoder) {
+        if (! $this->_responseEncoder instanceof PwgResponseEncoder) {
             set_status_header(400);
             header('Content-Type: text/plain');
             echo 'Cannot process your request. Unknown response format.
@@ -69,7 +69,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
             die(0);
         }
 
-        if (! $this->_requestHandler instanceof \PwgRequestHandler) {
+        if (! $this->_requestHandler instanceof PwgRequestHandler) {
             $this->sendResponse(new PwgError(400, 'Unknown request format'));
             return;
         }
@@ -344,7 +344,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
                     self::makeArrayParam($the_param);
                 }
 
-                if ($options['type'] > 0 && ($ret = self::checkType($the_param, $options['type'], $name)) instanceof \PwgError) {
+                if ($options['type'] > 0 && ($ret = self::checkType($the_param, $options['type'], $name)) instanceof PwgError) {
                     return $ret;
                 }
 
@@ -400,7 +400,7 @@ Request format: ' . $this->_requestFormat . ' Response format: ' . $this->_respo
     public static function ws_getMethodDetails(
         array $params,
         self &$service
-    ): \PwgError|array {
+    ): PwgError|array {
         $methodName = $params['methodName'];
 
         if (! $service->hasMethod($methodName)) {

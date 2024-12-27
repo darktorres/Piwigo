@@ -48,8 +48,8 @@ class updates
         $this->default_plugins = ['AdminTools', 'TakeATour', 'language_switch', 'LocalFilesEditor'];
 
         foreach ($this->types as $type) {
-            require_once PHPWG_ROOT_PATH . 'admin/inc/' . $type . '.class.php';
-            $this->{$type} = new $type();
+            $className = "Piwigo\\admin\\inc\\{$type}";
+            $this->{$type} = new $className();
         }
     }
 
@@ -473,7 +473,7 @@ class updates
             fclose($zip);
 
             if (filesize($filename)) {
-                $zip = new PclZip($filename);
+                $zip = new \PclZip($filename);
                 if ($result = $zip->extract(
                     PCLZIP_OPT_PATH,
                     PHPWG_ROOT_PATH,

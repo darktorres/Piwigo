@@ -559,7 +559,7 @@ class plugins
 
             if (($handle = fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
-                $zip = new PclZip($archive);
+                $zip = new \PclZip($archive);
                 if ($list = $zip->listContent()) {
                     foreach ($list as $file) {
                         // we search main.inc.php in archive

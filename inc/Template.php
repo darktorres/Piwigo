@@ -78,7 +78,7 @@ class Template
 
         $this->scriptLoader = new ScriptLoader();
         $this->cssLoader = new CssLoader();
-        $this->smarty = new Smarty\Smarty();
+        $this->smarty = new \Smarty\Smarty();
         $this->smarty->debugging = $conf['debug_template'];
         if (! $this->smarty->debugging) {
             $this->smarty->error_reporting = error_reporting() & ~E_NOTICE;

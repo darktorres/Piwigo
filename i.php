@@ -125,7 +125,7 @@ function url_to_size(
 
 function parse_custom_params(
     array $tokens
-): \DerivativeParams {
+): DerivativeParams {
     if (count($tokens) < 1) {
         ierror('Empty array while parsing Sizing', 400);
     }

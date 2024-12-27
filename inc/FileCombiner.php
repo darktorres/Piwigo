@@ -214,8 +214,8 @@ final class FileCombiner
     ): string {
         if (! str_contains($file, '.min') && ! str_contains($file, '.packed')) {
             try {
-                $js = JShrink\Minifier::minify($js);
-            } catch (Exception) {
+                $js = \JShrink\Minifier::minify($js);
+            } catch (\Exception) {
             }
         }
 
@@ -236,7 +236,7 @@ final class FileCombiner
     ): string {
         $css = self::process_css_rec($css, dirname($file), $header);
         if (! str_contains($file, '.min') && PHP_VERSION_ID >= 50200) {
-            $cssMin = new tubalmartin\CssMin\Minifier();
+            $cssMin = new \tubalmartin\CssMin\Minifier();
             $css = $cssMin->run($css);
         }
 

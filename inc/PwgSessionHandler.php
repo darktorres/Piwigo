@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Piwigo\inc;
 
-class PwgSessionHandler implements SessionHandlerInterface
+class PwgSessionHandler implements \SessionHandlerInterface
 {
     public function open(string $save_path, string $name): bool
     {
