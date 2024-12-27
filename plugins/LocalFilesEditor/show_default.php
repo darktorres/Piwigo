@@ -39,7 +39,7 @@ if (isset($_GET['file'])) {
         die('Hacking attempt!');
     }
 
-    $template->set_filename('show_default', dirname(__FILE__) . '/template/show_default.tpl');
+    $template->set_filename('show_default', __DIR__ . '/template/show_default.tpl');
 
     $file = file_get_contents(PHPWG_ROOT_PATH . $path);
     $title = str_replace('/', ' / ', $path);

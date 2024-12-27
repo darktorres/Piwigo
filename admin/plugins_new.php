@@ -28,7 +28,7 @@ $base_url = get_root_url() . 'admin.php?page=' . $page['page'] . '&tab=' . $page
 $plugins = new plugins();
 
 //------------------------------------------------------automatic installation
-if (isset($_GET['revision']) and isset($_GET['extension'])) {
+if (isset($_GET['revision']) && isset($_GET['extension'])) {
     if (! is_webmaster()) {
         $page['errors'][] = l10n('Webmaster status is required.');
     } else {
@@ -64,22 +64,23 @@ if (isset($_GET['installstatus'])) {
                     ]
                 );
             }
+
             break;
 
         case 'temp_path_error':
-            $page['errors'][] = l10n('Can\'t create temporary file.');
+            $page['errors'][] = l10n("Can't create temporary file.");
             break;
 
         case 'dl_archive_error':
-            $page['errors'][] = l10n('Can\'t download archive.');
+            $page['errors'][] = l10n("Can't download archive.");
             break;
 
         case 'archive_error':
-            $page['errors'][] = l10n('Can\'t read or extract archive.');
+            $page['errors'][] = l10n("Can't read or extract archive.");
             break;
 
         default:
-            $page['errors'][] = l10n('An error occurred during extraction (%s).', htmlspecialchars($_GET['installstatus']));
+            $page['errors'][] = l10n('An error occurred during extraction (%s).', htmlspecialchars((string) $_GET['installstatus']));
             $page['errors'][] = l10n('Please check "plugins" folder and sub-folders permissions (CHMOD).');
     }
 }
@@ -120,8 +121,8 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
     }
 
     foreach ($plugins->server_plugins as $plugin) {
-        $ext_desc = trim($plugin['extension_description'], " \n\r");
-        list($small_desc) = explode("\n", wordwrap($ext_desc, 200));
+        $ext_desc = trim((string) $plugin['extension_description'], " \n\r");
+        [$small_desc] = explode("\n", wordwrap($ext_desc, 200));
 
         $url_auto_install = htmlentities($base_url)
           . '&amp;revision=' . $plugin['revision_id']
@@ -138,7 +139,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
         // Check if the current version is in the compatible version (not necessary if we are in beta test)
         if ($beta_test) {
             foreach ($plugin['compatible_with_versions'] as $vers) {
-                if (get_branch_from_version($vers) == get_branch_from_version(PHPWG_VERSION)) {
+                if (get_branch_from_version($vers) === get_branch_from_version(PHPWG_VERSION)) {
                     $has_compatible_version = true;
                 }
             }
@@ -155,6 +156,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
         } elseif ($last_revision_diff->y > 3) { // 3 years or less
             $certification = 0;
         }
+
         // Between 6 months and 3 years: certification = 1
 
         $template->append('plugins', [
@@ -172,18 +174,19 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
             'CERTIFICATION' => $certification,
             'RATING' => $plugin['rating_score'],
             'NB_RATINGS' => $plugin['nb_ratings'],
-            'SCREENSHOT' => (key_exists('screenshot_url', $plugin)) ? $plugin['screenshot_url'] : '',
+            'SCREENSHOT' => (array_key_exists('screenshot_url', $plugin)) ? $plugin['screenshot_url'] : '',
             'TAGS' => $plugin['tags'],
         ]);
     }
 
 } else {
-    $page['errors'][] = l10n('Can\'t connect to server.');
+    $page['errors'][] = l10n("Can't connect to server.");
 }
 
-if (! $beta_test and preg_match('/(beta|RC)/', PHPWG_VERSION)) {
+if (! $beta_test && preg_match('/(beta|RC)/', PHPWG_VERSION)) {
     $template->assign('BETA_URL', $base_url . '&amp;beta-test=true');
 }
+
 $template->assign('ADMIN_PAGE_TITLE', l10n('Plugins'));
 $template->assign('BETA_TEST', $beta_test);
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugins');

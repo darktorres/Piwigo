@@ -34,7 +34,7 @@ function customErrorHandler(
     ];
 
     // Determine the error type
-    $error_type = isset($error_types[$errno]) ? $error_types[$errno] : 'Unknown Error';
+    $error_type = $error_types[$errno] ?? 'Unknown Error';
 
     // Construct the error message
     $errorMessage = "PHP: {$errstr} in {$errfile} on line {$errline}";
@@ -124,6 +124,7 @@ class Template
         if (! $this->smarty->debugging) {
             $this->smarty->error_reporting = error_reporting() & ~E_NOTICE;
         }
+
         $this->smarty->compile_check = $conf['template_compile_check'];
         $this->smarty->force_compile = $conf['template_force_compile'];
 
@@ -141,6 +142,7 @@ class Template
                     false // show trace
                 );
             }
+
             if (function_exists('pwg_query')) {
                 conf_update_param('data_dir_checked', 1);
             }
@@ -199,7 +201,7 @@ class Template
         }
 
         $this->smarty->setTemplateDir([]);
-        if (! empty($theme)) {
+        if ($theme !== '' && $theme !== '0') {
             $this->set_theme($root, $theme, $path);
             if (! defined('IN_ADMIN')) {
                 $this->set_prefilter('header', self::prefilter_local_css(...));
@@ -208,17 +210,17 @@ class Template
             $this->set_template_dir($root);
         }
 
-        if (isset($lang_info['code']) and ! isset($lang_info['jquery_code'])) {
+        if (isset($lang_info['code']) && ! isset($lang_info['jquery_code'])) {
             $lang_info['jquery_code'] = $lang_info['code'];
         }
 
-        if (isset($lang_info['jquery_code']) and ! isset($lang_info['plupload_code'])) {
+        if (isset($lang_info['jquery_code']) && ! isset($lang_info['plupload_code'])) {
             $lang_info['plupload_code'] = str_replace('-', '_', $lang_info['jquery_code']);
         }
 
         $this->smarty->assign('lang_info', $lang_info);
 
-        if (! defined('IN_ADMIN') and isset($conf['extents_for_templates'])) {
+        if (! defined('IN_ADMIN') && isset($conf['extents_for_templates'])) {
             $tpl_extents = $conf['extents_for_templates'];
             $this->set_extents($tpl_extents, './template-extension/', true, $theme);
         }
@@ -239,13 +241,13 @@ class Template
 
         $themeconf = $this->load_themeconf($root . '/' . $theme);
 
-        if (isset($themeconf['parent']) and $themeconf['parent'] != $theme) {
+        if (isset($themeconf['parent']) && $themeconf['parent'] != $theme) {
             $this->set_theme(
                 $root,
                 $themeconf['parent'],
                 $path,
-                isset($themeconf['load_parent_css']) ? $themeconf['load_parent_css'] : $load_css,
-                isset($themeconf['load_parent_local_head']) ? $themeconf['load_parent_local_head'] : $load_local_head
+                $themeconf['load_parent_css'] ?? $load_css,
+                $themeconf['load_parent_local_head'] ?? $load_local_head
             );
         }
 
@@ -253,9 +255,10 @@ class Template
             'id' => $theme,
             'load_css' => $load_css,
         ];
-        if (! empty($themeconf['local_head']) and $load_local_head) {
+        if (! empty($themeconf['local_head']) && $load_local_head) {
             $tpl_var['local_head'] = realpath($root . '/' . $theme . '/' . $themeconf['local_head']);
         }
+
         $themeconf['id'] = $theme;
 
         if (! isset($themeconf['colorscheme'])) {
@@ -311,7 +314,7 @@ class Template
         string $val
     ): mixed {
         $tc = $this->smarty->getTemplateVars('themeconf');
-        return isset($tc[$val]) ? $tc[$val] : '';
+        return $tc[$val] ?? '';
     }
 
     /**
@@ -337,6 +340,7 @@ class Template
         if (! is_array($filename_array)) {
             return false;
         }
+
         reset($filename_array);
         foreach ($filename_array as $handle => $filename) {
             if ($filename === null) {
@@ -345,6 +349,7 @@ class Template
                 $this->files[$handle] = $this->get_extent($filename, $handle);
             }
         }
+
         return true;
     }
 
@@ -377,6 +382,7 @@ class Template
         if (! is_array($filename_array)) {
             return false;
         }
+
         foreach ($filename_array as $filename => $value) {
             if (is_array($value)) {
                 $handle = $value[0];
@@ -390,13 +396,11 @@ class Template
                 return false;
             }
 
-            if ((stripos(implode('', array_keys($_GET)), '/' . $param) !== false or $param == 'N/A')
-              and ($thm == $theme or $thm == 'N/A')
-              and (! isset($this->extents[$handle]) or $overwrite)
-              and file_exists($dir . $filename)) {
+            if ((stripos(implode('', array_keys($_GET)), '/' . $param) !== false || $param === 'N/A') && ($thm === $theme || $thm === 'N/A') && (! isset($this->extents[$handle]) || $overwrite) && file_exists($dir . $filename)) {
                 $this->extents[$handle] = realpath($dir . $filename);
             }
         }
+
         return true;
     }
 
@@ -412,6 +416,7 @@ class Template
         if (isset($this->extents[$handle])) {
             $filename = $this->extents[$handle];
         }
+
         return $filename;
     }
 
@@ -505,7 +510,7 @@ class Template
         $this->load_external_filters($handle);
 
         global $conf, $lang_info;
-        if ($conf['compiled_template_cache_language'] and isset($lang_info['code'])) {
+        if ($conf['compiled_template_cache_language'] && isset($lang_info['code'])) {
             $this->smarty->compile_id .= '_' . $lang_info['code'];
         }
 
@@ -517,6 +522,7 @@ class Template
         if ($return) {
             return $v;
         }
+
         $this->output .= $v;
 
         return null;
@@ -546,7 +552,7 @@ class Template
                 foreach ($scripts as $script) {
                     $content[] =
                         '<script src="'
-                        . self::make_script_src($script)
+                        . $this->make_script_src($script)
                         . '"></script>';
                 }
 
@@ -560,12 +566,14 @@ class Template
         foreach ($css as $combi) {
             $href = embellish_url(get_root_url() . $combi->path);
             if ($combi->version !== false) {
-                $href .= '?v' . ($combi->version ? $combi->version : PHPWG_VERSION);
+                $href .= '?v' . ($combi->version ?: PHPWG_VERSION);
             }
+
             // trigger the event for eventual use of a cdn
             $href = trigger_change('combined_css', $href, $combi);
             $content[] = '<link rel="stylesheet" href="' . $href . '">';
         }
+
         $this->output = str_replace(
             self::COMBINED_CSS_TAG,
             implode("\n", $content),
@@ -578,11 +586,14 @@ class Template
             $pos = strpos($this->output, $search);
             if ($pos !== false) {
                 $rep = "\n" . implode("\n", $this->html_head_elements);
-                if (strlen($this->html_style)) {
+                if (strlen($this->html_style) !== 0) {
                     $rep .= $this->html_style;
                 }
+
                 $this->output = substr_replace($this->output, $rep, $pos, 0);
-            } //else maybe error or warning?
+            }
+
+            //else maybe error or warning?
             $this->html_head_elements = [];
             $this->html_style = '';
         }
@@ -619,13 +630,11 @@ class Template
     public static function get_php_str_val(
         string $str
     ): mixed {
-        if (is_string($str) && strlen($str) > 1) {
-            if (($str[0] == '\'' && $str[strlen($str) - 1] == '\'')
-              || ($str[0] == '"' && $str[strlen($str) - 1] == '"')) {
-                eval('$tmp=' . $str . ';');
-                return $tmp;
-            }
+        if (is_string($str) && strlen($str) > 1 && ($str[0] === "'" && $str[strlen($str) - 1] === "'" || $str[0] === '"' && $str[strlen($str) - 1] === '"')) {
+            eval('$tmp=' . $str . ';');
+            return $tmp;
         }
+
         return null;
     }
 
@@ -649,6 +658,7 @@ class Template
                 ) {
                     return var_export($lang[$key], true);
                 }
+
                 return 'l10n(' . $params[0] . ')';
 
             default:
@@ -659,6 +669,7 @@ class Template
                     $ret .= ')';
                     return $ret;
                 }
+
                 return 'l10n(' . $params[0] . ',' . implode(',', array_slice($params, 1)) . ')';
         }
     }
@@ -680,6 +691,7 @@ class Template
             } else {
                 $ret .= '($tmp=(' . $params[0] . '))>1';
             }
+
             $ret .= '?';
             $ret .= self::modcompiler_translate([$params[2]]);
             $ret .= ':';
@@ -688,6 +700,7 @@ class Template
             $ret .= ')';
             return $ret;
         }
+
         return 'l10n_dec(' . $params[1] . ',' . $params[2] . ',' . $params[0] . ')';
     }
 
@@ -727,7 +740,7 @@ class Template
         ?string $content
     ): void {
         $content = isset($content) ? trim($content) : '';
-        if (! empty($content)) { // second call
+        if ($content !== '' && $content !== '0') { // second call
             $this->html_head_elements[] = $content;
         }
     }
@@ -743,7 +756,7 @@ class Template
         ?string $content
     ): void {
         $content = isset($content) ? trim($content) : '';
-        if (! empty($content)) { // second call
+        if ($content !== '' && $content !== '0') { // second call
             $this->html_style .= "\n" . $content;
         }
     }
@@ -765,14 +778,23 @@ class Template
         array $params,
         \Smarty\Template $smarty
     ): void {
-        ! empty($params['name']) or fatal_error('define_derivative missing name');
+        if (empty($params['name'])) {
+            fatal_error('define_derivative missing name');
+        }
+
         if (isset($params['type'])) {
             $derivative = ImageStdParams::get_by_type($params['type']);
             $smarty->assign($params['name'], $derivative);
             return;
         }
-        ! empty($params['width']) or fatal_error('define_derivative missing width');
-        ! empty($params['height']) or fatal_error('define_derivative missing height');
+
+        if (empty($params['width'])) {
+            fatal_error('define_derivative missing width');
+        }
+
+        if (empty($params['height'])) {
+            fatal_error('define_derivative missing height');
+        }
 
         $w = intval($params['width']);
         $h = intval($params['height']);
@@ -789,9 +811,14 @@ class Template
 
             if ($crop) {
                 $minw = empty($params['min_width']) ? $w : intval($params['min_width']);
-                $minw <= $w or fatal_error('define_derivative invalid min_width');
+                if ($minw > $w) {
+                    fatal_error('define_derivative invalid min_width');
+                }
+
                 $minh = empty($params['min_height']) ? $h : intval($params['min_height']);
-                $minh <= $h or fatal_error('define_derivative invalid min_height');
+                if ($minh > $h) {
+                    fatal_error('define_derivative invalid min_height');
+                }
             }
         }
 
@@ -816,6 +843,7 @@ class Template
         if (! isset($params['id'])) {
             trigger_error("combine_script: missing 'id' parameter", E_USER_ERROR);
         }
+
         $load = 0;
         if (isset($params['load'])) {
             switch ($params['load']) {
@@ -831,9 +859,9 @@ class Template
         $this->scriptLoader->add(
             $params['id'],
             $load,
-            empty($params['require']) ? [] : explode(',', $params['require']),
+            empty($params['require']) ? [] : explode(',', (string) $params['require']),
             ($params['path'] ?? null),
-            isset($params['version']) ? $params['version'] : 0,
+            $params['version'] ?? 0,
             ($params['template'] ?? null)
         );
     }
@@ -851,6 +879,7 @@ class Template
         if (! isset($params['load'])) {
             trigger_error("get_combined_scripts: missing 'load' parameter", E_USER_ERROR);
         }
+
         $load = $params['load'] == 'header' ? 0 : 1;
         $content = [];
 
@@ -862,10 +891,11 @@ class Template
         foreach ($scripts[0] as $script) {
             $content[] =
               '<script src="'
-              . self::make_script_src($script)
+              . $this->make_script_src($script)
               . '"></script>';
         }
-        if (count($this->scriptLoader->inline_scripts)) {
+
+        if ($this->scriptLoader->inline_scripts !== []) {
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
         }
 
@@ -877,10 +907,11 @@ class Template
             foreach ($scripts[1] as $id => $script) {
                 $content[] =
                   "s = document.createElement('script'); s.async = true; s.src = '"
-                  . self::make_script_src($script)
+                  . $this->make_script_src($script)
                   . "';\n";
                 $content[] = "after = after.parentNode.insertBefore(s, after);\n";
             }
+
             $content[] = '})();';
             $content[] = '</script>';
         }
@@ -899,11 +930,11 @@ class Template
         ?string $content
     ): void {
         $content = isset($content) ? trim($content) : '';
-        if (! empty($content)) { // second call
+        if ($content !== '' && $content !== '0') { // second call
 
             $this->scriptLoader->add_inline(
                 $content,
-                empty($params['require']) ? [] : explode(',', $params['require'])
+                empty($params['require']) ? [] : explode(',', (string) $params['require'])
             );
         }
     }
@@ -927,10 +958,10 @@ class Template
         }
 
         if (! isset($params['id'])) {
-            $params['id'] = md5($params['path']);
+            $params['id'] = md5((string) $params['path']);
         }
 
-        $this->cssLoader->add($params['id'], $params['path'], isset($params['version']) ? $params['version'] : 0, (int) ($params['order'] ?? null), (bool) ($params['template'] ?? null));
+        $this->cssLoader->add($params['id'], $params['path'], $params['version'] ?? 0, (int) ($params['order'] ?? null), (bool) ($params['template'] ?? null));
     }
 
     /**
@@ -998,7 +1029,7 @@ class Template
             $compile_id = '';
             foreach ($this->external_filters[$handle] as $filters) {
                 foreach ($filters as $filter) {
-                    list($type, $callback) = $filter;
+                    [$type, $callback] = $filter;
 
                     if (is_array($callback)) {
                         $callbackString = implode('', $callback);
@@ -1012,6 +1043,7 @@ class Template
                     $this->smarty->registerFilter($type, $callback);
                 }
             }
+
             $this->smarty->compile_id .= '.' . base_convert(hash('crc32b', $compile_id), 16, 36);
         }
     }
@@ -1025,7 +1057,7 @@ class Template
         if (isset($this->external_filters[$handle])) {
             foreach ($this->external_filters[$handle] as $filters) {
                 foreach ($filters as $filter) {
-                    list($type, $callback) = $filter;
+                    [$type, $callback] = $filter;
                     $this->smarty->unregisterFilter($type, $callback);
                 }
             }
@@ -1050,10 +1082,12 @@ class Template
             $regex[] = "#^[ \t]+({$ldq}{$tag}" . "[^{$ld}{$rd}]*{$rdq})\s*$#m";
             $regex[] = "#^[ \t]+({$ldq}/{$tag}{$rdq})\s*$#m";
         }
+
         $tags = ['include', 'else', 'combine_script', 'html_head'];
         foreach ($tags as $tag) {
             $regex[] = "#^[ \t]+({$ldq}{$tag}" . "[^{$ld}{$rd}]*{$rdq})\s*$#m";
         }
+
         $source = preg_replace($regex, '$1', $source);
         return $source;
     }
@@ -1091,12 +1125,13 @@ class Template
                 $css[] = "{combine_css path='{$f}' order=10}";
             }
         }
+
         $f = 'local/css/rules.css';
         if (file_exists(PHPWG_ROOT_PATH . $f)) {
             $css[] = "{combine_css path='{$f}' order=10}";
         }
 
-        if (! empty($css)) {
+        if ($css !== []) {
             $source = str_replace('{get_combined_css}', implode("\n", $css) . "\n{get_combined_css}", $source);
         }
 
@@ -1118,6 +1153,7 @@ class Template
             // Put themeconf in cache
             $themeconfs[$dir] = $themeconf;
         }
+
         return $themeconfs[$dir];
     }
 
@@ -1146,12 +1182,13 @@ class Template
      */
     public function parse_picture_buttons(): void
     {
-        if (! empty($this->picture_buttons)) {
+        if ($this->picture_buttons !== []) {
             ksort($this->picture_buttons);
             $buttons = [];
             foreach ($this->picture_buttons as $k => $row) {
                 $buttons = array_merge($buttons, $row);
             }
+
             $this->assign('PLUGIN_PICTURE_BUTTONS', $buttons);
 
             // only for PHP 5.3
@@ -1169,12 +1206,13 @@ class Template
      */
     public function parse_index_buttons(): void
     {
-        if (! empty($this->index_buttons)) {
+        if ($this->index_buttons !== []) {
             ksort($this->index_buttons);
             $buttons = [];
             foreach ($this->index_buttons as $k => $row) {
                 $buttons = array_merge($buttons, $row);
             }
+
             $this->assign('PLUGIN_INDEX_BUTTONS', $buttons);
 
             // only for PHP 5.3
@@ -1190,7 +1228,7 @@ class Template
     /**
      * Returns clean relative URL to script file.
      */
-    private static function make_script_src(
+    private function make_script_src(
         Combinable $script
     ): string {
         $ret = '';
@@ -1199,9 +1237,10 @@ class Template
         } else {
             $ret = get_root_url() . $script->path;
             if ($script->version !== false) {
-                $ret .= '?v' . ($script->version ? $script->version : PHPWG_VERSION);
+                $ret .= '?v' . ($script->version ?: PHPWG_VERSION);
             }
         }
+
         // trigger the event for eventual use of a cdn
         $ret = trigger_change('combined_script', $ret, $script);
         return embellish_url($ret);
@@ -1234,36 +1273,29 @@ class PwgTemplateAdapter
  */
 class Combinable
 {
-    public string $id;
-
     public string $path = '';
 
-    public int|string $version;
-
-    public ?bool $is_template;
+    public ?bool $is_template = false;
 
     public function __construct(
-        string $id,
+        public string $id,
         ?string $path,
-        int|string $version = 0
+        public int|string $version = 0
     ) {
-        $this->id = $id;
         $this->set_path($path);
-        $this->version = $version;
-        $this->is_template = false;
     }
 
     public function set_path(
         ?string $path
     ): void {
-        if (! empty($path)) {
+        if ($path !== null && $path !== '' && $path !== '0') {
             $this->path = $path;
         }
     }
 
     public function is_remote(): bool
     {
-        return url_is_remote($this->path) || strncmp($this->path, '//', 2) == 0;
+        return url_is_remote($this->path) || str_starts_with($this->path, '//');
     }
 }
 
@@ -1272,29 +1304,19 @@ class Combinable
  */
 final class Script extends Combinable
 {
-    /**
-     * 0,1,2
-     */
-    public int $load_mode;
-
-    public array $precedents;
-
-    public array $extra;
+    public array $extra = [];
 
     /**
      * @param int $load_mode 0,1,2
      */
     public function __construct(
-        int $load_mode,
+        public int $load_mode,
         string $id,
         ?string $path,
         int|string $version = 0,
-        array $precedents = []
+        public array $precedents = []
     ) {
         parent::__construct($id, $path, $version);
-        $this->load_mode = $load_mode;
-        $this->precedents = $precedents;
-        $this->extra = [];
     }
 }
 
@@ -1303,16 +1325,13 @@ final class Script extends Combinable
  */
 final class Css extends Combinable
 {
-    public int $order;
-
     public function __construct(
         string $id,
         string $path,
         int|string $version = 0,
-        int $order = 0
+        public int $order = 0
     ) {
         parent::__construct($id, $path, $version);
-        $this->order = $order;
     }
 }
 
@@ -1347,7 +1366,7 @@ class CssLoader
      */
     public function get_css(): array
     {
-        uasort($this->registered_css, self::cmp_by_order(...));
+        uasort($this->registered_css, $this->cmp_by_order(...));
         $combiner = new FileCombiner('css', $this->registered_css);
         return $combiner->combine();
     }
@@ -1381,7 +1400,7 @@ class CssLoader
     /**
      * Callback for CSS files sorting.
      */
-    private static function cmp_by_order(
+    private function cmp_by_order(
         Css $a,
         Css $b
     ): int {
@@ -1431,7 +1450,8 @@ class ScriptLoader
         $this->registered_scripts = [];
         $this->inline_scripts = [];
         $this->head_done_scripts = [];
-        $this->did_head = $this->did_footer = false;
+        $this->did_head = false;
+        $this->did_footer = false;
     }
 
     public function did_head(): bool
@@ -1454,18 +1474,23 @@ class ScriptLoader
         string $code,
         array $require
     ): void {
-        ! $this->did_footer || trigger_error('Attempt to add inline script but the footer has been written', E_USER_WARNING);
-        if (! empty($require)) {
+        if ($this->did_footer) {
+            trigger_error('Attempt to add inline script but the footer has been written', E_USER_WARNING);
+        }
+
+        if ($require !== []) {
             foreach ($require as $id) {
-                if (! isset($this->registered_scripts[$id])) {
-                    $this->load_known_required_script($id, 1) or fatal_error("inline script not found require {$id}");
+                if (! isset($this->registered_scripts[$id]) && ! $this->load_known_required_script($id, 1)) {
+                    fatal_error("inline script not found require {$id}");
                 }
+
                 $s = $this->registered_scripts[$id];
                 if ($s->load_mode == 2) {
                     $s->load_mode = 1;
                 } // until now, the implementation does not allow executing inline script depending on another async script
             }
         }
+
         $this->inline_scripts[] = $code;
     }
 
@@ -1485,10 +1510,11 @@ class ScriptLoader
         } elseif ($this->did_footer) {
             trigger_error("Attempt to add script {$id} but the footer has been written", E_USER_WARNING);
         }
+
         if (! isset($this->registered_scripts[$id])) {
             $script = new Script($load_mode, $id, $path, $version, $require);
             $script->is_template = $is_template;
-            self::fill_well_known($id, $script);
+            $this->fill_well_known($id, $script);
             $this->registered_scripts[$id] = $script;
 
             // Try to load undefined required script
@@ -1499,13 +1525,15 @@ class ScriptLoader
             }
         } else {
             $script = $this->registered_scripts[$id];
-            if (count($require)) {
+            if ($require !== []) {
                 $script->precedents = array_unique(array_merge($script->precedents, $require));
             }
+
             $script->set_path($path);
             if ($version && version_compare((string) $script->version, (string) $version) < 0) {
                 $script->version = $version;
             }
+
             if ($load_mode < $script->load_mode) {
                 $script->load_mode = $load_mode;
             }
@@ -1519,25 +1547,27 @@ class ScriptLoader
      */
     public function get_head_scripts(): array
     {
-        self::check_load_dep($this->registered_scripts);
+        $this->check_load_dep($this->registered_scripts);
         foreach (array_keys($this->registered_scripts) as $id) {
             $this->compute_script_topological_order($id);
         }
 
-        uasort($this->registered_scripts, self::cmp_by_mode_and_order(...));
+        uasort($this->registered_scripts, $this->cmp_by_mode_and_order(...));
 
         foreach ($this->registered_scripts as $id => $script) {
             if ($script->load_mode > 0) {
                 break;
             }
+
             if (! empty($script->path)) {
                 $this->head_done_scripts[$id] = $script;
             } else {
                 trigger_error("Script {$id} has an undefined path", E_USER_WARNING);
             }
         }
+
         $this->did_head = true;
-        return self::do_combine($this->head_done_scripts);
+        return $this->do_combine($this->head_done_scripts);
     }
 
     /**
@@ -1548,8 +1578,9 @@ class ScriptLoader
     public function get_footer_scripts(): array
     {
         if (! $this->did_head) {
-            self::check_load_dep($this->registered_scripts);
+            $this->check_load_dep($this->registered_scripts);
         }
+
         $this->did_footer = true;
         $todo = [];
         foreach ($this->registered_scripts as $id => $script) {
@@ -1562,7 +1593,7 @@ class ScriptLoader
             $this->compute_script_topological_order($id);
         }
 
-        uasort($todo, self::cmp_by_mode_and_order(...));
+        uasort($todo, $this->cmp_by_mode_and_order(...));
 
         $result = [[], []];
         foreach ($todo as $id => $script) {
@@ -1570,14 +1601,15 @@ class ScriptLoader
                 $result[$script->load_mode - 1][$id] = $script;
             }
         }
-        return [self::do_combine($result[0]), self::do_combine($result[1])];
+
+        return [$this->do_combine($result[0]), $this->do_combine($result[1])];
     }
 
     /**
      * @param Script[] $scripts
      * @return Combinable[]
      */
-    private static function do_combine(
+    private function do_combine(
         array $scripts
     ): array {
         $combiner = new FileCombiner('js', $scripts);
@@ -1590,7 +1622,7 @@ class ScriptLoader
      *
      * @param Script[] $scripts
      */
-    private static function check_load_dep(
+    private function check_load_dep(
         array $scripts
     ): void {
         global $conf;
@@ -1602,11 +1634,13 @@ class ScriptLoader
                     if (! isset($scripts[$precedent])) {
                         continue;
                     }
+
                     if ($scripts[$precedent]->load_mode > $load) {
                         $scripts[$precedent]->load_mode = $load;
                         $changed = true;
                     }
-                    if ($load == 2 && $scripts[$precedent]->load_mode == 2 && ($scripts[$precedent]->is_remote() or ! $conf['template_combine_files'])) {// we are async -> a predecessor cannot be async unlesss it can be merged; otherwise script execution order is not guaranteed
+
+                    if ($load == 2 && $scripts[$precedent]->load_mode == 2 && ($scripts[$precedent]->is_remote() || ! $conf['template_combine_files'])) {// we are async -> a predecessor cannot be async unlesss it can be merged; otherwise script execution order is not guaranteed
                         $scripts[$precedent]->load_mode = 1;
                         $changed = true;
                     }
@@ -1620,11 +1654,11 @@ class ScriptLoader
      *
      * @param string $id in FileCombiner::$known_paths
      */
-    private static function fill_well_known(
+    private function fill_well_known(
         string $id,
         Script $script
     ): void {
-        if (empty($script->path) && isset(self::$known_paths[$id])) {
+        if (($script->path === '' || $script->path === '0') && isset(self::$known_paths[$id])) {
             $script->path = self::$known_paths[$id];
         }
     }
@@ -1647,6 +1681,7 @@ class ScriptLoader
 
             return true;
         }
+
         return false;
     }
 
@@ -1662,18 +1697,25 @@ class ScriptLoader
             trigger_error("Undefined script {$script_id} is required by someone", E_USER_WARNING);
             return 0;
         }
-        $recursion_limiter < 5 or fatal_error('combined script circular dependency');
+
+        if ($recursion_limiter >= 5) {
+            fatal_error('combined script circular dependency');
+        }
+
         $script = $this->registered_scripts[$script_id];
         if (isset($script->extra['order'])) {
             return $script->extra['order'];
         }
+
         if (count($script->precedents) == 0) {
             return $script->extra['order'] = 0;
         }
+
         $max = 0;
         foreach ($script->precedents as $precedent) {
             $max = max($max, $this->compute_script_topological_order($precedent, $recursion_limiter + 1));
         }
+
         $max++;
         return $script->extra['order'] = $max;
     }
@@ -1681,12 +1723,12 @@ class ScriptLoader
     /**
      * Callback for scripts sorter.
      */
-    private static function cmp_by_mode_and_order(
+    private function cmp_by_mode_and_order(
         Script $s1,
         Script $s2
     ): int {
         $ret = intval($s1->load_mode) - intval($s2->load_mode);
-        if ($ret) {
+        if ($ret !== 0) {
             return $ret;
         }
 
@@ -1695,9 +1737,10 @@ class ScriptLoader
             return $ret;
         }
 
-        if ($s1->extra['order'] == 0 and ($s1->is_remote() xor $s2->is_remote())) {
+        if ($s1->extra['order'] == 0 && ($s1->is_remote() xor $s2->is_remote())) {
             return $s1->is_remote() ? -1 : 1;
         }
+
         return strcmp($s1->id, $s2->id);
     }
 }
@@ -1707,29 +1750,17 @@ class ScriptLoader
  */
 final class FileCombiner
 {
-    /**
-     * 'js' or 'css'
-     */
-    private string $type;
-
-    private bool $is_css;
-
-    /**
-     * @var Combinable[]
-     */
-    private array $combinables;
+    private readonly bool $is_css;
 
     /**
      * @param string $type 'js' or 'css'
      * @param Combinable[] $combinables
      */
     public function __construct(
-        string $type,
-        array $combinables = []
+        private readonly string $type,
+        private array $combinables = []
     ) {
-        $this->type = $type;
-        $this->is_css = $type == 'css';
-        $this->combinables = $combinables;
+        $this->is_css = $this->type === 'css';
     }
 
     /**
@@ -1739,10 +1770,11 @@ final class FileCombiner
     {
         $dir = opendir(PHPWG_ROOT_PATH . PWG_COMBINED_DIR);
         while ($file = readdir($dir)) {
-            if (get_extension($file) == 'js' || get_extension($file) == 'css') {
+            if (get_extension($file) === 'js' || get_extension($file) === 'css') {
                 unlink(PHPWG_ROOT_PATH . PWG_COMBINED_DIR . $file);
             }
         }
+
         closedir($dir);
     }
 
@@ -1767,8 +1799,8 @@ final class FileCombiner
         global $conf;
         $force = false;
         if (is_admin() && ($this->is_css || ! $conf['template_compile_check'])) {
-            $force = (isset($_SERVER['HTTP_CACHE_CONTROL']) && strpos($_SERVER['HTTP_CACHE_CONTROL'], 'max-age=0') !== false)
-              || (isset($_SERVER['HTTP_PRAGMA']) && strpos($_SERVER['HTTP_PRAGMA'], 'no-cache'));
+            $force = (isset($_SERVER['HTTP_CACHE_CONTROL']) && str_contains((string) $_SERVER['HTTP_CACHE_CONTROL'], 'max-age=0'))
+              || (isset($_SERVER['HTTP_PRAGMA']) && strpos((string) $_SERVER['HTTP_PRAGMA'], 'no-cache'));
         }
 
         $result = [];
@@ -1792,8 +1824,10 @@ final class FileCombiner
             if ($conf['template_compile_check']) {
                 $key[] = file_exists(PHPWG_ROOT_PATH . $combinable->path) ? filemtime(PHPWG_ROOT_PATH . $combinable->path) : false;
             }
+
             $pending[] = $combinable;
         }
+
         $this->flush_pending($result, $pending, $key, $force);
         return $result;
     }
@@ -1810,7 +1844,7 @@ final class FileCombiner
         bool $force
     ): void {
         if (count($pending) > 1) {
-            $key = join('>', $key);
+            $key = implode('>', $key);
             $file = PWG_COMBINED_DIR . base_convert(hash('crc32b', $key), 16, 36) . '.' . $this->type;
             if ($force || ! file_exists(PHPWG_ROOT_PATH . $file)) {
                 $output = '';
@@ -1820,17 +1854,20 @@ final class FileCombiner
                     $output .= $this->process_combinable($combinable, true, $force, $header);
                     $output .= "\n";
                 }
+
                 $output = "/*BEGIN header */\n" . $header . "\n" . $output;
                 mkgetdir(dirname(PHPWG_ROOT_PATH . $file));
                 file_put_contents(PHPWG_ROOT_PATH . $file, $output);
                 chmod(PHPWG_ROOT_PATH . $file, 0644);
             }
+
             $result[] = new Combinable('combi', $file);
         } elseif (count($pending) == 1) {
             $header = '';
             $this->process_combinable($pending[0], false, $force, $header);
             $result[] = $pending[0];
         }
+
         $key = [];
         $pending = [];
     }
@@ -1855,6 +1892,7 @@ final class FileCombiner
                 if ($conf['template_compile_check']) {
                     $key[] = filemtime(PHPWG_ROOT_PATH . $combinable->path);
                 }
+
                 $file = PWG_COMBINED_DIR . 't' . base_convert(hash('crc32b', implode(',', $key)), 16, 36) . '.' . $this->type;
                 if (! $force && file_exists(PHPWG_ROOT_PATH . $file)) {
                     $combinable->path = $file;
@@ -1870,9 +1908,9 @@ final class FileCombiner
             $content = $template->parse($handle, true);
 
             if ($this->is_css) {
-                $content = self::process_css($content, $combinable->path, $header);
+                $content = $this->process_css($content, $combinable->path, $header);
             } else {
-                $content = self::process_js($content, $combinable->path);
+                $content = $this->process_js($content, $combinable->path);
             }
 
             if ($return_content) {
@@ -1888,10 +1926,11 @@ final class FileCombiner
         } elseif ($return_content) {
             $content = file_get_contents(PHPWG_ROOT_PATH . $combinable->path);
             if ($this->is_css) {
-                $content = self::process_css($content, $combinable->path, $header);
+                $content = $this->process_css($content, $combinable->path, $header);
             } else {
-                $content = self::process_js($content, $combinable->path);
+                $content = $this->process_js($content, $combinable->path);
             }
+
             return $content;
         }
 
@@ -1903,16 +1942,17 @@ final class FileCombiner
      *
      * @param string $js file content
      */
-    private static function process_js(
+    private function process_js(
         string $js,
         string $file
     ): string {
-        if (strpos($file, '.min') === false and strpos($file, '.packed') === false) {
+        if (! str_contains($file, '.min') && ! str_contains($file, '.packed')) {
             try {
                 $js = JShrink\Minifier::minify($js);
-            } catch (Exception $e) {
+            } catch (Exception) {
             }
         }
+
         return trim($js, " \t\r\n;") . ";\n";
     }
 
@@ -1923,16 +1963,17 @@ final class FileCombiner
      * @param string $header CSS directives that must appear first in
      *                       the minified file.
      */
-    private static function process_css(
+    private function process_css(
         string $css,
         string $file,
         string &$header
     ): string {
         $css = self::process_css_rec($css, dirname($file), $header);
-        if (strpos($file, '.min') === false and version_compare(PHP_VERSION, '5.2.4', '>=')) {
+        if (! str_contains($file, '.min') && PHP_VERSION_ID >= 50200) {
             $cssMin = new tubalmartin\CssMin\Minifier();
             $css = $cssMin->run($css);
         }
+
         $css = trigger_change('combined_css_postfilter', $css);
         return $css;
     }
@@ -1951,29 +1992,28 @@ final class FileCombiner
     ): string {
         static $PATTERN_URL = "#url\(\s*['|\"]{0,1}(.*?)['|\"]{0,1}\s*\)#";
         static $PATTERN_IMPORT = "#@import\s*['|\"]{0,1}(.*?)['|\"]{0,1};#";
-
         if (preg_match_all($PATTERN_URL, $css, $matches, PREG_SET_ORDER)) {
-            $search = $replace = [];
+            $search = [];
+            $replace = [];
             foreach ($matches as $match) {
-                if (! url_is_remote($match[1]) && $match[1][0] != '/' && strpos($match[1], 'data:image/') === false) {
+                if (! url_is_remote($match[1]) && $match[1][0] !== '/' && ! str_contains($match[1], 'data:image/')) {
                     $relative = $dir . "/{$match[1]}";
                     $search[] = $match[0];
                     $replace[] = 'url(' . embellish_url(get_absolute_root_url(false) . $relative) . ')';
                 }
             }
+
             $css = str_replace($search, $replace, $css);
         }
 
         if (preg_match_all($PATTERN_IMPORT, $css, $matches, PREG_SET_ORDER)) {
-            $search = $replace = [];
-
+            $search = [];
+            $replace = [];
             foreach ($matches as $match) {
                 $search[] = $match[0];
 
                 if (
-                    strpos($match[1], '..') !== false // Possible attempt to get out of Piwigo's dir
-                    or strpos($match[1], '://') !== false // Remote URL
-                    or ! is_readable(PHPWG_ROOT_PATH . $dir . '/' . $match[1])
+                    str_contains($match[1], '..') || str_contains($match[1], '://') || ! is_readable(PHPWG_ROOT_PATH . $dir . '/' . $match[1])
                 ) {
                     // If anything is suspicious, don't try to process the
                     // @import. Since @import needs to be first, and we are
@@ -1986,8 +2026,10 @@ final class FileCombiner
                     $replace[] = self::process_css_rec($sub_css, dirname($dir . "/{$match[1]}"), $header);
                 }
             }
+
             $css = str_replace($search, $replace, $css);
         }
+
         return $css;
     }
 }

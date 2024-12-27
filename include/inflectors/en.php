@@ -13,13 +13,13 @@ class Inflector_en
 {
     private array $exceptions;
 
-    private array $pluralizers;
+    private readonly array $pluralizers;
 
-    private array $singularizers;
+    private readonly array $singularizers;
 
-    private array $ing2er;
+    private readonly array $ing2er;
 
-    private array $er2ing;
+    private readonly array $er2ing;
 
     public function __construct()
     {
@@ -115,38 +115,43 @@ class Inflector_en
             if (! empty($rc)) {
                 $res[] = $rc;
             }
+
             return $res;
         }
 
-        self::run($this->pluralizers, $word, $res);
-        self::run($this->singularizers, $word, $res);
+        $this->run($this->pluralizers, $word, $res);
+        $this->run($this->singularizers, $word, $res);
         if (strlen($word) > 4) {
-            self::run($this->er2ing, $word, $res);
+            $this->run($this->er2ing, $word, $res);
         }
+
         if (strlen($word) > 5) {
-            $rc = self::run($this->ing2er, $word, $res);
+            $rc = $this->run($this->ing2er, $word, $res);
             if ($rc !== false) {
-                self::run($this->pluralizers, $rc, $res);
+                $this->run($this->pluralizers, $rc, $res);
             }
         }
+
         return $res;
     }
 
-    private static function run(
+    private function run(
         array $rules,
         string $word,
         array &$res
     ): string|array|null|false {
         foreach ($rules as $rule => $replacement) {
-            $rc = preg_replace($rule . 'i', $replacement, $word, -1, $count);
-            if ($count) {
+            $rc = preg_replace($rule . 'i', (string) $replacement, $word, -1, $count);
+            if ($count !== 0) {
                 if ($rc !== $word) {
                     $res[] = $rc;
                     return $rc;
                 }
+
                 break;
             }
         }
+
         return false;
     }
 }

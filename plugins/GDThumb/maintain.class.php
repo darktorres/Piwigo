@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
+defined('PHPWG_ROOT_PATH') || die('Hacking attempt!');
 
 class GDThumb_maintain extends PluginMaintain
 {
@@ -12,7 +12,7 @@ class GDThumb_maintain extends PluginMaintain
         string $plugin_version,
         array &$errors = []
     ): void {
-        require dirname(__FILE__) . '/config_default.inc.php';
+        require __DIR__ . '/config_default.inc.php';
         global $conf;
         if (empty($conf['gdThumb'])) {
             conf_update_param('gdThumb', $config_default, true);
@@ -58,7 +58,7 @@ class GDThumb_maintain extends PluginMaintain
         if (is_dir($path)) {
             $fh = opendir($path);
             while ($file = readdir($fh)) {
-                if ($file != '.' and $file != '..') {
+                if ($file !== '.' && $file !== '..') {
                     $pathfile = $path . '/' . $file;
                     if (is_dir($pathfile)) {
                         self::gtdeltree($pathfile);
@@ -67,6 +67,7 @@ class GDThumb_maintain extends PluginMaintain
                     }
                 }
             }
+
             closedir($fh);
             return rmdir($path);
         }

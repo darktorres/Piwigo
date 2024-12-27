@@ -18,9 +18,7 @@ $env_nbm =
         ];
 
 if (
-    (! isset($env_nbm['sendmail_timeout'])) or
-    (! is_numeric($env_nbm['sendmail_timeout'])) or
-    ($env_nbm['sendmail_timeout'] <= 0)
+    ! isset($env_nbm['sendmail_timeout']) || ! is_numeric($env_nbm['sendmail_timeout']) || $env_nbm['sendmail_timeout'] <= 0
 ) {
     $env_nbm['sendmail_timeout'] = $conf['nbm_treatment_timeout_default'];
 }
@@ -42,7 +40,7 @@ function find_available_check_key(): string
             WHERE check_key = '{$key}';
             SQL;
 
-        list($count) = pwg_db_fetch_row(pwg_query($query));
+        [$count] = pwg_db_fetch_row(pwg_query($query));
         if ($count == 0) {
             return $key;
         }
@@ -71,7 +69,7 @@ function check_sendmail_timeout(): bool
 function quote_check_key_list(
     $check_key_list = []
 ): array {
-    return array_map(function ($s) { return '\'' . $s . '\''; }, $check_key_list);
+    return array_map(fn ($s): string => "'" . $s . "'", $check_key_list);
 }
 
 /*
@@ -109,7 +107,7 @@ function get_user_notifications(
 
             SQL;
 
-        if ($action == 'send') {
+        if ($action === 'send') {
             // No mail empty and all users enabled
             $query .= <<<SQL
                 AND n.enabled = 'true'
@@ -120,7 +118,7 @@ function get_user_notifications(
 
         $query .= $query_and_check_key;
 
-        if (isset($enabled_filter_value) and ($enabled_filter_value != '')) {
+        if (isset($enabled_filter_value) && $enabled_filter_value != '') {
             $filter_value = boolean_to_string($enabled_filter_value);
             $query .= <<<SQL
                 AND n.enabled = '{$filter_value}'
@@ -133,7 +131,7 @@ function get_user_notifications(
 
             SQL;
 
-        if ($action == 'send') {
+        if ($action === 'send') {
             $query .= <<<SQL
                 last_send, username
 
@@ -153,6 +151,7 @@ function get_user_notifications(
             }
         }
     }
+
     return $data_users;
 }
 
@@ -177,7 +176,7 @@ function begin_users_env_nbm(
     if ($is_to_send_mail) {
         // Init mail configuration
         $env_nbm['email_format'] = get_str_email_format($conf['nbm_send_html_mail']);
-        $env_nbm['send_as_name'] = ((isset($conf['nbm_send_mail_as']) and ! empty($conf['nbm_send_mail_as'])) ? $conf['nbm_send_mail_as'] : get_mail_sender_name());
+        $env_nbm['send_as_name'] = ((isset($conf['nbm_send_mail_as']) && ! empty($conf['nbm_send_mail_as'])) ? $conf['nbm_send_mail_as'] : get_mail_sender_name());
         $env_nbm['send_as_mail_address'] = get_webmaster_mail_address();
         $env_nbm['send_as_mail_formated'] = format_email($env_nbm['send_as_name'], $env_nbm['send_as_mail_address']);
         // Init mail counter
@@ -265,7 +264,7 @@ function inc_mail_sent_success(
     global $page, $env_nbm;
 
     ++$env_nbm['sent_mail_count'];
-    $page['infos'][] = sprintf($env_nbm['msg_info'], stripslashes($nbm_user['username']), $nbm_user['mail_address']);
+    $page['infos'][] = sprintf($env_nbm['msg_info'], stripslashes((string) $nbm_user['username']), $nbm_user['mail_address']);
 }
 
 /*
@@ -279,7 +278,7 @@ function inc_mail_sent_failed(
     global $page, $env_nbm;
 
     ++$env_nbm['error_on_mail_count'];
-    $page['errors'][] = sprintf($env_nbm['msg_error'], stripslashes($nbm_user['username']), $nbm_user['mail_address']);
+    $page['errors'][] = sprintf($env_nbm['msg_error'], stripslashes((string) $nbm_user['username']), $nbm_user['mail_address']);
 }
 
 /*
@@ -297,7 +296,6 @@ function display_counter_info(): void
             '%d mails were not sent.',
             $env_nbm['error_on_mail_count']
         );
-
         if ($env_nbm['sent_mail_count'] != 0) {
             $page['infos'][] = l10n_dec(
                 '%d mail was sent.',
@@ -305,16 +303,14 @@ function display_counter_info(): void
                 $env_nbm['sent_mail_count']
             );
         }
+    } elseif ($env_nbm['sent_mail_count'] == 0) {
+        $page['infos'][] = l10n('No mail to send.');
     } else {
-        if ($env_nbm['sent_mail_count'] == 0) {
-            $page['infos'][] = l10n('No mail to send.');
-        } else {
-            $page['infos'][] = l10n_dec(
-                '%d mail was sent.',
-                '%d mails were sent.',
-                $env_nbm['sent_mail_count']
-            );
-        }
+        $page['infos'][] = l10n_dec(
+            '%d mail was sent.',
+            '%d mails were sent.',
+            $env_nbm['sent_mail_count']
+        );
     }
 }
 
@@ -327,7 +323,7 @@ function assign_vars_nbm_mail_content(
 
     $env_nbm['mail_template']->assign(
         [
-            'USERNAME' => stripslashes($nbm_user['username']),
+            'USERNAME' => stripslashes((string) $nbm_user['username']),
 
             'SEND_AS_NAME' => $env_nbm['send_as_name'],
 
@@ -416,7 +412,7 @@ function do_subscribe_unsubscribe_notification_by_mail(
 
                 $ret = pwg_mail(
                     [
-                        'name' => stripslashes($nbm_user['username']),
+                        'name' => stripslashes((string) $nbm_user['username']),
                         'email' => $nbm_user['mail_address'],
                     ],
                     [
@@ -446,10 +442,10 @@ function do_subscribe_unsubscribe_notification_by_mail(
                     'enabled' => $enabled_value,
                 ];
                 ++$updated_data_count;
-                $page['infos'][] = sprintf($msg_info, stripslashes($nbm_user['username']), $nbm_user['mail_address']);
+                $page['infos'][] = sprintf($msg_info, stripslashes((string) $nbm_user['username']), $nbm_user['mail_address']);
             } else {
                 ++$error_on_updated_data_count;
-                $page['errors'][] = sprintf($msg_error, stripslashes($nbm_user['username']), $nbm_user['mail_address']);
+                $page['errors'][] = sprintf($msg_error, stripslashes((string) $nbm_user['username']), $nbm_user['mail_address']);
             }
 
         }

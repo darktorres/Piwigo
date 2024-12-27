@@ -23,7 +23,7 @@ $query = <<<SQL
     FROM categories;
     SQL;
 
-list($nb_cats) = pwg_db_fetch_row(pwg_query($query));
+[$nb_cats] = pwg_db_fetch_row(pwg_query($query));
 $template->assign(
     [
         'nb_cats' => $nb_cats,

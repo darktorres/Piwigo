@@ -13,11 +13,15 @@ define('PHPWG_ROOT_PATH', './');
 
 // fast bootstrap - no db connection
 require PHPWG_ROOT_PATH . 'include/config_default.inc.php';
-file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php')) {
+    require PHPWG_ROOT_PATH . 'local/config/config.inc.php';
+}
 
-defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
+defined('PWG_DERIVATIVE_DIR') || define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
-file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php') && require PHPWG_ROOT_PATH . 'local/config/database.inc.php';
+if (file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php')) {
+    require PHPWG_ROOT_PATH . 'local/config/database.inc.php';
+}
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     // we use a hashed filename to prevent direct file access, and we salt with
@@ -66,6 +70,7 @@ function ierror(
         if (ob_get_length() !== false) {
             ob_clean();
         }
+
         // default url is on html format
         $url = html_entity_decode($msg);
         $logger->debug($code . ' ' . $url, [
@@ -76,6 +81,7 @@ function ierror(
         header('Location: ' . $url);
         exit;
     }
+
     if ($code >= 400) {
         $protocol = $_SERVER['SERVER_PROTOCOL'];
         if (($protocol != 'HTTP/1.1') && ($protocol != 'HTTP/1.0')) {
@@ -84,6 +90,7 @@ function ierror(
 
         header("{$protocol} {$code} {$msg}", true, $code);
     }
+
     //todo improve
     echo $msg;
     $logger->error($code . ' ' . $msg, [
@@ -107,6 +114,7 @@ function url_to_size(
     if ($pos === false) {
         return [(int) $s, (int) $s];
     }
+
     return [(int) substr($s, 0, $pos), (int) substr($s, $pos + 1)];
 }
 
@@ -122,10 +130,11 @@ function parse_custom_params(
 
     $token = array_shift($tokens);
     if ($token[0] == 's') {
-        $size = url_to_size(substr($token, 1));
+        $size = url_to_size(substr((string) $token, 1));
     } elseif ($token[0] == 'e') {
         $crop = 1;
-        $size = $min_size = url_to_size(substr($token, 1));
+        $size = url_to_size(substr((string) $token, 1));
+        $min_size = $size;
     } else {
         $size = url_to_size($token);
         if (count($tokens) < 2) {
@@ -138,6 +147,7 @@ function parse_custom_params(
         $token = array_shift($tokens);
         $min_size = url_to_size($token);
     }
+
     return new DerivativeParams(new SizingParams($size, $crop, $min_size));
 }
 
@@ -145,18 +155,18 @@ function parse_request(): void
 {
     global $conf, $page;
 
-    if ($conf['question_mark_in_urls'] == false and
-         isset($_SERVER['PATH_INFO']) and ! empty($_SERVER['PATH_INFO'])) {
+    if ($conf['question_mark_in_urls'] == false && isset($_SERVER['PATH_INFO']) && ! empty($_SERVER['PATH_INFO'])) {
         $req = $_SERVER['PATH_INFO'];
         $req = str_replace('//', '/', $req);
         $path_count = count(explode('/', $req));
         $page['root_path'] = PHPWG_ROOT_PATH . str_repeat('../', $path_count - 1);
     } else {
         $req = $_SERVER['QUERY_STRING'];
-        if ($pos = strpos($req, '&')) {
-            $req = substr($req, 0, $pos);
+        if ($pos = strpos((string) $req, '&')) {
+            $req = substr((string) $req, 0, $pos);
         }
-        $req = rawurldecode($req);
+
+        $req = rawurldecode((string) $req);
         /*foreach (array_keys($_GET) as $keynum => $key)
         {
           $req = $key;
@@ -168,25 +178,31 @@ function parse_request(): void
     $req = ltrim($req, '/');
 
     foreach (preg_split('#/+#', $req) as $token) {
-        preg_match($conf['sync_chars_regex'], $token) or ierror('Invalid chars in request', 400);
+        preg_match($conf['sync_chars_regex'], $token) || ierror('Invalid chars in request', 400);
     }
 
     $page['derivative_path'] = PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $req;
 
     $pos = strrpos($req, '.');
-    $pos !== false || ierror('Missing .', 400);
+    if ($pos === false) {
+        ierror('Missing .', 400);
+    }
+
     $ext = substr($req, $pos);
     $page['derivative_ext'] = $ext;
     $req = substr($req, 0, $pos);
 
     $pos = strrpos($req, '-');
-    $pos !== false || ierror('Missing -', 400);
+    if ($pos === false) {
+        ierror('Missing -', 400);
+    }
+
     $deriv = substr($req, $pos + 1);
     $req = substr($req, 0, $pos);
 
     $deriv = explode('_', $deriv);
     foreach (ImageStdParams::get_defined_type_map() as $type => $params) {
-        if (derivative_to_url($type) == $deriv[0]) {
+        if (derivative_to_url($type) === $deriv[0]) {
             $page['derivative_type'] = $type;
             $page['derivative_params'] = $params;
             break;
@@ -194,24 +210,27 @@ function parse_request(): void
     }
 
     if (! isset($page['derivative_type'])) {
-        if (derivative_to_url(IMG_CUSTOM) == $deriv[0]) {
+        if (derivative_to_url(IMG_CUSTOM) === $deriv[0]) {
             $page['derivative_type'] = IMG_CUSTOM;
         } else {
             ierror('Unknown parsing type', 400);
         }
     }
+
     array_shift($deriv);
 
     if ($page['derivative_type'] == IMG_CUSTOM) {
         $params = $page['derivative_params'] = parse_custom_params($deriv);
         ImageStdParams::apply_global($params);
 
-        if ($params->sizing->ideal_size[0] < 20 or $params->sizing->ideal_size[1] < 20) {
+        if ($params->sizing->ideal_size[0] < 20 || $params->sizing->ideal_size[1] < 20) {
             ierror('Invalid size', 400);
         }
-        if ($params->sizing->max_crop < 0 or $params->sizing->max_crop > 1) {
+
+        if ($params->sizing->max_crop < 0 || $params->sizing->max_crop > 1) {
             ierror('Invalid crop', 400);
         }
+
         $greatest = ImageStdParams::get_by_type(IMG_XXLARGE);
 
         $key = [];
@@ -248,6 +267,7 @@ function try_switch_source(
         $original_size[0] = $original_size[1];
         $original_size[1] = $tmp;
     }
+
     $dsize = $params->compute_final_size($original_size);
 
     $use_watermark = $params->use_watermark;
@@ -260,12 +280,15 @@ function try_switch_source(
         if ($candidate->type == $params->type) {
             continue;
         }
+
         if ($candidate->use_watermark != $use_watermark) {
             continue;
         }
+
         if ($candidate->max_width() < $params->max_width() || $candidate->max_height() < $params->max_height()) {
             continue;
         }
+
         $candidate_size = $candidate->compute_final_size($original_size);
         if ($dsize != $params->compute_final_size($candidate_size)) {
             continue;
@@ -278,14 +301,19 @@ function try_switch_source(
         } else {
             if ($use_watermark && $candidate->use_watermark) {
                 continue;
-            } //a square that requires watermark should not be generated from a larger derivative with watermark, because if the watermark is not centered on the large image, it will be cropped.
+            }
+
+            //a square that requires watermark should not be generated from a larger derivative with watermark, because if the watermark is not centered on the large image, it will be cropped.
             if ($candidate->sizing->max_crop != 0) {
                 continue;
-            } // this could be optimized
+            }
+
+            // this could be optimized
             if ($candidate_size[0] < $params->sizing->min_size[0] || $candidate_size[1] < $params->sizing->min_size[1]) {
                 continue;
             }
         }
+
         $candidates[] = $candidate;
     }
 
@@ -298,6 +326,7 @@ function try_switch_source(
           || $candidate_mtime < $candidate->last_mod_time) {
             continue;
         }
+
         $params->use_watermark = false;
         $params->sharpen = min(1, $params->sharpen);
         $page['src_path'] = $candidate_path;
@@ -305,6 +334,7 @@ function try_switch_source(
         $page['rotation_angle'] = 0;
         return true;
     }
+
     return false;
 }
 
@@ -313,7 +343,7 @@ function send_derivative(
 ): void {
     global $page;
 
-    if (isset($_GET['ajaxload']) and $_GET['ajaxload'] == 'true') {
+    if (isset($_GET['ajaxload']) && $_GET['ajaxload'] == 'true') {
         require_once PHPWG_ROOT_PATH . 'include/functions_cookie.inc.php';
         require_once PHPWG_ROOT_PATH . 'include/functions_url.inc.php';
 
@@ -322,6 +352,7 @@ function send_derivative(
         ]);
         return;
     }
+
     $fp = fopen($page['derivative_path'], 'rb');
 
     $fstat = fstat($fp);
@@ -329,10 +360,11 @@ function send_derivative(
     if ($expires !== false) {
         header('Expires: ' . gmdate('D, d M Y H:i:s', $expires) . ' GMT');
     }
+
     header('Connection: close');
 
     $ctype = 'application/octet-stream';
-    switch (strtolower($page['derivative_ext'])) {
+    switch (strtolower((string) $page['derivative_ext'])) {
         case '.jpe': case '.jpeg': case '.jpg': $ctype = 'image/jpeg';
             break;
         case '.png': $ctype = 'image/png';
@@ -342,6 +374,7 @@ function send_derivative(
         case '.webp': $ctype = 'image/webp';
             break;
     }
+
     header("Content-Type: {$ctype}");
 
     fpassthru($fp);
@@ -349,7 +382,8 @@ function send_derivative(
 }
 
 $page = [];
-$begin = $step = microtime(true);
+$begin = microtime(true);
+$step = $begin;
 $timing = [];
 foreach (explode(',', 'load,rotate,crop,scale,sharpen,watermark,save,send') as $k) {
     $timing[$k] = '';
@@ -366,8 +400,8 @@ try {
         $conf['db_password'],
         $conf['db_base']
     );
-} catch (Exception $e) {
-    $logger->error($e->getMessage());
+} catch (Exception $exception) {
+    $logger->error($exception->getMessage());
 }
 
 $query = <<<SQL
@@ -375,7 +409,7 @@ $query = <<<SQL
     FROM config
     WHERE param = 'derivatives';
     SQL;
-list($conf['derivatives']) = pwg_db_fetch_row(pwg_query($query));
+[$conf['derivatives']] = pwg_db_fetch_row(pwg_query($query));
 $conf['derivatives'] = unserialize($conf['derivatives']);
 ImageStdParams::load_from_db();
 
@@ -391,9 +425,7 @@ if ($src_mtime === false) {
 
 $need_generate = false;
 $derivative_mtime = file_exists($page['derivative_path']) ? filemtime($page['derivative_path']) : false;
-if ($derivative_mtime === false or
-    $derivative_mtime < $src_mtime or
-    $derivative_mtime < $params->last_mod_time) {
+if ($derivative_mtime === false || $derivative_mtime < $src_mtime || $derivative_mtime < $params->last_mod_time) {
     $need_generate = true;
 }
 
@@ -407,21 +439,21 @@ if (isset($_GET['b'])) {
 }
 
 if (! $need_generate) {
-    if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-      and strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $derivative_mtime) {// send the last mod time of the file back
+    if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime((string) $_SERVER['HTTP_IF_MODIFIED_SINCE']) === $derivative_mtime) {// send the last mod time of the file back
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $derivative_mtime) . ' GMT', true, 304);
         header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 10 * 24 * 3600) . ' GMT', true, 304);
         exit;
     }
+
     send_derivative($expires);
     exit;
 }
 
 require_once PHPWG_ROOT_PATH . 'admin/include/image.class.php';
 $page['coi'] = null;
-if (strpos($page['src_location'], '/pwg_representative/') === false
-    && strpos($page['src_location'], 'themes/') === false
-    && strpos($page['src_location'], 'plugins/') === false) {
+if (! str_contains($page['src_location'], '/pwg_representative/')
+    && ! str_contains($page['src_location'], 'themes/')
+    && ! str_contains($page['src_location'], 'plugins/')) {
     try {
         // Extract the function result
         $escaped_path = addslashes($page['src_location']);
@@ -435,6 +467,7 @@ if (strpos($page['src_location'], '/pwg_representative/') === false
             if (isset($row['width'])) {
                 $page['original_size'] = [$row['width'], $row['height']];
             }
+
             $page['coi'] = $row['coi'];
 
             if (! isset($row['rotation'])) {
@@ -453,6 +486,7 @@ if (strpos($page['src_location'], '/pwg_representative/') === false
                 $page['rotation_angle'] = pwg_image::get_rotation_angle_from_code($row['rotation']);
             }
         }
+
         if (! $row) {
             ierror('Db file path not found', 404);
         }
@@ -462,6 +496,7 @@ if (strpos($page['src_location'], '/pwg_representative/') === false
 } else {
     $page['rotation_angle'] = 0;
 }
+
 pwg_db_close();
 
 if (! try_switch_source($params, $src_mtime) && $params->type == IMG_CUSTOM) {
@@ -469,6 +504,7 @@ if (! try_switch_source($params, $src_mtime) && $params->type == IMG_CUSTOM) {
     foreach (ImageStdParams::get_defined_type_map() as $std_params) {
         $sharpen += $std_params->sharpen;
     }
+
     $params->sharpen = round($sharpen / count(ImageStdParams::get_defined_type_map()));
 }
 
@@ -492,7 +528,8 @@ if ($page['rotation_angle'] != 0) {
 }
 
 // Crop & scale
-$o_size = $d_size = [$image->get_width(), $image->get_height()];
+$o_size = [$image->get_width(), $image->get_height()];
+$d_size = [$image->get_width(), $image->get_height()];
 $params->sizing->compute($o_size, $page['coi'], $crop_rect, $scaled_size);
 if ($crop_rect) {
     $changes++;
@@ -516,12 +553,13 @@ if ($params->will_watermark($d_size)) {
     $wm = ImageStdParams::get_watermark();
     $wm_image = new pwg_image(PHPWG_ROOT_PATH . $wm->file);
     $wm_size = [$wm_image->get_width(), $wm_image->get_height()];
-    if ($d_size[0] < $wm_size[0] or $d_size[1] < $wm_size[1]) {
+    if ($d_size[0] < $wm_size[0] || $d_size[1] < $wm_size[1]) {
         $wm_scaling_params = SizingParams::classic($d_size[0], $d_size[1]);
         $wm_scaling_params->compute($wm_size, null, $tmp, $wm_scaled_size);
         $wm_size = $wm_scaled_size;
         $wm_image->resize($wm_scaled_size[0], $wm_scaled_size[1]);
     }
+
     $x = round(($wm->xpos / 100) * ($d_size[0] - $wm_size[0]));
     $y = round(($wm->ypos / 100) * ($d_size[1] - $wm_size[1]));
     if ($image->compose($wm_image, $x, $y, $wm->opacity)) {
@@ -535,18 +573,17 @@ if ($params->will_watermark($d_size)) {
                     if (! $i && ! $j) {
                         continue;
                     }
+
                     $x2 = $x + $i * $xpad;
                     $y2 = $y + $j * $ypad;
-                    if ($x2 >= 0 && $x2 + $wm_size[0] < $d_size[0] &&
-                        $y2 >= 0 && $y2 + $wm_size[1] < $d_size[1]) {
-                        if (! $image->compose($wm_image, $x2, $y2, $wm->opacity)) {
-                            break;
-                        }
+                    if ($x2 >= 0 && $x2 + $wm_size[0] < $d_size[0] && $y2 >= 0 && $y2 + $wm_size[1] < $d_size[1] && ! $image->compose($wm_image, $x2, $y2, $wm->opacity)) {
+                        break;
                     }
                 }
             }
         }
     }
+
     $wm_image->destroy();
     $timing['watermark'] = time_step($step);
 }
