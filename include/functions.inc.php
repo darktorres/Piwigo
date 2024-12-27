@@ -680,7 +680,7 @@ function pwg_activity(
     $inserts = [];
     $details_insert = pwg_db_real_escape_string(serialize($details));
     $ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
-    $session_id = in_array(session_id(), ['', '0'], true) || session_id() === false ? 'none' : session_id();
+    $session_id = session_id() ?: 'none';
 
     foreach ($object_ids as $loop_object_id) {
         $performed_by = $user['id'] ?? 0; // on a plugin autoupdate, $user is not yet loaded
@@ -2276,7 +2276,7 @@ function safe_version_compare(
     string $b,
     ?string $op = null
 ): bool|int {
-    $replace_chars = (fn ($m): int => ord(strtolower((string) $m[1])));
+    $replace_chars = fn ($m): int => ord(strtolower((string) $m[1]));
 
     // add dot before groups of letters (version_compare does the same thing)
     $a = preg_replace('#([0-9]+)([a-z]+)#i', '$1.$2', $a);

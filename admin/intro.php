@@ -314,7 +314,7 @@ function cmp_day(
     array $a,
     array $b
 ): int {
-    return ($a['x'] < $b['x']) ? -1 : 1;
+    return $a['x'] <=> $b['x'];
 }
 
 usort($temp_data, cmp_day(...));

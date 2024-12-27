@@ -121,12 +121,14 @@ function rv_cdn_combined_script(
     if (! $script->is_remote()) {
         $url = RVCDN_ROOT_URL . $script->path;
     }
+
     return $url;
 }
 
 if (defined('RVPT_JQUERY_SRC')) {
     add_event_handler('loc_begin_page_header', modus_loc_begin_page_header(...));
 }
+
 function modus_loc_begin_page_header(): void
 {
     $all = $GLOBALS['template']->scriptLoader->get_all();
@@ -169,22 +171,26 @@ function modus_css_resolution(
     if (! empty($base)) {
         $rules[] = $base;
     }
+
     foreach (['min', 'max'] as $type) {
         if (! empty(${$type})) {
             $rules[] = '(-webkit-' . $type . '-device-pixel-ratio:' . ${$type} . ')';
         }
     }
+
     $res = implode(' and ', $rules);
 
     $rules = [];
     if (! empty($base)) {
         $rules[] = $base;
     }
+
     foreach (['min', 'max'] as $type) {
         if (! empty(${$type})) {
             $rules[] = '(' . $type . '-resolution:' . round(96 * ${$type}, 1) . 'dpi)';
         }
     }
+
     $res .= ',' . implode(' and ', $rules);
 
     return $res;
@@ -210,6 +216,7 @@ function modus_thumbs(
     } else {
         $horizontal_margin = floor(0.02 * $row_height);
     }
+
     $vertical_margin = $horizontal_margin + 1;
 
     $candidates = [$default_params];
@@ -244,6 +251,7 @@ function modus_thumbs(
         } elseif ($csize[1] > $row_height) {
             $csize = $c->get_scaled_size(9999, $row_height);
         }
+
         // Create class names and styles
         $li_class = 'path-ext-' . $item['path_ext'] . ' file-ext-' . $item['file_ext'];
         $li_style = 'width:' . $csize[0] . 'px; height:' . $row_height . 'px;';
@@ -335,11 +343,13 @@ function modus_get_index_photo_derivative_params(
         if (($caps = pwg_get_session_var('caps')) && ($caps[0] >= 2 && $caps[1] >= 768 || $caps[0] >= 3)) {
             $type = $conf['modus_theme']['index_photo_deriv_hdpi'];
         }
+
         $new = ImageStdParams::get_by_type($type);
         if ($new) {
             return $new;
         }
     }
+
     return $default;
 }
 
@@ -388,6 +398,7 @@ function modus_index_category_thumbnails(
             $l = intval($wh - $dsize[0]) / 2;
             $t = intval($wh - $dsize[1]) / 2;
         }
+
         $item['modus_deriv'] = $deriv;
 
         if (! empty($item['icon_ts'])) {
@@ -421,6 +432,7 @@ function modus_loc_begin_picture(): void
     if (isset($_GET['map'])) {
         return;
     }
+
     $template->append('head_elements', '
     <script>
         if (document.documentElement.offsetWidth > 1270) {
@@ -447,13 +459,16 @@ function modus_picture_content(
         if ($type == IMG_SQUARE || $type == IMG_THUMB) {
             continue;
         }
+
         if (! array_key_exists($type, ImageStdParams::get_defined_type_map())) {
             continue;
         }
+
         $url = $derivative->get_url();
         if (isset($added[$url])) {
             continue;
         }
+
         $added[$url] = 1;
         $show_original &= ! ($derivative->same_as_source());
         $unique_derivatives[$type] = $derivative;
@@ -486,6 +501,7 @@ function modus_picture_content(
                 if ($available_size[2] > 1 || ! $selected_derivative) {
                     $selected_derivative = $derivative;
                 }
+
                 break;
             }
         }
@@ -522,6 +538,7 @@ function modus_picture_content(
                     if ($available_size[2] > 1 || ! $next_best) {
                         $next_best = $derivative;
                     }
+
                     break;
                 }
             }

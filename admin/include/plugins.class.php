@@ -15,6 +15,7 @@ declare(strict_types=1);
  */
 class DummyPlugin_maintain extends PluginMaintain
 {
+    #[\Override]
     public function install(
         string $plugin_version,
         array &$errors = []
@@ -24,6 +25,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function activate(
         string $plugin_version,
         array &$errors = []
@@ -33,6 +35,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function deactivate(): void
     {
         if (is_callable('plugin_deactivate')) {
@@ -40,6 +43,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function uninstall(): void
     {
         if (is_callable('plugin_uninstall')) {
@@ -47,6 +51,7 @@ class DummyPlugin_maintain extends PluginMaintain
         }
     }
 
+    #[\Override]
     public function update(
         string $old_version,
         string $new_version,
@@ -385,7 +390,7 @@ class plugins
 
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php?category_id=' . $conf['pem_plugins_category'] . '&format=php';
-        if (fetchRemote($url, $result) && $pem_versions = unserialize($result)) {
+        if (fetchRemote($url, $result) && ($pem_versions = unserialize($result))) {
             $i = 0;
 
             // If the actual version exists, put the PEM id in $versions_to_check
@@ -598,7 +603,7 @@ class plugins
                 'origin' => 'piwigo_' . $action,
             ];
 
-            if ($handle = fopen($archive, 'wb') && fetchRemote($url, $handle, $get_data)) {
+            if (($handle = fopen($archive, 'wb')) && fetchRemote($url, $handle, $get_data)) {
                 fclose($handle);
                 $zip = new PclZip($archive);
                 if ($list = $zip->listContent()) {
@@ -636,7 +641,7 @@ class plugins
                                 }
                             }
 
-                            if (file_exists($extract_path . '/obsolete.list') && $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES) && $old_files !== []) {
+                            if (file_exists($extract_path . '/obsolete.list') && ($old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)) && $old_files !== []) {
                                 $old_files[] = 'obsolete.list';
                                 $logger->debug(__FUNCTION__ . ', $old_files = {' . implode('},{', $old_files) . '}');
 
@@ -693,7 +698,7 @@ class plugins
         $file = PHPWG_ROOT_PATH . 'install/obsolete_extensions.list';
         $merged_extensions = [];
 
-        if (file_exists($file) && $obsolete_ext = file($file, FILE_IGNORE_NEW_LINES) && $obsolete_ext !== []) {
+        if (file_exists($file) && ($obsolete_ext = file($file, FILE_IGNORE_NEW_LINES)) && $obsolete_ext !== []) {
             foreach ($obsolete_ext as $ext) {
                 if (preg_match('/^(\d+) ?: ?(.*?)$/', $ext, $matches)) {
                     $merged_extensions[$matches[1]] = $matches[2];

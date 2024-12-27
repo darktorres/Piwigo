@@ -333,9 +333,9 @@ function mass_updates(
         mass_inserts($temporary_tablename, $all_fields, $datas);
 
         if (($flags & MASS_UPDATES_SKIP_EMPTY) !== 0) {
-            $func_set = (fn (string $s): string => "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})");
+            $func_set = fn (string $s): string => "t1.{$s} = IFNULL(t2.{$s}, t1.{$s})";
         } else {
-            $func_set = (fn (string $s): string => "t1.{$s} = t2.{$s}");
+            $func_set = fn (string $s): string => "t1.{$s} = t2.{$s}";
         }
 
         // update of table by joining with temporary table

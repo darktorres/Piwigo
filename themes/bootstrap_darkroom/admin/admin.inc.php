@@ -20,7 +20,7 @@ define('TAB_SETTINGS', 'settings');
 define('TAB_ABOUT', 'about');
 
 // Get current tab
-$page['tab'] = $_GET['tab'] ?? $page['tab'] = TAB_SETTINGS;
+$page['tab'] = $_GET['tab'] ?? ($page['tab'] = TAB_SETTINGS);
 if (! in_array($page['tab'], [TAB_SETTINGS, TAB_ABOUT])) {
     $page['tab'] = TAB_SETTINGS;
 }

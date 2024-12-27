@@ -91,7 +91,7 @@ class updates
             $url .= '&show_requirements';
             $url .= '&origin_hash=' . sha1($conf['secret_key'] . get_absolute_root_url());
 
-            if (fetchRemote($url, $result) && $all_versions = explode("\n", $result) && is_array($all_versions)) {
+            if (fetchRemote($url, $result) && ($all_versions = explode("\n", (string) $result)) && is_array($all_versions)) {
                 $new_versions['piwigo.org-checked'] = true;
                 $last_version = trim($all_versions[0]);
                 [$last_version_number, $last_version_php] = explode('/', trim($all_versions[0]));
@@ -234,7 +234,7 @@ class updates
         // Retrieve PEM versions
         $versions_to_check = [];
         $url = PEM_URL . '/api/get_version_list.php';
-        if (fetchRemote($url, $result, $get_data) && $pem_versions = unserialize($result)) {
+        if (fetchRemote($url, $result, $get_data) && ($pem_versions = unserialize($result))) {
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
@@ -405,7 +405,7 @@ class updates
     public static function process_obsolete_list(
         string $file
     ): void {
-        if (file_exists(PHPWG_ROOT_PATH . $file) && $old_files = file(PHPWG_ROOT_PATH . $file, FILE_IGNORE_NEW_LINES) && $old_files !== []) {
+        if (file_exists(PHPWG_ROOT_PATH . $file) && ($old_files = file(PHPWG_ROOT_PATH . $file, FILE_IGNORE_NEW_LINES)) && $old_files !== []) {
             $old_files[] = $file;
             foreach ($old_files as $old_file) {
                 $path = PHPWG_ROOT_PATH . $old_file;
@@ -457,7 +457,7 @@ class updates
 
             while (! $end) {
                 $chunk_num++;
-                if (fetchRemote(PHPWG_URL . '/download/dlcounter.php?code=' . $dl_code . '&chunk_num=' . $chunk_num, $result) && $input = unserialize($result)) {
+                if (fetchRemote(PHPWG_URL . '/download/dlcounter.php?code=' . $dl_code . '&chunk_num=' . $chunk_num, $result) && ($input = unserialize($result))) {
                     if ($input['remaining'] == 0) {
                         $end = true;
                     }
@@ -486,7 +486,7 @@ class updates
                     foreach ($result as $extract) {
                         if (! in_array($extract['status'], ['ok', 'filtered', 'already_a_directory'])) {
                             // Try to change chmod and extract
-                            if (chmod(PHPWG_ROOT_PATH . $extract['filename'], 0777) && $res = $zip->extract(
+                            if (chmod(PHPWG_ROOT_PATH . $extract['filename'], 0777) && ($res = $zip->extract(
                                 PCLZIP_OPT_BY_NAME,
                                 $remove_path . '/' . $extract['filename'],
                                 PCLZIP_OPT_PATH,
@@ -496,7 +496,7 @@ class updates
                                 PCLZIP_OPT_SET_CHMOD,
                                 0755,
                                 PCLZIP_OPT_REPLACE_NEWER
-                            ) && isset($res[0]['status']) && $res[0]['status'] == 'ok') {
+                            )) && isset($res[0]['status']) && $res[0]['status'] == 'ok') {
                                 continue;
                             }
 
