@@ -42,17 +42,17 @@ if (isset($_FILES['watermarkImage']) and ! empty($_FILES['watermarkImage']['tmp_
             'PNG'
         );
     } else {
-        $upload_dir = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'watermarks';
+        $upload_dir = PHPWG_ROOT_PATH . 'local/watermarks';
         if (mkgetdir($upload_dir, MKGETDIR_DEFAULT & ~MKGETDIR_DIE_ON_ERROR)) {
             // file name may include exotic chars like single quote, we need a safe name
             $new_name = str2url(get_filename_wo_extension($_FILES['watermarkImage']['name']));
 
             // we need existing watermarks to avoid overwriting one
             $watermark_files = [];
-            if (($glob = glob(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'watermarks/*.png')) !== false) {
+            if (($glob = glob(PHPWG_ROOT_PATH . 'local/watermarks/*.png')) !== false) {
                 foreach ($glob as $file) {
                     $watermark_files[] = get_filename_wo_extension(
-                        substr($file, strlen(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'watermarks/'))
+                        substr($file, strlen(PHPWG_ROOT_PATH . 'local/watermarks/'))
                     );
                 }
             }

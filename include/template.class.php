@@ -1117,12 +1117,12 @@ class Template
     {
         $css = [];
         foreach ($smarty->getTemplateVars('themes') as $theme) {
-            $f = PWG_LOCAL_DIR . 'css/' . $theme['id'] . '-rules.css';
+            $f = 'local/css/' . $theme['id'] . '-rules.css';
             if (file_exists(PHPWG_ROOT_PATH . $f)) {
                 $css[] = "{combine_css path='{$f}' order=10}";
             }
         }
-        $f = PWG_LOCAL_DIR . 'css/rules.css';
+        $f = 'local/css/rules.css';
         if (file_exists(PHPWG_ROOT_PATH . $f)) {
             $css[] = "{combine_css path='{$f}' order=10}";
         }

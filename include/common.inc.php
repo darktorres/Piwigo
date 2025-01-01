@@ -58,9 +58,7 @@ $filter = [];
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
-
-file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php') && include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php') && include(PHPWG_ROOT_PATH . 'local/config/database.inc.php');
 if (! defined('PHPWG_INSTALLED')) {
     header('Location: install.php');
     exit;
@@ -159,7 +157,7 @@ if (is_admin() || (defined('IN_ADMIN') and IN_ADMIN)) {
     load_language('admin.lang');
 }
 trigger_notify('loading_lang');
-load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
+load_language('lang', PHPWG_ROOT_PATH . 'local/', [
     'no_fallback' => true,
     'local' => true,
 ]);

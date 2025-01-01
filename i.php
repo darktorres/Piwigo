@@ -15,10 +15,9 @@ define('PHPWG_ROOT_PATH', './');
 include(PHPWG_ROOT_PATH . 'include/config_default.inc.php');
 file_exists(PHPWG_ROOT_PATH . 'local/config/config.inc.php') && include(PHPWG_ROOT_PATH . 'local/config/config.inc.php');
 
-defined('PWG_LOCAL_DIR') or define('PWG_LOCAL_DIR', 'local/');
 defined('PWG_DERIVATIVE_DIR') or define('PWG_DERIVATIVE_DIR', $conf['data_location'] . 'i/');
 
-file_exists(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php') && include(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/database.inc.php');
+file_exists(PHPWG_ROOT_PATH . 'local/config/database.inc.php') && include(PHPWG_ROOT_PATH . 'local/config/database.inc.php');
 
 $logger = new Katzgrau\KLogger\Logger(PHPWG_ROOT_PATH . $conf['data_location'] . $conf['log_dir'], $conf['log_level'], [
     // we use a hashed filename to prevent direct file access, and we salt with

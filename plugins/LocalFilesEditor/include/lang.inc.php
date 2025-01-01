@@ -22,7 +22,7 @@ if (! isset($page['language']) or ! in_array($page['language'], array_keys($lang
 
 $template->assign('language', $page['language']);
 
-$edited_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'language/' . $page['language'] . '.lang.php';
+$edited_file = PHPWG_ROOT_PATH . 'local/language/' . $page['language'] . '.lang.php';
 
 if (file_exists($edited_file)) {
     $content_file = file_get_contents($edited_file);
@@ -32,7 +32,7 @@ if (file_exists($edited_file)) {
 
 $selected = 0;
 foreach (get_languages() as $language_code => $language_name) {
-    $file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'language/' . $language_code . '.lang.php';
+    $file = PHPWG_ROOT_PATH . 'local/language/' . $language_code . '.lang.php';
 
     $options[$language_code] = (file_exists($file) ? '&#x2714;' : '&#x2718;') . ' ' . $language_name;
 
