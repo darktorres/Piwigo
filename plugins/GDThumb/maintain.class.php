@@ -40,8 +40,8 @@ class GDThumb_maintain extends PluginMaintain
 
     private function cleanUp()
     {
-        if (is_dir(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'GDThumb')) {
-            $this->gtdeltree(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'GDThumb');
+        if (is_dir(PHPWG_ROOT_PATH . 'local/GDThumb')) {
+            $this->gtdeltree(PHPWG_ROOT_PATH . 'local/GDThumb');
         }
     }
 

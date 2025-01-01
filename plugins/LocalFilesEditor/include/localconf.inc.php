@@ -6,7 +6,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
 
-$edited_file = PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'config/config.inc.php';
+$edited_file = PHPWG_ROOT_PATH . 'local/config/config.inc.php';
 
 if (file_exists($edited_file)) {
     $content_file = file_get_contents($edited_file);
