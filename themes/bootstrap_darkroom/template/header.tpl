@@ -82,8 +82,7 @@
 {else}
 {assign var=loc value="footer"} 
 {/if}
-{combine_script id='jquery' path='themes/bootstrap_darkroom/node_modules/jquery/dist/jquery.min.js' load=$loc}
-{combine_script id='jquery-migrate' require='jquery' path='themes/bootstrap_darkroom/node_modules/jquery-migrate/dist/jquery-migrate.min.js' load=$loc}
+{combine_script id='jquery' load=$loc}
 {combine_script id='jquery.ajaxmanager' require='jquery' path='https://raw.githack.com/aFarkas/Ajaxmanager/refs/heads/master/jquery.ajaxmanager.js' load='footer'}
 {combine_script id='thumbnails.loader' require='jquery.ajaxmanager' path='themes/default/js/thumbnails.loader.js' load='footer'}
 {combine_script id='popper.js' require='jquery' path='themes/bootstrap_darkroom/node_modules/popper.js/dist/umd/popper.min.js' load=$loc}
