@@ -19,6 +19,7 @@
     "jquery-confirm": "3.3.4",
     "jquery-migrate": "^3.5.2",
     "jQuery-Timepicker-Addon": "github:trentrichardson/jQuery-Timepicker-Addon#v1.4.4",
+    "jquery-ui": "^1.14.1",
     "jquery.cookie": "github:js-cookie/js-cookie#v1.4.1",
     "jquery.Jcrop.js": "0.9.12",
     "moment": "2.26",

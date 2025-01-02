@@ -6,7 +6,7 @@
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
 
 {combine_script id='jquery.ui' require='jquery' load='header'}
-{combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/css/jquery.ui.slider.css"}
+{combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.css"}
 
 {combine_script id='jquery.confirm' load='header' require='jquery' path='node_modules/jquery-confirm/dist/jquery-confirm.min.js'}
 {combine_css path="node_modules/jquery-confirm/dist/jquery-confirm.min.css"}

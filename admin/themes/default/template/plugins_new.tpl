@@ -1,7 +1,7 @@
 {combine_script id='jquery.sort' load='footer' path='https://raw.githack.com/Piwigo/Piwigo/refs/heads/14.x/themes/default/js/plugins/jquery.sort.js'}
 
 {combine_script id='jquery.ui' require='jquery' load='header'}
-{combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/css/jquery.ui.slider.css"}
+{combine_css path="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.css"}
 
 {combine_script id='jquery.selectize' load='footer' path='node_modules/selectize/dist/js/standalone/selectize.min.js'}
 {combine_css id='jquery.selectize' path="themes/default/js/plugins/selectize.{$themeconf.colorscheme}.css"}
