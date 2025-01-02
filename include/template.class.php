@@ -58,7 +58,7 @@ define('BUTTONS_RANK_NEUTRAL', 50);
  */
 class Template
 {
-  /** @var Smarty */
+  /** @var \Smarty\Smarty */
   var $smarty;
   /** @var string */
   var $output = '';
@@ -100,11 +100,9 @@ class Template
   {
     global $conf, $lang_info;
 
-    SmartyException::$escape = false;
-
     $this->scriptLoader = new ScriptLoader;
     $this->cssLoader = new CssLoader;
-    $this->smarty = new Smarty;
+    $this->smarty = new Smarty\Smarty;
     $this->smarty->debugging = $conf['debug_template'];
     if (!$this->smarty->debugging)
     {
@@ -639,7 +637,7 @@ class Template
         'AAAA_DEBUG_TOTAL_TIME__' => get_elapsed_time($t2, get_moment())
         )
         );
-      $this->smarty->display(__DIR__ . '/../vendor/smarty/smarty/libs/debug.tpl');
+      $this->smarty->display(__DIR__ . '/../vendor/smarty/smarty/src/debug.tpl');
     }
   }
 
@@ -1125,8 +1123,8 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    */
   static function prefilter_white_space($source, $smarty)
   {
-    $ld = $smarty->left_delimiter;
-    $rd = $smarty->right_delimiter;
+    $ld = $smarty->getLeftDelimiter();
+    $rd = $smarty->getRightDelimiter();
     $ldq = preg_quote($ld, '#');
     $rdq = preg_quote($rd, '#');
 
