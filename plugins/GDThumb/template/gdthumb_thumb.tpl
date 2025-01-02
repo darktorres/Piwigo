@@ -55,7 +55,8 @@
     {/if}
   </span>
   {/if}
-  <a href="{$thumbnail.URL}">
+  {assign var=src_size value=$derivative->src_image->get_size()}
+  <a href="{$thumbnail.URL}" data-pswp-src="{$derivative->src_image->get_url()}" data-pswp-width="{$src_size.0}" data-pswp-height="{$src_size.1}">
     <img class="thumbnail" {if $derivative->is_cached()}src="{$derivative->get_url()}"{else}src="{$ROOT_URL}{$themeconf.icon_dir}/img_small.png" data-src="{$derivative->get_url()}"{/if} alt="{$thumbnail.TN_ALT}" title="{$thumbnail.TN_TITLE}" {$derivative->get_size_htm()}>
   </a>
 </li>
