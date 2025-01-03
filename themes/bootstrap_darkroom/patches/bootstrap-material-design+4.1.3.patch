@@ -1,0 +1,28 @@
+diff --git a/node_modules/bootstrap-material-design/scss/_core.scss b/node_modules/bootstrap-material-design/scss/_core.scss
+index e83aee3..089ff7d 100644
+--- a/node_modules/bootstrap-material-design/scss/_core.scss
++++ b/node_modules/bootstrap-material-design/scss/_core.scss
+@@ -1,7 +1,7 @@
+ // This is the main scss file, provided as an underscored file so that variable contexts remain in-tact when importing from the source.
+ @import "variables";
+ @import "mixins";
+-@import "~bootstrap/scss/bootstrap";
++@import "../../bootstrap/scss/bootstrap";
+ 
+ @import "reboot";
+ 
+diff --git a/node_modules/bootstrap-material-design/scss/_variables.scss b/node_modules/bootstrap-material-design/scss/_variables.scss
+index cd80e6e..ad8ebed 100644
+--- a/node_modules/bootstrap-material-design/scss/_variables.scss
++++ b/node_modules/bootstrap-material-design/scss/_variables.scss
+@@ -53,8 +53,8 @@ $theme-colors: map-merge((
+ // import their vars after customization for use below
+ $enable-flex: true; // fully adopt flexbox layouts
+ $enable-shadows: true; // enable shadows, set to false to turn off shadows
+-@import "~bootstrap/scss/functions"; // from bootstrap node_module
+-@import "~bootstrap/scss/variables"; // from bootstrap node_module
++@import "../../bootstrap/scss/functions"; // from bootstrap node_module
++@import "../../bootstrap/scss/variables"; // from bootstrap node_module
+ 
+ //
+ @import "variables/layout";
