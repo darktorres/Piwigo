@@ -196,8 +196,8 @@ if (isset($_POST['install'])) {
 
         pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], '');
         pwg_db_check_version();
-        pwg_query('DROP DATABASE IF EXISTS ' . $dbname);
-        pwg_query('CREATE DATABASE ' . $dbname);
+        pwg_query("DROP DATABASE IF EXISTS {$dbname};");
+        pwg_query("CREATE DATABASE {$dbname};");
 
         pwg_db_connect($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpasswd'], $_POST['dbname']);
 
@@ -212,10 +212,13 @@ if (isset($_POST['install'])) {
             'mysql'
         );
 
-        $query = '
-INSERT INTO config (param,value,comment)
-   VALUES (\'secret_key\',md5(' . pwg_db_cast_to_text(DB_RANDOM_FUNCTION . '()') . '),
-   \'a secret key specific to the gallery for internal use\');';
+        $random_function = pwg_db_cast_to_text(DB_RANDOM_FUNCTION . '()');
+        $query = <<<SQL
+            INSERT INTO config
+                (param, value, comment)
+            VALUES
+                ('secret_key', md5({$random_function}), 'a secret key specific to the gallery for internal use');
+            SQL;
         pwg_query($query);
 
         conf_update_param('piwigo_db_version', get_branch_from_version(PHPWG_VERSION));

@@ -249,13 +249,12 @@ function sync_metadata($ids)
     $datas = [];
     $tags_of = [];
 
-    $query = '
-SELECT id, path, representative_ext
-  FROM images
-  WHERE id IN (
-' . wordwrap(implode(', ', $ids), 160, "\n") . '
-)
-;';
+    $wrapped_ids = wordwrap(implode(', ', $ids), 160, "\n");
+    $query = <<<SQL
+        SELECT id, path, representative_ext
+        FROM images
+        WHERE id IN ({$wrapped_ids});
+        SQL;
 
     $result = pwg_query($query);
     while ($data = pwg_db_fetch_assoc($result)) {
@@ -324,24 +323,30 @@ function get_filelist(
     // filling $cat_ids : all categories required
     $cat_ids = [];
 
-    $query = '
-SELECT id
-  FROM categories
-  WHERE site_id = ' . $site_id . '
-    AND dir IS NOT NULL';
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE site_id = {$site_id}
+            AND dir IS NOT NULL
+
+        SQL;
+
     if (is_numeric($category_id)) {
         if ($recursive) {
-            $query .= '
-    AND uppercats ' . DB_REGEX_OPERATOR . ' \'(^|,)' . $category_id . '(,|$)\'
-';
+            $regex_operator = DB_REGEX_OPERATOR;
+            $query .= <<<SQL
+                AND uppercats {$regex_operator} '(^|,){$category_id}(,|$)'
+
+                SQL;
         } else {
-            $query .= '
-    AND id = ' . $category_id . '
-';
+            $query .= <<<SQL
+                AND id = {$category_id}
+
+                SQL;
         }
     }
-    $query .= '
-;';
+
+    $query .= ';';
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $cat_ids[] = $row['id'];
@@ -351,17 +356,22 @@ SELECT id
         return [];
     }
 
-    $query = '
-SELECT id, path, representative_ext
-  FROM images
-  WHERE storage_category_id IN (' . implode(',', $cat_ids) . ')';
+    $imploded_cat_ids = implode(',', $cat_ids);
+    $query = <<<SQL
+        SELECT id, path, representative_ext
+        FROM images
+        WHERE storage_category_id IN ({$imploded_cat_ids})
+
+        SQL;
+
     if ($only_new) {
-        $query .= '
-    AND date_metadata_update IS NULL
-';
+        $query .= <<<SQL
+            AND date_metadata_update IS NULL
+
+            SQL;
     }
-    $query .= '
-;';
+
+    $query .= ';';
     return hash_from_query($query, 'id');
 }
 

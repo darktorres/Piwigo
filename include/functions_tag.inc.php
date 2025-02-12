@@ -42,39 +42,46 @@ function get_nb_available_tags()
 function get_available_tags($tag_ids = [])
 {
     // we can find top fatter tags among reachable images
-    $query = '
-SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter
-  FROM image_category ic
-    INNER JOIN image_tag it
-    ON ic.image_id=it.image_id
-  WHERE 1=1
-  ' . get_sql_condition_FandF(
+    $permissions_conditions = get_sql_condition_FandF(
         [
             'forbidden_categories' => 'category_id',
             'visible_categories' => 'category_id',
             'visible_images' => 'ic.image_id',
         ],
-        ' AND '
+        'AND',
     );
 
+    $query = <<<SQL
+        SELECT tag_id, COUNT(DISTINCT it.image_id) AS counter
+        FROM image_category ic
+        INNER JOIN image_tag it ON ic.image_id = it.image_id
+        WHERE 1 = 1
+            {$permissions_conditions}
+
+        SQL;
+
     if (is_array($tag_ids) and count($tag_ids) > 0) {
-        $query .= '
-    AND tag_id IN (' . implode(',', $tag_ids) . ')
-';
+        $tags_list = implode(',', $tag_ids);
+        $query .= <<<SQL
+            AND tag_id IN ({$tags_list})
+
+            SQL;
     }
 
-    $query .= '
-  GROUP BY tag_id
-;';
+    $query .= <<<SQL
+        GROUP BY tag_id;
+        SQL;
+
     $tag_counters = query2array($query, 'tag_id', 'counter');
 
     if (empty($tag_counters)) {
         return [];
     }
 
-    $query = '
-SELECT *
-  FROM tags';
+    $query = <<<SQL
+        SELECT *
+        FROM tags;
+        SQL;
     $result = pwg_query($query);
 
     $tags = [];
@@ -96,10 +103,10 @@ SELECT *
  */
 function get_all_tags()
 {
-    $query = '
-SELECT *
-  FROM tags
-;';
+    $query = <<<SQL
+        SELECT *
+        FROM tags;
+        SQL;
     $result = pwg_query($query);
     $tags = [];
     while ($row = pwg_db_fetch_assoc($result)) {
@@ -181,38 +188,51 @@ function get_image_ids_for_tags($tag_ids, $mode = 'AND', $extra_images_where_sql
         return [];
     }
 
-    $query = '
-SELECT id
-  FROM images i ';
+    $permissions_conditions = $use_permissions ? get_sql_condition_FandF(
+        [
+            'forbidden_categories' => 'category_id',
+            'visible_categories' => 'category_id',
+            'visible_images' => 'id',
+        ],
+        'AND'
+    ) : '';
+
+    $tags_list = implode(',', $tag_ids);
+    $extra_conditions = ! empty($extra_images_where_sql) ? " AND ({$extra_images_where_sql})" : '';
+    $having_clause = ($mode === 'AND' && count($tag_ids) > 1) ? 'HAVING COUNT(DISTINCT tag_id) = ' . count($tag_ids) : '';
+    $order_clause = ! empty($order_by) ? $order_by : $conf['order_by'];
+    $query = <<<SQL
+        SELECT id
+        FROM images i
+
+        SQL;
 
     if ($use_permissions) {
-        $query .= '
-    INNER JOIN image_category ic ON id=ic.image_id';
+        $query .= <<<SQL
+            INNER JOIN image_category ic ON id = ic.image_id
+
+            SQL;
     }
 
-    $query .= '
-    INNER JOIN image_tag it ON id=it.image_id
-    WHERE tag_id IN (' . implode(',', $tag_ids) . ')';
+    $query .= <<<SQL
+        INNER JOIN image_tag it ON id = it.image_id
+        WHERE tag_id IN ({$tags_list})
+            {$permissions_conditions}
+            {$extra_conditions}
+        GROUP BY id
 
-    if ($use_permissions) {
-        $query .= get_sql_condition_FandF(
-            [
-                'forbidden_categories' => 'category_id',
-                'visible_categories' => 'category_id',
-                'visible_images' => 'id',
-            ],
-            "\n  AND"
-        );
+        SQL;
+
+    if (! empty($having_clause)) {
+        $query .= <<<SQL
+            {$having_clause}
+
+            SQL;
     }
 
-    $query .= (empty($extra_images_where_sql) ? '' : " \nAND (" . $extra_images_where_sql . ')') . '
-  GROUP BY id';
-
-    if ($mode == 'AND' and count($tag_ids) > 1) {
-        $query .= '
-  HAVING COUNT(DISTINCT tag_id)=' . count($tag_ids);
-    }
-    $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
+    $query .= <<<SQL
+        {$order_clause};
+        SQL;
 
     return query2array($query, null, 'id');
 }
@@ -230,21 +250,35 @@ function get_common_tags($items, $max_tags, $excluded_tag_ids = [])
     if (empty($items)) {
         return [];
     }
-    $query = '
-SELECT t.*, count(*) AS counter
-  FROM image_tag
-    INNER JOIN tags t ON tag_id = id
-  WHERE image_id IN (' . implode(',', $items) . ')';
+    $items_list = implode(',', $items);
+    $query = <<<SQL
+        SELECT t.*, COUNT(*) AS counter
+        FROM image_tag
+        INNER JOIN tags t ON tag_id = id
+        WHERE image_id IN ({$items_list})
+
+        SQL;
+
     if (! empty($excluded_tag_ids)) {
-        $query .= '
-    AND tag_id NOT IN (' . implode(',', $excluded_tag_ids) . ')';
+        $excluded_tags = implode(',', $excluded_tag_ids);
+        $query .= <<<SQL
+            AND tag_id NOT IN ({$excluded_tags})
+
+            SQL;
     }
-    $query .= '
-  GROUP BY t.id
-  ORDER BY ';
+
+    $query .= <<<SQL
+        GROUP BY t.id
+        ORDER BY
+
+        SQL;
+
     if ($max_tags > 0) { // TODO : why ORDER field is in the if ?
-        $query .= 'counter DESC
-  LIMIT ' . $max_tags;
+        $query .= <<<SQL
+            counter DESC
+            LIMIT {$max_tags}
+
+            SQL;
     } else {
         $query .= 'NULL';
     }
@@ -271,25 +305,27 @@ function find_tags($ids = [], $url_names = [], $names = [])
 {
     $where_clauses = [];
     if (! empty($ids)) {
-        $where_clauses[] = 'id IN (' . implode(',', $ids) . ')';
+        $ids_ = implode(',', $ids);
+        $where_clauses[] = "id IN ({$ids_})";
     }
     if (! empty($url_names)) {
-        $where_clauses[] =
-          'url_name IN (\'' . implode('\', \'', $url_names) . '\')';
+        $url_names_ = implode("', '", $url_names);
+        $where_clauses[] = "url_name IN ('{$url_names_}')";
     }
     if (! empty($names)) {
-        $where_clauses[] =
-          'name IN (\'' . implode('\', \'', $names) . '\')';
+        $names_ = implode("', '", $names);
+        $where_clauses[] = "name IN ('{$names_}')";
     }
     if (empty($where_clauses)) {
         return [];
     }
 
-    $query = '
-SELECT *
-  FROM tags
-  WHERE ' . implode('
-    OR ', $where_clauses);
+    $where_conditions = implode("\n    OR ", $where_clauses);
+    $query = <<<SQL
+        SELECT *
+        FROM tags
+        WHERE {$where_conditions};
+        SQL;
 
     return query2array($query);
 }

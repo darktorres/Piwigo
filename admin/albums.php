@@ -15,11 +15,10 @@ if (! defined('PHPWG_ROOT_PATH')) {
 
 include_once(PHPWG_ROOT_PATH . 'admin/include/functions.php');
 
-$query = '
-SELECT
-    COUNT(*)
-  FROM categories
-;';
+$query = <<<SQL
+    SELECT COUNT(*)
+    FROM categories;
+    SQL;
 list($albums_counter) = pwg_db_fetch_row(pwg_query($query));
 
 // +-----------------------------------------------------------------------+
@@ -60,12 +59,12 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     }
     check_input_parameter('id', $_POST, false, '/^-?\d+$/');
 
-    $query = '
-SELECT id
-  FROM categories
-  WHERE id_uppercat ' .
-      (($_POST['id'] === '-1') ? 'IS NULL' : '= ' . $_POST['id']) . '
-;';
+    $id_condition = ($_POST['id'] === '-1') ? 'IS NULL' : "= {$_POST['id']}";
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        WHERE id_uppercat {$id_condition};
+        SQL;
     $category_ids = array_from_query($query, 'id');
 
     if (isset($_POST['recursiveAutoOrder'])) {
@@ -88,11 +87,12 @@ SELECT id
         );
     }
 
-    $query = '
-SELECT id, name, id_uppercat
-  FROM categories
-  WHERE id IN (' . implode(',', $category_ids) . ')
-;';
+    $category_ids_str = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT id, name, id_uppercat
+        FROM categories
+        WHERE id IN ({$category_ids_str});
+        SQL;
     $result = pwg_query($query);
     while ($row = pwg_db_fetch_assoc($result)) {
         $row['name'] = trigger_change('render_category_name', $row['name'], 'admin_cat_list');
@@ -143,10 +143,10 @@ $template->assign('POS_PREF', $conf['newcat_default_position']); //TODO use user
 // +-----------------------------------------------------------------------+
 
 //Get all albums
-$query = '
-SELECT id,name,rank_column,status, visible, uppercats, lastmodified
-  FROM categories
-;';
+$query = <<<SQL
+    SELECT id, name, rank_column, status, visible, uppercats, lastmodified
+    FROM categories;
+    SQL;
 
 $allAlbum = query2array($query);
 
@@ -209,22 +209,18 @@ function assocToOrderedTree($assocT)
     return $orderedTree;
 }
 
-$query = '
-SELECT
-    category_id,
-    COUNT(*) AS nb_photos
-  FROM image_category
-  GROUP BY category_id
-;';
+$query = <<<SQL
+    SELECT category_id, COUNT(*) AS nb_photos
+    FROM image_category
+    GROUP BY category_id;
+    SQL;
 
 $nb_photos_in = query2array($query, 'category_id', 'nb_photos');
 
-$query = '
-SELECT
-    id,
-    uppercats
-  FROM categories
-;';
+$query = <<<SQL
+    SELECT id, uppercats
+    FROM categories;
+    SQL;
 $all_categories = query2array($query, 'id', 'uppercats');
 
 $subcats_of = [];
@@ -273,26 +269,24 @@ function get_categories_ref_date($ids, $field = 'date_available', $minmax = 'max
     $category_ids = get_subcat_ids($ids);
 
     // search for the reference date of each album
-    $query = '
-SELECT
-    category_id,
-    ' . $minmax . '(' . $field . ') as ref_date
-  FROM image_category
-    JOIN images ON image_id = id
-  WHERE category_id IN (' . implode(',', $category_ids) . ')
-  GROUP BY category_id
-;';
+    $category_ids_str = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT category_id, {$minmax}({$field}) AS ref_date
+        FROM image_category
+        JOIN images ON image_id = id
+        WHERE category_id IN ({$category_ids_str})
+        GROUP BY category_id;
+        SQL;
     $ref_dates = query2array($query, 'category_id', 'ref_date');
 
     // iterate on all albums (having a ref_date or not) to find the
     // reference_date, with a search on sub-albums
-    $query = '
-SELECT
-    id,
-    uppercats
-  FROM categories
-  WHERE id IN (' . implode(',', $category_ids) . ')
-;';
+    $category_ids_str = implode(',', $category_ids);
+    $query = <<<SQL
+        SELECT id, uppercats
+        FROM categories
+        WHERE id IN ({$category_ids_str});
+        SQL;
     $uppercats_of = query2array($query, 'id', 'uppercats');
 
     foreach (array_keys($uppercats_of) as $cat_id) {
@@ -300,7 +294,7 @@ SELECT
         $subcat_ids = [];
 
         foreach ($uppercats_of as $id => $uppercats) {
-            if (preg_match('/(^|,)' . $cat_id . '(,|$)/', $uppercats)) {
+            if (preg_match("/(^|,){$cat_id}(,|$)/", $uppercats)) {
                 $subcat_ids[] = $id;
             }
         }

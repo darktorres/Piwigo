@@ -39,12 +39,12 @@ if (isset($_GET['image_id']) and pwg_get_session_var('TAT_image_id') == null) {
 } elseif (is_numeric(pwg_get_session_var('TAT_image_id'))) {
     $template->assign('TAT_image_id', pwg_get_session_var('TAT_image_id'));
 } else {
-    $query = '
-    SELECT id
-      FROM images
-      ORDER BY RAND()
-      LIMIT 1
-    ;';
+    $query = <<<SQL
+        SELECT id
+        FROM images
+        ORDER BY RAND()
+        LIMIT 1;
+        SQL;
     $row = pwg_db_fetch_assoc(pwg_query($query));
     $template->assign('TAT_image_id', $row['id']);
 }
@@ -59,12 +59,12 @@ if (isset($_GET['cat_id']) and pwg_get_session_var('TAT_cat_id') == null) {
 } elseif (is_numeric(pwg_get_session_var('TAT_cat_id'))) {
     $template->assign('TAT_cat_id', pwg_get_session_var('TAT_cat_id'));
 } else {
-    $query = '
-    SELECT id
-      FROM categories
-      ORDER BY RAND()
-      LIMIT 1
-    ;';
+    $query = <<<SQL
+        SELECT id
+        FROM categories
+        ORDER BY RAND()
+        LIMIT 1;
+        SQL;
     $row = pwg_db_fetch_assoc(pwg_query($query));
     $template->assign('TAT_cat_id', $row['id']);
 }

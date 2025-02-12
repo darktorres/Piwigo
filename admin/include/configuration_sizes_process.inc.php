@@ -191,7 +191,10 @@ if (count($errors) == 0) {
 
     ImageStdParams::set_and_save($enabled_by);
     if (count($disabled) == 0) {
-        $query = 'DELETE FROM config WHERE param = \'disabled_derivatives\'';
+        $query = <<<SQL
+            DELETE FROM config
+            WHERE param = 'disabled_derivatives';
+            SQL;
         pwg_query($query);
     } else {
         conf_update_param('disabled_derivatives', addslashes(serialize($disabled)));

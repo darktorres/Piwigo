@@ -33,9 +33,10 @@ include(PHPWG_ROOT_PATH . 'admin/include/albums_tab.inc.php');
 
 $categories = [];
 
-$query = '
-SELECT id, name, status, uppercats
-  FROM categories';
+$query = <<<SQL
+    SELECT id, name, status, uppercats
+    FROM categories;
+    SQL;
 
 $result = query2array($query);
 
@@ -55,13 +56,12 @@ foreach ($result as $cat) {
 // +-----------------------------------------------------------------------+
 
 // let's find a custom placeholder
-$query = '
-SELECT
-    name
-  FROM categories
-  ORDER BY RAND()
-  LIMIT 1
-;';
+$query = <<<SQL
+    SELECT name
+    FROM categories
+    ORDER BY RAND()
+    LIMIT 1;
+    SQL;
 $lines = query2array($query);
 $placeholder = null;
 foreach ($lines as $line) {

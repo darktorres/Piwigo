@@ -90,10 +90,10 @@ function get_cat_display_name_cache(
     }
 
     if (! isset($cache['cat_names'])) {
-        $query = '
-SELECT id, name, permalink
-  FROM categories
-;';
+        $query = <<<SQL
+            SELECT id, name, permalink
+            FROM categories;
+            SQL;
         $cache['cat_names'] = query2array($query, 'id');
     }
 
