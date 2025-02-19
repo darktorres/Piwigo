@@ -59,7 +59,8 @@ CREATE TABLE `piwigo_categories` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `categories_i3` (`permalink`),
   KEY `categories_i2` (`id_uppercat`),
-  KEY `lastmodified` (`lastmodified`)
+  KEY `lastmodified` (`lastmodified`),
+  FULLTEXT KEY `category_ft` (`name`, `comment`)
 ) ENGINE=InnoDB;
 
 --
@@ -247,7 +248,8 @@ CREATE TABLE `piwigo_images` (
   KEY `images_i1` (`storage_category_id`),
   KEY `images_i6` (`latitude`),
   KEY `images_i7` (`path`),
-  KEY `lastmodified` (`lastmodified`)
+  KEY `lastmodified` (`lastmodified`),
+  FULLTEXT KEY `image_ft` (`name`, `comment`)
 ) ENGINE=InnoDB;
 
 --
@@ -364,7 +366,8 @@ CREATE TABLE `piwigo_tags` (
   `lastmodified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   KEY `tags_i1` (`url_name`),
-  KEY `lastmodified` (`lastmodified`)
+  KEY `lastmodified` (`lastmodified`),
+  FULLTEXT KEY `tag_name_ft` (`name`)
 ) ENGINE=InnoDB;
 
 --
