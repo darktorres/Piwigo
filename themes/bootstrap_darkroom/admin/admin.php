@@ -5,10 +5,6 @@ use Piwigo\admin\inc\tabsheet;
 // Check whether we are indeed included by Piwigo.
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
-// Includes
-include_once(PHPWG_ROOT_PATH . 'admin/inc/tabsheet.php');
-require_once(PHPWG_THEMES_PATH . 'bootstrap_darkroom/inc/config.php');
-
 load_language('theme.lang', PHPWG_THEMES_PATH.'bootstrap_darkroom/');
 
 // Constants
