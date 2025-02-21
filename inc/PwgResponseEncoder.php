@@ -53,11 +53,11 @@ abstract class PwgResponseEncoder
     if (is_object($value))
     {
       $class = strtolower( @get_class($value) );
-      if ($class == 'pwgnamedarray')
+      if ($class == 'piwigo\inc\pwgnamedarray')
       {
         $value = $value->_content;
       }
-      if ($class == 'pwgnamedstruct')
+      if ($class == 'piwigo\inc\pwgnamedstruct')
       {
         $value = $value->_content;
       }

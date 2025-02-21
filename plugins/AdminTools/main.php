@@ -29,9 +29,9 @@ add_event_handler('init', 'admintools_init');
 add_event_handler('user_init', array(&$MultiView, 'user_init'));
 add_event_handler('init', array(&$MultiView, 'init'));
 
-add_event_handler('ws_add_methods', array('MultiView', 'register_ws'));
-add_event_handler('delete_user', array('MultiView', 'invalidate_cache'));
-add_event_handler('register_user', array('MultiView', 'invalidate_cache'));
+add_event_handler('ws_add_methods', array('Piwigo\plugins\AdminTools\inc\MultiView', 'register_ws'));
+add_event_handler('delete_user', array('Piwigo\plugins\AdminTools\inc\MultiView', 'invalidate_cache'));
+add_event_handler('register_user', array('Piwigo\plugins\AdminTools\inc\MultiView', 'invalidate_cache'));
 
 if (!defined('IN_ADMIN'))
 {
