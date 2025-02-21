@@ -124,10 +124,10 @@ class PwgRestEncoder extends PwgResponseEncoder
       case 'object':
         switch ( strtolower(@get_class($data)) )
         {
-          case 'pwgnamedarray':
+          case 'piwigo\inc\pwgnamedarray':
             $this->encode_array($data->_content, $data->_itemName, $data->_xmlAttributes);
             break;
-          case 'pwgnamedstruct':
+          case 'piwigo\inc\pwgnamedstruct':
 						$this->encode_struct($data->_content, false, $data->_xmlAttributes);
             break;
           default:

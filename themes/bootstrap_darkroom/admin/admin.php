@@ -23,7 +23,7 @@ if (!in_array($page['tab'], array(TAB_SETTINGS, TAB_ABOUT))) {
     $page['tab'] = TAB_SETTINGS;
 }
 
-$themeconfig = new \BootstrapDarkroom\Config();
+$themeconfig = new Config();
 
 // Save settings
 if ($page['tab'] == TAB_SETTINGS) {

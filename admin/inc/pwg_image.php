@@ -44,7 +44,7 @@ class pwg_image
     }
 
     include_once(PHPWG_ROOT_PATH."admin/inc/image_$this->library.php");
-    $class = 'image_'.$this->library;
+    $class = 'Piwigo\admin\inc\image_'.$this->library;
     $this->image = new $class($source_filepath);
   }
 
@@ -198,7 +198,7 @@ class pwg_image
 
     $fp = fopen($source_filepath, 'rb');
     if (!$fp) {
-        throw new Exception("webp_info(): fopen($f): Failed");
+        throw new \Exception("webp_info(): fopen($f): Failed");
     }
     $buf = fread($fp, 25);
     fclose($fp);
@@ -209,7 +209,7 @@ class pwg_image
       case substr($buf, 0, 4) != 'RIFF':
       case substr($buf, 8, 4) != 'WEBP':
       case substr($buf, 12, 3) != 'VP8':
-        throw new Exception("webp_info(): not a valid webp image");
+        throw new \Exception("webp_info(): not a valid webp image");
 
       case $buf[15] == ' ':
         // Simple File Format (Lossy)
@@ -237,7 +237,7 @@ class pwg_image
         );
 
       default:
-        throw new Exception("webp_info(): could not detect webp type");
+        throw new \Exception("webp_info(): could not detect webp type");
     }
   }
 
@@ -371,7 +371,7 @@ class pwg_image
   static function is_vips()
   {
     include_once(PHPWG_ROOT_PATH.'admin/inc/image_vips.php');
-    return class_exists('image_vips');
+    return class_exists('\Piwigo\admin\inc\image_vips');
   }
 
   static function get_library($library=null, $extension=null)

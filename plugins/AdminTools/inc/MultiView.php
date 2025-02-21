@@ -291,7 +291,7 @@ class MultiView
 
     $service->addMethod(
       'multiView.getData',
-      array('MultiView', 'ws_get_data'),
+      array('Piwigo\plugins\AdminTools\inc\MultiView', 'ws_get_data'),
       array(),
       'AdminTools private method.',
       null,

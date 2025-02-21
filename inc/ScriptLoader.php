@@ -141,7 +141,7 @@ class ScriptLoader
       $this->compute_script_topological_order($id);
     }
 
-    uasort($this->registered_scripts, array('ScriptLoader', 'cmp_by_mode_and_order'));
+    uasort($this->registered_scripts, array('Piwigo\inc\ScriptLoader', 'cmp_by_mode_and_order'));
 
     foreach( $this->registered_scripts as $id => $script)
     {
@@ -182,7 +182,7 @@ class ScriptLoader
       $this->compute_script_topological_order($id);
     }
 
-    uasort($todo, array('ScriptLoader', 'cmp_by_mode_and_order'));
+    uasort($todo, array('Piwigo\inc\ScriptLoader', 'cmp_by_mode_and_order'));
 
     $result = array( array(), array() );
     foreach( $todo as $id => $script)

@@ -16,7 +16,7 @@ include_once(PHPWG_ROOT_PATH.'admin/inc/imageInterface.php');
 
 class image_vips implements imageInterface
 {
-    public Jcupitt\Vips\Image $image;
+    public \Jcupitt\Vips\Image $image;
 
     public $quality = 75;
 
@@ -26,7 +26,7 @@ class image_vips implements imageInterface
         $source_filepath
     ) {
         // putenv('VIPS_WARNING=0');
-        $this->image = Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), [
+        $this->image = \Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), [
             'access' => 'sequential',
         ]);
         $this->source_filepath = realpath($source_filepath);
@@ -79,7 +79,7 @@ class image_vips implements imageInterface
     #[\Override]
     public function resize($width, $height)
     {
-        $this->image = Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, [
+        $this->image = \Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, [
             'height' => $height,
         ]);
         return true;

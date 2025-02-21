@@ -37,7 +37,7 @@ class themes
   private static function build_maintain_class($theme_id)
   {
     $file_to_include = PHPWG_THEMES_PATH.$theme_id.'/admin/'.$theme_id.'_maintain.php';
-    $classname = $theme_id.'_maintain';
+    $classname = 'Piwigo\\themes\\'.$theme_id.'\\admin\\'.$theme_id.'_maintain';
 
     // 2.7 pattern (OO only)
     if (file_exists($file_to_include))
@@ -588,7 +588,7 @@ SELECT
       if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
-        $zip = new PclZip($archive);
+        $zip = new \PclZip($archive);
         if ($list = $zip->listContent())
         {
           foreach ($list as $file)

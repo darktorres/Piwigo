@@ -64,11 +64,11 @@ Request format: ".@$this->_requestFormat." Response format: ".@$this->_responseF
     // add reflection methods
     $this->addMethod(
         'reflection.getMethodList',
-        array('PwgServer', 'ws_getMethodList')
+        array('Piwigo\inc\PwgServer', 'ws_getMethodList')
         );
     $this->addMethod(
         'reflection.getMethodDetails',
-        array('PwgServer', 'ws_getMethodDetails'),
+        array('Piwigo\inc\PwgServer', 'ws_getMethodDetails'),
         array('methodName')
         );
 

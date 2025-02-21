@@ -140,7 +140,7 @@ function modus_combinable_preparse($template)
 
 	try {
 		$template->smarty->registerPlugin('modifier', 'cssGradient', 'modus_css_gradient');
-	} catch(SmartyException $exc) {}
+	} catch(\SmartyException $exc) {}
 
 	include( dirname(__FILE__).'/skins/'.$conf['modus_theme']['skin'].'.php' );
 

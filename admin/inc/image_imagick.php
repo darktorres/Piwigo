@@ -21,7 +21,7 @@ class image_imagick implements imageInterface
   function __construct($source_filepath)
   {
     // A bug cause that Imagick class can not be extended
-    $this->image = new Imagick($source_filepath);
+    $this->image = new \Imagick($source_filepath);
   }
 
   function get_width()
@@ -51,14 +51,14 @@ class image_imagick implements imageInterface
 
   function rotate($rotation)
   {
-    $this->image->rotateImage(new ImagickPixel(), -$rotation);
-    $this->image->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+    $this->image->rotateImage(new \ImagickPixel(), -$rotation);
+    $this->image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
     return true;
   }
 
   function resize($width, $height)
   {
-    $this->image->setInterlaceScheme(Imagick::INTERLACE_LINE);
+    $this->image->setInterlaceScheme(\Imagick::INTERLACE_LINE);
 
     // TODO need to explain this condition
     if ($this->get_width()%2 == 0
@@ -68,7 +68,7 @@ class image_imagick implements imageInterface
       $this->image->scaleImage($this->get_width()/2, $this->get_height()/2);
     }
 
-    return $this->image->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 0.9);
+    return $this->image->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 0.9);
   }
 
   function sharpen($amount)
@@ -89,11 +89,11 @@ class image_imagick implements imageInterface
     global $dirty_trick_xrepeat;
     if ( !isset($dirty_trick_xrepeat) && $opacity < 100)
     {// NOTE: Using setImageOpacity will destroy current alpha channels!
-      $ioverlay->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity / 100, Imagick::CHANNEL_ALPHA);
+      $ioverlay->evaluateImage(\Imagick::EVALUATE_MULTIPLY, $opacity / 100, \Imagick::CHANNEL_ALPHA);
       $dirty_trick_xrepeat = true;
     }
 
-    return $this->image->compositeImage($ioverlay, Imagick::COMPOSITE_DISSOLVE, $x, $y);
+    return $this->image->compositeImage($ioverlay, \Imagick::COMPOSITE_DISSOLVE, $x, $y);
   }
 
   function write($destination_filepath)

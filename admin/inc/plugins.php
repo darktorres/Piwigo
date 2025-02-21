@@ -38,7 +38,7 @@ class plugins
   private static function build_maintain_class($plugin_id)
   {
     $file_to_include = PHPWG_PLUGINS_PATH . $plugin_id . '/' . $plugin_id . '_maintain.php';
-    $classname = $plugin_id.'_maintain';
+    $classname = 'Piwigo\\plugins\\'.$plugin_id.'\\'.$plugin_id.'_maintain';
 
     // piwigo-videojs and piwigo-openstreetmap unfortunately have a "-" in their folder
     // name (=plugin_id) and a class name can't have a "-". So we have to replace with a "_"
@@ -636,7 +636,7 @@ DELETE FROM '. PLUGINS_TABLE .'
       if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
-        $zip = new PclZip($archive);
+        $zip = new \PclZip($archive);
         if ($list = $zip->listContent())
         {
           foreach ($list as $file)
