@@ -154,9 +154,7 @@
         <file name="include/ws_core.inc.php" />
         <file name="include/ws_functions.inc.php" />
         <file name="include/ws_init.inc.php" />
-        <file name="install/hosting.php" />
         <file name="install/index.php" />
-        <file name="install/php5_apache_configuration.php" />
         <file name="install/upgrade_1.3.0.php" />
         <file name="install/upgrade_1.3.1.php" />
         <file name="install/upgrade_1.4.0.php" />
