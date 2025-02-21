@@ -160,7 +160,7 @@ class BlockManager
    */
   protected function sort_blocks()
   {
-    uasort($this->display_blocks, array('BlockManager', 'cmp_by_position'));
+    uasort($this->display_blocks, array('Piwigo\inc\BlockManager', 'cmp_by_position'));
   }
 
   /**

@@ -311,7 +311,7 @@ UPDATE '.USER_INFOS_TABLE.'
       if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
-        $zip = new PclZip($archive);
+        $zip = new \PclZip($archive);
         if ($list = $zip->listContent())
         {
           foreach ($list as $file)

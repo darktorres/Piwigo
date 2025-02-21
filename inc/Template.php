@@ -50,7 +50,7 @@ function customErrorHandler(
     return false;
 }
 
-set_error_handler('customErrorHandler');
+set_error_handler('Piwigo\inc\customErrorHandler');
 
 /** default rank for buttons */
 define('BUTTONS_RANK_NEUTRAL', 50);
@@ -68,7 +68,7 @@ include(PHPWG_ROOT_PATH.'inc/ScriptLoader.php');
  */
 class Template
 {
-  /** @var Smarty */
+  /** @var \Smarty */
   var $smarty;
   /** @var string */
   var $output = '';
@@ -110,11 +110,11 @@ class Template
   {
     global $conf, $lang_info;
 
-    SmartyException::$escape = false;
+    \SmartyException::$escape = false;
 
     $this->scriptLoader = new ScriptLoader;
     $this->cssLoader = new CssLoader;
-    $this->smarty = new Smarty;
+    $this->smarty = new \Smarty;
     $this->smarty->debugging = $conf['debug_template'];
     if (!$this->smarty->debugging)
     {
@@ -150,8 +150,8 @@ class Template
     $this->smarty->setCompileDir($compile_dir);
 
     $this->smarty->assign( 'pwg', new PwgTemplateAdapter() );
-    $this->smarty->registerPlugin('modifiercompiler', 'translate', array('Template', 'modcompiler_translate') );
-    $this->smarty->registerPlugin('modifiercompiler', 'translate_dec', array('Template', 'modcompiler_translate_dec') );
+    $this->smarty->registerPlugin('modifiercompiler', 'translate', array('Piwigo\inc\Template', 'modcompiler_translate') );
+    $this->smarty->registerPlugin('modifiercompiler', 'translate_dec', array('Piwigo\inc\Template', 'modcompiler_translate_dec') );
     $this->smarty->registerPlugin('modifier', 'sprintf', 'sprintf');
     $this->smarty->registerPlugin('modifier', 'urlencode', 'urlencode');
     $this->smarty->registerPlugin('modifier', 'intval', 'intval');
@@ -169,8 +169,8 @@ class Template
     $this->smarty->registerPlugin('modifier', 'md5', 'md5');
     $this->smarty->registerPlugin('modifier', 'strtolower', 'strtolower');
     $this->smarty->registerPlugin('modifier', 'str_ireplace', 'str_ireplace');
-    $this->smarty->registerPlugin('modifier', 'explode', array('Template', 'mod_explode') );
-    $this->smarty->registerPlugin('modifier', 'ternary', array('Template', 'mod_ternary') );
+    $this->smarty->registerPlugin('modifier', 'explode', array('Piwigo\inc\Template', 'mod_explode') );
+    $this->smarty->registerPlugin('modifier', 'ternary', array('Piwigo\inc\Template', 'mod_ternary') );
     $this->smarty->registerPlugin('modifier', 'get_extent', array($this, 'get_extent') );
     $this->smarty->registerPlugin('block', 'html_head', array($this, 'block_html_head') );
     $this->smarty->registerPlugin('block', 'html_style', array($this, 'block_html_style') );
@@ -180,10 +180,10 @@ class Template
     $this->smarty->registerPlugin('function', 'define_derivative', array($this, 'func_define_derivative') );
     $this->smarty->registerPlugin('compiler', 'get_combined_css', array($this, 'func_get_combined_css') );
     $this->smarty->registerPlugin('block', 'footer_script', array($this, 'block_footer_script') );
-    $this->smarty->registerFilter('pre', array('Template', 'prefilter_white_space') );
+    $this->smarty->registerFilter('pre', array('Piwigo\inc\Template', 'prefilter_white_space') );
     if ( $conf['compiled_template_cache_language'] )
     {
-      $this->smarty->registerFilter('post', array('Template', 'postfilter_language') );
+      $this->smarty->registerFilter('post', array('Piwigo\inc\Template', 'postfilter_language') );
     }
 
     $this->smarty->setTemplateDir(array());
@@ -192,7 +192,7 @@ class Template
       $this->set_theme($root, $theme, $path);
       if (!defined('IN_ADMIN'))
       {
-        $this->set_prefilter( 'header', array('Template', 'prefilter_local_css') );
+        $this->set_prefilter( 'header', array('Piwigo\inc\Template', 'prefilter_local_css') );
       }
     }
     else
@@ -647,7 +647,7 @@ class Template
         'AAAA_DEBUG_TOTAL_TIME__' => get_elapsed_time($t2, get_moment())
         )
         );
-      Smarty_Internal_Debug::display_debug($this->smarty);
+      \Smarty_Internal_Debug::display_debug($this->smarty);
     }
   }
 
@@ -816,7 +816,7 @@ class Template
    *    - crop (optional, used if type is empty)
    *    - min_height (optional, used with crop)
    *    - min_height (optional, used with crop)
-   * @param Smarty $smarty
+   * @param \Smarty $smarty
    */
   function func_define_derivative($params, $smarty)
   {
@@ -1128,7 +1128,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * @toto : description of Template::prefilter_white_space
    *
    * @param string $source
-   * @param Smarty $smarty
+   * @param \Smarty $smarty
    * @param return string
    */
   static function prefilter_white_space($source, $smarty)
@@ -1158,7 +1158,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * Postfilter used when $conf['compiled_template_cache_language'] is true.
    *
    * @param string $source
-   * @param Smarty $smarty
+   * @param \Smarty $smarty
    * @param return string
    */
   static function postfilter_language($source, $smarty)
@@ -1175,7 +1175,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * Prefilter used to add theme local CSS files.
    *
    * @param string $source
-   * @param Smarty $smarty
+   * @param \Smarty $smarty
    * @param return string
    */
   static function prefilter_local_css($source, $smarty)

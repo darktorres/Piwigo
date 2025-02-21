@@ -37,7 +37,8 @@ class updates
     foreach ($this->types as $type)
     {
       include_once(PHPWG_ROOT_PATH.'admin/inc/'.$type.'.php');
-      $this->$type = new $type();
+      $className = "Piwigo\\admin\\inc\\{$type}";
+      $this->{$type} = new $className();
     }
   }
 
@@ -524,7 +525,7 @@ class updates
 
       if (@filesize($filename))
       {
-        $zip = new PclZip($filename);
+        $zip = new \PclZip($filename);
         if ($result = $zip->extract(PCLZIP_OPT_PATH, PHPWG_ROOT_PATH,
                                     PCLZIP_OPT_REMOVE_PATH, $remove_path,
                                     PCLZIP_OPT_SET_CHMOD, 0755,

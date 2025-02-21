@@ -34,7 +34,7 @@ class CssLoader
    */
   function get_css()
   {
-    uasort($this->registered_css, array('CssLoader', 'cmp_by_order'));
+    uasort($this->registered_css, array('Piwigo\inc\CssLoader', 'cmp_by_order'));
     $combiner = new FileCombiner('css', $this->registered_css);
     return $combiner->combine();
   }

@@ -30,7 +30,7 @@ pwg_set_session_var('show_metadata', true);
 $video_ext = array('mp4','m4v');
 $conf['file_ext'] = array_merge ($conf['file_ext'], $video_ext, array_map('strtoupper', $video_ext));
 
-$controller = new \BootstrapDarkroom\ThemeController();
+$controller = new ThemeController();
 
 
 // Define if skin is clear or dark
@@ -66,9 +66,9 @@ $clear_skins = array(
     'bootswatch-yeti',
 );
 // Get value of bootstrap theme and set themeconf to clear or leave as default (dark)
-$closure = \Closure::bind(function &(\BootstrapDarkroom\ThemeController $controller) {
+$closure = \Closure::bind(function &(ThemeController $controller) {
     return $controller->config;
-}, null, \BootstrapDarkroom\ThemeController::class);
+}, null, ThemeController::class);
 
 $config = &$closure($controller);
 
