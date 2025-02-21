@@ -12,8 +12,6 @@ namespace Piwigo\admin\inc;
 // |                       Class for libvips library                       |
 // +-----------------------------------------------------------------------+
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/imageInterface.php');
-
 class image_vips implements imageInterface
 {
     public \Jcupitt\Vips\Image $image;
