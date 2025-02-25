@@ -6,6 +6,10 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\inc\ImageStdParams;
+use Piwigo\inc\PersistentFileCache;
+use Piwigo\inc\Template;
+
 defined('PHPWG_ROOT_PATH') or trigger_error('Hacking attempt!', E_USER_ERROR);
 
 // determine the initial instant to indicate the generation time of this page

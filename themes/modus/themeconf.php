@@ -7,9 +7,14 @@ Theme URI: https://piwigo.org/ext/extension_view.php?eid=728
 Author: rvelices
 Author URI: http://www.modusoptimus.com
 */
+
+use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\ImageRect;
+use Piwigo\inc\ImageStdParams;
+
 $themeconf = array(
 	'name' => 'modus',
-	'parent' => 'default',
+	'parent' => 'default',	
 	'colorscheme' => 'dark',
 );
 

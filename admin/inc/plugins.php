@@ -8,6 +8,8 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\PluginMaintain;
+
 class plugins
 {
   var $fs_plugins = array();
