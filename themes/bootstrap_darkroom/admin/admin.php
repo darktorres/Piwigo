@@ -1,4 +1,7 @@
 <?php
+
+use Piwigo\admin\inc\tabsheet;
+
 // Check whether we are indeed included by Piwigo.
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
