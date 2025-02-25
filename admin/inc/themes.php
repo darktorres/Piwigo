@@ -8,6 +8,8 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\ThemeMaintain;
+
 class themes
 {
   var $fs_themes = array();

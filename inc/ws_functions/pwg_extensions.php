@@ -6,6 +6,11 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\plugins;
+use Piwigo\admin\inc\themes;
+use Piwigo\admin\inc\updates;
+use Piwigo\inc\PwgError;
+
 /**
  * API method
  * Returns the list of all plugins
