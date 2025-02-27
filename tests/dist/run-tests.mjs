@@ -50,7 +50,7 @@ async function runPuppeteerScript() {
         ),
     );
     // Navigate to the install page
-    await page.goto("http://localhost/piwigo-fork2/install.php", {
+    await page.goto("http://localhost/piwigo-fork3/install.php", {
         waitUntil: "networkidle0",
     });
     await page.waitForSelector(
