@@ -43,7 +43,7 @@ if ($conf['update_notify_check_period'] > 0)
   if ($check_for_updates)
   {
     include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    include_once(PHPWG_ROOT_PATH.'admin/inc/updates_class.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/updates.php');
     $updates = new updates();
     $updates->notify_piwigo_new_versions();
   }
