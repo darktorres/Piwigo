@@ -61,7 +61,7 @@ async function runPuppeteerScript(): Promise<void> {
     await fs.remove(
         path.resolve(
             import.meta.dirname,
-            "../../local/config/database.inc.php",
+            "../../local/config/database.php",
         ),
     );
 

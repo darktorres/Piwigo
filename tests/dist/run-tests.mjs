@@ -46,7 +46,7 @@ async function runPuppeteerScript() {
     await fs.remove(
         path.resolve(
             import.meta.dirname,
-            "../../local/config/database.inc.php",
+            "../../local/config/database.php",
         ),
     );
     // Navigate to the install page
