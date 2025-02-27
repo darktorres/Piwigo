@@ -7,7 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH.'admin/inc/image_class.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/pwg_image.php');
 
 // add default event handler for image and thumbnail resize
 add_event_handler('upload_image_resize', 'pwg_image_resize');
