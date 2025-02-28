@@ -7,7 +7,12 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\tabsheet;
+use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_category;
+use Piwigo\inc\functions_url;
+use Piwigo\inc\functions_user;
 
 if (!defined('PHPWG_ROOT_PATH'))
 {
@@ -19,9 +24,9 @@ include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
-check_input_parameter('display', $_GET, false, PATTERN_ID);
+functions::check_input_parameter('display', $_GET, false, PATTERN_ID);
 
 $tabsheet = new tabsheet();
 $tabsheet->set_id('rating');
@@ -68,7 +73,7 @@ if (isset($_GET['users']))
 $page['cat_filter'] = '';
 if (isset($_GET['cat']) and is_numeric($_GET['cat']))
 {
-  $cat_ids = get_subcat_ids(array($_GET['cat']));
+  $cat_ids = functions_category::get_subcat_ids(array($_GET['cat']));
 
   if (count($cat_ids) > 0)
   {
@@ -81,8 +86,8 @@ $query = '
 SELECT '.$conf['user_fields']['username'].' as username, '.$conf['user_fields']['id'].' as id
   FROM '.USERS_TABLE.'
 ;';
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result))
+$result = functions_mysqli::pwg_query($query);
+while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
 {
   $users[$row['id']]=stripslashes($row['username']);
 }
@@ -102,14 +107,14 @@ if (!empty($page['cat_filter']))
 
 $query.= '
 WHERE 1=1'. $page['user_filter'];
-list($nb_images) = pwg_db_fetch_row(pwg_query($query));
+list($nb_images) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
 $query = '
 SELECT
     COUNT(*)
   FROM '.RATE_TABLE.
 ';';
-list($nb_elements) = pwg_db_fetch_row(pwg_query($query));
+list($nb_elements) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
 // +-----------------------------------------------------------------------+
 // |                             template init                             |
@@ -119,8 +124,8 @@ $template->set_filename('rating', 'rating.tpl');
 
 $template->assign(
   array(
-    'navbar' => create_navigation_bar(
-      PHPWG_ROOT_PATH.'admin.php'.get_query_string_diff(array('start','del')),
+    'navbar' => functions::create_navigation_bar(
+      PHPWG_ROOT_PATH.'admin.php'.functions_url::get_query_string_diff(array('start','del')),
       $nb_images,
       $start,
       $elements_per_page
@@ -129,21 +134,21 @@ $template->assign(
     'DISPLAY' => $elements_per_page,
     'NB_ELEMENTS' => $nb_elements,
     'category' => (isset($_GET['cat']) ? array($_GET['cat']) : array()),
-    'CACHE_KEYS' => get_admin_client_cache_keys(array('categories')),
+    'CACHE_KEYS' => \Piwigo\admin\inc\functions::get_admin_client_cache_keys(array('categories')),
     )
   );
 
 
 
 $available_order_by= array(
-    array(l10n('Rate date'), 'recently_rated DESC'),
-    array(l10n('Rating score'), 'score DESC'),
-    array(l10n('Average rate'), 'avg_rates DESC'),
-    array(l10n('Number of rates'), 'nb_rates DESC'),
-    array(l10n('Sum of rates'), 'sum_rates DESC'),
-    array(l10n('File name'), 'file DESC'),
-    array(l10n('Creation date'), 'date_creation DESC'),
-    array(l10n('Post date'), 'date_available DESC'),
+    array(functions::l10n('Rate date'), 'recently_rated DESC'),
+    array(functions::l10n('Rating score'), 'score DESC'),
+    array(functions::l10n('Average rate'), 'avg_rates DESC'),
+    array(functions::l10n('Number of rates'), 'nb_rates DESC'),
+    array(functions::l10n('Sum of rates'), 'sum_rates DESC'),
+    array(functions::l10n('File name'), 'file DESC'),
+    array(functions::l10n('Creation date'), 'date_creation DESC'),
+    array(functions::l10n('Post date'), 'date_available DESC'),
   );
 
 for ($i=0; $i<count($available_order_by); $i++)
@@ -157,14 +162,14 @@ $template->assign('order_by_options_selected', array($order_by_index) );
 
 
 $user_options = array(
-  'all'   => l10n('all'),
-  'user'  => l10n('Users'),
-  'guest' => l10n('Guests'),
+  'all'   => functions::l10n('all'),
+  'user'  => functions::l10n('Users'),
+  'guest' => functions::l10n('Guests'),
   );
 
 $template->assign('user_options', $user_options );
 $template->assign('user_options_selected', array(@$_GET['users']) );
-$template->assign('ADMIN_PAGE_TITLE', l10n('Rating'));
+$template->assign('ADMIN_PAGE_TITLE', functions::l10n('Rating'));
 
 $query = '
 SELECT i.id,
@@ -198,8 +203,8 @@ $query.= '
 ;';
 
 $images = array();
-$result = pwg_query($query);
-while ($row = pwg_db_fetch_assoc($result))
+$result = functions_mysqli::pwg_query($query);
+while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
 {
   $images[] = $row;
 }
@@ -209,14 +214,14 @@ foreach ($images as $image)
 {
   $thumbnail_src = DerivativeImage::thumb_url($image);
 
-  $image_url = get_root_url().'admin.php?page=photo-'.$image['id'];
+  $image_url = functions_url::get_root_url().'admin.php?page=photo-'.$image['id'];
 
   $query = 'SELECT *
 FROM '.RATE_TABLE.' AS r
 WHERE r.element_id='.$image['id'] . '
 ORDER BY date DESC;';
-  $result = pwg_query($query);
-  $nb_rates = pwg_db_num_rows($result);
+  $result = functions_mysqli::pwg_query($query);
+  $nb_rates = functions_mysqli::pwg_db_num_rows($result);
 
   $tpl_image = 
     array(
@@ -232,7 +237,7 @@ ORDER BY date DESC;';
        'rates'  => array()
    );
 
-  while ($row = pwg_db_fetch_assoc($result))
+  while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
   {
     if ( isset($users[$row['user_id']]) )
     {

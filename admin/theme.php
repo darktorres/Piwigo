@@ -7,6 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\themes;
+use Piwigo\inc\functions_user;
 
 if( !defined("PHPWG_ROOT_PATH") )
 {
@@ -14,7 +15,7 @@ if( !defined("PHPWG_ROOT_PATH") )
 }
 
 include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 if (empty($_GET['theme']))
 {

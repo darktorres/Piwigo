@@ -8,13 +8,17 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions_session;
+use Piwigo\inc\functions_user;
+
 class c13y_internal
 {
   function __construct()
   {
-    add_event_handler('list_check_integrity', array(&$this, 'c13y_version'));
-    add_event_handler('list_check_integrity', array(&$this, 'c13y_exif'));
-    add_event_handler('list_check_integrity', array(&$this, 'c13y_user'));
+    \Piwigo\inc\functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_version'));
+    \Piwigo\inc\functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_exif'));
+    \Piwigo\inc\functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_user'));
   }
 
   /**
@@ -37,8 +41,8 @@ class c13y_internal
 
     $check_list[] = array(
         'type' => 'MySQL',
-        'current' => pwg_get_db_version(), 
-        'required' => REQUIRED_MYSQL_VERSION,
+        'current' => functions_mysqli::pwg_get_db_version(),
+        'required' => functions_mysqli::REQUIRED_MYSQL_VERSION,
         );
 
     foreach ($check_list as $elem)
@@ -46,10 +50,10 @@ class c13y_internal
       if (version_compare($elem['current'], $elem['required'], '<'))
       {
         $c13y->add_anomaly(
-          sprintf(l10n('The version of %s [%s] installed is not compatible with the version required [%s]'), $elem['type'], $elem['current'], $elem['required']),
+          sprintf(\Piwigo\inc\functions::l10n('The version of %s [%s] installed is not compatible with the version required [%s]'), $elem['type'], $elem['current'], $elem['required']),
           null,
           null,
-          l10n('You need to upgrade your system to take full advantage of the application else the application will not work correctly, or not at all')
+          \Piwigo\inc\functions::l10n('You need to upgrade your system to take full advantage of the application else the application will not work correctly, or not at all')
           .'<br>'.
           $c13y->get_htlm_links_more_info());
       }
@@ -71,10 +75,10 @@ class c13y_internal
       if (($conf[$value]) and (!function_exists('exif_read_data')))
       {
         $c13y->add_anomaly(
-          sprintf(l10n('%s value is not correct file because exif are not supported'), '$conf[\''.$value.'\']'),
+          sprintf(\Piwigo\inc\functions::l10n('%s value is not correct file because exif are not supported'), '$conf[\''.$value.'\']'),
           null,
           null,
-          sprintf(l10n('%s must be to set to false in your local/config/config.php file'), '$conf[\''.$value.'\']')
+          sprintf(\Piwigo\inc\functions::l10n('%s must be to set to false in your local/config/config.php file'), '$conf[\''.$value.'\']')
           .'<br>'.
           $c13y->get_htlm_links_more_info());
       }
@@ -121,8 +125,8 @@ class c13y_internal
 
     $status = array();
 
-    $result = pwg_query($query);
-    while ($row = pwg_db_fetch_assoc($result))
+    $result = functions_mysqli::pwg_query($query);
+    while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
     {
       $status[$row['id']] = $row['status'];
     }
@@ -131,13 +135,13 @@ class c13y_internal
     {
       if (!array_key_exists($id, $status))
       {
-        $c13y->add_anomaly(l10n($data['l10n_non_existent']), 'c13y_correction_user',
+        $c13y->add_anomaly(\Piwigo\inc\functions::l10n($data['l10n_non_existent']), 'c13y_correction_user',
           array('id' => $id, 'action' => 'creation'));
       }
       else
       if (!empty($data['status']) and $status[$id] != $data['status'])
       {
-        $c13y->add_anomaly(l10n($data['l10n_bad_status']), 'c13y_correction_user',
+        $c13y->add_anomaly(\Piwigo\inc\functions::l10n($data['l10n_bad_status']), 'c13y_correction_user',
           array('id' => $id, 'action' => 'status'));
       }
     }
@@ -173,7 +177,7 @@ class c13y_internal
           else if  ($id == $conf['webmaster_id'])
           {
             $name = 'webmaster';
-            $password = generate_key(6);
+            $password = functions_session::generate_key(6);
           }
 
           if (isset($name))
@@ -181,10 +185,10 @@ class c13y_internal
             $name_ok = false;
             while (!$name_ok)
             {
-              $name_ok = (get_userid($name) === false);
+              $name_ok = (functions_user::get_userid($name) === false);
               if (!$name_ok)
               {
-                $name .= generate_key(1);
+                $name .= functions_session::generate_key(1);
               }
             }
 
@@ -195,11 +199,11 @@ class c13y_internal
                 'password' => $password
                 ),
               );
-            mass_inserts(USERS_TABLE, array_keys($inserts[0]), $inserts);
+            functions_mysqli::mass_inserts(USERS_TABLE, array_keys($inserts[0]), $inserts);
 
-            create_user_infos($id);
+            functions_user::create_user_infos($id);
 
-            $page['infos'][] = sprintf(l10n('User "%s" created with "%s" like password'), $name, $password);
+            $page['infos'][] = sprintf(\Piwigo\inc\functions::l10n('User "%s" created with "%s" like password'), $name, $password);
 
             $result = true;
           }
@@ -226,11 +230,11 @@ class c13y_internal
                 'status'  => $status
                 ),
               );
-            mass_updates(USER_INFOS_TABLE,
+            functions_mysqli::mass_updates(USER_INFOS_TABLE,
               array('primary' => array('user_id'),'update' => array('status')),
               $updates);
 
-            $page['infos'][] = sprintf(l10n('Status of user "%s" updated'), get_username($id));
+            $page['infos'][] = sprintf(\Piwigo\inc\functions::l10n('Status of user "%s" updated'), functions::get_username($id));
 
             $result = true;
           }

@@ -7,6 +7,10 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\tabsheet;
+use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_url;
+use Piwigo\inc\functions_user;
 
 if( !defined("PHPWG_ROOT_PATH") )
 {
@@ -17,15 +21,15 @@ if( !defined("PHPWG_ROOT_PATH") )
 // | Basic checks                                                          |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
-check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
-check_input_parameter('image_id', $_GET, false, PATTERN_ID);
+functions::check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
+functions::check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 
-$admin_photo_base_url = get_root_url().'admin.php?page=photo-'.$_GET['image_id'];
+$admin_photo_base_url = functions_url::get_root_url().'admin.php?page=photo-'.$_GET['image_id'];
 
 // retrieving direct information about picture
-$page['image'] = get_image_infos($_GET['image_id'], true);
+$page['image'] = \Piwigo\admin\inc\functions::get_image_infos($_GET['image_id'], true);
 
 if (isset($_GET['cat_id']))
 {
@@ -34,7 +38,7 @@ SELECT *
   FROM '.CATEGORIES_TABLE.'
   WHERE id = '.$_GET['cat_id'].'
 ;';
-  $category = pwg_db_fetch_assoc(pwg_query($query));
+  $category = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
 }
 
 // +-----------------------------------------------------------------------+
@@ -55,7 +59,7 @@ $tabsheet->assign();
 
 $template->assign(
   array(
-    'ADMIN_PAGE_TITLE' => l10n('Edit photo').' <span class="image-id">#'.$_GET['image_id'].'</span>',
+    'ADMIN_PAGE_TITLE' => functions::l10n('Edit photo').' <span class="image-id">#'.$_GET['image_id'].'</span>',
     )
   );
 

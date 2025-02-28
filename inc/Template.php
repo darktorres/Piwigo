@@ -8,9 +8,9 @@
 
 namespace Piwigo\inc;
 
-/**
- * @package template
- */
+use Smarty;
+use Smarty_Internal_Debug;
+use SmartyException;
 
 function customErrorHandler(
     $errno,
@@ -60,7 +60,7 @@ define('BUTTONS_RANK_NEUTRAL', 50);
  */
 class Template
 {
-  /** @var \Smarty */
+  /** @var Smarty */
   var $smarty;
   /** @var string */
   var $output = '';
@@ -102,11 +102,11 @@ class Template
   {
     global $conf, $lang_info;
 
-    \SmartyException::$escape = false;
+    SmartyException::$escape = false;
 
     $this->scriptLoader = new ScriptLoader;
     $this->cssLoader = new CssLoader;
-    $this->smarty = new \Smarty;
+    $this->smarty = new Smarty;
     $this->smarty->debugging = $conf['debug_template'];
     if (!$this->smarty->debugging)
     {
@@ -118,26 +118,26 @@ class Template
     if (!isset($conf['data_dir_checked']))
     {
       $dir = PHPWG_ROOT_PATH.$conf['data_location'];
-      mkgetdir($dir, MKGETDIR_DEFAULT&~MKGETDIR_DIE_ON_ERROR);
+      functions::mkgetdir($dir, functions::MKGETDIR_DEFAULT&~functions::MKGETDIR_DIE_ON_ERROR);
       if (!is_writable($dir))
       {
-        load_language('admin.lang');
-        fatal_error(
-          l10n(
+        functions::load_language('admin.lang');
+        functions_html::fatal_error(
+          functions::l10n(
             'Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation',
             $conf['data_location']
             ),
-          l10n('an error happened'),
+          functions::l10n('an error happened'),
           false // show trace
           );
       }
       if (function_exists('pwg_query')) {
-        conf_update_param('data_dir_checked', 1);
+        functions::conf_update_param('data_dir_checked', 1);
       }
     }
 
     $compile_dir = PHPWG_ROOT_PATH.$conf['data_location'].'templates_c';
-    mkgetdir( $compile_dir );
+    functions::mkgetdir( $compile_dir );
 
     $this->smarty->setCompileDir($compile_dir);
 
@@ -508,10 +508,10 @@ class Template
   {
     if ( !isset($this->files[$handle]) )
     {
-      fatal_error("Template->parse(): Couldn't load template file for handle $handle");
+      functions_html::fatal_error("Template->parse(): Couldn't load template file for handle $handle");
     }
 
-    $this->smarty->assign( 'ROOT_URL', get_root_url() );
+    $this->smarty->assign( 'ROOT_URL', functions_url::get_root_url() );
 
     $save_compile_id = $this->smarty->compile_id;
     $this->load_external_filters($handle);
@@ -575,11 +575,11 @@ class Template
     $content = array();
     foreach( $css as $combi )
     {
-      $href = embellish_url(get_root_url().$combi->path);
+      $href = functions_url::embellish_url(functions_url::get_root_url().$combi->path);
       if ($combi->version !== false)
         $href .= '?v' . ($combi->version ? $combi->version : PHPWG_VERSION);
       // trigger the event for eventual use of a cdn
-      $href = trigger_change('combined_css', $href, $combi);
+      $href = functions_plugins::trigger_change('combined_css', $href, $combi);
       $content[] = '<link rel="stylesheet" type="text/css" href="'.$href.'">';
     }
     $this->output = str_replace(self::COMBINED_CSS_TAG,
@@ -636,10 +636,10 @@ class Template
       global $t2;
       $this->smarty->assign(
         array(
-        'AAAA_DEBUG_TOTAL_TIME__' => get_elapsed_time($t2, get_moment())
+        'AAAA_DEBUG_TOTAL_TIME__' => functions::get_elapsed_time($t2, functions::get_moment())
         )
         );
-      \Smarty_Internal_Debug::display_debug($this->smarty);
+      Smarty_Internal_Debug::display_debug($this->smarty);
     }
   }
 
@@ -686,7 +686,7 @@ class Template
       ) {
         return var_export($lang[$key], true);
       }
-      return 'l10n('.$params[0].')';
+      return '\Piwigo\inc\functions::l10n('.$params[0].')';
 
     default:
       if ($conf['compiled_template_cache_language'])
@@ -697,7 +697,7 @@ class Template
         $ret .= ')';
         return $ret;
       }
-      return 'l10n('.$params[0].','.implode(',', array_slice($params, 1)).')';
+      return '\Piwigo\inc\functions::l10n('.$params[0].','.implode(',', array_slice($params, 1)).')';
     }
   }
 
@@ -732,7 +732,7 @@ class Template
       $ret .= ')';
       return $ret;
     }
-    return 'l10n_dec('.$params[1].','.$params[2].','.$params[0].')';
+    return '\Piwigo\inc\functions::l10n_dec('.$params[1].','.$params[2].','.$params[0].')';
   }
 
   /**
@@ -808,19 +808,19 @@ class Template
    *    - crop (optional, used if type is empty)
    *    - min_height (optional, used with crop)
    *    - min_height (optional, used with crop)
-   * @param \Smarty $smarty
+   * @param Smarty $smarty
    */
   function func_define_derivative($params, $smarty)
   {
-    !empty($params['name']) or fatal_error('define_derivative missing name');
+    !empty($params['name']) or functions_html::fatal_error('define_derivative missing name');
     if (isset($params['type']))
     {
       $derivative = ImageStdParams::get_by_type($params['type']);
       $smarty->assign( $params['name'], $derivative);
       return;
     }
-    !empty($params['width']) or fatal_error('define_derivative missing width');
-    !empty($params['height']) or fatal_error('define_derivative missing height');
+    !empty($params['width']) or functions_html::fatal_error('define_derivative missing width');
+    !empty($params['height']) or functions_html::fatal_error('define_derivative missing height');
 
     $w = intval($params['width']);
     $h = intval($params['height']);
@@ -842,9 +842,9 @@ class Template
       if ($crop)
       {
         $minw = empty($params['min_width']) ? $w : intval($params['min_width']);
-        $minw <= $w or fatal_error('define_derivative invalid min_width');
+        $minw <= $w or functions_html::fatal_error('define_derivative invalid min_width');
         $minh = empty($params['min_height']) ? $h : intval($params['min_height']);
-        $minh <= $h or fatal_error('define_derivative invalid min_height');
+        $minh <= $h or functions_html::fatal_error('define_derivative invalid min_height');
       }
     }
 
@@ -959,15 +959,15 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
       $ret = $script->path;
     else
     {
-      $ret = get_root_url().$script->path;
+      $ret = functions_url::get_root_url().$script->path;
       if ($script->version!==false)
       {
         $ret.= '?v'. ($script->version ? $script->version : PHPWG_VERSION);
       }
     }
     // trigger the event for eventual use of a cdn
-    $ret = trigger_change('combined_script', $ret, $script);
-    return embellish_url($ret);
+    $ret = functions_plugins::trigger_change('combined_script', $ret, $script);
+    return functions_url::embellish_url($ret);
   }
 
   /**
@@ -1005,7 +1005,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
   {
     if (empty($params['path']))
     {
-      fatal_error('combine_css missing path');
+      functions_html::fatal_error('combine_css missing path');
     }
 
     if (!isset($params['id']))
@@ -1120,7 +1120,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * @toto : description of Template::prefilter_white_space
    *
    * @param string $source
-   * @param \Smarty $smarty
+   * @param Smarty $smarty
    * @param return string
    */
   static function prefilter_white_space($source, $smarty)
@@ -1150,7 +1150,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * Postfilter used when $conf['compiled_template_cache_language'] is true.
    *
    * @param string $source
-   * @param \Smarty $smarty
+   * @param Smarty $smarty
    * @param return string
    */
   static function postfilter_language($source, $smarty)
@@ -1167,7 +1167,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
    * Prefilter used to add theme local CSS files.
    *
    * @param string $source
-   * @param \Smarty $smarty
+   * @param Smarty $smarty
    * @param return string
    */
   static function prefilter_local_css($source, $smarty)
