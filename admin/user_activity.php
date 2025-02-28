@@ -6,6 +6,10 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions;
+use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions_user;
+
 if (!defined('PHPWG_ROOT_PATH'))
 {
   die('Hacking attempt!');
@@ -16,7 +20,7 @@ include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
@@ -46,9 +50,9 @@ SELECT
   ORDER BY activity_id DESC
 ;';
 
-  $result = pwg_query($query);
+  $result = functions_mysqli::pwg_query($query);
   array_push($output_lines, ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details']);
-  while ($row = pwg_db_fetch_assoc($result))
+  while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
   {
     $row['details'] = str_replace('`groups`', 'groups', $row['details']);
     $row['details'] = str_replace('`rank`', 'rank', $row['details']);
@@ -85,15 +89,15 @@ SELECT
 // |                       template initialization                         |
 // +-----------------------------------------------------------------------+
 $template->set_filename('user_activity', 'user_activity.tpl');
-$template->assign('ADMIN_PAGE_TITLE', l10n('Users'));
+$template->assign('ADMIN_PAGE_TITLE', \Piwigo\inc\functions::l10n('Users'));
 
 // +-----------------------------------------------------------------------+
 // |                          sending html code                            |
 // +-----------------------------------------------------------------------+
 $template->assign(array(
-  'PWG_TOKEN' => get_pwg_token(),
+  'PWG_TOKEN' => \Piwigo\inc\functions::get_pwg_token(),
   'INHERIT' => $conf['inheritance_by_default'],
-  'CACHE_KEYS' => get_admin_client_cache_keys(array('users')),
+  'CACHE_KEYS' => functions::get_admin_client_cache_keys(array('users')),
   ));
 
 $query = '
@@ -105,7 +109,7 @@ SELECT
   GROUP BY performed_by
 ;';
 
-$nb_lines_for_user = query2array($query, 'performed_by', 'counter');
+$nb_lines_for_user = functions_mysqli::query2array($query, 'performed_by', 'counter');
 
 if (count($nb_lines_for_user) > 0)
 {
@@ -117,7 +121,7 @@ if (count($nb_lines_for_user) > 0)
     WHERE '.$conf['user_fields']['id'].' IN ('.implode(',', array_keys($nb_lines_for_user)).');';
 }
 
-$username_of = query2array($query, 'id', 'username');
+$username_of = functions_mysqli::query2array($query, 'id', 'username');
 
 $filterable_users = array();
 
@@ -138,7 +142,7 @@ SELECT COUNT(*)
   FROM '.USERS_TABLE.'
 ;';
 
-list($nb_users) = pwg_db_fetch_row(pwg_query($query));
+list($nb_users) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 $template->assign('nb_users', $nb_users);
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'user_activity');

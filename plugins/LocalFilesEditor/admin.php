@@ -22,13 +22,16 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\tabsheet;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_url;
+use Piwigo\inc\functions_user;
 
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 include_once(LOCALEDIT_PATH.'inc/functions.php');
-load_language('plugin.lang', LOCALEDIT_PATH);
-$my_base_url = get_root_url().'admin.php?page=plugin-'.basename(dirname(__FILE__));
+functions::load_language('plugin.lang', LOCALEDIT_PATH);
+$my_base_url = functions_url::get_root_url().'admin.php?page=plugin-'.basename(dirname(__FILE__));
 
-check_status(ACCESS_WEBMASTER);
+functions_user::check_status(ACCESS_WEBMASTER);
 
 // +-----------------------------------------------------------------------+
 // |                            Tabssheet
@@ -46,7 +49,7 @@ if (!in_array($page['tab'], $conf['LocalFilesEditor_tabs'])) die('Hacking attemp
 $tabsheet = new tabsheet();
 foreach ($conf['LocalFilesEditor_tabs'] as $tab)
 {
-  $tabsheet->add($tab, l10n('locfiledit_onglet_'.$tab), $my_base_url.'-'.$tab);
+  $tabsheet->add($tab, functions::l10n('locfiledit_onglet_'.$tab), $my_base_url.'-'.$tab);
 }
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
@@ -59,8 +62,8 @@ include_once(LOCALEDIT_PATH.'inc/'.$page['tab'].'.php');
 if (isset($_POST['restore']))
 {
   $content_file = file_get_contents(get_bak_file($edited_file));
-  $page['infos'][] = l10n('locfiledit_bak_loaded1');
-  $page['infos'][] = l10n('locfiledit_bak_loaded2');
+  $page['infos'][] = functions::l10n('locfiledit_bak_loaded1');
+  $page['infos'][] = functions::l10n('locfiledit_bak_loaded2');
 }
 
 // +-----------------------------------------------------------------------+
@@ -68,22 +71,22 @@ if (isset($_POST['restore']))
 // +-----------------------------------------------------------------------+
 if (isset($_POST['submit']))
 {
-  check_pwg_token();
+  functions::check_pwg_token();
 
-  if (!is_webmaster())
+  if (!functions_user::is_webmaster())
   {
-    $page['errors'][] = l10n('locfiledit_webmaster_only');
+    $page['errors'][] = functions::l10n('locfiledit_webmaster_only');
   }
   else
   {
     $content_file = stripslashes($_POST['text']);
-    if (get_extension($edited_file) == 'php')
+    if (functions::get_extension($edited_file) == 'php')
     {
       $content_file = eval_syntax($content_file);
     }
     if ($content_file === false)
     {
-      $page['errors'][] = l10n('locfiledit_syntax_error');
+      $page['errors'][] = functions::l10n('locfiledit_syntax_error');
     }
     else
     {
@@ -94,19 +97,19 @@ if (isset($_POST['submit']))
       if (file_exists($edited_file))
       {
         @copy($edited_file, get_bak_file($edited_file));
-        $page['infos'][] = l10n('locfiledit_saved_bak', substr(get_bak_file($edited_file), 2));
+        $page['infos'][] = functions::l10n('locfiledit_saved_bak', substr(get_bak_file($edited_file), 2));
       }
       
       if ($file = @fopen($edited_file , "w"))
       {
         @fwrite($file , $content_file);
         @fclose($file);
-        array_unshift($page['infos'], l10n('locfiledit_save_config'));
+        array_unshift($page['infos'], functions::l10n('locfiledit_save_config'));
         $template->delete_compiled_templates();
       }
       else
       {
-        $page['errors'][] = l10n('locfiledit_cant_save');
+        $page['errors'][] = functions::l10n('locfiledit_cant_save');
       }
     }
   }
@@ -144,7 +147,7 @@ if (!empty($edited_file))
 $template->assign(array(
   'F_ACTION' => PHPWG_ROOT_PATH.'admin.php?page=plugin-LocalFilesEditor-'.$page['tab'],
   'LOCALEDIT_PATH' => LOCALEDIT_PATH,
-  'PWG_TOKEN' => get_pwg_token(),
+  'PWG_TOKEN' => functions::get_pwg_token(),
   'CODEMIRROR_MODE' => @$codemirror_mode
   )
 );

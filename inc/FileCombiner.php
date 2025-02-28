@@ -8,6 +8,9 @@
 
 namespace Piwigo\inc;
 
+use Exception;
+use tubalmartin\CssMin\Minifier;
+
 /**
  * Allows merging of javascript and css files into a single one.
  */
@@ -39,7 +42,7 @@ final class FileCombiner
     $dir = opendir(PHPWG_ROOT_PATH.PWG_COMBINED_DIR);
     while ($file = readdir($dir))
     {
-      if ( get_extension($file)=='js' || get_extension($file)=='css')
+      if ( functions::get_extension($file)=='js' || functions::get_extension($file)=='css')
         unlink(PHPWG_ROOT_PATH.PWG_COMBINED_DIR.$file);
     }
     closedir($dir);
@@ -67,7 +70,7 @@ final class FileCombiner
   {
     global $conf;
     $force = false;
-    if (is_admin() && ($this->is_css || !$conf['template_compile_check']) )
+    if (functions_user::is_admin() && ($this->is_css || !$conf['template_compile_check']) )
     {
       $force = (isset($_SERVER['HTTP_CACHE_CONTROL']) && strpos($_SERVER['HTTP_CACHE_CONTROL'], 'max-age=0') !== false)
         || (isset($_SERVER['HTTP_PRAGMA']) && strpos($_SERVER['HTTP_PRAGMA'], 'no-cache'));
@@ -75,7 +78,7 @@ final class FileCombiner
 
     $result = array();
     $pending = array();
-    $ini_key = $this->is_css ? array(get_absolute_root_url(false)): array(); //because for css we modify bg url;
+    $ini_key = $this->is_css ? array(functions_url::get_absolute_root_url(false)): array(); //because for css we modify bg url;
     $key = $ini_key;
 
     foreach ($this->combinables as $combinable)
@@ -128,7 +131,7 @@ final class FileCombiner
           $output .= "\n";
         }
         $output = "/*BEGIN header */\n" . $header . "\n" . $output;
-        mkgetdir( dirname(PHPWG_ROOT_PATH.$file) );
+        functions::mkgetdir( dirname(PHPWG_ROOT_PATH.$file) );
         file_put_contents( PHPWG_ROOT_PATH.$file, $output );
         @chmod(PHPWG_ROOT_PATH.$file, 0644);
       }
@@ -177,7 +180,7 @@ final class FileCombiner
       global $template;
       $handle = $this->type. '.' .$combinable->id;
       $template->set_filename($handle, realpath(PHPWG_ROOT_PATH.$combinable->path));
-      trigger_notify( 'combinable_preparse', $template, $combinable, $this); //allow themes and plugins to set their own vars to template ...
+      functions_plugins::trigger_notify( 'combinable_preparse', $template, $combinable, $this); //allow themes and plugins to set their own vars to template ...
       $content = $template->parse($handle, true);
 
       if ($this->is_css)
@@ -189,7 +192,7 @@ final class FileCombiner
         return $content;
 
       if (! file_exists(dirname(PHPWG_ROOT_PATH . $file))) {
-          mkgetdir(dirname(PHPWG_ROOT_PATH . $file));
+          functions::mkgetdir(dirname(PHPWG_ROOT_PATH . $file));
       }
 
       file_put_contents( PHPWG_ROOT_PATH.$file, $content );
@@ -217,7 +220,7 @@ final class FileCombiner
   {
     if (strpos($file, '.min')===false and strpos($file, '.packed')===false )
     {
-      try { $js = \JShrink\Minifier::minify($js); } catch(\Exception $e) {}
+      try { $js = \JShrink\Minifier::minify($js); } catch(Exception $e) {}
     }
     return trim($js, " \t\r\n;").";\n";
   }
@@ -236,10 +239,10 @@ final class FileCombiner
     $css = self::process_css_rec($css, dirname($file), $header);
     if (strpos($file, '.min')===false and version_compare(PHP_VERSION, '5.2.4', '>='))
     {
-      $cssMin = new \tubalmartin\CssMin\Minifier();
+      $cssMin = new Minifier();
       $css = $cssMin->run($css);
     }
-    $css = trigger_change('combined_css_postfilter', $css);
+    $css = functions_plugins::trigger_change('combined_css_postfilter', $css);
     return $css;
   }
 
@@ -262,11 +265,11 @@ final class FileCombiner
       $search = $replace = array();
       foreach ($matches as $match)
       {
-        if ( !url_is_remote($match[1]) && $match[1][0] != '/' && strpos($match[1], 'data:image/')===false)
+        if ( !functions_url::url_is_remote($match[1]) && $match[1][0] != '/' && strpos($match[1], 'data:image/')===false)
         {
           $relative = $dir . "/$match[1]";
           $search[] = $match[0];
-          $replace[] = 'url('.embellish_url(get_absolute_root_url(false).$relative).')';
+          $replace[] = 'url('.functions_url::embellish_url(functions_url::get_absolute_root_url(false).$relative).')';
         }
       }
       $css = str_replace($search, $replace, $css);

@@ -8,6 +8,8 @@
 
 namespace Piwigo\admin\inc;
 
+use Piwigo\inc\dblayer\functions_mysqli;
+
 class check_integrity
 {
   var $ignore_list;
@@ -53,12 +55,12 @@ class check_integrity
     $this->retrieve_list = array();
     $this->build_ignore_list = array();
 
-    trigger_notify('list_check_integrity', $this);
+    \Piwigo\inc\functions_plugins::trigger_notify('list_check_integrity', $this);
 
     // Information
     if (count($this->retrieve_list) > 0)
     {
-      $header_notes[] = l10n_dec(
+      $header_notes[] = \Piwigo\inc\functions::l10n_dec(
         '%d anomaly has been detected.', '%d anomalies have been detected.',
         count($this->retrieve_list)
         );
@@ -104,14 +106,14 @@ class check_integrity
 
       if ($corrected_count > 0)
       {
-        $page['infos'][] = l10n_dec(
+        $page['infos'][] = \Piwigo\inc\functions::l10n_dec(
           '%d anomaly has been corrected.', '%d anomalies have been detected corrected.',
           $corrected_count
           );
       }
       if ($not_corrected_count > 0)
       {
-        $page['errors'][] = l10n_dec(
+        $page['errors'][] = \Piwigo\inc\functions::l10n_dec(
           '%d anomaly has not been corrected.', '%d anomalies have not been corrected.',
           $not_corrected_count
           );
@@ -135,7 +137,7 @@ class check_integrity
 
         if ($ignored_count > 0)
         {
-          $page['infos'][] = l10n_dec(
+          $page['infos'][] = \Piwigo\inc\functions::l10n_dec(
             '%d anomaly has been ignored.', '%d anomalies have been ignored.',
             $ignored_count
             );
@@ -295,7 +297,7 @@ class check_integrity
     $conf_c13y_ignore['version'] = PHPWG_VERSION;
     $conf_c13y_ignore['list'] = $conf_ignore_list;
     $query = 'update '.CONFIG_TABLE.' set value =\''.serialize($conf_c13y_ignore).'\'where param = \'c13y_ignore\';';
-    pwg_query($query);
+    functions_mysqli::pwg_query($query);
   }
 
   /**
@@ -317,14 +319,14 @@ class check_integrity
    */
   function get_htlm_links_more_info()
   {
-    $pwg_links = pwg_URL();
+    $pwg_links = functions::pwg_URL();
     $link_fmt = '<a href="%s" onclick="window.open(this.href, \'\'); return false;">%s</a>';
     return
       sprintf
       (
-        l10n('Go to %s or %s for more informations'),
-        sprintf($link_fmt, $pwg_links['FORUM'], l10n('the forum')),
-        sprintf($link_fmt, $pwg_links['WIKI'], l10n('the wiki'))
+        \Piwigo\inc\functions::l10n('Go to %s or %s for more informations'),
+        sprintf($link_fmt, $pwg_links['FORUM'], \Piwigo\inc\functions::l10n('the forum')),
+        sprintf($link_fmt, $pwg_links['WIKI'], \Piwigo\inc\functions::l10n('the wiki'))
       );
   }
 

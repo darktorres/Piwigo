@@ -1,4 +1,7 @@
 <?php
+
+use Piwigo\inc\functions;
+
 function modus_css_gradient($gradient) {
 	if (!empty($gradient))
 	{
@@ -32,7 +35,7 @@ function modus_smarty_prefilter($source)
 	$source = str_replace('<div id=imageHeaderBar>',   '<div class=titrePage id=imageHeaderBar>', $source );
 
 	if (!isset($lang['modus_theme']))
-		load_language('theme.lang', dirname(__FILE__).'/');
+		functions::load_language('theme.lang', dirname(__FILE__).'/');
 
 	// picture page actionButtons wrap for mobile
 	if (strpos($source, '<div id="imageToolBar">')!==false || strpos($source, '<div id=imageToolBar>')!==false){

@@ -20,6 +20,7 @@
 // | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, |
 // | USA.                                                                  |
 // +-----------------------------------------------------------------------+
+use Piwigo\inc\functions;
 
 /**
  * returns $code if php syntax is correct
@@ -76,7 +77,7 @@ function editarea_quote($value)
  */
 function get_bak_file($file)
 {
-  if (get_extension($file) == 'php')
+  if (functions::get_extension($file) == 'php')
   {
     return substr_replace($file, '.bak', strrpos($file , '.'), 0);
   }

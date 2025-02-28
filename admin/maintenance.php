@@ -7,6 +7,9 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\tabsheet;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_url;
+use Piwigo\inc\functions_user;
 
 if (!defined('PHPWG_ROOT_PATH'))
 {
@@ -19,22 +22,22 @@ include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 if (isset($_GET['action']))
 {
-  check_pwg_token();
+  functions::check_pwg_token();
 }
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
 // +-----------------------------------------------------------------------+
 
-$my_base_url = get_root_url().'admin.php?page=';
+$my_base_url = functions_url::get_root_url().'admin.php?page=';
 
 if (isset($_GET['tab']))
 {
-  check_input_parameter('tab', $_GET, false, '/^(actions|env)$/');
+  functions::check_input_parameter('tab', $_GET, false, '/^(actions|env)$/');
   $page['tab'] = $_GET['tab'];
 }
 else
@@ -51,5 +54,5 @@ $tabsheet->assign();
 include(PHPWG_ROOT_PATH.'admin/maintenance_'.$page['tab'].'.php');
 
 $template->assign(
-  array('ADMIN_PAGE_TITLE' => l10n('Maintenance'))
+  array('ADMIN_PAGE_TITLE' => functions::l10n('Maintenance'))
 );

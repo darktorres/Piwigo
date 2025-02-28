@@ -6,7 +6,15 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions;
+use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions_category;
+use Piwigo\inc\functions_html;
+use Piwigo\inc\functions_plugins;
+use Piwigo\inc\functions_url;
+use Piwigo\inc\functions_user;
 use Piwigo\inc\SrcImage;
 
 /**
@@ -25,9 +33,9 @@ include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
-trigger_notify('loc_begin_element_set_unit');
+functions_plugins::trigger_notify('loc_begin_element_set_unit');
 
 // +-----------------------------------------------------------------------+
 // |                        unit mode form submission                      |
@@ -35,8 +43,8 @@ trigger_notify('loc_begin_element_set_unit');
 
 if (isset($_POST['submit']))
 {
-  check_pwg_token();
-  check_input_parameter('element_ids', $_POST, false, '/^\d+(,\d+)*$/');
+  \Piwigo\inc\functions::check_pwg_token();
+  \Piwigo\inc\functions::check_input_parameter('element_ids', $_POST, false, '/^\d+(,\d+)*$/');
   $collection = explode(',', $_POST['element_ids']);
 
   $datas = array();
@@ -46,9 +54,9 @@ SELECT id, date_creation
   FROM '.IMAGES_TABLE.'
   WHERE id IN ('.implode(',', $collection).')
 ;';
-  $result = pwg_query($query);
+  $result = functions_mysqli::pwg_query($query);
 
-  while ($row = pwg_db_fetch_assoc($result))
+  while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
   {
     $data = array();
 
@@ -81,12 +89,12 @@ SELECT id, date_creation
     $tag_ids = array();
     if (!empty($_POST[ 'tags-'.$row['id'] ]))
     {
-      $tag_ids = get_tag_ids($_POST[ 'tags-'.$row['id'] ]);
+      $tag_ids = functions::get_tag_ids($_POST[ 'tags-'.$row['id'] ]);
     }
-    set_tags($tag_ids, $row['id']);
+    functions::set_tags($tag_ids, $row['id']);
   }
 
-  mass_updates(
+  functions_mysqli::mass_updates(
     IMAGES_TABLE,
     array(
       'primary' => array('id'),
@@ -95,8 +103,8 @@ SELECT id, date_creation
     $datas
     );
 
-  $page['infos'][] = l10n('Photo informations updated');
-  invalidate_user_cache();
+  $page['infos'][] = \Piwigo\inc\functions::l10n('Photo informations updated');
+  functions::invalidate_user_cache();
 }
 
 // +-----------------------------------------------------------------------+
@@ -110,11 +118,11 @@ $base_url = PHPWG_ROOT_PATH.'admin.php';
 
 $template->assign(
   array(
-    'U_ELEMENTS_PAGE' => $base_url.get_query_string_diff(array('display','start')),
-    'F_ACTION' => $base_url.get_query_string_diff(array()),
-    'level_options' => get_privacy_level_options(),
-    'ADMIN_PAGE_TITLE' => l10n('Batch Manager'),
-    'PWG_TOKEN' => get_pwg_token(),
+    'U_ELEMENTS_PAGE' => $base_url.functions_url::get_query_string_diff(array('display','start')),
+    'F_ACTION' => $base_url.functions_url::get_query_string_diff(array()),
+    'level_options' => \Piwigo\inc\functions::get_privacy_level_options(),
+    'ADMIN_PAGE_TITLE' => \Piwigo\inc\functions::l10n('Batch Manager'),
+    'PWG_TOKEN' => \Piwigo\inc\functions::get_pwg_token(),
     )
   );
 
@@ -140,8 +148,8 @@ else
 
 if (count($page['cat_elements_id']) > 0)
 {
-  $nav_bar = create_navigation_bar(
-    $base_url.get_query_string_diff(array('start')),
+  $nav_bar = \Piwigo\inc\functions::create_navigation_bar(
+    $base_url.functions_url::get_query_string_diff(array('start')),
     count($page['cat_elements_id']),
     $page['start'],
     $page['nb_images']
@@ -170,7 +178,7 @@ SELECT *
 
   if ($is_category)
   {
-    $category_info = get_cat_info($_SESSION['bulk_manager_filter']['category']);
+    $category_info = functions_category::get_cat_info($_SESSION['bulk_manager_filter']['category']);
 
     $conf['order_by'] = $conf['order_by_inside_category'];
     if (!empty($category_info['image_order']))
@@ -195,9 +203,9 @@ SELECT *
   '.$conf['order_by'].'
   LIMIT '.$page['nb_images'].' OFFSET '.$page['start'].'
 ;';
-  $result = pwg_query($query);
+  $result = functions_mysqli::pwg_query($query);
 
-  while ($row = pwg_db_fetch_assoc($result))
+  while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
   {
     $element_ids[] = $row['id'];
 
@@ -211,10 +219,10 @@ SELECT
     JOIN '.TAGS_TABLE.' AS t ON t.id = it.tag_id
   WHERE image_id = '.$row['id'].'
 ;';
-    $tag_selection = get_taglist($query);
+    $tag_selection = functions::get_taglist($query);
 
-    $legend = render_element_name($row);
-    if ($legend != get_name_from_file($row['file']))
+    $legend = functions_html::render_element_name($row);
+    if ($legend != \Piwigo\inc\functions::get_name_from_file($row['file']))
     {
       $legend.= ' ('.$row['file'].')';
     }
@@ -224,10 +232,10 @@ SELECT
       'elements', array_merge($row,
       array(
         'ID' => $row['id'],
-        'TN_SRC' => DerivativeImage::url(IMG_THUMB, $src_image),
-        'FILE_SRC' => DerivativeImage::url(IMG_LARGE, $src_image),
+        'TN_SRC' => DerivativeImage::url(derivative_std_params::IMG_THUMB, $src_image),
+        'FILE_SRC' => DerivativeImage::url(derivative_std_params::IMG_LARGE, $src_image),
         'LEGEND' => $legend,
-        'U_EDIT' => get_root_url().'admin.php?page=photo-'.$row['id'],
+        'U_EDIT' => functions_url::get_root_url().'admin.php?page=photo-'.$row['id'],
         'NAME' => htmlspecialchars(isset($row['name']) ? $row['name'] : ""),
         'AUTHOR' => htmlspecialchars(isset($row['author']) ? $row['author'] : ""),
         'LEVEL' => !empty($row['level'])?$row['level']:'0',
@@ -241,11 +249,11 @@ SELECT
 
   $template->assign(array(
     'ELEMENT_IDS' => implode(',', $element_ids),
-    'CACHE_KEYS' => get_admin_client_cache_keys(array('tags')),
+    'CACHE_KEYS' => functions::get_admin_client_cache_keys(array('tags')),
     ));
 }
 
-trigger_notify('loc_end_element_set_unit');
+functions_plugins::trigger_notify('loc_end_element_set_unit');
 
 // +-----------------------------------------------------------------------+
 // |                           sending html code                           |
