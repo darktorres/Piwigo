@@ -7,6 +7,11 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\tabsheet;
+use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_category;
+use Piwigo\inc\functions_url;
+use Piwigo\inc\functions_user;
 
 if (!defined('PHPWG_ROOT_PATH'))
 {
@@ -18,14 +23,14 @@ include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 if (!empty($_POST))
 {
-  check_pwg_token();
-  check_input_parameter('cat_true', $_POST, true, PATTERN_ID);
-  check_input_parameter('cat_false', $_POST, true, PATTERN_ID);
-  check_input_parameter('section', $_GET, false, '/^[a-z0-9_-]+$/i');
+  functions::check_pwg_token();
+  functions::check_input_parameter('cat_true', $_POST, true, PATTERN_ID);
+  functions::check_input_parameter('cat_false', $_POST, true, PATTERN_ID);
+  functions::check_input_parameter('section', $_GET, false, '/^[a-z0-9_-]+$/i');
 }
 
 // +-----------------------------------------------------------------------+
@@ -46,17 +51,17 @@ UPDATE '.CATEGORIES_TABLE.'
   SET commentable = \'false\'
   WHERE id IN ('.implode(',', $_POST['cat_true']).')
 ;';
-      pwg_query($query);
+      functions_mysqli::pwg_query($query);
       break;
     }
     case 'visible' :
     {
-      set_cat_visible($_POST['cat_true'], 'false');
+      \Piwigo\admin\inc\functions::set_cat_visible($_POST['cat_true'], 'false');
       break;
     }
     case 'status' :
     {
-      set_cat_status($_POST['cat_true'], 'private');
+      \Piwigo\admin\inc\functions::set_cat_status($_POST['cat_true'], 'private');
       break;
     }
     case 'representative' :
@@ -66,12 +71,12 @@ UPDATE '.CATEGORIES_TABLE.'
   SET representative_picture_id = NULL
   WHERE id IN ('.implode(',', $_POST['cat_true']).')
 ;';
-      pwg_query($query);
+      functions_mysqli::pwg_query($query);
       break;
     }
   }
 
-  pwg_activity('album', $_POST['cat_true'], 'edit', array('section'=>$_GET['section'], 'action'=>'falsify'));
+  functions::pwg_activity('album', $_POST['cat_true'], 'edit', array('section'=>$_GET['section'], 'action'=>'falsify'));
 }
 else if (isset($_POST['trueify'])
          and isset($_POST['cat_false'])
@@ -86,29 +91,29 @@ UPDATE '.CATEGORIES_TABLE.'
   SET commentable = \'true\'
   WHERE id IN ('.implode(',', $_POST['cat_false']).')
 ;';
-      pwg_query($query);
+      functions_mysqli::pwg_query($query);
       break;
     }
     case 'visible' :
     {
-      set_cat_visible($_POST['cat_false'], 'true');
+      \Piwigo\admin\inc\functions::set_cat_visible($_POST['cat_false'], 'true');
       break;
     }
     case 'status' :
     {
-      set_cat_status($_POST['cat_false'], 'public');
+      \Piwigo\admin\inc\functions::set_cat_status($_POST['cat_false'], 'public');
       break;
     }
     case 'representative' :
     {
       // theoretically, all categories in $_POST['cat_false'] contain at
       // least one element, so Piwigo can find a representant.
-      set_random_representant($_POST['cat_false']);
+      \Piwigo\admin\inc\functions::set_random_representant($_POST['cat_false']);
       break;
     }
   }
 
-  pwg_activity('album', $_POST['cat_false'], 'edit', array('section'=>$_GET['section'], 'action'=>'trueify'));
+  functions::pwg_activity('album', $_POST['cat_false'], 'edit', array('section'=>$_GET['section'], 'action'=>'trueify'));
 }
 
 // +-----------------------------------------------------------------------+
@@ -127,7 +132,7 @@ $base_url = PHPWG_ROOT_PATH.'admin.php?page=cat_options&amp;section=';
 
 $template->assign(
   array(
-    'U_HELP' => get_root_url().'admin/popuphelp.php?page=cat_options',
+    'U_HELP' => functions_url::get_root_url().'admin/popuphelp.php?page=cat_options',
     'F_ACTION'=>$base_url.$page['section']
    )
  );
@@ -169,9 +174,9 @@ SELECT id,name,uppercats,global_rank
 ;';
     $template->assign(
       array(
-        'L_SECTION' => l10n('Authorize users to add comments on selected albums'),
-        'L_CAT_OPTIONS_TRUE' => l10n('Authorized'),
-        'L_CAT_OPTIONS_FALSE' => l10n('Forbidden'),
+        'L_SECTION' => functions::l10n('Authorize users to add comments on selected albums'),
+        'L_CAT_OPTIONS_TRUE' => functions::l10n('Authorized'),
+        'L_CAT_OPTIONS_FALSE' => functions::l10n('Forbidden'),
         )
       );
     break;
@@ -190,9 +195,9 @@ SELECT id,name,uppercats,global_rank
 ;';
     $template->assign(
       array(
-        'L_SECTION' => l10n('Lock albums'),
-        'L_CAT_OPTIONS_TRUE' => l10n('Unlocked'),
-        'L_CAT_OPTIONS_FALSE' => l10n('Locked'),
+        'L_SECTION' => functions::l10n('Lock albums'),
+        'L_CAT_OPTIONS_TRUE' => functions::l10n('Unlocked'),
+        'L_CAT_OPTIONS_FALSE' => functions::l10n('Locked'),
         )
       );
     break;
@@ -211,9 +216,9 @@ SELECT id,name,uppercats,global_rank
 ;';
     $template->assign(
       array(
-        'L_SECTION' => l10n('Manage authorizations for selected albums'),
-        'L_CAT_OPTIONS_TRUE' => l10n('Public'),
-        'L_CAT_OPTIONS_FALSE' => l10n('Private'),
+        'L_SECTION' => functions::l10n('Manage authorizations for selected albums'),
+        'L_CAT_OPTIONS_TRUE' => functions::l10n('Public'),
+        'L_CAT_OPTIONS_FALSE' => functions::l10n('Private'),
         )
       );
     break;
@@ -232,18 +237,18 @@ SELECT DISTINCT id,name,uppercats,global_rank
 ;';
     $template->assign(
       array(
-        'L_SECTION' => l10n('Representative'),
-        'L_CAT_OPTIONS_TRUE' => l10n('singly represented'),
-        'L_CAT_OPTIONS_FALSE' => l10n('randomly represented')
+        'L_SECTION' => functions::l10n('Representative'),
+        'L_CAT_OPTIONS_TRUE' => functions::l10n('singly represented'),
+        'L_CAT_OPTIONS_FALSE' => functions::l10n('randomly represented')
         )
       );
     break;
   }
 }
-display_select_cat_wrapper($query_true,array(),'category_option_true');
-display_select_cat_wrapper($query_false,array(),'category_option_false');
-$template->assign('PWG_TOKEN',get_pwg_token());
-$template->assign('ADMIN_PAGE_TITLE', l10n('Properties of abums'));
+functions_category::display_select_cat_wrapper($query_true,array(),'category_option_true');
+functions_category::display_select_cat_wrapper($query_false,array(),'category_option_false');
+$template->assign('PWG_TOKEN',functions::get_pwg_token());
+$template->assign('ADMIN_PAGE_TITLE', functions::l10n('Properties of abums'));
 
 // +-----------------------------------------------------------------------+
 // |                           sending html code                           |

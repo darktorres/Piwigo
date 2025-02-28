@@ -8,6 +8,10 @@
 
 namespace Piwigo\admin\inc;
 
+use PclZip;
+use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions_user;
+
 class languages
 {
   var $fs_languages = array();
@@ -60,7 +64,7 @@ INSERT INTO '.LANGUAGES_TABLE.'
          \''.$this->fs_languages[$language_id]['version'].'\',
          \''.$this->fs_languages[$language_id]['name'].'\')
 ;';
-        pwg_query($query);
+        functions_mysqli::pwg_query($query);
         break;
 
       case 'deactivate':
@@ -70,7 +74,7 @@ INSERT INTO '.LANGUAGES_TABLE.'
           break;
         }
 
-        if ($language_id == get_default_language())
+        if ($language_id == functions_user::get_default_language())
         {
           $errors[] = 'CANNOT DEACTIVATE - LANGUAGE IS DEFAULT LANGUAGE';
           break;
@@ -81,7 +85,7 @@ DELETE
   FROM '.LANGUAGES_TABLE.'
   WHERE id= \''.$language_id.'\'
 ;';
-        pwg_query($query);
+        functions_mysqli::pwg_query($query);
         break;
 
       case 'delete':
@@ -99,12 +103,12 @@ DELETE
         // Set default language to user who are using this language
         $query = '
 UPDATE '.USER_INFOS_TABLE.'
-  SET language = \''.get_default_language().'\'
+  SET language = \''.functions_user::get_default_language().'\'
   WHERE language = \''.$language_id.'\'
 ;';
-        pwg_query($query);
+        functions_mysqli::pwg_query($query);
 
-        deltree(PHPWG_ROOT_PATH.'language/'.$language_id, PHPWG_ROOT_PATH.'language/trash');
+        functions::deltree(PHPWG_ROOT_PATH.'language/'.$language_id, PHPWG_ROOT_PATH.'language/trash');
         break;
 
       case 'set_default':
@@ -113,7 +117,7 @@ UPDATE '.USER_INFOS_TABLE.'
   SET language = \''.$language_id.'\'
   WHERE user_id IN ('.$conf['default_user_id'].', '.$conf['guest_id'].')
 ;';
-        pwg_query($query);
+        functions_mysqli::pwg_query($query);
         break;
     }
     return $errors;
@@ -126,7 +130,7 @@ UPDATE '.USER_INFOS_TABLE.'
   {
     if ( empty($target_charset) )
     {
-      $target_charset = get_pwg_charset();
+      $target_charset = \Piwigo\inc\functions::get_pwg_charset();
     }
     $target_charset = strtolower($target_charset);
 
@@ -153,7 +157,7 @@ UPDATE '.USER_INFOS_TABLE.'
           if (preg_match("|Language Name:\\s*(.+)|", $plg_data, $val))
           {
             $language['name'] = trim( $val[1] );
-            $language['name'] = convert_charset($language['name'], 'utf-8', $target_charset);
+            $language['name'] = \Piwigo\inc\functions::convert_charset($language['name'], 'utf-8', $target_charset);
           }
           if (preg_match("|Version:\\s*([\\w.-]+)|", $plg_data, $val))
           {
@@ -184,7 +188,7 @@ UPDATE '.USER_INFOS_TABLE.'
       }
     }
     closedir($dir);
-    @uasort($this->fs_languages, 'name_compare');
+    @uasort($this->fs_languages, '\Piwigo\inc\functions_html::name_compare');
   }
 
   function get_db_languages()
@@ -194,9 +198,9 @@ UPDATE '.USER_INFOS_TABLE.'
     FROM '.LANGUAGES_TABLE.'
     ORDER BY name ASC
   ;';
-    $result = pwg_query($query);
+    $result = functions_mysqli::pwg_query($query);
 
-    while ($row = pwg_db_fetch_assoc($result))
+    while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
     {
       $this->db_languages[ $row['id'] ] = $row['name'];
     }
@@ -218,13 +222,13 @@ UPDATE '.USER_INFOS_TABLE.'
     $version = PHPWG_VERSION;
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
+    if (functions::fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
         $version = $pem_versions[0]['name'];
       }
-      $branch = get_branch_from_version($version);
+      $branch = \Piwigo\inc\functions::get_branch_from_version($version);
       foreach ($pem_versions as $pem_version)
       {
         if (strpos($pem_version['name'], $branch) === 0)
@@ -269,7 +273,7 @@ UPDATE '.USER_INFOS_TABLE.'
       }
     }
 
-    if (fetchRemote($url, $result, $get_data))
+    if (functions::fetchRemote($url, $result, $get_data))
     {
       $pem_languages = @unserialize($result);
       if (!is_array($pem_languages))
@@ -308,10 +312,10 @@ UPDATE '.USER_INFOS_TABLE.'
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = @fopen($archive, 'wb') and fetchRemote($url, $handle, $get_data))
+      if ($handle = @fopen($archive, 'wb') and functions::fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
-        $zip = new \PclZip($archive);
+        $zip = new PclZip($archive);
         if ($list = $zip->listContent())
         {
           foreach ($list as $file)
@@ -400,7 +404,7 @@ UPDATE '.USER_INFOS_TABLE.'
                     }
                     elseif (is_dir($path))
                     {
-                      deltree($path, PHPWG_ROOT_PATH.'language/trash');
+                      functions::deltree($path, PHPWG_ROOT_PATH.'language/trash');
                     }
                   }
                 }

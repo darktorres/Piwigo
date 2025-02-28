@@ -32,7 +32,7 @@ class image_ext_imagick implements imageInterface
       @putenv('MAGICK_THREAD_LIMIT=1');
     }
 
-    if ('webp' == strtolower(get_extension($source_filepath)))
+    if ('webp' == strtolower(\Piwigo\inc\functions::get_extension($source_filepath)))
     {
       $webp_info = pwg_image::webp_info($source_filepath);
 

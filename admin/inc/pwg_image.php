@@ -12,6 +12,8 @@ namespace Piwigo\admin\inc;
 // |                          Main Image Class                             |
 // +-----------------------------------------------------------------------+
 
+use Exception;
+
 class pwg_image
 {
   var $image;
@@ -24,14 +26,14 @@ class pwg_image
     global $conf;
     $this->source_filepath = $source_filepath;
 
-    trigger_notify('load_image_library', array(&$this) );
+    \Piwigo\inc\functions_plugins::trigger_notify('load_image_library', array(&$this) );
 
     if (is_object($this->image))
     {
       return; // A plugin may have load its own library
     }
 
-    $extension = strtolower(get_extension($source_filepath));
+    $extension = strtolower(\Piwigo\inc\functions::get_extension($source_filepath));
 
     if (!in_array($extension, $conf['picture_ext']))
     {
@@ -56,7 +58,7 @@ class pwg_image
   // Piwigo resize function
   function pwg_resize($destination_filepath, $max_width, $max_height, $quality, $automatic_rotation=true, $strip_metadata=false, $crop=false, $follow_orientation=true)
   {
-    $starttime = get_moment();
+    $starttime = \Piwigo\inc\functions::get_moment();
 
     // width/height
     $source_width  = $this->image->get_width();
@@ -197,7 +199,7 @@ class pwg_image
 
     $fp = fopen($source_filepath, 'rb');
     if (!$fp) {
-        throw new \Exception("webp_info(): fopen($f): Failed");
+        throw new Exception("webp_info(): fopen($f): Failed");
     }
     $buf = fread($fp, 25);
     fclose($fp);
@@ -208,7 +210,7 @@ class pwg_image
       case substr($buf, 0, 4) != 'RIFF':
       case substr($buf, 8, 4) != 'WEBP':
       case substr($buf, 12, 3) != 'VP8':
-        throw new \Exception("webp_info(): not a valid webp image");
+        throw new Exception("webp_info(): not a valid webp image");
 
       case $buf[15] == ' ':
         // Simple File Format (Lossy)
@@ -236,7 +238,7 @@ class pwg_image
         );
 
       default:
-        throw new \Exception("webp_info(): could not detect webp type");
+        throw new Exception("webp_info(): could not detect webp type");
     }
   }
 
@@ -332,7 +334,7 @@ class pwg_image
       'width'       => $width,
       'height'      => $height,
       'size'        => floor(filesize($destination_filepath) / 1024).' KB',
-      'time'        => $time ? number_format((get_moment() - $time) * 1000, 2, '.', ' ').' ms' : null,
+      'time'        => $time ? number_format((\Piwigo\inc\functions::get_moment() - $time) * 1000, 2, '.', ' ').' ms' : null,
       'library'     => $this->library,
     );
   }

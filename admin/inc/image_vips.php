@@ -12,9 +12,12 @@ namespace Piwigo\admin\inc;
 // |                       Class for libvips library                       |
 // +-----------------------------------------------------------------------+
 
+use Jcupitt\Vips\Image;
+use Override;
+
 class image_vips implements imageInterface
 {
-    public \Jcupitt\Vips\Image $image;
+    public Image $image;
 
     public $quality = 75;
 
@@ -24,7 +27,7 @@ class image_vips implements imageInterface
         $source_filepath
     ) {
         // putenv('VIPS_WARNING=0');
-        $this->image = \Jcupitt\Vips\Image::newFromFile(realpath($source_filepath), [
+        $this->image = Image::newFromFile(realpath($source_filepath), [
             'access' => 'sequential',
         ]);
         $this->source_filepath = realpath($source_filepath);
@@ -35,67 +38,67 @@ class image_vips implements imageInterface
 
     }
 
-    #[\Override]
+    #[Override]
     public function get_width()
     {
         return $this->image->width;
     }
 
-    #[\Override]
+    #[Override]
     public function get_height()
     {
         return $this->image->height;
     }
 
-    #[\Override]
+    #[Override]
     public function crop($width, $height, $x, $y)
     {
         $this->image = $this->image->crop($x, $y, $width, $height);
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function strip()
     {
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function rotate($rotation)
     {
         $this->image = $this->image->rotate($rotation);
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function set_compression_quality($quality)
     {
         $this->quality = $quality;
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function resize($width, $height)
     {
-        $this->image = \Jcupitt\Vips\Image::thumbnail($this->source_filepath, $width, [
+        $this->image = Image::thumbnail($this->source_filepath, $width, [
             'height' => $height,
         ]);
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function sharpen($amount)
     {
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function compose($overlay, $x, $y, $opacity)
     {
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function write($destination_filepath)
     {
         $dest = pathinfo((string) $destination_filepath);

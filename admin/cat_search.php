@@ -6,6 +6,11 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_plugins;
+use Piwigo\inc\functions_user;
+
 if (!defined('PHPWG_ROOT_PATH'))
 {
   die('Hacking attempt!');
@@ -16,7 +21,7 @@ include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
-check_status(ACCESS_ADMINISTRATOR);
+functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 
 // +-----------------------------------------------------------------------+
@@ -36,11 +41,11 @@ $query = '
 SELECT id, name, status, uppercats
   FROM '.CATEGORIES_TABLE;
 
-$result = query2array($query);
+$result = functions_mysqli::query2array($query);
 
 foreach ($result as $cat) 
 {
-  $cat['name'] = trigger_change('render_category_name', $cat['name'], 'admin_cat_list');
+  $cat['name'] = functions_plugins::trigger_change('render_category_name', $cat['name'], 'admin_cat_list');
 
   $private = ($cat['status'] == 'private')? 1:0;
 
@@ -62,11 +67,11 @@ SELECT
   ORDER BY RAND()
   LIMIT 1
 ;';
-$lines = query2array($query);
+$lines = functions_mysqli::query2array($query);
 $placeholder = null;
 foreach ($lines as $line)
 {
-  $name = trigger_change('render_category_name', $line['name']);
+  $name = functions_plugins::trigger_change('render_category_name', $line['name']);
 
   if (mb_strlen($name) > 25)
   {
@@ -79,7 +84,7 @@ foreach ($lines as $line)
 
 if (empty($placeholder))
 {
-  $placeholder = l10n('Portraits');
+  $placeholder = functions::l10n('Portraits');
 }
 
 $template->set_filename('cat_search', 'cat_search.tpl');
@@ -87,7 +92,7 @@ $template->set_filename('cat_search', 'cat_search.tpl');
 $template->assign(
   array(
     'data_cat' => $categories,
-    'ADMIN_PAGE_TITLE' => l10n('Albums'),
+    'ADMIN_PAGE_TITLE' => functions::l10n('Albums'),
     'placeholder' => $placeholder,
   )
 );
