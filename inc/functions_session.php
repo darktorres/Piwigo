@@ -9,6 +9,7 @@
 namespace Piwigo\inc;
 
 use Piwigo\inc\dblayer\functions_mysqli;
+use Random\RandomException;
 
 if (isset($conf['session_save_handler'])
   and ($conf['session_save_handler'] == 'db')
@@ -45,6 +46,7 @@ class functions_session
    *
    * @param int $size
    * @return string
+   * @throws RandomException
    */
   static function generate_key($size)
   {
@@ -66,7 +68,7 @@ class functions_session
    * Called by PHP session manager, always return true.
    *
    * @param string $path
-   * @param sring $name
+   * @param string $name
    * @return true
    */
   static function pwg_session_open($path, $name)
@@ -133,7 +135,7 @@ class functions_session
    * Called by PHP session manager, writes data in the sessions table.
    *
    * @param string $session_id
-   * @param sring $data
+   * @param string $data
    * @return true
    */
   static function pwg_session_write($session_id, $data)
@@ -231,7 +233,6 @@ class functions_session
   /**
    * delete all sessions for a given user (certainly deleted)
    *
-   * @since 2.8
    * @param int $user_id
    * @return null
    */

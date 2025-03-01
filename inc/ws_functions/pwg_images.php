@@ -8,6 +8,7 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Exception;
 use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\functions_metadata_admin;
 use Piwigo\admin\inc\functions_upload;
@@ -28,6 +29,7 @@ use Piwigo\inc\PwgError;
 use Piwigo\inc\PwgNamedArray;
 use Piwigo\inc\PwgNamedStruct;
 use Piwigo\inc\ws_functions;
+use Random\RandomException;
 
 class pwg_images
 {
@@ -298,11 +300,13 @@ class pwg_images
   /**
    * API method
    * Adds a comment to an image
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option string author
-   *    @option string content
-   *    @option string key
+   * @param array{
+   *     image_id: int,
+   *     author: string,
+   *     content: string,
+   *     key: string,
+   * } $params
+   * @throws Exception
    */
   static function ws_images_addComment($params, $service)
   {
@@ -359,10 +363,11 @@ class pwg_images
   /**
    * API method
    * Returns detailed information for an element
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option int comments_page
-   *    @option int comments_per_page
+   * @param array{
+   *     image_id: int, 
+   *     comments_page: int, 
+   *     comments_per_page: int,
+   * } $params
    */
   static function ws_images_getInfo($params, $service)
   {
@@ -587,9 +592,10 @@ class pwg_images
   /**
    * API method
    * Rates an image
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option float rate
+   * @param array{
+   *     image_id: int, 
+   *     rate: float,
+   * } $params
    */
   static function ws_images_rate($params, $service)
   {
@@ -626,11 +632,12 @@ class pwg_images
   /**
    * API method
    * Returns a list of elements corresponding to a query search
-   * @param mixed[] $params
-   *    @option string query
-   *    @option int per_page
-   *    @option int page
-   *    @option string order (optional)
+   * @param array{
+   *     query: string, 
+   *     per_page: int, 
+   *     page: int, 
+   *     order?: string,
+   * } $params
    */
   static function ws_images_search($params, $service)
   {
@@ -716,8 +723,21 @@ class pwg_images
   /**
    * API method
    * Registers a new search
-   * @param mixed[] $params
-   *    @option string query
+   * @param array{
+   *     query: string,
+   *     search_id: mixed,
+   *     allwords: mixed,
+   *     allwords_mode: mixed,
+   *     allwords_fields: mixed,
+   *     tags: mixed,
+   *     tags_mode: mixed,
+   *     categories: mixed,
+   *     categories_withsubs: mixed,
+   *     filetypes: mixed,
+   *     added_by: mixed,
+   *     date_posted: mixed,
+   *     authors: mixed,
+   * } $params
    */
   static function ws_images_filteredSearch_create($params, $service)
   {
@@ -877,9 +897,10 @@ class pwg_images
   /**
    * API method
    * Sets the level of an image
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option int level
+   * @param array{
+   *     image_id: int, 
+   *     level: int,
+   * } $params
    */
   static function ws_images_setPrivacyLevel($params, $service)
   {
@@ -911,10 +932,11 @@ class pwg_images
   /**
    * API method
    * Sets the rank of an image in a category
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option int category_id
-   *    @option int rank
+   * @param array{
+   *     image_id: int, 
+   *     category_id: int, 
+   *     rank: int,
+   * } $params
    */
   static function ws_images_setRank($params, $service)
   {
@@ -1026,11 +1048,13 @@ class pwg_images
   /**
    * API method
    * Adds a file chunk
-   * @param mixed[] $params
-   *    @option string data
-   *    @option string original_sum
-   *    @option string type = 'file'
-   *    @option int position
+   * @param array{
+   *     data: string, 
+   *     original_sum: string, 
+   *     type: string, 
+   *     position: int,
+   * } $params
+   *     type = 'file'
    */
   static function ws_images_add_chunk($params, $service)
   {
@@ -1083,10 +1107,12 @@ class pwg_images
   /**
    * API method
    * Adds a file
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option string type = 'file'
-   *    @option string sum
+   * @param array{
+   *     image_id: int, 
+   *     type: string, 
+   *     sum: string,
+   * } $params
+   *     type = 'file'
    */
   static function ws_images_addFile($params, $service)
   {
@@ -1168,18 +1194,21 @@ class pwg_images
   /**
    * API method
    * Adds an image
-   * @param mixed[] $params
-   *    @option string original_sum
-   *    @option string original_filename (optional)
-   *    @option string name (optional)
-   *    @option string author (optional)
-   *    @option string date_creation (optional)
-   *    @option string comment (optional)
-   *    @option string categories (optional) - "cat_id[,rank];cat_id[,rank]"
-   *    @option string tags_ids (optional) - "tag_id,tag_id"
-   *    @option int level
-   *    @option bool check_uniqueness
-   *    @option int image_id (optional)
+   * @param array{
+   *     original_sum: string,
+   *     original_filename?: string,
+   *     name?: string,
+   *     author?: string,
+   *     date_creation?: string,
+   *     comment?: string,
+   *     categories?: string,
+   *     tags_ids?: string,
+   *     level: int,
+   *     check_uniqueness: bool,
+   *     image_id?: int,
+   *     high_sum: mixed,
+   *     tag_ids: mixed,
+   * } $params
    */
   static function ws_images_add($params, $service)
   {
@@ -1333,14 +1362,15 @@ class pwg_images
   /**
    * API method
    * Adds a image (simple way)
-   * @param mixed[] $params
-   *    @option int[] category
-   *    @option string name (optional)
-   *    @option string author (optional)
-   *    @option string comment (optional)
-   *    @option int level
-   *    @option string|string[] tags
-   *    @option int image_id (optional)
+   * @param array{
+   *     category: int[],
+   *     name?: string,
+   *     author?: string,
+   *     comment?: string,
+   *     level: int,
+   *     tags: string|string[],
+   *     image_id?: int,
+   * } $params
    */
   static function ws_images_addSimple($params, $service)
   {
@@ -1487,14 +1517,17 @@ class pwg_images
   /**
    * API method
    * Adds a image (simple way)
-   * @param mixed[] $params
-   *    @option int[] category
-   *    @option string name (optional)
-   *    @option string author (optional)
-   *    @option string comment (optional)
-   *    @option int level
-   *    @option string|string[] tags
-   *    @option int image_id (optional)
+   * @param array{
+   *     category: int[], 
+   *     name?: string, 
+   *     author?: string, 
+   *     comment?: string, 
+   *     level: int, 
+   *     tags: string|string[], 
+   *     image_id?: int,
+   *     pwg_token: mixed,
+   *     format_of: mixed,
+   * } $params
    */
   static function ws_images_upload($params, $service)
   {
@@ -1694,23 +1727,23 @@ class pwg_images
   /**
    * API method
    * Adds a chunk of an image. Chunks don't have to be uploaded in the right sort order. When the last chunk is added, they get merged.
-   * @since 11
-   * @param mixed[] $params
-   *    @option string username
-   *    @option string password
-   *    @option chunk int number of the chunk
-   *    @option string chunk_sum MD5 sum of the chunk
-   *    @option chunks int total number of chunks for this image
-   *    @option string original_sum MD5 sum of the final image
-   *    @option int[] category
-   *    @option string filename
-   *    @option string name (optional)
-   *    @option string author (optional)
-   *    @option string comment (optional)
-   *    @option string date_creation (optional)
-   *    @option int level
-   *    @option string tag_ids (optional) - "tag_id,tag_id"
-   *    @option int image_id (optional)
+   * @param array{
+   *     username: string,
+   *     password: string,
+   *     chunk: int,
+   *     chunk_sum: string,
+   *     chunks: int,
+   *     original_sum: string,
+   *     category: int[],
+   *     filename: string,
+   *     name?: string,
+   *     author?: string,
+   *     comment?: string,
+   *     date_creation?: string,
+   *     level: int,
+   *     tag_ids?: string,
+   *     image_id?: int,
+   * } $params
    */
   static function ws_images_uploadAsync($params, &$service)
   {
@@ -1971,9 +2004,10 @@ class pwg_images
   /**
    * API method
    * Check if an image exists by it's name or md5 sum
-   * @param mixed[] $params
-   *    @option string md5sum_list (optional)
-   *    @option string filename_list (optional)
+   * @param array{
+   *     md5sum_list?: string, 
+   *     filename_list?: string,
+   * } $params
    */
   static function ws_images_exist($params, $service)
   {
@@ -2045,10 +2079,10 @@ class pwg_images
    * API method
    * Check if an image exists by it's name or md5 sum
    * 
-   * @since 13
-   * @param mixed[] $params
-   *    @option string category_id (optional)
-   *    @option string filename_list
+   * @param array{
+   *     category_id?: string, 
+   *     filename_list: string,
+   * } $params
    */
   static function ws_images_formats_searchImage($params, $service)
   {
@@ -2117,10 +2151,10 @@ class pwg_images
    * API method
    * Remove a formats from the database and the file system
    * 
-   * @since 13
-   * @param mixed[] $params
-   *    @option int format_id
-   *    @option string pwg_token
+   * @param array{
+   *     format_id: int, 
+   *     pwg_token: string,
+   * } $params
    */
   static function ws_images_formats_delete($params, $service) {
     if (functions::get_pwg_token() != $params['pwg_token'])
@@ -2235,9 +2269,12 @@ class pwg_images
   /**
    * API method
    * Check is file has been update
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option string file_sum
+   * @param array{
+   *     image_id: int, 
+   *     file_sum: string,
+   *     thumbnail_sum: mixed,
+   *     high_sum: mixed,
+   * } $params
    */
   static function ws_images_checkFiles($params, $service)
   {
@@ -2300,18 +2337,21 @@ class pwg_images
   /**
    * API method
    * Sets details of an image
-   * @param mixed[] $params
-   *    @option int image_id
-   *    @option string file (optional)
-   *    @option string name (optional)
-   *    @option string author (optional)
-   *    @option string date_creation (optional)
-   *    @option string comment (optional)
-   *    @option string categories (optional) - "cat_id[,rank];cat_id[,rank]"
-   *    @option string tags_ids (optional) - "tag_id,tag_id"
-   *    @option int level (optional)
-   *    @option string single_value_mode
-   *    @option string multiple_value_mode
+   * @param array{
+   *     image_id: int,
+   *     file?: string,
+   *     name?: string,
+   *     author?: string,
+   *     date_creation?: string,
+   *     comment?: string,
+   *     categories?: string,
+   *     tags_ids?: string,
+   *     level?: int,
+   *     single_value_mode: string,
+   *     multiple_value_mode: string,
+   *     pwg_token: mixed,
+   *     tag_ids: mixed,
+   * } $params
    */
   static function ws_images_setInfo($params, $service)
   {
@@ -2464,9 +2504,10 @@ class pwg_images
   /**
    * API method
    * Deletes an image
-   * @param mixed[] $params
-   *    @option int|int[] image_id
-   *    @option string pwg_token
+   * @param array{
+   *     image_id: int|int[], 
+   *     pwg_token: string,
+   * } $params
    */
   static function ws_images_delete($params, $service)
   {
@@ -2505,7 +2546,7 @@ class pwg_images
   /**
    * API method
    * Checks if Piwigo is ready for upload
-   * @param mixed[] $params
+   * @param array $params
    */
   static function ws_images_checkUpload($params, $service)
   {
@@ -2524,8 +2565,8 @@ class pwg_images
   /**
    * API method
    * Empties the lounge, where photos may wait before taking off.
-   * @since 12
-   * @param mixed[] $params
+   * @param array $params
+   * @throws RandomException
    */
   static function ws_images_emptyLounge($params, $service)
   {
@@ -2539,8 +2580,8 @@ class pwg_images
   /**
    * API method
    * Empties the lounge, where photos may wait before taking off.
-   * @since 12
-   * @param mixed[] $params
+   * @param array $params
+   * @throws RandomException
    */
   static function ws_images_uploadCompleted($params, $service)
   {
@@ -2606,8 +2647,10 @@ class pwg_images
   /**
    * API method
    * add md5sum at photos, by block. Returns how md5sum were added and how many are remaining.
-   * @param mixed[] $params
-   *    @option int block_size
+   * @param array{
+   *     block_size: int,
+   *     pwg_token: mixed,
+   * } $params
    */
   static function ws_images_setMd5sum($params, $service)
   {
@@ -2636,8 +2679,10 @@ class pwg_images
   /**
    * API method
    * Synchronize metadatas photos. Returns how many metadatas were sync.
-   * @param mixed[] $params
-   *    @option int image_id
+   * @param array{
+   *     image_id: int,
+   *     pwg_token: mixed,
+   * } $params
    */
   static function ws_images_syncMetadata($params, $service)
   {
@@ -2670,8 +2715,10 @@ class pwg_images
   /**
    * API method
    * Deletes orphan photos, by block. Returns how many orphans were deleted and how many are remaining.
-   * @param mixed[] $params
-   *    @option int block_size
+   * @param array{
+   *     block_size: int,
+   *     pwg_token: mixed,
+   * } $params
    */
   static function ws_images_deleteOrphans($params, $service)
   {
@@ -2695,12 +2742,12 @@ class pwg_images
    * API method
    * Associate/Dissociate/Move photos with an album.
    * 
-   * @since 14
-   * @param mixed[] $params
-   *    @option int[] image_id
-   *    @option int category_id
-   *    @option string action
-   *    @option string pwg_token
+   * @param array{
+   *     image_id: int[], 
+   *     category_id: int, 
+   *     action: string, 
+   *     pwg_token: string,
+   * } $params
    */
   static function ws_images_setCategory($params, $service)
   {

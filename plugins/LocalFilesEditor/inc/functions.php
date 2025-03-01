@@ -26,7 +26,7 @@ use Piwigo\inc\functions;
  * returns $code if php syntax is correct
  * else return false
  *
- * @param string php code
+ * @param string $code php code
  */
 function eval_syntax($code)
 {
@@ -56,7 +56,7 @@ function eval_syntax($code)
   * returns $str if $str is integer
  * else "$str"
  *
- * @param string
+ * @param string $value
  */
 function editarea_quote($value)
 {
@@ -73,7 +73,7 @@ function editarea_quote($value)
 
 /**
  * returns bak file for restore
- * @param string
+ * @param string $file
  */
 function get_bak_file($file)
 {
@@ -89,8 +89,8 @@ function get_bak_file($file)
 
 /**
  * returns dirs and subdirs
- * retun array
- * @param string
+ * @param string $path
+ * @return array
  */
 function get_rec_dirs($path='')
 {

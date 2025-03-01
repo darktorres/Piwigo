@@ -8,9 +8,13 @@
 
 namespace Piwigo\inc;
 
+use Exception;
+use InvalidArgumentException;
 use Pelago\Emogrifier\CssInliner;
 use PHPMailer\PHPMailer\PHPMailer;
 use Piwigo\inc\Template;
+use SmartyException;
+use Symfony\Component\CssSelector\Exception\ParseException;
 
 class functions_mail
 {
@@ -29,7 +33,6 @@ class functions_mail
   /**
    * Returns the email of the mail sender
    *
-   * @since 2.6
    * @return string
    */
   static function get_mail_sender_email()
@@ -105,7 +108,6 @@ class functions_mail
 
   /**
    * Returns the email and the name from a formatted address.
-   * @since 2.6
    *
    * @param string|string[] $input - if is an array must contain email[, name]
    * @return array email, name
@@ -144,7 +146,6 @@ class functions_mail
    *    - array of emails
    *    - single hashmap (email[, name])
    *    - array of incomplete hashmaps
-   * @since 2.6
    *
    * @param mixed $data
    * @return string[][]
@@ -233,6 +234,7 @@ class functions_mail
    *
    * @param string $email_format - text/html or text/plain
    * @return Template
+   * @throws SmartyException
    */
   static function &get_mail_template($email_format)
   {
@@ -350,8 +352,9 @@ class functions_mail
    *
    * @param string|array $subject
    * @param string|array $content
-   * @param boolean $send_technical_details - send user IP and browser
-   * @return boolean
+   * @param bool $send_technical_details - send user IP and browser
+   * @return bool
+   * @throws Exception
    */
   static function pwg_mail_notification_admins($subject, $content, $send_technical_details=true, $group_id=null)
   {
@@ -409,12 +412,11 @@ class functions_mail
   /**
    * Send a email to all administrators.
    * current user (if admin) is excluded
-   * @see pwg_mail()
-   * @since 2.6
-   *
    * @param array $args - as in pwg_mail()
    * @param array $tpl - as in pwg_mail()
-   * @return boolean
+   * @return bool
+   * @throws Exception
+   * @see pwg_mail()
    */
   static function pwg_mail_admins($args=array(), $tpl=array(), $exclude_current_user=true, $only_webmasters=false, $group_id=null)
   {
@@ -486,13 +488,13 @@ class functions_mail
 
   /**
    * Send an email to a group.
-   * @see pwg_mail()
-   *
    * @param int $group_id
    * @param array $args - as in pwg_mail()
    *       o language_selected: filters users of the group by language [default value empty]
    * @param array $tpl - as in pwg_mail()
-   * @return boolean
+   * @return bool
+   * @throws Exception
+   * @see pwg_mail()
    */
   static function pwg_mail_group($group_id, $args=array(), $tpl=array())
   {  
@@ -611,7 +613,8 @@ class functions_mail
    *       o dirname (optional)
    *       o assign (optional)
    *
-   * @return boolean
+   * @return bool
+   * @throws Exception
    */
   static function pwg_mail($to, $args=array(), $tpl=array())
   {
@@ -955,10 +958,10 @@ class functions_mail
   /**
    * Moves CSS rules contained in the <style> tag to inline CSS.
    * Used for compatibility with Gmail and such clients
-   * @since 2.6
-   *
    * @param string $content
    * @return string
+   * @throws InvalidArgumentException
+   * @throws ParseException
    */
   static function move_css_to_body($content)
   {
@@ -968,7 +971,7 @@ class functions_mail
   /**
    * Saves a copy of the mail if _data/tmp.
    *
-   * @param boolean $success
+   * @param bool $success
    * @param PHPMailer $mail
    * @param array $args
    */

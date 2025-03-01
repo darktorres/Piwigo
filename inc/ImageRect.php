@@ -13,13 +13,14 @@ namespace Piwigo\inc;
  */
 final class ImageRect
 {
-  /**
-   * @var int $l
-   * @var int $t
-   * @var int $r
-   * @var int $b
-   */
-  public $l,$t,$r,$b;
+  /** @var int $l */
+  public $l;
+  /** @var int $t */
+  public $t;
+  /** @var int $r */
+  public $r;
+  /** @var int $b */
+  public $b;
 
   /**
    * @param int[] $l width and height
@@ -51,7 +52,7 @@ final class ImageRect
    * Crops horizontally this rectangle by increasing left side and/or reducing the right side.
    *
    * @param int $pixels - the amount to substract from the width
-   * @param stirng $coi - a 4 character string (or null) containing the center of interest
+   * @param string $coi - a 4 character string (or null) containing the center of interest
    */
   function crop_h($pixels, $coi)
   {
