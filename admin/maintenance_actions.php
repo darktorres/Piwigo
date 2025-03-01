@@ -92,7 +92,7 @@ switch ($action) {
 
         $query = '
 DELETE
-  FROM ' . HISTORY_TABLE . '
+  FROM history
 ;';
         functions_mysqli::pwg_query($query);
         $page['infos'][] = sprintf('%s : %s', functions::l10n('Purge history detail'), functions::l10n('action successfully performed.'));
@@ -102,7 +102,7 @@ DELETE
 
         $query = '
 DELETE
-  FROM ' . HISTORY_SUMMARY_TABLE . '
+  FROM history_summary
 ;';
         functions_mysqli::pwg_query($query);
         $page['infos'][] = sprintf('%s : %s', functions::l10n('Purge history summary'), functions::l10n('action successfully performed.'));
@@ -117,14 +117,14 @@ DELETE
 SELECT
     id,
     data
-  FROM ' . SESSIONS_TABLE . '
+  FROM sessions
 ;';
         $sessions = functions_mysqli::query2array($query);
 
         $query = '
 SELECT
     ' . $conf['user_fields']['id'] . ' AS id
-  FROM ' . USERS_TABLE . '
+  FROM users
 ;';
         $all_user_ids = functions_mysqli::query2array($query, 'id', null);
 
@@ -141,7 +141,7 @@ SELECT
         if (count($sessions_to_delete) > 0) {
             $query = '
 DELETE
-  FROM ' . SESSIONS_TABLE . '
+  FROM sessions
   WHERE id IN (\'' . implode("','", $sessions_to_delete) . '\')
 ;';
             functions_mysqli::pwg_query($query);
@@ -154,7 +154,7 @@ DELETE
 
         $query = '
 DELETE
-  FROM ' . USER_FEED_TABLE . '
+  FROM user_feed
   WHERE last_check IS NULL
 ;';
         functions_mysqli::pwg_query($query);
@@ -177,7 +177,7 @@ DELETE
 
         $query = '
 DELETE
-  FROM ' . SEARCH_TABLE . '
+  FROM search
 ;';
         functions_mysqli::pwg_query($query);
         sprintf('%s : %s', functions::l10n('Reinitialize check integrity'), functions::l10n('action successfully performed.'));

@@ -128,7 +128,7 @@ class pwg_tags
         if (! empty($image_ids) and ! $params['tag_mode_and']) {
             $query = '
   SELECT image_id, GROUP_CONCAT(tag_id) AS tag_ids
-    FROM ' . IMAGE_TAG_TABLE . '
+    FROM image_tag
     WHERE tag_id IN (' . implode(',', $tag_ids) . ')
       AND image_id IN (' . implode(',', $image_ids) . ')
     GROUP BY image_id
@@ -148,7 +148,7 @@ class pwg_tags
 
             $query = '
   SELECT *
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (' . implode(',', $image_ids) . ')
   ;';
             $result = functions_mysqli::pwg_query($query);
@@ -240,7 +240,7 @@ class pwg_tags
 
         $query = '
   SELECT name, url_name
-  FROM `' . TAGS_TABLE . '`
+  FROM `tags`
   WHERE id = ' . $creation_output['id'] . ';';
 
         $new_tag = functions_mysqli::query2array($query);
@@ -263,7 +263,7 @@ class pwg_tags
 
         $query = '
   SELECT COUNT(*)
-    FROM `' . TAGS_TABLE . '`
+    FROM `tags`
     WHERE id in (' . implode(',', $params['tag_id']) . ')
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -300,7 +300,7 @@ class pwg_tags
         // does the tag exist ?
         $query = '
   SELECT COUNT(*)
-    FROM `' . TAGS_TABLE . '`
+    FROM `tags`
     WHERE id = ' . $tag_id . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -310,7 +310,7 @@ class pwg_tags
 
         $query = '
   SELECT name
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE id != ' . $tag_id . '
   ;';
         $existing_names = functions::array_from_query($query, 'name');
@@ -330,7 +330,7 @@ class pwg_tags
         functions::pwg_activity('tag', $tag_id, 'edit');
 
         functions_mysqli::single_update(
-            TAGS_TABLE,
+            'tags',
             $update,
             [
                 'id' => $tag_id,
@@ -342,7 +342,7 @@ class pwg_tags
       id,
       name,
       url_name
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE id = ' . $tag_id . '
   ;';
 
@@ -364,7 +364,7 @@ class pwg_tags
         // does the tag exist ?
         $query = '
   SELECT COUNT(*)
-    FROM `' . TAGS_TABLE . '`
+    FROM `tags`
     WHERE id = ' . $tag_id . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -374,7 +374,7 @@ class pwg_tags
 
         $query = '
   SELECT COUNT(*)
-    FROM `' . TAGS_TABLE . '`
+    FROM `tags`
     WHERE name = "' . $copy_name . '"
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -383,13 +383,13 @@ class pwg_tags
         }
 
         functions_mysqli::single_insert(
-            TAGS_TABLE,
+            'tags',
             [
                 'name' => $copy_name,
                 'url_name' => functions_plugins::trigger_change('render_tag_url', $copy_name),
             ]
         );
-        $destination_tag_id = functions_mysqli::pwg_db_insert_id(TAGS_TABLE);
+        $destination_tag_id = functions_mysqli::pwg_db_insert_id('tags');
 
         functions::pwg_activity('tag', $destination_tag_id, 'add', [
             'action' => 'duplicate',
@@ -398,7 +398,7 @@ class pwg_tags
 
         $query = '
   SELECT image_id
-    FROM ' . IMAGE_TAG_TABLE . '
+    FROM image_tag
     WHERE tag_id = ' . $tag_id . '
   ;';
         $destination_tag_image_ids = functions::array_from_query($query, 'image_id');
@@ -417,7 +417,7 @@ class pwg_tags
 
         if (count($inserts) > 0) {
             functions_mysqli::mass_inserts(
-                IMAGE_TAG_TABLE,
+                'image_tag',
                 array_keys($inserts[0]),
                 $inserts
             );
@@ -446,7 +446,7 @@ class pwg_tags
 
         $query = '
   SELECT COUNT(*)
-    FROM `' . TAGS_TABLE . '`
+    FROM `tags`
     WHERE id in (' . implode(',', $all_tags) . ')
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -460,7 +460,7 @@ class pwg_tags
 
         $query = '
   SELECT DISTINCT(image_id)
-    FROM `' . IMAGE_TAG_TABLE . '`
+    FROM `image_tag`
     WHERE
       tag_id IN (' . implode(',', $merge_tag) . ')
   ;';
@@ -468,7 +468,7 @@ class pwg_tags
 
         $query = '
   SELECT image_id
-    FROM `' . IMAGE_TAG_TABLE . '`
+    FROM `image_tag`
     WHERE tag_id = ' . $params['destination_tag_id'] . '
   ;';
 
@@ -485,7 +485,7 @@ class pwg_tags
         }
 
         functions_mysqli::mass_inserts(
-            IMAGE_TAG_TABLE,
+            'image_tag',
             ['tag_id', 'image_id'],
             $inserts,
             [

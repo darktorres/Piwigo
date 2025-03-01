@@ -41,7 +41,7 @@ class functions_user
         if (defined('PHPWG_INSTALLED') and ! empty($mail_address)) {
             $query = '
   SELECT count(*)
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE upper(' . $conf['user_fields']['email'] . ') = upper(\'' . $mail_address . '\')
   ' . (is_numeric($user_id) ? 'AND ' . $conf['user_fields']['id'] . ' != \'' . $user_id . '\'' : '') . '
   ;';
@@ -66,7 +66,7 @@ class functions_user
         if (defined('PHPWG_INSTALLED')) {
             $query = '
   SELECT ' . $conf['user_fields']['username'] . '
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE LOWER(' . stripslashes($conf['user_fields']['username']) . ") = '" . strtolower($login) . "'
   ;";
 
@@ -94,7 +94,7 @@ class functions_user
 
         $q = functions_mysqli::pwg_query('
       SELECT ' . $conf['user_fields']['username'] . ' AS username
-      FROM `' . USERS_TABLE . '`;
+      FROM `users`;
     ');
         while ($r = functions_mysqli::pwg_db_fetch_assoc($q)) {
             $SCU_users[$r['username']] = strtolower($r['username']);
@@ -179,13 +179,13 @@ class functions_user
                 $conf['user_fields']['email'] => $mail_address,
             ];
 
-            functions_mysqli::single_insert(USERS_TABLE, $insert);
+            functions_mysqli::single_insert('users', $insert);
             $user_id = functions_mysqli::pwg_db_insert_id();
 
             // Assign by default groups
             $query = '
   SELECT id
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE is_default = \'' . functions_mysqli::boolean_to_string(true) . '\'
     ORDER BY id ASC
   ;';
@@ -200,7 +200,7 @@ class functions_user
             }
 
             if (count($inserts) != 0) {
-                functions_mysqli::mass_inserts(USER_GROUP_TABLE, ['user_id', 'group_id'], $inserts);
+                functions_mysqli::mass_inserts('user_group', ['user_id', 'group_id'], $inserts);
             }
 
             $override = [];
@@ -337,7 +337,7 @@ class functions_user
         }
 
         $query .= '
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE ' . $conf['user_fields']['id'] . ' = \'' . $user_id . '\'';
 
         $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -347,9 +347,9 @@ class functions_user
             $query = '
   SELECT
       COUNT(1) AS counter
-    FROM ' . USER_INFOS_TABLE . ' AS ui
-      LEFT JOIN ' . USER_CACHE_TABLE . ' AS uc ON ui.user_id = uc.user_id
-      LEFT JOIN ' . THEMES_TABLE . ' AS t ON t.id = ui.theme
+    FROM user_infos AS ui
+      LEFT JOIN user_cache AS uc ON ui.user_id = uc.user_id
+      LEFT JOIN themes AS t ON t.id = ui.theme
     WHERE ui.user_id = ' . $user_id . '
     GROUP BY ui.user_id
   ;';
@@ -365,9 +365,9 @@ class functions_user
       ui.*,
       uc.*,
       t.name AS theme_name
-    FROM ' . USER_INFOS_TABLE . ' AS ui
-      LEFT JOIN ' . USER_CACHE_TABLE . ' AS uc ON ui.user_id = uc.user_id
-      LEFT JOIN ' . THEMES_TABLE . ' AS t ON t.id = ui.theme
+    FROM user_infos AS ui
+      LEFT JOIN user_cache AS uc ON ui.user_id = uc.user_id
+      LEFT JOIN themes AS t ON t.id = ui.theme
     WHERE ui.user_id = ' . $user_id . '
   ;';
 
@@ -406,7 +406,7 @@ class functions_user
                 images that are not in at least an authorized category)*/
                 $query = '
   SELECT DISTINCT(id)
-    FROM ' . IMAGES_TABLE . ' INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id=image_id
+    FROM images INNER JOIN image_category ON id=image_id
     WHERE category_id NOT IN (' . $userdata['forbidden_categories'] . ')
       AND level>' . $userdata['level'];
                 $forbidden_ids = functions_mysqli::query2array($query, null, 'id');
@@ -420,7 +420,7 @@ class functions_user
 
                 $query = '
   SELECT COUNT(DISTINCT(image_id)) as total
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id NOT IN (' . $userdata['forbidden_categories'] . ')
       AND image_id ' . $userdata['image_access_type'] . ' (' . $userdata['image_access_list'] . ')';
                 list($userdata['nb_total_images']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -447,7 +447,7 @@ class functions_user
 
                 // delete user cache
                 $query = '
-  DELETE FROM ' . USER_CACHE_CATEGORIES_TABLE . '
+  DELETE FROM user_cache_categories
     WHERE user_id = ' . $userdata['id'];
                 functions_mysqli::pwg_query($query);
 
@@ -455,7 +455,7 @@ class functions_user
                 // insert. This may happen when cache needs refresh and that Piwigo is
                 // called "very simultaneously".
                 functions_mysqli::mass_inserts(
-                    USER_CACHE_CATEGORIES_TABLE,
+                    'user_cache_categories',
                     [
                         'user_id', 'cat_id',
                         'date_last', 'max_date_last', 'nb_images', 'count_images', 'nb_categories', 'count_categories',
@@ -468,14 +468,14 @@ class functions_user
 
                 // update user cache
                 $query = '
-  DELETE FROM ' . USER_CACHE_TABLE . '
+  DELETE FROM user_cache
     WHERE user_id = ' . $userdata['id'];
                 functions_mysqli::pwg_query($query);
 
                 // for the same reason as user_cache_categories, we ignore error on
                 // this insert
                 $query = '
-  INSERT IGNORE INTO ' . USER_CACHE_TABLE . '
+  INSERT IGNORE INTO user_cache
     (user_id, need_update, cache_update_time, forbidden_categories, nb_total_images,
       last_photo_date,
       image_access_type, image_access_list)
@@ -509,7 +509,7 @@ class functions_user
         // category
         $query = '
   SELECT DISTINCT f.image_id
-    FROM ' . FAVORITES_TABLE . ' AS f INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic
+    FROM favorites AS f INNER JOIN image_category AS ic
       ON f.image_id = ic.image_id
     WHERE f.user_id = ' . $user['id'] . '
     ' . self::get_sql_condition_FandF(
@@ -523,7 +523,7 @@ class functions_user
 
         $query = '
   SELECT image_id
-    FROM ' . FAVORITES_TABLE . '
+    FROM favorites
     WHERE user_id = ' . $user['id'] . '
   ;';
         $favorites = functions_mysqli::query2array($query, null, 'image_id');
@@ -531,7 +531,7 @@ class functions_user
         $to_deletes = array_diff($favorites, $authorizeds);
         if (count($to_deletes) > 0) {
             $query = '
-  DELETE FROM ' . FAVORITES_TABLE . '
+  DELETE FROM favorites
     WHERE image_id IN (' . implode(',', $to_deletes) . ')
       AND user_id = ' . $user['id'] . '
   ;';
@@ -555,7 +555,7 @@ class functions_user
     {
         $query = '
   SELECT id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE status = \'private\'
   ;';
         $private_array = functions_mysqli::query2array($query, null, 'id');
@@ -563,7 +563,7 @@ class functions_user
         // retrieve category ids directly authorized to the user
         $query = '
   SELECT cat_id
-    FROM ' . USER_ACCESS_TABLE . '
+    FROM user_access
     WHERE user_id = ' . $user_id . '
   ;';
         $authorized_array = functions_mysqli::query2array($query, null, 'cat_id');
@@ -571,7 +571,7 @@ class functions_user
         // retrieve category ids authorized to the groups the user belongs to
         $query = '
   SELECT cat_id
-    FROM ' . USER_GROUP_TABLE . ' AS ug INNER JOIN ' . GROUP_ACCESS_TABLE . ' AS ga
+    FROM user_group AS ug INNER JOIN group_access AS ga
       ON ug.group_id = ga.group_id
     WHERE ug.user_id = ' . $user_id . '
   ;';
@@ -592,7 +592,7 @@ class functions_user
         if (! self::is_admin($user_status)) {
             $query = '
   SELECT id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE visible = \'false\'
   ;';
             $forbidden_array = array_merge($forbidden_array, functions_mysqli::query2array($query, null, 'id'));
@@ -622,7 +622,7 @@ class functions_user
 
         $query = '
   SELECT ' . $conf['user_fields']['id'] . '
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE ' . $conf['user_fields']['username'] . ' = \'' . $username . '\'
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -651,7 +651,7 @@ class functions_user
         $query = '
   SELECT
       ' . $conf['user_fields']['id'] . '
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE UPPER(' . $conf['user_fields']['email'] . ') = UPPER(\'' . $email . '\')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -678,7 +678,7 @@ class functions_user
         if (! isset($cache['default_user'])) {
             $query = '
   SELECT *
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE user_id = ' . $conf['default_user_id'] . '
   ;';
 
@@ -884,7 +884,7 @@ class functions_user
                 $inserts[] = $insert;
             }
 
-            functions_mysqli::mass_inserts(USER_INFOS_TABLE, array_keys($inserts[0]), $inserts);
+            functions_mysqli::mass_inserts('user_infos', array_keys($inserts[0]), $inserts);
         }
     }
 
@@ -902,7 +902,7 @@ class functions_user
         $query = '
   SELECT ' . $conf['user_fields']['username'] . ' AS username
     , ' . $conf['user_fields']['password'] . ' AS password
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE ' . $conf['user_fields']['id'] . ' = ' . $user_id;
         $result = functions_mysqli::pwg_query($query);
         if (functions_mysqli::pwg_db_num_rows($result) > 0) {
@@ -1050,7 +1050,7 @@ class functions_user
         $query = '
   SELECT ' . $conf['user_fields']['id'] . ' AS id,
         ' . $conf['user_fields']['password'] . ' AS password
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE ' . $conf['user_fields']['username'] . ' = \'' . functions_mysqli::pwg_db_real_escape_string($username) . '\'
   ;';
 
@@ -1064,7 +1064,7 @@ class functions_user
             $query = '
     SELECT ' . $conf['user_fields']['id'] . ' AS id,
           ' . $conf['user_fields']['password'] . ' AS password
-      FROM ' . USERS_TABLE . '
+      FROM users
       WHERE ' . $conf['user_fields']['email'] . ' = \'' . functions_mysqli::pwg_db_real_escape_string($username) . '\'
       ;';
 
@@ -1082,7 +1082,7 @@ class functions_user
             $query = '
   SELECT
       *
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE user_id = ' . $row['id'] . '
   ;';
             $result = functions_mysqli::pwg_query($query);
@@ -1438,9 +1438,9 @@ class functions_user
       *,
       ' . $conf['user_fields']['username'] . ' AS username,
       NOW() AS dbnow
-    FROM ' . USER_AUTH_KEYS_TABLE . ' AS uak
-      JOIN ' . USER_INFOS_TABLE . ' AS ui ON uak.user_id = ui.user_id
-      JOIN ' . USERS_TABLE . ' AS u ON u.' . $conf['user_fields']['id'] . ' = ui.user_id
+    FROM user_auth_keys AS uak
+      JOIN user_infos AS ui ON uak.user_id = ui.user_id
+      JOIN users AS u ON u.' . $conf['user_fields']['id'] . ' = ui.user_id
     WHERE auth_key = \'' . $auth_key . '\'
   ;';
         $keys = functions_mysqli::query2array($query);
@@ -1492,7 +1492,7 @@ class functions_user
             $query = '
   SELECT
       status
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE user_id = ' . $user_id . '
   ;';
             $user_infos = functions_mysqli::query2array($query);
@@ -1515,7 +1515,7 @@ class functions_user
       COUNT(*),
       NOW(),
       ADDDATE(NOW(), INTERVAL ' . $conf['auth_key_duration'] . ' SECOND)
-    FROM ' . USER_AUTH_KEYS_TABLE . '
+    FROM user_auth_keys
     WHERE auth_key = \'' . $candidate . '\'
   ;';
         list($counter, $now, $expiration) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1528,7 +1528,7 @@ class functions_user
                 'expired_on' => $expiration,
             ];
 
-            functions_mysqli::single_insert(USER_AUTH_KEYS_TABLE, $key);
+            functions_mysqli::single_insert('user_auth_keys', $key);
 
             $key['auth_key_id'] = functions_mysqli::pwg_db_insert_id();
 
@@ -1547,7 +1547,7 @@ class functions_user
     public static function deactivate_user_auth_keys($user_id)
     {
         $query = '
-  UPDATE ' . USER_AUTH_KEYS_TABLE . '
+  UPDATE user_auth_keys
     SET expired_on = NOW()
     WHERE user_id = ' . $user_id . '
       AND expired_on > NOW()
@@ -1563,7 +1563,7 @@ class functions_user
     public static function deactivate_password_reset_key($user_id)
     {
         functions_mysqli::single_update(
-            USER_INFOS_TABLE,
+            'user_infos',
             [
                 'activation_key' => null,
                 'activation_key_expire' => null,
@@ -1589,7 +1589,7 @@ class functions_user
   SELECT
       date,
       time
-  FROM ' . HISTORY_TABLE . '
+  FROM history
     WHERE user_id = ' . $user_id . '
     ORDER BY id DESC
     LIMIT 1
@@ -1601,7 +1601,7 @@ class functions_user
 
         if ($save_in_user_infos) {
             $query = '
-  UPDATE ' . USER_INFOS_TABLE . '
+  UPDATE user_infos
     SET last_visit = ' . ($last_visit === null ? 'NULL' : "'" . $last_visit . "'") . ',
         last_visit_from_history = \'true\',
         lastmodified = lastmodified
@@ -1623,7 +1623,7 @@ class functions_user
         $dbValue = functions_mysqli::pwg_db_real_escape_string(serialize($user['preferences']));
 
         $query = '
-  UPDATE ' . USER_INFOS_TABLE . '
+  UPDATE user_infos
     SET preferences = \'' . $dbValue . '\'
     WHERE user_id = ' . $user['id'] . '
   ;';

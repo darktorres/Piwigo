@@ -76,7 +76,7 @@ class plugins
 
                 if (empty($errors)) {
                     $query = '
-INSERT INTO ' . PLUGINS_TABLE . ' (id,version)
+INSERT INTO plugins (id,version)
   VALUES (\'' . $plugin_id . '\', \'' . $this->fs_plugins[$plugin_id]['version'] . '\')
 ;';
                     functions_mysqli::pwg_query($query);
@@ -101,7 +101,7 @@ INSERT INTO ' . PLUGINS_TABLE . ' (id,version)
 
                     if ($new_version != 'auto') {
                         $query = '
-UPDATE ' . PLUGINS_TABLE . '
+UPDATE plugins
   SET version=\'' . $new_version . '\'
   WHERE id=\'' . $plugin_id . '\'
 ;';
@@ -129,7 +129,7 @@ UPDATE ' . PLUGINS_TABLE . '
 
                 if (empty($errors)) {
                     $query = '
-UPDATE ' . PLUGINS_TABLE . '
+UPDATE plugins
   SET state=\'active\'
   WHERE id=\'' . $plugin_id . '\'
 ;';
@@ -147,7 +147,7 @@ UPDATE ' . PLUGINS_TABLE . '
                 }
 
                 $query = '
-UPDATE ' . PLUGINS_TABLE . '
+UPDATE plugins
   SET state=\'inactive\'
   WHERE id=\'' . $plugin_id . '\'
 ;';
@@ -177,7 +177,7 @@ UPDATE ' . PLUGINS_TABLE . '
                 }
 
                 $query = '
-DELETE FROM ' . PLUGINS_TABLE . '
+DELETE FROM plugins
   WHERE id=\'' . $plugin_id . '\'
 ;';
                 functions_mysqli::pwg_query($query);

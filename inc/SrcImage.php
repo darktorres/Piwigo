@@ -159,7 +159,7 @@ final class SrcImage
             // probably not metadata synced
             if (($size = getimagesize($this->get_path())) !== false) {
                 $this->size = [$size[0], $size[1]];
-                functions_mysqli::pwg_query('UPDATE ' . IMAGES_TABLE . ' SET width=' . $size[0] . ', height=' . $size[1] . ' WHERE id=' . $this->id);
+                functions_mysqli::pwg_query('UPDATE images SET width=' . $size[0] . ', height=' . $size[1] . ' WHERE id=' . $this->id);
             }
         }
 

@@ -56,7 +56,7 @@ if (isset($_POST['falsify'])
     $subcats = functions_category::get_subcat_ids($_POST['cat_true']);
     $query = '
 DELETE
-  FROM ' . GROUP_ACCESS_TABLE . '
+  FROM group_access
   WHERE group_id = ' . $page['group'] . '
   AND cat_id IN (' . implode(',', $subcats) . ')
 ;';
@@ -69,7 +69,7 @@ DELETE
 
     $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $uppercats) . ')
   AND status = \'private\'
 ;';
@@ -85,7 +85,7 @@ SELECT id
 
     $query = '
 SELECT cat_id
-  FROM ' . GROUP_ACCESS_TABLE . '
+  FROM group_access
   WHERE group_id = ' . $page['group'] . '
 ;';
     $result = functions_mysqli::pwg_query($query);
@@ -103,7 +103,7 @@ SELECT cat_id
         ];
     }
 
-    functions_mysqli::mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $inserts);
+    functions_mysqli::mass_inserts('group_access', ['group_id', 'cat_id'], $inserts);
     functions_admin::invalidate_user_cache();
 }
 
@@ -138,7 +138,7 @@ $template->assign(
 // only private categories are listed
 $query_true = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . ' INNER JOIN ' . GROUP_ACCESS_TABLE . ' ON cat_id = id
+  FROM categories INNER JOIN group_access ON cat_id = id
   WHERE status = \'private\'
     AND group_id = ' . $page['group'] . '
 ;';
@@ -152,7 +152,7 @@ while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
 
 $query_false = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE status = \'private\'';
 if (count($authorized_ids) > 0) {
     $query_false .= '

@@ -25,7 +25,7 @@ if ($conf['rate']) {
         $query = '
 SELECT COUNT(rate) AS count
      , ROUND(AVG(rate),2) AS average
-  FROM ' . RATE_TABLE . '
+  FROM rate
   WHERE element_id = ' . $picture['current']['id'] . '
 ;';
         list($rate_summary['count'], $rate_summary['average']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -37,7 +37,7 @@ SELECT COUNT(rate) AS count
     if ($conf['rate_anonymous'] or functions_user::is_autorize_status(ACCESS_CLASSIC)) {
         if ($rate_summary['count'] > 0) {
             $query = 'SELECT rate
-      FROM ' . RATE_TABLE . '
+      FROM rate
       WHERE element_id = ' . $page['image_id'] . '
       AND user_id = ' . $user['id'];
 

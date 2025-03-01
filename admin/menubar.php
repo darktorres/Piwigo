@@ -118,7 +118,7 @@ if (isset($_POST['submit']) and functions_user::is_webmaster()) {
     // END OPTIM
     */
     $query = '
-UPDATE ' . CONFIG_TABLE . '
+UPDATE config
   SET value=\'' . addslashes(serialize($mb_conf_db)) . '\'
   WHERE param=\'blk_' . addslashes($menu->get_id()) . '\'
   ';

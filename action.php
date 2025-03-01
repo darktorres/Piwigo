@@ -30,7 +30,7 @@ if ($conf['enable_formats'] and isset($_GET['format'])) {
     $query = '
 SELECT
     *
-  FROM ' . IMAGE_FORMAT_TABLE . '
+  FROM image_format
   WHERE format_id = ' . $_GET['format'] . '
 ;';
     $formats = functions_mysqli::query2array($query);
@@ -53,7 +53,7 @@ if (! isset($_GET['id'])
 }
 
 $query = '
-SELECT * FROM ' . IMAGES_TABLE . '
+SELECT * FROM images
   WHERE id=' . $_GET['id'] . '
 ;';
 
@@ -75,8 +75,8 @@ $src_image = new SrcImage($element_info);
 // are not used because it's not necessary (filter <> restriction)
 $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE . '
-    INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON category_id = id
+  FROM categories
+    INNER JOIN image_category ON category_id = id
   WHERE image_id = ' . $_GET['id'] . '
 ' . functions_user::get_sql_condition_FandF(
     [

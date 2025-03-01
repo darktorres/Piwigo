@@ -45,7 +45,7 @@ functions::check_input_parameter('display', $_REQUEST, false, '/^(\d+|all)$/');
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'empty_caddie') {
         $query = '
-DELETE FROM ' . CADDIE_TABLE . '
+DELETE FROM caddie
   WHERE user_id = ' . $user['id'] . '
 ;';
         functions_mysqli::pwg_query($query);
@@ -280,7 +280,7 @@ if (isset($_SESSION['bulk_manager_filter']['prefilter'])) {
         case 'caddie':
             $query = '
 SELECT element_id
-  FROM ' . CADDIE_TABLE . '
+  FROM caddie
   WHERE user_id = ' . $user['id'] . '
 ;';
             $filter_sets[] = functions_mysqli::query2array($query, null, 'element_id');
@@ -290,7 +290,7 @@ SELECT element_id
         case 'favorites':
             $query = '
 SELECT image_id
-  FROM ' . FAVORITES_TABLE . '
+  FROM favorites
   WHERE user_id = ' . $user['id'] . '
 ;';
             $filter_sets[] = functions_mysqli::query2array($query, null, 'image_id');
@@ -300,13 +300,13 @@ SELECT image_id
         case 'last_import':
             $query = '
 SELECT MAX(date_available) AS date
-  FROM ' . IMAGES_TABLE . '
+  FROM images
 ;';
             $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
             if (! empty($row['date'])) {
                 $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE date_available BETWEEN ' . functions_mysqli::pwg_db_get_recent_period_expression(1, $row['date']) . ' AND \'' . $row['date'] . '\'
 ;';
                 $filter_sets[] = functions_mysqli::query2array($query, null, 'id');
@@ -318,7 +318,7 @@ SELECT id
             // we are searching elements not linked to any virtual category
             $query = '
  SELECT id
-   FROM ' . IMAGES_TABLE . '
+   FROM images
  ;';
             $all_elements = functions_mysqli::query2array($query, null, 'id');
 
@@ -326,14 +326,14 @@ SELECT id
 
             $query = '
  SELECT id
-   FROM ' . CATEGORIES_TABLE . '
+   FROM categories
    WHERE dir IS NULL
  ;';
             $virtual_categories = functions_mysqli::query2array($query, null, 'id');
             if (! empty($virtual_categories)) {
                 $query = '
  SELECT DISTINCT(image_id)
-   FROM ' . IMAGE_CATEGORY_TABLE . '
+   FROM image_category
    WHERE category_id IN (' . implode(',', $virtual_categories) . ')
  ;';
                 $linked_to_virtual = functions_mysqli::query2array($query, null, 'image_id');
@@ -354,8 +354,8 @@ SELECT id
             $query = '
 SELECT
     id
-  FROM ' . IMAGES_TABLE . '
-    LEFT JOIN ' . IMAGE_TAG_TABLE . ' ON id = image_id
+  FROM images
+    LEFT JOIN image_tag ON id = image_id
   WHERE tag_id is null
 ;';
             $filter_sets[] = functions_mysqli::query2array($query, null, 'id');
@@ -390,7 +390,7 @@ SELECT
             $query = '
 SELECT
     GROUP_CONCAT(id) AS ids
-  FROM ' . IMAGES_TABLE;
+  FROM images';
 
             if (in_array('md5sum', $duplicates_on_fields)) {
                 $query .= '
@@ -419,7 +419,7 @@ SELECT
             if (count($_SESSION['bulk_manager_filter']) == 1) {// make the query only if this is the only filter
                 $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   ' . $conf['order_by'];
 
                 $filter_sets[] = functions_mysqli::query2array($query, null, 'id');
@@ -439,7 +439,7 @@ if (isset($_SESSION['bulk_manager_filter']['category'])) {
     // we need to check the category still exists (it may have been deleted since it was added in the session)
     $query = '
 SELECT COUNT(*)
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id = ' . $_SESSION['bulk_manager_filter']['category'] . '
 ;';
     list($counter) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -456,7 +456,7 @@ SELECT COUNT(*)
 
     $query = '
  SELECT DISTINCT(image_id)
-   FROM ' . IMAGE_CATEGORY_TABLE . '
+   FROM image_category
    WHERE category_id IN (' . implode(',', $categories) . ')
  ;';
     $filter_sets[] = functions_mysqli::query2array($query, null, 'image_id');
@@ -470,7 +470,7 @@ if (isset($_SESSION['bulk_manager_filter']['level'])) {
 
     $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE level ' . $operator . ' ' . $_SESSION['bulk_manager_filter']['level'] . '
   ' . $conf['order_by'];
 
@@ -516,7 +516,7 @@ if (isset($_SESSION['bulk_manager_filter']['dimension'])) {
 
     $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE ' . implode(' AND ', $where_clause) . '
   ' . $conf['order_by'];
 
@@ -536,7 +536,7 @@ if (isset($_SESSION['bulk_manager_filter']['filesize'])) {
 
     $query = '
 SELECT id
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE ' . implode(' AND ', $where_clause) . '
   ' . $conf['order_by'];
 
@@ -612,7 +612,7 @@ $dimensions = [];
 $query = '
 SELECT
   DISTINCT width, height
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE width IS NOT NULL
     AND height IS NOT NULL
 ;';
@@ -698,7 +698,7 @@ $filesize = [];
 $query = '
 SELECT
   filesize
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE filesize IS NOT NULL
   GROUP BY filesize
 ;';

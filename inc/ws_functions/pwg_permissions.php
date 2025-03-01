@@ -44,7 +44,7 @@ class pwg_permissions
         // direct users
         $query = '
   SELECT user_id, cat_id
-    FROM ' . USER_ACCESS_TABLE . '
+    FROM user_access
     ' . $cat_filter . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -60,8 +60,8 @@ class pwg_permissions
         // indirect users
         $query = '
   SELECT ug.user_id, ga.cat_id
-    FROM ' . USER_GROUP_TABLE . ' AS ug
-      INNER JOIN ' . GROUP_ACCESS_TABLE . ' AS ga
+    FROM user_group AS ug
+      INNER JOIN group_access AS ga
       ON ug.group_id = ga.group_id
     ' . $cat_filter . '
   ;';
@@ -78,7 +78,7 @@ class pwg_permissions
         // groups
         $query = '
   SELECT group_id, cat_id
-    FROM ' . GROUP_ACCESS_TABLE . '
+    FROM group_access
     ' . $cat_filter . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -153,7 +153,7 @@ class pwg_permissions
 
             $query = '
   SELECT id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $cat_ids) . ')
       AND status = \'private\'
   ;';
@@ -170,7 +170,7 @@ class pwg_permissions
             }
 
             functions_mysqli::mass_inserts(
-                GROUP_ACCESS_TABLE,
+                'group_access',
                 ['group_id', 'cat_id'],
                 $inserts,
                 [
@@ -215,7 +215,7 @@ class pwg_permissions
         if (! empty($params['group_id'])) {
             $query = '
   DELETE
-    FROM ' . GROUP_ACCESS_TABLE . '
+    FROM group_access
     WHERE group_id IN (' . implode(',', $params['group_id']) . ')
       AND cat_id IN (' . implode(',', $cat_ids) . ')
   ;';
@@ -225,7 +225,7 @@ class pwg_permissions
         if (! empty($params['user_id'])) {
             $query = '
   DELETE
-    FROM ' . USER_ACCESS_TABLE . '
+    FROM user_access
     WHERE user_id IN (' . implode(',', $params['user_id']) . ')
       AND cat_id IN (' . implode(',', $cat_ids) . ')
   ;';

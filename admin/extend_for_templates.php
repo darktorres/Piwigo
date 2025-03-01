@@ -60,7 +60,7 @@ $relevant_parameters = [
 ];
 $query = '
 SELECT permalink
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE permalink IS NOT NULL
 ';
 
@@ -146,7 +146,7 @@ if (isset($_POST['submit'])) {
     $tpl_extension = $replacements;
     /* ecrire la nouvelle conf */
     $query = '
-UPDATE ' . CONFIG_TABLE . '
+UPDATE config
   SET value = \'' . $conf['extents_for_templates'] . '\'
 WHERE param = \'extents_for_templates\';';
     if (functions_mysqli::pwg_query($query)) {

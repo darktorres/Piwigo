@@ -236,7 +236,7 @@ class functions_metadata_admin
 
         $query = '
   SELECT id, path, representative_ext
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (
   ' . wordwrap(implode(', ', $ids), 160, "\n") . '
   )
@@ -278,7 +278,7 @@ class functions_metadata_admin
             );
 
             functions_mysqli::mass_updates(
-                IMAGES_TABLE,
+                'images',
                 [
                     'primary' => ['id'],
                     'update' => $update_fields,
@@ -312,7 +312,7 @@ class functions_metadata_admin
 
         $query = '
   SELECT id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE site_id = ' . $site_id . '
       AND dir IS NOT NULL';
         if (is_numeric($category_id)) {
@@ -340,7 +340,7 @@ class functions_metadata_admin
 
         $query = '
   SELECT id, path, representative_ext
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE storage_category_id IN (' . implode(',', $cat_ids) . ')';
         if ($only_new) {
             $query .= '

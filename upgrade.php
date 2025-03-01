@@ -43,8 +43,6 @@ if ($php_end_tag === false) {
 
 include($config_file);
 
-// $conf is not used for users tables - define cannot be re-defined
-define('USERS_TABLE', 'users');
 include_once(PHPWG_ROOT_PATH . 'inc/constants.php');
 define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 
@@ -167,7 +165,7 @@ $template->assign(
 
 $has_remote_site = false;
 
-$query = 'SELECT galleries_url FROM ' . SITES_TABLE . ';';
+$query = 'SELECT galleries_url FROM sites;';
 $result = functions_mysqli::pwg_query($query);
 while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
     if (functions_url::url_is_remote($row['galleries_url'])) {
@@ -354,7 +352,7 @@ if ((isset($_POST['submit']) or isset($_GET['now']))
 
             if (file_exists(PHPWG_PLUGINS_PATH . 'TakeATour/tours/' . $version_ . '/config.php')) {
                 $query = '
-REPLACE INTO ' . PLUGINS_TABLE . '
+REPLACE INTO plugins
   (id, state)
   VALUES (\'TakeATour\', \'active\')
 ;';

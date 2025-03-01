@@ -48,8 +48,8 @@ class pwg_groups
         $query = '
   SELECT
       g.*, COUNT(user_id) AS nb_users
-    FROM `' . GROUPS_TABLE . '` AS g
-      LEFT JOIN ' . USER_GROUP_TABLE . ' AS ug
+    FROM `groups` AS g
+      LEFT JOIN user_group AS ug
       ON ug.group_id = g.id
     WHERE ' . implode(' AND ', $where_clauses) . '
     GROUP BY id
@@ -85,7 +85,7 @@ class pwg_groups
         // is the name not already used ?
         $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE name = \'' . $params['name'] . '\'
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -99,7 +99,7 @@ class pwg_groups
 
         // creating the group
         functions_mysqli::single_insert(
-            GROUPS_TABLE,
+            'groups',
             [
                 'name' => $params['name'],
                 'is_default' => functions_mysqli::boolean_to_string($params['is_default']),
@@ -161,7 +161,7 @@ class pwg_groups
         // does the group exist ?
         $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id = ' . $params['group_id'] . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -175,7 +175,7 @@ class pwg_groups
             // is the name not already used ?
             $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE name = \'' . $params['name'] . '\'
     AND id != ' . $params['group_id'] . '
   ;';
@@ -192,7 +192,7 @@ class pwg_groups
         }
 
         functions_mysqli::single_update(
-            GROUPS_TABLE,
+            'groups',
             $updates,
             [
                 'id' => $params['group_id'],
@@ -224,7 +224,7 @@ class pwg_groups
         // does the group exist ?
         $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id = ' . $params['group_id'] . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -241,7 +241,7 @@ class pwg_groups
         }
 
         functions_mysqli::mass_inserts(
-            USER_GROUP_TABLE,
+            'user_group',
             ['group_id', 'user_id'],
             $inserts
         );
@@ -284,7 +284,7 @@ class pwg_groups
 
         $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id in (' . implode(',', $all_groups) . ')
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -298,7 +298,7 @@ class pwg_groups
 
         $query = '
   SELECT DISTINCT(user_id)
-    FROM `' . USER_GROUP_TABLE . '`
+    FROM `user_group`
     WHERE
       group_id IN (' . implode(',', $merge_group) . ')
   ;';
@@ -306,7 +306,7 @@ class pwg_groups
 
         $query = '
   SELECT user_id
-    FROM `' . USER_GROUP_TABLE . '`
+    FROM `user_group`
     WHERE group_id = ' . $params['destination_group_id'] . '
   ;';
 
@@ -323,7 +323,7 @@ class pwg_groups
         }
 
         functions_mysqli::mass_inserts(
-            USER_GROUP_TABLE,
+            'user_group',
             ['group_id', 'user_id'],
             $inserts,
             [
@@ -371,7 +371,7 @@ class pwg_groups
 
         $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE name = \'' . functions_mysqli::pwg_db_real_escape_string($params['copy_name']) . '\'
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -381,7 +381,7 @@ class pwg_groups
 
         $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id = ' . $params['group_id'] . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -391,7 +391,7 @@ class pwg_groups
 
         $query = '
   SELECT is_default
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id = ' . $params['group_id'] . '
   ;';
 
@@ -399,7 +399,7 @@ class pwg_groups
 
         // creating the group
         functions_mysqli::single_insert(
-            GROUPS_TABLE,
+            'groups',
             [
                 'name' => $params['copy_name'],
                 'is_default' => functions_mysqli::boolean_to_string($is_default),
@@ -411,7 +411,7 @@ class pwg_groups
 
         $query = '
     SELECT user_id
-      FROM `' . USER_GROUP_TABLE . '`
+      FROM `user_group`
       WHERE group_id = ' . $params['group_id'] . '
     ;';
 
@@ -426,7 +426,7 @@ class pwg_groups
         }
 
         functions_mysqli::mass_inserts(
-            USER_GROUP_TABLE,
+            'user_group',
             ['group_id', 'user_id'],
             $inserts,
             [
@@ -466,7 +466,7 @@ class pwg_groups
         // does the group exist ?
         $query = '
   SELECT COUNT(*)
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id = ' . $params['group_id'] . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -475,7 +475,7 @@ class pwg_groups
         }
 
         $query = '
-  DELETE FROM ' . USER_GROUP_TABLE . '
+  DELETE FROM user_group
     WHERE
       group_id = ' . $params['group_id'] . '
       AND user_id IN(' . implode(',', $params['user_id']) . ')

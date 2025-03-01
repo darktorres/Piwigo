@@ -34,7 +34,7 @@ if (isset($_GET['image_id']) and functions_session::pwg_get_session_var('TAT_ima
 } else {
     $query = '
     SELECT id
-      FROM ' . IMAGES_TABLE . '
+      FROM images
       ORDER BY RAND()
       LIMIT 1
     ;';
