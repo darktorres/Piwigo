@@ -74,13 +74,16 @@ foreach ($orphan_tags as $tag) {
 }
 
 if (count($orphan_tag_names) > 0) {
+    $review_url = functions_url::get_root_url() . 'admin.php?page=tags&amp;action=delete_orphans&amp;pwg_token=' . functions::get_pwg_token();
+    $review_link = <<<HTML
+        <a class="icon-eye" data-url="{$review_url}">
+          {functions::l10n('Review')}
+        </a>
+        HTML;
     $warning_tags = sprintf(
         functions::l10n('You have %d orphan tags %s'),
         count($orphan_tag_names),
-        '<a
-      class="icon-eye"
-      data-url="' . functions_url::get_root_url() . 'admin.php?page=tags&amp;action=delete_orphans&amp;pwg_token=' . functions::get_pwg_token() . '">'
-        . functions::l10n('Review') . '</a>'
+        $review_link
     );
 
     $orphan_tag_names_array = '["';
