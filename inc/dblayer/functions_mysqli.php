@@ -573,12 +573,12 @@ class functions_mysqli
      */
     public static function do_maintenance_all_tables()
     {
-        global $prefixeTable, $page;
+        global $page;
 
         $all_tables = [];
 
         // List all tables
-        $query = 'SHOW TABLES LIKE \'' . $prefixeTable . '%\'';
+        $query = 'SHOW TABLES';
         $result = self::pwg_query($query);
         while ($row = self::pwg_db_fetch_row($result)) {
             $all_tables[] = $row[0];

@@ -39,7 +39,6 @@ if (! $conf['check_upgrade_feed']) {
 
 functions_upgrade::prepare_conf_upgrade();
 
-define('PREFIX_TABLE', $prefixeTable);
 define('UPGRADES_PATH', PHPWG_ROOT_PATH . 'install/db');
 
 // +-----------------------------------------------------------------------+
@@ -65,7 +64,7 @@ functions_mysqli::pwg_db_check_charset();
 // retrieve already applied upgrades
 $query = '
 SELECT id
-  FROM ' . PREFIX_TABLE . 'upgrade
+  FROM upgrade
 ;';
 $applied = functions::array_from_query($query, 'id');
 
@@ -91,7 +90,7 @@ foreach ($to_apply as $upgrade_id) {
 
     // notify upgrade
     $query = '
-INSERT INTO ' . PREFIX_TABLE . 'upgrade
+INSERT INTO upgrade
   (id, applied, description)
   VALUES
   (\'' . $upgrade_id . '\', NOW(), \'' . $upgrade_description . '\')

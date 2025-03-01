@@ -27,40 +27,38 @@ class functions_upgrade
     // concerning upgrade, we use the default tables
     public static function prepare_conf_upgrade()
     {
-        global $prefixeTable;
-
         // $conf is not used for users tables
         // define cannot be re-defined
-        define('CATEGORIES_TABLE', $prefixeTable . 'categories');
-        define('COMMENTS_TABLE', $prefixeTable . 'comments');
-        define('CONFIG_TABLE', $prefixeTable . 'config');
-        define('FAVORITES_TABLE', $prefixeTable . 'favorites');
-        define('GROUP_ACCESS_TABLE', $prefixeTable . 'group_access');
-        define('GROUPS_TABLE', $prefixeTable . 'groups');
-        define('HISTORY_TABLE', $prefixeTable . 'history');
-        define('HISTORY_SUMMARY_TABLE', $prefixeTable . 'history_summary');
-        define('IMAGE_CATEGORY_TABLE', $prefixeTable . 'image_category');
-        define('IMAGES_TABLE', $prefixeTable . 'images');
-        define('SESSIONS_TABLE', $prefixeTable . 'sessions');
-        define('SITES_TABLE', $prefixeTable . 'sites');
-        define('USER_ACCESS_TABLE', $prefixeTable . 'user_access');
-        define('USER_GROUP_TABLE', $prefixeTable . 'user_group');
-        define('USERS_TABLE', $prefixeTable . 'users');
-        define('USER_INFOS_TABLE', $prefixeTable . 'user_infos');
-        define('USER_FEED_TABLE', $prefixeTable . 'user_feed');
-        define('RATE_TABLE', $prefixeTable . 'rate');
-        define('USER_CACHE_TABLE', $prefixeTable . 'user_cache');
-        define('USER_CACHE_CATEGORIES_TABLE', $prefixeTable . 'user_cache_categories');
-        define('CADDIE_TABLE', $prefixeTable . 'caddie');
-        define('UPGRADE_TABLE', $prefixeTable . 'upgrade');
-        define('SEARCH_TABLE', $prefixeTable . 'search');
-        define('USER_MAIL_NOTIFICATION_TABLE', $prefixeTable . 'user_mail_notification');
-        define('TAGS_TABLE', $prefixeTable . 'tags');
-        define('IMAGE_TAG_TABLE', $prefixeTable . 'image_tag');
-        define('PLUGINS_TABLE', $prefixeTable . 'plugins');
-        define('OLD_PERMALINKS_TABLE', $prefixeTable . 'old_permalinks');
-        define('THEMES_TABLE', $prefixeTable . 'themes');
-        define('LANGUAGES_TABLE', $prefixeTable . 'languages');
+        define('CATEGORIES_TABLE', 'categories');
+        define('COMMENTS_TABLE', 'comments');
+        define('CONFIG_TABLE', 'config');
+        define('FAVORITES_TABLE', 'favorites');
+        define('GROUP_ACCESS_TABLE', 'group_access');
+        define('GROUPS_TABLE', 'groups');
+        define('HISTORY_TABLE', 'history');
+        define('HISTORY_SUMMARY_TABLE', 'history_summary');
+        define('IMAGE_CATEGORY_TABLE', 'image_category');
+        define('IMAGES_TABLE', 'images');
+        define('SESSIONS_TABLE', 'sessions');
+        define('SITES_TABLE', 'sites');
+        define('USER_ACCESS_TABLE', 'user_access');
+        define('USER_GROUP_TABLE', 'user_group');
+        define('USERS_TABLE', 'users');
+        define('USER_INFOS_TABLE', 'user_infos');
+        define('USER_FEED_TABLE', 'user_feed');
+        define('RATE_TABLE', 'rate');
+        define('USER_CACHE_TABLE', 'user_cache');
+        define('USER_CACHE_CATEGORIES_TABLE', 'user_cache_categories');
+        define('CADDIE_TABLE', 'caddie');
+        define('UPGRADE_TABLE', 'upgrade');
+        define('SEARCH_TABLE', 'search');
+        define('USER_MAIL_NOTIFICATION_TABLE', 'user_mail_notification');
+        define('TAGS_TABLE', 'tags');
+        define('IMAGE_TAG_TABLE', 'image_tag');
+        define('PLUGINS_TABLE', 'plugins');
+        define('OLD_PERMALINKS_TABLE', 'old_permalinks');
+        define('THEMES_TABLE', 'themes');
+        define('LANGUAGES_TABLE', 'languages');
     }
 
     // Deactivate all non-standard plugins
@@ -77,7 +75,7 @@ class functions_upgrade
 
         $query = '
   SELECT id
-  FROM ' . PREFIX_TABLE . 'plugins
+  FROM plugins
   WHERE state = \'active\'
   AND id NOT IN (\'' . implode('\',\'', $standard_plugins) . '\')
   ;';
@@ -90,7 +88,7 @@ class functions_upgrade
 
         if (! empty($plugins)) {
             $query = '
-  UPDATE ' . PREFIX_TABLE . 'plugins
+  UPDATE plugins
   SET state=\'inactive\'
   WHERE id IN (\'' . implode('\',\'', $plugins) . '\')
   ;';
@@ -116,7 +114,7 @@ class functions_upgrade
   SELECT
       id,
       name
-    FROM ' . PREFIX_TABLE . 'themes
+    FROM themes
     WHERE id NOT IN (\'' . implode("','", $standard_themes) . '\')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -130,7 +128,7 @@ class functions_upgrade
         if (! empty($theme_ids)) {
             $query = '
   DELETE
-    FROM ' . PREFIX_TABLE . 'themes
+    FROM themes
     WHERE id IN (\'' . implode("','", $theme_ids) . '\')
   ;';
             functions_mysqli::pwg_query($query);
@@ -141,7 +139,7 @@ class functions_upgrade
             // what is the default theme?
             $query = '
   SELECT theme
-    FROM ' . PREFIX_TABLE . 'user_infos
+    FROM user_infos
     WHERE user_id = ' . $conf['default_user_id'] . '
   ;';
             list($default_theme) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -152,7 +150,7 @@ class functions_upgrade
                 $query = '
   SELECT
       COUNT(*)
-    FROM ' . PREFIX_TABLE . 'themes
+    FROM themes
     WHERE id = \'' . PHPWG_DEFAULT_TEMPLATE . '\'
   ;';
                 list($counter) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -164,7 +162,7 @@ class functions_upgrade
 
                 // then associate it to default user
                 $query = '
-  UPDATE ' . PREFIX_TABLE . 'user_infos
+  UPDATE user_infos
     SET theme = \'' . PHPWG_DEFAULT_TEMPLATE . '\'
     WHERE user_id = ' . $conf['default_user_id'] . '
   ;';
