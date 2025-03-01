@@ -11,6 +11,7 @@ namespace Piwigo\admin\inc;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions_session;
 use Piwigo\inc\functions_user;
+use Random\RandomException;
 
 class c13y_internal
 {
@@ -24,7 +25,7 @@ class c13y_internal
   /**
    * Check version
    *
-   * @param c13y object
+   * @param c13y_internal $c13y
    * @return void
    */
   function c13y_version($c13y)
@@ -63,7 +64,7 @@ class c13y_internal
   /**
    * Check exif
    *
-   * @param c13y object
+   * @param c13y_internal $c13y
    * @return void
    */
   function c13y_exif($c13y)
@@ -88,7 +89,7 @@ class c13y_internal
   /**
    * Check user
    *
-   * @param c13y object
+   * @param c13y_internal $c13y
    * @return void
    */
   function c13y_user($c13y)
@@ -150,8 +151,10 @@ class c13y_internal
   /**
    * Do correction user
    *
-   * @param user_id, action
-   * @return boolean true if ok else false
+   * @param mixed $id
+   * @param mixed $action
+   * @return bool true if ok else false
+   * @throws RandomException
    */
   function c13y_correction_user($id, $action)
   {

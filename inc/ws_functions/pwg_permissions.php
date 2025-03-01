@@ -19,10 +19,11 @@ class pwg_permissions
   /**
    * API method
    * Returns permissions
-   * @param mixed[] $params
-   *    @option int[] cat_id (optional)
-   *    @option int[] group_id (optional)
-   *    @option int[] user_id (optional)
+   * @param array{
+   *     cat_id?: int[], 
+   *     group_id?: int[], 
+   *     user_id?: int[]
+   * } $params
    */
   static function ws_permissions_getList($params, &$service)
   {
@@ -133,11 +134,12 @@ class pwg_permissions
   /**
    * API method
    * Add permissions
-   * @param mixed[] $params
-   *    @option int[] cat_id
-   *    @option int[] group_id (optional)
-   *    @option int[] user_id (optional)
-   *    @option bool recursive
+   * @param array{
+   *     cat_id: int[], 
+   *     group_id?: int[], 
+   *     user_id?: int[], 
+   *     recursive: bool
+   * } $params
    */
   static function ws_permissions_add($params, &$service)
   {
@@ -196,10 +198,11 @@ class pwg_permissions
   /**
    * API method
    * Removes permissions
-   * @param mixed[] $params
-   *    @option int[] cat_id
-   *    @option int[] group_id (optional)
-   *    @option int[] user_id (optional)
+   * @param array{
+   *     cat_id: int[], 
+   *     group_id?: int[], 
+   *     user_id?: int[]
+   * } $params
    */
   static function ws_permissions_remove($params, &$service)
   {

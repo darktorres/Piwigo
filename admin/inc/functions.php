@@ -18,6 +18,7 @@ use Piwigo\inc\functions_session;
 use Piwigo\inc\functions_url;
 use Piwigo\inc\functions_user;
 use Piwigo\inc\ImageStdParams;
+use Random\RandomException;
 
 include_once(PHPWG_ROOT_PATH.'admin/inc/functions_metadata.php');
 
@@ -166,7 +167,7 @@ class functions
    * Deletes all files (on disk) related to given image ids.
    *
    * @param int[] $ids
-   * @return 0|int[] image ids where files were successfully deleted
+   * @return int[]|int image ids where files were successfully deleted
    */
   static function delete_element_files($ids)
   {
@@ -593,7 +594,7 @@ class functions
    * Directories named ".svn", "thumbnail", "pwg_high" or "pwg_representative"
    * are omitted.
    *
-   * @param string $basedir (eg: ./galleries)
+   * @param string $path (eg: ./galleries)
    * @return string[]
    */
   static function get_fs_directories($path, $recursive = true)
@@ -642,7 +643,7 @@ class functions
    * The list of ordered categories id is supposed to be in the same parent
    * category
    *
-   * @param array categories
+   * @param array $categories
    * @return void
    */
   static function save_categories_order($categories)
@@ -753,8 +754,8 @@ class functions
    * Change the **visible** property on a set of categories.
    *
    * @param int[] $categories
-   * @param boolean|string $value
-   * @param boolean $unlock_child optional   default false
+   * @param bool|string $value
+   * @param bool $unlock_child optional   default false
    */
   static function set_cat_visible($categories, $value, $unlock_child = false)
   {
@@ -1060,7 +1061,7 @@ class functions
   /**
    * Returns the fulldir for each given category id.
    *
-   * @param int[] intcat_ids
+   * @param int[] $cat_ids
    * @return string[]
    */
   static function get_fulldirs($cat_ids)
@@ -1837,9 +1838,8 @@ class functions
    * Get list of tag ids for each image. Returns an empty list if the image has
    * no tags.
    *
-   * @since 2.9
    * @param array $image_ids
-   * @return associative array, image_id => list of tag ids
+   * @return array image_id => list of tag ids
    */
   static function get_image_tag_ids($image_ids)
   {
@@ -1874,7 +1874,6 @@ class functions
   /**
    * Compare the list of tags, for each image. Returns image_ids where tag list has changed.
    *
-   * @since 2.9
    * @param array $taglist_before - for each image_id (key), list of tag ids
    * @param array $taglist_after - for each image_id (key), list of tag ids
    * @return array - image_ids where the list has changed
@@ -1902,7 +1901,6 @@ class functions
   /**
    * Instead of associating images to categories, add them in the lounge, waiting for take-off.
    *
-   * @since 12
    * @param array $images - list of image ids
    * @param array $categories - list of category ids
    */
@@ -1934,9 +1932,9 @@ class functions
   /**
    * Move images from the lounge to the categories they were intended for.
    *
-   * @since 12
-   * @param boolean $invalidate_user_cache
-   * @return int number of images moved
+   * @param bool $invalidate_user_cache
+   * @return array|void number of images moved
+   * @throws RandomException
    */
   static function empty_lounge($invalidate_user_cache=true)
   {
@@ -2118,7 +2116,7 @@ class functions
    * Dissociate a list of images from a category.
    *
    * @param int[] $images
-   * @param int $categories
+   * @param int $category
    */
   static function dissociate_images_from_category($images, $category)
   {
@@ -2438,7 +2436,7 @@ class functions
    * Retrieve data from external URL.
    *
    * @param string $src
-   * @param string|Ressource $dest - can be a file ressource or string
+   * @param string|resource $dest - can be a file ressource or string
    * @param array $get_data - data added to request url
    * @param array $post_data - data transmitted with POST
    * @param string $user_agent
@@ -2804,7 +2802,7 @@ class functions
    * Get tags list from SQL query (ids are surrounded by ~~, for get_tag_ids()).
    *
    * @param string $query
-   * @param boolean $only_user_language - if true, only local name is returned for
+   * @param bool $only_user_language - if true, only local name is returned for
    *    multilingual tags (if ExtendedDescription plugin is active)
    * @return array[] ('id', 'name')
    */
@@ -2857,7 +2855,7 @@ class functions
    * or "1234" (numeric characters only)
    *
    * @param string|string[] $raw_tags - array or comma separated string
-   * @param boolean $allow_create
+   * @param bool $allow_create
    * @return int[]
    */
   static function get_tag_ids($raw_tags, $allow_create=true)
@@ -2889,7 +2887,7 @@ class functions
    * names. Sequence is not case sensitive.
    * Warning: By definition, this function breaks original keys.
    *
-   * @param int[] $elements_ids
+   * @param int[] $element_ids
    * @param string[] $name - names of elements, indexed by ids
    * @return int[]
    */
@@ -2971,7 +2969,7 @@ class functions
   /**
    * Returns the list of admin users.
    *
-   * @param boolean $include_webmaster
+   * @param bool $include_webmaster
    * @return int[]
    */
   static function get_admins($include_webmaster=true)
@@ -3056,7 +3054,6 @@ class functions
 
   /**
    * Used by clear_derivative_cache()
-   * @ignore
    */
   static function clear_derivative_cache_rec($path, $pattern)
   {
@@ -3226,7 +3223,7 @@ class functions
    * Additionally returns the hash of root path.
    * Used to invalidate LocalStorage cache on admin pages.
    *
-   * @param string|string[] list of keys to retrieve (categories,groups,images,tags,users)
+   * @param string|string[] $requested list of keys to retrieve (categories,groups,images,tags,users)
    * @return string[]
    */
   static function get_admin_client_cache_keys($requested=array())
@@ -3289,7 +3286,7 @@ class functions
 
   /**
    * Compute and add the md5sum of image ids (where md5sum is null)
-   * @param int[] list of image ids and there paths
+   * @param int[] $ids list of image ids and there paths
    * @return int number of md5sum added
    */
   static function add_md5sum($ids)
@@ -3390,8 +3387,8 @@ class functions
    * The list of ordered images id is supposed to be in the same parent
    * category
    *
-   * @param int category_id
-   * @param int[] images
+   * @param int $category_id
+   * @param int[] $images
    * @return void
    */
   static function save_images_order($category_id, $images)
@@ -3414,10 +3411,8 @@ class functions
   }
 
   /**
-   * Force update on images.lastmodified column. Useful when modifying the tag
-   * list.
+   * Force update on images.lastmodified column. Useful when modifying the tag list.
    *
-   * @since 2.9
    * @param array $image_ids
    */
   static function update_images_lastmodified($image_ids)
@@ -3443,7 +3438,6 @@ class functions
   /**
    * Get a more human friendly representation of big numbers. Like 17.8k instead of 17832
    *
-   * @since 2.9
    * @param float $numbers
    */
   static function number_format_human_readable($numbers)
@@ -3476,7 +3470,6 @@ class functions
   /**
    * Get infos related to an image
    *
-   * @since 2.9
    * @param int $image_id
    * @param bool $die_on_missing
    */
@@ -3510,8 +3503,7 @@ class functions
   /**
    * Return each cache image sizes.
    *
-   * @since 12
-   * @param string $path_to_file
+   * @param string $path
    */
   static function get_cache_size_derivatives($path)
   {
@@ -3551,8 +3543,6 @@ class functions
 
   /**
    * Displays a header warning if we find missing photos on a random sample.
-   *
-   * @since 13.4.0
    */
   static function fs_quick_check()
   {
@@ -3629,8 +3619,6 @@ class functions
 
   /**
    * Return latest news from piwigo.org.
-   *
-   * @since 13
    */
   static function get_piwigo_news()
   {

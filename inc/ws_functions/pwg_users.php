@@ -8,6 +8,8 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use DateMalformedStringException;
+use Exception;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_plugins;
@@ -17,27 +19,30 @@ use Piwigo\inc\PwgError;
 use Piwigo\inc\PwgNamedArray;
 use Piwigo\inc\PwgNamedStruct;
 use Piwigo\inc\ws_functions;
+use Random\RandomException;
 
 class pwg_users
 {
   /**
    * API method
    * Returns a list of users
-   * @param mixed[] $params
-   *    @option int[] user_id (optional)
-   *    @option string username (optional)
-   *    @option string[] status (optional)
-   *    @option int min_level (optional)
-   *    @option int max_level (optional)
-   *    @option int[] group_id (optional)
-   *    @option int per_page
-   *    @option int page
-   *    @option string order
-   *    @option string display
-   *    @option string filter
-   *    @option int[] exclude (optional)
-   *    @option string min_register
-   *    @option string max_register
+   * @param array{
+   *     user_id?: int[],
+   *     username?: string,
+   *     status?: string[],
+   *     min_level?: int,
+   *     max_level?: int,
+   *     group_id?: int[],
+   *     per_page: int,
+   *     page: int,
+   *     order: string,
+   *     display: string,
+   *     filter: string,
+   *     exclude?: int[],
+   *     min_register: string,
+   *     max_register: string
+   * } $params
+   * @throws DateMalformedStringException
    */
   static function ws_users_getList($params, &$service)
   {
@@ -371,10 +376,12 @@ class pwg_users
   /**
    * API method
    * Adds a user
-   * @param mixed[] $params
-   *    @option string username
-   *    @option string password (optional)
-   *    @option string email (optional)
+   * @param array{
+   *     username: string,
+   *     password?: string,
+   *     email?: string
+   * } $params
+   * @throws Exception
    */
   static function ws_users_add($params, &$service)
   {
@@ -417,9 +424,11 @@ class pwg_users
   /**
    * API method
    * Get a new authentication key for a user.
-   * @param mixed[] $params
-   *    @option int[] user_id
-   *    @option string pwg_token
+   * @param array{
+   *     user_id: int[],
+   *     pwg_token: string
+   * } $params
+   * @throws RandomException
    */
   static function ws_users_getAuthKey($params, &$service)
   {
@@ -441,9 +450,10 @@ class pwg_users
   /**
    * API method
    * Deletes users
-   * @param mixed[] $params
-   *    @option int[] user_id
-   *    @option string pwg_token
+   * @param array{
+   *     user_id: int[], 
+   *     pwg_token: string
+   * } $params
    */
   static function ws_users_delete($params, &$service)
   {
@@ -495,21 +505,22 @@ class pwg_users
   /**
    * API method
    * Updates users
-   * @param mixed[] $params
-   *    @option int[] user_id
-   *    @option string username (optional)
-   *    @option string password (optional)
-   *    @option string email (optional)
-   *    @option string status (optional)
-   *    @option int level (optional)
-   *    @option string language (optional)
-   *    @option string theme (optional)
-   *    @option int nb_image_page (optional)
-   *    @option int recent_period (optional)
-   *    @option bool expand (optional)
-   *    @option bool show_nb_comments (optional)
-   *    @option bool show_nb_hits (optional)
-   *    @option bool enabled_high (optional)
+   * @param array{
+   *     user_id: int[],
+   *     username?: string,
+   *     password?: string,
+   *     email?: string,
+   *     status?: string,
+   *     level?: int,
+   *     language?: string,
+   *     theme?: string,
+   *     nb_image_page?: int,
+   *     recent_period?: int,
+   *     expand?: bool,
+   *     show_nb_comments?: bool,
+   *     show_nb_hits?: bool,
+   *     enabled_high?: bool
+   * } $params
    */
   static function ws_users_setInfo($params, &$service)
   {
@@ -787,10 +798,10 @@ class pwg_users
   /**
    * API method
    * Set a preferences parameter to current user
-   * @since 13
-   * @param mixed[] $params
-   *    @option string param
-   *    @option string|mixed value
+   * @param array{
+   *     param: string, 
+   *     value: mixed
+   * } $params
    */
   static function ws_users_preferences_set($params, &$service)
   {
@@ -815,8 +826,9 @@ class pwg_users
   /**
    * API method
    * Adds a favorite image for the current user
-   * @param mixed[] $params
-   *    @option int image_id
+   * @param array{
+   *     image_id: int
+   * } $params
    */
   static function ws_users_favorites_add($params, &$service)
   {
@@ -854,8 +866,9 @@ class pwg_users
   /**
    * API method
    * Removes a favorite image for the current user
-   * @param mixed[] $params
-   *    @option int image_id
+   * @param array{
+   *     image_id: int
+   * } $params
    */
   static function ws_users_favorites_remove($params, &$service)
   {
@@ -893,10 +906,11 @@ class pwg_users
   /**
    * API method
    * Returns the favorite images of the current user
-   * @param mixed[] $params
-   *    @option int per_page
-   *    @option int page
-   *    @option string order
+   * @param array{
+   *     per_page: int, 
+   *     page: int, 
+   *     order: string
+   * } $params
    */
   static function ws_users_favorites_getList($params, &$service)
   {

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use PhpCsFixer\Fixer\Alias\RandomApiMigrationFixer;
 use PhpCsFixer\Fixer\Basic\SingleLineEmptyBodyFixer;
+use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
 use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
 use PhpCsFixer\Fixer\StringNotation\NoTrailingWhitespaceInStringFixer;
+use PhpCsFixer\Fixer\Whitespace\LineEndingFixer;
 use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
@@ -21,6 +23,8 @@ return ECSConfig::configure()
         __DIR__ . '/themes/bootstrap_darkroom/node_modules',
         __DIR__ . '/vendor',
         LineLengthFixer::class,
+        LineEndingFixer::class,
+        GeneralPhpdocAnnotationRemoveFixer::class,
     ])
     ->withRootFiles()
     ->withPreparedSets(

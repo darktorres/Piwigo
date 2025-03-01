@@ -9,12 +9,14 @@
 namespace Piwigo\inc;
 
 use DateInterval;
+use DateMalformedStringException;
 use DateTime;
 use Piwigo\admin\inc\functions_history;
 use Piwigo\admin\inc\functions_notification_by_mail;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\Template;
 use Piwigo\themes\smartpocket\SPThumbPicker;
+use Random\RandomException;
 use SmartyException;
 use stdClass;
 use uagent_info;
@@ -37,7 +39,7 @@ class functions
   /**
    * returns the current microsecond since Unix epoch
    *
-   * @return int
+   * @return string
    */
   static function micro_seconds()
   {
@@ -155,7 +157,7 @@ class functions
   /**
    * finds out if a string is in ASCII, UTF-8 or other encoding
    *
-   * @param string $str
+   * @param string $Str
    * @return int *0* if _$str_ is ASCII, *1* if UTF-8, *-1* otherwise
    */
   static function qualify_utf8($Str)
@@ -393,11 +395,8 @@ class functions
   /**
    * Does the current user must log visits in history table
    *
-   * @since 14
-   *
    * @param int $image_id
    * @param string $image_type
-   *
    * @return bool
    */
   static function do_log($image_id = null, $image_type = null)
@@ -668,6 +667,7 @@ class functions
    * @param DateTime $date1
    * @param DateTime $date2
    * @return DateInterval|stdClass
+   * @throws DateMalformedStringException
    */
   static function dateDiff($date1, $date2)
   {
@@ -732,9 +732,10 @@ class functions
   /**
    * converts a string into a DateTime object
    *
-   * @param int|string timestamp or datetime string
+   * @param int|string $original timestamp or datetime string
    * @param string $format input format respecting date() syntax
    * @return DateTime|false
+   * @throws DateMalformedStringException
    */
   static function str2DateTime($original, $format=null)
   {
@@ -785,11 +786,12 @@ class functions
   /**
    * returns a formatted and localized date for display
    *
-   * @param int|string timestamp or datetime string
+   * @param int|string $original timestamp or datetime string
    * @param array $show list of components displayed, default is ['day_name', 'day', 'month', 'year']
    *    THIS PARAMETER IS PLANNED TO CHANGE
    * @param string $format input format respecting date() syntax
    * @return string
+   * @throws DateMalformedStringException
    */
   static function format_date($original, $show=null, $format=null)
   {
@@ -838,8 +840,9 @@ class functions
    * Format a "From ... to ..." string from two dates
    * @param string $from
    * @param string $to
-   * @param boolean $full
+   * @param bool $full
    * @return string
+   * @throws DateMalformedStringException
    */
   static function format_fromto($from, $to, $full=false)
   {
@@ -873,12 +876,13 @@ class functions
   /**
    * Works out the time since the given date
    *
-   * @param int|string timestamp or datetime string
+   * @param int|string $original timestamp or datetime string
    * @param string $stop year,month,week,day,hour,minute,second
    * @param string $format input format respecting date() syntax
    * @param bool $with_text append "ago" or "in the future"
-   * @param bool $with_weeks
+   * @param bool $with_week
    * @return string
+   * @throws DateMalformedStringException
    */
   static function time_since($original, $stop='minute', $format=null, $with_text=true, $with_week=true, $only_last_unit=false)
   {
@@ -970,6 +974,7 @@ class functions
    * @param string $format_out respecting date() syntax
    * @param string $default if _$original_ is empty
    * @return string
+   * @throws DateMalformedStringException
    */
   static function transform_date($original, $format_in, $format_out, $default=null)
   {
@@ -1026,8 +1031,9 @@ class functions
    *
    * @param string $url
    * @param string $msg
-   * @param integer $refresh_time
+   * @param int $refresh_time
    * @return void
+   * @throws SmartyException
    */
   static function redirect_html( $url , $msg = '', $refresh_time = 0)
   {
@@ -1076,8 +1082,9 @@ class functions
    *
    * @param string $url
    * @param string $msg
-   * @param integer $refresh_time
+   * @param int $refresh_time
    * @return void
+   * @throws SmartyException
    */
   static function redirect( $url , $msg = '', $refresh_time = 0)
   {
@@ -1251,7 +1258,7 @@ class functions
    * if more than one parameter is provided sprintf is applied
    *
    * @param string $key
-   * @param mixed $args,... optional arguments
+   * @param mixed ...$args optional arguments
    * @return string
    */
   static function l10n($key)
@@ -1304,7 +1311,7 @@ class functions
    * @param string $key translation key
    * @param mixed $args arguments to use on sprintf($key, args)
    *   if args is a array, each values are used on sprintf
-   * @return string
+   * @return array[]
    */
   static function get_l10n_args($key, $args='')
   {
@@ -1437,9 +1444,8 @@ class functions
   /**
    * Is the config table currentable writeable?
    *
-   * @since 14
-   *
-   * @return boolean
+   * @return bool
+   * @throws RandomException
    */
   static function pwg_is_dbconf_writeable()
   {
@@ -1462,10 +1468,10 @@ class functions
    *
    * @param string $param
    * @param string $value
-   * @param boolean $updateGlobal update global *$conf* variable
+   * @param bool $updateGlobal update global *$conf* variable
    * @param callable $parser function to apply to the value before save in database
-        (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
-  */
+   *     (eg: serialize, json_encode) will not be applied to *$conf* if *$parser* is *true*
+   */
   static function conf_update_param($param, $value, $updateGlobal=false, $parser=null)
   {
     if ($parser != null)
@@ -1499,7 +1505,6 @@ class functions
 
   /**
    * Delete one or more config parameters
-   * @since 2.6
    *
    * @param string|string[] $params
    */
@@ -1530,11 +1535,9 @@ class functions
 
   /**
    * Return a default value for a configuration parameter.
-   * @since 2.8
    *
    * @param string $param the configuration value to be extracted (if it exists)
    * @param mixed $default_value the default value for the configuration value if it does not exist.
-   *
    * @return mixed The configuration value if the variable exists, otherwise the default.
    */
   static function conf_get_param($param, $default_value=null)
@@ -1551,7 +1554,6 @@ class functions
 
   /**
    * Apply *unserialize* on a value only if it is a string
-   * @since 2.7
    *
    * @param array|string $value
    * @return array
@@ -1567,7 +1569,6 @@ class functions
 
   /**
    * Apply *json_decode* on a value only if it is a string
-   * @since 2.7
    *
    * @param array|string $value
    * @return array
@@ -1716,7 +1717,6 @@ class functions
   /**
    * returns the parent (fallback) language of a language.
    * if _$lang_id_ is null it applies to the current language
-   * @since 2.6
    *
    * @param string $lang_id
    * @return string|null
@@ -1748,14 +1748,14 @@ class functions
    *
    * @param string $filename
    * @param string $dirname
-   * @param mixed options can contain
-   *     @option string language - language to load
-   *     @option bool return - if true the file content is returned
-   *     @option bool no_fallback - if true do not load default language
-   *     @option bool|string force_fallback - force pre-loading of another language
-   *        default language if *true* or specified language
-   *     @option bool local - if true load file from local directory
-   * @return boolean|string
+   * @param array{
+   *     language: string,            // language to load
+   *     return: bool,                // if true the file content is returned
+   *     no_fallback: bool,           // if true do not load default language
+   *     force_fallback: bool|string, // force pre-loading of another language, default language if *true* or specified language
+   *     local: bool,                 // if true load file from local directory
+   * } $options
+   * @return bool|string
    */
   static function load_language($filename, $dirname = '', $options = array())
   {
@@ -1969,7 +1969,7 @@ class functions
    * return an array which will be sent to template to display navigation bar
    *
    * @param string $url base url of all links
-   * @param int $nb_elements
+   * @param int $nb_element
    * @param int $start
    * @param int $nb_element_page
    * @param bool $clean_url
@@ -2080,6 +2080,7 @@ class functions
    * else pwg_token is compare to server token
    *
    * @return void access denied if token given is not equal to server token
+   * @throws SmartyException
    */
   static function check_pwg_token()
   {
@@ -2344,7 +2345,6 @@ class functions
    * Compare two versions with version_compare after having converted
    * single chars to their decimal values.
    * Needed because version_compare does not understand versions like '2.5.c'.
-   * @since 2.6
    *
    * @param string $a
    * @param string $b
@@ -2374,8 +2374,6 @@ class functions
 
   /**
    * Checks if the lounge needs to be emptied automatically.
-   *
-   * @since 12
    */
   static function check_lounge()
   {
@@ -3464,7 +3462,7 @@ class functions
    * creates a Unix timestamp (number of seconds since 1970-01-01 00:00:00
    * GMT) from a MySQL datetime format (2005-07-14 23:01:37)
    *
-   * @param string mysql datetime format
+   * @param string $datetime mysql datetime format
    * @return int timestamp
    */
   static function datetime_to_ts($datetime)
@@ -3478,7 +3476,7 @@ class functions
    *
    * function copied from Dotclear project http://dotclear.net
    *
-   * @param int timestamp
+   * @param int $ts timestamp
    * @return string ISO 8601 date format
    */
   static function ts_to_iso8601($ts)
@@ -3793,6 +3791,7 @@ class functions
    * search an available feed_id
    *
    * @return string feed identifier
+   * @throws RandomException
    */
   static function find_available_feed_id()
   {
@@ -3817,6 +3816,7 @@ class functions
    * $page['infos'] and send an email with confirmation link
    *
    * @return bool (true if email was sent, false otherwise)
+   * @throws RandomException
    */
   static function process_password_request()
   {
@@ -4709,8 +4709,6 @@ class functions
     return $columns_of;
   }
 
-  /**
-   */
   static function print_time($message)
   {
     global $last_time;
