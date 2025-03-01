@@ -22,7 +22,7 @@ class functions_plugins
    * Register an event handler.
    *
    * @param string $event the name of the event to listen to
-   * @param Callable $func the callback function
+   * @param callable $func the callback function
    * @param int $priority greater priority will be executed at last
    * @param string $include_path file to include before executing the callback
    * @return bool false is handler already exists
@@ -57,7 +57,7 @@ class functions_plugins
    * @see add_event_handler()
    *
    * @param string $event
-   * @param Callable $func
+   * @param callable $func
    * @param int $priority
    */
   static function remove_event_handler($event, $func,
@@ -97,11 +97,9 @@ class functions_plugins
    * through all handlers, thus each handler MUST return a value,
    * optional _$args_ are not transmitted.
    *
-   * @since 2.6
-   *
    * @param string $event
    * @param mixed $data data to transmit to all handlers
-   * @param mixed $args,... optional arguments
+   * @param mixed ...$args optional arguments
    * @return mixed $data
    */
   static function trigger_change($event, $data=null)
@@ -151,10 +149,8 @@ class functions_plugins
    * Triggers a notifier event and calls all registered event handlers.
    * trigger_notify() is only used as a notifier, no modification of data is possible
    *
-   * @since 2.6
-   *
    * @param string $event
-   * @param mixed $args,... optional arguments
+   * @param mixed ...$args optional arguments
    */
   static function trigger_notify($event)
   {
@@ -194,7 +190,7 @@ class functions_plugins
    * @depracted 2.6
    *
    * @param string $plugin_id
-   * @param mixed &$data
+   * @param mixed $data
    * @return bool
    */
   static function set_plugin_data($plugin_id, &$data)
@@ -277,9 +273,7 @@ class functions_plugins
    * Performs update task of a plugin.
    * Autoupdate is only performed if the plugin has a *_maintain.php file.
    *
-   * @since 2.7
-   *
-   * @param array &$plugin (id, version, state) will be updated if version changes
+   * @param array $plugin (id, version, state) will be updated if version changes
    */
   static function autoupdate_plugin(&$plugin)
   {

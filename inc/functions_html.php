@@ -12,6 +12,7 @@ use Piwigo\inc\BlockManager;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\RegisteredBlock;
 use Piwigo\inc\SrcImage;
+use SmartyException;
 
 class functions_html
 {
@@ -292,10 +293,11 @@ class functions_html
 
   /**
    * Exits the current script with 403 code.
-   * @todo nice display if $template loaded
-   *
    * @param string $msg
    * @param string|null $alternate_url redirect to this url
+   * @throws SmartyException
+   * @todo nice display if $template loaded
+   *
    */
   static function page_forbidden($msg, $alternate_url=null)
   {
@@ -311,10 +313,11 @@ class functions_html
 
   /**
    * Exits the current script with 400 code.
-   * @todo nice display if $template loaded
-   *
    * @param string $msg
    * @param string|null $alternate_url redirect to this url
+   * @throws SmartyException
+   * @todo nice display if $template loaded
+   *
    */
   static function bad_request($msg, $alternate_url=null)
   {
@@ -330,10 +333,11 @@ class functions_html
 
   /**
    * Exits the current script with 404 code.
-   * @todo nice display if $template loaded
-   *
    * @param string $msg
    * @param string|null $alternate_url redirect to this url
+   * @throws SmartyException
+   * @todo nice display if $template loaded
+   *
    */
   static function page_not_found($msg, $alternate_url=null)
   {

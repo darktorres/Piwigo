@@ -24,7 +24,7 @@ class themes
 
   /**
    * Initialize $fs_themes and $db_themes_by_id
-  */
+   */
   function __construct()
   {
     $this->get_fs_themes();
@@ -70,9 +70,9 @@ class themes
 
   /**
    * Perform requested actions
-   * @param string - action
-   * @param string - theme id
-   * @param array - errors
+   * @param string $action
+   * @param string $theme_id
+   * @return array errors
    */
   function perform_action($action, $theme_id)
   {
@@ -337,8 +337,8 @@ SELECT
 
 
   /**
-  *  Get themes defined in the theme directory
-  */
+   *  Get themes defined in the theme directory
+   */
   function get_fs_themes()
   {
     $dir = opendir(PHPWG_THEMES_PATH);
@@ -574,9 +574,9 @@ SELECT
   /**
    * Extract theme files from archive
    *
-   * @param string - install or upgrade
-   * @param string - remote revision identifier (numeric)
-   * @param string - theme id or extension id
+   * @param string $action - install or upgrade
+   * @param string $revision - remote revision identifier (numeric)
+   * @param string $theme_id - theme id or extension id
    */
   function extract_theme_files($action, $revision, $dest, &$theme_id=null)
   {
