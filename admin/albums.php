@@ -23,7 +23,7 @@ include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
 $query = '
 SELECT
     COUNT(*)
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
 ;';
 list($albums_counter) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
@@ -67,7 +67,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
 
     $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id_uppercat ' .
       (($_POST['id'] === '-1') ? 'IS NULL' : '= ' . $_POST['id']) . '
 ;';
@@ -95,7 +95,7 @@ SELECT id
 
     $query = '
 SELECT id, name, id_uppercat
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id IN (' . implode(',', $category_ids) . ')
 ;';
     $result = functions_mysqli::pwg_query($query);
@@ -150,7 +150,7 @@ $template->assign('POS_PREF', $conf['newcat_default_position']); //TODO use user
 //Get all albums
 $query = '
 SELECT id,name,`rank`,status, visible, uppercats, lastmodified
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
 ;';
 
 $allAlbum = functions_mysqli::query2array($query);
@@ -182,7 +182,7 @@ $query = '
 SELECT
     category_id,
     COUNT(*) AS nb_photos
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   GROUP BY category_id
 ;';
 
@@ -192,7 +192,7 @@ $query = '
 SELECT
     id,
     uppercats
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
 ;';
 $all_categories = functions_mysqli::query2array($query, 'id', 'uppercats');
 

@@ -43,7 +43,7 @@ if (isset($_POST['falsify'])
         case 'comments':
 
             $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET commentable = \'false\'
   WHERE id IN (' . implode(',', $_POST['cat_true']) . ')
 ;';
@@ -63,7 +63,7 @@ UPDATE ' . CATEGORIES_TABLE . '
         case 'representative':
 
             $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET representative_picture_id = NULL
   WHERE id IN (' . implode(',', $_POST['cat_true']) . ')
 ;';
@@ -83,7 +83,7 @@ UPDATE ' . CATEGORIES_TABLE . '
         case 'comments':
 
             $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET commentable = \'true\'
   WHERE id IN (' . implode(',', $_POST['cat_false']) . ')
 ;';
@@ -162,12 +162,12 @@ switch ($page['section']) {
 
         $query_true = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE commentable = \'true\'
 ;';
         $query_false = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE commentable = \'false\'
 ;';
         $template->assign(
@@ -183,12 +183,12 @@ SELECT id,name,uppercats,global_rank
 
         $query_true = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE visible = \'true\'
 ;';
         $query_false = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE visible = \'false\'
 ;';
         $template->assign(
@@ -204,12 +204,12 @@ SELECT id,name,uppercats,global_rank
 
         $query_true = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE status = \'public\'
 ;';
         $query_false = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE status = \'private\'
 ;';
         $template->assign(
@@ -225,12 +225,12 @@ SELECT id,name,uppercats,global_rank
 
         $query_true = '
 SELECT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE representative_picture_id IS NOT NULL
 ;';
         $query_false = '
 SELECT DISTINCT id,name,uppercats,global_rank
-  FROM ' . CATEGORIES_TABLE . ' INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id=category_id
+  FROM categories INNER JOIN image_category ON id=category_id
   WHERE representative_picture_id IS NULL
 ;';
         $template->assign(

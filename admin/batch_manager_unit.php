@@ -49,7 +49,7 @@ if (isset($_POST['submit'])) {
 
     $query = '
 SELECT id, date_creation
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id IN (' . implode(',', $collection) . ')
 ;';
     $result = functions_mysqli::pwg_query($query);
@@ -85,7 +85,7 @@ SELECT id, date_creation
     }
 
     functions_mysqli::mass_updates(
-        IMAGES_TABLE,
+        'images',
         [
             'primary' => ['id'],
             'update' => ['name', 'author', 'level', 'comment', 'date_creation'],
@@ -158,7 +158,7 @@ if (count($page['cat_elements_id']) > 0) {
 
     $query = '
 SELECT *
-  FROM ' . IMAGES_TABLE;
+  FROM images';
 
     if ($is_category) {
         $category_info = functions_category::get_cat_info($_SESSION['bulk_manager_filter']['category']);
@@ -169,7 +169,7 @@ SELECT *
         }
 
         $query .= '
-    JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id';
+    JOIN image_category ON id = image_id';
     }
 
     $query .= '
@@ -195,8 +195,8 @@ SELECT *
 SELECT
     id,
     name
-  FROM ' . IMAGE_TAG_TABLE . ' AS it
-    JOIN ' . TAGS_TABLE . ' AS t ON t.id = it.tag_id
+  FROM image_tag AS it
+    JOIN tags AS t ON t.id = it.tag_id
   WHERE image_id = ' . $row['id'] . '
 ;';
         $tag_selection = functions::get_taglist($query);

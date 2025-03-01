@@ -34,7 +34,7 @@ $page['image'] = \Piwigo\admin\inc\functions::get_image_infos($_GET['image_id'],
 if (isset($_GET['cat_id'])) {
     $query = '
 SELECT *
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE id = ' . $_GET['cat_id'] . '
 ;';
     $category = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));

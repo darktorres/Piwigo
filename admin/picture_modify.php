@@ -43,7 +43,7 @@ if (! isset($page['image'])) {
 // represent
 $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE . '
+  FROM categories
   WHERE representative_picture_id = ' . $_GET['image_id'] . '
 ;';
 $represented_albums = functions_mysqli::query2array($query, null, 'id');
@@ -76,7 +76,7 @@ if (isset($_GET['delete'])) {
 
     $query = '
 SELECT category_id
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
 
@@ -132,7 +132,7 @@ if (isset($_POST['submit'])) {
     $data = functions_plugins::trigger_change('picture_modify_before_update', $data);
 
     functions_mysqli::single_update(
-        IMAGES_TABLE,
+        'images',
         $data,
         [
             'id' => $data['id'],
@@ -169,7 +169,7 @@ if (isset($_POST['submit'])) {
     $new_thumbnail_for = array_diff($_POST['represent'], $represented_albums);
     if (count($new_thumbnail_for) > 0) {
         $query = '
-UPDATE ' . CATEGORIES_TABLE . '
+UPDATE categories
   SET representative_picture_id = ' . $_GET['image_id'] . '
   WHERE id IN (' . implode(',', $new_thumbnail_for) . ')
 ;';
@@ -190,8 +190,8 @@ $query = '
 SELECT
     id,
     name
-  FROM ' . IMAGE_TAG_TABLE . ' AS it
-    JOIN ' . TAGS_TABLE . ' AS t ON t.id = it.tag_id
+  FROM image_tag AS it
+    JOIN tags AS t ON t.id = it.tag_id
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
 $tag_selection = \Piwigo\admin\inc\functions::get_taglist($query);
@@ -277,7 +277,7 @@ $template->assign(
 $added_by = 'N/A';
 $query = '
 SELECT ' . $conf['user_fields']['username'] . ' AS username
-  FROM ' . USERS_TABLE . '
+  FROM users
   WHERE ' . $conf['user_fields']['id'] . ' = ' . $row['added_by'] . '
 ;';
 $result = functions_mysqli::pwg_query($query);
@@ -303,7 +303,7 @@ if ($conf['rate'] and ! empty($row['rating_score'])) {
     $query = '
 SELECT
     COUNT(*)
-  FROM ' . RATE_TABLE . '
+  FROM rate
   WHERE element_id = ' . $_GET['image_id'] . '
 ;';
     list($row['nb_rates']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -313,7 +313,7 @@ SELECT
 
 $query = '
 SELECT *
-  FROM ' . IMAGE_FORMAT_TABLE . '
+  FROM image_format
   WHERE image_id = ' . $row['id'] . '
 ;';
 $formats = functions_mysqli::query2array($query);
@@ -346,8 +346,8 @@ $template->assign(
 // categories
 $query = '
 SELECT category_id, uppercats, dir
-  FROM ' . IMAGE_CATEGORY_TABLE . ' AS ic
-    INNER JOIN ' . CATEGORIES_TABLE . ' AS c
+  FROM image_category AS ic
+    INNER JOIN categories AS c
       ON c.id = ic.category_id
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
@@ -388,7 +388,7 @@ $template->assign('related_categories_ids', $related_categories_ids);
 
 $query = '
 SELECT category_id
-  FROM ' . IMAGE_CATEGORY_TABLE . '
+  FROM image_category
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
 
@@ -429,8 +429,8 @@ if (isset($url_img) and $user['level'] >= $page['image']['level']) {
 // associate to albums
 $query = '
 SELECT id
-  FROM ' . CATEGORIES_TABLE . '
-    INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = category_id
+  FROM categories
+    INNER JOIN image_category ON id = category_id
   WHERE image_id = ' . $_GET['image_id'] . '
 ;';
 $associated_albums = functions_mysqli::query2array($query, null, 'id');
