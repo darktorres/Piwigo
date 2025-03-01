@@ -66,7 +66,7 @@ class pwg_users
 
         $filtered_groups = [];
         if (! empty($params['filter'])) {
-            $filter_query = 'SELECT id FROM `' . GROUPS_TABLE . '` WHERE name LIKE \'%' . $params['filter'] . '%\';';
+            $filter_query = 'SELECT id FROM `groups` WHERE name LIKE \'%' . $params['filter'] . '%\';';
             $filtered_groups_res = functions_mysqli::pwg_query($filter_query);
             while ($row = functions_mysqli::pwg_db_fetch_assoc($filtered_groups_res)) {
                 $filtered_groups[] = $row['id'];
@@ -101,7 +101,7 @@ class pwg_users
         }
 
         if (! empty($params['status'])) {
-            $params['status'] = array_intersect($params['status'], functions_mysqli::get_enums(USER_INFOS_TABLE, 'status'));
+            $params['status'] = array_intersect($params['status'], functions_mysqli::get_enums('user_infos', 'status'));
             if (count($params['status']) > 0) {
                 $where_clauses[] = 'ui.status IN("' . implode('","', $params['status']) . '")';
             }
@@ -210,10 +210,10 @@ class pwg_users
             $query .= 'ui.last_visit_from_history AS last_visit_from_history';
         }
         $query .= '
-    FROM ' . USERS_TABLE . ' AS u
-      INNER JOIN ' . USER_INFOS_TABLE . ' AS ui
+    FROM users AS u
+      INNER JOIN user_infos AS ui
         ON u.' . $conf['user_fields']['id'] . ' = ui.user_id
-      LEFT JOIN ' . USER_GROUP_TABLE . ' AS ug
+      LEFT JOIN user_group AS ug
         ON u.' . $conf['user_fields']['id'] . ' = ug.user_id
     WHERE
       ' . implode(' AND ', $where_clauses) . '
@@ -245,7 +245,7 @@ class pwg_users
             if (isset($params['display']['groups'])) {
                 $query = '
     SELECT user_id, group_id
-    FROM ' . USER_GROUP_TABLE . '
+    FROM user_group
     WHERE user_id IN (' . implode(',', array_keys($users)) . ')
   ;';
                 $result = functions_mysqli::pwg_query($query);
@@ -408,7 +408,7 @@ class pwg_users
             $query = '
   SELECT
       user_id
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE status IN (\'webmaster\', \'admin\')
   ;';
             $protected_users = array_merge($protected_users, functions_mysqli::query2array($query, null, 'user_id'));
@@ -501,7 +501,7 @@ class pwg_users
                     $query = '
   SELECT
       user_id
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE status IN (\'webmaster\', \'admin\')
   ;';
                     $admin_ids = functions_mysqli::query2array($query, null, 'user_id');
@@ -538,7 +538,7 @@ class pwg_users
                 $query = '
   SELECT
       user_id
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE status IN (\'webmaster\', \'admin\')
   ;';
                 $protected_users = array_merge($protected_users, functions_mysqli::query2array($query, null, 'user_id'));
@@ -598,7 +598,7 @@ class pwg_users
 
         // perform updates
         functions_mysqli::single_update(
-            USERS_TABLE,
+            'users',
             $updates,
             [
                 $conf['user_fields']['id'] => $params['user_id'][0],
@@ -615,7 +615,7 @@ class pwg_users
 
         if (isset($update_status) and count($params['user_id_for_status']) > 0) {
             $query = '
-  UPDATE ' . USER_INFOS_TABLE . ' SET
+  UPDATE user_infos SET
       status = "' . $update_status . '"
     WHERE user_id IN(' . implode(',', $params['user_id_for_status']) . ')
   ;';
@@ -632,7 +632,7 @@ class pwg_users
 
         if (count($updates_infos) > 0) {
             $query = '
-  UPDATE ' . USER_INFOS_TABLE . ' SET ';
+  UPDATE user_infos SET ';
 
             $first = true;
             foreach ($updates_infos as $field => $value) {
@@ -654,7 +654,7 @@ class pwg_users
         if (! empty($params['group_id'])) {
             $query = '
   DELETE
-    FROM ' . USER_GROUP_TABLE . '
+    FROM user_group
     WHERE user_id IN (' . implode(',', $params['user_id']) . ')
   ;';
             functions_mysqli::pwg_query($query);
@@ -663,7 +663,7 @@ class pwg_users
             $query = '
   SELECT
       id
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id IN (' . implode(',', $params['group_id']) . ')
   ;';
             $group_ids = functions::array_from_query($query, 'id');
@@ -683,7 +683,7 @@ class pwg_users
                     }
                 }
 
-                functions_mysqli::mass_inserts(USER_GROUP_TABLE, array_keys($inserts[0]), $inserts);
+                functions_mysqli::mass_inserts('user_group', array_keys($inserts[0]), $inserts);
             }
         }
 
@@ -742,7 +742,7 @@ class pwg_users
         // does the image really exist?
         $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -751,7 +751,7 @@ class pwg_users
         }
 
         functions_mysqli::single_insert(
-            FAVORITES_TABLE,
+            'favorites',
             [
                 'image_id' => $params['image_id'],
                 'user_id' => $user['id'],
@@ -782,7 +782,7 @@ class pwg_users
         // does the image really exist?
         $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -792,7 +792,7 @@ class pwg_users
 
         $query = '
   DELETE
-    FROM ' . FAVORITES_TABLE . '
+    FROM favorites
     WHERE user_id = ' . $user['id'] . '
       AND image_id = ' . $params['image_id'] . '
   ;';
@@ -827,8 +827,8 @@ class pwg_users
         $query = '
   SELECT
       i.*
-    FROM ' . FAVORITES_TABLE . '
-      INNER JOIN ' . IMAGES_TABLE . ' i ON image_id = i.id
+    FROM favorites
+      INNER JOIN images i ON image_id = i.id
     WHERE user_id = ' . $user['id'] . '
   ' . functions_user::get_sql_condition_FandF(
             [

@@ -88,7 +88,7 @@ class pwg_images
 
         $query = '
   SELECT id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $cat_ids) . ')
   ;';
         $db_cat_ids = functions_mysqli::query2array($query, null, 'id');
@@ -106,7 +106,7 @@ class pwg_images
         // in case of replace mode, we first check the existing associations
         $query = '
   SELECT category_id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE image_id = ' . $image_id . '
   ;';
         $existing_cat_ids = functions_mysqli::query2array($query, null, 'category_id');
@@ -116,7 +116,7 @@ class pwg_images
             if (count($to_remove_cat_ids) > 0) {
                 $query = '
   DELETE
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE image_id = ' . $image_id . '
       AND category_id IN (' . implode(', ', $to_remove_cat_ids) . ')
   ;';
@@ -133,7 +133,7 @@ class pwg_images
         if ($search_current_ranks) {
             $query = '
   SELECT category_id, MAX(`rank`) AS max_rank
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE `rank` IS NOT NULL
       AND category_id IN (' . implode(',', $new_cat_ids) . ')
     GROUP BY category_id
@@ -166,7 +166,7 @@ class pwg_images
         }
 
         functions_mysqli::mass_inserts(
-            IMAGE_CATEGORY_TABLE,
+            'image_category',
             array_keys($inserts[0]),
             $inserts
         );
@@ -289,8 +289,8 @@ class pwg_images
     {
         $query = '
   SELECT DISTINCT image_id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
-        INNER JOIN ' . CATEGORIES_TABLE . ' ON category_id=id
+    FROM image_category
+        INNER JOIN categories ON category_id=id
     WHERE commentable="true"
       AND image_id=' . $params['image_id'] .
           functions_user::get_sql_condition_FandF(
@@ -352,7 +352,7 @@ class pwg_images
 
         $query = '
   SELECT *
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id=' . $params['image_id'] .
           functions_user::get_sql_condition_FandF(
               [
@@ -374,8 +374,8 @@ class pwg_images
         //-------------------------------------------------------- related categories
         $query = '
   SELECT id, name, permalink, uppercats, global_rank, commentable
-    FROM ' . IMAGE_CATEGORY_TABLE . '
-      INNER JOIN ' . CATEGORIES_TABLE . ' ON category_id = id
+    FROM image_category
+      INNER JOIN categories ON category_id = id
     WHERE image_id = ' . $image_row['id'] .
           functions_user::get_sql_condition_FandF(
               [
@@ -449,7 +449,7 @@ class pwg_images
         if (isset($rating['score'])) {
             $query = '
   SELECT COUNT(rate) AS count, ROUND(AVG(rate),2) AS average
-    FROM ' . RATE_TABLE . '
+    FROM rate
     WHERE element_id = ' . $image_row['id'] . '
   ;';
             $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -469,7 +469,7 @@ class pwg_images
 
         $query = '
   SELECT COUNT(id) AS nb_comments
-    FROM ' . COMMENTS_TABLE . '
+    FROM comments
     WHERE ' . $where_comments . '
   ;';
         list($nb_comments) = functions_mysqli::query2array($query, null, 'nb_comments');
@@ -478,7 +478,7 @@ class pwg_images
         if ($nb_comments > 0 and $params['comments_per_page'] > 0) {
             $query = '
   SELECT id, date, author, content
-    FROM ' . COMMENTS_TABLE . '
+    FROM comments
     WHERE ' . $where_comments . '
     ORDER BY date
     LIMIT ' . (int) $params['comments_per_page'] . '
@@ -566,8 +566,8 @@ class pwg_images
     {
         $query = '
   SELECT DISTINCT id
-    FROM ' . IMAGES_TABLE . '
-      INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id=image_id
+    FROM images
+      INNER JOIN image_category ON id=image_id
     WHERE id=' . $params['image_id']
           . functions_user::get_sql_condition_FandF(
               [
@@ -634,7 +634,7 @@ class pwg_images
         if (count($image_ids)) {
             $query = '
   SELECT *
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (' . implode(',', $image_ids) . ')
   ;';
             $result = functions_mysqli::pwg_query($query);
@@ -843,7 +843,7 @@ class pwg_images
         }
 
         $query = '
-  UPDATE ' . IMAGES_TABLE . '
+  UPDATE images
     SET level=' . (int) $params['level'] . '
     WHERE id IN (' . implode(',', $params['image_id']) . ')
   ;';
@@ -881,7 +881,7 @@ class pwg_images
             $query = '
   SELECT
       image_id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id = ' . $params['category_id'] . '
     ORDER BY `rank` ASC
   ;';
@@ -904,7 +904,7 @@ class pwg_images
         // does the image really exist?
         $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
         list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -915,7 +915,7 @@ class pwg_images
         // is the image associated to this category?
         $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE image_id = ' . $params['image_id'] . '
       AND category_id = ' . $params['category_id'] . '
   ;';
@@ -927,7 +927,7 @@ class pwg_images
         // what is the current higher rank for this category?
         $query = '
   SELECT MAX(`rank`) AS max_rank
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id = ' . $params['category_id'] . '
   ;';
         $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -942,7 +942,7 @@ class pwg_images
 
         // update rank for all other photos in the same category
         $query = '
-  UPDATE ' . IMAGE_CATEGORY_TABLE . '
+  UPDATE image_category
     SET `rank` = `rank` + 1
     WHERE category_id = ' . $params['category_id'] . '
       AND `rank` IS NOT NULL
@@ -952,7 +952,7 @@ class pwg_images
 
         // set the new rank for the photo
         $query = '
-  UPDATE ' . IMAGE_CATEGORY_TABLE . '
+  UPDATE image_category
     SET `rank` = ' . $params['rank'] . '
     WHERE image_id = ' . $params['image_id'] . '
       AND category_id = ' . $params['category_id'] . '
@@ -1044,7 +1044,7 @@ class pwg_images
   SELECT
       path, file, md5sum,
       width, height, filesize
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -1137,7 +1137,7 @@ class pwg_images
         if ($params['image_id'] > 0) {
             $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
             list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1157,7 +1157,7 @@ class pwg_images
 
             $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE ' . $where_clause . '
   ;';
             list($counter) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1211,7 +1211,7 @@ class pwg_images
 
         if (count(array_keys($update)) > 0) {
             functions_mysqli::single_update(
-                IMAGES_TABLE,
+                'images',
                 $update,
                 [
                     'id' => $image_id,
@@ -1232,7 +1232,7 @@ class pwg_images
 
                 $query = '
   SELECT id, name, permalink
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id = ' . $category_id . '
   ;';
                 $result = functions_mysqli::pwg_query($query);
@@ -1316,7 +1316,7 @@ class pwg_images
         if ($params['image_id'] > 0) {
             $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
             list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1351,7 +1351,7 @@ class pwg_images
         }
 
         functions_mysqli::single_update(
-            IMAGES_TABLE,
+            'images',
             $update,
             [
                 'id' => $image_id,
@@ -1383,7 +1383,7 @@ class pwg_images
         if (! empty($params['category'])) {
             $query = '
   SELECT id, name, permalink
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id = ' . $params['category'][0] . '
   ;';
             $result = functions_mysqli::pwg_query($query);
@@ -1521,7 +1521,7 @@ class pwg_images
             if (isset($params['format_of'])) {
                 $query = '
   SELECT *
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['format_of'] . '
   ;';
                 $images = functions_mysqli::query2array($query);
@@ -1555,7 +1555,7 @@ class pwg_images
       name,
       representative_ext,
       path
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $image_id . '
   ;';
             $image_infos = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -1563,7 +1563,7 @@ class pwg_images
             $query = '
   SELECT
       COUNT(*) AS nb_photos
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id = ' . $params['category'][0] . '
   ;';
             $category_infos = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -1571,7 +1571,7 @@ class pwg_images
             $query = '
   SELECT
       COUNT(*)
-    FROM ' . LOUNGE_TABLE . '
+    FROM lounge
     WHERE category_id = ' . $params['category'][0] . '
   ;';
             list($nb_photos_lounge) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1628,7 +1628,7 @@ class pwg_images
         if ($params['image_id'] > 0) {
             $query = '
   SELECT COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
             list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1802,7 +1802,7 @@ class pwg_images
 
         if (count(array_keys($update)) > 0) {
             functions_mysqli::single_update(
-                IMAGES_TABLE,
+                'images',
                 $update,
                 [
                     'id' => $image_id,
@@ -1877,7 +1877,7 @@ class pwg_images
 
             $query = '
   SELECT id, md5sum
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE md5sum IN (\'' . implode("','", $md5sums) . '\')
   ;';
             $id_of_md5 = functions_mysqli::query2array($query, 'md5sum', 'id');
@@ -1900,7 +1900,7 @@ class pwg_images
 
             $query = '
   SELECT id, file
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE file IN (\'' . implode("','", $filenames) . '\')
   ;';
             $id_of_filename = functions_mysqli::query2array($query, 'file', 'id');
@@ -1939,7 +1939,7 @@ class pwg_images
   SELECT
       id,
       file
-    FROM ' . IMAGES_TABLE . '
+    FROM images
   ;';
         $result = functions_mysqli::pwg_query($query);
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
@@ -2035,7 +2035,7 @@ class pwg_images
   SELECT
       image_id,
       ext
-    FROM ' . IMAGE_FORMAT_TABLE . '
+    FROM image_format
     WHERE format_id IN (' . implode(',', $format_ids) . ')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -2058,7 +2058,7 @@ class pwg_images
       id,
       path,
       representative_ext
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (' . implode(',', $image_ids) . ')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -2087,7 +2087,7 @@ class pwg_images
 
         //Delete format in the database
         $query = '
-  DELETE FROM ' . IMAGE_FORMAT_TABLE . '
+  DELETE FROM image_format
     WHERE format_id IN (' . implode(',', $format_ids) . ')
   ;';
         functions_mysqli::pwg_query($query);
@@ -2115,7 +2115,7 @@ class pwg_images
 
         $query = '
   SELECT path
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -2187,7 +2187,7 @@ class pwg_images
 
         $query = '
   SELECT *
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $params['image_id'] . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -2251,7 +2251,7 @@ class pwg_images
             $update['id'] = $params['image_id'];
 
             functions_mysqli::single_update(
-                IMAGES_TABLE,
+                'images',
                 $update,
                 [
                     'id' => $update['id'],
@@ -2415,7 +2415,7 @@ class pwg_images
         $query = '
   SELECT
       COUNT(*) AS nb_photos
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id = ' . $params['category_id'] . '
   ;';
         $category_infos = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -2486,7 +2486,7 @@ class pwg_images
 
         $query = '
   SELECT id
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (' . implode(', ', $params['image_id']) . ')
   ;';
         $params['image_id'] = functions_mysqli::query2array($query, null, 'id');
@@ -2550,7 +2550,7 @@ class pwg_images
         $query = '
   SELECT
       id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id = ' . $params['category_id'] . '
   ;';
         $categories = functions_mysqli::query2array($query);

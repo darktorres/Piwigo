@@ -37,7 +37,7 @@ class functions_admin
         // destruction of the categories of the site
         $query = '
   SELECT id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE site_id = ' . $id . '
   ;';
         $category_ids = functions_mysqli::query2array($query, null, 'id');
@@ -45,7 +45,7 @@ class functions_admin
 
         // destruction of the site
         $query = '
-  DELETE FROM ' . SITES_TABLE . '
+  DELETE FROM sites
     WHERE id = ' . $id . '
   ;';
         functions_mysqli::pwg_query($query);
@@ -77,7 +77,7 @@ class functions_admin
         // destruction of all photos physically linked to the category
         $query = '
   SELECT id
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE storage_category_id IN (
   ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
   ;';
@@ -89,7 +89,7 @@ class functions_admin
             $query = '
   SELECT
       DISTINCT(image_id)
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id IN (' . implode(',', $ids) . ')
   ;';
             $image_ids_linked = functions_mysqli::query2array($query, null, 'image_id');
@@ -99,7 +99,7 @@ class functions_admin
                     $query = '
   SELECT
       DISTINCT(image_id)
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE image_id IN (' . implode(',', $image_ids_linked) . ')
       AND category_id NOT IN (' . implode(',', $ids) . ')
   ;';
@@ -117,7 +117,7 @@ class functions_admin
 
         // destruction of the links between images and this category
         $query = '
-  DELETE FROM ' . IMAGE_CATEGORY_TABLE . '
+  DELETE FROM image_category
     WHERE category_id IN (
   ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
   ;';
@@ -125,14 +125,14 @@ class functions_admin
 
         // destruction of the access linked to the category
         $query = '
-  DELETE FROM ' . USER_ACCESS_TABLE . '
+  DELETE FROM user_access
     WHERE cat_id IN (
   ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         $query = '
-  DELETE FROM ' . GROUP_ACCESS_TABLE . '
+  DELETE FROM group_access
     WHERE cat_id IN (
   ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
   ;';
@@ -140,19 +140,19 @@ class functions_admin
 
         // destruction of the category
         $query = '
-  DELETE FROM ' . CATEGORIES_TABLE . '
+  DELETE FROM categories
     WHERE id IN (
   ' . wordwrap(implode(', ', $ids), 80, "\n") . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         $query = '
-  DELETE FROM ' . OLD_PERMALINKS_TABLE . '
+  DELETE FROM old_permalinks
     WHERE cat_id IN (' . implode(',', $ids) . ')';
         functions_mysqli::pwg_query($query);
 
         $query = '
-  DELETE FROM ' . USER_CACHE_CATEGORIES_TABLE . '
+  DELETE FROM user_cache_categories
     WHERE cat_id IN (' . implode(',', $ids) . ')';
         functions_mysqli::pwg_query($query);
 
@@ -182,7 +182,7 @@ class functions_admin
   SELECT
       image_id,
       ext
-    FROM ' . IMAGE_FORMAT_TABLE . '
+    FROM image_format
     WHERE image_id IN (' . implode(',', $ids) . ')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -199,7 +199,7 @@ class functions_admin
       id,
       path,
       representative_ext
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (' . implode(',', $ids) . ')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -272,56 +272,56 @@ class functions_admin
 
         // destruction of the comments on the image
         $query = '
-  DELETE FROM ' . COMMENTS_TABLE . '
+  DELETE FROM comments
     WHERE image_id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         // destruction of the links between images and categories
         $query = '
-  DELETE FROM ' . IMAGE_CATEGORY_TABLE . '
+  DELETE FROM image_category
     WHERE image_id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         // destruction of the formats
         $query = '
-  DELETE FROM ' . IMAGE_FORMAT_TABLE . '
+  DELETE FROM image_format
     WHERE image_id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         // destruction of the links between images and tags
         $query = '
-  DELETE FROM ' . IMAGE_TAG_TABLE . '
+  DELETE FROM image_tag
     WHERE image_id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         // destruction of the favorites associated with the picture
         $query = '
-  DELETE FROM ' . FAVORITES_TABLE . '
+  DELETE FROM favorites
     WHERE image_id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         // destruction of the rates associated to this element
         $query = '
-  DELETE FROM ' . RATE_TABLE . '
+  DELETE FROM rate
     WHERE element_id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         // destruction of the caddie associated to this element
         $query = '
-  DELETE FROM ' . CADDIE_TABLE . '
+  DELETE FROM caddie
     WHERE element_id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         // destruction of the image
         $query = '
-  DELETE FROM ' . IMAGES_TABLE . '
+  DELETE FROM images
     WHERE id IN (' . $ids_str . ')
   ;';
         functions_mysqli::pwg_query($query);
@@ -330,7 +330,7 @@ class functions_admin
         $query = '
   SELECT
       id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE representative_picture_id IN (' . $ids_str . ')
   ;';
         $category_ids = functions_mysqli::query2array($query, null, 'id');
@@ -355,24 +355,24 @@ class functions_admin
         global $conf;
         $tables = [
             // destruction of the access linked to the user
-            USER_ACCESS_TABLE,
+            'user_access',
             // destruction of data notification by mail for this user
-            USER_MAIL_NOTIFICATION_TABLE,
+            'user_mail_notification',
             // destruction of data RSS notification for this user
-            USER_FEED_TABLE,
+            'user_feed',
             // deletion of calculated permissions linked to the user
-            USER_CACHE_TABLE,
+            'user_cache',
             // deletion of computed cache data linked to the user
-            USER_CACHE_CATEGORIES_TABLE,
+            'user_cache_categories',
             // destruction of the group links for this user
-            USER_GROUP_TABLE,
+            'user_group',
             // destruction of the favorites associated with the user
-            FAVORITES_TABLE,
+            'favorites',
             // destruction of the caddie associated with the user
-            CADDIE_TABLE,
+            'caddie',
             // deletion of piwigo specific informations
-            USER_INFOS_TABLE,
-            USER_AUTH_KEYS_TABLE,
+            'user_infos',
+            'user_auth_keys',
         ];
 
         foreach ($tables as $table) {
@@ -388,7 +388,7 @@ class functions_admin
 
         // destruction of the user
         $query = '
-  DELETE FROM ' . USERS_TABLE . '
+  DELETE FROM users
     WHERE ' . $conf['user_fields']['id'] . ' = ' . $user_id . '
   ;';
         functions_mysqli::pwg_query($query);
@@ -423,8 +423,8 @@ class functions_admin
   SELECT
       id,
       name
-    FROM ' . TAGS_TABLE . '
-      LEFT JOIN ' . IMAGE_TAG_TABLE . ' ON id = tag_id
+    FROM tags
+      LEFT JOIN image_tag ON id = tag_id
     WHERE tag_id IS NULL
       AND lastmodified < SUBDATE(NOW(), INTERVAL 1 DAY)
   ;';
@@ -456,7 +456,7 @@ class functions_admin
         // the picture does not exist
         $query = '
   SELECT DISTINCT c.id
-    FROM ' . CATEGORIES_TABLE . ' AS c LEFT JOIN ' . IMAGES_TABLE . ' AS i
+    FROM categories AS c LEFT JOIN images AS i
       ON c.representative_picture_id = i.id
     WHERE representative_picture_id IS NOT NULL
       AND ' . sprintf($where_cats, 'c.id') . '
@@ -466,7 +466,7 @@ class functions_admin
 
         if (count($wrong_representant) > 0) {
             $query = '
-  UPDATE ' . CATEGORIES_TABLE . '
+  UPDATE categories
     SET representative_picture_id = NULL
     WHERE id IN (' . wordwrap(implode(', ', $wrong_representant), 120, "\n") . ')
   ;';
@@ -480,7 +480,7 @@ class functions_admin
             // representant.
             $query = '
   SELECT DISTINCT id
-    FROM ' . CATEGORIES_TABLE . ' INNER JOIN ' . IMAGE_CATEGORY_TABLE . '
+    FROM categories INNER JOIN image_category
       ON id = category_id
     WHERE representative_picture_id IS NULL
       AND ' . sprintf($where_cats, 'category_id') . '
@@ -493,7 +493,7 @@ class functions_admin
     }
 
     /**
-     * Checks and repairs IMAGE_CATEGORY_TABLE integrity.
+     * Checks and repairs image_category integrity.
      * Removes all entries from the table which correspond to a deleted image.
      */
     public static function images_integrity()
@@ -501,8 +501,8 @@ class functions_admin
         $query = '
   SELECT
       image_id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
-      LEFT JOIN ' . IMAGES_TABLE . ' ON id = image_id
+    FROM image_category
+      LEFT JOIN images ON id = image_id
     WHERE id IS NULL
   ;';
         $orphan_image_ids = functions_mysqli::query2array($query, null, 'image_id');
@@ -510,7 +510,7 @@ class functions_admin
         if (count($orphan_image_ids) > 0) {
             $query = '
   DELETE
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE image_id IN (' . implode(',', $orphan_image_ids) . ')
   ;';
             functions_mysqli::pwg_query($query);
@@ -524,11 +524,11 @@ class functions_admin
     public static function categories_integrity()
     {
         $related_columns = [
-            IMAGE_CATEGORY_TABLE . '.category_id',
-            USER_ACCESS_TABLE . '.cat_id',
-            GROUP_ACCESS_TABLE . '.cat_id',
-            OLD_PERMALINKS_TABLE . '.cat_id',
-            USER_CACHE_CATEGORIES_TABLE . '.cat_id',
+            'image_category.category_id',
+            'user_access.cat_id',
+            'group_access.cat_id',
+            'old_permalinks.cat_id',
+            'user_cache_categories.cat_id',
         ];
 
         foreach ($related_columns as $fullcol) {
@@ -538,7 +538,7 @@ class functions_admin
   SELECT
       ' . $column . '
     FROM ' . $table . '
-      LEFT JOIN ' . CATEGORIES_TABLE . ' ON id = ' . $column . '
+      LEFT JOIN categories ON id = ' . $column . '
     WHERE id IS NULL
   ;';
             $orphans = array_unique(functions_mysqli::query2array($query, null, $column));
@@ -635,7 +635,7 @@ class functions_admin
             'primary' => ['id'],
             'update' => ['rank'],
         ];
-        functions_mysqli::mass_updates(CATEGORIES_TABLE, $fields, $datas);
+        functions_mysqli::mass_updates('categories', $fields, $datas);
 
         self::update_global_rank();
     }
@@ -648,7 +648,7 @@ class functions_admin
     {
         $query = '
   SELECT id, id_uppercat, uppercats, `rank`, global_rank
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     ORDER BY id_uppercat, `rank`, name';
 
         global $cat_map; // used in preg_replace callback
@@ -697,7 +697,7 @@ class functions_admin
         unset($cat_map);
 
         functions_mysqli::mass_updates(
-            CATEGORIES_TABLE,
+            'categories',
             [
                 'primary' => ['id'],
                 'update' => ['rank', 'global_rank'],
@@ -728,7 +728,7 @@ class functions_admin
                 $cats = array_merge($cats, functions_category::get_subcat_ids($categories));
             }
             $query = '
-  UPDATE ' . CATEGORIES_TABLE . '
+  UPDATE categories
     SET visible = \'true\'
     WHERE id IN (' . implode(',', $cats) . ')';
             functions_mysqli::pwg_query($query);
@@ -737,7 +737,7 @@ class functions_admin
         else {
             $subcats = functions_category::get_subcat_ids($categories);
             $query = '
-  UPDATE ' . CATEGORIES_TABLE . '
+  UPDATE categories
     SET visible = \'false\'
     WHERE id IN (' . implode(',', $subcats) . ')';
             functions_mysqli::pwg_query($query);
@@ -761,7 +761,7 @@ class functions_admin
         if ($value == 'public') {
             $uppercats = self::get_uppercat_ids($categories);
             $query = '
-  UPDATE ' . CATEGORIES_TABLE . '
+  UPDATE categories
     SET status = \'public\'
     WHERE id IN (' . implode(',', $uppercats) . ')
   ;';
@@ -773,7 +773,7 @@ class functions_admin
             $subcats = functions_category::get_subcat_ids($categories);
 
             $query = '
-  UPDATE ' . CATEGORIES_TABLE . '
+  UPDATE categories
     SET status = \'private\'
     WHERE id IN (' . implode(',', $subcats) . ')';
             functions_mysqli::pwg_query($query);
@@ -821,7 +821,7 @@ class functions_admin
       id_uppercat,
       uppercats,
       global_rank
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $categories) . ')
   ;';
             $all_categories = functions_mysqli::query2array($query);
@@ -858,15 +858,15 @@ class functions_admin
   SELECT
       id,
       status
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $parent_ids) . ')
   ;';
                 $parent_cats = functions_mysqli::query2array($query, 'id');
             }
 
             $tables = [
-                USER_ACCESS_TABLE => 'user_id',
-                GROUP_ACCESS_TABLE => 'group_id',
+                'user_access' => 'user_id',
+                'group_access' => 'group_id',
             ];
 
             foreach ($top_categories as $top_category) {
@@ -924,7 +924,7 @@ class functions_admin
 
         $query = '
   SELECT uppercats
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $cat_ids) . ')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -943,7 +943,7 @@ class functions_admin
     {
         $query = '
   SELECT id,representative_ext,path
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $image_id . '
   ;';
 
@@ -972,7 +972,7 @@ class functions_admin
         foreach ($categories as $category_id) {
             $query = '
   SELECT image_id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id = ' . $category_id . '
     ORDER BY ' . functions_mysqli::DB_RANDOM_FUNCTION . '()
     LIMIT 1
@@ -986,7 +986,7 @@ class functions_admin
         }
 
         functions_mysqli::mass_updates(
-            CATEGORIES_TABLE,
+            'categories',
             [
                 'primary' => ['id'],
                 'update' => ['representative_picture_id'],
@@ -1011,7 +1011,7 @@ class functions_admin
         global $cat_dirs; // used in preg_replace callback
         $query = '
   SELECT id, dir
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE dir IS NOT NULL
   ;';
         $cat_dirs = functions_mysqli::query2array($query, 'id', 'dir');
@@ -1019,14 +1019,14 @@ class functions_admin
         // caching galleries_url
         $query = '
   SELECT id, galleries_url
-    FROM ' . SITES_TABLE . '
+    FROM sites
   ;';
         $galleries_url = functions_mysqli::query2array($query, 'id', 'galleries_url');
 
         // categories : id, site_id, uppercats
         $query = '
   SELECT id, uppercats, site_id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE dir IS NOT NULL
       AND id IN (
   ' . wordwrap(implode(', ', $cat_ids), 80, "\n") . ')
@@ -1131,8 +1131,8 @@ class functions_admin
     /**
      * Synchronize base users list and related users list.
      *
-     * Compares and synchronizes base users table (USERS_TABLE) with its child
-     * tables (USER_INFOS_TABLE, USER_ACCESS, USER_CACHE, USER_GROUP) : each
+     * Compares and synchronizes base users table (users) with its child
+     * tables (user_infos, USER_ACCESS, USER_CACHE, USER_GROUP) : each
      * base user must be present in child tables, users in child tables not
      * present in base table must be deleted.
      */
@@ -1142,13 +1142,13 @@ class functions_admin
 
         $query = '
   SELECT ' . $conf['user_fields']['id'] . ' AS id
-    FROM ' . USERS_TABLE . '
+    FROM users
   ;';
         $base_users = functions_mysqli::query2array($query, null, 'id');
 
         $query = '
   SELECT user_id
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
   ;';
         $infos_users = functions_mysqli::query2array($query, null, 'user_id');
 
@@ -1162,13 +1162,13 @@ class functions_admin
         // users present in user related tables must be present in the base user
         // table
         $tables = [
-            USER_MAIL_NOTIFICATION_TABLE,
-            USER_FEED_TABLE,
-            USER_INFOS_TABLE,
-            USER_ACCESS_TABLE,
-            USER_CACHE_TABLE,
-            USER_CACHE_CATEGORIES_TABLE,
-            USER_GROUP_TABLE,
+            'user_mail_notification',
+            'user_feed',
+            'user_infos',
+            'user_access',
+            'user_cache',
+            'user_cache_categories',
+            'user_group',
         ];
 
         foreach ($tables as $table) {
@@ -1199,7 +1199,7 @@ class functions_admin
     {
         $query = '
   SELECT id, id_uppercat, uppercats
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
   ;';
         $cat_map = functions_mysqli::query2array($query, 'id');
 
@@ -1225,7 +1225,7 @@ class functions_admin
             'primary' => ['id'],
             'update' => ['uppercats'],
         ];
-        functions_mysqli::mass_updates(CATEGORIES_TABLE, $fields, $datas);
+        functions_mysqli::mass_updates('categories', $fields, $datas);
     }
 
     /**
@@ -1235,7 +1235,7 @@ class functions_admin
     {
         $query = '
   SELECT DISTINCT(storage_category_id)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE storage_category_id IS NOT NULL
   ;';
         $cat_ids = functions_mysqli::query2array($query, null, 'storage_category_id');
@@ -1243,7 +1243,7 @@ class functions_admin
 
         foreach ($cat_ids as $cat_id) {
             $query = '
-  UPDATE ' . IMAGES_TABLE . '
+  UPDATE images
     SET path = ' . functions_mysqli::pwg_db_concat(["'" . $fulldirs[$cat_id] . "/'", 'file']) . '
     WHERE storage_category_id = ' . $cat_id . '
   ;';
@@ -1272,7 +1272,7 @@ class functions_admin
 
         $query = '
   SELECT id, id_uppercat, status, uppercats
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $category_ids) . ')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -1290,7 +1290,7 @@ class functions_admin
         if ($new_parent != 'NULL') {
             $query = '
   SELECT uppercats
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id = ' . $new_parent . '
   ;';
             list($new_parent_uppercats) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1306,12 +1306,12 @@ class functions_admin
         }
 
         $tables = [
-            USER_ACCESS_TABLE => 'user_id',
-            GROUP_ACCESS_TABLE => 'group_id',
+            'user_access' => 'user_id',
+            'group_access' => 'group_id',
         ];
 
         $query = '
-  UPDATE ' . CATEGORIES_TABLE . '
+  UPDATE categories
     SET id_uppercat = ' . $new_parent . '
     WHERE id IN (' . implode(',', $category_ids) . ')
   ;';
@@ -1326,7 +1326,7 @@ class functions_admin
         } else {
             $query = '
   SELECT status
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id = ' . $new_parent . '
   ;';
             list($parent_status) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1376,7 +1376,7 @@ class functions_admin
             //what is the current higher rank for this parent?
             $query = '
   SELECT MAX(`rank`) AS max_rank
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id_uppercat ' . (empty($parent_id) ? 'IS NULL' : '= ' . $parent_id) . '
   ;';
             $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -1425,7 +1425,7 @@ class functions_admin
         if (! empty($parent_id) and is_numeric($parent_id)) {
             $query = '
   SELECT id, uppercats, global_rank, visible, status
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id = ' . $parent_id . '
   ;';
             $parent = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
@@ -1453,11 +1453,11 @@ class functions_admin
         }
 
         // we have then to add the virtual category
-        functions_mysqli::single_insert(CATEGORIES_TABLE, $insert);
-        $inserted_id = functions_mysqli::pwg_db_insert_id(CATEGORIES_TABLE);
+        functions_mysqli::single_insert('categories', $insert);
+        $inserted_id = functions_mysqli::pwg_db_insert_id('categories');
 
         functions_mysqli::single_update(
-            CATEGORIES_TABLE,
+            'categories',
             [
                 'uppercats' => $uppercats_prefix . $inserted_id,
             ],
@@ -1471,7 +1471,7 @@ class functions_admin
         if ($insert['status'] == 'private' and ! empty($insert['id_uppercat']) and ((isset($options['inherit']) and $options['inherit']) or $conf['inheritance_by_default'])) {
             $query = '
         SELECT group_id
-        FROM ' . GROUP_ACCESS_TABLE . '
+        FROM group_access
         WHERE cat_id = ' . $insert['id_uppercat'] . '
       ;';
             $granted_grps = functions_mysqli::query2array($query, null, 'group_id');
@@ -1482,11 +1482,11 @@ class functions_admin
                     'cat_id' => $inserted_id,
                 ];
             }
-            functions_mysqli::mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $inserts);
+            functions_mysqli::mass_inserts('group_access', ['group_id', 'cat_id'], $inserts);
 
             $query = '
         SELECT user_id
-        FROM ' . USER_ACCESS_TABLE . '
+        FROM user_access
         WHERE cat_id = ' . $insert['id_uppercat'] . '
       ;';
             $granted_users = functions_mysqli::query2array($query, null, 'user_id');
@@ -1538,7 +1538,7 @@ class functions_admin
         // delete lines we'll insert later
         $query = '
   DELETE
-    FROM ' . IMAGE_TAG_TABLE . '
+    FROM image_tag
     WHERE image_id IN (' . implode(',', $images) . ')
       AND tag_id IN (' . implode(',', $tags) . ')
   ;';
@@ -1554,7 +1554,7 @@ class functions_admin
             }
         }
         functions_mysqli::mass_inserts(
-            IMAGE_TAG_TABLE,
+            'image_tag',
             array_keys($inserts[0]),
             $inserts
         );
@@ -1585,21 +1585,21 @@ class functions_admin
         $query = '
   SELECT
       image_id
-    FROM ' . IMAGE_TAG_TABLE . '
+    FROM image_tag
     WHERE tag_id IN (' . implode(',', $tag_ids) . ')
   ;';
         $image_ids = functions_mysqli::query2array($query, null, 'image_id');
 
         $query = '
   DELETE
-    FROM ' . IMAGE_TAG_TABLE . '
+    FROM image_tag
     WHERE tag_id IN (' . implode(',', $tag_ids) . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         $query = '
   DELETE
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE id IN (' . implode(',', $tag_ids) . ')
   ;';
         functions_mysqli::pwg_query($query);
@@ -1629,7 +1629,7 @@ class functions_admin
         // search existing by exact name
         $query = '
   SELECT id
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE name = \'' . $tag_name . '\'
   ;';
         if (count($existing_tags = functions_mysqli::query2array($query, null, 'id')) == 0) {
@@ -1637,7 +1637,7 @@ class functions_admin
             // search existing by url name
             $query = '
   SELECT id
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE url_name = \'' . $url_name . '\'
   ;';
             if (count($existing_tags = functions_mysqli::query2array($query, null, 'id')) == 0) {
@@ -1646,7 +1646,7 @@ class functions_admin
                 if (count($sub_name_where)) {
                     $query = '
   SELECT id
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE ' . implode(' OR ', $sub_name_where) . '
   ;';
                     $existing_tags = functions_mysqli::query2array($query, null, 'id');
@@ -1654,7 +1654,7 @@ class functions_admin
 
                 if (count($existing_tags) == 0) {// finally create the tag
                     functions_mysqli::mass_inserts(
-                        TAGS_TABLE,
+                        'tags',
                         ['name', 'url_name'],
                         [
                             [
@@ -1664,7 +1664,7 @@ class functions_admin
                         ]
                     );
 
-                    $page['tag_id_from_tag_name_cache'][$tag_name] = functions_mysqli::pwg_db_insert_id(TAGS_TABLE);
+                    $page['tag_id_from_tag_name_cache'][$tag_name] = functions_mysqli::pwg_db_insert_id('tags');
 
                     self::invalidate_user_cache_nb_tags();
 
@@ -1691,7 +1691,7 @@ class functions_admin
 
             $query = '
   DELETE
-    FROM ' . IMAGE_TAG_TABLE . '
+    FROM image_tag
     WHERE image_id IN (' . implode(',', array_keys($tags_of)) . ')
   ;';
             functions_mysqli::pwg_query($query);
@@ -1709,7 +1709,7 @@ class functions_admin
 
             if (count($inserts)) {
                 functions_mysqli::mass_inserts(
-                    IMAGE_TAG_TABLE,
+                    'image_tag',
                     array_keys($inserts[0]),
                     $inserts
                 );
@@ -1748,7 +1748,7 @@ class functions_admin
   SELECT
       image_id,
       tag_id
-    FROM ' . IMAGE_TAG_TABLE . '
+    FROM image_tag
     WHERE image_id IN (' . implode(',', $image_ids) . ')
   ;';
 
@@ -1806,7 +1806,7 @@ class functions_admin
 
         if (count($inserts)) {
             functions_mysqli::mass_inserts(
-                LOUNGE_TABLE,
+                'lounge',
                 array_keys($inserts[0]),
                 $inserts,
                 [
@@ -1841,13 +1841,13 @@ class functions_admin
         // if lounge is already being emptied, skip
         $query = '
   INSERT IGNORE
-    INTO ' . CONFIG_TABLE . '
+    INTO config
     SET param="empty_lounge_running"
       , value="' . $exec_id . '-' . time() . '"
   ;';
         functions_mysqli::pwg_query($query);
 
-        list($empty_lounge_running) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT value FROM ' . CONFIG_TABLE . ' WHERE param = "empty_lounge_running"'));
+        list($empty_lounge_running) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT value FROM config WHERE param = "empty_lounge_running"'));
         list($running_exec_id) = explode('-', $empty_lounge_running);
 
         if ($running_exec_id != $exec_id) {
@@ -1862,7 +1862,7 @@ class functions_admin
   SELECT
       image_id,
       category_id
-    FROM ' . LOUNGE_TABLE . '
+    FROM lounge
     ORDER BY category_id ASC, image_id ASC
   ;';
 
@@ -1885,7 +1885,7 @@ class functions_admin
 
         $query = '
   DELETE
-    FROM ' . LOUNGE_TABLE . '
+    FROM lounge
     WHERE image_id <= ' . $max_image_id . '
   ;';
         functions_mysqli::pwg_query($query);
@@ -1922,7 +1922,7 @@ class functions_admin
   SELECT
       image_id,
       category_id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE image_id IN (' . implode(',', $images) . ')
       AND category_id IN (' . implode(',', $categories) . ')
   ;';
@@ -1938,7 +1938,7 @@ class functions_admin
   SELECT
       category_id,
       MAX(`rank`) AS max_rank
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE `rank` IS NOT NULL
       AND category_id IN (' . implode(',', $categories) . ')
     GROUP BY category_id
@@ -1975,7 +1975,7 @@ class functions_admin
 
         if (count($inserts)) {
             functions_mysqli::mass_inserts(
-                IMAGE_CATEGORY_TABLE,
+                'image_category',
                 array_keys($inserts[0]),
                 $inserts
             );
@@ -1996,8 +1996,8 @@ class functions_admin
         // which create virtual links with the category to "dissociate from".
         $query = '
   SELECT id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
-      INNER JOIN ' . IMAGES_TABLE . ' ON image_id = id
+    FROM image_category
+      INNER JOIN images ON image_id = id
     WHERE category_id =' . $category . '
       AND id IN (' . implode(',', $images) . ')
       AND (
@@ -2010,7 +2010,7 @@ class functions_admin
         if (! empty($dissociables)) {
             $query = '
   DELETE
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id = ' . $category . '
       AND image_id IN (' . implode(',', $dissociables) . ')
   ';
@@ -2036,9 +2036,9 @@ class functions_admin
 
         // let's first break links with all old albums but their "storage album"
         $query = '
-  DELETE ' . IMAGE_CATEGORY_TABLE . '.*
-    FROM ' . IMAGE_CATEGORY_TABLE . '
-      JOIN ' . IMAGES_TABLE . ' ON image_id=id
+  DELETE image_category.*
+    FROM image_category
+      JOIN images ON image_id=id
     WHERE id IN (' . implode(',', $images) . ')
   ';
 
@@ -2073,7 +2073,7 @@ class functions_admin
 
         $query = '
   SELECT image_id
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
     WHERE category_id IN (' . implode(',', $sources) . ')
   ;';
         $images = functions_mysqli::query2array($query, null, 'image_id');
@@ -2106,14 +2106,14 @@ class functions_admin
     {
         if ($full) {
             $query = '
-  TRUNCATE TABLE ' . USER_CACHE_CATEGORIES_TABLE . ';';
+  TRUNCATE TABLE user_cache_categories;';
             functions_mysqli::pwg_query($query);
             $query = '
-  TRUNCATE TABLE ' . USER_CACHE_TABLE . ';';
+  TRUNCATE TABLE user_cache;';
             functions_mysqli::pwg_query($query);
         } else {
             $query = '
-  UPDATE ' . USER_CACHE_TABLE . '
+  UPDATE user_cache
     SET need_update = \'true\';';
             functions_mysqli::pwg_query($query);
         }
@@ -2130,7 +2130,7 @@ class functions_admin
         unset($user['nb_available_tags']);
 
         $query = '
-  UPDATE ' . USER_CACHE_TABLE . '
+  UPDATE user_cache
     SET nb_available_tags = NULL';
         functions_mysqli::pwg_query($query);
     }
@@ -2235,21 +2235,21 @@ class functions_admin
         // does the tag already exists?
         $query = '
   SELECT id
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE name = \'' . $tag_name . '\'
   ;';
         $existing_tags = functions_mysqli::query2array($query, null, 'id');
 
         if (count($existing_tags) == 0) {
             functions_mysqli::single_insert(
-                TAGS_TABLE,
+                'tags',
                 [
                     'name' => $tag_name,
                     'url_name' => functions_plugins::trigger_change('render_tag_url', $tag_name),
                 ]
             );
 
-            $inserted_id = functions_mysqli::pwg_db_insert_id(TAGS_TABLE);
+            $inserted_id = functions_mysqli::pwg_db_insert_id('tags');
 
             return [
                 'info' => functions::l10n('Tag "%s" was added', stripslashes($tag_name)),
@@ -2449,7 +2449,7 @@ class functions_admin
     {
         $query = '
   SELECT name
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id = ' . intval($group_id) . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -2483,7 +2483,7 @@ class functions_admin
         // destruction of the access linked to the group
         $query = '
   DELETE
-    FROM ' . GROUP_ACCESS_TABLE . '
+    FROM group_access
     WHERE group_id IN (' . $group_id_string . ')
   ;';
         functions_mysqli::pwg_query($query);
@@ -2491,14 +2491,14 @@ class functions_admin
         // destruction of the users links for this group
         $query = '
   DELETE
-    FROM ' . USER_GROUP_TABLE . '
+    FROM user_group
     WHERE group_id IN (' . $group_id_string . ')
   ;';
         functions_mysqli::pwg_query($query);
 
         $query = '
   SELECT id, name
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id IN (' . $group_id_string . ')
   ;';
 
@@ -2508,7 +2508,7 @@ class functions_admin
         // destruction of the group
         $query = '
   DELETE
-    FROM `' . GROUPS_TABLE . '`
+    FROM `groups`
     WHERE id IN (' . $group_id_string . ')
   ;';
         functions_mysqli::pwg_query($query);
@@ -2531,7 +2531,7 @@ class functions_admin
 
         $query = '
   SELECT ' . $conf['user_fields']['username'] . '
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE ' . $conf['user_fields']['id'] . ' = ' . intval($user_id) . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -2739,7 +2739,7 @@ class functions_admin
 
         $query = '
   SELECT id
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $cat_ids) . ')
       AND status = \'private\'
   ;';
@@ -2760,7 +2760,7 @@ class functions_admin
         }
 
         functions_mysqli::mass_inserts(
-            USER_ACCESS_TABLE,
+            'user_access',
             ['user_id', 'cat_id'],
             $inserts,
             [
@@ -2786,7 +2786,7 @@ class functions_admin
         $query = '
   SELECT
       user_id
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE status in (\'' . implode("','", $status_list) . '\')
   ;';
 
@@ -2981,11 +2981,11 @@ class functions_admin
     public static function get_admin_client_cache_keys($requested = [])
     {
         $tables = [
-            'categories' => CATEGORIES_TABLE,
-            'groups' => GROUPS_TABLE,
-            'images' => IMAGES_TABLE,
-            'tags' => TAGS_TABLE,
-            'users' => USER_INFOS_TABLE,
+            'categories' => 'categories',
+            'groups' => 'groups',
+            'images' => 'images',
+            'tags' => 'tags',
+            'users' => 'user_infos',
         ];
 
         if (! is_array($requested)) {
@@ -3025,7 +3025,7 @@ class functions_admin
     {
         $query = '
   SELECT id
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE md5sum is null
   ;';
         return functions_mysqli::query2array($query, null, 'id');
@@ -3040,7 +3040,7 @@ class functions_admin
     {
         $query = '
   SELECT path
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (' . implode(', ', $ids) . ')
   ;';
         $paths = functions_mysqli::query2array($query, null, 'path');
@@ -3055,7 +3055,7 @@ class functions_admin
             ];
         }
         functions_mysqli::mass_updates(
-            IMAGES_TABLE,
+            'images',
             [
                 'primary' => ['id'],
                 'update' => ['md5sum'],
@@ -3073,14 +3073,14 @@ class functions_admin
             $query = '
   SELECT
       COUNT(*)
-    FROM ' . IMAGES_TABLE . '
+    FROM images
   ;';
             list($image_counter_all) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
             $query = '
   SELECT
       COUNT(DISTINCT(image_id))
-    FROM ' . IMAGE_CATEGORY_TABLE . '
+    FROM image_category
   ;';
             list($image_counter_in_categories) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
@@ -3102,15 +3102,15 @@ class functions_admin
         $query = '
   SELECT
       image_id
-    FROM ' . LOUNGE_TABLE . '
+    FROM lounge
   ;';
         $lounged_ids = functions_mysqli::query2array($query, null, 'image_id');
 
         $query = '
   SELECT
       id
-    FROM ' . IMAGES_TABLE . '
-      LEFT JOIN ' . IMAGE_CATEGORY_TABLE . ' ON id = image_id
+    FROM images
+      LEFT JOIN image_category ON id = image_id
     WHERE category_id is null';
 
         if (count($lounged_ids) > 0) {
@@ -3149,7 +3149,7 @@ class functions_admin
             'primary' => ['image_id', 'category_id'],
             'update' => ['rank'],
         ];
-        functions_mysqli::mass_updates(IMAGE_CATEGORY_TABLE, $fields, $datas);
+        functions_mysqli::mass_updates('image_category', $fields, $datas);
     }
 
     /**
@@ -3168,7 +3168,7 @@ class functions_admin
         }
 
         $query = '
-  UPDATE ' . IMAGES_TABLE . '
+  UPDATE images
     SET lastmodified = NOW()
     WHERE id IN (' . implode(',', $image_ids) . ')
   ;';
@@ -3218,7 +3218,7 @@ class functions_admin
 
         $query = '
   SELECT *
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id = ' . $image_id . '
   ;';
         $images = functions_mysqli::query2array($query);
@@ -3289,7 +3289,7 @@ class functions_admin
         $query = '
   SELECT
       id
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE date_available < \'2022-12-08 00:00:00\'
       AND path LIKE \'./upload/%\'
     LIMIT 5000
@@ -3301,7 +3301,7 @@ class functions_admin
         $query = '
   SELECT
       id
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     LIMIT 5000
   ;';
         $random_image_ids = functions_mysqli::query2array($query, null, 'id');
@@ -3318,7 +3318,7 @@ class functions_admin
   SELECT
       id,
       path
-    FROM ' . IMAGES_TABLE . '
+    FROM images
     WHERE id IN (' . implode(',', $fs_quick_check_ids) . ')
   ;';
         $fsqc_paths = functions_mysqli::query2array($query, 'id', 'path');

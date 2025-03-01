@@ -485,7 +485,7 @@ class functions
     {
         $query = '
   SELECT id, name
-    FROM ' . LANGUAGES_TABLE . '
+    FROM languages
     ORDER BY name ASC
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -543,7 +543,7 @@ class functions
 
         if ($update_last_visit) {
             $query = '
-  UPDATE ' . USER_INFOS_TABLE . '
+  UPDATE user_infos
     SET last_visit = NOW(),
         lastmodified = lastmodified
     WHERE user_id = ' . $user['id'] . '
@@ -581,7 +581,7 @@ class functions
         if (isset($page['section'])) {
             // set cache if not available
             if (! isset($conf['history_sections_cache'])) {
-                self::conf_update_param('history_sections_cache', functions_mysqli::get_enums(HISTORY_TABLE, 'section'), true);
+                self::conf_update_param('history_sections_cache', functions_mysqli::get_enums('history', 'section'), true);
             }
 
             $conf['history_sections_cache'] = self::safe_unserialize($conf['history_sections_cache']);
@@ -592,21 +592,21 @@ class functions
             ) {
                 $section = $page['section'];
             } elseif (preg_match('/^[a-zA-Z0-9_-]+$/', $page['section'])) {
-                $history_sections = functions_mysqli::get_enums(HISTORY_TABLE, 'section');
+                $history_sections = functions_mysqli::get_enums('history', 'section');
                 $history_sections[] = $page['section'];
 
                 // alter history table structure, to include a new section
-                functions_mysqli::pwg_query('ALTER TABLE ' . HISTORY_TABLE . ' CHANGE section section enum(\'' . implode("','", array_unique($history_sections)) . '\') DEFAULT NULL;');
+                functions_mysqli::pwg_query('ALTER TABLE history CHANGE section section enum(\'' . implode("','", array_unique($history_sections)) . '\') DEFAULT NULL;');
 
                 // and refresh cache
-                self::conf_update_param('history_sections_cache', functions_mysqli::get_enums(HISTORY_TABLE, 'section'), true);
+                self::conf_update_param('history_sections_cache', functions_mysqli::get_enums('history', 'section'), true);
 
                 $section = $page['section'];
             }
         }
 
         $query = '
-  INSERT INTO ' . HISTORY_TABLE . '
+  INSERT INTO history
     (
       date,
       time,
@@ -639,7 +639,7 @@ class functions
   ;';
         functions_mysqli::pwg_query($query);
 
-        $history_id = functions_mysqli::pwg_db_insert_id(HISTORY_TABLE);
+        $history_id = functions_mysqli::pwg_db_insert_id('history');
         if ($history_id % 1000 == 0) {
             include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_history.php');
             functions_history::history_summarize(50000);
@@ -734,7 +734,7 @@ class functions
             ];
         }
 
-        functions_mysqli::mass_inserts(ACTIVITY_TABLE, array_keys($inserts[0]), $inserts);
+        functions_mysqli::mass_inserts('activity', array_keys($inserts[0]), $inserts);
     }
 
     /**
@@ -1177,7 +1177,7 @@ class functions
   SELECT
       id,
       name
-    FROM ' . THEMES_TABLE . '
+    FROM themes
     ORDER BY name ASC
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -1268,7 +1268,7 @@ class functions
 
         $query = '
   SELECT element_id
-    FROM ' . CADDIE_TABLE . '
+    FROM caddie
     WHERE user_id = ' . $user['id'] . '
   ;';
         $in_caddie = functions_mysqli::query2array($query, null, 'element_id');
@@ -1285,7 +1285,7 @@ class functions
         }
 
         if (count($caddiables) > 0) {
-            functions_mysqli::mass_inserts(CADDIE_TABLE, ['element_id', 'user_id'], $datas);
+            functions_mysqli::mass_inserts('caddie', ['element_id', 'user_id'], $datas);
         }
     }
 
@@ -1426,7 +1426,7 @@ class functions
 
         $query = '
   SELECT ' . $conf['user_fields']['email'] . '
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE ' . $conf['user_fields']['id'] . ' = ' . $conf['webmaster_id'] . '
   ;';
         list($email) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -1447,7 +1447,7 @@ class functions
 
         $query = '
   SELECT param, value
-  FROM ' . CONFIG_TABLE . '
+  FROM config
   ' . (! empty($condition) ? 'WHERE ' . $condition : '') . '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -1481,7 +1481,7 @@ class functions
         list($param, $value) = ['pwg_is_dbconf_writeable_' . functions_session::generate_key(12), date('c') . ' ' . functions_session::generate_key(20)];
 
         self::conf_update_param($param, $value);
-        list($dbvalue) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT value FROM ' . CONFIG_TABLE . ' WHERE param = \'' . $param . '\''));
+        list($dbvalue) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT value FROM config WHERE param = \'' . $param . '\''));
 
         if ($dbvalue != $value) {
             return false;
@@ -1512,7 +1512,7 @@ class functions
 
         $query = '
   INSERT INTO
-    ' . CONFIG_TABLE . ' (param, value)
+    config (param, value)
     VALUES(\'' . $param . '\', \'' . $dbValue . '\')
     ON DUPLICATE KEY UPDATE value = \'' . $dbValue . '\'
   ;';
@@ -1542,7 +1542,7 @@ class functions
         }
 
         $query = '
-  DELETE FROM ' . CONFIG_TABLE . '
+  DELETE FROM config
     WHERE param IN(\'' . implode('\',\'', $params) . '\')
   ;';
         functions_mysqli::pwg_query($query);
@@ -2273,15 +2273,15 @@ class functions
 
             $query = '
   SELECT COUNT(DISTINCT(com.id))
-    FROM ' . IMAGE_CATEGORY_TABLE . ' AS ic
-      INNER JOIN ' . COMMENTS_TABLE . ' AS com
+    FROM image_category AS ic
+      INNER JOIN comments AS com
       ON ic.image_id = com.image_id
     WHERE ' . implode('
       AND ', $where);
             list($user['nb_available_comments']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
             functions_mysqli::single_update(
-                USER_CACHE_TABLE,
+                'user_cache',
                 [
                     'nb_available_comments' => $user['nb_available_comments'],
                 ],
@@ -2343,8 +2343,8 @@ class functions
       image_id,
       date_available,
       NOW() AS dbnow
-    FROM ' . LOUNGE_TABLE . '
-      JOIN ' . IMAGES_TABLE . ' ON image_id = id
+    FROM lounge
+      JOIN images ON image_id = id
     ORDER BY image_id ASC
     LIMIT 1
   ;';
@@ -2447,8 +2447,8 @@ class functions
   SELECT
       category_id,
       ' . $minmax . '(' . $field . ') as ref_date
-    FROM ' . IMAGE_CATEGORY_TABLE . '
-      JOIN ' . IMAGES_TABLE . ' ON image_id = id
+    FROM image_category
+      JOIN images ON image_id = id
     WHERE category_id IN (' . implode(',', $category_ids) . ')
     GROUP BY category_id
   ;';
@@ -2460,7 +2460,7 @@ class functions
   SELECT
       id,
       uppercats
-    FROM ' . CATEGORIES_TABLE . '
+    FROM categories
     WHERE id IN (' . implode(',', $category_ids) . ')
   ;';
         $uppercats_of = functions_mysqli::query2array($query, 'id', 'uppercats');
@@ -2528,7 +2528,7 @@ class functions
             $uppercats = $page['plain_structure'][$category_id]['uppercats'];
         } else {
             $query = 'SELECT uppercats';
-            $query .= ' FROM ' . CATEGORIES_TABLE . ' WHERE id = ' . $category_id;
+            $query .= ' FROM categories WHERE id = ' . $category_id;
             $query .= ';';
             $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
             $uppercats = $row['uppercats'];
@@ -2538,7 +2538,7 @@ class functions
 
         $database_dirs = [];
         $query = 'SELECT id,dir';
-        $query .= ' FROM ' . CATEGORIES_TABLE . ' WHERE id IN (' . $uppercats . ')';
+        $query .= ' FROM categories WHERE id IN (' . $uppercats . ')';
         $query .= ';';
         $result = functions_mysqli::pwg_query($query);
         while($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
@@ -2559,7 +2559,7 @@ class functions
 
         $query = '
   SELECT galleries_url
-    FROM ' . SITES_TABLE . ' AS s,' . CATEGORIES_TABLE . ' AS c
+    FROM sites AS s,categories AS c
     WHERE s.id = c.site_id
       AND c.id = ' . $category_id . '
   ;';
@@ -2661,7 +2661,7 @@ class functions
         // Set null mail_address empty
         $query = '
   update
-    ' . USERS_TABLE . '
+    users
   set
     ' . $conf['user_fields']['email'] . ' = null
   where
@@ -2675,7 +2675,7 @@ class functions
     u.' . $conf['user_fields']['username'] . ' as username,
     u.' . $conf['user_fields']['email'] . ' as mail_address
   from
-    ' . USERS_TABLE . ' as u left join ' . USER_MAIL_NOTIFICATION_TABLE . ' as m on u.' . $conf['user_fields']['id'] . ' = m.user_id
+    users as u left join user_mail_notification as m on u.' . $conf['user_fields']['id'] . ' = m.user_id
   where
     u.' . $conf['user_fields']['email'] . ' is not null and
     m.user_id is null
@@ -2710,7 +2710,7 @@ class functions
             }
 
             // Insert new nbm_users
-            functions_mysqli::mass_inserts(USER_MAIL_NOTIFICATION_TABLE, ['user_id', 'check_key', 'enabled'], $inserts);
+            functions_mysqli::mass_inserts('user_mail_notification', ['user_id', 'check_key', 'enabled'], $inserts);
             // Update field enabled with specific function
             $check_key_treated = functions_notification_by_mail::do_subscribe_unsubscribe_notification_by_mail(
                 true,
@@ -2722,7 +2722,7 @@ class functions
             if ($env_nbm['is_sendmail_timeout']) {
                 $quoted_check_key_list = functions_notification_by_mail::quote_check_key_list(array_diff($check_key_list, $check_key_treated));
                 if (count($quoted_check_key_list) != 0) {
-                    $query = 'delete from ' . USER_MAIL_NOTIFICATION_TABLE . ' where check_key in (' . implode(',', $quoted_check_key_list) . ');';
+                    $query = 'delete from user_mail_notification where check_key in (' . implode(',', $quoted_check_key_list) . ');';
                     $result = functions_mysqli::pwg_query($query);
 
                     self::redirect($base_url . functions_url::get_query_string_diff([], false), self::l10n('Operation in progress') . "\n" . self::l10n('Please wait...'));
@@ -2936,7 +2936,7 @@ class functions
 
                     if ($is_action_send) {
                         functions_mysqli::mass_updates(
-                            USER_MAIL_NOTIFICATION_TABLE,
+                            'user_mail_notification',
                             [
                                 'primary' => ['user_id'],
                                 'update' => ['last_send'],
@@ -3059,7 +3059,7 @@ class functions
       day,
       hour,
       nb_pages
-    FROM ' . HISTORY_SUMMARY_TABLE;
+    FROM history_summary';
 
         if ($type === 'hour') {
             $query .= '
@@ -3126,7 +3126,7 @@ class functions
     day,
     hour,
     nb_pages
-  FROM ' . HISTORY_SUMMARY_TABLE . '
+  FROM history_summary
   WHERE month IS NOT NULL
     AND day IS NULL
   ORDER BY
@@ -3173,7 +3173,7 @@ class functions
     day,
     hour,
     nb_pages
-  FROM ' . HISTORY_SUMMARY_TABLE . '
+  FROM history_summary
   WHERE
     (
       (year = ' . $date->format('Y') . ' AND month = ' . $date->format('n') . ')
@@ -3216,7 +3216,7 @@ class functions
         $query = '
   SELECT
     AVG(nb_pages)
-  FROM ' . HISTORY_SUMMARY_TABLE . '
+  FROM history_summary
   WHERE
     (
     year = ' . $date->format('Y') . ' OR
@@ -3628,7 +3628,7 @@ class functions
             $key = functions_session::generate_key(50);
             $query = '
   SELECT COUNT(*)
-    FROM ' . USER_FEED_TABLE . '
+    FROM user_feed
     WHERE id = \'' . $key . '\'
   ;';
             list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -3687,7 +3687,7 @@ class functions
         list($expire) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT ADDDATE(NOW(), INTERVAL 1 HOUR)'));
 
         functions_mysqli::single_update(
-            USER_INFOS_TABLE,
+            'user_infos',
             [
                 'activation_key' => functions_user::pwg_password_hash($activation_key),
                 'activation_key_expire' => $expire,
@@ -3755,7 +3755,7 @@ class functions
         $query = '
   SELECT
     ' . $conf['user_fields']['id'] . ' AS id
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE ' . $conf['user_fields']['email'] . ' = \'' . functions_mysqli::pwg_db_real_escape_string($email) . '\'
   ;';
         $user_ids = functions_mysqli::query2array($query, null, 'id');
@@ -3774,7 +3774,7 @@ class functions
       activation_key,
       activation_key_expire,
       NOW() AS dbnow
-    FROM ' . USER_INFOS_TABLE . '
+    FROM user_infos
     WHERE user_id IN (' . implode(',', $user_ids) . ')
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -3829,7 +3829,7 @@ class functions
         }
 
         functions_mysqli::single_update(
-            USERS_TABLE,
+            'users',
             [
                 $conf['user_fields']['password'] => $conf['password_hash']($_POST['use_new_pwd']),
             ],
@@ -4675,7 +4675,7 @@ class functions
             if (! defined('IN_ADMIN')) {// changing password requires old password
                 $query = '
     SELECT ' . $conf['user_fields']['password'] . ' AS password
-      FROM ' . USERS_TABLE . '
+      FROM users
       WHERE ' . $conf['user_fields']['id'] . ' = \'' . $userdata['id'] . '\'
     ;';
                 list($current_password) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
@@ -4743,7 +4743,7 @@ class functions
                 }
 
                 functions_mysqli::mass_updates(
-                    USERS_TABLE,
+                    'users',
                     [
                         'primary' => [$conf['user_fields']['id']],
                         'update' => $fields,
@@ -4778,7 +4778,7 @@ class functions
                     }
                 }
                 functions_mysqli::mass_updates(
-                    USER_INFOS_TABLE,
+                    'user_infos',
                     [
                         'primary' => ['user_id'],
                         'update' => $fields,

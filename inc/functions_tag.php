@@ -24,7 +24,7 @@ class functions_tag
         if (! isset($user['nb_available_tags'])) {
             $user['nb_available_tags'] = count(self::get_available_tags());
             functions_mysqli::single_update(
-                USER_CACHE_TABLE,
+                'user_cache',
                 [
                     'nb_available_tags' => $user['nb_available_tags'],
                 ],
@@ -48,8 +48,8 @@ class functions_tag
         // we can find top fatter tags among reachable images
         $query = '
   SELECT tag_id, COUNT(DISTINCT(it.image_id)) AS counter
-    FROM ' . IMAGE_CATEGORY_TABLE . ' ic
-      INNER JOIN ' . IMAGE_TAG_TABLE . ' it
+    FROM image_category ic
+      INNER JOIN image_tag it
       ON ic.image_id=it.image_id
     WHERE 1=1
     ' . functions_user::get_sql_condition_FandF(
@@ -78,7 +78,7 @@ class functions_tag
 
         $query = '
   SELECT *
-    FROM ' . TAGS_TABLE;
+    FROM tags';
         $result = functions_mysqli::pwg_query($query);
 
         $tags = [];
@@ -102,7 +102,7 @@ class functions_tag
     {
         $query = '
   SELECT *
-    FROM ' . TAGS_TABLE . '
+    FROM tags
   ;';
         $result = functions_mysqli::pwg_query($query);
         $tags = [];
@@ -188,15 +188,15 @@ class functions_tag
 
         $query = '
   SELECT id
-    FROM ' . IMAGES_TABLE . ' i ';
+    FROM images i ';
 
         if ($use_permissions) {
             $query .= '
-      INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' ic ON id=ic.image_id';
+      INNER JOIN image_category ic ON id=ic.image_id';
         }
 
         $query .= '
-      INNER JOIN ' . IMAGE_TAG_TABLE . ' it ON id=it.image_id
+      INNER JOIN image_tag it ON id=it.image_id
       WHERE tag_id IN (' . implode(',', $tag_ids) . ')';
 
         if ($use_permissions) {
@@ -237,8 +237,8 @@ class functions_tag
         }
         $query = '
   SELECT t.*, count(*) AS counter
-    FROM ' . IMAGE_TAG_TABLE . '
-      INNER JOIN ' . TAGS_TABLE . ' t ON tag_id = id
+    FROM image_tag
+      INNER JOIN tags t ON tag_id = id
     WHERE image_id IN (' . implode(',', $items) . ')';
         if (! empty($excluded_tag_ids)) {
             $query .= '
@@ -292,7 +292,7 @@ class functions_tag
 
         $query = '
   SELECT *
-    FROM ' . TAGS_TABLE . '
+    FROM tags
     WHERE ' . implode('
       OR ', $where_clauses);
 

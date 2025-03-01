@@ -37,7 +37,7 @@ if (count($selection) > 0) {
 
     $query = '
 SELECT *
-  FROM ' . IMAGES_TABLE . '
+  FROM images
   WHERE id IN (' . implode(',', $selection) . ')
 ;';
     $result = functions_mysqli::pwg_query($query);
@@ -72,7 +72,7 @@ if (count($pictures) > 0) {
     if ($conf['activate_comments'] and $user['show_nb_comments']) {
         $query = '
 SELECT image_id, COUNT(*) AS nb_comments
-  FROM ' . COMMENTS_TABLE . '
+  FROM comments
   WHERE validated = \'true\'
     AND image_id IN (' . implode(',', $selection) . ')
   GROUP BY image_id

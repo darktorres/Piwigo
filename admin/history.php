@@ -33,7 +33,7 @@ if (! defined('PHPWG_ROOT_PATH')) {
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_admin.php');
 include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_history.php');
 
-$types = array_merge(['none'], functions_mysqli::get_enums(HISTORY_TABLE, 'image_type'));
+$types = array_merge(['none'], functions_mysqli::get_enums('history', 'image_type'));
 
 $display_thumbnails = [
     'no_display_thumbnail' => functions::l10n('No display'),
@@ -118,7 +118,7 @@ if ($form_param['user_id'] != '-1') {
     $query = '
   SELECT
       username
-    FROM ' . USERS_TABLE . '
+    FROM users
     WHERE id = ' . $form_param['user_id'] . '
   ;';
 
