@@ -1,63 +1,61 @@
 <?php
+
 /*gradients facebook '#3B5998','#2B4170' ; Google '#E64522','#C33219' ; Pinterest '#CB2027','#A0171C'*/
-$skin = array(
-	'BODY' => array(
-			// REQUIRED
-			'backgroundColor' 	=> '#fff',
-			// REQUIRED
-			'color' 						=> '#000',
-		),
-		
-	'A' => array(
-			// REQUIRED
-			'color' 						=> '#00f',
-		),
+$skin = [
+    'BODY' => [
+        // REQUIRED
+        'backgroundColor' => '#fff',
+        // REQUIRED
+        'color' => '#000',
+    ],
+    'A' => [
+        // REQUIRED
+        'color' => '#00f',
+    ],
+    'A:hover' => [
+        'color' => '#000',
+    ],
+    'menubar' => [
+        'backgroundColor' => '#C33219',
+        'gradient' => ['#E64522', '#C33219'],
+        'color' => '#bbb',
+        'link' => [
+            'color' => '#ddd',
+        ],
+        'linkHover' => [
+            'color' => '#fff',
+        ],
+    ],
+    'dropdowns' => [
+        // REQUIRED - cannot be transparent
+        'backgroundColor' => '#0f0',
+    ],
+    'pageTitle' => [
+        'backgroundColor' => '#2B4170',
+        'gradient' => ['#3B5998', '#2B4170'],
+        'color' => '#bbb',
+        'link' => [
+            'color' => '#ddd',
+        ],
+        'linkHover' => [
+            'color' => '#fff',
+        ],
+    ],
+    'pictureBar' => [
+        'backgroundColor' => '#ccc',
+    ],
+    'widePictureBar' => [
+        'backgroundColor' => '#dca',
+    ],
+    'pictureWideInfoTable' => [
+        'backgroundColor' => '#ccc',
+    ],
+    'comment' => [
+        'backgroundColor' => '#ccc',
+    ],
 
-	'A:hover' => array(
-			'color' 						=> '#000',
-		),
-
-	'menubar' => array(
-			'backgroundColor' 	=> '#C33219', 
-			'gradient' 					=> array('#E64522','#C33219'),
-			'color' 						=> '#bbb',
-			'link'							=> array( 'color' => '#ddd' ),
-			'linkHover'					=> array( 'color' => '#fff' ),
-		),
-
-	'dropdowns' => array(
-			// REQUIRED - cannot be transparent
-			'backgroundColor' 	=> '#0f0',
-		),
-
-	'pageTitle' => array(
-			'backgroundColor' 	=> '#2B4170', 
-			'gradient' 					=> array('#3B5998','#2B4170'),
-			'color' 						=> '#bbb',
-			'link'							=> array( 'color' => '#ddd' ),
-			'linkHover'					=> array( 'color' => '#fff' ),
-		),
-
-	'pictureBar' => array(
-			'backgroundColor' 	=> '#ccc',
-		),
-
-	'widePictureBar' => array(
-			'backgroundColor' 	=> '#dca',
-		),
-
-	'pictureWideInfoTable' => array(
-			'backgroundColor' 	=> '#ccc',
-		),
-
-	'comment' => array(
-			'backgroundColor' 	=> '#ccc',
-		),
-
-	// should be white or around white
-	'albumLegend' => array(
-			'color' 	=> '#fff',
-		),
-
-);
-?>
+    // should be white or around white
+    'albumLegend' => [
+        'color' => '#fff',
+    ],
+];

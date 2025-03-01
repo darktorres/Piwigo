@@ -34,7 +34,7 @@ return ECSConfig::configure()
         symplify: true
     )
     ->withRules([
-        DeclareStrictTypesFixer::class,
+        // DeclareStrictTypesFixer::class,
         NoTrailingWhitespaceInStringFixer::class,
         SingleLineEmptyBodyFixer::class,
         RandomApiMigrationFixer::class,
