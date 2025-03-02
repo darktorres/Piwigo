@@ -445,7 +445,7 @@ class functions_mysqli
      * @param array $dbfields - fields from $datas which will be used
      * @param array $datas
      * @param array{
-     *     ignore: bool // use "INSERT IGNORE"
+     *     ignore: bool
      * } $options
      */
     public static function mass_inserts($table_name, $dbfields, $datas, $options = [])
@@ -505,7 +505,7 @@ class functions_mysqli
      * @param string $table_name
      * @param array $data
      * @param array{
-     *     ignore: bool // use "INSERT IGNORE"
+     *     ignore: bool
      * } $options
      */
     public static function single_insert($table_name, $data, $options = [])

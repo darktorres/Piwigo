@@ -1106,8 +1106,8 @@ class pwg_images
      *     author?: string,
      *     date_creation?: string,
      *     comment?: string,
-     *     categories?: string,  // Format: "cat_id[,rank];cat_id[,rank]"
-     *     tags_ids?: string,    // Format: "tag_id,tag_id"
+     *     categories?: string,
+     *     tags_ids?: string,
      *     level: int,
      *     check_uniqueness: bool,
      *     image_id?: int
@@ -1254,13 +1254,13 @@ class pwg_images
      * API method
      * Adds a image (simple way)
      * @param array{
-     *     category: int[],          // List of category IDs
-     *     name?: string,            // The name (optional)
-     *     author?: string,          // The author (optional)
-     *     comment?: string,         // The comment (optional)
-     *     level: int,               // The level of the category
-     *     tags: string|string[],    // A single tag or an array of tags
-     *     image_id?: int            // Image ID (optional)
+     *     category: int[],
+     *     name?: string,
+     *     author?: string,
+     *     comment?: string,
+     *     level: int,
+     *     tags: string|string[],
+     *     image_id?: int
      * } $params
      */
     public static function ws_images_addSimple($params, $service)
@@ -1587,10 +1587,10 @@ class pwg_images
      * @param array{
      *     username: string,
      *     password: string,
-     *     chunk: int,           // number of the chunk
-     *     chunk_sum: string,    // MD5 sum of the chunk
-     *     chunks: int,          // total number of chunks for this image
-     *     original_sum: string, // MD5 sum of the final image
+     *     chunk: int,
+     *     chunk_sum: string,
+     *     chunks: int,
+     *     original_sum: string,
      *     category: int[],
      *     filename: string,
      *     name?: string,
@@ -1598,7 +1598,7 @@ class pwg_images
      *     comment?: string,
      *     date_creation?: string,
      *     level: int,
-     *     tag_ids?: string,     // "tag_id,tag_id"
+     *     tag_ids?: string,
      *     image_id?: int
      * } $params
      */
@@ -2153,8 +2153,8 @@ class pwg_images
      *     author?: string,
      *     date_creation?: string,
      *     comment?: string,
-     *     categories?: string, // "cat_id[,rank];cat_id[,rank]"
-     *     tags_ids?: string,   // "tag_id,tag_id"
+     *     categories?: string,
+     *     tags_ids?: string,
      *     level?: int,
      *     single_value_mode: string,
      *     multiple_value_mode: string

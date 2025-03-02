@@ -94,17 +94,17 @@ class PwgServer
      * @param string $methodName The name of the method as seen externally.
      * @param callable $callback PHP method to be invoked internally.
      * @param array{
-     *     default?: mixed,    // Optional default value for the parameter.
-     *     flags?: int,        // Optional flags (possible values: WS_PARAM_ALLOW_ARRAY, WS_PARAM_FORCE_ARRAY, WS_PARAM_OPTIONAL).
-     *     type?: int,         // Optional type (possible values: WS_TYPE_BOOL, WS_TYPE_INT, WS_TYPE_FLOAT, WS_TYPE_ID, WS_TYPE_POSITIVE, WS_TYPE_NOTNULL).
-     *     maxValue?: int|float // Optional maximum value (can be an int or float).
+     *     default?: mixed,
+     *     flags?: int,
+     *     type?: int,
+     *     maxValue?: int|float
      * } $params Map of allowed parameter names with options.
      * @param string $description A description of the method.
      * @param string $include_file A file to be included before the callback is executed.
      * @param array{
-     *     hidden?: bool,      // If true, this method won't be visible by reflection.getMethodList.
-     *     admin_only?: bool,  // If true, only admins can access this method.
-     *     post_only?: bool    // If true, only POST requests are allowed for this method.
+     *     hidden?: bool,
+     *     admin_only?: bool,
+     *     post_only?: bool
      * } $options Additional options for the method.
      */
     public function addMethod($methodName, $callback, $params = [], $description = '', $include_file = '', $options = [])

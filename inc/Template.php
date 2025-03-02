@@ -803,9 +803,9 @@ class Template
      *     type?: mixed,
      *     width: mixed,
      *     height: mixed,
-     *     crop?: mixed,       // used if type is empty
-     *     min_height?: mixed, // used with crop
-     *     min_height?: mixed  // used with crop
+     *     crop?: mixed,
+     *     min_height?: mixed,
+     *     min_height?: mixed
      * } $params
      * @param Smarty $smarty
      */
@@ -851,9 +851,9 @@ class Template
      * @param array{
      *     id: mixed,
      *     path: mixed,
-     *     load?: mixed,    // 'header', 'footer' or 'async'
-     *     require?: mixed, // comma separated list of script ids required to be loaded and executed before this one
-     *     version?: mixed  // used to force a browser refresh
+     *     load?: mixed,
+     *     require?: mixed,
+     *     version?: mixed
      * } $params
      */
     public function func_combine_script($params)
@@ -938,7 +938,7 @@ class Template
      * The "footer_script" block allows to add runtime script in the HTML page.
      *
      * @param array{
-     *     require?: mixed // comma separated list of script ids
+     *     require?: mixed
      * } $params
      * @param string $content
      */
@@ -959,11 +959,11 @@ class Template
      * The engine will combine several css files into a single one.
      *
      * @param array{
-     *     id?: mixed, // used to deal with multiple inclusions from plugins
+     *     id?: mixed,
      *     path: mixed,
-     *     version?: mixed, // used to force a browser refresh
+     *     version?: mixed,
      *     order?: mixed,
-     *     template?: mixed // set to true to allow smarty syntax in the css file
+     *     template?: mixed
      * } $params
      */
     public function func_combine_css($params)

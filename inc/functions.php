@@ -1754,11 +1754,11 @@ class functions
      * @param string $filename
      * @param string $dirname
      * @param array{
-     *     language: string,            // language to load
-     *     return: bool,                // if true the file content is returned
-     *     no_fallback: bool,           // if true do not load default language
-     *     force_fallback: bool|string, // force pre-loading of another language, default language if *true* or specified language
-     *     local: bool,                 // if true load file from local directory
+     *     language: string,
+     *     return: bool,
+     *     no_fallback: bool,
+     *     force_fallback: bool|string,
+     *     local: bool,
      * } $options
      * @return bool|string
      */

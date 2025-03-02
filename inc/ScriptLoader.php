@@ -171,7 +171,7 @@ class ScriptLoader
     /**
      * Returns combined scripts loaded in footer.
      *
-     * @return Combinable[]
+     * @return Combinable[][]
      * @throws SmartyException
      */
     public function get_footer_scripts()
