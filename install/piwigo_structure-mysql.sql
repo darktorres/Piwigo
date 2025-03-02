@@ -1,9 +1,3 @@
--- MySQL dump 9.11
---
--- Host: localhost    Database: pwg-bsf
--- ------------------------------------------------------
--- Server version	4.0.24_Debian-10-log
-
 --
 -- Table structure for table `activity`
 --
