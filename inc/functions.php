@@ -483,11 +483,11 @@ class functions
      */
     public static function get_languages()
     {
-        $query = '
-  SELECT id, name
-    FROM languages
-    ORDER BY name ASC
-  ;';
+        $query = <<<SQL
+            SELECT id, name
+            FROM languages
+            ORDER BY name ASC;
+            SQL;
         $result = functions_mysqli::pwg_query($query);
 
         $languages = [];
@@ -542,12 +542,11 @@ class functions
         $update_last_visit = functions_plugins::trigger_change('pwg_log_update_last_visit', $update_last_visit);
 
         if ($update_last_visit) {
-            $query = '
-  UPDATE user_infos
-    SET last_visit = NOW(),
-        lastmodified = lastmodified
-    WHERE user_id = ' . $user['id'] . '
-  ';
+            $query = <<<SQL
+                UPDATE user_infos
+                SET last_visit = NOW(), lastmodified = lastmodified
+                WHERE user_id = {$user['id']};
+                SQL;
             functions_mysqli::pwg_query($query);
         }
 
@@ -605,38 +604,21 @@ class functions
             }
         }
 
-        $query = '
-  INSERT INTO history
-    (
-      date,
-      time,
-      user_id,
-      IP,
-      section,
-      category_id,
-      search_id,
-      image_id,
-      image_type,
-      format_id,
-      auth_key_id,
-      tag_ids
-    )
-    VALUES
-    (
-      CURRENT_DATE,
-      CURRENT_TIME,
-      ' . $user['id'] . ',
-      \'' . $ip . '\',
-      ' . (isset($section) ? "'" . $section . "'" : 'NULL') . ',
-      ' . (isset($page['category']['id']) ? $page['category']['id'] : 'NULL') . ',
-      ' . (isset($page['search_id']) ? $page['search_id'] : 'NULL') . ',
-      ' . (isset($image_id) ? $image_id : 'NULL') . ',
-      ' . (isset($image_type) ? "'" . $image_type . "'" : 'NULL') . ',
-      ' . (isset($format_id) ? $format_id : 'NULL') . ',
-      ' . (isset($page['auth_key_id']) ? $page['auth_key_id'] : 'NULL') . ',
-      ' . (isset($tags_string) ? "'" . $tags_string . "'" : 'NULL') . '
-    )
-  ;';
+        $sectionValue = isset($section) ? "'{$section}'" : 'NULL';
+        $categoryIdValue = $page['category']['id'] ?? 'NULL';
+        $searchIdValue = $page['search_id'] ?? 'NULL';
+        $imageIdValue = $image_id ?? 'NULL';
+        $imageTypeValue = isset($image_type) ? "'{$image_type}'" : 'NULL';
+        $formatIdValue = $format_id ?? 'NULL';
+        $authKeyIdValue = $page['auth_key_id'] ?? 'NULL';
+        $tagsStringValue = isset($tags_string) ? "'{$tags_string}'" : 'NULL';
+        $query = <<<SQL
+            INSERT INTO history
+                (date, time, user_id, IP, section, category_id, search_id, image_id, image_type, format_id, auth_key_id, tag_ids)
+            VALUES
+                (CURRENT_DATE, CURRENT_TIME, {$user['id']}, '{$ip}', {$sectionValue}, {$categoryIdValue}, {$searchIdValue},
+                {$imageIdValue}, {$imageTypeValue}, {$formatIdValue}, {$authKeyIdValue}, {$tagsStringValue});
+            SQL;
         functions_mysqli::pwg_query($query);
 
         $history_id = functions_mysqli::pwg_db_insert_id('history');
@@ -1173,13 +1155,11 @@ class functions
 
         $themes = [];
 
-        $query = '
-  SELECT
-      id,
-      name
-    FROM themes
-    ORDER BY name ASC
-  ;';
+        $query = <<<SQL
+            SELECT id, name
+            FROM themes
+            ORDER BY name ASC;
+            SQL;
         $result = functions_mysqli::pwg_query($query);
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
             if ($row['id'] == $conf['mobile_theme']) {
@@ -1266,11 +1246,11 @@ class functions
     {
         global $user;
 
-        $query = '
-  SELECT element_id
-    FROM caddie
-    WHERE user_id = ' . $user['id'] . '
-  ;';
+        $query = <<<SQL
+            SELECT element_id
+            FROM caddie
+            WHERE user_id = {$user['id']};
+            SQL;
         $in_caddie = functions_mysqli::query2array($query, null, 'element_id');
 
         $caddiables = array_diff($elements_id, $in_caddie);
@@ -1424,11 +1404,11 @@ class functions
     {
         global $conf;
 
-        $query = '
-  SELECT ' . $conf['user_fields']['email'] . '
-    FROM users
-    WHERE ' . $conf['user_fields']['id'] . ' = ' . $conf['webmaster_id'] . '
-  ;';
+        $query = <<<SQL
+            SELECT {$conf['user_fields']['email']}
+            FROM users
+            WHERE {$conf['user_fields']['id']} = {$conf['webmaster_id']};
+            SQL;
         list($email) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
         $email = functions_plugins::trigger_change('get_webmaster_mail_address', $email);
@@ -1445,11 +1425,12 @@ class functions
     {
         global $conf;
 
-        $query = '
-  SELECT param, value
-  FROM config
-  ' . (! empty($condition) ? 'WHERE ' . $condition : '') . '
-  ;';
+        $condition = ! empty($condition) ? 'WHERE ' . $condition : '';
+        $query = <<<SQL
+            SELECT param, value
+            FROM config
+            {$condition};
+            SQL;
         $result = functions_mysqli::pwg_query($query);
 
         if ((functions_mysqli::pwg_db_num_rows($result) == 0) and ! empty($condition)) {
@@ -1510,12 +1491,14 @@ class functions
             $dbValue = functions_mysqli::boolean_to_string($value);
         }
 
-        $query = '
-  INSERT INTO
-    config (param, value)
-    VALUES(\'' . $param . '\', \'' . $dbValue . '\')
-    ON DUPLICATE KEY UPDATE value = \'' . $dbValue . '\'
-  ;';
+        $query = <<<SQL
+            INSERT INTO config
+                (param, value)
+            VALUES
+                ('{$param}', '{$dbValue}')
+            ON DUPLICATE KEY UPDATE
+                value = '{$dbValue}';
+            SQL;
 
         functions_mysqli::pwg_query($query);
 
@@ -1541,10 +1524,11 @@ class functions
             return;
         }
 
-        $query = '
-  DELETE FROM config
-    WHERE param IN(\'' . implode('\',\'', $params) . '\')
-  ;';
+        $implodedParams = implode("','", $params);
+        $query = <<<SQL
+            DELETE FROM config
+            WHERE param IN ('{$implodedParams}');
+            SQL;
         functions_mysqli::pwg_query($query);
 
         foreach ($params as $param) {
@@ -2271,13 +2255,13 @@ class functions
                 true
             );
 
-            $query = '
-  SELECT COUNT(DISTINCT(com.id))
-    FROM image_category AS ic
-      INNER JOIN comments AS com
-      ON ic.image_id = com.image_id
-    WHERE ' . implode('
-      AND ', $where);
+            $whereClause = implode(' AND ', $where);
+            $query = <<<SQL
+                SELECT COUNT(DISTINCT(com.id))
+                FROM image_category AS ic
+                INNER JOIN comments AS com ON ic.image_id = com.image_id
+                WHERE {$whereClause};
+                SQL;
             list($user['nb_available_comments']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
             functions_mysqli::single_update(
@@ -2338,16 +2322,13 @@ class functions
         }
 
         // is the oldest photo in the lounge older than lounge maximum waiting time?
-        $query = '
-  SELECT
-      image_id,
-      date_available,
-      NOW() AS dbnow
-    FROM lounge
-      JOIN images ON image_id = id
-    ORDER BY image_id ASC
-    LIMIT 1
-  ;';
+        $query = <<<SQL
+            SELECT image_id, date_available, NOW() AS dbnow
+            FROM lounge
+            JOIN images ON image_id = id
+            ORDER BY image_id ASC
+            LIMIT 1;
+            SQL;
         $voyagers = functions_mysqli::query2array($query);
         if (count($voyagers)) {
             $voyager = $voyagers[0];
@@ -2443,26 +2424,24 @@ class functions
         $category_ids = functions_category::get_subcat_ids($ids);
 
         // search for the reference date of each album
-        $query = '
-  SELECT
-      category_id,
-      ' . $minmax . '(' . $field . ') as ref_date
-    FROM image_category
-      JOIN images ON image_id = id
-    WHERE category_id IN (' . implode(',', $category_ids) . ')
-    GROUP BY category_id
-  ;';
+        $category_ids_str = implode(',', $category_ids);
+        $query = <<<SQL
+            SELECT category_id, {$minmax}({$field}) AS ref_date
+            FROM image_category
+            JOIN images ON image_id = id
+            WHERE category_id IN ({$category_ids_str})
+            GROUP BY category_id;
+            SQL;
         $ref_dates = functions_mysqli::query2array($query, 'category_id', 'ref_date');
 
         // the iterate on all albums (having a ref_date or not) to find the
         // reference_date, with a search on sub-albums
-        $query = '
-  SELECT
-      id,
-      uppercats
-    FROM categories
-    WHERE id IN (' . implode(',', $category_ids) . ')
-  ;';
+        $category_ids_str = implode(',', $category_ids);
+        $query = <<<SQL
+            SELECT id, uppercats
+            FROM categories
+            WHERE id IN ({$category_ids_str});
+            SQL;
         $uppercats_of = functions_mysqli::query2array($query, 'id', 'uppercats');
 
         foreach (array_keys($uppercats_of) as $cat_id) {
@@ -2527,9 +2506,11 @@ class functions
         if (isset($page['plain_structure'][$category_id]['uppercats'])) {
             $uppercats = $page['plain_structure'][$category_id]['uppercats'];
         } else {
-            $query = 'SELECT uppercats';
-            $query .= ' FROM categories WHERE id = ' . $category_id;
-            $query .= ';';
+            $query = <<<SQL
+                SELECT uppercats
+                FROM categories
+                WHERE id = {$category_id};
+                SQL;
             $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
             $uppercats = $row['uppercats'];
         }
@@ -2537,9 +2518,11 @@ class functions
         $upper_array = explode(',', $uppercats);
 
         $database_dirs = [];
-        $query = 'SELECT id,dir';
-        $query .= ' FROM categories WHERE id IN (' . $uppercats . ')';
-        $query .= ';';
+        $query = <<<SQL
+            SELECT id, dir
+            FROM categories
+            WHERE id IN ({$uppercats});
+            SQL;
         $result = functions_mysqli::pwg_query($query);
         while($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
             $database_dirs[$row['id']] = $row['dir'];
@@ -2557,12 +2540,12 @@ class functions
     {
         global $page;
 
-        $query = '
-  SELECT galleries_url
-    FROM sites AS s,categories AS c
-    WHERE s.id = c.site_id
-      AND c.id = ' . $category_id . '
-  ;';
+        $query = <<<SQL
+            SELECT galleries_url
+            FROM sites AS s, categories AS c
+            WHERE s.id = c.site_id
+                AND c.id = {$category_id};
+            SQL;
         $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
         return $row['galleries_url'];
     }
@@ -2659,28 +2642,22 @@ class functions
         global $conf, $page, $env_nbm;
 
         // Set null mail_address empty
-        $query = '
-  update
-    users
-  set
-    ' . $conf['user_fields']['email'] . ' = null
-  where
-    trim(' . $conf['user_fields']['email'] . ') = \'\';';
+        $query = <<<SQL
+            UPDATE users
+            SET {$conf['user_fields']['email']} = NULL
+            WHERE TRIM({$conf['user_fields']['email']}) = '';
+            SQL;
         functions_mysqli::pwg_query($query);
 
         // null mail_address are not selected in the list
-        $query = '
-  select
-    u.' . $conf['user_fields']['id'] . ' as user_id,
-    u.' . $conf['user_fields']['username'] . ' as username,
-    u.' . $conf['user_fields']['email'] . ' as mail_address
-  from
-    users as u left join user_mail_notification as m on u.' . $conf['user_fields']['id'] . ' = m.user_id
-  where
-    u.' . $conf['user_fields']['email'] . ' is not null and
-    m.user_id is null
-  order by
-    user_id;';
+        $query = <<<SQL
+            SELECT u.{$conf['user_fields']['id']} AS user_id, u.{$conf['user_fields']['username']} AS username, u.{$conf['user_fields']['email']} AS mail_address
+            FROM users AS u
+            LEFT JOIN user_mail_notification AS m ON u.{$conf['user_fields']['id']} = m.user_id
+            WHERE u.{$conf['user_fields']['email']} IS NOT NULL
+                AND m.user_id IS NULL
+            ORDER BY user_id;
+            SQL;
 
         $result = functions_mysqli::pwg_query($query);
 
@@ -2722,7 +2699,11 @@ class functions
             if ($env_nbm['is_sendmail_timeout']) {
                 $quoted_check_key_list = functions_notification_by_mail::quote_check_key_list(array_diff($check_key_list, $check_key_treated));
                 if (count($quoted_check_key_list) != 0) {
-                    $query = 'delete from user_mail_notification where check_key in (' . implode(',', $quoted_check_key_list) . ');';
+                    $imploded_check_key_list = implode(',', $quoted_check_key_list);
+                    $query = <<<SQL
+                        DELETE FROM user_mail_notification
+                        WHERE check_key IN ({$imploded_check_key_list});
+                        SQL;
                     $result = functions_mysqli::pwg_query($query);
 
                     self::redirect($base_url . functions_url::get_query_string_diff([], false), self::l10n('Operation in progress') . "\n" . self::l10n('Please wait...'));
@@ -3052,59 +3033,52 @@ class functions
     //Get the last unit of time for years, months, days and hours
     public static function get_last($last_number = 60, $type = 'year')
     {
-        $query = '
-  SELECT
-      year,
-      month,
-      day,
-      hour,
-      nb_pages
-    FROM history_summary';
+        $query = <<<SQL
+            SELECT year, month, day, hour, nb_pages
+            FROM history_summary
+
+            SQL;
 
         if ($type === 'hour') {
-            $query .= '
-    WHERE year IS NOT NULL
-      AND month IS NOT NULL
-      AND day IS NOT NULL
-      AND hour IS NOT NULL
-    ORDER BY
-      year DESC,
-      month DESC,
-      day DESC,
-      hour DESC
-    LIMIT ' . $last_number . '
-  ;';
+            $query .= <<<SQL
+                WHERE year IS NOT NULL
+                    AND month IS NOT NULL
+                    AND day IS NOT NULL
+                    AND hour IS NOT NULL
+                ORDER BY year DESC, month DESC, day DESC, hour DESC
+                LIMIT {$last_number}
+
+                SQL;
         } elseif ($type === 'day') {
-            $query .= '
-    WHERE year IS NOT NULL
-      AND month IS NOT NULL
-      AND day IS NOT NULL
-      AND hour IS NULL
-    ORDER BY
-      year DESC,
-      month DESC,
-      day DESC
-    LIMIT ' . $last_number . '
-  ;';
+            $query .= <<<SQL
+                WHERE year IS NOT NULL
+                    AND month IS NOT NULL
+                    AND day IS NOT NULL
+                    AND hour IS NULL
+                ORDER BY year DESC, month DESC, day DESC
+                LIMIT {$last_number}
+
+                SQL;
         } elseif ($type === 'month') {
-            $query .= '
-    WHERE year IS NOT NULL
-      AND month IS NOT NULL
-      AND day IS NULL
-    ORDER BY
-      year DESC,
-      month DESC
-    LIMIT ' . $last_number . '
-  ;';
+            $query .= <<<SQL
+                WHERE year IS NOT NULL
+                    AND month IS NOT NULL
+                    AND day IS NULL
+                ORDER BY year DESC, month DESC
+                LIMIT {$last_number}
+
+                SQL;
         } else {
-            $query .= '
-    WHERE year IS NOT NULL
-      AND month IS NULL
-    ORDER BY
-      year DESC
-    LIMIT ' . $last_number . '
-  ;';
+            $query .= <<<SQL
+                WHERE year IS NOT NULL
+                    AND month IS NULL
+                ORDER BY year DESC
+                LIMIT {$last_number}
+
+                SQL;
         }
+
+        $query .= ';';
 
         $result = functions_mysqli::pwg_query($query);
 
@@ -3119,25 +3093,19 @@ class functions
     public static function get_month_of_last_years($last = 'all')
     {
 
-        $query = '
-  SELECT
-    year,
-    month,
-    day,
-    hour,
-    nb_pages
-  FROM history_summary
-  WHERE month IS NOT NULL
-    AND day IS NULL
-  ORDER BY
-    year DESC,
-    month DESC';
+        $query = <<<SQL
+            SELECT year, month, day, hour, nb_pages
+            FROM history_summary
+            WHERE month IS NOT NULL
+                AND day IS NULL
+            ORDER BY year DESC, month DESC
+
+            SQL;
 
         if ($last !== 'all') {
             $date = new DateTime();
             $limit = ($last - 1) * 12 + $date->format('n') - 1;
-            $query .=
-  ' LIMIT ' . $limit;
+            $query .= " LIMIT {$limit}\n";
             $result = functions_mysqli::query2array($query . ';');
             $lastDate = $date->sub(new DateInterval('P' . ($last - 1) . 'Y' . ($date->format('n') - 1) . 'M'));
             return self::set_missing_values('month', $result, $lastDate, new DateTime());
@@ -3166,26 +3134,19 @@ class functions
 
         $date_last_month->sub(new DateInterval('P1M'));
         $date_last_year->sub(new DateInterval('P1Y'));
-        $query = '
-  SELECT
-    year,
-    month,
-    day,
-    hour,
-    nb_pages
-  FROM history_summary
-  WHERE
-    (
-      (year = ' . $date->format('Y') . ' AND month = ' . $date->format('n') . ')
-      OR (year = ' . $date_last_month->format('Y') . ' AND month = ' . $date_last_month->format('n') . ')
-      OR (year = ' . $date_last_year->format('Y') . ' AND month = ' . $date_last_year->format('n') . ')
-    )
-    AND day IS NOT NULL
-    AND hour IS NULL
-  ORDER BY
-    year DESC,
-    month DESC
-  ;';
+        $query = <<<SQL
+            SELECT year, month, day, hour, nb_pages
+            FROM history_summary
+            WHERE
+            (
+                (year = {$date->format('Y')} AND month = {$date->format('n')})
+                OR (year = {$date_last_month->format('Y')} AND month = {$date_last_month->format('n')})
+                OR (year = {$date_last_year->format('Y')} AND month = {$date_last_year->format('n')})
+            )
+                AND day IS NOT NULL
+                AND hour IS NULL
+            ORDER BY year DESC, month DESC;
+            SQL;
 
         foreach (functions_mysqli::query2array($query) as $value) {
             $date = self::get_date_object($value);
@@ -3213,21 +3174,18 @@ class functions
             $result['month'][] = self::set_missing_values('day', $val, new DateTime($key), $lastDate);
         }
 
-        $query = '
-  SELECT
-    AVG(nb_pages)
-  FROM history_summary
-  WHERE
-    (
-    year = ' . $date->format('Y') . ' OR
-    (year = ' . ($date->format('Y') - 1) . ' and month > ' . $date->format('n') . ')
-    )
-    AND day IS NOT NULL
-    AND hour IS NULL
-  ORDER BY
-    year DESC,
-    month DESC
-  ;';
+        $query = <<<SQL
+            SELECT AVG(nb_pages)
+            FROM history_summary
+            WHERE
+            (
+                year = {$date->format('Y')} OR
+                (year = ({$date->format('Y')} - 1) AND month > {$date->format('n')})
+            )
+                AND day IS NOT NULL
+                AND hour IS NULL
+            ORDER BY year DESC, month DESC;
+            SQL;
 
         list($result['avg']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
@@ -3626,11 +3584,11 @@ class functions
     {
         while (true) {
             $key = functions_session::generate_key(50);
-            $query = '
-  SELECT COUNT(*)
-    FROM user_feed
-    WHERE id = \'' . $key . '\'
-  ;';
+            $query = <<<SQL
+                SELECT COUNT(*)
+                FROM user_feed
+                WHERE id = '{$key}';
+                SQL;
             list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
             if ($count == 0) {
                 return $key;
@@ -3752,12 +3710,12 @@ class functions
 
         $user_ids = [];
 
-        $query = '
-  SELECT
-    ' . $conf['user_fields']['id'] . ' AS id
-    FROM users
-    WHERE ' . $conf['user_fields']['email'] . ' = \'' . functions_mysqli::pwg_db_real_escape_string($email) . '\'
-  ;';
+        $escaped_email = functions_mysqli::pwg_db_real_escape_string($email);
+        $query = <<<SQL
+            SELECT {$conf['user_fields']['id']} AS id
+            FROM users
+            WHERE {$conf['user_fields']['email']} = '{$escaped_email}';
+            SQL;
         $user_ids = functions_mysqli::query2array($query, null, 'id');
 
         if (count($user_ids) == 0) {
@@ -3767,16 +3725,12 @@ class functions
 
         $user_id = null;
 
-        $query = '
-  SELECT
-      user_id,
-      status,
-      activation_key,
-      activation_key_expire,
-      NOW() AS dbnow
-    FROM user_infos
-    WHERE user_id IN (' . implode(',', $user_ids) . ')
-  ;';
+        $imploded_user_ids = implode(',', $user_ids);
+        $query = <<<SQL
+            SELECT user_id, status, activation_key, activation_key_expire, NOW() AS dbnow
+            FROM user_infos
+            WHERE user_id IN ({$imploded_user_ids});
+            SQL;
         $result = functions_mysqli::pwg_query($query);
         while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
             if (functions_user::pwg_password_verify($key, $row['activation_key'])) {
@@ -4558,9 +4512,9 @@ class functions
     {
         $tables = [];
 
-        $query = '
-  SHOW TABLES
-  ;';
+        $query = <<<SQL
+            SHOW TABLES;
+            SQL;
         $result = functions_mysqli::pwg_query($query);
 
         while ($row = functions_mysqli::pwg_db_fetch_row($result)) {
@@ -4580,9 +4534,9 @@ class functions
         $columns_of = [];
 
         foreach ($tables as $table) {
-            $query = '
-  DESC `' . $table . '`
-  ;';
+            $query = <<<SQL
+                DESC {$table};
+                SQL;
             $result = functions_mysqli::pwg_query($query);
 
             $columns_of[$table] = [];
@@ -4673,11 +4627,11 @@ class functions
             }
 
             if (! defined('IN_ADMIN')) {// changing password requires old password
-                $query = '
-    SELECT ' . $conf['user_fields']['password'] . ' AS password
-      FROM users
-      WHERE ' . $conf['user_fields']['id'] . ' = \'' . $userdata['id'] . '\'
-    ;';
+                $query = <<<SQL
+                    SELECT {$conf['user_fields']['password']} AS password
+                    FROM users
+                    WHERE {$conf['user_fields']['id']} = '{$userdata['id']}';
+                    SQL;
                 list($current_password) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
                 if (! $conf['password_verify']($_POST['password'], $current_password)) {
