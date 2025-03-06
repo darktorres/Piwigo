@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
@@ -18,7 +19,7 @@ if( !defined("PHPWG_ROOT_PATH") )
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -68,7 +69,7 @@ else if (isset($_POST['trueify'])
          and isset($_POST['cat_false'])
          and count($_POST['cat_false']) > 0)
 {
-  $uppercats = \Piwigo\admin\inc\functions::get_uppercat_ids($_POST['cat_false']);
+  $uppercats = functions_admin::get_uppercat_ids($_POST['cat_false']);
   $private_uppercats = array();
 
   $query = '
@@ -111,7 +112,7 @@ SELECT cat_id
   }
 
   functions_mysqli::mass_inserts(GROUP_ACCESS_TABLE, array('group_id','cat_id'), $inserts);
-  \Piwigo\admin\inc\functions::invalidate_user_cache();
+  functions_admin::invalidate_user_cache();
 }
 
 // +-----------------------------------------------------------------------+
@@ -130,7 +131,7 @@ $template->assign(
     'TITLE' =>
       functions::l10n(
         'Manage permissions for group "%s"',
-        \Piwigo\admin\inc\functions::get_groupname($page['group'])
+        functions_admin::get_groupname($page['group'])
         ),
     'L_CAT_OPTIONS_TRUE'=>functions::l10n('Authorized'),
     'L_CAT_OPTIONS_FALSE'=>functions::l10n('Forbidden'),

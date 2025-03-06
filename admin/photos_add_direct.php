@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
@@ -99,7 +100,7 @@ if ($display_formats && $_GET['formats'])
 {
   functions::check_input_parameter('formats', $_GET, false, PATTERN_ID, false);
   
-  $formats_original_info = \Piwigo\admin\inc\functions::get_image_infos($_GET['formats']);
+  $formats_original_info = functions_admin::get_image_infos($_GET['formats']);
   if ($formats_original_info)
   {
     $src_image = new SrcImage($formats_original_info);

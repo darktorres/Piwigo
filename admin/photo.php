@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
@@ -29,7 +30,7 @@ functions::check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 $admin_photo_base_url = functions_url::get_root_url().'admin.php?page=photo-'.$_GET['image_id'];
 
 // retrieving direct information about picture
-$page['image'] = \Piwigo\admin\inc\functions::get_image_infos($_GET['image_id'], true);
+$page['image'] = functions_admin::get_image_infos($_GET['image_id'], true);
 
 if (isset($_GET['cat_id']))
 {

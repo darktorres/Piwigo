@@ -9,6 +9,7 @@
 namespace Piwigo\admin\inc;
 
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 
 class functions_permalinks
 {
@@ -20,7 +21,7 @@ class functions_permalinks
     $query ='
   SELECT id FROM '.CATEGORIES_TABLE.'
     WHERE permalink=\''.$permalink.'\'';
-    $ids = \Piwigo\inc\functions::array_from_query($query, 'id');
+    $ids = functions::array_from_query($query, 'id');
     if (!empty($ids))
     {
       return $ids[0];
@@ -78,7 +79,7 @@ class functions_permalinks
       {
         $page['errors'][] = 
           sprintf( 
-            \Piwigo\inc\functions::l10n('Permalink %s has been previously used by album %s. Delete from the permalink history first'),
+            functions::l10n('Permalink %s has been previously used by album %s. Delete from the permalink history first'),
             $permalink, $old_cat_id
           );
         return false;
@@ -131,7 +132,7 @@ class functions_permalinks
     if ( $sanitized_permalink != $permalink 
         or preg_match( '#^(\d)+(-.*)?$#', $permalink) )
     {
-      $page['errors'][] = '{'.$permalink.'} '.\Piwigo\inc\functions::l10n('The permalink name must be composed of a-z, A-Z, 0-9, "-", "_" or "/". It must not be numeric or start with number followed by "-"');
+      $page['errors'][] = '{'.$permalink.'} '. functions::l10n('The permalink name must be composed of a-z, A-Z, 0-9, "-", "_" or "/". It must not be numeric or start with number followed by "-"');
       return false;
     }
     
@@ -147,7 +148,7 @@ class functions_permalinks
       {
         $page['errors'][] = 
           sprintf( 
-            \Piwigo\inc\functions::l10n('Permalink %s is already used by album %s'),
+            functions::l10n('Permalink %s is already used by album %s'),
             $permalink, $existing_cat_id 
           );
         return false;
@@ -160,7 +161,7 @@ class functions_permalinks
     {
       $page['errors'][] = 
         sprintf( 
-          \Piwigo\inc\functions::l10n('Permalink %s has been previously used by album %s. Delete from the permalink history first'),
+          functions::l10n('Permalink %s has been previously used by album %s. Delete from the permalink history first'),
           $permalink, $old_cat_id
         );
       return false;

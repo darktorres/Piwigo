@@ -8,6 +8,7 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
@@ -146,11 +147,11 @@ class pwg_permissions
       return new PwgError(403, 'Invalid security token');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     if (!empty($params['group_id']))
     {
-      $cat_ids = \Piwigo\admin\inc\functions::get_uppercat_ids($params['cat_id']);
+      $cat_ids = functions_admin::get_uppercat_ids($params['cat_id']);
       if ($params['recursive'])
       {
         $cat_ids = array_merge($cat_ids, functions_category::get_subcat_ids($params['cat_id']));
@@ -187,7 +188,7 @@ class pwg_permissions
     if (!empty($params['user_id']))
     {
       if ($params['recursive']) $_POST['apply_on_sub'] = true;
-      \Piwigo\admin\inc\functions::add_permission_on_category($params['cat_id'], $params['user_id']);
+      functions_admin::add_permission_on_category($params['cat_id'], $params['user_id']);
     }
 
     return $service->invoke('pwg.permissions.getList', array('cat_id'=>$params['cat_id']));
@@ -208,7 +209,7 @@ class pwg_permissions
       return new PwgError(403, 'Invalid security token');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     $cat_ids = functions_category::get_subcat_ids($params['cat_id']);
 

@@ -11,6 +11,7 @@ namespace Piwigo\admin\inc;
 use Exception;
 use Piwigo\admin\inc\themes;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 
 class functions_upgrade
 {
@@ -97,7 +98,7 @@ class functions_upgrade
   ;';
       functions_mysqli::pwg_query($query);
 
-      $page['infos'][] = \Piwigo\inc\functions::l10n('As a precaution, following plugins have been deactivated. You must check for plugins upgrade before reactiving them:')
+      $page['infos'][] = functions::l10n('As a precaution, following plugins have been deactivated. You must check for plugins upgrade before reactiving them:')
                           .'<p><i>'.implode(', ', $plugins).'</i></p>';
     }
   }
@@ -138,7 +139,7 @@ class functions_upgrade
   ;';
       functions_mysqli::pwg_query($query);
 
-      $page['infos'][] = \Piwigo\inc\functions::l10n('As a precaution, following themes have been deactivated. You must check for themes upgrade before reactiving them:')
+      $page['infos'][] = functions::l10n('As a precaution, following themes have been deactivated. You must check for themes upgrade before reactiving them:')
                           .'<p><i>'.implode(', ', $theme_names).'</i></p>';
 
       // what is the default theme?
@@ -181,7 +182,7 @@ class functions_upgrade
   // Deactivate all templates
   static function deactivate_templates()
   {
-    \Piwigo\inc\functions::conf_update_param('extents_for_templates', array());
+    functions::conf_update_param('extents_for_templates', array());
   }
 
   // Check access rights
@@ -252,11 +253,11 @@ class functions_upgrade
 
     if (!$conf['password_verify']($password, $row['password']))
     {
-      $page['errors'][] = \Piwigo\inc\functions::l10n('Invalid password!');
+      $page['errors'][] = functions::l10n('Invalid password!');
     }
     elseif ($row['status'] != 'admin' and $row['status'] != 'webmaster')
     {
-      $page['errors'][] = \Piwigo\inc\functions::l10n('You do not have access rights to run upgrade');
+      $page['errors'][] = functions::l10n('You do not have access rights to run upgrade');
     }
     else
     {
@@ -303,7 +304,7 @@ class functions_upgrade
   SELECT id
     FROM '.UPGRADE_TABLE.'
   ;';
-    $applied = \Piwigo\inc\functions::array_from_query($query, 'id');
+    $applied = functions::array_from_query($query, 'id');
 
     // retrieve existing upgrades
     $existing = self::get_available_upgrade_ids();
@@ -324,7 +325,7 @@ class functions_upgrade
     }
     catch (Exception $e)
     {
-      functions_mysqli::my_error(\Piwigo\inc\functions::l10n($e->getMessage()), true); 
+      functions_mysqli::my_error(functions::l10n($e->getMessage()), true);
     }
   }
 }

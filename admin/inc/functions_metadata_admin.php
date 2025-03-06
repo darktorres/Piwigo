@@ -9,11 +9,13 @@
  namespace Piwigo\admin\inc;
 
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_metadata;
 
 include_once(PHPWG_ROOT_PATH.'/inc/functions_metadata.php');
 
 
-class functions_metadata
+class functions_metadata_admin
 {
   /**
    * Returns IPTC metadata to sync from a file, depending on IPTC mapping.
@@ -28,7 +30,7 @@ class functions_metadata
 
     $map = $conf['use_iptc_mapping'];
 
-    $iptc = \Piwigo\inc\functions_metadata::get_iptc_data($file, $map);
+    $iptc = functions_metadata::get_iptc_data($file, $map);
 
     foreach ($iptc as $pwg_key => $value)
     {
@@ -75,7 +77,7 @@ class functions_metadata
   {
     global $conf;
 
-    $exif = \Piwigo\inc\functions_metadata::get_exif_data($file, $conf['use_exif_mapping']);
+    $exif = functions_metadata::get_exif_data($file, $conf['use_exif_mapping']);
 
     foreach ($exif as $pwg_key => $value)
     {
@@ -180,7 +182,7 @@ class functions_metadata
         }
       }
 
-      $file = \Piwigo\inc\functions::original_to_representative($file, $infos['representative_ext']);
+      $file = functions::original_to_representative($file, $infos['representative_ext']);
     }
 
     if (function_exists('mime_content_type') && in_array(mime_content_type($file), array('image/svg+xml', 'image/svg')))
@@ -295,7 +297,7 @@ class functions_metadata
 
           foreach (explode(',', $data[$key]) as $tag_name)
           {
-            $tags_of[$id][] = functions::tag_id_from_tag_name($tag_name);
+            $tags_of[$id][] = functions_admin::tag_id_from_tag_name($tag_name);
           }
         }
       }
@@ -326,7 +328,7 @@ class functions_metadata
         );
     }
 
-    functions::set_tags_of($tags_of);
+    functions_admin::set_tags_of($tags_of);
   }
 
   /**
@@ -390,7 +392,7 @@ class functions_metadata
     }
     $query.= '
   ;';
-    return \Piwigo\inc\functions::hash_from_query($query, 'id');
+    return functions::hash_from_query($query, 'id');
   }
 
   /**

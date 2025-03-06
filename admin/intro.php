@@ -8,6 +8,7 @@
 
 use Piwigo\admin\inc\c13y_internal;
 use Piwigo\admin\inc\check_integrity;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
@@ -20,7 +21,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -64,7 +65,7 @@ $nb_orphans = $page['nb_orphans']; // already calculated in admin.php
 
 if ($page['nb_photos_total'] >= 100000) // but has not been calculated on a big gallery, so force it now
 {
-  $nb_orphans = \Piwigo\admin\inc\functions::count_orphans();
+  $nb_orphans = functions_admin::count_orphans();
 }
 
 if ($nb_orphans > 0)
@@ -96,7 +97,7 @@ if ($locked_album > 0)
   $page['warnings'][] = $message;
 }
 
-\Piwigo\admin\inc\functions::fs_quick_check();
+functions_admin::fs_quick_check();
 
 // +-----------------------------------------------------------------------+
 // |                             template init                             |
@@ -108,7 +109,7 @@ if ($conf['show_newsletter_subscription'] and functions_user::userprefs_get_para
   $template->assign(
     array(
       'EMAIL' => $user['email'],
-      'SUBSCRIBE_BASE_URL' => \Piwigo\admin\inc\functions::get_newsletter_subscribe_base_url($user['language']),
+      'SUBSCRIBE_BASE_URL' => functions_admin::get_newsletter_subscribe_base_url($user['language']),
       )
     );
 }
@@ -196,7 +197,7 @@ $template->assign(
     'NB_USERS' => $nb_users,
     'NB_GROUPS' => $nb_groups,
     'NB_RATES' => $nb_rates,
-    'NB_VIEWS' => \Piwigo\admin\inc\functions::number_format_human_readable($nb_views),
+    'NB_VIEWS' => functions_admin::number_format_human_readable($nb_views),
     'NB_PLUGINS' => count($pwg_loaded_plugins),
     'STORAGE_USED' => str_replace(' ', '&nbsp;', functions::l10n('%sGB', number_format($du_gb, $du_decimals))),
     'U_QUICK_SYNC' => PHPWG_ROOT_PATH.'admin.php?page=site_update&amp;site=1&amp;quick_sync=1&amp;pwg_token='.functions::get_pwg_token(),
@@ -218,7 +219,7 @@ SELECT COUNT(*)
 
 if ($conf['show_piwigo_latest_news'])
 {
-  $latest_news = \Piwigo\admin\inc\functions::get_piwigo_news();
+  $latest_news = functions_admin::get_piwigo_news();
 
   if (isset($latest_news['id']) and $latest_news['posted_on'] > time()-60*60*24*30)
   {

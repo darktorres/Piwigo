@@ -10,6 +10,7 @@ namespace Piwigo\admin\inc;
 
 use PclZip;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_mail;
 use Piwigo\inc\functions_url;
 use Piwigo\inc\functions_user;
@@ -52,7 +53,7 @@ class updates
     $_SESSION['need_update'.PHPWG_VERSION] = null;
 
     if (preg_match('/(\d+\.\d+)\.(\d+)/', PHPWG_VERSION, $matches)
-      and @functions::fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid(rand(), true)), $result))
+      and @functions_admin::fetchRemote(PHPWG_URL.'/download/all_versions.php?rand='.md5(uniqid(rand(), true)), $result))
     {
       $all_versions = @explode("\n", $result);
       $new_version = trim($all_versions[0]);
@@ -83,14 +84,14 @@ class updates
     if (preg_match('/^(\d+\.\d+)\.(\d+)$/', PHPWG_VERSION))
     {
       $new_versions['is_dev'] = false;
-      $actual_branch = \Piwigo\inc\functions::get_branch_from_version(PHPWG_VERSION);
+      $actual_branch = functions::get_branch_from_version(PHPWG_VERSION);
 
       $url = PHPWG_URL.'/download/all_versions.php';
       $url.= '?rand='.md5(uniqid(rand(), true)); // Avoid server cache
       $url.= '&show_requirements';
       $url.= '&origin_hash='.sha1($conf['secret_key'].functions_url::get_absolute_root_url());
 
-      if (@functions::fetchRemote($url, $result)
+      if (@functions_admin::fetchRemote($url, $result)
           and $all_versions = @explode("\n", $result)
           and is_array($all_versions))
       {
@@ -100,7 +101,7 @@ class updates
 
         if (version_compare(PHPWG_VERSION, $last_version_number, '<'))
         {
-          $last_branch = \Piwigo\inc\functions::get_branch_from_version($last_version_number);
+          $last_branch = functions::get_branch_from_version($last_version_number);
 
           if ($last_branch == $actual_branch)
           {
@@ -116,7 +117,7 @@ class updates
             foreach ($all_versions as $version)
             {
               list($version_number, $version_php) = explode('/', trim($version));
-              $branch = \Piwigo\inc\functions::get_branch_from_version($version_number);
+              $branch = functions::get_branch_from_version($version_number);
 
               if ($branch == $actual_branch)
               {
@@ -145,13 +146,13 @@ class updates
   {
     global $conf;
 
-    if (!\Piwigo\inc\functions::pwg_is_dbconf_writeable())
+    if (!functions::pwg_is_dbconf_writeable())
     {
       return;
     }
 
     $new_versions = $this->get_piwigo_new_versions();
-    \Piwigo\inc\functions::conf_update_param('update_notify_last_check', date('c'));
+    functions::conf_update_param('update_notify_last_check', date('c'));
 
     if ($new_versions['is_dev'])
     {
@@ -183,7 +184,7 @@ class updates
     }
     else
     {
-      $conf['update_notify_last_notification'] = \Piwigo\inc\functions::safe_unserialize($conf['update_notify_last_notification']);
+      $conf['update_notify_last_notification'] = functions::safe_unserialize($conf['update_notify_last_notification']);
       $last_notification = $conf['update_notify_last_notification']['notified_on'];
 
       if ($new_versions_string != $conf['update_notify_last_notification']['version'])
@@ -206,18 +207,18 @@ class updates
 
       functions_mail::switch_lang_to(functions_user::get_default_language());
 
-      $content = \Piwigo\inc\functions::l10n('Hello,');
-      $content.= "\n\n".\Piwigo\inc\functions::l10n(
+      $content = functions::l10n('Hello,');
+      $content.= "\n\n". functions::l10n(
         'Time has come to update your Piwigo with version %s, go to %s',
         $new_versions_string,
         functions_url::get_absolute_root_url().'admin.php?page=updates'
         );
-      $content.= "\n\n".\Piwigo\inc\functions::l10n('It only takes a few clicks.');
-      $content.= "\n\n".\Piwigo\inc\functions::l10n('Running on an up-to-date Piwigo is important for security.');
+      $content.= "\n\n". functions::l10n('It only takes a few clicks.');
+      $content.= "\n\n". functions::l10n('Running on an up-to-date Piwigo is important for security.');
 
       functions_mail::pwg_mail_admins(
         array(
-          'subject' => \Piwigo\inc\functions::l10n('Piwigo %s is available, please update', $new_versions_string),
+          'subject' => functions::l10n('Piwigo %s is available, please update', $new_versions_string),
           'content' => $content,
           'content_format' => 'text/plain',
           ),
@@ -231,7 +232,7 @@ class updates
       functions_mail::switch_lang_back();
 
       // save notify
-      \Piwigo\inc\functions::conf_update_param(
+      functions::conf_update_param(
         'update_notify_last_notification',
         array(
           'version' => $new_versions_string,
@@ -252,13 +253,13 @@ class updates
     // Retrieve PEM versions
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (functions::fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
+    if (functions_admin::fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
         $version = $pem_versions[0]['name'];
       }
-      $branch = \Piwigo\inc\functions::get_branch_from_version($version);
+      $branch = functions::get_branch_from_version($version);
       foreach ($pem_versions as $pem_version)
       {
         if (strpos($pem_version['name'], $branch) === 0)
@@ -302,7 +303,7 @@ class updates
       $post_data['extension_include'] = implode(',', array_keys($ext_to_check));
     }
 
-    if (functions::fetchRemote($url, $result, $get_data, $post_data))
+    if (functions_admin::fetchRemote($url, $result, $get_data, $post_data))
     {
       $pem_exts = @unserialize($result);
       if (!is_array($pem_exts))
@@ -370,7 +371,7 @@ class updates
         {
           $ext_info = $server_ext[$fs_ext['extension']];
 
-          if (!\Piwigo\inc\functions::safe_version_compare($fs_ext['version'], $ext_info['revision_name'], '>='))
+          if (!functions::safe_version_compare($fs_ext['version'], $ext_info['revision_name'], '>='))
           {
             if (in_array($ext_id, $conf['updates_ignored'][$type]))
             {
@@ -385,7 +386,7 @@ class updates
       }
       $conf['updates_ignored'][$type] = $ignore_list;
     }
-    \Piwigo\inc\functions::conf_update_param('updates_ignored', functions_mysqli::pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
+    functions::conf_update_param('updates_ignored', functions_mysqli::pwg_db_real_escape_string(serialize($conf['updates_ignored'])));
   }
 
   // Check if extension have been upgraded since last check
@@ -399,7 +400,7 @@ class updates
         foreach($this->$type->$fs as $ext_id => $fs_ext)
         {
           if (isset($_SESSION['extensions_need_update'][$type][$ext_id])
-            and \Piwigo\inc\functions::safe_version_compare($fs_ext['version'], $_SESSION['extensions_need_update'][$type][$ext_id], '>='))
+            and functions::safe_version_compare($fs_ext['version'], $_SESSION['extensions_need_update'][$type][$ext_id], '>='))
           {
             // Extension have been upgraded
             $this->check_extensions();
@@ -431,7 +432,7 @@ class updates
 
   function get_merged_extensions($version)
   {
-    if (functions::fetchRemote($this->merged_extension_url, $result))
+    if (functions_admin::fetchRemote($this->merged_extension_url, $result))
     {
       $rows = explode("\n", $result);
       foreach ($rows as $row)
@@ -464,7 +465,7 @@ class updates
         }
         elseif (is_dir($path))
         {
-          functions::deltree($path, PHPWG_ROOT_PATH.'_trash');
+          functions_admin::deltree($path, PHPWG_ROOT_PATH.'_trash');
         }
       }
     }
@@ -478,14 +479,14 @@ class updates
     {
       // TODO why redirect to a plugin page? maybe a remaining code from when
       // the update system was provided as a plugin?
-      \Piwigo\inc\functions::redirect(functions_url::get_root_url().'admin.php?page=plugin-'.basename(dirname(__FILE__)));
+      functions::redirect(functions_url::get_root_url().'admin.php?page=plugin-'.basename(dirname(__FILE__)));
     }
 
     $obsolete_list = null;
 
     if ($step == 2)
     {
-      $code = \Piwigo\inc\functions::get_branch_from_version(PHPWG_VERSION).'.x_to_'.$upgrade_to;
+      $code = functions::get_branch_from_version(PHPWG_VERSION).'.x_to_'.$upgrade_to;
       $dl_code = str_replace(array('.', '_'), '', $code);
       $remove_path = $code;
       // no longer try to delete files on a minor upgrade
@@ -503,7 +504,7 @@ class updates
     {
       $path = PHPWG_ROOT_PATH.$conf['data_location'].'update';
       $filename = $path.'/'.$code.'.zip';
-      @\Piwigo\inc\functions::mkgetdir($path);
+      @functions::mkgetdir($path);
 
       $chunk_num = 0;
       $end = false;
@@ -512,7 +513,7 @@ class updates
       while (!$end)
       {
         $chunk_num++;
-        if (@functions::fetchRemote(PHPWG_URL.'/download/dlcounter.php?code='.$dl_code.'&chunk_num='.$chunk_num, $result)
+        if (@functions_admin::fetchRemote(PHPWG_URL.'/download/dlcounter.php?code='.$dl_code.'&chunk_num='.$chunk_num, $result)
           and $input = @unserialize($result))
         {
           if (0 == $input['remaining'])
@@ -568,10 +569,10 @@ class updates
               self::process_obsolete_list($obsolete_list);
             }
 
-            functions::deltree(PHPWG_ROOT_PATH.$conf['data_location'].'update');
-            functions::invalidate_user_cache(true);
-            \Piwigo\inc\functions::conf_update_param('piwigo_installed_version', $upgrade_to);
-            \Piwigo\inc\functions::pwg_activity('system', ACTIVITY_SYSTEM_CORE, 'update', array('from_version'=>PHPWG_VERSION, 'to_version'=>$upgrade_to));
+            functions_admin::deltree(PHPWG_ROOT_PATH.$conf['data_location'].'update');
+            functions_admin::invalidate_user_cache(true);
+            functions::conf_update_param('piwigo_installed_version', $upgrade_to);
+            functions::pwg_activity('system', ACTIVITY_SYSTEM_CORE, 'update', array('from_version'=>PHPWG_VERSION, 'to_version'=>$upgrade_to));
 
             if ($step == 2)
             {
@@ -580,23 +581,23 @@ class updates
               // changes. Anyway, a compiled template purge will be performed
               // by upgrade.php
               $template->delete_compiled_templates();
-              \Piwigo\inc\functions::conf_delete_param('fs_quick_check_last_check');
+              functions::conf_delete_param('fs_quick_check_last_check');
 
-              $page['infos'][] = \Piwigo\inc\functions::l10n('Update Complete');
+              $page['infos'][] = functions::l10n('Update Complete');
               $page['infos'][] = $upgrade_to;
               $page['updated_version'] = $upgrade_to;
               $step = -1;
             }
             else
             {
-              \Piwigo\inc\functions::redirect(PHPWG_ROOT_PATH.'upgrade.php?now=');
+              functions::redirect(PHPWG_ROOT_PATH.'upgrade.php?now=');
             }
           }
           else
           {
             file_put_contents(PHPWG_ROOT_PATH.$conf['data_location'].'update/log_error.txt', $error);
             
-            $page['errors'][] = \Piwigo\inc\functions::l10n(
+            $page['errors'][] = functions::l10n(
               'An error has occured during extract. Please check files permissions of your piwigo installation.<br><a href="%s">Click here to show log error</a>.',
               functions_url::get_root_url().$conf['data_location'].'update/log_error.txt'
               );
@@ -604,13 +605,13 @@ class updates
         }
         else
         {
-          functions::deltree(PHPWG_ROOT_PATH.$conf['data_location'].'update');
-          $page['errors'][] = \Piwigo\inc\functions::l10n('An error has occured during upgrade.');
+          functions_admin::deltree(PHPWG_ROOT_PATH.$conf['data_location'].'update');
+          $page['errors'][] = functions::l10n('An error has occured during upgrade.');
         }
       }
       else
       {
-        $page['errors'][] = \Piwigo\inc\functions::l10n('Piwigo cannot retrieve upgrade file from server');
+        $page['errors'][] = functions::l10n('Piwigo cannot retrieve upgrade file from server');
       }
     }
   }

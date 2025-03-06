@@ -10,6 +10,8 @@ namespace Piwigo\admin\inc;
 
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_plugins;
 
 class functions_history
 {
@@ -54,7 +56,7 @@ class functions_history
     FROM '.IMAGES_TABLE.'
     WHERE file LIKE \''.$search['fields']['filename'].'\'
   ;';
-      $search['image_ids'] = \Piwigo\inc\functions::array_from_query($query, 'id');
+      $search['image_ids'] = functions::array_from_query($query, 'id');
     }
 
     // echo '<pre>'; print_r($search); echo '</pre>';
@@ -126,7 +128,7 @@ class functions_history
       $clauses[] = 'IP LIKE "'.$search['fields']['ip'].'"';
     }
 
-    $clauses = \Piwigo\inc\functions::prepend_append_array_items($clauses, '(', ')');
+    $clauses = functions::prepend_append_array_items($clauses, '(', ')');
 
     $where_separator =
       implode(
@@ -497,11 +499,11 @@ class functions_history
       functions_mysqli::pwg_query('ALTER TABLE `'.HISTORY_TABLE.'` DROP COLUMN `summarized`;');
     }
 
-    \Piwigo\inc\functions::conf_update_param('history_summarized_dropped', true);
+    functions::conf_update_param('history_summarized_dropped', true);
   }
 }
 
-\Piwigo\inc\functions_plugins::add_event_handler('get_history', '\Piwigo\admin\inc\functions_history::get_history');
-\Piwigo\inc\functions_plugins::trigger_notify('functions_history_included');
+functions_plugins::add_event_handler('get_history', '\Piwigo\admin\inc\functions_history::get_history');
+functions_plugins::trigger_notify('functions_history_included');
 
 ?>

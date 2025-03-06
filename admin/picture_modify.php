@@ -6,7 +6,8 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions_metadata;
+use Piwigo\admin\inc\functions_admin;
+use Piwigo\admin\inc\functions_metadata_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
@@ -23,7 +24,7 @@ if(!defined("PHPWG_ROOT_PATH"))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -38,7 +39,7 @@ functions::check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
 // photo.php as proxy.
 if (!isset($page['image']))
 {
-  $page['image'] = \Piwigo\admin\inc\functions::get_image_infos($_GET['image_id'], true);
+  $page['image'] = functions_admin::get_image_infos($_GET['image_id'], true);
 }
 
 // represent
@@ -57,8 +58,8 @@ if (isset($_GET['delete']))
 {
   functions::check_pwg_token();
 
-  \Piwigo\admin\inc\functions::delete_elements(array($_GET['image_id']), true);
-  \Piwigo\admin\inc\functions::invalidate_user_cache();
+  functions_admin::delete_elements(array($_GET['image_id']), true);
+  functions_admin::invalidate_user_cache();
 
   // where to redirect the user now?
   //
@@ -108,7 +109,7 @@ SELECT category_id
 
 if (isset($_GET['sync_metadata']))
 {
-  functions_metadata::sync_metadata(array( intval($_GET['image_id'])));
+  functions_metadata_admin::sync_metadata(array( intval($_GET['image_id'])));
   $page['infos'][] = functions::l10n('Metadata synchronized from file');
 }
 
@@ -153,9 +154,9 @@ if (isset($_POST['submit']))
   $tag_ids = array();
   if (!empty($_POST['tags']))
   {
-    $tag_ids = \Piwigo\admin\inc\functions::get_tag_ids($_POST['tags']);
+    $tag_ids = functions_admin::get_tag_ids($_POST['tags']);
   }
-  \Piwigo\admin\inc\functions::set_tags($tag_ids, $_GET['image_id']);
+  functions_admin::set_tags($tag_ids, $_GET['image_id']);
 
   // association to albums
   if (!isset($_POST['associate']))
@@ -163,9 +164,9 @@ if (isset($_POST['submit']))
     $_POST['associate'] = array();
   }
   functions::check_input_parameter('associate', $_POST, true, PATTERN_ID);
-  \Piwigo\admin\inc\functions::move_images_to_categories(array($_GET['image_id']), $_POST['associate']);
+  functions_admin::move_images_to_categories(array($_GET['image_id']), $_POST['associate']);
 
-  \Piwigo\admin\inc\functions::invalidate_user_cache();
+  functions_admin::invalidate_user_cache();
 
   // thumbnail for albums
   if (!isset($_POST['represent']))
@@ -177,7 +178,7 @@ if (isset($_POST['submit']))
   $no_longer_thumbnail_for = array_diff($represented_albums, $_POST['represent']);
   if (count($no_longer_thumbnail_for) > 0)
   {
-    \Piwigo\admin\inc\functions::set_random_representant($no_longer_thumbnail_for);
+    functions_admin::set_random_representant($no_longer_thumbnail_for);
   }
 
   $new_thumbnail_for = array_diff($_POST['represent'], $represented_albums);
@@ -197,7 +198,7 @@ UPDATE '.CATEGORIES_TABLE.'
   functions::pwg_activity('photo', $_GET['image_id'], 'edit');
 
   // refresh page cache
-  $page['image'] = \Piwigo\admin\inc\functions::get_image_infos($_GET['image_id'], true);
+  $page['image'] = functions_admin::get_image_infos($_GET['image_id'], true);
 }
 
 // tags
@@ -209,7 +210,7 @@ SELECT
     JOIN '.TAGS_TABLE.' AS t ON t.id = it.tag_id
   WHERE image_id = '.$_GET['image_id'].'
 ;';
-$tag_selection = \Piwigo\admin\inc\functions::get_taglist($query);
+$tag_selection = functions_admin::get_taglist($query);
 
 $row = $page['image'];
 
@@ -467,7 +468,7 @@ $template->assign(array(
   'associated_albums' => $associated_albums,
   'represented_albums' => $represented_albums,
   'STORAGE_ALBUM' => $storage_category_id,
-  'CACHE_KEYS' => \Piwigo\admin\inc\functions::get_admin_client_cache_keys(array('tags', 'categories')),
+  'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('tags', 'categories')),
   'PWG_TOKEN' => functions::get_pwg_token(),
   ));
 

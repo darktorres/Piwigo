@@ -6,8 +6,9 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_user;
 
 if (!defined('PHPWG_ROOT_PATH'))
@@ -15,7 +16,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -89,15 +90,15 @@ SELECT
 // |                       template initialization                         |
 // +-----------------------------------------------------------------------+
 $template->set_filename('user_activity', 'user_activity.tpl');
-$template->assign('ADMIN_PAGE_TITLE', \Piwigo\inc\functions::l10n('Users'));
+$template->assign('ADMIN_PAGE_TITLE', functions::l10n('Users'));
 
 // +-----------------------------------------------------------------------+
 // |                          sending html code                            |
 // +-----------------------------------------------------------------------+
 $template->assign(array(
-  'PWG_TOKEN' => \Piwigo\inc\functions::get_pwg_token(),
+  'PWG_TOKEN' => functions::get_pwg_token(),
   'INHERIT' => $conf['inheritance_by_default'],
-  'CACHE_KEYS' => functions::get_admin_client_cache_keys(array('users')),
+  'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('users')),
   ));
 
 $query = '

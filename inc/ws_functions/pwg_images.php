@@ -8,12 +8,13 @@
 
 namespace Piwigo\inc\ws_functions;
 
-use Piwigo\admin\inc\functions;
-use Piwigo\admin\inc\functions_metadata;
+use Piwigo\admin\inc\functions_admin;
+use Piwigo\admin\inc\functions_metadata_admin;
 use Piwigo\admin\inc\functions_upload;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_comment;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_plugins;
@@ -123,7 +124,7 @@ class pwg_images
       AND category_id IN ('.implode(', ', $to_remove_cat_ids).')
   ;';
         functions_mysqli::pwg_query($query);
-        functions::update_category($to_remove_cat_ids);
+        functions_admin::update_category($to_remove_cat_ids);
       }
     }
 
@@ -179,8 +180,8 @@ class pwg_images
       $inserts
       );
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    functions::update_category($new_cat_ids);
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::update_category($new_cat_ids);
   }
 
   /**
@@ -339,7 +340,7 @@ class pwg_images
     switch ($comment_action)
     {
       case 'reject':
-        $infos[] = \Piwigo\inc\functions::l10n('Your comment has NOT been registered because it did not pass the validation rules');
+        $infos[] = functions::l10n('Your comment has NOT been registered because it did not pass the validation rules');
         return new PwgError(403, implode("; ", $infos) );
 
       case 'validate':
@@ -522,7 +523,7 @@ class pwg_images
       )
     {
       $comment_post_data['author'] = stripslashes($user['username']);
-      $comment_post_data['key'] = \Piwigo\inc\functions::get_ephemeral_key(2, $params['image_id']);
+      $comment_post_data['key'] = functions::get_ephemeral_key(2, $params['image_id']);
     }
 
     $ret = $image_row;
@@ -896,13 +897,13 @@ class pwg_images
   ;';
     $result = functions_mysqli::pwg_query($query);
 
-    \Piwigo\inc\functions::pwg_activity('photo', $params['image_id'], 'edit');
+    functions::pwg_activity('photo', $params['image_id'], 'edit');
 
     $affected_rows = functions_mysqli::pwg_db_changes($result);
     if ($affected_rows)
     {
-      include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-      functions::invalidate_user_cache();
+      include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+      functions_admin::invalidate_user_cache();
     }
     return $affected_rows;
   }
@@ -919,9 +920,9 @@ class pwg_images
   {
     if (count($params['image_id']) > 1)
     {
-      include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+      include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-      functions::save_images_order(
+      functions_admin::save_images_order(
         $params['category_id'],
         $params['image_id']
         );
@@ -1052,7 +1053,7 @@ class pwg_images
     $upload_dir = $conf['upload_dir'].'/buffer';
 
     // create the upload directory tree if not exists
-    if (!\Piwigo\inc\functions::mkgetdir($upload_dir, \Piwigo\inc\functions::MKGETDIR_DEFAULT&~\Piwigo\inc\functions::MKGETDIR_DIE_ON_ERROR))
+    if (!functions::mkgetdir($upload_dir, functions::MKGETDIR_DEFAULT&~functions::MKGETDIR_DIE_ON_ERROR))
     {
       return new PwgError(500, 'error during buffer directory creation');
     }
@@ -1315,13 +1316,13 @@ class pwg_images
     // and now, let's create tag associations
     if (isset($params['tag_ids']) and !empty($params['tag_ids']))
     {
-      functions::set_tags(
+      functions_admin::set_tags(
         explode(',', $params['tag_ids']),
         $image_id
         );
     }
 
-    functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
 
     return array(
       'image_id' => $image_id,
@@ -1434,14 +1435,14 @@ class pwg_images
 
     if (isset($params['tags']) and !empty($params['tags']))
     {
-      include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+      include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
       $tag_ids = array();
       if (is_array($params['tags']))
       {
         foreach ($params['tags'] as $tag_name)
         {
-          $tag_ids[] = functions::tag_id_from_tag_name($tag_name);
+          $tag_ids[] = functions_admin::tag_id_from_tag_name($tag_name);
         }
       }
       else
@@ -1449,11 +1450,11 @@ class pwg_images
         $tag_names = preg_split('~(?<!\\\),~', $params['tags']);
         foreach ($tag_names as $tag_name)
         {
-          $tag_ids[] = functions::tag_id_from_tag_name(preg_replace('#\\\\*,#', ',', $tag_name));
+          $tag_ids[] = functions_admin::tag_id_from_tag_name(preg_replace('#\\\\*,#', ',', $tag_name));
         }
       }
 
-      functions::add_tags($tag_ids, array($image_id));
+      functions_admin::add_tags($tag_ids, array($image_id));
     }
 
     $url_params = array('image_id' => $image_id);
@@ -1474,8 +1475,8 @@ class pwg_images
 
     // update metadata from the uploaded file (exif/iptc), even if the sync
     // was already performed by add_uploaded_file().
-    require_once(PHPWG_ROOT_PATH.'admin/inc/functions_metadata.php');
-    functions_metadata::sync_metadata(array($image_id));
+    require_once(PHPWG_ROOT_PATH.'admin/inc/functions_metadata_admin.php');
+    functions_metadata_admin::sync_metadata(array($image_id));
 
     return array(
       'image_id' => $image_id,
@@ -1499,7 +1500,7 @@ class pwg_images
   {
     global $conf;
 
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -1540,7 +1541,7 @@ class pwg_images
     $upload_dir = $conf['upload_dir'].'/buffer';
 
     // create the upload directory tree if not exists
-    if (!\Piwigo\inc\functions::mkgetdir($upload_dir, \Piwigo\inc\functions::MKGETDIR_DEFAULT&~\Piwigo\inc\functions::MKGETDIR_DIE_ON_ERROR))
+    if (!functions::mkgetdir($upload_dir, functions::MKGETDIR_DEFAULT&~functions::MKGETDIR_DIE_ON_ERROR))
     {
       return new PwgError(500, 'error during buffer directory creation');
     }
@@ -1747,11 +1748,11 @@ class pwg_images
     $chunkfile_path = sprintf($chunkfile_path_pattern, $params['chunk']+1, $params['chunks']);
 
     // create the upload directory tree if not exists
-    if (!\Piwigo\inc\functions::mkgetdir(dirname($chunkfile_path), \Piwigo\inc\functions::MKGETDIR_DEFAULT&~\Piwigo\inc\functions::MKGETDIR_DIE_ON_ERROR))
+    if (!functions::mkgetdir(dirname($chunkfile_path), functions::MKGETDIR_DEFAULT&~functions::MKGETDIR_DIE_ON_ERROR))
     {
       return new PwgError(500, 'error during buffer directory creation');
     }
-    \Piwigo\inc\functions::secure_directory(dirname($chunkfile_path));
+    functions::secure_directory(dirname($chunkfile_path));
 
     // move uploaded file
     move_uploaded_file($_FILES['file']['tmp_name'], $chunkfile_path);
@@ -1887,7 +1888,7 @@ class pwg_images
     // and now, let's create tag associations
     if (isset($params['tag_ids']) and !empty($params['tag_ids']))
     {
-      functions::set_tags(
+      functions_admin::set_tags(
         explode(',', $params['tag_ids']),
         $image_id
       );
@@ -1920,7 +1921,7 @@ class pwg_images
     }
 
     // final step, reset user cache
-    functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
 
     // trick to bypass get_sql_condition_FandF
     if (!empty($params['level']) and $params['level'] > $user['level'])
@@ -2068,7 +2069,7 @@ class pwg_images
     $result = functions_mysqli::pwg_query($query);
     while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
     {
-      $filename_wo_ext = \Piwigo\inc\functions::get_filename_wo_extension($row['file']);
+      $filename_wo_ext = functions::get_filename_wo_extension($row['file']);
       @$unique_filenames_db[ $filename_wo_ext ][] = $row['id'];
     }
 
@@ -2122,7 +2123,7 @@ class pwg_images
    *    @option string pwg_token
    */
   static function ws_images_formats_delete($params, $service) {
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -2147,7 +2148,7 @@ class pwg_images
       }
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     $image_ids = array();
     $formats_of = array();
@@ -2197,13 +2198,13 @@ class pwg_images
       }
 
       $files = array();
-      $image_path = \Piwigo\inc\functions::get_element_path($row);
+      $image_path = functions::get_element_path($row);
 
       if (isset($formats_of[ $row['id'] ]))
       {
         foreach ($formats_of[ $row['id'] ] as $format_ext)
         {
-          $files[] = \Piwigo\inc\functions::original_to_format($image_path, $format_ext);
+          $files[] = functions::original_to_format($image_path, $format_ext);
         }
       }
 
@@ -2226,7 +2227,7 @@ class pwg_images
   ;';
     functions_mysqli::pwg_query($query);
 
-    functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
 
     return $ok;
   }
@@ -2316,12 +2317,12 @@ class pwg_images
   {
     global $conf;
 
-    if (isset($params['pwg_token']) and \Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (isset($params['pwg_token']) and functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     $query='
   SELECT *
@@ -2406,7 +2407,7 @@ class pwg_images
         array('id' => $update['id'])
         );
 
-      \Piwigo\inc\functions::pwg_activity('photo', $update['id'], 'edit');
+      functions::pwg_activity('photo', $update['id'], 'edit');
     }
 
     if (isset($params['categories']))
@@ -2435,14 +2436,14 @@ class pwg_images
 
       if ('replace' == $params['multiple_value_mode'])
       {
-        functions::set_tags(
+        functions_admin::set_tags(
           $tag_ids,
           $params['image_id']
           );
       }
       elseif ('append' == $params['multiple_value_mode'])
       {
-        functions::add_tags(
+        functions_admin::add_tags(
           $tag_ids,
           array($params['image_id'])
           );
@@ -2457,7 +2458,7 @@ class pwg_images
       }
     }
 
-    functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
   }
 
   /**
@@ -2469,7 +2470,7 @@ class pwg_images
    */
   static function ws_images_delete($params, $service)
   {
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -2494,9 +2495,9 @@ class pwg_images
       }
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    $ret = functions::delete_elements($image_ids, true);
-    functions::invalidate_user_cache();
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    $ret = functions_admin::delete_elements($image_ids, true);
+    functions_admin::invalidate_user_cache();
 
     return $ret;
   }
@@ -2528,9 +2529,9 @@ class pwg_images
    */
   static function ws_images_emptyLounge($params, $service)
   {
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    $ret = array('rows' => functions::empty_lounge());
+    $ret = array('rows' => functions_admin::empty_lounge());
 
     return $ret;
   }
@@ -2543,9 +2544,9 @@ class pwg_images
    */
   static function ws_images_uploadCompleted($params, $service)
   {
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -2572,7 +2573,7 @@ class pwg_images
 
     // the list of images moved from the lounge might not be the same than
     // $image_ids (canbe a subset or more image_ids from another upload too)
-    $moved_from_lounge = functions::empty_lounge();
+    $moved_from_lounge = functions_admin::empty_lounge();
 
     $query = '
   SELECT
@@ -2610,25 +2611,25 @@ class pwg_images
    */
   static function ws_images_setMd5sum($params, $service)
   {
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    $nb_no_md5sum = count(functions::get_photos_no_md5sum());
+    $nb_no_md5sum = count(functions_admin::get_photos_no_md5sum());
     $added_count = 0;
 
     if ($nb_no_md5sum > 0)
     {
-      $md5sum_ids_to_add = array_slice(functions::get_photos_no_md5sum(), 0, $params['block_size']);
-      $added_count = functions::add_md5sum($md5sum_ids_to_add);
+      $md5sum_ids_to_add = array_slice(functions_admin::get_photos_no_md5sum(), 0, $params['block_size']);
+      $added_count = functions_admin::add_md5sum($md5sum_ids_to_add);
     }
 
     return array(
       'nb_added' => $added_count,
-      'nb_no_md5sum' => count(functions::get_photos_no_md5sum()),
+      'nb_no_md5sum' => count(functions_admin::get_photos_no_md5sum()),
       );
   }
 
@@ -2640,7 +2641,7 @@ class pwg_images
    */
   static function ws_images_syncMetadata($params, $service)
   {
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -2657,9 +2658,9 @@ class pwg_images
       return new PwgError(403, 'No image found');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_metadata.php');
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    functions_metadata::sync_metadata($params['image_id']);
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_metadata_admin.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_metadata_admin::sync_metadata($params['image_id']);
 
     return array(
       'nb_synchronized' => count($params['image_id'])
@@ -2674,19 +2675,19 @@ class pwg_images
    */
   static function ws_images_deleteOrphans($params, $service)
   {
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    $orphan_ids_to_delete = array_slice(functions::get_orphans(), 0, $params['block_size']);
-    $deleted_count = functions::delete_elements($orphan_ids_to_delete, true);
+    $orphan_ids_to_delete = array_slice(functions_admin::get_orphans(), 0, $params['block_size']);
+    $deleted_count = functions_admin::delete_elements($orphan_ids_to_delete, true);
 
     return array(
       'nb_deleted' => $deleted_count,
-      'nb_orphans' => count(functions::get_orphans()),
+      'nb_orphans' => count(functions_admin::get_orphans()),
       );
   }
 
@@ -2703,7 +2704,7 @@ class pwg_images
    */
   static function ws_images_setCategory($params, $service)
   {
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -2722,22 +2723,22 @@ class pwg_images
       return new PwgError(404, 'category_id not found');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     if ('associate' == $params['action'])
     {
-      functions::associate_images_to_categories($params['image_id'], array($params['category_id']));
+      functions_admin::associate_images_to_categories($params['image_id'], array($params['category_id']));
     }
     elseif ('dissociate' == $params['action'])
     {
-      functions::dissociate_images_from_category($params['image_id'], $params['category_id']);
+      functions_admin::dissociate_images_from_category($params['image_id'], $params['category_id']);
     }
     elseif ('move' == $params['action'])
     {
-      functions::move_images_to_categories($params['image_id'], array($params['category_id']));
+      functions_admin::move_images_to_categories($params['image_id'], array($params['category_id']));
     }
 
-    functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
   }
 }
 ?>

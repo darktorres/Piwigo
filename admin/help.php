@@ -12,7 +12,7 @@ use Piwigo\inc\functions_plugins;
 use Piwigo\inc\functions_url;
 use Piwigo\inc\functions_user;
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |

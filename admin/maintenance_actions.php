@@ -7,6 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\check_integrity;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\pwg_image;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
@@ -19,7 +20,7 @@ use Piwigo\inc\functions_url;
 use Piwigo\inc\functions_user;
 use Piwigo\inc\ImageStdParams;
 
-\Piwigo\admin\inc\functions::fs_quick_check();
+functions_admin::fs_quick_check();
 
 // +-----------------------------------------------------------------------+
 // |                                actions                                |
@@ -52,34 +53,34 @@ switch ($action)
   }
   case 'categories' :
   {
-    \Piwigo\admin\inc\functions::images_integrity();
-    \Piwigo\admin\inc\functions::categories_integrity();
-    \Piwigo\admin\inc\functions::update_uppercats();
-    \Piwigo\admin\inc\functions::update_category('all');
-    \Piwigo\admin\inc\functions::update_global_rank();
-    \Piwigo\admin\inc\functions::invalidate_user_cache(true);
+    functions_admin::images_integrity();
+    functions_admin::categories_integrity();
+    functions_admin::update_uppercats();
+    functions_admin::update_category('all');
+    functions_admin::update_global_rank();
+    functions_admin::invalidate_user_cache(true);
     $page['infos'][] = sprintf('%s : %s', functions::l10n('Update albums informations'), functions::l10n('action successfully performed.'));
     break;
   }
   case 'images' :
   {
-    \Piwigo\admin\inc\functions::images_integrity();
-    \Piwigo\admin\inc\functions::update_path();
+    functions_admin::images_integrity();
+    functions_admin::update_path();
 		include_once(PHPWG_ROOT_PATH.'inc/functions_rate.php');
     functions_rate::update_rating_score();
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
     $page['infos'][] = sprintf('%s : %s', functions::l10n('Update photos information'), functions::l10n('action successfully performed.'));
     break;
   }
   case 'delete_orphan_tags' :
   {
-    \Piwigo\admin\inc\functions::delete_orphan_tags();
+    functions_admin::delete_orphan_tags();
     $page['infos'][] = sprintf('%s : %s', functions::l10n('Delete orphan tags'), functions::l10n('action successfully performed.'));
     break;
   }
   case 'user_cache' :
   {
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
     $page['infos'][] = sprintf('%s : %s', functions::l10n('Purge user cache'), functions::l10n('action successfully performed.'));
     break;
   }
@@ -193,11 +194,11 @@ DELETE
   {
     $types_str = $_GET['type'];
     if ($types_str == "all") {
-      \Piwigo\admin\inc\functions::clear_derivative_cache($_GET['type']);
+      functions_admin::clear_derivative_cache($_GET['type']);
     } else {
       $types = explode('_', $types_str);
       foreach ($types as $type_to_clear) {
-        \Piwigo\admin\inc\functions::clear_derivative_cache($type_to_clear);
+        functions_admin::clear_derivative_cache($type_to_clear);
       }
     }
     $page['infos'][] = functions::l10n('action successfully performed.');
@@ -206,7 +207,7 @@ DELETE
 
   case 'check_upgrade':
   {
-    if (!\Piwigo\admin\inc\functions::fetchRemote(PHPWG_URL.'/download/latest_version', $result))
+    if (!functions_admin::fetchRemote(PHPWG_URL.'/download/latest_version', $result))
     {
       $page['errors'][] = functions::l10n('Unable to check for upgrade.');
     }

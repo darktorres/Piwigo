@@ -173,7 +173,7 @@ class pwg_extensions
       return new PwgError(403, "invalid extension type");
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
     include_once(PHPWG_ROOT_PATH.'admin/inc/'.$params['type'].'.php');
 
     $type = $params['type'];
@@ -272,7 +272,7 @@ class pwg_extensions
     global $conf;
 
     define('IN_ADMIN', true);
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     if (!functions_user::is_webmaster())
     {
@@ -332,7 +332,7 @@ class pwg_extensions
   {
     global $conf;
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     $update = new updates();
     $result = array();

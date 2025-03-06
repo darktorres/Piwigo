@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
@@ -18,7 +19,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -56,12 +57,12 @@ UPDATE '.CATEGORIES_TABLE.'
     }
     case 'visible' :
     {
-      \Piwigo\admin\inc\functions::set_cat_visible($_POST['cat_true'], 'false');
+      functions_admin::set_cat_visible($_POST['cat_true'], 'false');
       break;
     }
     case 'status' :
     {
-      \Piwigo\admin\inc\functions::set_cat_status($_POST['cat_true'], 'private');
+      functions_admin::set_cat_status($_POST['cat_true'], 'private');
       break;
     }
     case 'representative' :
@@ -96,19 +97,19 @@ UPDATE '.CATEGORIES_TABLE.'
     }
     case 'visible' :
     {
-      \Piwigo\admin\inc\functions::set_cat_visible($_POST['cat_false'], 'true');
+      functions_admin::set_cat_visible($_POST['cat_false'], 'true');
       break;
     }
     case 'status' :
     {
-      \Piwigo\admin\inc\functions::set_cat_status($_POST['cat_false'], 'public');
+      functions_admin::set_cat_status($_POST['cat_false'], 'public');
       break;
     }
     case 'representative' :
     {
       // theoretically, all categories in $_POST['cat_false'] contain at
       // least one element, so Piwigo can find a representant.
-      \Piwigo\admin\inc\functions::set_random_representant($_POST['cat_false']);
+      functions_admin::set_random_representant($_POST['cat_false']);
       break;
     }
   }

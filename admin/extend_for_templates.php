@@ -24,18 +24,19 @@
 //                            initialization                              |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_url;
 use Piwigo\inc\functions_user;
 
 if (!defined('PHPWG_ROOT_PATH')) { die('Hacking attempt!'); }
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 $tpl_extension = isset($conf['extents_for_templates']) ?
       unserialize($conf['extents_for_templates']) : array();
-$new_extensions = \Piwigo\admin\inc\functions::get_extents(); 
+$new_extensions = functions_admin::get_extents();
 
 /* Selective URLs keyword */
 $relevant_parameters = array(
@@ -104,7 +105,7 @@ $flip_templates = array_flip($eligible_templates);
 
 $available_templates = array_merge(
   array('N/A' => '----------'),
-  \Piwigo\admin\inc\functions::get_dirs(PHPWG_ROOT_PATH.'themes'));
+  functions_admin::get_dirs(PHPWG_ROOT_PATH.'themes'));
 
 // +-----------------------------------------------------------------------+
 // |                            selected templates                         |

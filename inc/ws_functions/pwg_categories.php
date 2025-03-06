@@ -8,10 +8,11 @@
 
 namespace Piwigo\inc\ws_functions;
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_plugins;
@@ -685,11 +686,11 @@ class pwg_categories
    */
   static function ws_categories_add($params, &$service)
   {
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     global $conf;
 
-    if (isset($params['pwg_token']) and \Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (isset($params['pwg_token']) and functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -711,7 +712,7 @@ class pwg_categories
       $options['comment'] = (!$conf['allow_html_descriptions'] or !isset($params['pwg_token'])) ? strip_tags($params['comment']) : $params['comment'];
     }
     
-    $creation_output = functions::create_virtual_category(
+    $creation_output = functions_admin::create_virtual_category(
       (!$conf['allow_html_descriptions'] or !isset($params['pwg_token'])) ? strip_tags($params['name']) : $params['name'],
       $params['parent'],
       $options
@@ -722,7 +723,7 @@ class pwg_categories
       return new PwgError(500, $creation_output['error']);
     }
 
-    functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
 
     return $creation_output;
   }
@@ -805,8 +806,8 @@ class pwg_categories
       }
     }
     // include function to set the global rank
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    functions::save_categories_order($order_new);
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::save_categories_order($order_new);
   }
 
   /**
@@ -825,7 +826,7 @@ class pwg_categories
   {
     global $conf;
 
-    if (isset($params['pwg_token']) and \Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (isset($params['pwg_token']) and functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -853,8 +854,8 @@ class pwg_categories
 
       if ($params['status'] != $category['status'])
       {
-        include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-        functions::set_cat_status(array($params['category_id']), $params['status']);
+        include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+        functions_admin::set_cat_status(array($params['category_id']), $params['status']);
       }
     }
 
@@ -872,8 +873,8 @@ class pwg_categories
 
     if (!empty($params['visible']) and ($params['visible'] != $category['visible']))
     {
-      include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-      functions::set_cat_visible(array($params['category_id']), $params['visible']);
+      include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+      functions_admin::set_cat_visible(array($params['category_id']), $params['visible']);
     }
 
     $info_columns = array('name', 'comment','commentable');
@@ -911,7 +912,7 @@ class pwg_categories
         );
     }
 
-    \Piwigo\inc\functions::pwg_activity('album', $params['category_id'], 'edit', array('fields' => implode(',', array_keys($update))));
+    functions::pwg_activity('album', $params['category_id'], 'edit', array('fields' => implode(',', array_keys($update))));
   }
 
   /**
@@ -962,7 +963,7 @@ class pwg_categories
   ;';
     functions_mysqli::pwg_query($query);
 
-    \Piwigo\inc\functions::pwg_activity('album', $params['category_id'], 'edit', array('image_id'=>$params['image_id']));
+    functions::pwg_activity('album', $params['category_id'], 'edit', array('image_id'=>$params['image_id']));
   }
 
   /**
@@ -1009,7 +1010,7 @@ class pwg_categories
   ;';
     functions_mysqli::pwg_query($query);
 
-    \Piwigo\inc\functions::pwg_activity('album', $params['category_id'], 'edit');
+    functions::pwg_activity('album', $params['category_id'], 'edit');
   }
 
   /**
@@ -1051,11 +1052,11 @@ class pwg_categories
       return new PwgError(401, 'not permitted');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
     
-    functions::set_random_representant(array($params['category_id']));
+    functions_admin::set_random_representant(array($params['category_id']));
 
-    \Piwigo\inc\functions::pwg_activity('album', $params['category_id'], 'edit');
+    functions::pwg_activity('album', $params['category_id'], 'edit');
 
     // return url of the new representative
     $query = '
@@ -1065,7 +1066,7 @@ class pwg_categories
   ;';
     $category = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
 
-    return functions::get_category_representant_properties($category['representative_picture_id'], derivative_std_params::IMG_SMALL);
+    return functions_admin::get_category_representant_properties($category['representative_picture_id'], derivative_std_params::IMG_SMALL);
   }
 
   /**
@@ -1078,7 +1079,7 @@ class pwg_categories
    */
   static function ws_categories_delete($params, &$service)
   {
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -1123,17 +1124,17 @@ class pwg_categories
     FROM '. CATEGORIES_TABLE .'
     WHERE id IN ('. implode(',', $category_ids) .')
   ;';
-    $category_ids = \Piwigo\inc\functions::array_from_query($query, 'id');
+    $category_ids = functions::array_from_query($query, 'id');
 
     if (count($category_ids) == 0)
     {
       return;
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    functions::delete_categories($category_ids, $params['photo_deletion_mode']);
-    functions::update_global_rank();
-    functions::invalidate_user_cache();
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::delete_categories($category_ids, $params['photo_deletion_mode']);
+    functions_admin::update_global_rank();
+    functions_admin::invalidate_user_cache();
   }
 
   /**
@@ -1148,7 +1149,7 @@ class pwg_categories
   {
     global $page;
 
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -1241,9 +1242,9 @@ class pwg_categories
     $page['infos'] = array();
     $page['errors'] = array();
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    functions::move_categories($category_ids, $params['parent']);
-    functions::invalidate_user_cache();
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::move_categories($category_ids, $params['parent']);
+    functions_admin::invalidate_user_cache();
 
     if (count($page['errors']) != 0)
     {

@@ -10,7 +10,7 @@ namespace Piwigo\admin\inc;
 
 use Piwigo\inc\functions_url;
 
-class functions_plugins
+class functions_plugins_admin
 {
   /**
    * Retrieves an url for a plugin page.

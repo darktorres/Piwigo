@@ -10,7 +10,9 @@ namespace Piwigo\admin\inc;
 
 use PclZip;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_html;
+use Piwigo\inc\functions_plugins;
 use Piwigo\inc\PluginMaintain;
 
 class plugins
@@ -27,7 +29,7 @@ class plugins
   {
     $this->get_fs_plugins();
 
-    foreach (\Piwigo\inc\functions_plugins::get_db_plugins() as $db_plugin)
+    foreach (functions_plugins::get_db_plugins() as $db_plugin)
     {
       $this->db_plugins_by_id[$db_plugin['id']] = $db_plugin;
     }
@@ -160,8 +162,8 @@ UPDATE '. PLUGINS_TABLE .'
         if (!isset($crt_db_plugin))
         {
           $errors = $this->perform_action('install', $plugin_id);
-          list($crt_db_plugin) = \Piwigo\inc\functions_plugins::get_db_plugins(null, $plugin_id);
-          \Piwigo\inc\functions::load_conf_from_db();
+          list($crt_db_plugin) = functions_plugins::get_db_plugins(null, $plugin_id);
+          functions::load_conf_from_db();
         }
         elseif ($crt_db_plugin['state'] == 'active')
         {
@@ -264,12 +266,12 @@ DELETE FROM '. PLUGINS_TABLE .'
           $activity_details['fs_version'] = $this->fs_plugins[$plugin_id]['version'];
         }
 
-        include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-        functions::deltree(PHPWG_PLUGINS_PATH . $plugin_id, PHPWG_PLUGINS_PATH . 'trash');
+        include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+        functions_admin::deltree(PHPWG_PLUGINS_PATH . $plugin_id, PHPWG_PLUGINS_PATH . 'trash');
         break;
     }
 
-    \Piwigo\inc\functions::pwg_activity('system', ACTIVITY_SYSTEM_PLUGIN, $action, $activity_details);
+    functions::pwg_activity('system', ACTIVITY_SYSTEM_PLUGIN, $action, $activity_details);
 
     return $errors;
   }
@@ -329,7 +331,7 @@ DELETE FROM '. PLUGINS_TABLE .'
       {
         $plugin['uri'] = trim($val[1]);
       }
-      if ($desc = \Piwigo\inc\functions::load_language('description.txt', $path.'/', array('return' => true)))
+      if ($desc = functions::load_language('description.txt', $path.'/', array('return' => true)))
       {
         $plugin['description'] = trim($desc);
       }
@@ -407,14 +409,14 @@ DELETE FROM '. PLUGINS_TABLE .'
 
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php?category_id='. $conf['pem_plugins_category'] .'&format=php';
-    if (functions::fetchRemote($url, $result) and $pem_versions = @unserialize($result))
+    if (functions_admin::fetchRemote($url, $result) and $pem_versions = @unserialize($result))
     {
       $i = 0;
 
       // If the actual version exist, put the PEM id in $versions_to_check
       while ($i < count($pem_versions) && count($versions_to_check) == 0) 
       {
-        if (\Piwigo\inc\functions::get_branch_from_version($pem_versions[$i]['name']) == \Piwigo\inc\functions::get_branch_from_version($version))
+        if (functions::get_branch_from_version($pem_versions[$i]['name']) == functions::get_branch_from_version($version))
         {
           $versions_to_check[] = $pem_versions[$i]['id'];
         }
@@ -506,7 +508,7 @@ DELETE FROM '. PLUGINS_TABLE .'
         $get_data['extension_include'] = implode(',', $plugins_to_check);
       }
     }
-    if (functions::fetchRemote($url, $result, $get_data))
+    if (functions_admin::fetchRemote($url, $result, $get_data))
     {
       $pem_plugins = @unserialize($result);
       if (!is_array($pem_plugins))
@@ -559,7 +561,7 @@ DELETE FROM '. PLUGINS_TABLE .'
       'extension_include' => implode(',', $plugins_to_check),
     );
 
-    if (functions::fetchRemote($url, $result, $get_data))
+    if (functions_admin::fetchRemote($url, $result, $get_data))
     {
       $pem_plugins = @unserialize($result);
       if (!is_array($pem_plugins))
@@ -635,7 +637,7 @@ DELETE FROM '. PLUGINS_TABLE .'
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = @fopen($archive, 'wb') and functions::fetchRemote($url, $handle, $get_data))
+      if ($handle = @fopen($archive, 'wb') and functions_admin::fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -716,7 +718,7 @@ DELETE FROM '. PLUGINS_TABLE .'
                   }
                   elseif (is_dir($path))
                   {
-                    functions::deltree($path, PHPWG_PLUGINS_PATH . 'trash');
+                    functions_admin::deltree($path, PHPWG_PLUGINS_PATH . 'trash');
                   }
                 }
               }

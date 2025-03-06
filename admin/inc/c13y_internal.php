@@ -9,6 +9,8 @@
 namespace Piwigo\admin\inc;
 
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_plugins;
 use Piwigo\inc\functions_session;
 use Piwigo\inc\functions_user;
 
@@ -16,9 +18,9 @@ class c13y_internal
 {
   function __construct()
   {
-    \Piwigo\inc\functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_version'));
-    \Piwigo\inc\functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_exif'));
-    \Piwigo\inc\functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_user'));
+    functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_version'));
+    functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_exif'));
+    functions_plugins::add_event_handler('list_check_integrity', array(&$this, 'c13y_user'));
   }
 
   /**
@@ -50,10 +52,10 @@ class c13y_internal
       if (version_compare($elem['current'], $elem['required'], '<'))
       {
         $c13y->add_anomaly(
-          sprintf(\Piwigo\inc\functions::l10n('The version of %s [%s] installed is not compatible with the version required [%s]'), $elem['type'], $elem['current'], $elem['required']),
+          sprintf(functions::l10n('The version of %s [%s] installed is not compatible with the version required [%s]'), $elem['type'], $elem['current'], $elem['required']),
           null,
           null,
-          \Piwigo\inc\functions::l10n('You need to upgrade your system to take full advantage of the application else the application will not work correctly, or not at all')
+          functions::l10n('You need to upgrade your system to take full advantage of the application else the application will not work correctly, or not at all')
           .'<br>'.
           $c13y->get_htlm_links_more_info());
       }
@@ -75,10 +77,10 @@ class c13y_internal
       if (($conf[$value]) and (!function_exists('exif_read_data')))
       {
         $c13y->add_anomaly(
-          sprintf(\Piwigo\inc\functions::l10n('%s value is not correct file because exif are not supported'), '$conf[\''.$value.'\']'),
+          sprintf(functions::l10n('%s value is not correct file because exif are not supported'), '$conf[\''.$value.'\']'),
           null,
           null,
-          sprintf(\Piwigo\inc\functions::l10n('%s must be to set to false in your local/config/config.php file'), '$conf[\''.$value.'\']')
+          sprintf(functions::l10n('%s must be to set to false in your local/config/config.php file'), '$conf[\''.$value.'\']')
           .'<br>'.
           $c13y->get_htlm_links_more_info());
       }
@@ -135,13 +137,13 @@ class c13y_internal
     {
       if (!array_key_exists($id, $status))
       {
-        $c13y->add_anomaly(\Piwigo\inc\functions::l10n($data['l10n_non_existent']), 'c13y_correction_user',
+        $c13y->add_anomaly(functions::l10n($data['l10n_non_existent']), 'c13y_correction_user',
           array('id' => $id, 'action' => 'creation'));
       }
       else
       if (!empty($data['status']) and $status[$id] != $data['status'])
       {
-        $c13y->add_anomaly(\Piwigo\inc\functions::l10n($data['l10n_bad_status']), 'c13y_correction_user',
+        $c13y->add_anomaly(functions::l10n($data['l10n_bad_status']), 'c13y_correction_user',
           array('id' => $id, 'action' => 'status'));
       }
     }
@@ -203,7 +205,7 @@ class c13y_internal
 
             functions_user::create_user_infos($id);
 
-            $page['infos'][] = sprintf(\Piwigo\inc\functions::l10n('User "%s" created with "%s" like password'), $name, $password);
+            $page['infos'][] = sprintf(functions::l10n('User "%s" created with "%s" like password'), $name, $password);
 
             $result = true;
           }
@@ -234,7 +236,7 @@ class c13y_internal
               array('primary' => array('user_id'),'update' => array('status')),
               $updates);
 
-            $page['infos'][] = sprintf(\Piwigo\inc\functions::l10n('Status of user "%s" updated'), functions::get_username($id));
+            $page['infos'][] = sprintf(functions::l10n('Status of user "%s" updated'), functions_admin::get_username($id));
 
             $result = true;
           }

@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\DerivativeImage;
 use Piwigo\inc\functions;
@@ -243,8 +244,8 @@ UPDATE '.CATEGORIES_TABLE.'
         functions_mysqli::pwg_query($query);
         functions::pwg_activity('album', $page['category']['id'], 'edit', array('action'=>$_GET['action'], 'image_id'=>$page['image_id']));
 
-        include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-        \Piwigo\admin\inc\functions::invalidate_user_cache();
+        include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+        functions_admin::invalidate_user_cache();
       }
 
       functions::redirect($url_self);

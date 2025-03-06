@@ -10,6 +10,7 @@ namespace Piwigo\admin\inc;
 
 use PclZip;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_user;
 
 class languages
@@ -108,7 +109,7 @@ UPDATE '.USER_INFOS_TABLE.'
 ;';
         functions_mysqli::pwg_query($query);
 
-        functions::deltree(PHPWG_ROOT_PATH.'language/'.$language_id, PHPWG_ROOT_PATH.'language/trash');
+        functions_admin::deltree(PHPWG_ROOT_PATH.'language/'.$language_id, PHPWG_ROOT_PATH.'language/trash');
         break;
 
       case 'set_default':
@@ -130,7 +131,7 @@ UPDATE '.USER_INFOS_TABLE.'
   {
     if ( empty($target_charset) )
     {
-      $target_charset = \Piwigo\inc\functions::get_pwg_charset();
+      $target_charset = functions::get_pwg_charset();
     }
     $target_charset = strtolower($target_charset);
 
@@ -157,7 +158,7 @@ UPDATE '.USER_INFOS_TABLE.'
           if (preg_match("|Language Name:\\s*(.+)|", $plg_data, $val))
           {
             $language['name'] = trim( $val[1] );
-            $language['name'] = \Piwigo\inc\functions::convert_charset($language['name'], 'utf-8', $target_charset);
+            $language['name'] = functions::convert_charset($language['name'], 'utf-8', $target_charset);
           }
           if (preg_match("|Version:\\s*([\\w.-]+)|", $plg_data, $val))
           {
@@ -222,13 +223,13 @@ UPDATE '.USER_INFOS_TABLE.'
     $version = PHPWG_VERSION;
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (functions::fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
+    if (functions_admin::fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
         $version = $pem_versions[0]['name'];
       }
-      $branch = \Piwigo\inc\functions::get_branch_from_version($version);
+      $branch = functions::get_branch_from_version($version);
       foreach ($pem_versions as $pem_version)
       {
         if (strpos($pem_version['name'], $branch) === 0)
@@ -273,7 +274,7 @@ UPDATE '.USER_INFOS_TABLE.'
       }
     }
 
-    if (functions::fetchRemote($url, $result, $get_data))
+    if (functions_admin::fetchRemote($url, $result, $get_data))
     {
       $pem_languages = @unserialize($result);
       if (!is_array($pem_languages))
@@ -312,7 +313,7 @@ UPDATE '.USER_INFOS_TABLE.'
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = @fopen($archive, 'wb') and functions::fetchRemote($url, $handle, $get_data))
+      if ($handle = @fopen($archive, 'wb') and functions_admin::fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -404,7 +405,7 @@ UPDATE '.USER_INFOS_TABLE.'
                     }
                     elseif (is_dir($path))
                     {
-                      functions::deltree($path, PHPWG_ROOT_PATH.'language/trash');
+                      functions_admin::deltree($path, PHPWG_ROOT_PATH.'language/trash');
                     }
                   }
                 }

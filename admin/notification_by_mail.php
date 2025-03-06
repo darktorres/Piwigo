@@ -23,7 +23,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 include_once(PHPWG_ROOT_PATH.'admin/inc/functions_notification_by_mail.php');
 include_once(PHPWG_ROOT_PATH.'inc/common.php');
 include_once(PHPWG_ROOT_PATH.'inc/functions_notification.php');
