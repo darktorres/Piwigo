@@ -6,10 +6,11 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_plugins;
@@ -28,7 +29,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -43,8 +44,8 @@ functions_plugins::trigger_notify('loc_begin_element_set_unit');
 
 if (isset($_POST['submit']))
 {
-  \Piwigo\inc\functions::check_pwg_token();
-  \Piwigo\inc\functions::check_input_parameter('element_ids', $_POST, false, '/^\d+(,\d+)*$/');
+  functions::check_pwg_token();
+  functions::check_input_parameter('element_ids', $_POST, false, '/^\d+(,\d+)*$/');
   $collection = explode(',', $_POST['element_ids']);
 
   $datas = array();
@@ -89,9 +90,9 @@ SELECT id, date_creation
     $tag_ids = array();
     if (!empty($_POST[ 'tags-'.$row['id'] ]))
     {
-      $tag_ids = functions::get_tag_ids($_POST[ 'tags-'.$row['id'] ]);
+      $tag_ids = functions_admin::get_tag_ids($_POST[ 'tags-'.$row['id'] ]);
     }
-    functions::set_tags($tag_ids, $row['id']);
+    functions_admin::set_tags($tag_ids, $row['id']);
   }
 
   functions_mysqli::mass_updates(
@@ -103,8 +104,8 @@ SELECT id, date_creation
     $datas
     );
 
-  $page['infos'][] = \Piwigo\inc\functions::l10n('Photo informations updated');
-  functions::invalidate_user_cache();
+  $page['infos'][] = functions::l10n('Photo informations updated');
+  functions_admin::invalidate_user_cache();
 }
 
 // +-----------------------------------------------------------------------+
@@ -120,9 +121,9 @@ $template->assign(
   array(
     'U_ELEMENTS_PAGE' => $base_url.functions_url::get_query_string_diff(array('display','start')),
     'F_ACTION' => $base_url.functions_url::get_query_string_diff(array()),
-    'level_options' => \Piwigo\inc\functions::get_privacy_level_options(),
-    'ADMIN_PAGE_TITLE' => \Piwigo\inc\functions::l10n('Batch Manager'),
-    'PWG_TOKEN' => \Piwigo\inc\functions::get_pwg_token(),
+    'level_options' => functions::get_privacy_level_options(),
+    'ADMIN_PAGE_TITLE' => functions::l10n('Batch Manager'),
+    'PWG_TOKEN' => functions::get_pwg_token(),
     )
   );
 
@@ -148,7 +149,7 @@ else
 
 if (count($page['cat_elements_id']) > 0)
 {
-  $nav_bar = \Piwigo\inc\functions::create_navigation_bar(
+  $nav_bar = functions::create_navigation_bar(
     $base_url.functions_url::get_query_string_diff(array('start')),
     count($page['cat_elements_id']),
     $page['start'],
@@ -219,10 +220,10 @@ SELECT
     JOIN '.TAGS_TABLE.' AS t ON t.id = it.tag_id
   WHERE image_id = '.$row['id'].'
 ;';
-    $tag_selection = functions::get_taglist($query);
+    $tag_selection = functions_admin::get_taglist($query);
 
     $legend = functions_html::render_element_name($row);
-    if ($legend != \Piwigo\inc\functions::get_name_from_file($row['file']))
+    if ($legend != functions::get_name_from_file($row['file']))
     {
       $legend.= ' ('.$row['file'].')';
     }
@@ -249,7 +250,7 @@ SELECT
 
   $template->assign(array(
     'ELEMENT_IDS' => implode(',', $element_ids),
-    'CACHE_KEYS' => functions::get_admin_client_cache_keys(array('tags')),
+    'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('tags')),
     ));
 }
 

@@ -6,11 +6,12 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_params;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_user;
 use Piwigo\inc\ImageStdParams;
@@ -26,7 +27,7 @@ if(!defined("PHPWG_ROOT_PATH"))
 // +-----------------------------------------------------------------------+
 functions_user::check_status(ACCESS_ADMINISTRATOR);
 
-\Piwigo\inc\functions::check_input_parameter('image_id', $_GET, false, PATTERN_ID);
+functions::check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 
 if (isset($_POST['submit']))
 {
@@ -56,10 +57,10 @@ if (isset($_POST['submit']))
   {
     if ($params->sizing->max_crop != 0)
     {
-      functions::delete_element_derivatives($row, $params->type);
+      functions_admin::delete_element_derivatives($row, $params->type);
     }
   }
-  functions::delete_element_derivatives($row, derivative_std_params::IMG_CUSTOM);
+  functions_admin::delete_element_derivatives($row, derivative_std_params::IMG_CUSTOM);
   $uid = '&b='.time();
   $conf['question_mark_in_urls'] = $conf['php_extension_in_urls'] = true;
   if ($conf['derivative_url_style']==1)

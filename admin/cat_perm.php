@@ -6,8 +6,9 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_url;
@@ -18,7 +19,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -37,7 +38,7 @@ $page['cat'] = $category['id'];
 
 if (!empty($_POST))
 {
-  \Piwigo\inc\functions::check_pwg_token();
+  functions::check_pwg_token();
 
   if ($category['status'] != $_POST['status'] or ($category['status'] != 'public' and isset($_POST['apply_on_sub'])))
   {
@@ -46,7 +47,7 @@ if (!empty($_POST))
       {
         $cat_ids = array_merge($cat_ids, functions_category::get_subcat_ids(array($page['cat'])));
       }
-    functions::set_cat_status($cat_ids, $_POST['status']);
+    functions_admin::set_cat_status($cat_ids, $_POST['status']);
     $category['status'] = $_POST['status'];
   }
 
@@ -60,7 +61,7 @@ SELECT group_id
   FROM '.GROUP_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-    $groups_granted = \Piwigo\inc\functions::array_from_query($query, 'group_id');
+    $groups_granted = functions::array_from_query($query, 'group_id');
 
     if (!isset($_POST['groups']))
     {
@@ -90,7 +91,7 @@ DELETE
     $grant_groups = $_POST['groups'];
     if (count($grant_groups) > 0)
     {
-      $cat_ids = functions::get_uppercat_ids(array($page['cat']));
+      $cat_ids = functions_admin::get_uppercat_ids(array($page['cat']));
       if (isset($_POST['apply_on_sub']))
       {
         $cat_ids = array_merge($cat_ids, functions_category::get_subcat_ids(array($page['cat'])));
@@ -102,7 +103,7 @@ SELECT id
   WHERE id IN ('.implode(',', $cat_ids).')
     AND status = \'private\'
 ;';
-      $private_cats = \Piwigo\inc\functions::array_from_query($query, 'id');
+      $private_cats = functions::array_from_query($query, 'id');
       
       $inserts = array();
       foreach ($private_cats as $cat_id)
@@ -132,7 +133,7 @@ SELECT user_id
   FROM '.USER_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-    $users_granted = \Piwigo\inc\functions::array_from_query($query, 'user_id');
+    $users_granted = functions::array_from_query($query, 'user_id');
 
     if (!isset($_POST['users']))
     {
@@ -162,11 +163,11 @@ DELETE
     $grant_users = $_POST['users'];
     if (count($grant_users) > 0)
     {
-      functions::add_permission_on_category($page['cat'], $grant_users);
+      functions_admin::add_permission_on_category($page['cat'], $grant_users);
     }
   }
 
-  $page['infos'][] = \Piwigo\inc\functions::l10n('Album updated successfully');
+  $page['infos'][] = functions::l10n('Album updated successfully');
 }
 
 // +-----------------------------------------------------------------------+
@@ -202,7 +203,7 @@ SELECT id, name
   FROM `'.GROUPS_TABLE.'`
   ORDER BY name ASC
 ;';
-$groups = \Piwigo\inc\functions::simple_hash_from_query($query, 'id', 'name');
+$groups = functions::simple_hash_from_query($query, 'id', 'name');
 $template->assign('groups', $groups);
 
 // groups granted to access the category
@@ -211,7 +212,7 @@ SELECT group_id
   FROM '.GROUP_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-$group_granted_ids = \Piwigo\inc\functions::array_from_query($query, 'group_id');
+$group_granted_ids = functions::array_from_query($query, 'group_id');
 $template->assign('groups_selected', $group_granted_ids);
 
 // users...
@@ -222,7 +223,7 @@ SELECT '.$conf['user_fields']['id'].' AS id,
        '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.'
 ;';
-$users = \Piwigo\inc\functions::simple_hash_from_query($query, 'id', 'username');
+$users = functions::simple_hash_from_query($query, 'id', 'username');
 $template->assign('users', $users);
 
 
@@ -231,7 +232,7 @@ SELECT user_id
   FROM '.USER_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-$user_granted_direct_ids = \Piwigo\inc\functions::array_from_query($query, 'user_id');
+$user_granted_direct_ids = functions::array_from_query($query, 'user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 
@@ -296,9 +297,9 @@ SELECT user_id, group_id
 // |                           sending html code                           |
 // +-----------------------------------------------------------------------+
 $template->assign(array(
-  'PWG_TOKEN' => \Piwigo\inc\functions::get_pwg_token(),
+  'PWG_TOKEN' => functions::get_pwg_token(),
   'INHERIT' => $conf['inheritance_by_default'],
-  'CACHE_KEYS' => functions::get_admin_client_cache_keys(array('groups', 'users')),
+  'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('groups', 'users')),
   ));
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'cat_perm');

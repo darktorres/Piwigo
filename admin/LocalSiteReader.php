@@ -9,7 +9,7 @@
 namespace Piwigo\admin;
 
 // provides data for site synchronization from the local file system
-use Piwigo\admin\inc\functions_metadata;
+use Piwigo\admin\inc\functions_metadata_admin;
 use Piwigo\inc\functions;
 
 class LocalSiteReader
@@ -56,7 +56,7 @@ function open()
 // retrieve file system sub-directories fulldirs
 function get_full_directories($basedir)
 {
-  $fs_fulldirs = inc\functions::get_fs_directories($basedir);
+  $fs_fulldirs = inc\functions_admin::get_fs_directories($basedir);
   return $fs_fulldirs;
 }
 
@@ -151,13 +151,13 @@ function get_element_update_attributes($file)
 // metadata update/synchronization according to configuration
 function get_metadata_attributes()
 {
-  return functions_metadata::get_sync_metadata_attributes();
+  return functions_metadata_admin::get_sync_metadata_attributes();
 }
 
 // returns a hash of attributes (metadata+filesize+width,...) for file
 function get_element_metadata($infos)
 {
-  return functions_metadata::get_sync_metadata($infos);
+  return functions_metadata_admin::get_sync_metadata($infos);
 }
 
 

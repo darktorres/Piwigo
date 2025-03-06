@@ -10,6 +10,7 @@ namespace Piwigo\inc;
 
 use DateInterval;
 use DateTime;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\functions_history;
 use Piwigo\admin\inc\functions_notification_by_mail;
 use Piwigo\inc\dblayer\functions_mysqli;
@@ -2410,8 +2411,8 @@ class functions
 
       if ($age > $conf['lounge_max_duration'])
       {
-        include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-        \Piwigo\admin\inc\functions::empty_lounge();
+        include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+        functions_admin::empty_lounge();
       }
     }
   }
@@ -4113,7 +4114,7 @@ class functions
         if ($node != '.'
             and $node != '..'
             and is_dir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node)):
-          \Piwigo\admin\inc\functions::clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
+          functions_admin::clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
         endif;
       endwhile;
       closedir($contents);
@@ -4160,7 +4161,7 @@ class functions
     $template->assign('ABS_U_ADMIN', functions_url::get_absolute_root_url());// absolute one due to public pages and $conf['question_mark_in_urls'] = false+$conf['php_extension_in_urls'] = false;
   
     // some tours may need admin functions (like 2_8_0 needs get_orphans)
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
   
     include($tour_to_launch.'/config.php');
     $template->set_filename('TAT_tour_tpl', $TOUR_PATH);
@@ -4819,7 +4820,7 @@ class functions
     if (count($errors) == 0)
     {
       // mass_updates function
-      include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+      include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
   
       $activity_details_tables = array();
   

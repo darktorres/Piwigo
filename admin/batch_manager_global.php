@@ -6,11 +6,12 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\LocalSiteReader;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_plugins;
@@ -31,7 +32,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -41,14 +42,14 @@ functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 if (!empty($_POST))
 {
-  \Piwigo\inc\functions::check_pwg_token();
+  functions::check_pwg_token();
 }
 
 functions_plugins::trigger_notify('loc_begin_element_set_global');
 
-\Piwigo\inc\functions::check_input_parameter('del_tags', $_POST, true, PATTERN_ID);
-\Piwigo\inc\functions::check_input_parameter('associate', $_POST, false, PATTERN_ID);
-\Piwigo\inc\functions::check_input_parameter('dissociate', $_POST, false, PATTERN_ID);
+functions::check_input_parameter('del_tags', $_POST, true, PATTERN_ID);
+functions::check_input_parameter('associate', $_POST, false, PATTERN_ID);
+functions::check_input_parameter('dissociate', $_POST, false, PATTERN_ID);
 
 // +-----------------------------------------------------------------------+
 // |                            current selection                          |
@@ -57,7 +58,7 @@ functions_plugins::trigger_notify('loc_begin_element_set_global');
 $collection = array();
 if (isset($_POST['nb_photos_deleted']))
 {
-  \Piwigo\inc\functions::check_input_parameter('nb_photos_deleted', $_POST, false, '/^\d+$/');
+  functions::check_input_parameter('nb_photos_deleted', $_POST, false, '/^\d+$/');
 
   // let's fake a collection (we don't know the image_ids so we use "null", we only
   // care about the number of items here)
@@ -107,7 +108,7 @@ if (isset($_POST['submit']))
   // photo in the selection
   if (count($collection) == 0)
   {
-    $page['errors'][] = \Piwigo\inc\functions::l10n('Select at least one photo');
+    $page['errors'][] = functions::l10n('Select at least one photo');
   }
 
   $action = $_POST['selectAction'];
@@ -131,12 +132,12 @@ DELETE
   {
     if (empty($_POST['add_tags']))
     {
-      $page['errors'][] = \Piwigo\inc\functions::l10n('Select at least one tag');
+      $page['errors'][] = functions::l10n('Select at least one tag');
     }
     else
     {
-      $tag_ids = functions::get_tag_ids($_POST['add_tags']);
-      functions::add_tags($tag_ids, $collection);
+      $tag_ids = functions_admin::get_tag_ids($_POST['add_tags']);
+      functions_admin::add_tags($tag_ids, $collection);
 
       if ('no_tag' == $page['prefilter'])
       {
@@ -149,7 +150,7 @@ DELETE
   {
     if (isset($_POST['del_tags']) and count($_POST['del_tags']) > 0)
     {
-      $taglist_before = functions::get_image_tag_ids($collection);
+      $taglist_before = functions_admin::get_image_tag_ids($collection);
 
       $query = '
 DELETE
@@ -159,9 +160,9 @@ DELETE
 ;';
       functions_mysqli::pwg_query($query);
 
-      $taglist_after = functions::get_image_tag_ids($collection);
-      $images_to_update = functions::compare_image_tag_lists($taglist_before, $taglist_after);
-      functions::update_images_lastmodified($images_to_update);
+      $taglist_after = functions_admin::get_image_tag_ids($collection);
+      $images_to_update = functions_admin::compare_image_tag_lists($taglist_before, $taglist_after);
+      functions_admin::update_images_lastmodified($images_to_update);
 
       if (isset($_SESSION['bulk_manager_filter']['tags']) &&
         count(array_intersect($_SESSION['bulk_manager_filter']['tags'], $_POST['del_tags'])))
@@ -171,19 +172,19 @@ DELETE
     }
     else
     {
-      $page['errors'][] = \Piwigo\inc\functions::l10n('Select at least one tag');
+      $page['errors'][] = functions::l10n('Select at least one tag');
     }
   }
 
   if ('associate' == $action)
   {
-    functions::associate_images_to_categories(
+    functions_admin::associate_images_to_categories(
       $collection,
       array($_POST['associate'])
       );
 
     $_SESSION['page_infos'] = array(
-      \Piwigo\inc\functions::l10n('Information data registered in database')
+      functions::l10n('Information data registered in database')
       );
 
     // let's refresh the page because we the current set might be modified
@@ -204,10 +205,10 @@ DELETE
 
   else if ('move' == $action)
   {
-    functions::move_images_to_categories($collection, array($_POST['associate']));
+    functions_admin::move_images_to_categories($collection, array($_POST['associate']));
 
     $_SESSION['page_infos'] = array(
-      \Piwigo\inc\functions::l10n('Information data registered in database')
+      functions::l10n('Information data registered in database')
       );
 
     // let's refresh the page because we the current set might be modified
@@ -234,12 +235,12 @@ DELETE
 
   else if ('dissociate' == $action)
   {
-    $nb_dissociated = functions::dissociate_images_from_category($collection, $_POST['dissociate']);
+    $nb_dissociated = functions_admin::dissociate_images_from_category($collection, $_POST['dissociate']);
 
     if ($nb_dissociated > 0)
     {
       $_SESSION['page_infos'] = array(
-        \Piwigo\inc\functions::l10n('Information data registered in database')
+        functions::l10n('Information data registered in database')
         );
 
       // let's refresh the page because the current set might be modified
@@ -270,7 +271,7 @@ DELETE
       $datas
       );
 
-    \Piwigo\inc\functions::pwg_activity('photo', $collection, 'edit', array('action'=>'author'));
+    functions::pwg_activity('photo', $collection, 'edit', array('action'=>'author'));
   }
 
   // title
@@ -296,7 +297,7 @@ DELETE
       $datas
       );
 
-    \Piwigo\inc\functions::pwg_activity('photo', $collection, 'edit', array('action'=>'title'));
+    functions::pwg_activity('photo', $collection, 'edit', array('action'=>'title'));
   }
 
   // date_creation
@@ -326,7 +327,7 @@ DELETE
       $datas
       );
 
-    \Piwigo\inc\functions::pwg_activity('photo', $collection, 'edit', array('action'=>'date_creation'));
+    functions::pwg_activity('photo', $collection, 'edit', array('action'=>'date_creation'));
   }
 
   // privacy_level
@@ -347,7 +348,7 @@ DELETE
       $datas
       );
 
-    \Piwigo\inc\functions::pwg_activity('photo', $collection, 'edit', array('action'=>'privacy_level'));
+    functions::pwg_activity('photo', $collection, 'edit', array('action'=>'privacy_level'));
 
     if (isset($_SESSION['bulk_manager_filter']['level']))
     {
@@ -361,7 +362,7 @@ DELETE
   // add_to_caddie
   else if ('add_to_caddie' == $action)
   {
-    \Piwigo\inc\functions::fill_caddie($collection);
+    functions::fill_caddie($collection);
   }
 
   // delete
@@ -373,7 +374,7 @@ DELETE
       // $deleted_count = \Piwigo\admin\inc\functions::delete_elements($collection, true);
       if (count($collection) > 0)
       {
-        $_SESSION['page_infos'][] = \Piwigo\inc\functions::l10n_dec(
+        $_SESSION['page_infos'][] = functions::l10n_dec(
           '%d photo was deleted', '%d photos were deleted',
           count($collection)
           );
@@ -383,19 +384,19 @@ DELETE
       }
       else
       {
-        $page['errors'][] = \Piwigo\inc\functions::l10n('No photo can be deleted');
+        $page['errors'][] = functions::l10n('No photo can be deleted');
       }
     }
     else
     {
-      $page['errors'][] = \Piwigo\inc\functions::l10n('You need to confirm deletion');
+      $page['errors'][] = functions::l10n('You need to confirm deletion');
     }
   }
 
   // synchronize metadata
   else if ('metadata' == $action)
   {
-    $page['infos'][] = \Piwigo\inc\functions::l10n('Metadata synchronized from file').' <span class="badge">'.count($collection).'</span>';
+    $page['infos'][] = functions::l10n('Metadata synchronized from file').' <span class="badge">'.count($collection).'</span>';
   }
 
   else if ('delete_derivatives' == $action && !empty($_POST['del_derivatives_type']))
@@ -407,7 +408,7 @@ DELETE
     {
       foreach( $_POST['del_derivatives_type'] as $type)
       {
-        functions::delete_element_derivatives($info, $type);
+        functions_admin::delete_element_derivatives($info, $type);
       }
     }
   }
@@ -416,24 +417,24 @@ DELETE
   {
     if ($_POST['regenerateSuccess'] != '0')
     {
-      $page['infos'][] = \Piwigo\inc\functions::l10n('%s photos have been regenerated', $_POST['regenerateSuccess']);
+      $page['infos'][] = functions::l10n('%s photos have been regenerated', $_POST['regenerateSuccess']);
     }
     if ($_POST['regenerateError'] != '0')
     {
-      $page['warnings'][] = \Piwigo\inc\functions::l10n('%s photos can not be regenerated', $_POST['regenerateError']);
+      $page['warnings'][] = functions::l10n('%s photos can not be regenerated', $_POST['regenerateError']);
     }
   }
 
   if (!in_array($action, array('remove_from_caddie','add_to_caddie','delete_derivatives','generate_derivatives')))
   {
-    functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
   }
 
   functions_plugins::trigger_notify('element_set_global_action', $action, $collection);
 
   if ($redirect)
   {
-    \Piwigo\inc\functions::redirect($redirect_url);
+    functions::redirect($redirect_url);
   }
 }
 
@@ -445,19 +446,19 @@ $template->set_filenames(array('batch_manager_global' => 'batch_manager_global.t
 $base_url = functions_url::get_root_url().'admin.php';
 
 $prefilters = array(
-  array('ID' => 'caddie', 'NAME' => \Piwigo\inc\functions::l10n('Caddie')),
-  array('ID' => 'favorites', 'NAME' => \Piwigo\inc\functions::l10n('Your favorites')),
-  array('ID' => 'last_import', 'NAME' => \Piwigo\inc\functions::l10n('Last import')),
-  array('ID' => 'no_album', 'NAME' => \Piwigo\inc\functions::l10n('With no album').' ('.\Piwigo\inc\functions::l10n('Orphans').')'),
-  array('ID' => 'no_tag', 'NAME' => \Piwigo\inc\functions::l10n('With no tag')),
-  array('ID' => 'duplicates', 'NAME' => \Piwigo\inc\functions::l10n('Duplicates')),
-  array('ID' => 'all_photos', 'NAME' => \Piwigo\inc\functions::l10n('All'))
+  array('ID' => 'caddie', 'NAME' => functions::l10n('Caddie')),
+  array('ID' => 'favorites', 'NAME' => functions::l10n('Your favorites')),
+  array('ID' => 'last_import', 'NAME' => functions::l10n('Last import')),
+  array('ID' => 'no_album', 'NAME' => functions::l10n('With no album').' ('. functions::l10n('Orphans').')'),
+  array('ID' => 'no_tag', 'NAME' => functions::l10n('With no tag')),
+  array('ID' => 'duplicates', 'NAME' => functions::l10n('Duplicates')),
+  array('ID' => 'all_photos', 'NAME' => functions::l10n('All'))
 );
 
 if ($conf['enable_synchronization'])
 {
-  $prefilters[] = array('ID' => 'no_virtual_album', 'NAME' => \Piwigo\inc\functions::l10n('With no virtual album'));
-  $prefilters[] = array('ID' => 'no_sync_md5sum', 'NAME' => \Piwigo\inc\functions::l10n('With no checksum'));
+  $prefilters[] = array('ID' => 'no_virtual_album', 'NAME' => functions::l10n('With no virtual album'));
+  $prefilters[] = array('ID' => 'no_sync_md5sum', 'NAME' => functions::l10n('With no checksum'));
 }
 
 $prefilters = functions_plugins::trigger_change('get_batch_manager_prefilters', $prefilters);
@@ -475,10 +476,10 @@ $template->assign(
     'selection' => $collection,
     'all_elements' => $page['cat_elements_id'],
     'START' => $page['start'],
-    'PWG_TOKEN' => \Piwigo\inc\functions::get_pwg_token(),
+    'PWG_TOKEN' => functions::get_pwg_token(),
     'U_DISPLAY'=>$base_url.functions_url::get_query_string_diff(array('display')),
     'F_ACTION'=>$base_url.functions_url::get_query_string_diff(array('cat','start','tag','filter')),
-    'ADMIN_PAGE_TITLE' => \Piwigo\inc\functions::l10n('Batch Manager'),
+    'ADMIN_PAGE_TITLE' => functions::l10n('Batch Manager'),
    )
  );
 
@@ -506,11 +507,11 @@ $template->assign('IN_CADDIE', 'caddie' == $page['prefilter']);
 // privacy level
 foreach ($conf['available_permission_levels'] as $level)
 {
-  $level_options[$level] = \Piwigo\inc\functions::l10n(sprintf('Level %d', $level));
+  $level_options[$level] = functions::l10n(sprintf('Level %d', $level));
 
   if (0 == $level)
   {
-    $level_options[$level] = \Piwigo\inc\functions::l10n('Everybody');
+    $level_options[$level] = functions::l10n('Everybody');
   }
 }
 $template->assign(
@@ -535,7 +536,7 @@ SELECT
   WHERE id IN ('.implode(',', $_SESSION['bulk_manager_filter']['tags']).')
 ;';
 
-  $filter_tags = functions::get_taglist($query);
+  $filter_tags = functions_admin::get_taglist($query);
 }
 
 $template->assign('filter_tags', $filter_tags);
@@ -604,7 +605,7 @@ $template->assign('DATE_CREATION',
 // image level options
 $template->assign(
     array(
-      'level_options'=> \Piwigo\inc\functions::get_privacy_level_options(),
+      'level_options'=> functions::get_privacy_level_options(),
       'level_options_selected' => 0,
     )
   );
@@ -623,10 +624,10 @@ $template->assign(
 $del_deriv_map = array();
 foreach(ImageStdParams::get_defined_type_map() as $params)
 {
-  $del_deriv_map[$params->type] = \Piwigo\inc\functions::l10n($params->type);
+  $del_deriv_map[$params->type] = functions::l10n($params->type);
 }
 $gen_deriv_map = $del_deriv_map;
-$del_deriv_map[derivative_std_params::IMG_CUSTOM] = \Piwigo\inc\functions::l10n(derivative_std_params::IMG_CUSTOM);
+$del_deriv_map[derivative_std_params::IMG_CUSTOM] = functions::l10n(derivative_std_params::IMG_CUSTOM);
 $template->assign(
     array(
       'del_derivatives_types' => $del_deriv_map,
@@ -663,7 +664,7 @@ $nb_thumbs_page = 0;
 
 if (count($page['cat_elements_id']) > 0)
 {
-  $nav_bar = \Piwigo\inc\functions::create_navigation_bar(
+  $nav_bar = functions::create_navigation_bar(
     $base_url.functions_url::get_query_string_diff(array('start')),
     count($page['cat_elements_id']),
     $page['start'],
@@ -730,7 +731,7 @@ SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
     $src_image = new SrcImage($row);
 
     $ttitle = functions_html::render_element_name($row);
-    if ($ttitle != \Piwigo\inc\functions::get_name_from_file($row['file']))
+    if ($ttitle != functions::get_name_from_file($row['file']))
     {
       $ttitle.= ' ('.$row['file'].')';
     }
@@ -753,7 +754,7 @@ SELECT id,path,representative_ext,file,filesize,level,name,width,height,rotation
 $template->assign(array(
   'nb_thumbs_page' => $nb_thumbs_page,
   'nb_thumbs_set' => count($page['cat_elements_id']),
-  'CACHE_KEYS' => functions::get_admin_client_cache_keys(array('tags', 'categories')),
+  'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('tags', 'categories')),
   ));
 
 functions_plugins::trigger_notify('loc_end_element_set_global');

@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
@@ -18,7 +19,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 $query = '
 SELECT
@@ -129,7 +130,7 @@ SELECT id, name, id_uppercat
     $categories
     );
   
-  \Piwigo\admin\inc\functions::save_categories_order($categories);
+  functions_admin::save_categories_order($categories);
 
   $open_cat = $_POST['id'];
 }

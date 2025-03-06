@@ -8,8 +8,9 @@
 
 namespace Piwigo\inc\ws_functions;
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_plugins;
 use Piwigo\inc\functions_tag;
 use Piwigo\inc\functions_url;
@@ -234,16 +235,16 @@ class pwg_tags
    */
   static function ws_tags_add($params, &$service)
   {
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    $creation_output = functions::create_tag($params['name']);
+    $creation_output = functions_admin::create_tag($params['name']);
 
     if (isset($creation_output['error']))
     {
       return new PwgError(WS_ERR_INVALID_PARAM, $creation_output['error']);
     }
 
-    \Piwigo\inc\functions::pwg_activity('tag', $creation_output['id'], 'add');
+    functions::pwg_activity('tag', $creation_output['id'], 'add');
 
     $query = '
   SELECT name, url_name 
@@ -262,9 +263,9 @@ class pwg_tags
 
   static function ws_tags_delete($params, &$service) 
   {
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -285,7 +286,7 @@ class pwg_tags
 
     if (count($tag_ids) > 0) 
     {
-      functions::delete_tags($params['tag_id']);
+      functions_admin::delete_tags($params['tag_id']);
       return array('id' => $tag_ids);
     } else {
       return array('id' => array());
@@ -294,9 +295,9 @@ class pwg_tags
 
   static function ws_tags_rename($params, &$service) 
   {
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -321,7 +322,7 @@ class pwg_tags
     FROM '.TAGS_TABLE.'
     WHERE id != '.$tag_id.'
   ;';
-    $existing_names = \Piwigo\inc\functions::array_from_query($query, 'name');
+    $existing_names = functions::array_from_query($query, 'name');
 
     $update = array();
 
@@ -338,7 +339,7 @@ class pwg_tags
 
     }
 
-    \Piwigo\inc\functions::pwg_activity('tag', $tag_id, 'edit');
+    functions::pwg_activity('tag', $tag_id, 'edit');
 
     functions_mysqli::single_update(
       TAGS_TABLE,
@@ -362,9 +363,9 @@ class pwg_tags
   static function ws_tags_duplicate($params, &$service)
   {
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -405,14 +406,14 @@ class pwg_tags
     );
     $destination_tag_id = functions_mysqli::pwg_db_insert_id(TAGS_TABLE);
 
-    \Piwigo\inc\functions::pwg_activity('tag', $destination_tag_id, 'add', array('action'=>'duplicate', 'source_tag'=>$tag_id));
+    functions::pwg_activity('tag', $destination_tag_id, 'add', array('action'=>'duplicate', 'source_tag'=>$tag_id));
 
     $query = '
   SELECT image_id
     FROM '.IMAGE_TAG_TABLE.'
     WHERE tag_id = '.$tag_id.'
   ;';
-    $destination_tag_image_ids = \Piwigo\inc\functions::array_from_query($query, 'image_id');
+    $destination_tag_image_ids = functions::array_from_query($query, 'image_id');
 
     $inserts = array();
           
@@ -422,7 +423,7 @@ class pwg_tags
         'tag_id' => $destination_tag_id,
         'image_id' => $image_id
       );
-      \Piwigo\inc\functions::pwg_activity('photo', $image_id, 'edit', array("add-tag" => $destination_tag_id));
+      functions::pwg_activity('photo', $image_id, 'edit', array("add-tag" => $destination_tag_id));
     }
 
     if (count($inserts) > 0)
@@ -445,7 +446,7 @@ class pwg_tags
   static function ws_tags_merge($params, &$service)
   {
 
-    if (\Piwigo\inc\functions::get_pwg_token() != $params['pwg_token'])
+    if (functions::get_pwg_token() != $params['pwg_token'])
     {
       return new PwgError(403, 'Invalid security token');
     }
@@ -506,15 +507,15 @@ class pwg_tags
       array('ignore'=>true)
       );
 
-    \Piwigo\inc\functions::pwg_activity('tag', $params['destination_tag_id'], 'edit');
+    functions::pwg_activity('tag', $params['destination_tag_id'], 'edit');
     foreach ($image_to_add as $image_id) 
     {
-      \Piwigo\inc\functions::pwg_activity('photo', $image_id, 'edit', array("tag-add" => $params['destination_tag_id']));
+      functions::pwg_activity('photo', $image_id, 'edit', array("tag-add" => $params['destination_tag_id']));
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    functions::delete_tags($merge_tag);
+    functions_admin::delete_tags($merge_tag);
 
     $image_in_merged = array_merge($image_in_dest, $image_to_add);
 

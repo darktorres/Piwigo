@@ -10,6 +10,7 @@
 // | Photo selection                                                       |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\functions_upload;
 use Piwigo\admin\inc\pwg_image;
 use Piwigo\inc\dblayer\functions_mysqli;
@@ -178,7 +179,7 @@ if (!function_exists('gd_info'))
 
 $template->assign(array(
   'setup_errors'=> $setup_errors,
-  'CACHE_KEYS' => \Piwigo\admin\inc\functions::get_admin_client_cache_keys(array('categories')),
+  'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('categories')),
   ));
 
 // Warnings

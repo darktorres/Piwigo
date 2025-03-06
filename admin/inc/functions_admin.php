@@ -12,17 +12,19 @@ use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_params;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
 use Piwigo\inc\functions_html;
+use Piwigo\inc\functions_plugins;
 use Piwigo\inc\functions_session;
 use Piwigo\inc\functions_url;
 use Piwigo\inc\functions_user;
 use Piwigo\inc\ImageStdParams;
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions_metadata.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_metadata_admin.php');
 
 
-class functions
+class functions_admin
 {
   /**
    * Deletes a site and call delete_categories for each primary category of the site
@@ -158,8 +160,8 @@ class functions
     WHERE cat_id IN ('.implode(',',$ids).')';
     functions_mysqli::pwg_query($query);
 
-    \Piwigo\inc\functions_plugins::trigger_notify('delete_categories', $ids);
-    \Piwigo\inc\functions::pwg_activity('album', $ids, 'delete', array('photo_deletion_mode'=>$photo_deletion_mode));
+    functions_plugins::trigger_notify('delete_categories', $ids);
+    functions::pwg_activity('album', $ids, 'delete', array('photo_deletion_mode'=>$photo_deletion_mode));
   }
 
   /**
@@ -214,18 +216,18 @@ class functions
       }
 
       $files = array();
-      $files[] = \Piwigo\inc\functions::get_element_path($row);
+      $files[] = functions::get_element_path($row);
 
       if (!empty($row['representative_ext']))
       {
-        $files[] = \Piwigo\inc\functions::original_to_representative( $files[0], $row['representative_ext']);
+        $files[] = functions::original_to_representative( $files[0], $row['representative_ext']);
       }
 
       if (isset($formats_of[ $row['id'] ]))
       {
         foreach ($formats_of[ $row['id'] ] as $format_ext)
         {
-          $files[] = \Piwigo\inc\functions::original_to_format($files[0], $format_ext);
+          $files[] = functions::original_to_format($files[0], $format_ext);
         }
       }
 
@@ -274,7 +276,7 @@ class functions
     {
       return 0;
     }
-    \Piwigo\inc\functions_plugins::trigger_notify('begin_delete_elements', $ids);
+    functions_plugins::trigger_notify('begin_delete_elements', $ids);
 
     if ($physical_deletion)
     {
@@ -356,8 +358,8 @@ class functions
       self::update_category($category_ids);
     }
 
-    \Piwigo\inc\functions_plugins::trigger_notify('delete_elements', $ids);
-    \Piwigo\inc\functions::pwg_activity('photo', $ids, 'delete');
+    functions_plugins::trigger_notify('delete_elements', $ids);
+    functions::pwg_activity('photo', $ids, 'delete');
     return count($ids);
   }
 
@@ -412,8 +414,8 @@ class functions
   ;';
     functions_mysqli::pwg_query($query);
 
-    \Piwigo\inc\functions_plugins::trigger_notify('delete_user', $user_id);
-    \Piwigo\inc\functions::pwg_activity('user', $user_id, 'delete');
+    functions_plugins::trigger_notify('delete_user', $user_id);
+    functions::pwg_activity('user', $user_id, 'delete');
   }
 
   /**
@@ -1154,7 +1156,7 @@ class functions
 
           if (is_file($path.'/'.$node))
           {
-            $extension = \Piwigo\inc\functions::get_extension($node);
+            $extension = functions::get_extension($node);
 
             if (isset($conf['flip_picture_ext'][$extension]))
             {
@@ -1381,7 +1383,7 @@ class functions
         // into a new parent category with uppercats 12,125,13,14,24
         if (preg_match('/^'.$category['uppercats'].'(,|$)/', $new_parent_uppercats))
         {
-          $page['errors'][] = \Piwigo\inc\functions::l10n('You cannot move an album in its own sub album');
+          $page['errors'][] = functions::l10n('You cannot move an album in its own sub album');
           return;
         }
       }
@@ -1422,12 +1424,12 @@ class functions
       self::set_cat_status(array_keys($categories), 'private');
     }
 
-    $page['infos'][] = \Piwigo\inc\functions::l10n_dec(
+    $page['infos'][] = functions::l10n_dec(
       '%d album moved', '%d albums moved',
       count($categories)
       );
 
-      \Piwigo\inc\functions::pwg_activity('album', $category_ids, 'move', array('parent'=>$new_parent));
+      functions::pwg_activity('album', $category_ids, 'move', array('parent'=>$new_parent));
   }
 
   /**
@@ -1450,7 +1452,7 @@ class functions
     // is the given category name only containing blank spaces ?
     if (preg_match('/^\s*$/', $category_name))
     {
-      return array('error' => \Piwigo\inc\functions::l10n('The name of an album must not be empty'));
+      return array('error' => functions::l10n('The name of an album must not be empty'));
     }
 
     $rank = 0;
@@ -1594,11 +1596,11 @@ class functions
       self::add_permission_on_category($inserted_id, array_unique(array_merge(self::get_admins(), array($user['id']))));
     }
 
-    \Piwigo\inc\functions_plugins::trigger_notify('create_virtual_category', array_merge(array('id'=>$inserted_id), $insert));
-    \Piwigo\inc\functions::pwg_activity('album', $inserted_id, 'add');
+    functions_plugins::trigger_notify('create_virtual_category', array_merge(array('id'=>$inserted_id), $insert));
+    functions::pwg_activity('album', $inserted_id, 'add');
 
     return array(
-      'info' => \Piwigo\inc\functions::l10n('Album added'),
+      'info' => functions::l10n('Album added'),
       'id'   => $inserted_id,
       );
   }
@@ -1704,8 +1706,8 @@ class functions
   ;';
     functions_mysqli::pwg_query($query);
 
-    \Piwigo\inc\functions_plugins::trigger_notify("delete_tags", $tag_ids);
-    \Piwigo\inc\functions::pwg_activity('tag', $tag_ids, 'delete');
+    functions_plugins::trigger_notify("delete_tags", $tag_ids);
+    functions::pwg_activity('tag', $tag_ids, 'delete');
 
     self::update_images_lastmodified($image_ids);
     self::invalidate_user_cache_nb_tags();
@@ -1735,7 +1737,7 @@ class functions
   ;';
     if (count($existing_tags = functions_mysqli::query2array($query, null, 'id')) == 0)
     {
-      $url_name = \Piwigo\inc\functions_plugins::trigger_change('render_tag_url', $tag_name);
+      $url_name = functions_plugins::trigger_change('render_tag_url', $tag_name);
       // search existing by url name
       $query = '
   SELECT id
@@ -1745,7 +1747,7 @@ class functions
       if (count($existing_tags = functions_mysqli::query2array($query, null, 'id')) == 0)
       {
         // search by extended description (plugin sub name)
-        $sub_name_where = \Piwigo\inc\functions_plugins::trigger_change('get_tag_name_like_where', array(), $tag_name);
+        $sub_name_where = functions_plugins::trigger_change('get_tag_name_like_where', array(), $tag_name);
         if (count($sub_name_where))
         {
           $query = '
@@ -1948,7 +1950,7 @@ class functions
       if (time() - $running_exec_start_time > 60)
       {
         $logger->debug(__FUNCTION__.', exec='.$running_exec_id.', timeout stopped by another call to the function');
-        \Piwigo\inc\functions::conf_delete_param('empty_lounge_running');
+        functions::conf_delete_param('empty_lounge_running');
       }
     }
 
@@ -2016,11 +2018,11 @@ class functions
       self::invalidate_user_cache();
     }
 
-    \Piwigo\inc\functions::conf_delete_param('empty_lounge_running');
+    functions::conf_delete_param('empty_lounge_running');
 
     $logger->debug(__FUNCTION__.', exec='.$exec_id.', ends');
 
-    \Piwigo\inc\functions_plugins::trigger_notify('empty_lounge', $rows);
+    functions_plugins::trigger_notify('empty_lounge', $rows);
 
     return $rows;
   }
@@ -2135,7 +2137,7 @@ class functions
         OR storage_category_id IS NULL
       )
   ;';
-    $dissociables = \Piwigo\inc\functions::array_from_query($query, 'id');
+    $dissociables = functions::array_from_query($query, 'id');
 
     if (!empty($dissociables))
     {
@@ -2255,8 +2257,8 @@ class functions
     SET need_update = \'true\';';
       functions_mysqli::pwg_query($query);
     }
-    \Piwigo\inc\functions::conf_delete_param('count_orphans');
-    \Piwigo\inc\functions_plugins::trigger_notify('invalidate_user_cache', $full);
+    functions::conf_delete_param('count_orphans');
+    functions_plugins::trigger_notify('invalidate_user_cache', $full);
   }
 
   /**
@@ -2334,7 +2336,7 @@ class functions
     $tpl_options = array();
     for ($level = $MinLevelAccess; $level <= $MaxLevelAccess; $level++)
     {
-      $tpl_options[$level] = \Piwigo\inc\functions::l10n(sprintf('ACCESS_%d', $level));
+      $tpl_options[$level] = functions::l10n(sprintf('ACCESS_%d', $level));
     }
     return $tpl_options;
   }
@@ -2361,7 +2363,7 @@ class functions
         $extents = array_merge($extents, self::get_extents($path));
       }
       elseif ( !is_link($path) and file_exists($path)
-              and \Piwigo\inc\functions::get_extension($path) == 'tpl' )
+              and functions::get_extension($path) == 'tpl' )
       {
         $extents[] = substr($path, 21);
       }
@@ -2394,21 +2396,21 @@ class functions
         TAGS_TABLE,
         array(
           'name' => $tag_name,
-          'url_name' => \Piwigo\inc\functions_plugins::trigger_change('render_tag_url', $tag_name),
+          'url_name' => functions_plugins::trigger_change('render_tag_url', $tag_name),
           )
         );
 
       $inserted_id = functions_mysqli::pwg_db_insert_id(TAGS_TABLE);
 
       return array(
-        'info' => \Piwigo\inc\functions::l10n('Tag "%s" was added', stripslashes($tag_name)),
+        'info' => functions::l10n('Tag "%s" was added', stripslashes($tag_name)),
         'id' => $inserted_id,
         );
     }
     else
     {
       return array(
-        'error' => \Piwigo\inc\functions::l10n('Tag "%s" already exists', stripslashes($tag_name))
+        'error' => functions::l10n('Tag "%s" already exists', stripslashes($tag_name))
         );
     }
   }
@@ -2645,13 +2647,13 @@ class functions
       return false;
     }
 
-    if (preg_match('/^group:(\d+)$/', \Piwigo\inc\functions::conf_get_param('email_admin_on_new_user', 'undefined'), $matches))
+    if (preg_match('/^group:(\d+)$/', functions::conf_get_param('email_admin_on_new_user', 'undefined'), $matches))
     {
       foreach ($group_ids as $group_id)
       {
         if ($group_id == $matches[1])
         {
-          \Piwigo\inc\functions::conf_update_param('email_admin_on_new_user', 'all', true);
+          functions::conf_update_param('email_admin_on_new_user', 'all', true);
         }
       }
     }
@@ -2691,8 +2693,8 @@ class functions
   ;';
     functions_mysqli::pwg_query($query);
 
-    \Piwigo\inc\functions_plugins::trigger_notify('delete_group', $groupids);
-    \Piwigo\inc\functions::pwg_activity('group', $groupids, 'delete');
+    functions_plugins::trigger_notify('delete_group', $groupids);
+    functions::pwg_activity('group', $groupids, 'delete');
 
 
     return $group_list;
@@ -2817,7 +2819,7 @@ class functions
     while ($row = functions_mysqli::pwg_db_fetch_assoc($result))
     {
       $raw_name = $row['name'];
-      $name = \Piwigo\inc\functions_plugins::trigger_change('render_tag_name', $raw_name, $row);
+      $name = functions_plugins::trigger_change('render_tag_name', $raw_name, $row);
 
       $taglist[] =  array(
           'name' => $name,
@@ -2826,7 +2828,7 @@ class functions
 
       if (!$only_user_language)
       {
-        $alt_names = \Piwigo\inc\functions_plugins::trigger_change('get_tag_alt_names', array(), $raw_name);
+        $alt_names = functions_plugins::trigger_change('get_tag_alt_names', array(), $raw_name);
 
         foreach( array_diff( array_unique($alt_names), array($name) ) as $alt)
         {
@@ -3115,7 +3117,7 @@ class functions
     $path = $infos['path'];
     if (!empty($infos['representative_ext']))
     {
-      $path = \Piwigo\inc\functions::original_to_representative( $path, $infos['representative_ext']);
+      $path = functions::original_to_representative( $path, $infos['representative_ext']);
     }
     if (substr_compare($path, '../', 0, 3)==0)
     {
@@ -3202,7 +3204,7 @@ class functions
       {
         if (!is_dir($trash_path))
         {
-          @\Piwigo\inc\functions::mkgetdir($trash_path, \Piwigo\inc\functions::MKGETDIR_RECURSIVE|\Piwigo\inc\functions::MKGETDIR_DIE_ON_ERROR|\Piwigo\inc\functions::MKGETDIR_PROTECT_HTACCESS);
+          @functions::mkgetdir($trash_path, functions::MKGETDIR_RECURSIVE| functions::MKGETDIR_DIE_ON_ERROR| functions::MKGETDIR_PROTECT_HTACCESS);
         }
         while ($r = $trash_path . '/' . md5(uniqid(rand(), true)))
         {
@@ -3324,7 +3326,7 @@ class functions
 
   static function count_orphans()
   {
-    if (is_null(\Piwigo\inc\functions::conf_get_param('count_orphans')))
+    if (is_null(functions::conf_get_param('count_orphans')))
     {
       // we don't care about the list of image_ids, we only care about the number
       // of orphans, so let's use a faster method than calling count(get_orphans())
@@ -3343,10 +3345,10 @@ class functions
       list($image_counter_in_categories) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
 
       $counter = $image_counter_all - $image_counter_in_categories;
-      \Piwigo\inc\functions::conf_update_param('count_orphans', $counter, true);
+      functions::conf_update_param('count_orphans', $counter, true);
     }
 
-    return \Piwigo\inc\functions::conf_get_param('count_orphans');
+    return functions::conf_get_param('count_orphans');
   }
 
   /**
@@ -3569,7 +3571,7 @@ class functions
     }
 
     $page[__FUNCTION__.'_already_called'] = true;
-    \Piwigo\inc\functions::conf_update_param('fs_quick_check_last_check', date('c'));
+    functions::conf_update_param('fs_quick_check_last_check', date('c'));
 
     $query = '
   SELECT
@@ -3618,7 +3620,7 @@ class functions
         $template->assign(
           'header_msgs',
           array(
-            \Piwigo\inc\functions::l10n('Some photos are missing from your file system. Details provided by plugin Check Uploads'),
+            functions::l10n('Some photos are missing from your file system. Details provided by plugin Check Uploads'),
           )
         );
 
@@ -3638,7 +3640,7 @@ class functions
 
     $news = null;
 
-    $cache_path = PHPWG_ROOT_PATH.\Piwigo\inc\functions::conf_get_param('data_location').'cache/piwigo_latest_news-'.$lang_info['code'].'.cache.php';
+    $cache_path = PHPWG_ROOT_PATH. functions::conf_get_param('data_location').'cache/piwigo_latest_news-'.$lang_info['code'].'.cache.php';
     if (!is_file($cache_path) or filemtime($cache_path) < strtotime('24 hours ago'))
     {
       $url = PHPWG_URL.'/ws.php?method=porg.news.getLatest&format=json';
@@ -3657,12 +3659,12 @@ class functions
             'id' => $topic['topic_id'],
             'subject' => $topic['subject'],
             'posted_on' => $topic['posted_on'],
-            'posted' => \Piwigo\inc\functions::format_date($topic['posted_on']),
+            'posted' => functions::format_date($topic['posted_on']),
             'url' => $topic['url'],
           );
         }
 
-        if (\Piwigo\inc\functions::mkgetdir(dirname($cache_path)))
+        if (functions::mkgetdir(dirname($cache_path)))
         {
           file_put_contents($cache_path, serialize($news));
         }

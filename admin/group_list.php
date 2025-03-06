@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
@@ -17,7 +18,7 @@ if( !defined("PHPWG_ROOT_PATH") )
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | tabs                                                                  |
@@ -52,7 +53,7 @@ $template->assign(
     'F_ADD_ACTION' => functions_url::get_root_url().'admin.php?page=group_list',
     // 'U_HELP' => \Piwigo\inc\functions_url::get_root_url().'admin/popuphelp.php?page=group_list',
     'PWG_TOKEN' => functions::get_pwg_token(),
-    'CACHE_KEYS' => \Piwigo\admin\inc\functions::get_admin_client_cache_keys(array('groups', 'users')),
+    'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('groups', 'users')),
     )
   );
 

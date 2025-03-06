@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_category;
@@ -17,7 +18,7 @@ if (!defined('IN_ADMIN'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -66,7 +67,7 @@ elseif (isset($_POST['trueify'])
     and isset($_POST['cat_false'])
     and count($_POST['cat_false']) > 0)
 {
-  \Piwigo\admin\inc\functions::add_permission_on_category($_POST['cat_false'], $page['user']);
+  functions_admin::add_permission_on_category($_POST['cat_false'], $page['user']);
 }
 
 // +-----------------------------------------------------------------------+
@@ -85,7 +86,7 @@ $template->assign(
     'TITLE' =>
       functions::l10n(
         'Manage permissions for user "%s"',
-        \Piwigo\admin\inc\functions::get_username($page['user'])
+        functions_admin::get_username($page['user'])
         ),
     'L_CAT_OPTIONS_TRUE'=>functions::l10n('Authorized'),
     'L_CAT_OPTIONS_FALSE'=>functions::l10n('Forbidden'),

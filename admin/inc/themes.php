@@ -10,6 +10,7 @@ namespace Piwigo\admin\inc;
 
 use PclZip;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_url;
 use Piwigo\inc\functions_user;
@@ -110,7 +111,7 @@ class themes
         $missing_parent = $this->missing_parent_theme($theme_id);
         if (isset($missing_parent))
         {
-          $errors[] = \Piwigo\inc\functions::l10n(
+          $errors[] = functions::l10n(
             'Impossible to activate this theme, the parent theme is missing: %s',
             $missing_parent
             );
@@ -122,7 +123,7 @@ class themes
             and !empty($conf['mobile_theme'])
             and $conf['mobile_theme'] != $theme_id)
         {
-          $errors[] = \Piwigo\inc\functions::l10n('You can activate only one mobile theme.');
+          $errors[] = functions::l10n('You can activate only one mobile theme.');
           break;
         }
 
@@ -143,7 +144,7 @@ INSERT INTO '.THEMES_TABLE.'
 
           if ($this->fs_themes[$theme_id]['mobile'])
           {
-            \Piwigo\inc\functions::conf_update_param('\Piwigo\inc\functions::mobile_theme', $theme_id);
+            functions::conf_update_param('\Piwigo\inc\functions::mobile_theme', $theme_id);
           }
         }
         break;
@@ -158,7 +159,7 @@ INSERT INTO '.THEMES_TABLE.'
         // you can't deactivate the last theme
         if (count($this->db_themes_by_id) <= 1)
         {
-          $errors[] = \Piwigo\inc\functions::l10n('Impossible to deactivate this theme, you need at least one theme.');
+          $errors[] = functions::l10n('Impossible to deactivate this theme, you need at least one theme.');
           break;
         }
 
@@ -196,7 +197,7 @@ DELETE
 
         if ($this->fs_themes[$theme_id]['mobile'])
         {
-          \Piwigo\inc\functions::conf_update_param('\Piwigo\inc\functions::mobile_theme', '');
+          functions::conf_update_param('\Piwigo\inc\functions::mobile_theme', '');
         }
         break;
 
@@ -215,7 +216,7 @@ DELETE
         $children = $this->get_children_themes($theme_id);
         if (count($children) > 0)
         {
-          $errors[] = \Piwigo\inc\functions::l10n(
+          $errors[] = functions::l10n(
             'Impossible to delete this theme. Other themes depends on it: %s',
             implode(', ', $children)
             );
@@ -224,8 +225,8 @@ DELETE
 
         $theme_maintain->delete();
 
-        include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-        functions::deltree(PHPWG_THEMES_PATH.$theme_id, PHPWG_THEMES_PATH . 'trash');
+        include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+        functions_admin::deltree(PHPWG_THEMES_PATH.$theme_id, PHPWG_THEMES_PATH . 'trash');
         break;
 
       case 'set_default':
@@ -234,7 +235,7 @@ DELETE
         break;
     }
 
-    \Piwigo\inc\functions::pwg_activity('system', ACTIVITY_SYSTEM_THEME, $action, $activity_details);
+    functions::pwg_activity('system', ACTIVITY_SYSTEM_THEME, $action, $activity_details);
 
     return $errors;
   }
@@ -291,7 +292,7 @@ SELECT
 ;';
     $user_ids = array_unique(
       array_merge(
-        \Piwigo\inc\functions::array_from_query($query, 'user_id'),
+        functions::array_from_query($query, 'user_id'),
         array($conf['guest_id'], $conf['default_user_id'])
         )
       );
@@ -375,7 +376,7 @@ SELECT
           {
             $theme['uri'] = trim($val[1]);
           }
-          if ($desc = \Piwigo\inc\functions::load_language('description.txt', $path.'/', array('return' => true)))
+          if ($desc = functions::load_language('description.txt', $path.'/', array('return' => true)))
           {
             $theme['description'] = trim($desc);
           }
@@ -478,13 +479,13 @@ SELECT
     $version = PHPWG_VERSION;
     $versions_to_check = array();
     $url = PEM_URL . '/api/get_version_list.php';
-    if (functions::fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
+    if (functions_admin::fetchRemote($url, $result, $get_data) and $pem_versions = @unserialize($result))
     {
       if (!preg_match('/^\d+\.\d+\.\d+$/', $version))
       {
         $version = $pem_versions[0]['name'];
       }
-      $branch = \Piwigo\inc\functions::get_branch_from_version($version);
+      $branch = functions::get_branch_from_version($version);
       foreach ($pem_versions as $pem_version)
       {
         if (strpos($pem_version['name'], $branch) === 0)
@@ -529,7 +530,7 @@ SELECT
         $get_data['extension_include'] = implode(',', $themes_to_check);
       }
     }
-    if (functions::fetchRemote($url, $result, $get_data))
+    if (functions_admin::fetchRemote($url, $result, $get_data))
     {
       $pem_themes = @unserialize($result);
       if (!is_array($pem_themes))
@@ -589,7 +590,7 @@ SELECT
         'origin' => 'piwigo_'.$action,
       );
 
-      if ($handle = @fopen($archive, 'wb') and functions::fetchRemote($url, $handle, $get_data))
+      if ($handle = @fopen($archive, 'wb') and functions_admin::fetchRemote($url, $handle, $get_data))
       {
         fclose($handle);
         $zip = new PclZip($archive);
@@ -675,7 +676,7 @@ SELECT
                   }
                   elseif (is_dir($path))
                   {
-                    functions::deltree($path, PHPWG_THEMES_PATH . 'trash');
+                    functions_admin::deltree($path, PHPWG_THEMES_PATH . 'trash');
                   }
                 }
               }

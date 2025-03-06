@@ -8,6 +8,7 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\PwgError;
@@ -123,10 +124,10 @@ class pwg_groups
       return new PwgError(403, 'Invalid security token');
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    $groupnames = array_values(\Piwigo\admin\inc\functions::delete_groups($params['group_id']));
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    $groupnames = array_values(functions_admin::delete_groups($params['group_id']));
     
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
 
     return new PwgNamedArray($groupnames, 'group_deleted');
   }
@@ -241,8 +242,8 @@ class pwg_groups
       $inserts
       );
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::invalidate_user_cache();
 
     functions::pwg_activity('group', $params['group_id'], 'edit');
     functions::pwg_activity('user', $params['user_id'], 'edit');
@@ -321,8 +322,8 @@ class pwg_groups
       array('ignore'=>true)
       );
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::invalidate_user_cache();
 
     functions::pwg_activity('group', $params['destination_group_id'], 'edit');
     foreach ($user_to_add as $user_id) 
@@ -330,9 +331,9 @@ class pwg_groups
       functions::pwg_activity('user', $user_id, 'edit', array("associated" => $params['destination_group_id']));
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
-    \Piwigo\admin\inc\functions::delete_groups($merge_group);
+    functions_admin::delete_groups($merge_group);
 
     return array(
       "destination_group" => $service->invoke('pwg.groups.getList', array('group_id' => $params['destination_group_id'])),
@@ -420,8 +421,8 @@ class pwg_groups
       array('ignore'=>true)
     );
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::invalidate_user_cache();
 
     foreach ($users as $user_id) 
     {
@@ -465,8 +466,8 @@ class pwg_groups
   ;';
     functions_mysqli::pwg_query($query);
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+    functions_admin::invalidate_user_cache();
 
     functions::pwg_activity('group', $params['group_id'], 'edit');
     functions::pwg_activity('user', $params['user_id'], 'edit');

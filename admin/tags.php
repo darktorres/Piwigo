@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
@@ -18,7 +19,7 @@ if( !defined("PHPWG_ROOT_PATH") )
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 // +-----------------------------------------------------------------------+
@@ -40,7 +41,7 @@ if (isset($_GET['action']) and 'delete_orphans' == $_GET['action'])
 {
   functions::check_pwg_token();
 
-  \Piwigo\admin\inc\functions::delete_orphan_tags();
+  functions_admin::delete_orphan_tags();
   $_SESSION['message_tags'] = functions::l10n('Orphan tags deleted');
   functions::redirect(functions_url::get_root_url().'admin.php?page=tags');
 }
@@ -64,7 +65,7 @@ $template->assign(
 
 $warning_tags = "";
 
-$orphan_tags = \Piwigo\admin\inc\functions::get_orphan_tags();
+$orphan_tags = functions_admin::get_orphan_tags();
 
 $orphan_tag_names_array = '[]';
 $orphan_tag_names = array();

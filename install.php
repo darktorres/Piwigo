@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\functions_install;
 use Piwigo\admin\inc\languages;
 use Piwigo\inc\dblayer\functions_mysqli;
@@ -158,7 +159,7 @@ if (@file_exists($config_file))
 }
 
 include(PHPWG_ROOT_PATH . 'inc/constants.php');
-include(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+include(PHPWG_ROOT_PATH . 'admin/inc/functions_admin.php');
 
 $languages = new languages('utf-8');
 
@@ -482,8 +483,8 @@ else
     // newsletter subscription
     if ($is_newsletter_subscribe)
     {
-      \Piwigo\admin\inc\functions::fetchRemote(
-        \Piwigo\admin\inc\functions::get_newsletter_subscribe_base_url($language).$admin_mail,
+      functions_admin::fetchRemote(
+        functions_admin::get_newsletter_subscribe_base_url($language).$admin_mail,
         $result,
         array(),
         array('origin' => 'installation')

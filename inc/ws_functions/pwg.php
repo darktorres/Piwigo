@@ -8,6 +8,7 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_params;
 use Piwigo\inc\derivative_std_params;
@@ -243,10 +244,10 @@ class pwg
       }
     }
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
     // Multiples sizes size
     $path_msizes = $conf['data_location'].'i';
-    $msizes = \Piwigo\admin\inc\functions::get_cache_size_derivatives($path_msizes);
+    $msizes = functions_admin::get_cache_size_derivatives($path_msizes);
 
     $infos['msizes'] = array_fill_keys(array_keys(ImageStdParams::get_defined_type_map()), 0);
     $infos['msizes']['custom'] = 0;
@@ -490,9 +491,9 @@ class pwg
     }
     elseif ('admins_only' == $conf['activity_display_connections'])
     {
-      include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+      include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
       $query.= '
-      AND NOT (action IN (\'login\', \'logout\') AND object_id NOT IN ('.implode(',', \Piwigo\admin\inc\functions::get_admins()).'))';
+      AND NOT (action IN (\'login\', \'logout\') AND object_id NOT IN ('.implode(',', functions_admin::get_admins()).'))';
     }
 
     $query.= '
@@ -668,7 +669,7 @@ class pwg
   static function ws_history_search($param, &$service)
   {
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
     include_once(PHPWG_ROOT_PATH.'admin/inc/functions_history.php');
 
     global $conf;

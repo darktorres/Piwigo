@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_user;
 use Piwigo\inc\ImageStdParams;
@@ -182,7 +183,7 @@ if (count($errors) == 0)
 
   if (count($changed_types))
   {
-    \Piwigo\admin\inc\functions::clear_derivative_cache($changed_types);
+    functions_admin::clear_derivative_cache($changed_types);
   }
 
   $page['infos'][] = functions::l10n('Your configuration settings are saved');

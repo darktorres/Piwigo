@@ -13,7 +13,7 @@ if( !defined("PHPWG_ROOT_PATH") )
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 functions_user::check_status(ACCESS_ADMINISTRATOR);
 
 $sections = explode('/', $_GET['section'] );

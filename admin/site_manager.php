@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
@@ -19,7 +20,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -121,7 +122,7 @@ SELECT galleries_url
   {
     case 'delete' :
     {
-      \Piwigo\admin\inc\functions::delete_site($page['site']);
+      functions_admin::delete_site($page['site']);
       $page['infos'][] = $galleries_url.' '.functions::l10n('deleted');
       break;
     }

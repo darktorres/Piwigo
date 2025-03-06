@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
@@ -27,7 +28,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -146,7 +147,7 @@ if (isset($_POST['submitFilter']))
 
   if (isset($_POST['filter_tags_use']))
   {
-    $_SESSION['bulk_manager_filter']['tags'] = \Piwigo\admin\inc\functions::get_tag_ids($_POST['filter_tags'], false);
+    $_SESSION['bulk_manager_filter']['tags'] = functions_admin::get_tag_ids($_POST['filter_tags'], false);
 
     if (isset($_POST['tag_mode']) and in_array($_POST['tag_mode'], array('AND', 'OR')))
     {
@@ -378,10 +379,10 @@ SELECT id
     break;
 
   case 'no_album':
-    $filter_sets[] = \Piwigo\admin\inc\functions::get_orphans();
+    $filter_sets[] = functions_admin::get_orphans();
     break;
   case 'no_sync_md5sum':
-    $filter_sets[] = \Piwigo\admin\inc\functions::get_photos_no_md5sum();
+    $filter_sets[] = functions_admin::get_photos_no_md5sum();
     break;
 
   case 'no_tag':

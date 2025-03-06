@@ -6,7 +6,8 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions_metadata;
+use Piwigo\admin\inc\functions_admin;
+use Piwigo\admin\inc\functions_metadata_admin;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\admin\LocalSiteReader;
 use Piwigo\inc\dblayer\functions_mysqli;
@@ -21,7 +22,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -174,7 +175,7 @@ SELECT id, uppercats, global_rank, status, visible
 
   // get categort full directories in an array for comparison with file
   // system directory tree
-  $db_fulldirs = \Piwigo\admin\inc\functions::get_fulldirs(array_keys($db_categories));
+  $db_fulldirs = functions_admin::get_fulldirs(array_keys($db_categories));
 
   // what is the base directory to search file system sub-directories ?
   if (isset($_POST['cat']) and is_numeric($_POST['cat']))
@@ -424,7 +425,7 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
       }
       else
       {
-        \Piwigo\admin\inc\functions::add_permission_on_category($category_ids, \Piwigo\admin\inc\functions::get_admins());
+        functions_admin::add_permission_on_category($category_ids, functions_admin::get_admins());
       }
     }
 
@@ -456,12 +457,12 @@ SELECT id_uppercat, MAX(`rank`)+1 AS next_rank
   {
     if (!$simulate)
     {
-      \Piwigo\admin\inc\functions::delete_categories($to_delete);
+      functions_admin::delete_categories($to_delete);
       foreach($to_delete_derivative_dirs as $to_delete_dir)
       {
         if (is_dir($to_delete_dir))
         {
-          \Piwigo\admin\inc\functions::clear_derivative_cache_rec($to_delete_dir, '#.+#');
+          functions_admin::clear_derivative_cache_rec($to_delete_dir, '#.+#');
         }
       }
     }
@@ -729,7 +730,7 @@ DELETE
   {
     if (!$simulate)
     {
-      \Piwigo\admin\inc\functions::delete_elements($to_delete_elements);
+      functions_admin::delete_elements($to_delete_elements);
     }
     $counts['del_elements'] = count($to_delete_elements);
   }
@@ -749,12 +750,12 @@ if (isset($_POST['submit'])
   if (!$simulate)
   {
     $start = functions::get_moment();
-    \Piwigo\admin\inc\functions::update_category('all');
+    functions_admin::update_category('all');
     $template->append('footer_elements', '<!-- \Piwigo\admin\inc\functions::update_category(all) : '
       . functions::get_elapsed_time($start, functions::get_moment())
       . ' -->' );
     $start = functions::get_moment();
-    \Piwigo\admin\inc\functions::update_global_rank();
+    functions_admin::update_global_rank();
     $template->append('footer_elements', '<!-- ordering categories : '
       . functions::get_elapsed_time($start, functions::get_moment())
       . ' -->');
@@ -773,7 +774,7 @@ if (isset($_POST['submit'])
         $opts['recursive'] = false;
       }
     }
-    $files = functions_metadata::get_filelist($opts['category_id'], $site_id,
+    $files = functions_metadata_admin::get_filelist($opts['category_id'], $site_id,
                           $opts['recursive'],
                           false);
     $template->append('footer_elements', '<!-- get_filelist : '
@@ -853,7 +854,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
     }
   }
   $start = functions::get_moment();
-  $files = functions_metadata::get_filelist($opts['category_id'], $site_id,
+  $files = functions_metadata_admin::get_filelist($opts['category_id'], $site_id,
                         $opts['recursive'],
                         $opts['only_new']);
 
@@ -886,7 +887,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
 
           foreach (explode(',', $data[$key]) as $tag_name)
           {
-            $tags_of[$id][] = \Piwigo\admin\inc\functions::tag_id_from_tag_name($tag_name);
+            $tags_of[$id][] = functions_admin::tag_id_from_tag_name($tag_name);
           }
         }
       }
@@ -923,7 +924,7 @@ if (isset($_POST['submit']) and isset($_POST['sync_meta'])
         isset($_POST['meta_empty_overrides']) ? 0 : functions_mysqli::MASS_UPDATES_SKIP_EMPTY
         );
     }
-    \Piwigo\admin\inc\functions::set_tags_of($tags_of);
+    functions_admin::set_tags_of($tags_of);
   }
 
   $template->append('footer_elements', '<!-- metadata update : '

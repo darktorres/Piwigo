@@ -12,6 +12,7 @@ use Exception;
 use Piwigo\admin\inc\plugins;
 use Piwigo\admin\inc\themes;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 
 class functions_install
 {
@@ -111,7 +112,7 @@ class functions_install
     }
     catch (Exception $e)
     {
-      $errors[] = \Piwigo\inc\functions::l10n($e->getMessage());
+      $errors[] = functions::l10n($e->getMessage());
     }
   }
 }

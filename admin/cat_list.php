@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_html;
@@ -18,7 +19,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -72,11 +73,11 @@ if (isset($_GET['delete']) and is_numeric($_GET['delete']))
   {
     $photo_deletion_mode = $_GET['photo_deletion_mode'];
   }
-  \Piwigo\admin\inc\functions::delete_categories(array($_GET['delete']), $photo_deletion_mode);
+  functions_admin::delete_categories(array($_GET['delete']), $photo_deletion_mode);
 
   $_SESSION['page_infos'] = array(functions::l10n('Virtual album deleted'));
-  \Piwigo\admin\inc\functions::update_global_rank();
-  \Piwigo\admin\inc\functions::invalidate_user_cache();
+  functions_admin::update_global_rank();
+  functions_admin::invalidate_user_cache();
 
   $redirect_url = functions_url::get_root_url().'admin.php?page=cat_list';
   if (isset($_GET['parent_id']))
@@ -88,12 +89,12 @@ if (isset($_GET['delete']) and is_numeric($_GET['delete']))
 // request to add a virtual category
 elseif (isset($_POST['submitAdd']))
 {
-  $output_create = \Piwigo\admin\inc\functions::create_virtual_category(
+  $output_create = functions_admin::create_virtual_category(
     $_POST['virtual_name'],
     @$_GET['parent_id']
   );
 
-  \Piwigo\admin\inc\functions::invalidate_user_cache();
+  functions_admin::invalidate_user_cache();
   if (isset($output_create['error']))
   {
     $page['errors'][] = $output_create['error'];

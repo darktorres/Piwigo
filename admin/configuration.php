@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\pwg_image;
 use Piwigo\admin\inc\tabsheet;
 use Piwigo\inc\dblayer\functions_mysqli;
@@ -25,7 +26,7 @@ if (!functions_user::is_webmaster())
   $page['warnings'][] = str_replace('%s', functions::l10n('user_status_webmaster'), functions::l10n('%s status is required to edit parameters.'));
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 include_once(PHPWG_ROOT_PATH.'admin/inc/functions_upload.php');
 
 // +-----------------------------------------------------------------------+
@@ -327,7 +328,7 @@ if ('sizes' == $page['section'] and isset($_GET['action']) and 'restore_settings
 {
   ImageStdParams::set_and_save( ImageStdParams::get_default_sizes() );
   functions_mysqli::pwg_query('DELETE FROM '.CONFIG_TABLE.' WHERE param = \'disabled_derivatives\'');
-  \Piwigo\admin\inc\functions::clear_derivative_cache();
+  functions_admin::clear_derivative_cache();
 
   $page['infos'][] = functions::l10n('Your configuration settings are saved');
   functions::pwg_activity('system', ACTIVITY_SYSTEM_CORE, 'config', array('config_section'=>$page['section'],'config_action'=>$_GET['action']));

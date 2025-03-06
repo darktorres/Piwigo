@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
@@ -27,7 +28,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -54,7 +55,7 @@ if (isset($_POST['submit']))
   {
     asort($_POST['rank_of_image'], SORT_NUMERIC);
 
-    \Piwigo\admin\inc\functions::save_images_order(
+    functions_admin::save_images_order(
       $page['category_id'],
       array_keys($_POST['rank_of_image'])
       );

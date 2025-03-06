@@ -7,6 +7,7 @@
 // +-----------------------------------------------------------------------+
 
 use Piwigo\admin\inc\check_integrity;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\admin\inc\pwg_image;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
@@ -24,7 +25,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die ("Hacking attempt!");
 }
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -65,31 +66,31 @@ switch ($action)
   }
   case 'categories' :
   {
-    \Piwigo\admin\inc\functions::images_integrity();
-    \Piwigo\admin\inc\functions::categories_integrity();
-    \Piwigo\admin\inc\functions::update_uppercats();
-    \Piwigo\admin\inc\functions::update_category('all');
-    \Piwigo\admin\inc\functions::update_global_rank();
-    \Piwigo\admin\inc\functions::invalidate_user_cache(true);
+    functions_admin::images_integrity();
+    functions_admin::categories_integrity();
+    functions_admin::update_uppercats();
+    functions_admin::update_category('all');
+    functions_admin::update_global_rank();
+    functions_admin::invalidate_user_cache(true);
     break;
   }
   case 'images' :
   {
-    \Piwigo\admin\inc\functions::images_integrity();
-    \Piwigo\admin\inc\functions::update_path();
+    functions_admin::images_integrity();
+    functions_admin::update_path();
 		include_once(PHPWG_ROOT_PATH.'inc/functions_rate.php');
     functions_rate::update_rating_score();
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
     break;
   }
   case 'delete_orphan_tags' :
   {
-    \Piwigo\admin\inc\functions::delete_orphan_tags();
+    functions_admin::delete_orphan_tags();
     break;
   }
   case 'user_cache' :
   {
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
     break;
   }
   case 'history_detail' :
@@ -194,13 +195,13 @@ DELETE
   }
   case 'derivatives':
   {
-    \Piwigo\admin\inc\functions::clear_derivative_cache($_GET['type']);
+    functions_admin::clear_derivative_cache($_GET['type']);
     break;
   }
 
   case 'check_upgrade':
   {
-    if (!\Piwigo\admin\inc\functions::fetchRemote(PHPWG_URL.'/download/latest_version', $result))
+    if (!functions_admin::fetchRemote(PHPWG_URL.'/download/latest_version', $result))
     {
       $page['errors'][] = functions::l10n('Unable to check for upgrade.');
     }

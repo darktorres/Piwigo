@@ -8,6 +8,7 @@
 
 namespace Piwigo\inc\ws_functions;
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\functions;
 use Piwigo\inc\functions_plugins;
@@ -454,7 +455,7 @@ class pwg_users
 
     global $conf, $user;
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     $protected_users = array(
       $user['id'],
@@ -482,7 +483,7 @@ class pwg_users
     
     foreach ($params['user_id'] as $user_id)
     {
-      \Piwigo\admin\inc\functions::delete_user($user_id);
+      functions_admin::delete_user($user_id);
       $counter++;
     }
 
@@ -524,14 +525,14 @@ class pwg_users
 
     global $conf, $user;
 
-    include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
     $updates = $updates_infos = array();
     $update_status = null;
 
     if (count($params['user_id']) == 1)
     {
-      if (\Piwigo\admin\inc\functions::get_username($params['user_id'][0]) === false)
+      if (functions_admin::get_username($params['user_id'][0]) === false)
       {
         return new PwgError(WS_ERR_INVALID_PARAM, 'This user does not exist.');
       }
@@ -774,7 +775,7 @@ class pwg_users
       }
     }
 
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    functions_admin::invalidate_user_cache();
 
     functions::pwg_activity('user', $params['user_id'], 'edit');
 

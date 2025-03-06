@@ -12,21 +12,23 @@ use Piwigo\admin\inc\pwg_image;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
+use Piwigo\inc\functions;
+use Piwigo\inc\functions_plugins;
 use Piwigo\inc\functions_url;
 use Piwigo\inc\ImageStdParams;
 use Piwigo\inc\SrcImage;
 
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
 
 // add default event handler for image and thumbnail resize
-\Piwigo\inc\functions_plugins::add_event_handler('upload_image_resize', 'pwg_image_resize');
-\Piwigo\inc\functions_plugins::add_event_handler('upload_thumbnail_resize', 'pwg_image_resize');
-\Piwigo\inc\functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_pdf');
-\Piwigo\inc\functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_heic');
-\Piwigo\inc\functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_tiff');
-\Piwigo\inc\functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_video');
-\Piwigo\inc\functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_psd');
-\Piwigo\inc\functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_eps');
+functions_plugins::add_event_handler('upload_image_resize', 'pwg_image_resize');
+functions_plugins::add_event_handler('upload_thumbnail_resize', 'pwg_image_resize');
+functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_pdf');
+functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_heic');
+functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_tiff');
+functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_video');
+functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_psd');
+functions_plugins::add_event_handler('upload_file', '\Piwigo\admin\inc\functions_upload::upload_file_eps');
 
 class functions_upload
 {
@@ -45,7 +47,7 @@ class functions_upload
         'max' => 20000,
         'pattern' => '/^\d+$/',
         'can_be_null' => false,
-        'error_message' => \Piwigo\inc\functions::l10n('The original maximum width must be a number between %d and %d'),
+        'error_message' => functions::l10n('The original maximum width must be a number between %d and %d'),
         ),
 
       'original_resize_maxheight' => array(
@@ -54,7 +56,7 @@ class functions_upload
         'max' => 20000,
         'pattern' => '/^\d+$/',
         'can_be_null' => false,
-        'error_message' => \Piwigo\inc\functions::l10n('The original maximum height must be a number between %d and %d'),
+        'error_message' => functions::l10n('The original maximum height must be a number between %d and %d'),
         ),
 
       'original_resize_quality' => array(
@@ -63,7 +65,7 @@ class functions_upload
         'max' => 98,
         'pattern' => '/^\d+$/',
         'can_be_null' => false,
-        'error_message' => \Piwigo\inc\functions::l10n('The original image quality must be a number between %d and %d'),
+        'error_message' => functions::l10n('The original image quality must be a number between %d and %d'),
         ),
       );
 
@@ -224,7 +226,7 @@ class functions_upload
       }
 
       // delete all physical files related to the photo (thumbnail, web site, HD)
-      functions::delete_element_files(array($image_id));
+      functions_admin::delete_element_files(array($image_id));
     }
     else
     {
@@ -268,7 +270,7 @@ class functions_upload
       }
       elseif (isset($conf['upload_form_all_types']) and $conf['upload_form_all_types'])
       {
-        $original_extension = strtolower(\Piwigo\inc\functions::get_extension($original_filename));
+        $original_extension = strtolower(functions::get_extension($original_filename));
 
         if (in_array($original_extension, $conf['file_ext']))
         {
@@ -301,7 +303,7 @@ class functions_upload
 
     // handle the uploaded file type by potentially making a
     // pwg_representative file.
-    $representative_ext = \Piwigo\inc\functions_plugins::trigger_change('upload_file', null, $file_path);
+    $representative_ext = functions_plugins::trigger_change('upload_file', null, $file_path);
 
     $logger->info("Handling " . (string)$file_path . " got " . (string)$representative_ext);
     
@@ -373,7 +375,7 @@ class functions_upload
       $file = functions_mysqli::pwg_db_real_escape_string(isset($original_filename) ? $original_filename : basename($file_path));
       $insert = array(
         'file' => $file,
-        'name' => \Piwigo\inc\functions::get_name_from_file($file),
+        'name' => functions::get_name_from_file($file),
         'date_available' => $dbnow,
         'path' => preg_replace('#^'.preg_quote(PHPWG_ROOT_PATH).'#', '', $file_path),
         'filesize' => $file_infos['filesize'],
@@ -397,7 +399,7 @@ class functions_upload
       functions_mysqli::single_insert(IMAGES_TABLE, $insert);
 
       $image_id = functions_mysqli::pwg_db_insert_id(IMAGES_TABLE);
-      \Piwigo\inc\functions::pwg_activity('photo', $image_id, 'add');
+      functions::pwg_activity('photo', $image_id, 'add');
     }
 
     self::add_uploaded_file_add_to_categories($image_id, $categories);
@@ -407,7 +409,7 @@ class functions_upload
     {
       $conf['use_exif'] = false;
     }
-    functions_metadata::sync_metadata(array($image_id));
+    functions_metadata_admin::sync_metadata(array($image_id));
 
     // cache a derivative
     $query = '
@@ -428,9 +430,9 @@ class functions_upload
 
     $logger->info(__FUNCTION__.' : force cache generation, derivative_url = '.$derivative_url);
 
-    functions::fetchRemote($derivative_url, $dest);
+    functions_admin::fetchRemote($derivative_url, $dest);
 
-    \Piwigo\inc\functions_plugins::trigger_notify('loc_end_add_uploaded_file', $image_infos);
+    functions_plugins::trigger_notify('loc_end_add_uploaded_file', $image_infos);
 
     return $image_id;
   }
@@ -441,7 +443,7 @@ class functions_upload
 
     if (!isset($conf['lounge_active']))
     {
-      \Piwigo\inc\functions::conf_update_param('lounge_active', false, true);
+      functions::conf_update_param('lounge_active', false, true);
     }
 
     if (!$conf['lounge_active'])
@@ -450,7 +452,7 @@ class functions_upload
       list($nb_photos) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT COUNT(*) FROM '.IMAGES_TABLE.';'));
       if ($nb_photos >= $conf['lounge_activate_threshold'])
       {
-        \Piwigo\inc\functions::conf_update_param('lounge_active', true, true);
+        functions::conf_update_param('lounge_active', true, true);
       }
     }
 
@@ -458,17 +460,17 @@ class functions_upload
     {
       if ($conf['lounge_active'])
       {
-        functions::fill_lounge(array($image_id), $categories);
+        functions_admin::fill_lounge(array($image_id), $categories);
       }
       else
       {
-        functions::associate_images_to_categories(array($image_id), $categories);
+        functions_admin::associate_images_to_categories(array($image_id), $categories);
       }
     }
 
     if (!$conf['lounge_active'])
     {
-      functions::invalidate_user_cache();
+      functions_admin::invalidate_user_cache();
     }
   }
 
@@ -480,14 +482,14 @@ class functions_upload
     //
     // 3) register in database
 
-    if (!\Piwigo\inc\functions::conf_get_param('enable_formats', false))
+    if (!functions::conf_get_param('enable_formats', false))
     {
       die('['.__FUNCTION__.'] formats are disabled');
     }
 
-    if (!in_array($format_ext, \Piwigo\inc\functions::conf_get_param('format_ext', array('cr2'))))
+    if (!in_array($format_ext, functions::conf_get_param('format_ext', array('cr2'))))
     {
-      die('['.__FUNCTION__.'] unexpected format extension "'.$format_ext.'" (authorized extensions: '.implode(', ', \Piwigo\inc\functions::conf_get_param('format_ext', array('cr2'))).')');
+      die('['.__FUNCTION__.'] unexpected format extension "'.$format_ext.'" (authorized extensions: '.implode(', ', functions::conf_get_param('format_ext', array('cr2'))).')');
     }
 
     $query = '
@@ -504,7 +506,7 @@ class functions_upload
     }
 
     $format_path = dirname($images[0]['path']).'/pwg_format/';
-    $format_path.= \Piwigo\inc\functions::get_filename_wo_extension(basename($images[0]['path']));
+    $format_path.= functions::get_filename_wo_extension(basename($images[0]['path']));
     $format_path.= '.'.$format_ext;
 
     self::prepare_directory(dirname($format_path));
@@ -530,12 +532,12 @@ class functions_upload
     functions_mysqli::single_insert(IMAGE_FORMAT_TABLE, $insert);
     $format_id = functions_mysqli::pwg_db_insert_id(IMAGE_FORMAT_TABLE);
 
-    \Piwigo\inc\functions::pwg_activity('photo', $format_of, 'edit', array('action'=>'add format', 'format_ext'=>$format_ext, 'format_id'=>$format_id));
+    functions::pwg_activity('photo', $format_of, 'edit', array('action'=>'add format', 'format_ext'=>$format_ext, 'format_id'=>$format_id));
 
     $format_infos = $insert;
     $format_infos['format_id'] = $format_id;
 
-    \Piwigo\inc\functions_plugins::trigger_notify('loc_end_add_format', $format_infos);
+    functions_plugins::trigger_notify('loc_end_add_format', $format_infos);
 
     return $format_id;
   }
@@ -556,16 +558,16 @@ class functions_upload
       return $representative_ext;
     }
 
-    if (!in_array(strtolower(\Piwigo\inc\functions::get_extension($file_path)), array('pdf')))
+    if (!in_array(strtolower(functions::get_extension($file_path)), array('pdf')))
     {
       return $representative_ext;
     }
 
-    $ext = \Piwigo\inc\functions::conf_get_param('pdf_representative_ext', 'jpg');
-    $jpg_quality = \Piwigo\inc\functions::conf_get_param('pdf_jpg_quality', 90);
+    $ext = functions::conf_get_param('pdf_representative_ext', 'jpg');
+    $jpg_quality = functions::conf_get_param('pdf_jpg_quality', 90);
 
     // move the uploaded file to pwg_representative sub-directory
-    $representative_file_path = \Piwigo\inc\functions::original_to_representative($file_path, $ext);
+    $representative_file_path = functions::original_to_representative($file_path, $ext);
     self::prepare_directory(dirname($representative_file_path));
 
     $exec = $conf['ext_imagick_dir'].'convert';
@@ -603,7 +605,7 @@ class functions_upload
       return $representative_ext;
     }
 
-    if (!in_array(strtolower(\Piwigo\inc\functions::get_extension($file_path)), array('heic')))
+    if (!in_array(strtolower(functions::get_extension($file_path)), array('heic')))
     {
       return $representative_ext;
     }
@@ -611,7 +613,7 @@ class functions_upload
     $ext = 'jpg';
 
     // move the uploaded file to pwg_representative sub-directory
-    $representative_file_path = \Piwigo\inc\functions::original_to_representative($file_path, $ext);
+    $representative_file_path = functions::original_to_representative($file_path, $ext);
     self::prepare_directory(dirname($representative_file_path));
 
     list($w,$h) = self::get_optimal_dimensions_for_representative();
@@ -651,14 +653,14 @@ class functions_upload
       return $representative_ext;
     }
 
-    if (!in_array(strtolower(\Piwigo\inc\functions::get_extension($file_path)), array('tif', 'tiff')))
+    if (!in_array(strtolower(functions::get_extension($file_path)), array('tif', 'tiff')))
     {
       return $representative_ext;
     }
 
     // move the uploaded file to pwg_representative sub-directory
     $representative_file_path = dirname($file_path).'/pwg_representative/';
-    $representative_file_path.= \Piwigo\inc\functions::get_filename_wo_extension(basename($file_path)).'.';
+    $representative_file_path.= functions::get_filename_wo_extension(basename($file_path)).'.';
 
     $representative_ext = $conf['tiff_representative_ext'];
     $representative_file_path.= $representative_ext;
@@ -697,7 +699,7 @@ class functions_upload
       }
     }
 
-    return \Piwigo\inc\functions::get_extension($representative_file_abspath);
+    return functions::get_extension($representative_file_abspath);
   }
 
   static function upload_file_video($representative_ext, $file_path)
@@ -716,13 +718,13 @@ class functions_upload
       'avi','rm', 'm4v', 'ogg', 'ogv', 'webm', 'webmv',
       );
 
-    if (!in_array(strtolower(\Piwigo\inc\functions::get_extension($file_path)), $ffmpeg_video_exts))
+    if (!in_array(strtolower(functions::get_extension($file_path)), $ffmpeg_video_exts))
     {
       return $representative_ext;
     }
 
     $representative_file_path = dirname($file_path).'/pwg_representative/';
-    $representative_file_path.= \Piwigo\inc\functions::get_filename_wo_extension(basename($file_path)).'.';
+    $representative_file_path.= functions::get_filename_wo_extension(basename($file_path)).'.';
 
     $representative_ext = 'jpg';
     $representative_file_path.= $representative_ext;
@@ -782,14 +784,14 @@ class functions_upload
       return $representative_ext;
     }
 
-    if (!in_array(strtolower(\Piwigo\inc\functions::get_extension($file_path)), array('psd')))
+    if (!in_array(strtolower(functions::get_extension($file_path)), array('psd')))
     {
       return $representative_ext;
     }
 
     // move the uploaded file to pwg_representative sub-directory
     $representative_file_path = dirname($file_path).'/pwg_representative/';
-    $representative_file_path.= \Piwigo\inc\functions::get_filename_wo_extension(basename($file_path)).'.';
+    $representative_file_path.= functions::get_filename_wo_extension(basename($file_path)).'.';
 
     $representative_ext = 'png';
     $representative_file_path.= $representative_ext;
@@ -824,7 +826,7 @@ class functions_upload
       }
     }
 
-    return \Piwigo\inc\functions::get_extension($representative_file_abspath);
+    return functions::get_extension($representative_file_abspath);
   }
 
   static function upload_file_eps($representative_ext, $file_path)
@@ -843,7 +845,7 @@ class functions_upload
       return $representative_ext;
     }
 
-    if (!in_array(strtolower(\Piwigo\inc\functions::get_extension($file_path)), array('eps')))
+    if (!in_array(strtolower(functions::get_extension($file_path)), array('eps')))
     {
       return $representative_ext;
     }
@@ -852,7 +854,7 @@ class functions_upload
     $ext = 'png';
 
     // move the uploaded file to pwg_representative sub-directory
-    $representative_file_path = \Piwigo\inc\functions::original_to_representative($file_path, $ext);
+    $representative_file_path = functions::original_to_representative($file_path, $ext);
     self::prepare_directory(dirname($representative_file_path));
 
     // convert -density 300 image.eps -resize 2048x2048 image.png
@@ -901,7 +903,7 @@ class functions_upload
       }
     }
 
-    \Piwigo\inc\functions::secure_directory($directory);
+    functions::secure_directory($directory);
   }
 
   static function need_resize($image_filepath, $max_width, $max_height)
@@ -952,23 +954,23 @@ class functions_upload
     switch ($error_code) {
       case UPLOAD_ERR_INI_SIZE:
         return sprintf(
-          \Piwigo\inc\functions::l10n('The uploaded file exceeds the upload_max_filesize directive in php.ini: %sB'),
+          functions::l10n('The uploaded file exceeds the upload_max_filesize directive in php.ini: %sB'),
           self::get_ini_size('upload_max_filesize', false)
           );
       case UPLOAD_ERR_FORM_SIZE:
-        return \Piwigo\inc\functions::l10n('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form');
+        return functions::l10n('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form');
       case UPLOAD_ERR_PARTIAL:
-        return \Piwigo\inc\functions::l10n('The uploaded file was only partially uploaded');
+        return functions::l10n('The uploaded file was only partially uploaded');
       case UPLOAD_ERR_NO_FILE:
-        return \Piwigo\inc\functions::l10n('No file was uploaded');
+        return functions::l10n('No file was uploaded');
       case UPLOAD_ERR_NO_TMP_DIR:
-        return \Piwigo\inc\functions::l10n('Missing a temporary folder');
+        return functions::l10n('Missing a temporary folder');
       case UPLOAD_ERR_CANT_WRITE:
-        return \Piwigo\inc\functions::l10n('Failed to write file to disk');
+        return functions::l10n('Failed to write file to disk');
       case UPLOAD_ERR_EXTENSION:
-        return \Piwigo\inc\functions::l10n('File upload stopped by extension');
+        return functions::l10n('File upload stopped by extension');
       default:
-        return \Piwigo\inc\functions::l10n('Unknown upload error');
+        return functions::l10n('Unknown upload error');
     }
   }
 
@@ -1027,7 +1029,7 @@ class functions_upload
       if (!is_writable(dirname($conf['upload_dir'])))
       {
         return sprintf(
-          \Piwigo\inc\functions::l10n('Create the "%s" directory at the root of your Piwigo installation'),
+          functions::l10n('Create the "%s" directory at the root of your Piwigo installation'),
           $relative_dir
           );
       }
@@ -1041,7 +1043,7 @@ class functions_upload
         if (!is_writable($conf['upload_dir']))
         {
           return sprintf(
-            \Piwigo\inc\functions::l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
+            functions::l10n('Give write access (chmod 777) to "%s" directory at the root of your Piwigo installation'),
             $relative_dir
             );
         }

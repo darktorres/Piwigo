@@ -6,6 +6,7 @@
 // | file that was distributed with this source code.                      |
 // +-----------------------------------------------------------------------+
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\functions;
@@ -248,7 +249,7 @@ $template->assign(array(
 
 $template->assign(array(
   'U_MANAGE_RANKS' => $base_url.'element_set_ranks&amp;cat_id='.$category['id'],
-  'CACHE_KEYS' => \Piwigo\admin\inc\functions::get_admin_client_cache_keys(array('categories')),
+  'CACHE_KEYS' => functions_admin::get_admin_client_cache_keys(array('categories')),
   ));
 
 if (!$category['is_virtual'])
@@ -282,7 +283,7 @@ if ($category['has_images'] or !empty($category['representative_picture_id']))
   // representant ?
   if (!empty($category['representative_picture_id']))
   {
-    $tpl_representant['picture'] = \Piwigo\admin\inc\functions::get_category_representant_properties($category['representative_picture_id'], derivative_std_params::IMG_MEDIUM);
+    $tpl_representant['picture'] = functions_admin::get_category_representant_properties($category['representative_picture_id'], derivative_std_params::IMG_MEDIUM);
   }
 
   // can the admin choose to set a new random representant ?

@@ -1,5 +1,6 @@
 <?php
 
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
 use Piwigo\inc\derivative_std_params;
 use Piwigo\inc\DerivativeImage;
@@ -106,7 +107,7 @@ SELECT element_id FROM ' . CADDIE_TABLE . '
       );
 
     // gets tags (full available list is loaded in ajax)
-    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_admin.php');
 
     $query = '
 SELECT id, name
@@ -114,7 +115,7 @@ SELECT id, name
     JOIN '.TAGS_TABLE.' AS t ON t.id = it.tag_id
   WHERE image_id = '.$page['image_id'].'
 ;';
-    $tag_selection = \Piwigo\admin\inc\functions::get_taglist($query);
+    $tag_selection = functions_admin::get_taglist($query);
 
     (!isset($picture['current']['date_creation'])) ? $picture['current']['date_creation'] = "" : false;
     $tpl_vars['QUICK_EDIT'] = array(
@@ -280,10 +281,10 @@ function admintools_save_picture()
 
   if (isset($_GET['delete']) and functions::get_pwg_token()==@$_GET['pwg_token'])
   {
-    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_admin.php');
 
-    \Piwigo\admin\inc\functions::delete_elements(array($page['image_id']), true);
-    \Piwigo\admin\inc\functions::invalidate_user_cache();
+    functions_admin::delete_elements(array($page['image_id']), true);
+    functions_admin::invalidate_user_cache();
 
     if (isset($page['rank_of'][ $page['image_id'] ]))
     {
@@ -305,7 +306,7 @@ function admintools_save_picture()
 
   if ($_POST['action'] == 'quick_edit')
   {
-    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions.php');
+    include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_admin.php');
 
     functions::check_pwg_token();
 
@@ -342,9 +343,9 @@ function admintools_save_picture()
     $tag_ids = array();
     if (!empty($_POST['tags']))
     {
-      $tag_ids = \Piwigo\admin\inc\functions::get_tag_ids($_POST['tags']);
+      $tag_ids = functions_admin::get_tag_ids($_POST['tags']);
     }
-    \Piwigo\admin\inc\functions::set_tags($tag_ids, $page['image_id']);
+    functions_admin::set_tags($tag_ids, $page['image_id']);
   }
 }
 

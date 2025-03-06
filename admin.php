@@ -10,8 +10,9 @@
 // | Basic constants and includes                                          |
 // +-----------------------------------------------------------------------+
 
-use Piwigo\admin\inc\functions;
+use Piwigo\admin\inc\functions_admin;
 use Piwigo\inc\dblayer\functions_mysqli;
+use Piwigo\inc\functions;
 use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_plugins;
 use Piwigo\inc\functions_session;
@@ -22,8 +23,8 @@ define('PHPWG_ROOT_PATH','./');
 define('IN_ADMIN', true);
 
 include_once(PHPWG_ROOT_PATH.'inc/common.php');
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions.php');
-include_once(PHPWG_ROOT_PATH.'admin/inc/functions_plugins.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_admin.php');
+include_once(PHPWG_ROOT_PATH.'admin/inc/functions_plugins_admin.php');
 include_once(PHPWG_ROOT_PATH.'admin/inc/add_core_tabs.php');
 
 functions_plugins::trigger_notify('loc_begin_admin');
@@ -34,8 +35,8 @@ functions_plugins::trigger_notify('loc_begin_admin');
 
 functions_user::check_status(ACCESS_ADMINISTRATOR);
 
-\Piwigo\inc\functions::check_input_parameter('page', $_GET, false, '/^[a-zA-Z\d_-]+$/');
-\Piwigo\inc\functions::check_input_parameter('section', $_GET, false, '/^[a-z]+[a-z_\/-]*(\.php)?$/i');
+functions::check_input_parameter('page', $_GET, false, '/^[a-zA-Z\d_-]+$/');
+functions::check_input_parameter('section', $_GET, false, '/^[a-z]+[a-z_\/-]*(\.php)?$/i');
 
 // +-----------------------------------------------------------------------+
 // | Filesystem checks                                                     |
@@ -58,7 +59,7 @@ if ($conf['fs_quick_check_period'] > 0)
 
   if ($perform_fsqc)
   {
-    functions::fs_quick_check();
+    functions_admin::fs_quick_check();
   }
 }
 
@@ -104,7 +105,7 @@ if (isset($_GET['change_theme']))
     $redirect_url.= '?'.implode('&amp;', $url_params);
   }
 
-  \Piwigo\inc\functions::redirect($redirect_url);
+  functions::redirect($redirect_url);
 }
 
 // +-----------------------------------------------------------------------+
@@ -114,7 +115,7 @@ if (isset($_GET['change_theme']))
 // sync_user() is only useful when external authentication is activated
 if ($conf['external_authentification'])
 {
-  functions::sync_users();
+  functions_admin::sync_users();
 }
 
 // +-----------------------------------------------------------------------+
@@ -191,14 +192,14 @@ $conf_link = $link_start.'configuration&amp;section=';
 // $_GET['tab'] is often used to perform and
 // include('admin_page_'.$_GET['tab'].'.php') : we need to protect it to
 // avoid any unexpected file inclusion
-\Piwigo\inc\functions::check_input_parameter('tab', $_GET, false, '/^[a-zA-Z\d_-]+$/');
+functions::check_input_parameter('tab', $_GET, false, '/^[a-zA-Z\d_-]+$/');
 
 // +-----------------------------------------------------------------------+
 // | Template init                                                         |
 // +-----------------------------------------------------------------------+
 
-$title = \Piwigo\inc\functions::l10n('Piwigo Administration'); // for inc/page_header.php
-$page['page_banner'] = '<h1>'.\Piwigo\inc\functions::l10n('Piwigo Administration').'</h1>';
+$title = functions::l10n('Piwigo Administration'); // for inc/page_header.php
+$page['page_banner'] = '<h1>'.functions::l10n('Piwigo Administration').'</h1>';
 $page['body_id'] = 'theAdminPage';
 
 $template->set_filenames(array('admin' => 'admin.tpl'));
@@ -295,7 +296,7 @@ if ($nb_photos_in_caddie > 0)
 // any photos with no md5sum ?
 if (in_array($page['page'], array('site_update', 'batch_manager')))
 {
-  $nb_no_md5sum = count(functions::get_photos_no_md5sum());
+  $nb_no_md5sum = count(functions_admin::get_photos_no_md5sum());
 
   if ($nb_no_md5sum > 0)
   {
@@ -309,7 +310,7 @@ $page['nb_orphans'] = 0;
 list($page['nb_photos_total']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT COUNT(*) FROM '.IMAGES_TABLE));
 if ($page['nb_photos_total'] < 100000) // 100k is already a big gallery
 {
-  $page['nb_orphans'] = functions::count_orphans();
+  $page['nb_orphans'] = functions_admin::count_orphans();
 }
 
 $template->assign(
@@ -343,7 +344,7 @@ if (
     )
   )
 {
-  functions::invalidate_user_cache();
+  functions_admin::invalidate_user_cache();
 }
 
 // +-----------------------------------------------------------------------+
@@ -353,14 +354,14 @@ if (
 functions_plugins::trigger_notify('loc_begin_admin_page');
 include(PHPWG_ROOT_PATH.'admin/'.$page['page'].'.php');
 
-$template->assign('ACTIVE_MENU', functions::get_active_menu($page['page']));
+$template->assign('ACTIVE_MENU', functions_admin::get_active_menu($page['page']));
 
 // +-----------------------------------------------------------------------+
 // | Sending html code                                                     |
 // +-----------------------------------------------------------------------+
 
 // Add the Piwigo Official menu
-$template->assign( 'pwgmenu', functions::pwg_URL() );
+$template->assign( 'pwgmenu', functions_admin::pwg_URL() );
 
 include(PHPWG_ROOT_PATH.'inc/page_header.php');
 
