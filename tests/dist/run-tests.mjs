@@ -29,10 +29,7 @@ async function runPuppeteerScript() {
     await page.setRequestInterception(true);
     page.on("request", handleRequest);
     await fs.remove(
-        path.resolve(
-            import.meta.dirname,
-            "../../local/config/database.php",
-        ),
+        path.resolve(import.meta.dirname, "../../local/config/database.php"),
     );
     // Navigate to the install page
     await page.goto("http://localhost/piwigo-fork2/install.php", { waitUntil: "networkidle0" });
