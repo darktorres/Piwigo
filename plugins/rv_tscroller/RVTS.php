@@ -106,21 +106,31 @@ class RVTS
         }
 
         // the String.fromCharCode comes from google bot which somehow manage to get these urls
+        $ajax_url_model_0 = ord($ajax_url_model[0]);
+        $ajax_url_model_rest = substr($ajax_url_model, 1);
+        $url_model_0 = ord($url_model[0]);
+        $url_model_rest = substr($url_model, 1);
+        $next = $start + $per_page;
+        $prevMsg = functions::l10n('Previous');
+
         $template->block_footer_script(
             null,
-            'var RVTS = {
-ajaxUrlModel: String.fromCharCode(' . ord($ajax_url_model[0]) . ")+'" . substr($ajax_url_model, 1) . "',
-start: {$start},
-perPage: {$per_page},
-next: " . ($start + $per_page) . ",
-total: {$total},
-urlModel: String.fromCharCode(" . ord($url_model[0]) . ")+'" . substr($url_model, 1) . "',
-moreMsg: '{$moreMsg}',
-prevMsg: '" . functions::l10n('Previous') . "',
-ajaxLoaderImage: '{$ajax_loader_image}'
-};
-jQuery('.navigationBar').hide();"
+            <<<JS
+                var RVTS = {
+                    ajaxUrlModel: String.fromCharCode({$ajax_url_model_0})+'{$ajax_url_model_rest}',
+                    start: {$start},
+                    perPage: {$per_page},
+                    next: {$next},
+                    total: {$total},
+                    urlModel: String.fromCharCode({$url_model_0})+'{$url_model_rest}',
+                    moreMsg: '{$moreMsg}',
+                    prevMsg: '{$prevMsg}',
+                    ajaxLoaderImage: '{$ajax_loader_image}'
+                };
+                jQuery('.navigationBar').hide();
+                JS
         );
+
         return $thumbs;
     }
 

@@ -937,22 +937,22 @@ class Template
         }
 
         if (count($this->scriptLoader->inline_scripts)) {
-            $content[] = '<script type="text/javascript">//<![CDATA[
-';
+            $content[] = '<script type="text/javascript">//<![CDATA[' . "\n";
             $content = array_merge($content, $this->scriptLoader->inline_scripts);
             $content[] = '//]]></script>';
         }
 
         if (count($scripts[1])) {
             $content[] = '<script type="text/javascript">';
-            $content[] = '(function() {
-var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTagName(\'script\').length-1];';
+            $content[] =
+              "(function() {\n"
+              . "var s, after = document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1];\n";
             foreach ($scripts[1] as $id => $script) {
                 $content[] =
-                  's=document.createElement(\'script\'); s.type=\'text/javascript\'; s.async=true; s.src=\''
+                  "s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = '"
                   . self::make_script_src($script)
-                  . '\';';
-                $content[] = 'after = after.parentNode.insertBefore(s, after);';
+                  . "';\n";
+                $content[] = "after = after.parentNode.insertBefore(s, after);\n";
             }
 
             $content[] = '})();';

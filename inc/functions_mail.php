@@ -817,7 +817,7 @@ class functions_mail
                 $smtp_port = 25;
             }
 
-            $mail->IsSMTP();
+            $mail->isSMTP();
 
             // enables SMTP debug information (for testing) 2 - debug, 0 - no message
             $mail->SMTPDebug = 0;

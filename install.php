@@ -345,21 +345,21 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
         //   $datas
         //   );
 
-        $file_content = '<?php
-$conf[\'dblayer\'] = \'' . $dblayer . '\';
-$conf[\'db_base\'] = \'' . $dbname . '\';
-$conf[\'db_user\'] = \'' . $dbuser . '\';
-$conf[\'db_password\'] = \'' . $dbpasswd . '\';
-$conf[\'db_host\'] = \'' . $dbhost . '\';
+        $file_content = <<<PHP
+            <?php
+            \$conf['dblayer'] = '{$dblayer}';
+            \$conf['db_base'] = '{$dbname}';
+            \$conf['db_user'] = '{$dbuser}';
+            \$conf['db_password'] = '{$dbpasswd}';
+            \$conf['db_host'] = '{$dbhost}';
 
-$prefixeTable = \'' . $prefixeTable . '\';
+            \$prefixeTable = '{$prefixeTable}';
 
-define(\'PHPWG_INSTALLED\', true);
-define(\'PWG_CHARSET\', \'utf-8\');
-define(\'DB_CHARSET\', \'utf8\');
-define(\'DB_COLLATE\', \'\');
-
-?' . '>';
+            define('PHPWG_INSTALLED', true);
+            define('PWG_CHARSET', 'utf-8');
+            define('DB_CHARSET', 'utf8');
+            define('DB_COLLATE', '');
+            PHP;
 
         @umask(0111);
         // writing the configuration file

@@ -1364,7 +1364,7 @@ class functions
         if (is_array($args)) {
             $key_arg = array_merge([$key], $args);
         } else {
-            $key_arg = [$key,  $args];
+            $key_arg = [$key, $args];
         }
         return [
             'key_args' => $key_arg,
@@ -4001,15 +4001,19 @@ class functions
 
     public static function TAT_help_prefilter($content)
     {
-
         $search = '<div id="helpContent">';
-        $replacement = '<div id="helpContent">
-  <fieldset>
-  <legend>{\'Visit your Piwigo!\'|@translate}</legend>
-  <p class="nextStepLink"><a href="admin.php?page=plugin-TakeATour">{\'Take a tour and discover the features of your Piwigo gallery » Go to the available tours\'|@translate}</a></p>
-  </fieldset>';
+        $replacement = <<<HTML
+            <div id="helpContent">
+              <fieldset>
+                <legend>{'Visit your Piwigo!'|@translate}</legend>
+                <p class="nextStepLink">
+                  <a href="admin.php?page=plugin-TakeATour">
+                    {'Take a tour and discover the features of your Piwigo gallery » Go to the available tours'|@translate}
+                  </a>
+                </p>
+              </fieldset>
+            HTML;
         return str_replace($search, $replacement, $content);
-
     }
 
     public static function TAT_no_photo_yet()
@@ -4180,21 +4184,59 @@ class functions
             } elseif ($csize[1] > $row_height) {
                 $csize = $c->get_scaled_size(9999, $row_height);
             }
-            if ($do_over) {?>
-  <li class="path-ext-<?=$item['path_ext']?> file-ext-<?=$item['file_ext']?>" style=width:<?=$csize[0]?>px;height:<?=$row_height?>px><a href="<?=$item['URL']?>"<?=$a_style?>><img src="<?=$c->get_url()?>" width=<?=$csize[0]?> height=<?=$csize[1]?> alt="<?=$item['TN_ALT']?>"></a><div class=overDesc><?=$item['NAME']?><?=$new?></div></li>
-  <?php
-            } else {?>
-  <li class="path-ext-<?=$item['path_ext']?> file-ext-<?=$item['file_ext']?>" style=width:<?=$csize[0]?>px;height:<?=$row_height?>px><a href="<?=$item['URL']?>"<?=$a_style?>><img src="<?=$c->get_url()?>" width=<?=$csize[0]?> height=<?=$csize[1]?> alt="<?=$item['TN_ALT']?>"></a></li>
-  <?php
-            }
+
+            // Create class names and styles
+            $li_class = 'path-ext-' . $item['path_ext'] . ' file-ext-' . $item['file_ext'];
+            $li_style = 'width:' . $csize[0] . 'px; height:' . $row_height . 'px;';
+            $img_src = $c->get_url();
+            $img_width = $csize[0];
+            $img_height = $csize[1];
+            $img_alt = $item['TN_ALT'];
+            $item_name = $item['NAME'];
+            $item_url = $item['URL'];
+
+            // Render the HTML block
+            ?>
+            <li class="<?= $li_class ?>" style="<?= $li_style ?>">
+                <a href="<?= $item_url ?>"<?= $a_style ?>>
+                    <img src="<?= $img_src ?>" width="<?= $img_width ?>" height="<?= $img_height ?>" alt="<?= $img_alt ?>">
+                </a>
+            <?php if ($do_over): ?>
+                <div class="overDesc"><?= $item_name . $new ?></div>
+            <?php endif; ?>
+            </li>
+            <?php
         }
 
         $template->block_html_style(
             null,
-            '#thumbnails{text-align:justify;overflow:hidden;margin-left:' . ($container_margin - $horizontal_margin) . 'px;margin-right:' . $container_margin . 'px}
-  #thumbnails>li{float:left;overflow:hidden;position:relative;margin-bottom:' . $vertical_margin . 'px;margin-left:' . $horizontal_margin . 'px}#thumbnails>li>a{position:absolute;border:0}'
+            '
+            #thumbnails {
+                text-align: justify;
+                overflow: hidden;
+                margin-left: ' . ($container_margin - $horizontal_margin) . 'px;
+                margin-right: ' . $container_margin . 'px;
+            }
+
+            #thumbnails > li {
+                float: left;
+                overflow: hidden;
+                position: relative;
+                margin-bottom: ' . $vertical_margin . 'px;
+                margin-left: ' . $horizontal_margin . 'px;
+            }
+
+            #thumbnails > li > a {
+                position: absolute;
+                border: 0;
+            }'
         );
-        $template->block_footer_script(null, 'rvgtProcessor=new RVGThumbs({hMargin:' . $horizontal_margin . ',rowHeight:' . $row_height . '});');
+        $template->block_footer_script(null, '
+        rvgtProcessor = new RVGThumbs({
+            hMargin: ' . $horizontal_margin . ',
+            rowHeight: ' . $row_height . '
+        });
+    ');
 
         $my_base_name = basename(dirname(__FILE__));
         // not async to avoid visible flickering reflow
@@ -4205,7 +4247,17 @@ class functions
     {
         global $template;
         if (! functions_session::pwg_get_session_var('caps')) {
-            $template->block_footer_script(null, 'try{document.cookie="caps="+(window.devicePixelRatio?window.devicePixelRatio:1)+"x"+document.documentElement.clientWidth+"x"+document.documentElement.clientHeight+";path=' . functions_cookie::cookie_path() . '"}catch(er){document.cookie="caps=1x1x1x"+err.message;}');
+            $template->block_footer_script(null, '
+            try {
+                document.cookie = "caps=" +
+                    (window.devicePixelRatio ? window.devicePixelRatio : 1) + "x" +
+                    document.documentElement.clientWidth + "x" +
+                    document.documentElement.clientHeight +
+                    ";path=' . functions_cookie::cookie_path() . '";
+            } catch (er) {
+                document.cookie = "caps=1x1x1x" + er.message;
+            }
+        ');
         }
 
     }
@@ -4309,7 +4361,13 @@ class functions
         if (isset($_GET['map'])) {
             return;
         }
-        $template->append('head_elements', '<script>if(document.documentElement.offsetWidth>1270)document.documentElement.className=\'wide\'</script>');
+        $template->append('head_elements', '
+        <script>
+            if (document.documentElement.offsetWidth > 1270) {
+                document.documentElement.className = \'wide\';
+            }
+        </script>
+        ');
     }
 
     public static function modus_picture_content($content, $element_info)

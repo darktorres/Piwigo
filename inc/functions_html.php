@@ -134,20 +134,21 @@ class functions_html
             if (! isset($url) or $single_link) {
                 $output .= $cat['name'];
             } elseif ($url == '') {
-                $output .= '
-  <a href="'
-                . functions_url::add_url_params(
-                    functions_url::make_index_url(
-                        [
-                            'category' => $cat,
-                        ]
-                    ),
+                $href = functions_url::add_url_params(
+                    functions_url::make_index_url([
+                        'category' => $cat,
+                    ]),
                     $add_url_params
-                )
-                . '">' . $cat['name'] . '</a>';
+                );
+
+                $output .= <<<HTML
+                    <a href="{$href}">{$cat['name']}</a>
+                    HTML;
             } else {
-                $output .= '
-  <a href="' . PHPWG_ROOT_PATH . $url . $category_id . '">' . $cat['name'] . '</a>';
+                $href = PHPWG_ROOT_PATH . $url . $category_id;
+                $output .= <<<HTML
+                    <a href="{$href}">{$cat['name']}</a>
+                    HTML;
             }
         }
 
@@ -277,13 +278,16 @@ class functions_html
             $alternate_url = functions_url::make_index_url();
         }
 
-        functions::redirect_html(
-            $alternate_url,
-            '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
-  <h1 style="text-align:left; font-size:36px;">' . functions::l10n('Forbidden') . '</h1><br>'
-  . $msg . '</div>',
-            5
-        );
+        $l10n_forbidden = functions::l10n('Forbidden');
+
+        $html_content = <<<HTML
+            <div style="text-align:left; margin-left:5em; margin-bottom:5em;">
+              <h1 style="text-align:left; font-size:36px;">{$l10n_forbidden}</h1><br>
+              {$msg}
+            </div>
+            HTML;
+
+        functions::redirect_html($alternate_url, $html_content, 5);
     }
 
     /**
@@ -300,13 +304,16 @@ class functions_html
             $alternate_url = functions_url::make_index_url();
         }
 
-        functions::redirect_html(
-            $alternate_url,
-            '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
-  <h1 style="text-align:left; font-size:36px;">' . functions::l10n('Bad request') . '</h1><br>'
-  . $msg . '</div>',
-            5
-        );
+        $l10n_bad_request = functions::l10n('Bad request');
+
+        $html_content = <<<HTML
+            <div style="text-align:left; margin-left:5em; margin-bottom:5em;">
+              <h1 style="text-align:left; font-size:36px;">{$l10n_bad_request}</h1><br>
+              {$msg}
+            </div>
+            HTML;
+
+        functions::redirect_html($alternate_url, $html_content, 5);
     }
 
     /**
@@ -323,13 +330,16 @@ class functions_html
             $alternate_url = functions_url::make_index_url();
         }
 
-        functions::redirect_html(
-            $alternate_url,
-            '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
-  <h1 style="text-align:left; font-size:36px;">' . functions::l10n('Page not found') . '</h1><br>'
-  . $msg . '</div>',
-            5
-        );
+        $l10n_page_not_found = functions::l10n('Page not found');
+
+        $html_content = <<<HTML
+            <div style="text-align:left; margin-left:5em; margin-bottom:5em;">
+              <h1 style="text-align:left; font-size:36px;">{$l10n_page_not_found}</h1><br>
+              {$msg}
+            </div>
+            HTML;
+
+        functions::redirect_html($alternate_url, $html_content, 5);
     }
 
     /**
@@ -358,12 +368,14 @@ class functions_html
             $msg .= "\n";
         }
 
-        $display = "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
-  <h1>{$title}</h1>
-  <pre style='font-size:larger;background:white;color:red;padding:1em;margin:0;clear:both;display:block;width:auto;height:auto;overflow:auto'>
-  <b>{$msg}</b>
-  {$btrace_msg}
-  </pre>\n";
+        $display = <<<HTML
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h1>{$title}</h1>
+            <pre style="font-size: larger; background: white; color: red; padding: 1em; margin: 0; clear: both; display: block; width: auto; height: auto; overflow: auto;">
+              <b>{$msg}</b>
+              {$btrace_msg}
+            </pre>
+            HTML;
 
         @self::set_status_header(500);
         echo $display . str_repeat(' ', 300); //IE6 doesn't error output if below a size

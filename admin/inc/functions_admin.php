@@ -3242,7 +3242,7 @@ class functions_admin
      */
     public static function number_format_human_readable($numbers)
     {
-        $readable = ['',  'k', 'M'];
+        $readable = ['', 'k', 'M'];
         $index = 0;
         $numbers = empty($numbers) ? 0 : $numbers;
 
