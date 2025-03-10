@@ -111,22 +111,22 @@ if (isset($_POST['submit'])) {
     if ($method == 'slide'):
         if ($big_thumb):
             $big_thumb = false;
-            array_push($page['warnings'], functions::l10n('Big thumb cannot be used in Slide mode. Disabled'));
+            $page['warnings'][] = functions::l10n('Big thumb cannot be used in Slide mode. Disabled');
         endif;
 
         if ($thumb_animate):
             $thumb_animate = false;
-            array_push($page['warnings'], functions::l10n('Thumb animation cannot be used in Slide mode. Disabled'));
+            $page['warnings'][] = functions::l10n('Thumb animation cannot be used in Slide mode. Disabled');
         endif;
 
         if (($thumb_mode_album == 'overlay-ex') || ($thumb_mode_album == 'overlay') || ($thumb_mode_album == 'top') || ($thumb_mode_album == 'bottom')):
             $thumb_mode_album = 'bottom_static';
-            array_push($page['warnings'], functions::l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+            $page['warnings'][] = functions::l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         endif;
 
         if (($thumb_mode_photo == 'overlay-ex') || ($thumb_mode_photo == 'overlay') || ($thumb_mode_photo == 'top') || ($thumb_mode_photo == 'bottom')):
             $thumb_mode_photo = 'bottom_static';
-            array_push($page['warnings'], functions::l10n('This Thumb mode cannot be used in Slide mode. Changed to default'));
+            $page['warnings'][] = functions::l10n('This Thumb mode cannot be used in Slide mode. Changed to default');
         endif;
     endif;
 
@@ -151,15 +151,15 @@ if (isset($_POST['submit'])) {
     ];
 
     if (! is_numeric($params['height'])) {
-        array_push($page['errors'], functions::l10n('Thumbnails max height must be an integer'));
+        $page['errors'][] = functions::l10n('Thumbnails max height must be an integer');
     }
 
     if (! is_numeric($params['margin'])) {
-        array_push($page['errors'], functions::l10n('Margin between thumbnails must be an integer'));
+        $page['errors'][] = functions::l10n('Margin between thumbnails must be an integer');
     }
 
     if (! is_numeric($params['nb_image_page'])) {
-        array_push($page['errors'], functions::l10n('Number of photos per page must be an integer'));
+        $page['errors'][] = functions::l10n('Number of photos per page must be an integer');
     }
 
     if ($params['height'] != $conf['gdThumb']['height']) {
@@ -170,7 +170,7 @@ if (isset($_POST['submit'])) {
 
     if (empty($page['errors'])) {
         functions::conf_update_param('gdThumb', $params);
-        array_push($page['infos'], functions::l10n('Information data registered in database'));
+        $page['infos'][] = functions::l10n('Information data registered in database');
     }
 }
 

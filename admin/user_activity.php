@@ -41,7 +41,7 @@ if (isset($_GET['type']) && $_GET['type'] == 'download_logs') {
         SQL;
 
     $result = functions_mysqli::pwg_query($query);
-    array_push($output_lines, ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details']);
+    $output_lines[] = ['User', 'ID_User', 'Object', 'Object_ID', 'Action', 'Date', 'Hour', 'IP_Address', 'Details'];
     while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
         $row['details'] = str_replace('`groups`', 'groups', $row['details']);
         $row['details'] = str_replace('`rank`', 'rank', $row['details']);
@@ -113,14 +113,11 @@ $username_of = functions_mysqli::query2array($query, 'id', 'username');
 $filterable_users = [];
 
 foreach ($nb_lines_for_user as $id => $nb_line) {
-    array_push(
-        $filterable_users,
-        [
-            'id' => $id,
-            'username' => isset($username_of[$id]) ? $username_of[$id] : 'user#' . $id,
-            'nb_lines' => $nb_line,
-        ]
-    );
+    $filterable_users[] = [
+        'id' => $id,
+        'username' => isset($username_of[$id]) ? $username_of[$id] : 'user#' . $id,
+        'nb_lines' => $nb_line,
+    ];
 }
 
 $template->assign('ulist', $filterable_users);

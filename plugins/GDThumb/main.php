@@ -201,13 +201,10 @@ function GDThumb_prefilter($content)
 
 function GDThumb_admin_menu($menu)
 {
-    array_push(
-        $menu,
-        [
-            'NAME' => 'gdThumb',
-            'URL' => functions_url::get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__)),
-        ]
-    );
+    $menu[] = [
+        'NAME' => 'gdThumb',
+        'URL' => functions_url::get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__)),
+    ];
     return $menu;
 }
 

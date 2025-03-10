@@ -802,7 +802,7 @@ class pwg
             $user_ids[$row['user_id']] = 1;
 
             if (isset($row['category_id'])) {
-                array_push($category_ids, $row['category_id']);
+                $category_ids[] = $row['category_id'];
             }
 
             if (isset($row['image_id'])) {
@@ -814,7 +814,7 @@ class pwg
             }
 
             if (isset($row['search_id'])) {
-                array_push($search_ids, $row['search_id']);
+                $search_ids[] = $row['search_id'];
             }
 
             $history_lines[] = $row;
@@ -1028,29 +1028,26 @@ class pwg
 
             @++$sorted_members[$user_name];
 
-            array_push(
-                $result,
-                [
-                    'DATE' => functions::format_date($line['date']),
-                    'TIME' => $line['time'],
-                    'USER' => $user_string,
-                    'USERNAME' => $user_name,
-                    'USERID' => $line['user_id'],
-                    'IP' => $line['IP'],
-                    'IMAGE' => $image_string,
-                    'IMAGENAME' => $image_title,
-                    'IMAGEID' => $image_id,
-                    'EDIT_IMAGE' => $image_edit_string,
-                    'TYPE' => $line['image_type'],
-                    'SECTION' => $line['section'],
-                    'FULL_CATEGORY_PATH' => isset($full_cat_path[$line['category_id']]) ? strip_tags($full_cat_path[$line['category_id']]) : functions::l10n('Root') . $line['category_id'],
-                    'CATEGORY' => isset($name_of_category[$line['category_id']]) ? $name_of_category[$line['category_id']] : functions::l10n('Root') . $line['category_id'],
-                    'SEARCH_ID' => $line['search_id'] ?? null,
-                    'TAGS' => explode(',', $tag_names),
-                    'TAGIDS' => explode(',', $tag_ids),
-                    'SEARCH_DETAILS' => $search_detail,
-                ]
-            );
+            $result[] = [
+                'DATE' => functions::format_date($line['date']),
+                'TIME' => $line['time'],
+                'USER' => $user_string,
+                'USERNAME' => $user_name,
+                'USERID' => $line['user_id'],
+                'IP' => $line['IP'],
+                'IMAGE' => $image_string,
+                'IMAGENAME' => $image_title,
+                'IMAGEID' => $image_id,
+                'EDIT_IMAGE' => $image_edit_string,
+                'TYPE' => $line['image_type'],
+                'SECTION' => $line['section'],
+                'FULL_CATEGORY_PATH' => isset($full_cat_path[$line['category_id']]) ? strip_tags($full_cat_path[$line['category_id']]) : functions::l10n('Root') . $line['category_id'],
+                'CATEGORY' => isset($name_of_category[$line['category_id']]) ? $name_of_category[$line['category_id']] : functions::l10n('Root') . $line['category_id'],
+                'SEARCH_ID' => $line['search_id'] ?? null,
+                'TAGS' => explode(',', $tag_names),
+                'TAGIDS' => explode(',', $tag_ids),
+                'SEARCH_DETAILS' => $search_detail,
+            ];
         }
 
         $max_page = ceil(count($result) / 300);

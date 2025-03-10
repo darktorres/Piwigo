@@ -326,12 +326,9 @@ if (isset($_POST['submit'])
                         }
 
                         // TODO: explanaition
-                        array_push(
-                            $granted_grps,
-                            [
-                                $row['cat_id'] => array_push($granted_grps[$row['cat_id']], $row['group_id']),
-                            ]
-                        );
+                        $granted_grps[] = [
+                            $row['cat_id'] => array_push($granted_grps[$row['cat_id']], $row['group_id']),
+                        ];
                     }
                 }
 
@@ -349,12 +346,9 @@ if (isset($_POST['submit'])
                         }
 
                         // TODO: explanaition
-                        array_push(
-                            $granted_users,
-                            [
-                                $row['cat_id'] => array_push($granted_users[$row['cat_id']], $row['user_id']),
-                            ]
-                        );
+                        $granted_users[] = [
+                            $row['cat_id'] => array_push($granted_users[$row['cat_id']], $row['user_id']),
+                        ];
                     }
                 }
 

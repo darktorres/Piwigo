@@ -2411,7 +2411,7 @@ class functions
                 $orderedCat['nb_subcats'] = count($cat['children']);
                 $orderedCat['children'] = self::assocToOrderedTree($cat['children']);
             }
-            array_push($orderedTree, $orderedCat);
+            $orderedTree[] = $orderedCat;
         }
         usort($orderedTree, '\Piwigo\inc\functions::cmpCat');
         return $orderedTree;

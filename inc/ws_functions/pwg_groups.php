@@ -273,7 +273,7 @@ class pwg_groups
         }
 
         $all_groups = $params['merge_group_id'];
-        array_push($all_groups, $params['destination_group_id']);
+        $all_groups[] = $params['destination_group_id'];
 
         $all_groups = array_unique($all_groups);
         $merge_group = array_diff($params['merge_group_id'], [$params['destination_group_id']]);
