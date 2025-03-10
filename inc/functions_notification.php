@@ -63,10 +63,12 @@ class functions_notification
                     $query .= '
       AND c.validation_date > \'' . $start . '\'';
                 }
+
                 if (! empty($end)) {
                     $query .= '
       AND c.validation_date <= \'' . $end . '\'';
                 }
+
                 $query .= self::get_std_sql_where_restrict_filter('AND');
                 break;
 
@@ -79,10 +81,12 @@ class functions_notification
                     $query .= '
       AND date > \'' . $start . '\'';
                 }
+
                 if (! empty($end)) {
                     $query .= '
       AND date <= \'' . $end . '\'';
                 }
+
                 $query .= '
       AND validated = \'false\'';
                 break;
@@ -97,10 +101,12 @@ class functions_notification
                     $query .= '
       AND date_available > \'' . $start . '\'';
                 }
+
                 if (! empty($end)) {
                     $query .= '
       AND date_available <= \'' . $end . '\'';
                 }
+
                 $query .= self::get_std_sql_where_restrict_filter('AND', 'id');
                 break;
 
@@ -114,10 +120,12 @@ class functions_notification
                     $query .= '
       AND date_available > \'' . $start . '\'';
                 }
+
                 if (! empty($end)) {
                     $query .= '
       AND date_available <= \'' . $end . '\'';
                 }
+
                 $query .= self::get_std_sql_where_restrict_filter('AND', 'id');
                 break;
 
@@ -130,10 +138,12 @@ class functions_notification
                     $query .= '
       AND registration_date > \'' . $start . '\'';
                 }
+
                 if (! empty($end)) {
                     $query .= '
       AND registration_date <= \'' . $end . '\'';
                 }
+
                 break;
 
             default:
@@ -160,6 +170,7 @@ class functions_notification
                         $field_id = 'user_id';
                         break;
                 }
+
                 $query = 'SELECT COUNT(DISTINCT ' . $field_id . ') ' . $query . ';';
                 list($count) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query($query));
                 return $count;
@@ -184,6 +195,7 @@ class functions_notification
                         $field_id = 'user_id';
                         break;
                 }
+
                 $query = 'SELECT DISTINCT ' . $field_id . ' ' . $query . ';';
                 $infos = functions_mysqli::query2array($query);
                 return $infos;
@@ -340,6 +352,7 @@ class functions_notification
             if ($add_url and ! empty($url)) {
                 $line = '<a href="' . $url . '">' . $line . '</a>';
             }
+
             $news[] = $line;
         }
     }
@@ -439,6 +452,7 @@ class functions_notification
         if ($persistent_cache->get($cache_key, $cached)) {
             return $cached;
         }
+
         $where_sql = self::get_std_sql_where_restrict_filter('WHERE', 'i.id', true);
 
         $query = '
@@ -550,6 +564,7 @@ class functions_notification
               )
               . '"><img src="' . $tn_src . '"></a>';
         }
+
         $description .= '...<br>';
 
         $description .=
@@ -566,6 +581,7 @@ class functions_notification
                   functions::l10n_dec('%d new photo', '%d new photos', $cat['img_count']) . ')'
                   . '</li>';
         }
+
         $description .= '</ul>';
 
         $description .= '</ul>';

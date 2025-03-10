@@ -67,6 +67,7 @@ class functions_html
                 $output .= $cat['name'] . '</a>';
             }
         }
+
         return $output;
     }
 
@@ -110,8 +111,10 @@ class functions_html
             if (isset($link_class)) {
                 $output .= ' class="' . $link_class . '"';
             }
+
             $output .= '>';
         }
+
         $is_first = true;
         foreach (explode(',', $uppercats) as $category_id) {
             $cat = $cache['cat_names'][$category_id];
@@ -273,6 +276,7 @@ class functions_html
         if ($alternate_url == null) {
             $alternate_url = functions_url::make_index_url();
         }
+
         functions::redirect_html(
             $alternate_url,
             '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -295,6 +299,7 @@ class functions_html
         if ($alternate_url == null) {
             $alternate_url = functions_url::make_index_url();
         }
+
         functions::redirect_html(
             $alternate_url,
             '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -317,6 +322,7 @@ class functions_html
         if ($alternate_url == null) {
             $alternate_url = functions_url::make_index_url();
         }
+
         functions::redirect_html(
             $alternate_url,
             '<div style="text-align:left; margin-left:5em;margin-bottom:5em;">
@@ -347,6 +353,7 @@ class functions_html
                 $class = isset($bt[$i]['class']) ? (@$bt[$i]['class'] . '::') : '';
                 $btrace_msg .= "#{$i}\t" . $class . @$bt[$i]['function'] . ' ' . @$bt[$i]['file'] . '(' . @$bt[$i]['line'] . ")\n";
             }
+
             $btrace_msg = trim($btrace_msg);
             $msg .= "\n";
         }
@@ -364,6 +371,7 @@ class functions_html
         if (function_exists('ini_set')) {// if possible turn off error display (we display it)
             ini_set('display_errors', false);
         }
+
         error_reporting(E_ALL);
         trigger_error(strip_tags($msg) . $btrace_msg, E_USER_ERROR);
         die(0); // just in case
@@ -417,6 +425,7 @@ class functions_html
                   . '</a>';
             }
         }
+
         return $title;
     }
 
@@ -450,6 +459,7 @@ class functions_html
                 if (count($other_cats) > 0) {
                     $params['combined_categories'] = $other_cats;
                 }
+
                 $remove_url = functions_url::make_index_url($params);
 
                 $title .=
@@ -499,6 +509,7 @@ class functions_html
                     break;
             }
         }
+
         $protocol = $_SERVER['SERVER_PROTOCOL'];
         if (($protocol != 'HTTP/1.1') && ($protocol != 'HTTP/1.0')) {
             $protocol = 'HTTP/1.0';
@@ -533,6 +544,7 @@ class functions_html
         if ($menu->get_id() != 'menubar') {
             return;
         }
+
         $menu->register_block(new RegisteredBlock('mbLinks', 'Links', 'piwigo'));
         $menu->register_block(new RegisteredBlock('mbCategories', 'Albums', 'piwigo'));
         $menu->register_block(new RegisteredBlock('mbTags', 'Related tags', 'piwigo'));
@@ -559,6 +571,7 @@ class functions_html
         if (! empty($info['name'])) {
             return functions_plugins::trigger_change('render_element_name', $info['name'], $info);
         }
+
         return functions::get_name_from_file($info['file']);
     }
 
@@ -574,6 +587,7 @@ class functions_html
         if (! empty($info['comment'])) {
             return functions_plugins::trigger_change('render_element_description', $info['comment'], $param);
         }
+
         return '';
     }
 
@@ -646,6 +660,7 @@ class functions_html
                 return $url;
             }
         }
+
         return functions_url::get_action_url($infos['id'], 'e', false);
     }
 

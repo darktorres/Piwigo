@@ -33,11 +33,13 @@ if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
                 foreach ($_POST[$k] as $k2 => $v2) {
                     $_POST[$k][$k2] = addslashes($v2);
                 }
+
                 @reset($_POST[$k]);
             } else {
                 $_POST[$k] = addslashes($v);
             }
         }
+
         @reset($_POST);
     }
 
@@ -47,11 +49,13 @@ if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
                 foreach ($_GET[$k] as $k2 => $v2) {
                     $_GET[$k][$k2] = addslashes($v2);
                 }
+
                 @reset($_GET[$k]);
             } else {
                 $_GET[$k] = addslashes($v);
             }
         }
+
         @reset($_GET);
     }
 
@@ -61,11 +65,13 @@ if (function_exists('get_magic_quotes_gpc') && ! @get_magic_quotes_gpc()) {
                 foreach ($_COOKIE[$k] as $k2 => $v2) {
                     $_COOKIE[$k][$k2] = addslashes($v2);
                 }
+
                 @reset($_COOKIE[$k]);
             } else {
                 $_COOKIE[$k] = addslashes($v);
             }
         }
+
         @reset($_COOKIE);
     }
 }
@@ -182,6 +188,7 @@ if ($language == 'fr_FR') {
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
 }
+
 define('PHPWG_URL', 'https://' . PHPWG_DOMAIN);
 
 functions::load_language('common.lang', '', [
@@ -211,6 +218,7 @@ $template->set_filenames([
 if (! isset($step)) {
     $step = 1;
 }
+
 //---------------------------------------------------------------- form analyze
 include(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $dblayer . '.php');
 include(PHPWG_ROOT_PATH . 'admin/inc/functions_install.php');
@@ -231,9 +239,11 @@ if (isset($_POST['install'])) {
     } elseif (preg_match('/[\'"]/', $webmaster)) {
         $errors[] = functions::l10n('webmaster login can\'t contain characters \' or "');
     }
+
     if ($admin_pass1 != $admin_pass2 || empty($admin_pass1)) {
         $errors[] = functions::l10n('please enter your password again');
     }
+
     if (empty($admin_mail)) {
         $errors[] = functions::l10n('mail address must be like xxx@yyy.eee (example : jack@altern.org)');
     } else {
@@ -286,6 +296,7 @@ INSERT INTO ' . $prefixeTable . 'config (param,value,comment)
         if (! defined('PWG_CHARSET')) {
             define('PWG_CHARSET', 'utf-8');
         }
+
         functions_install::activate_core_themes();
         functions_install::activate_core_plugins();
 
@@ -369,6 +380,7 @@ define(\'DB_COLLATE\', \'\');
                 ]
             );
         }
+
         @fputs($fp, $file_content, strlen($file_content));
         @fclose($fp);
     }
@@ -379,8 +391,10 @@ foreach ($languages->fs_languages as $language_code => $fs_language) {
     if ($language == $language_code) {
         $template->assign('language_selection', $language_code);
     }
+
     $languages_options[$language_code] = $fs_language['name'];
 }
+
 $template->assign('language_options', $languages_options);
 
 $template->assign(
@@ -426,6 +440,7 @@ if ($step == 1) {
             ini_set('session.use_trans_sid', intval($conf['session_use_trans_sid']));
             ini_set('session.cookie_httponly', 1);
         }
+
         session_name($conf['session_name']);
         session_set_cookie_params(0, functions_cookie::cookie_path());
         register_shutdown_function('session_write_close');
@@ -476,6 +491,7 @@ if ($step == 1) {
         }
     }
 }
+
 if (count($errors) != 0) {
     $template->assign('errors', $errors);
 }

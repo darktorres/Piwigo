@@ -99,6 +99,7 @@ class functions_user
         while ($r = functions_mysqli::pwg_db_fetch_assoc($q)) {
             $SCU_users[$r['username']] = strtolower($r['username']);
         }
+
         // $SCU_users is now an associative table where the key is the account as
         // registered in the DB, and the value is this same account, in lower case
 
@@ -131,18 +132,23 @@ class functions_user
         if ($login == '') {
             $errors[] = functions::l10n('Please, enter a login');
         }
+
         if (preg_match('/^.* $/', $login)) {
             $errors[] = functions::l10n('login mustn\'t end with a space character');
         }
+
         if (preg_match('/^ .*$/', $login)) {
             $errors[] = functions::l10n('login mustn\'t start with a space character');
         }
+
         if (self::get_userid($login)) {
             $errors[] = functions::l10n('this login is already used');
         }
+
         if ($login != strip_tags($login)) {
             $errors[] = functions::l10n('html tags are not allowed in login');
         }
+
         $mail_error = self::validate_mail_address(null, $mail_address);
         if ($mail_error != '') {
             $errors[] = $mail_error;
@@ -326,8 +332,10 @@ class functions_user
                 $query .= '
       , ';
             }
+
             $query .= $dbfield . ' AS ' . $pwgfield;
         }
+
         $query .= '
     FROM ' . USERS_TABLE . '
     WHERE ' . $conf['user_fields']['id'] . ' = \'' . $user_id . '\'';
@@ -377,6 +385,7 @@ class functions_user
                 $value = false;
             }
         }
+
         unset($value);
 
         $userdata['preferences'] = empty($userdata['preferences']) ? [] : unserialize($userdata['preferences']);
@@ -405,6 +414,7 @@ class functions_user
                 if (empty($forbidden_ids)) {
                     $forbidden_ids[] = 0;
                 }
+
                 $userdata['image_access_type'] = 'NOT IN'; //TODO maybe later
                 $userdata['image_access_list'] = implode(',', $forbidden_ids);
 
@@ -425,6 +435,7 @@ class functions_user
                             functions_category::remove_computed_category($user_cache_cats, $cat);
                         }
                     }
+
                     if (! empty($forbidden_ids)) {
                         if (empty($userdata['forbidden_categories'])) {
                             $userdata['forbidden_categories'] = implode(',', $forbidden_ids);
@@ -694,6 +705,7 @@ class functions_user
                     $value = false;
                 }
             }
+
             return $default_user;
         }
 
@@ -900,6 +912,7 @@ class functions_user
             $key = base64_encode(hash_hmac('sha1', $data, $conf['secret_key'] . $row['password'], true));
             return $key;
         }
+
         return false;
     }
 
@@ -931,12 +944,14 @@ class functions_user
         } else { // make sure we clean any remember me ...
             setcookie($conf['remember_me_name'], '', 0, functions_cookie::cookie_path(), ini_get('session.cookie_domain'));
         }
+
         if (session_id() != '') { // we regenerate the session for security reasons
             // see http://www.acros.si/papers/session_fixation.pdf
             session_regenerate_id(true);
         } else {
             session_start();
         }
+
         $_SESSION['pwg_uid'] = (int) $user_id;
 
         $user['id'] = $_SESSION['pwg_uid'];
@@ -967,8 +982,10 @@ class functions_user
                     return true;
                 }
             }
+
             setcookie($conf['remember_me_name'], '', 0, functions_cookie::cookie_path(), ini_get('session.cookie_domain'));
         }
+
         return false;
     }
 
@@ -1079,6 +1096,7 @@ class functions_user
                 return true;
             }
         }
+
         functions_plugins::trigger_notify('login_failure', stripslashes($username));
         return false;
     }
@@ -1124,6 +1142,7 @@ class functions_user
                 $user_status = '';
             }
         }
+
         return $user_status;
     }
 
@@ -1322,6 +1341,7 @@ class functions_user
                         $sql_list[] =
                           $field_name . ' NOT IN (' . $user['forbidden_categories'] . ')';
                     }
+
                     break;
 
                 case 'visible_categories':
@@ -1330,6 +1350,7 @@ class functions_user
                         $sql_list[] =
                           $field_name . ' IN (' . $filter['visible_categories'] . ')';
                     }
+
                     break;
 
                 case 'visible_images':
@@ -1350,6 +1371,7 @@ class functions_user
                         } elseif ($field_name == 'i.id') {
                             $table_prefix = 'i.';
                         }
+
                         if (isset($table_prefix)) {
                             $sql_list[] = $table_prefix . 'level<=' . $user['level'];
                         } elseif (! empty($user['image_access_list']) and ! empty($user['image_access_type'])) {
@@ -1357,6 +1379,7 @@ class functions_user
                                 . ' (' . $user['image_access_list'] . ')';
                         }
                     }
+
                     break;
                 default:
 
@@ -1391,6 +1414,7 @@ class functions_user
         if (! isset($user['last_photo_date'])) {
             return '0=1';
         }
+
         return $db_field . '>=LEAST('
           . functions_mysqli::pwg_db_get_recent_period_expression($user['recent_period'])
           . ',' . functions_mysqli::pwg_db_get_recent_period_expression(1, $user['last_photo_date']) . ')';
@@ -1640,6 +1664,7 @@ class functions_user
         if (! is_array($params)) {
             $params = [$params];
         }
+
         if (empty($params)) {
             return;
         }

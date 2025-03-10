@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
+use Rector\CodingStyle\Rector\Stmt\NewlineAfterStatementRector;
 use Rector\Config\RectorConfig;
 use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
 use Rector\Php73\Rector\String_\SensitiveHereNowDocRector;
@@ -19,20 +20,24 @@ return RectorConfig::configure()
     ])
     ->withSkip([
         __DIR__ . '/themes/bootstrap_darkroom/node_modules',
-        EncapsedStringsToSprintfRector::class,
-        RemoveExtraParametersRector::class,
-        SensitiveHereNowDocRector::class,
-        NullToStrictStringFuncCallArgRector::class,
+        // EncapsedStringsToSprintfRector::class,
+        // RemoveExtraParametersRector::class,
+        // SensitiveHereNowDocRector::class,
+        // NullToStrictStringFuncCallArgRector::class,
+    ])
+    ->withRules([
+        NewlineAfterStatementRector::class,
     ])
     ->withRootFiles()
-    ->withPhpSets()
-    ->withPreparedSets(
-        codeQuality: true,
-        codingStyle: true,
-        deadCode: false,
-        earlyReturn: false,
-        instanceOf: false,
-        naming: false,
-        privatization: false,
-        typeDeclarations: true
-    );
+    // ->withPhpSets()
+    // ->withPreparedSets(
+    //     codeQuality: true,
+    //     codingStyle: true,
+    //     deadCode: false,
+    //     earlyReturn: false,
+    //     instanceOf: false,
+    //     naming: false,
+    //     privatization: false,
+    //     typeDeclarations: true
+    // )
+;

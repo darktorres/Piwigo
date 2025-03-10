@@ -101,6 +101,7 @@ switch ($_GET['part']) {
                 functions::do_error(401, 'Access denied e');
             }
         }
+
         $file = functions::get_element_path($element_info);
         break;
     case 'r':
@@ -133,6 +134,7 @@ if (! functions_url::url_is_remote($file)) {
     if (! @is_readable($file)) {
         functions::do_error(404, "Requested file not found - {$file}");
     }
+
     $http_headers[] = 'Content-Length: ' . @filesize($file);
     if (function_exists('mime_content_type')) {
         $ctype = mime_content_type($file);
@@ -152,6 +154,7 @@ if (! functions_url::url_is_remote($file)) {
         foreach ($http_headers as $header) {
             header($header);
         }
+
         exit();
     }
 }
@@ -183,6 +186,7 @@ if (ini_get('safe_mode') == 0) {
 if (ob_get_length() !== false) {
     ob_flush();
 }
+
 flush();
 
 @readfile($file);

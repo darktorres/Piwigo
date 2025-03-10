@@ -32,6 +32,7 @@ class smartpocket_maintain extends ThemeMaintain
 
             functions::conf_update_param('smartpocket', $config, true);
         }
+
         $this->installed = true;
     }
 

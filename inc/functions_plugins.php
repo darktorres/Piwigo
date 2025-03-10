@@ -70,6 +70,7 @@ class functions_plugins
         if (! isset($pwg_event_handlers[$event][$priority])) {
             return false;
         }
+
         for ($i = 0; $i < count($pwg_event_handlers[$event][$priority]); $i++) {
             if ($pwg_event_handlers[$event][$priority][$i]['function'] == $func) {
                 unset($pwg_event_handlers[$event][$priority][$i]);
@@ -82,9 +83,11 @@ class functions_plugins
                         unset($pwg_event_handlers[$event]);
                     }
                 }
+
                 return true;
             }
         }
+
         return false;
     }
 
@@ -116,6 +119,7 @@ class functions_plugins
         if (! isset($pwg_event_handlers[$event])) {
             return $data;
         }
+
         $args = func_get_args();
         array_shift($args);
 
@@ -169,6 +173,7 @@ class functions_plugins
         if (! isset($pwg_event_handlers[$event])) {
             return;
         }
+
         $args = func_get_args();
         array_shift($args);
 
@@ -199,6 +204,7 @@ class functions_plugins
             $pwg_loaded_plugins[$plugin_id]['plugin_data'] = &$data;
             return true;
         }
+
         return false;
     }
 
@@ -216,6 +222,7 @@ class functions_plugins
         if (isset($pwg_loaded_plugins[$plugin_id]['plugin_data'])) {
             return $pwg_loaded_plugins[$plugin_id]['plugin_data'];
         }
+
         return null;
     }
 
@@ -234,9 +241,11 @@ class functions_plugins
         if (! empty($state)) {
             $clauses[] = 'state=\'' . $state . '\'';
         }
+
         if (! empty($id)) {
             $clauses[] = 'id="' . $id . '"';
         }
+
         if (count($clauses)) {
             $query .= '
     WHERE ' . implode(' AND ', $clauses);
@@ -349,6 +358,7 @@ class functions_plugins
             foreach ($plugins as $plugin) {// include main from a function to avoid using same function context
                 self::load_plugin($plugin);
             }
+
             self::trigger_notify('plugins_loaded');
         }
     }

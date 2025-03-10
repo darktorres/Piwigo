@@ -41,6 +41,7 @@ function eval_syntax($code)
                 --$b;
             }
         }
+
         if ($b) {
             return false;
         }
@@ -53,6 +54,7 @@ function eval_syntax($code)
         }
 
     }
+
     return '<?php' . $code . '?>';
 }
 
@@ -106,7 +108,9 @@ function get_rec_dirs($path = '')
                 $options = array_merge($options, get_rec_dirs($pathfile));
             }
         }
+
         closedir($fh);
     }
+
     return $options;
 }

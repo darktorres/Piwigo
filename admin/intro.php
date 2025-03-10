@@ -281,6 +281,7 @@ if (! isset($_SESSION['cache_activity_last_weeks']) or $_SESSION['cache_activity
                 $week = $i;
             }
         }
+
         $day_nb = $day_date->format('N');
 
         @$activity_last_weeks[$week][$day_nb]['details'][ucfirst($action['object'])][ucfirst($action['action'])] = $action['activity_counter'];
@@ -324,6 +325,7 @@ function cmp_day($a, $b)
     if ($a['x'] == $b['x']) {
         return 0;
     }
+
     return ($a['x'] < $b['x']) ? -1 : 1;
 }
 
@@ -364,6 +366,7 @@ for ($i = 1; $i < count($temp_data); $i++) {
     if ($diff_x[$i - 1] == -1) {
         $size++;
     }
+
     $chart_data[$temp_data[$i]['w']][$temp_data[$i]['d']] = $size;
 }
 
@@ -378,6 +381,7 @@ for ($i = 0; $i <= 6; $i++) {
     // first 3 letters of day name
     $day_labels[] = mb_substr($lang['day'][($i + 1) % 7], 0, 3);
 }
+
 $template->assign('DAY_LABELS', $day_labels);
 
 // +-----------------------------------------------------------------------+

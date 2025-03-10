@@ -87,6 +87,7 @@ class pwg_extensions
         if (in_array($params['action'], ['activate', 'deactivate'])) {
             $template->delete_compiled_templates();
         }
+
         return true;
 
     }
@@ -124,6 +125,7 @@ class pwg_extensions
         if (in_array($params['action'], ['activate', 'deactivate'])) {
             $template->delete_compiled_templates();
         }
+
         return true;
 
     }

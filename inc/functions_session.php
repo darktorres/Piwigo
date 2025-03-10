@@ -103,6 +103,7 @@ class functions_session
                 explode('.', $_SERVER['REMOTE_ADDR'])
             );
         }
+
         return ''; //ipv6 not yet
     }
 
@@ -123,6 +124,7 @@ class functions_session
         if (($row = functions_mysqli::pwg_db_fetch_assoc($result))) {
             return $row['data'];
         }
+
         return '';
     }
 
@@ -192,6 +194,7 @@ class functions_session
         if (! isset($_SESSION)) {
             return false;
         }
+
         $_SESSION['pwg_' . $var] = $value;
         return true;
     }
@@ -208,6 +211,7 @@ class functions_session
         if (isset($_SESSION['pwg_' . $var])) {
             return $_SESSION['pwg_' . $var];
         }
+
         return $default;
     }
 
@@ -222,6 +226,7 @@ class functions_session
         if (! isset($_SESSION)) {
             return false;
         }
+
         unset($_SESSION['pwg_' . $var]);
         return true;
     }

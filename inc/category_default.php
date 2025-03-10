@@ -135,9 +135,11 @@ foreach ($pictures as $row) {
             if (! $user['show_nb_hits']) {
                 $name = '(' . $row['hit'] . ') ' . $name;
             }
+
             break;
 
     }
+
     $tpl_var['NAME'] = $name;
     $tpl_thumbnails_var[] = $tpl_var;
 }

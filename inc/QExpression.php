@@ -25,6 +25,7 @@ class QExpression extends QMultiToken
                 $this->scopes[strtolower($alias)] = $scope;
             }
         }
+
         $i = 0;
         $this->parse_expression($q, $i, 0, $this);
         //manipulate the tree so that 'a OR b c' is the same as 'b c OR a'
@@ -48,6 +49,7 @@ class QExpression extends QMultiToken
                 } else {
                     $modifier &= ~functions_search::QST_NOT;
                 }
+
                 $this->stoken_modifiers[] = $modifier;
             } else {
                 $this->build_single_tokens($token, $crt_is_not);

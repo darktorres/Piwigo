@@ -82,6 +82,7 @@ class check_integrity
                     } else {
                         $args = [];
                     }
+
                     $this->retrieve_list[$i]['corrected'] = call_user_func_array($c13y['correction_fct'], $args);
 
                     if ($this->retrieve_list[$i]['corrected']) {
@@ -99,6 +100,7 @@ class check_integrity
                     $corrected_count
                 );
             }
+
             if ($not_corrected_count > 0) {
                 $page['errors'][] = functions::l10n_dec(
                     '%d anomaly has not been corrected.',

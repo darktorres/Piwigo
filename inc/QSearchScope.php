@@ -35,6 +35,7 @@ class QSearchScope
         if (! $this->nullable && strlen($token->term) == 0) {
             return false;
         }
+
         return true;
     }
 

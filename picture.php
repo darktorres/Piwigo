@@ -53,12 +53,14 @@ SELECT id, file, level
           str_replace(['_', '%'], ['/_', '/%'], $page['image_file']) .
           '.%\' ESCAPE \'/\' LIMIT 1';
     }
+
     if (! ($row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query)))) {// element does not exist
         functions_html::page_not_found(
             'The requested image does not exist',
             functions_url::duplicate_index_url()
         );
     }
+
     if ($row['level'] > $user['level']) {
         functions_html::access_denied();
     }
@@ -74,6 +76,7 @@ SELECT id, file, level
                 functions_url::duplicate_index_url()
             );
         }
+
         if ($page['section'] == 'categories' and ! isset($page['category'])) {// flat view - all items
             functions_html::access_denied();
         } else {// try to see if we can access it differently
@@ -282,11 +285,13 @@ UPDATE ' . CATEGORIES_TABLE . '
                     if ($perform_redirect) {
                         functions::redirect($url_self);
                     }
+
                     unset($_POST['content']);
                 }
 
                 $edit_comment = $_GET['comment_to_edit'];
             }
+
             break;
 
         case 'delete_comment':
@@ -335,6 +340,7 @@ if (isset($_SERVER['HTTP_X_MOZ']) and $_SERVER['HTTP_X_MOZ'] == 'prefetch') {
     if (functions_session::pwg_get_session_var('referer_image_id', 0) == $page['image_id']) {
         $inc_hit_count = false;
     }
+
     functions_session::pwg_set_session_var('referer_image_id', $page['image_id']);
 }
 
@@ -367,6 +373,7 @@ if (isset($page['previous_item'])) {
     $ids[] = $page['previous_item'];
     $ids[] = $page['first_item'];
 }
+
 if (isset($page['next_item'])) {
     $ids[] = $page['next_item'];
     $ids[] = $page['last_item'];
@@ -431,6 +438,7 @@ while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
     if ($i == 'previous' and $page['previous_item'] == $page['first_item']) {
         $picture['first'] = $picture[$i];
     }
+
     if ($i == 'next' and $page['next_item'] == $page['last_item']) {
         $picture['last'] = $picture[$i];
     }
@@ -472,6 +480,7 @@ if (isset($_GET['slideshow'])) {
 } else {
     $page['slideshow'] = false;
 }
+
 if ($page['slideshow'] and $conf['light_slideshow']) {
     $template->set_filenames([
         'slideshow' => 'slideshow.tpl',
@@ -532,6 +541,7 @@ foreach (['first', 'previous', 'next', 'last', 'current'] as $which_image) {
         );
     }
 }
+
 if ($conf['picture_download_icon'] and ! empty($picture['current']['download_url']) and $user['enabled_high'] == 'true') {
     $template->append('current', [
         'U_DOWNLOAD' => $picture['current']['download_url'],
@@ -632,6 +642,7 @@ if ($page['slideshow']) {
                   );
         }
     }
+
     $template->assign('slideshow', $tpl_slideshow);
 } elseif ($conf['picture_slideshow_icon']) {
     $template->assign(
@@ -837,6 +848,7 @@ if (count($related_categories) == 1 and
     foreach ($related_categories as $category) {// add all uppercats to $ids
         $ids = array_merge($ids, explode(',', $category['uppercats']));
     }
+
     $ids = array_unique($ids);
     $query = '
 SELECT id, name, permalink
@@ -848,6 +860,7 @@ SELECT id, name, permalink
         foreach (explode(',', $category['uppercats']) as $id) {
             $cats[] = $cat_map[$id];
         }
+
         $template->append('related_categories', functions_html::get_cat_display_name($cats));
     }
 }
@@ -889,6 +902,7 @@ include(PHPWG_ROOT_PATH . 'inc/picture_rate.php');
 if ($conf['activate_comments']) {
     include(PHPWG_ROOT_PATH . 'inc/picture_comment.php');
 }
+
 if ($metadata_showable and functions_session::pwg_get_session_var('show_metadata') <> null) {
     include(PHPWG_ROOT_PATH . 'inc/picture_metadata.php');
 }
@@ -899,6 +913,7 @@ if ($conf['picture_menu'] and (! isset($themeconf['hide_menu_on']) or ! in_array
     if (! isset($page['start'])) {
         $page['start'] = 0;
     }
+
     include(PHPWG_ROOT_PATH . 'inc/menubar.php');
 }
 
@@ -911,6 +926,7 @@ if ($page['slideshow'] and $conf['light_slideshow']) {
     $template->parse_picture_buttons();
     $template->pparse('picture');
 }
+
 //------------------------------------------------------------ log informations
 functions::pwg_log($picture['current']['id'], 'picture');
 include(PHPWG_ROOT_PATH . 'inc/page_tail.php');

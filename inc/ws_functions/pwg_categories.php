@@ -72,9 +72,11 @@ class pwg_categories
                 $where_clauses[] = 'id=' . $cat_id;
             }
         }
+
         if (! empty($where_clauses)) {
             $where_clauses = ['(' . implode("\n    OR ", $where_clauses) . ')'];
         }
+
         $where_clauses[] = functions_user::get_sql_condition_FandF(
             [
                 'forbidden_categories' => 'id',
@@ -117,6 +119,7 @@ class pwg_categories
             ) {
                 $order_by = $cats[$params['cat_id'][0]]['image_order'];
             }
+
             $order_by = empty($order_by) ? $conf['order_by'] : 'ORDER BY ' . $order_by;
             $favorite_ids = functions_url::get_user_favorites();
 
@@ -142,9 +145,11 @@ class pwg_categories
                         $image[$k] = (int) $row[$k];
                     }
                 }
+
                 foreach (['file', 'name', 'comment', 'date_creation', 'date_available'] as $k) {
                     $image[$k] = $row[$k];
                 }
+
                 $image = array_merge($image, ws_functions::ws_std_get_urls($row));
 
                 $images[] = $image;
@@ -408,6 +413,7 @@ class pwg_categories
                 $image_ids[] = $image_id;
                 $categories[] = $row;
             }
+
             unset($image_id);
             // management of the album thumbnail -- stops here
 
@@ -417,6 +423,7 @@ class pwg_categories
 
             $cats[] = $row;
         }
+
         usort($cats, '\Piwigo\inc\functions_category::global_rank_compare');
 
         // management of the album thumbnail -- starts here
@@ -450,6 +457,7 @@ class pwg_categories
                             if (isset($image_id) and ! in_array($image_id, $image_ids)) {
                                 $new_image_ids[] = $image_id;
                             }
+
                             if ($conf['representative_cache_on_level']) {
                                 $user_representative_updates_for[$category['id']] = $image_id;
                             }
@@ -457,6 +465,7 @@ class pwg_categories
                             $category['representative_picture_id'] = $image_id;
                         }
                     }
+
                     unset($category);
                 }
             }
@@ -505,9 +514,11 @@ class pwg_categories
                     $cat['tn_url'] = $thumbnail_src_of[$category['representative_picture_id']];
                 }
             }
+
             // we don't want them in the output
             unset($cat['user_representative_picture_id'], $cat['count_images'], $cat['count_categories']);
         }
+
         unset($cat);
         // management of the album thumbnail -- stops here
 
@@ -539,6 +550,7 @@ class pwg_categories
         if (! isset($params['additional_output'])) {
             $params['additional_output'] = '';
         }
+
         $params['additional_output'] = array_map('trim', explode(',', $params['additional_output']));
 
         $query = '
@@ -736,6 +748,7 @@ class pwg_categories
                     $order_new[] = $params['category_id'];
                     $was_inserted = true;
                 }
+
                 $order_new[] = $category_id;
                 ++$i;
             }
@@ -744,6 +757,7 @@ class pwg_categories
                 $order_new[] = $params['category_id'];
             }
         }
+
         // include function to set the global rank
         include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_admin.php');
         functions_admin::save_categories_order($order_new);
@@ -1033,6 +1047,7 @@ class pwg_categories
                 PREG_SPLIT_NO_EMPTY
             );
         }
+
         $params['category_id'] = array_map('intval', $params['category_id']);
 
         $category_ids = [];
@@ -1088,6 +1103,7 @@ class pwg_categories
                 PREG_SPLIT_NO_EMPTY
             );
         }
+
         $params['category_id'] = array_map('intval', $params['category_id']);
 
         $category_ids = [];

@@ -53,12 +53,14 @@ class QNumericRangeScope extends QSearchScope
                     } else {
                         $mult = 1000000;
                     }
+
                     $val *= $mult;
                     if ($i && ! $range_requested) {// round up the upper limit if possible - e.g 6k goes up to 6999, but 6.12k goes only up to 6129
                         if (($dot_pos = strpos($matches[1], '.')) !== false) {
                             $requested_precision = strlen($matches[1]) - $dot_pos - 1;
                             $mult /= pow(10, $requested_precision);
                         }
+
                         if ($mult > 1) {
                             $val += $mult - 1;
                         }
@@ -67,6 +69,7 @@ class QNumericRangeScope extends QSearchScope
             } else {
                 $val = '';
             }
+
             if (is_numeric($val)) {
                 if ($i ^ $strict[$i]) {
                     $val += $this->epsilon;
@@ -79,6 +82,7 @@ class QNumericRangeScope extends QSearchScope
         if (! $this->nullable && $range[0] === '' && $range[1] === '') {
             return false;
         }
+
         $token->scope_data = [
             'range' => $range,
             'strict' => $strict,
@@ -92,6 +96,7 @@ class QNumericRangeScope extends QSearchScope
         if ($token->scope_data['range'][0] !== '') {
             $clauses[] = $field . ' >' . ($token->scope_data['strict'][0] ? '' : '=') . $token->scope_data['range'][0] . ' ';
         }
+
         if ($token->scope_data['range'][1] !== '') {
             $clauses[] = $field . ' <' . ($token->scope_data['strict'][1] ? '' : '=') . $token->scope_data['range'][1] . ' ';
         }
@@ -103,6 +108,7 @@ class QNumericRangeScope extends QSearchScope
 
             return $field . ' IS NULL';
         }
+
         return '(' . implode(' AND ', $clauses) . ')';
     }
 }

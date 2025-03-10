@@ -28,6 +28,7 @@ SELECT
         $_SESSION['TAT_tour29_delete_cat_id'] = $rows[0]['category_id'];
     }
 }
+
 if ($_SESSION['TAT_tour29_delete_cat_id'] > 0) {
     $template->assign('TAT_tour29_delete_cat_id', $_SESSION['TAT_tour29_delete_cat_id']);
 }

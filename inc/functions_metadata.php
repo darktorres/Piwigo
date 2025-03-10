@@ -58,6 +58,7 @@ class functions_metadata
                 }
             }
         }
+
         return $result;
     }
 
@@ -73,6 +74,7 @@ class functions_metadata
         while (isset($value[0]) and $value[0] == chr(0)) {
             $value = substr($value, 1);
         }
+
         // remove binary nulls
         $value = str_replace(chr(0x00), ' ', $value);
 
@@ -98,6 +100,7 @@ class functions_metadata
                 $value = functions::convert_charset($value, $input_encoding, functions::get_pwg_charset());
             }
         }
+
         return $value;
     }
 
@@ -196,6 +199,7 @@ class functions_metadata
             $i = explode('/', $i);
             $i = $i[1] == 0 ? 0 : $i[0] / $i[1];
         }
+
         unset($i);
 
         $v = $raw[0] + $raw[1] / 60 + $raw[2] / 3600;

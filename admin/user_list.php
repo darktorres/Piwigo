@@ -150,6 +150,7 @@ $template->assign('pref_status_selected', 'normal');
 foreach ($conf['available_permission_levels'] as $level) {
     $level_options[$level] = functions::l10n(sprintf('Level %d', $level));
 }
+
 $template->assign('level_options', $level_options);
 $template->assign('level_selected', $default_user['level']);
 
@@ -180,6 +181,7 @@ if (functions_user::userprefs_get_param('user-manager-view', 'line') == 'line') 
     //Show 10 users by default
     $template->assign('pagination', functions_user::userprefs_get_param('user-manager-pagination', 10));
 }
+
 // +-----------------------------------------------------------------------+
 // | html code display                                                     |
 // +-----------------------------------------------------------------------+

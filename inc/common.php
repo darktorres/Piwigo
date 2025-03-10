@@ -38,16 +38,20 @@ if (! function_exists('get_magic_quotes_gpc') or ! @get_magic_quotes_gpc()) {
     {
         $v = addslashes($v);
     }
+
     if (is_array($_GET)) {
         array_walk_recursive($_GET, 'sanitize_mysql_kv');
     }
+
     if (is_array($_POST)) {
         array_walk_recursive($_POST, 'sanitize_mysql_kv');
     }
+
     if (is_array($_COOKIE)) {
         array_walk_recursive($_COOKIE, 'sanitize_mysql_kv');
     }
 }
+
 if (! empty($_SERVER['PATH_INFO'])) {
     $_SERVER['PATH_INFO'] = addslashes($_SERVER['PATH_INFO']);
 }
@@ -81,6 +85,7 @@ if (! defined('PHPWG_INSTALLED')) {
     header('Location: install.php');
     exit;
 }
+
 include(PHPWG_ROOT_PATH . 'inc/dblayer/functions_' . $conf['dblayer'] . '.php');
 
 if (isset($conf['show_php_errors']) && ! empty($conf['show_php_errors'])) {
@@ -153,6 +158,7 @@ if (preg_match('/(, )?`rank` ASC/', $conf['order_by'])) {
     if ($order_by == 'ORDER BY ') {
         $order_by = 'ORDER BY id ASC';
     }
+
     functions::conf_update_param('order_by', $order_by, true);
 }
 
@@ -160,6 +166,7 @@ if (preg_match('/(, )?`rank` ASC/', $conf['order_by'])) {
 if (isset($conf['order_by_custom'])) {
     $conf['order_by'] = $conf['order_by_custom'];
 }
+
 if (isset($conf['order_by_inside_category_custom'])) {
     $conf['order_by_inside_category'] = $conf['order_by_inside_category_custom'];
 }
@@ -177,6 +184,7 @@ if (in_array(substr($user['language'], 0, 2), ['fr', 'it', 'de', 'es', 'pl', 'ru
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
 }
+
 define('PHPWG_URL', 'https://' . PHPWG_DOMAIN);
 
 if (isset($conf['alternative_pem_url']) and $conf['alternative_pem_url'] != '') {
@@ -190,6 +198,7 @@ functions::load_language('common.lang');
 if (functions_user::is_admin() || (defined('IN_ADMIN') and IN_ADMIN)) {
     functions::load_language('admin.lang');
 }
+
 functions_plugins::trigger_notify('loading_lang');
 functions::load_language('lang', PHPWG_ROOT_PATH . PWG_LOCAL_DIR, [
     'no_fallback' => true,
@@ -219,6 +228,7 @@ if (defined('IN_ADMIN') and IN_ADMIN) {// Admin template
     if (functions::script_basename() != 'ws' and functions::mobile_theme()) {
         $theme = $conf['mobile_theme'];
     }
+
     $template = new Template(PHPWG_ROOT_PATH . 'themes', $theme);
 }
 
@@ -273,6 +283,7 @@ functions_plugins::add_event_handler('render_category_literal_description', '\Pi
 if (! $conf['allow_html_descriptions']) {
     functions_plugins::add_event_handler('render_category_description', 'nl2br');
 }
+
 functions_plugins::add_event_handler('render_comment_content', '\Piwigo\inc\functions_html::render_comment_content');
 functions_plugins::add_event_handler('render_comment_author', 'strip_tags');
 functions_plugins::add_event_handler('render_tag_url', '\Piwigo\inc\functions::str2url');
@@ -281,4 +292,5 @@ if (! empty($conf['original_url_protection'])) {
     functions_plugins::add_event_handler('get_element_url', '\Piwigo\inc\functions_html::get_element_url_protection_handler');
     functions_plugins::add_event_handler('get_src_image_url', '\Piwigo\inc\functions_html::get_src_image_url_protection_handler');
 }
+
 functions_plugins::trigger_notify('init');

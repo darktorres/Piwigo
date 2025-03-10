@@ -55,6 +55,7 @@ final class FileCombiner
                 unlink(PHPWG_ROOT_PATH . PWG_COMBINED_DIR . $file);
             }
         }
+
         closedir($dir);
     }
 
@@ -104,8 +105,10 @@ final class FileCombiner
             if ($conf['template_compile_check']) {
                 $key[] = filemtime(PHPWG_ROOT_PATH . $combinable->path);
             }
+
             $pending[] = $combinable;
         }
+
         $this->flush_pending($result, $pending, $key, $force);
         return $result;
     }
@@ -132,17 +135,20 @@ final class FileCombiner
                     $output .= $this->process_combinable($combinable, true, $force, $header);
                     $output .= "\n";
                 }
+
                 $output = "/*BEGIN header */\n" . $header . "\n" . $output;
                 functions::mkgetdir(dirname(PHPWG_ROOT_PATH . $file));
                 file_put_contents(PHPWG_ROOT_PATH . $file, $output);
                 @chmod(PHPWG_ROOT_PATH . $file, 0644);
             }
+
             $result[] = new Combinable('combi', $file, false);
         } elseif (count($pending) == 1) {
             $header = '';
             $this->process_combinable($pending[0], false, $force, $header);
             $result[] = $pending[0];
         }
+
         $key = [];
         $pending = [];
     }
@@ -168,6 +174,7 @@ final class FileCombiner
                 if ($conf['template_compile_check']) {
                     $key[] = filemtime(PHPWG_ROOT_PATH . $combinable->path);
                 }
+
                 $file = PWG_COMBINED_DIR . 't' . base_convert(hash('crc32b', implode(',', $key)), 16, 36) . '.' . $this->type;
                 if (! $force && file_exists(PHPWG_ROOT_PATH . $file)) {
                     $combinable->path = $file;
@@ -205,6 +212,7 @@ final class FileCombiner
             } else {
                 $content = self::process_js($content, $combinable->path);
             }
+
             return $content;
         }
     }
@@ -224,6 +232,7 @@ final class FileCombiner
             } catch (Exception $e) {
             }
         }
+
         return trim($js, " \t\r\n;") . ";\n";
     }
 
@@ -243,6 +252,7 @@ final class FileCombiner
             $cssMin = new Minifier();
             $css = $cssMin->run($css);
         }
+
         $css = functions_plugins::trigger_change('combined_css_postfilter', $css);
         return $css;
     }
@@ -270,6 +280,7 @@ final class FileCombiner
                     $replace[] = 'url(' . functions_url::embellish_url(functions_url::get_absolute_root_url(false) . $relative) . ')';
                 }
             }
+
             $css = str_replace($search, $replace, $css);
         }
 
@@ -295,8 +306,10 @@ final class FileCombiner
                     $replace[] = self::process_css_rec($sub_css, dirname($dir . "/{$match[1]}"), $header);
                 }
             }
+
             $css = str_replace($search, $replace, $css);
         }
+
         return $css;
     }
 }

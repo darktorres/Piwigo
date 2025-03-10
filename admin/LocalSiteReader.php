@@ -24,6 +24,7 @@ class LocalSiteReader
         if (! isset($conf['flip_file_ext'])) {
             $conf['flip_file_ext'] = array_flip($conf['file_ext']);
         }
+
         if (! isset($conf['flip_picture_ext'])) {
             $conf['flip_picture_ext'] = array_flip($conf['picture_ext']);
         }
@@ -100,15 +101,20 @@ class LocalSiteReader
                          and $node != 'thumbnail') {
                     $subdirs[] = $node;
                 }
-            } //end while readdir
+            }
+
+            //end while readdir
             closedir($contents);
 
             foreach ($subdirs as $subdir) {
                 $tmp_fs = $this->get_elements($path . '/' . $subdir);
                 $fs = array_merge($fs, $tmp_fs);
             }
+
             ksort($fs);
-        } //end if is_dir
+        }
+
+        //end if is_dir
         return $fs;
     }
 
@@ -162,6 +168,7 @@ class LocalSiteReader
                 return $ext;
             }
         }
+
         return null;
     }
 

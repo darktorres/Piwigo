@@ -34,6 +34,7 @@ class functions_install
             if (preg_match('/(^--|^$)/', $sql_line)) {
                 continue;
             }
+
             $query .= ' ' . $sql_line;
             // if we reached the end of query, we execute it and reinitialize the
             // variable "query"
@@ -47,8 +48,10 @@ class functions_install
                             $query = $matches[1] . ' DEFAULT CHARACTER SET utf8' . ';';
                         }
                     }
+
                     functions_mysqli::pwg_query($query);
                 }
+
                 $query = '';
             }
         }

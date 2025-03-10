@@ -43,18 +43,22 @@ if (isset($_GET['getMissingDerivative'])) {
             if ($src_image->is_mimetype()) {
                 continue;
             }
+
             if (($params['method'] == 'slide') || ($params['method'] == 'square')):
                 $derivative = new DerivativeImage(ImageStdParams::get_custom($params['height'], 9999), $src_image);
             else:
                 $derivative = new DerivativeImage(ImageStdParams::get_custom(9999, $params['height']), $src_image);
             endif;
+
             if (@filemtime($derivative->get_path()) === false) {
                 $urls[] = $derivative->get_url() . $uid;
             }
+
             if (count($urls) >= $max_urls && ! $is_last) {
                 break;
             }
         }
+
         if ($is_last) {
             $start_id = 0;
         }
@@ -64,6 +68,7 @@ if (isset($_GET['getMissingDerivative'])) {
     if ($start_id) {
         $ret['next_page'] = $start_id;
     }
+
     $ret['urls'] = $urls;
     echo json_encode($ret);
     exit();
@@ -85,6 +90,7 @@ if (isset($_POST['submit'])) {
     else:
         $method = $_POST['method'];
     endif;
+
     if (empty($_POST['normalize_title'])):
         $normalize = 'off';
     else:
@@ -102,6 +108,7 @@ if (isset($_POST['submit'])) {
             $big_thumb = false;
             array_push($page['warnings'], functions::l10n('Big thumb cannot be used in Slide mode. Disabled'));
         endif;
+
         if ($thumb_animate):
             $thumb_animate = false;
             array_push($page['warnings'], functions::l10n('Thumb animation cannot be used in Slide mode. Disabled'));
@@ -141,9 +148,11 @@ if (isset($_POST['submit'])) {
     if (! is_numeric($params['height'])) {
         array_push($page['errors'], functions::l10n('Thumbnails max height must be an integer'));
     }
+
     if (! is_numeric($params['margin'])) {
         array_push($page['errors'], functions::l10n('Margin between thumbnails must be an integer'));
     }
+
     if (! is_numeric($params['nb_image_page'])) {
         array_push($page['errors'], functions::l10n('Number of photos per page must be an integer'));
     }

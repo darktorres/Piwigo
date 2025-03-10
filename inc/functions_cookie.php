@@ -60,9 +60,11 @@ class functions_cookie
                 if ($new == $scr) {
                     break;
                 }
+
                 $scr = $new;
             }
         }
+
         return $scr;
     }
 

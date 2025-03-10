@@ -45,12 +45,14 @@ class PwgXmlWriter
         if (! empty($this->_elementStack)) {
             $this->_eol_indent();
         }
+
         $this->_indentLevel++;
         $this->_indent();
         $diff = ord($name[0]) - ord('0');
         if ($diff >= 0 && $diff <= 9) {
             $name = '_' . $name;
         }
+
         $this->_output('<' . $name);
         $this->_lastTagOpen = true;
         $this->_elementStack[] = $name;
@@ -108,8 +110,10 @@ class PwgXmlWriter
             } else {
                 $this->_output('>');
             }
+
             $this->_lastTagOpen = false;
         }
+
         return $ret;
     }
 

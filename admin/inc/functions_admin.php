@@ -239,6 +239,7 @@ class functions_admin
                 break;
             }
         }
+
         return $new_ids;
     }
 
@@ -259,6 +260,7 @@ class functions_admin
         if (count($ids) == 0) {
             return 0;
         }
+
         functions_plugins::trigger_notify('begin_delete_elements', $ids);
 
         if ($physical_deletion) {
@@ -449,6 +451,7 @@ class functions_admin
             if (count($ids) == 0) {
                 return false;
             }
+
             $where_cats = '%s IN(' . wordwrap(implode(', ', $ids), 120, "\n") . ')';
         }
 
@@ -591,6 +594,7 @@ class functions_admin
                         }
                     }
                 }
+
                 closedir($contents);
             }
         }
@@ -620,6 +624,7 @@ class functions_admin
                 if (! isset($current_rank_for_id_uppercat[$id_uppercat])) {
                     $current_rank_for_id_uppercat[$id_uppercat] = 0;
                 }
+
                 $current_rank = ++$current_rank_for_id_uppercat[$id_uppercat];
             } else {
                 $id = $category;
@@ -631,6 +636,7 @@ class functions_admin
                 'rank' => $current_rank,
             ];
         }
+
         $fields = [
             'primary' => ['id'],
             'update' => ['rank'],
@@ -663,6 +669,7 @@ class functions_admin
                 $current_rank = 0;
                 $current_uppercat = $row['id_uppercat'];
             }
+
             ++$current_rank;
             $cat =
               [
@@ -727,6 +734,7 @@ class functions_admin
             if ($unlock_child) {
                 $cats = array_merge($cats, functions_category::get_subcat_ids($categories));
             }
+
             $query = '
   UPDATE ' . CATEGORIES_TABLE . '
     SET visible = \'true\'
@@ -934,6 +942,7 @@ class functions_admin
                 explode(',', $row['uppercats'])
             );
         }
+
         $uppercats = array_unique($uppercats);
 
         return $uppercats;
@@ -953,6 +962,7 @@ class functions_admin
         } else {
             $src = DerivativeImage::url($size, $row);
         }
+
         $url = functions_url::get_root_url() . 'admin.php?page=photo-' . $image_id;
 
         return [
@@ -1069,6 +1079,7 @@ class functions_admin
         if (! isset($conf['flip_picture_ext'])) {
             $conf['flip_picture_ext'] = array_flip($conf['picture_ext']);
         }
+
         if (! isset($conf['flip_file_ext'])) {
             $conf['flip_file_ext'] = array_flip($conf['file_ext']);
         }
@@ -1104,6 +1115,7 @@ class functions_admin
                     }
                 }
             }
+
             closedir($contents);
 
             foreach ($subdirs as $subdir) {
@@ -1125,6 +1137,7 @@ class functions_admin
                 );
             }
         }
+
         return $fs;
     }
 
@@ -1221,6 +1234,7 @@ class functions_admin
                 ];
             }
         }
+
         $fields = [
             'primary' => ['id'],
             'update' => ['uppercats'],
@@ -1398,6 +1412,7 @@ class functions_admin
         } else {
             $insert['commentable'] = $conf['newcat_default_commentable'];
         }
+
         $insert['commentable'] = functions_mysqli::boolean_to_string($insert['commentable']);
 
         // is the album temporarily locked? (only visible by administrators,
@@ -1408,6 +1423,7 @@ class functions_admin
         } else {
             $insert['visible'] = $conf['newcat_default_visible'];
         }
+
         $insert['visible'] = functions_mysqli::boolean_to_string($insert['visible']);
 
         // is the album private? (may be overwritten if parent album is private)
@@ -1482,6 +1498,7 @@ class functions_admin
                     'cat_id' => $inserted_id,
                 ];
             }
+
             functions_mysqli::mass_inserts(GROUP_ACCESS_TABLE, ['group_id', 'cat_id'], $inserts);
 
             $query = '
@@ -1553,6 +1570,7 @@ class functions_admin
                 ];
             }
         }
+
         functions_mysqli::mass_inserts(
             IMAGE_TAG_TABLE,
             array_keys($inserts[0]),
@@ -1854,6 +1872,7 @@ class functions_admin
             $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ', skip');
             return;
         }
+
         $logger->debug(__FUNCTION__ . ', exec=' . $exec_id . ' wins the race and gets the token!');
 
         $max_image_id = 0;
@@ -1956,6 +1975,7 @@ class functions_admin
             if (! isset($current_rank_of[$category_id])) {
                 $current_rank_of[$category_id] = 0;
             }
+
             if (! isset($existing[$category_id])) {
                 $existing[$category_id] = [];
             }
@@ -2117,6 +2137,7 @@ class functions_admin
     SET need_update = \'true\';';
             functions_mysqli::pwg_query($query);
         }
+
         functions::conf_delete_param('count_orphans');
         functions_plugins::trigger_notify('invalidate_user_cache', $full);
     }
@@ -2149,10 +2170,12 @@ class functions_admin
             if (version_compare(functions_mysqli::pwg_get_db_version(), '4.1.0', '<')) {
                 return $query;
             }
+
             $charset_collate = ' DEFAULT CHARACTER SET ' . DB_CHARSET;
             if (DB_COLLATE != '') {
                 $charset_collate .= ' COLLATE ' . DB_COLLATE;
             }
+
             if (is_array($query)) {
                 foreach ($query as $id => $q) {
                     $q = trim($q);
@@ -2160,6 +2183,7 @@ class functions_admin
                     if (preg_match('/^CREATE\s+TABLE/i', $q)) {
                         $q .= $charset_collate;
                     }
+
                     $q .= ';';
                     $query[$id] = $q;
                 }
@@ -2169,9 +2193,11 @@ class functions_admin
                 if (preg_match('/^CREATE\s+TABLE/i', $query)) {
                     $query .= $charset_collate;
                 }
+
                 $query .= ';';
             }
         }
+
         return $query;
     }
 
@@ -2188,6 +2214,7 @@ class functions_admin
         for ($level = $MinLevelAccess; $level <= $MaxLevelAccess; $level++) {
             $tpl_options[$level] = functions::l10n(sprintf('ACCESS_%d', $level));
         }
+
         return $tpl_options;
     }
 
@@ -2203,6 +2230,7 @@ class functions_admin
         if ($start == '') {
             $start = './template-extension';
         }
+
         $dir = opendir($start);
         $extents = [];
 
@@ -2210,6 +2238,7 @@ class functions_admin
             if ($file == '.' or $file == '..' or $file == '.svn') {
                 continue;
             }
+
             $path = $start . '/' . $file;
             if (is_dir($path)) {
                 $extents = array_merge($extents, self::get_extents($path));
@@ -2218,6 +2247,7 @@ class functions_admin
                 $extents[] = substr($path, 21);
             }
         }
+
         return $extents;
     }
 
@@ -2280,6 +2310,7 @@ class functions_admin
         if (in_array($category_id, @explode(',', $user['forbidden_categories']))) {
             return false;
         }
+
         return true;
     }
 
@@ -2347,6 +2378,7 @@ class functions_admin
                 @curl_setopt($ch, CURLOPT_POST, 1);
                 @curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
             }
+
             $content = @curl_exec($ch);
             $header_length = @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
             $status = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -2355,6 +2387,7 @@ class functions_admin
                 if (preg_match('/Location:\s+?(.+)/', substr($content, 0, $header_length), $m)) {
                     return self::fetchRemote($m[1], $dest, [], [], $user_agent, $step + 1);
                 }
+
                 $content = substr($content, $header_length);
                 is_resource($dest) ? @fwrite($dest, $content) : $dest = $content;
                 return true;
@@ -2372,6 +2405,7 @@ class functions_admin
             if ($method == 'POST') {
                 $opts['http']['content'] = $request;
             }
+
             $context = @stream_context_create($opts);
             $content = @file_get_contents($src, false, $context);
             if ($content !== false) {
@@ -2396,6 +2430,7 @@ class functions_admin
             $http_request .= "Content-Type: application/x-www-form-urlencoded;\r\n";
             $http_request .= 'Content-Length: ' . strlen($request) . "\r\n";
         }
+
         $http_request .= 'User-Agent: ' . $user_agent . "\r\n";
         $http_request .= "Accept: */*\r\n";
         $http_request .= "\r\n";
@@ -2413,28 +2448,34 @@ class functions_admin
                 $i++;
                 continue;
             }
+
             if ($i == 0) {
                 if (! preg_match('/HTTP\/(\\d\\.\\d)\\s*(\\d+)\\s*(.*)/', rtrim($line, "\r\n"), $m)) {
                     fclose($s);
                     return false;
                 }
+
                 $status = (int) $m[2];
                 if ($status < 200 || $status >= 400) {
                     fclose($s);
                     return false;
                 }
             }
+
             if (! $in_content) {
                 if (preg_match('/Location:\s+?(.+)$/', rtrim($line, "\r\n"), $m)) {
                     fclose($s);
                     return self::fetchRemote(trim($m[1]), $dest, [], [], $user_agent, $step + 1);
                 }
+
                 $i++;
                 continue;
             }
+
             is_resource($dest) ? @fwrite($dest, $line) : $dest .= $line;
             $i++;
         }
+
         fclose($s);
         return true;
     }
@@ -2707,6 +2748,7 @@ class functions_admin
             $key = strtolower($name[$element_id]) . '-' . $name[$element_id] . '-' . $k_id;
             $ordered_element_ids[$key] = $element_id;
         }
+
         ksort($ordered_element_ids);
         return $ordered_element_ids;
     }
@@ -2722,6 +2764,7 @@ class functions_admin
         if (! is_array($category_ids)) {
             $category_ids = [$category_ids];
         }
+
         if (! is_array($user_ids)) {
             $user_ids = [$user_ids];
         }
@@ -2816,6 +2859,7 @@ class functions_admin
             } else {//assume a custom type
                 $type = derivative_params::derivative_to_url(derivative_std_params::IMG_CUSTOM) . '_' . $type;
             }
+
             $types[$i] = $type;
         }
 
@@ -2825,6 +2869,7 @@ class functions_admin
         } else {
             $pattern .= $types[0];
         }
+
         $pattern .= '\.[a-zA-Z0-9]{3,4}$#';
 
         if ($contents = @opendir(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR)) {
@@ -2835,6 +2880,7 @@ class functions_admin
                     self::clear_derivative_cache_rec(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $node, $pattern);
                 }
             }
+
             closedir($contents);
         }
     }
@@ -2852,6 +2898,7 @@ class functions_admin
                 if ($node == '.' or $node == '..') {
                     continue;
                 }
+
                 if (is_dir($path . '/' . $node)) {
                     $rmdir &= self::clear_derivative_cache_rec($path . '/' . $node, $pattern);
                 } else {
@@ -2864,15 +2911,18 @@ class functions_admin
                     }
                 }
             }
+
             closedir($contents);
 
             if ($rmdir) {
                 if ($rm_index) {
                     unlink($path . '/index.htm');
                 }
+
                 clearstatcache();
                 @rmdir($path);
             }
+
             return $rmdir;
         }
     }
@@ -2889,15 +2939,18 @@ class functions_admin
         if (! empty($infos['representative_ext'])) {
             $path = functions::original_to_representative($path, $infos['representative_ext']);
         }
+
         if (substr_compare($path, '../', 0, 3) == 0) {
             $path = substr($path, 3);
         }
+
         $dot = strrpos($path, '.');
         if ($type == 'all') {
             $pattern = '-*';
         } else {
             $pattern = '-' . derivative_params::derivative_to_url($type) . '*';
         }
+
         $path = substr_replace($path, $pattern, $dot, 0);
         if (($glob = glob(PHPWG_ROOT_PATH . PWG_DERIVATIVE_DIR . $path)) !== false) {
             foreach ($glob as $file) {
@@ -2924,8 +2977,10 @@ class functions_admin
                     $sub_dirs[] = $file;
                 }
             }
+
             closedir($opendir);
         }
+
         return $sub_dirs;
     }
 
@@ -2949,6 +3004,7 @@ class functions_admin
                     }
                 }
             }
+
             closedir($fh);
 
             if (@rmdir($path)) {
@@ -2957,6 +3013,7 @@ class functions_admin
                 if (! is_dir($trash_path)) {
                     @functions::mkgetdir($trash_path, functions::MKGETDIR_RECURSIVE | functions::MKGETDIR_DIE_ON_ERROR | functions::MKGETDIR_PROTECT_HTACCESS);
                 }
+
                 while ($r = $trash_path . '/' . md5(uniqid(mt_rand(), true))) {
                     if (! is_dir($r)) {
                         @rename($path, $r);
@@ -2991,6 +3048,7 @@ class functions_admin
         if (! is_array($requested)) {
             $requested = [$requested];
         }
+
         if (empty($requested)) {
             $requested = array_keys($tables);
         } else {
@@ -3054,6 +3112,7 @@ class functions_admin
                 'md5sum' => $md5sum,
             ];
         }
+
         functions_mysqli::mass_updates(
             IMAGES_TABLE,
             [
@@ -3145,6 +3204,7 @@ class functions_admin
                 'rank' => ++$current_rank,
             ];
         }
+
         $fields = [
             'primary' => ['image_id', 'category_id'],
             'update' => ['rank'],
@@ -3263,8 +3323,10 @@ class functions_admin
                     }
                 }
             }
+
             closedir($contents);
         }
+
         return $msizes;
     }
 

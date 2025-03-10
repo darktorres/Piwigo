@@ -57,6 +57,7 @@ class functions_comment
             $_POST['cr'][] = 'links';
             return $my_action;
         }
+
         return $action;
     }
 
@@ -95,8 +96,10 @@ class functions_comment
                     $infos[] = functions::l10n('Username is mandatory');
                     $comment_action = 'reject';
                 }
+
                 $comm['author'] = 'guest';
             }
+
             $comm['author_id'] = $conf['guest_id'];
             // if a guest try to use the name of an already existing user, he must be
             // rejected
@@ -135,6 +138,7 @@ class functions_comment
                 if (! preg_match('/^https?/i', $comm['website_url'])) {
                     $comm['website_url'] = 'http://' . $comm['website_url'];
                 }
+
                 if (! functions::url_check_format($comm['website_url'])) {
                     $infos[] = functions::l10n('Your website URL is invalid');
                     $comment_action = 'reject';
@@ -160,6 +164,7 @@ class functions_comment
         if (count($ip_components) > 3) {
             array_pop($ip_components);
         }
+
         $anonymous_id = implode('.', $ip_components);
 
         if ($comment_action != 'reject' and $conf['anti-flood_time'] > 0 and ! functions_user::is_admin()) { // anti-flood system
@@ -173,6 +178,7 @@ class functions_comment
                 $query .= '
         AND anonymous_id LIKE "' . $anonymous_id . '.%"';
             }
+
             $query .= '
   ;';
 
@@ -330,6 +336,7 @@ class functions_comment
             if (! preg_match('/^https?/i', $comment['website_url'])) {
                 $comment['website_url'] = 'http://' . $comment['website_url'];
             }
+
             if (! functions::url_check_format($comment['website_url'])) {
                 $page['errors'][] = functions::l10n('Your website URL is invalid');
                 $comment_action = 'reject';

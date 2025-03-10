@@ -33,6 +33,7 @@ class PwgXmlRpcEncoder extends PwgResponseEncoder
                     foreach ($data as $item) {
                         $return .= '  <value>' . self::xmlrpc_encode($item) . "</value>\n";
                     }
+
                     $return .= '</data></array>';
                 } else {
                     $return = '<struct>' . "\n";
@@ -41,8 +42,10 @@ class PwgXmlRpcEncoder extends PwgResponseEncoder
                         $return .= "  <member><name>{$name}</name><value>";
                         $return .= self::xmlrpc_encode($value) . "</value></member>\n";
                     }
+
                     $return .= '</struct>';
                 }
+
                 return $return;
         }
     }

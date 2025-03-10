@@ -55,6 +55,7 @@ try {
 } catch (Exception $e) {
     $logger->error($e->getMessage());
 }
+
 functions_mysqli::pwg_db_check_charset();
 
 list($conf['derivatives']) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT value FROM ' . $prefixeTable . 'config WHERE param=\'derivatives\''));
@@ -94,6 +95,7 @@ if (! $need_generate) {
         header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 10 * 24 * 3600) . ' GMT', true, 304);
         exit;
     }
+
     functions::send_derivative($expires);
     exit;
 }
@@ -113,6 +115,7 @@ SELECT *
             if (isset($row['width'])) {
                 $page['original_size'] = [$row['width'], $row['height']];
             }
+
             $page['coi'] = $row['coi'];
 
             if (! isset($row['rotation'])) {
@@ -131,6 +134,7 @@ SELECT *
                 $page['rotation_angle'] = pwg_image::get_rotation_angle_from_code($row['rotation']);
             }
         }
+
         if (! $row) {
             functions::ierror('Db file path not found', 404);
         }
@@ -140,6 +144,7 @@ SELECT *
 } else {
     $page['rotation_angle'] = 0;
 }
+
 functions_mysqli::pwg_db_close();
 
 if (! functions::try_switch_source($params, $src_mtime) && $params->type == derivative_std_params::IMG_CUSTOM) {
@@ -147,6 +152,7 @@ if (! functions::try_switch_source($params, $src_mtime) && $params->type == deri
     foreach (ImageStdParams::get_defined_type_map() as $std_params) {
         $sharpen += $std_params->sharpen;
     }
+
     $params->sharpen = round($sharpen / count(ImageStdParams::get_defined_type_map()));
 }
 
@@ -200,6 +206,7 @@ if ($params->will_watermark($d_size)) {
         $wm_size = $wm_scaled_size;
         $wm_image->resize($wm_scaled_size[0], $wm_scaled_size[1]);
     }
+
     $x = round(($wm->xpos / 100) * ($d_size[0] - $wm_size[0]));
     $y = round(($wm->ypos / 100) * ($d_size[1] - $wm_size[1]));
     if ($image->compose($wm_image, $x, $y, $wm->opacity)) {
@@ -213,6 +220,7 @@ if ($params->will_watermark($d_size)) {
                     if (! $i && ! $j) {
                         continue;
                     }
+
                     $x2 = $x + $i * $xpad;
                     $y2 = $y + $j * $ypad;
                     if ($x2 >= 0 && $x2 + $wm_size[0] < $d_size[0] &&
@@ -225,6 +233,7 @@ if ($params->will_watermark($d_size)) {
             }
         }
     }
+
     $wm_image->destroy();
     $timing['watermark'] = functions::time_step($step);
 }

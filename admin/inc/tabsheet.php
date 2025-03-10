@@ -54,8 +54,10 @@ class tabsheet
             if ($selected) {
                 $this->selected = $name;
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -70,8 +72,10 @@ class tabsheet
             if ($this->selected == $name) {
                 $this->selected = '';
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -85,6 +89,7 @@ class tabsheet
             $keys = array_keys($this->sheets);
             $name = $keys[0];
         }
+
         $this->selected = $name;
     }
 

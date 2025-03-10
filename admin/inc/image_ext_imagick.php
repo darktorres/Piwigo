@@ -106,6 +106,7 @@ class image_ext_imagick implements imageInterface
             $this->width = $this->height;
             $this->height = $tmp;
         }
+
         $this->add_command('rotate', -$rotation);
         $this->add_command('orient', 'top-left');
         return true;
@@ -145,6 +146,7 @@ class image_ext_imagick implements imageInterface
             $param .= ' ';
             $param .= implode(',', $line);
         }
+
         $param .= '"';
         $this->add_command('morphology', $param);
         return true;
@@ -197,6 +199,7 @@ class image_ext_imagick implements imageInterface
                 trigger_error($line, E_USER_WARNING);
             }
         }
+
         return is_array($returnarray);
     }
 }

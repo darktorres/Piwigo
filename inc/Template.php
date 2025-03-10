@@ -145,6 +145,7 @@ class Template
         if (! $this->smarty->debugging) {
             $this->smarty->error_reporting = error_reporting() & ~E_NOTICE;
         }
+
         $this->smarty->compile_check = $conf['template_compile_check'];
         $this->smarty->force_compile = $conf['template_force_compile'];
 
@@ -162,6 +163,7 @@ class Template
                     false // show trace
                 );
             }
+
             if (function_exists('pwg_query')) {
                 functions::conf_update_param('data_dir_checked', 1);
             }
@@ -266,6 +268,7 @@ class Template
         if (! empty($themeconf['local_head']) and $load_local_head) {
             $tpl_var['local_head'] = realpath($root . '/' . $theme . '/' . $themeconf['local_head']);
         }
+
         $themeconf['id'] = $theme;
 
         if (! isset($themeconf['colorscheme'])) {
@@ -352,6 +355,7 @@ class Template
         if (! is_array($filename_array)) {
             return false;
         }
+
         reset($filename_array);
         foreach ($filename_array as $handle => $filename) {
             if ($filename === null) {
@@ -360,6 +364,7 @@ class Template
                 $this->files[$handle] = $this->get_extent($filename, $handle);
             }
         }
+
         return true;
     }
 
@@ -394,6 +399,7 @@ class Template
         if (! is_array($filename_array)) {
             return false;
         }
+
         foreach ($filename_array as $filename => $value) {
             if (is_array($value)) {
                 $handle = $value[0];
@@ -414,6 +420,7 @@ class Template
                 $this->extents[$handle] = realpath($dir . $filename);
             }
         }
+
         return true;
     }
 
@@ -429,6 +436,7 @@ class Template
         if (isset($this->extents[$handle])) {
             $filename = $this->extents[$handle];
         }
+
         return $filename;
     }
 
@@ -543,6 +551,7 @@ class Template
         if ($return) {
             return $v;
         }
+
         $this->output .= $v;
     }
 
@@ -588,10 +597,12 @@ class Template
             if ($combi->version !== false) {
                 $href .= '?v' . ($combi->version ? $combi->version : PHPWG_VERSION);
             }
+
             // trigger the event for eventual use of a cdn
             $href = functions_plugins::trigger_change('combined_css', $href, $combi);
             $content[] = '<link rel="stylesheet" type="text/css" href="' . $href . '">';
         }
+
         $this->output = str_replace(
             self::COMBINED_CSS_TAG,
             implode("\n", $content),
@@ -607,8 +618,11 @@ class Template
                 if (strlen($this->html_style)) {
                     $rep .= '<style type="text/css">' . $this->html_style . '</style>';
                 }
+
                 $this->output = substr_replace($this->output, $rep, $pos, 0);
-            } //else maybe error or warning ?
+            }
+
+            //else maybe error or warning ?
             $this->html_head_elements = [];
             $this->html_style = '';
         }
@@ -666,6 +680,7 @@ class Template
                 return $tmp;
             }
         }
+
         return null;
     }
 
@@ -691,6 +706,7 @@ class Template
                 ) {
                     return var_export($lang[$key], true);
                 }
+
                 return '\Piwigo\inc\functions::l10n(' . $params[0] . ')';
 
             default:
@@ -701,6 +717,7 @@ class Template
                     $ret .= ')';
                     return $ret;
                 }
+
                 return '\Piwigo\inc\functions::l10n(' . $params[0] . ',' . implode(',', array_slice($params, 1)) . ')';
         }
     }
@@ -724,6 +741,7 @@ class Template
             } else {
                 $ret .= '($tmp=(' . $params[0] . '))>1';
             }
+
             $ret .= '?';
             $ret .= self::modcompiler_translate([$params[2]]);
             $ret .= ':';
@@ -732,6 +750,7 @@ class Template
             $ret .= ')';
             return $ret;
         }
+
         return '\Piwigo\inc\functions::l10n_dec(' . $params[1] . ',' . $params[2] . ',' . $params[0] . ')';
     }
 
@@ -818,6 +837,7 @@ class Template
             $smarty->assign($params['name'], $derivative);
             return;
         }
+
         ! empty($params['width']) or functions_html::fatal_error('define_derivative missing width');
         ! empty($params['height']) or functions_html::fatal_error('define_derivative missing height');
 
@@ -863,6 +883,7 @@ class Template
         if (! isset($params['id'])) {
             trigger_error("combine_script: missing 'id' parameter", E_USER_ERROR);
         }
+
         $load = 0;
         if (isset($params['load'])) {
             switch ($params['load']) {
@@ -899,6 +920,7 @@ class Template
         if (! isset($params['load'])) {
             trigger_error("get_combined_scripts: missing 'load' parameter", E_USER_ERROR);
         }
+
         $load = $params['load'] == 'header' ? 0 : 1;
         $content = [];
 
@@ -913,6 +935,7 @@ class Template
               . self::make_script_src($script)
               . '"></script>';
         }
+
         if (count($this->scriptLoader->inline_scripts)) {
             $content[] = '<script type="text/javascript">//<![CDATA[
 ';
@@ -931,6 +954,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
                   . '\';';
                 $content[] = 'after = after.parentNode.insertBefore(s, after);';
             }
+
             $content[] = '})();';
             $content[] = '</script>';
         }
@@ -1057,6 +1081,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
                     $this->smarty->registerFilter($type, $callback);
                 }
             }
+
             $this->smarty->compile_id .= '.' . base_convert(hash('crc32b', $compile_id), 16, 36);
         }
     }
@@ -1098,10 +1123,12 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             $regex[] = "#^[ \t]+({$ldq}{$tag}" . "[^{$ld}{$rd}]*{$rdq})\s*$#m";
             $regex[] = "#^[ \t]+({$ldq}/{$tag}{$rdq})\s*$#m";
         }
+
         $tags = ['include', 'else', 'combine_script', 'html_head'];
         foreach ($tags as $tag) {
             $regex[] = "#^[ \t]+({$ldq}{$tag}" . "[^{$ld}{$rd}]*{$rdq})\s*$#m";
         }
+
         $source = preg_replace($regex, '$1', $source);
         return $source;
     }
@@ -1143,6 +1170,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
                 $css[] = "{combine_css path='{$f}' order=10}";
             }
         }
+
         $f = PWG_LOCAL_DIR . 'css/rules.css';
         if (file_exists(PHPWG_ROOT_PATH . $f)) {
             $css[] = "{combine_css path='{$f}' order=10}";
@@ -1172,6 +1200,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             // Put themeconf in cache
             $themeconfs[$dir] = $themeconf;
         }
+
         return $themeconfs[$dir];
     }
 
@@ -1208,6 +1237,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             foreach ($this->picture_buttons as $k => $row) {
                 $buttons = array_merge($buttons, $row);
             }
+
             $this->assign('PLUGIN_PICTURE_BUTTONS', $buttons);
 
             // only for PHP 5.3
@@ -1231,6 +1261,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
             foreach ($this->index_buttons as $k => $row) {
                 $buttons = array_merge($buttons, $row);
             }
+
             $this->assign('PLUGIN_INDEX_BUTTONS', $buttons);
 
             // only for PHP 5.3
@@ -1260,6 +1291,7 @@ var s,after = document.getElementsByTagName(\'script\')[document.getElementsByTa
                 $ret .= '?v' . ($script->version ? $script->version : PHPWG_VERSION);
             }
         }
+
         // trigger the event for eventual use of a cdn
         $ret = functions_plugins::trigger_change('combined_script', $ret, $script);
         return functions_url::embellish_url($ret);

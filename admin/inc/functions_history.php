@@ -234,6 +234,7 @@ class functions_history
                         'history_id_to' => $row['max_id'],
                     ];
                 }
+
                 $need_update[$time_key]['nb_pages'] += $row['nb_pages'];
 
                 if ($row['min_id'] < $need_update[$time_key]['history_id_from']) {

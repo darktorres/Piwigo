@@ -64,6 +64,7 @@ if (isset($_POST['submit'])) {
         functions_user::log_user($user_id, false);
         functions::redirect(functions_url::make_index_url());
     }
+
     $registration_post_key = functions::get_ephemeral_key(2);
 } else {
     $registration_post_key = functions::get_ephemeral_key(6);

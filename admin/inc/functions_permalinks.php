@@ -26,6 +26,7 @@ class functions_permalinks
         if (! empty($ids)) {
             return $ids[0];
         }
+
         return null;
     }
 
@@ -45,6 +46,7 @@ class functions_permalinks
         if (functions_mysqli::pwg_db_num_rows($result)) {
             list($cat_id) = functions_mysqli::pwg_db_fetch_row($result);
         }
+
         return $cat_id;
     }
 
@@ -66,9 +68,11 @@ class functions_permalinks
         if (functions_mysqli::pwg_db_num_rows($result)) {
             list($permalink) = functions_mysqli::pwg_db_fetch_row($result);
         }
+
         if (! isset($permalink)) {// no permalink; nothing to do
             return true;
         }
+
         if ($save) {
             $old_cat_id = self::get_cat_id_from_old_permalink($permalink);
             if (isset($old_cat_id) and $old_cat_id != $cat_id) {
@@ -81,6 +85,7 @@ class functions_permalinks
                 return false;
             }
         }
+
         $query = '
   UPDATE ' . CATEGORIES_TABLE . '
     SET permalink=NULL
@@ -102,8 +107,10 @@ class functions_permalinks
   VALUES
     ( \'' . $permalink . '\',' . $cat_id . ',NOW() )';
             }
+
             functions_mysqli::pwg_query($query);
         }
+
         return true;
     }
 

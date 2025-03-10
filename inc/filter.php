@@ -81,6 +81,7 @@ WHERE ';
             $query .= '
   category_id  IN (' . $filter['visible_categories'] . ') and';
         }
+
         $query .= '
     date_available >= ' . functions_mysqli::pwg_db_get_recent_period_expression($filter['recent_period']);
 
@@ -103,6 +104,7 @@ WHERE ';
         $filter['visible_categories'] = functions_session::pwg_get_session_var('filter_visible_categories', '');
         $filter['visible_images'] = functions_session::pwg_get_session_var('filter_visible_images', '');
     }
+
     unset($filter_key);
     if (functions::get_filter_page_value('add_notes')) {
         $header_notes[] = functions::l10n_dec(
@@ -111,6 +113,7 @@ WHERE ';
             $filter['recent_period']
         );
     }
+
     include_once(PHPWG_ROOT_PATH . 'inc/functions_filter.php');
 } else {
     if (functions_session::pwg_get_session_var('filter_enabled', false)) {

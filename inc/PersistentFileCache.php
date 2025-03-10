@@ -31,6 +31,7 @@ class PersistentFileCache extends PersistentCache
                 return true;
             }
         }
+
         return false;
     }
 
@@ -55,6 +56,7 @@ class PersistentFileCache extends PersistentCache
                 return false;
             }
         }
+
         return true;
     }
 

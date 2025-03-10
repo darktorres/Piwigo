@@ -64,6 +64,7 @@ if (isset($_POST['simpleAutoOrder']) || isset($_POST['recursiveAutoOrder'])) {
     if (! in_array($_POST['order'], $sort_orders)) {
         die('Invalid sort order');
     }
+
     functions::check_input_parameter('id', $_POST, false, '/^-?\d+$/');
 
     $query = '
@@ -168,6 +169,7 @@ foreach ($allAlbum as $album) {
     for ($i = 1; $i < count($parents); $i++) {
         $the_place = &$the_place['children'][strval($parents[$i])];
     }
+
     $the_place['cat'] = $album;
 }
 

@@ -71,6 +71,7 @@ final class ImageRect
         if ($this->width() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
         if (! empty($coi)) {
@@ -86,6 +87,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->l += $tlcrop;
         $this->r -= $pixels - $tlcrop;
     }
@@ -101,6 +103,7 @@ final class ImageRect
         if ($this->height() <= $pixels) {
             return;
         }
+
         $tlcrop = floor($pixels / 2);
 
         if (! empty($coi)) {
@@ -116,6 +119,7 @@ final class ImageRect
                 }
             }
         }
+
         $this->t += $tlcrop;
         $this->b -= $pixels - $tlcrop;
     }

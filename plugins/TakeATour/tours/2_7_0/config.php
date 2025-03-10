@@ -24,6 +24,7 @@ $template->assign('TAT_search', functions_url::get_root_url() . 'search.php');
 if (isset($_GET['page']) and preg_match('/^photo-(\d+)(?:-(.*))?$/', $_GET['page'], $matches)) {
     $_GET['image_id'] = $matches[1];
 }
+
 functions::check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 if (isset($_GET['image_id']) and functions_session::pwg_get_session_var('TAT_image_id') == null) {
     $template->assign('TAT_image_id', $_GET['image_id']);

@@ -60,6 +60,7 @@ class functions_mysqli
         if (mysqli_connect_error()) {
             throw new Exception("Can't connect to server");
         }
+
         if (! $mysqli->select_db($database)) {
             throw new Exception('Connection to server succeed, but it was impossible to connect to database');
         }
@@ -88,6 +89,7 @@ class functions_mysqli
         if (defined('DB_CHARSET') and DB_CHARSET != '') {
             $db_charset = DB_CHARSET;
         }
+
         $mysqli->set_charset($db_charset);
     }
 
@@ -161,6 +163,7 @@ class functions_mysqli
                 $output .= "\n" . '(affected rows   : ';
                 $output .= self::pwg_db_changes() . ' )';
             }
+
             $output .= "</pre>\n";
 
             $debug .= $output;
@@ -289,8 +292,10 @@ class functions_mysqli
                         if ($flags & self::MASS_UPDATES_SKIP_EMPTY) {
                             continue; // next field
                         }
+
                         $query .= $separator . self::protect_column_name($key) . ' = NULL';
                     }
+
                     $is_first = false;
                 }
 
@@ -303,11 +308,13 @@ class functions_mysqli
                         if (! $is_first) {
                             $query .= ' AND ';
                         }
+
                         if (isset($data[$key])) {
                             $query .= self::protect_column_name($key) . ' = \'' . $data[$key] . '\'';
                         } else {
                             $query .= self::protect_column_name($key) . ' IS NULL';
                         }
+
                         $is_first = false;
                     }
 
@@ -331,14 +338,17 @@ class functions_mysqli
                         $column .= ' NOT NULL';
                         $nullable = false;
                     }
+
                     if (isset($row['Default'])) {
                         $column .= " default '" . $row['Default'] . "'";
                     } elseif ($nullable) {
                         $column .= ' default NULL';
                     }
+
                     if (isset($row['Collation']) and $row['Collation'] != 'NULL') {
                         $column .= " collate '" . $row['Collation'] . "'";
                     }
+
                     $columns[] = $column;
                 }
             }
@@ -412,8 +422,10 @@ class functions_mysqli
                 if ($flags & self::MASS_UPDATES_SKIP_EMPTY) {
                     continue; // next field
                 }
+
                 $query .= $separator . self::protect_column_name($key) . ' = NULL';
             }
+
             $is_first = false;
         }
 
@@ -427,11 +439,13 @@ class functions_mysqli
                 if (! $is_first) {
                     $query .= ' AND ';
                 }
+
                 if (isset($value)) {
                     $query .= self::protect_column_name($key) . ' = \'' . $value . '\'';
                 } else {
                     $query .= self::protect_column_name($key) . ' IS NULL';
                 }
+
                 $is_first = false;
             }
 
@@ -493,6 +507,7 @@ class functions_mysqli
                         $query .= "'" . $insert[$dbfield] . "'";
                     }
                 }
+
                 $query .= ')';
             }
 
@@ -537,6 +552,7 @@ class functions_mysqli
                     $query .= "'" . $value . "'";
                 }
             }
+
             $query .= ')';
 
             self::pwg_query($query);
@@ -765,6 +781,7 @@ class functions_mysqli
         if ($die) {
             functions_html::fatal_error($error);
         }
+
         echo '<pre>';
         trigger_error($error, E_USER_WARNING);
         echo '</pre>';

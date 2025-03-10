@@ -142,6 +142,7 @@ for ($i = 0; $i < count($available_order_by); $i++) {
         $available_order_by[$i][0]
     );
 }
+
 $template->assign('order_by_options_selected', [$order_by_index]);
 
 $user_options = [
@@ -223,6 +224,7 @@ ORDER BY date DESC;';
         } else {
             $user_rate = '? ' . $row['user_id'];
         }
+
         if (strlen($row['anonymous_id']) > 0) {
             $user_rate .= '(' . $row['anonymous_id'] . ')';
         }
@@ -230,6 +232,7 @@ ORDER BY date DESC;';
         $row['USER'] = $user_rate;
         $tpl_image['rates'][] = $row;
     }
+
     $template->append('images', $tpl_image);
 }
 

@@ -42,9 +42,11 @@ class QDateRangeScope extends QSearchScope
                 if (! isset($matches[1])) {
                     $matches[1] = ($i ^ $strict[$i]) ? 12 : 1;
                 }
+
                 if (! isset($matches[2])) {
                     $matches[2] = ($i ^ $strict[$i]) ? 31 : 1;
                 }
+
                 $val = implode('-', $matches);
                 if ($i ^ $strict[$i]) {
                     $val .= ' 23:59:59';
@@ -68,6 +70,7 @@ class QDateRangeScope extends QSearchScope
         if ($token->scope_data[0] != '') {
             $clauses[] = $field . ' >= \'' . $token->scope_data[0] . '\'';
         }
+
         if ($token->scope_data[1] != '') {
             $clauses[] = $field . ' <= \'' . $token->scope_data[1] . '\'';
         }
@@ -79,6 +82,7 @@ class QDateRangeScope extends QSearchScope
 
             return $field . ' IS NULL';
         }
+
         return '(' . implode(' AND ', $clauses) . ')';
     }
 }

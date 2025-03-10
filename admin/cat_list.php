@@ -70,6 +70,7 @@ if (isset($_GET['delete']) and is_numeric($_GET['delete'])) {
     if (isset($_GET['photo_deletion_mode'])) {
         $photo_deletion_mode = $_GET['photo_deletion_mode'];
     }
+
     functions_admin::delete_categories([$_GET['delete']], $photo_deletion_mode);
 
     $_SESSION['page_infos'] = [functions::l10n('Virtual album deleted')];
@@ -80,6 +81,7 @@ if (isset($_GET['delete']) and is_numeric($_GET['delete'])) {
     if (isset($_GET['parent_id'])) {
         $redirect_url .= '&parent_id=' . $_GET['parent_id'];
     }
+
     functions::redirect($redirect_url);
 }
 // request to add a virtual category
@@ -97,6 +99,7 @@ elseif (isset($_POST['submitAdd'])) {
         $page['infos'][] = $output_create['info'] . ' <a class="icon-pencil" href="' . $edit_url . '">' . functions::l10n('Edit album') . '</a>';
     }
 }
+
 // +-----------------------------------------------------------------------+
 // |                            Navigation path                            |
 // +-----------------------------------------------------------------------+
@@ -109,6 +112,7 @@ if (isset($_GET['parent_id'])) {
         $base_url . '&amp;parent_id='
     );
 }
+
 // +-----------------------------------------------------------------------+
 // |                       template initialization                         |
 // +-----------------------------------------------------------------------+
@@ -118,6 +122,7 @@ $form_action = PHPWG_ROOT_PATH . 'admin.php?page=cat_list';
 if (isset($_GET['parent_id'])) {
     $form_action .= '&amp;parent_id=' . $_GET['parent_id'];
 }
+
 $sort_orders_checked = array_keys($sort_orders);
 
 $template->assign([
@@ -145,6 +150,7 @@ if (! isset($_GET['parent_id'])) {
     $query .= '
   WHERE id_uppercat = ' . $_GET['parent_id'];
 }
+
 $query .= '
   ORDER BY `rank` ASC
 ;';

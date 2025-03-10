@@ -20,6 +20,7 @@ class functions_upgrade
         if (defined('PHPWG_IN_UPGRADE')) {
             return PHPWG_IN_UPGRADE;
         }
+
         return false;
     }
 
@@ -233,6 +234,7 @@ class functions_upgrade
   WHERE ' . $conf['user_fields']['username'] . '=\'' . $username . '\'
   ;';
         }
+
         $row = functions_mysqli::pwg_db_fetch_assoc(functions_mysqli::pwg_query($query));
 
         if (! $conf['password_verify']($password, $row['password'])) {

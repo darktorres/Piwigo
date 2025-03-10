@@ -108,6 +108,7 @@ if (isset($_SESSION['message_tags'])) {
     $message_tags = $_SESSION['message_tags'];
     unset($_SESSION['message_tags']);
 }
+
 $template->assign('message_tags', $message_tags);
 
 // +-----------------------------------------------------------------------+
@@ -143,8 +144,10 @@ while ($tag = functions_mysqli::pwg_db_fetch_assoc($result)) {
     if (count($alt_names)) {
         $tag['alt_names'] = implode(', ', $alt_names);
     }
+
     $all_tags[] = $tag;
 }
+
 usort($all_tags, '\Piwigo\inc\functions_html::tag_alpha_compare');
 
 $template->assign(

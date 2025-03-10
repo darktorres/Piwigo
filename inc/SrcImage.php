@@ -74,8 +74,10 @@ final class SrcImage
                 } else {
                     $this->rel_path = 'themes/default/icon/mimetypes/unknown.png';
                 }
+
                 $size = getimagesize(PHPWG_ROOT_PATH . $this->rel_path);
             }
+
             $this->size = @[$size[0], $size[1]];
         }
 
@@ -132,6 +134,7 @@ final class SrcImage
         if (! ($this->flags & self::IS_MIMETYPE)) {
             $url = functions_plugins::trigger_change('get_src_image_url', $url, $this);
         }
+
         return functions_url::embellish_url($url);
     }
 
@@ -152,12 +155,14 @@ final class SrcImage
             if ($this->flags & self::DIM_NOT_GIVEN) {
                 functions_html::fatal_error('SrcImage dimensions required but not provided');
             }
+
             // probably not metadata synced
             if (($size = getimagesize($this->get_path())) !== false) {
                 $this->size = [$size[0], $size[1]];
                 functions_mysqli::pwg_query('UPDATE ' . IMAGES_TABLE . ' SET width=' . $size[0] . ', height=' . $size[1] . ' WHERE id=' . $this->id);
             }
         }
+
         return $this->size;
     }
 }

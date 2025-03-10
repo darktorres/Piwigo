@@ -248,6 +248,7 @@ class functions_metadata_admin
             if ($data === false) {
                 continue;
             }
+
             // print_r($data);
             $id = $data['id'];
             foreach (['keywords', 'tags'] as $key) {
@@ -325,6 +326,7 @@ class functions_metadata_admin
   ';
             }
         }
+
         $query .= '
   ;';
         $result = functions_mysqli::pwg_query($query);
@@ -345,6 +347,7 @@ class functions_metadata_admin
       AND date_metadata_update IS NULL
   ';
         }
+
         $query .= '
   ;';
         return functions::hash_from_query($query, 'id');

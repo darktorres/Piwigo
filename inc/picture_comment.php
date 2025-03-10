@@ -117,6 +117,7 @@ SELECT
         if (! empty($_GET['comments_order']) && in_array(strtoupper($_GET['comments_order']), ['ASC', 'DESC'])) {
             functions_session::pwg_set_session_var('comments_order', $_GET['comments_order']);
         }
+
         $comments_order = functions_session::pwg_get_session_var('comments_order', $conf['comments_order']);
 
         $template->assign([
@@ -179,6 +180,7 @@ SELECT
                     ]
                 );
             }
+
             if (functions_user::can_manage_comment('edit', $row['author_id'])) {
                 $tpl_comment['U_EDIT'] = functions_url::add_url_params(
                     $url_self,
@@ -196,6 +198,7 @@ SELECT
                     $tpl_comment['U_CANCEL'] = $url_self;
                 }
             }
+
             if (functions_user::is_admin()) {
                 $tpl_comment['EMAIL'] = $email;
 
@@ -210,6 +213,7 @@ SELECT
                     );
                 }
             }
+
             $template->append('comments', $tpl_comment);
         }
     }
@@ -218,6 +222,7 @@ SELECT
     if (isset($edit_comment)) {
         $show_add_comment_form = false;
     }
+
     if (functions_user::is_a_guest() and ! $conf['comments_forall']) {
         $show_add_comment_form = false;
     }
@@ -244,8 +249,10 @@ SELECT
                 $tpl_var[strtoupper($k)] = isset($_POST[$k]) ? htmlspecialchars(stripslashes(@$_POST[$k])) : '';
             }
         }
+
         $template->assign('comment_add', $tpl_var);
     }
+
     $template->set_filenames([
         'comment_list' => 'comment_list.tpl',
     ]);

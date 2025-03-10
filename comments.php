@@ -121,6 +121,7 @@ $page['items_number'] = $conf['comments_page_nb_comments'];
 if (isset($_GET['items_number'])) {
     $page['items_number'] = $_GET['items_number'];
 }
+
 if (! is_numeric($page['items_number']) and $page['items_number'] != 'all') {
     $page['items_number'] = 10;
 }
@@ -312,6 +313,7 @@ $tpl_var = [];
 foreach ($since_options as $id => $option) {
     $tpl_var[$id] = $option['label'];
 }
+
 $template->assign('since_options', $tpl_var);
 $template->assign('since_options_selected', $page['since']);
 
@@ -329,6 +331,7 @@ $tpl_var = [];
 foreach ($items_number as $option) {
     $tpl_var[$option] = is_numeric($option) ? $option : functions::l10n($option);
 }
+
 $template->assign('item_number_options', $tpl_var);
 $template->assign('item_number_options_selected', $page['items_number']);
 
@@ -375,6 +378,7 @@ if ($page['items_number'] != 'all') {
     $query .= '
   LIMIT ' . $page['items_number'] . ' OFFSET ' . $start;
 }
+
 $query .= '
 ;';
 $result = functions_mysqli::pwg_query($query);
@@ -383,6 +387,7 @@ while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
     $element_ids[] = $row['image_id'];
     $category_ids[] = $row['category_id'];
 }
+
 list($counter) = functions_mysqli::pwg_db_fetch_row(functions_mysqli::pwg_query('SELECT FOUND_ROWS()'));
 
 $url = PHPWG_ROOT_PATH . 'comments.php'
@@ -494,6 +499,7 @@ SELECT *
                 );
             }
         }
+
         $template->append('comments', $tpl_comment);
     }
 }
@@ -516,5 +522,6 @@ functions_html::flush_page_messages();
 if (count($comments) > 0) {
     $template->assign_var_from_handle('COMMENT_LIST', 'comment_list');
 }
+
 $template->pparse('comments');
 include(PHPWG_ROOT_PATH . 'inc/page_tail.php');

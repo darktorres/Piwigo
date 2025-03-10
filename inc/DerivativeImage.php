@@ -85,6 +85,7 @@ final class DerivativeImage
         if ($params == null) {
             return $src_image->get_url();
         }
+
         return functions_url::embellish_url(
             functions_plugins::trigger_change(
                 'get_derivative_url',
@@ -118,6 +119,7 @@ final class DerivativeImage
             $derivative = new self($params, $src_image);
             $ret[$type] = $derivative;
         }
+
         // disabled types, fallback to enabled types
         foreach (ImageStdParams::get_undefined_type_map() as $type => $type2) {
             $ret[$type] = $ret[$type2];
@@ -169,6 +171,7 @@ final class DerivativeImage
         if ($this->params == null) {
             return $this->src_image->get_url();
         }
+
         return functions_url::embellish_url(
             functions_plugins::trigger_change(
                 'get_derivative_url',
@@ -196,6 +199,7 @@ final class DerivativeImage
         if ($this->params == null) {
             return 'Original';
         }
+
         return $this->params->type;
     }
 
@@ -207,6 +211,7 @@ final class DerivativeImage
         if ($this->params == null) {
             return $this->src_image->get_size();
         }
+
         return $this->params->compute_final_size($this->src_image->get_size());
     }
 
@@ -270,6 +275,7 @@ final class DerivativeImage
                 }
             }
         }
+
         return $size;
     }
 
@@ -307,6 +313,7 @@ final class DerivativeImage
                 $rel_path = $rel_url = $src->rel_path;
                 return;
             }
+
             $defined_types = array_keys(ImageStdParams::get_defined_type_map());
             for ($i = 0; $i < count($defined_types); $i++) {
                 if ($defined_types[$i] == $params->type) {
@@ -318,6 +325,7 @@ final class DerivativeImage
                             return;
                         }
                     }
+
                     break;
                 }
             }
@@ -336,6 +344,7 @@ final class DerivativeImage
         } elseif (substr_compare($loc, '../', 0, 3) == 0) {
             $loc = substr($loc, 3);
         }
+
         $loc = substr_replace($loc, '-' . implode('_', $tokens), strrpos($loc, '.'), 0);
 
         $rel_path = PWG_DERIVATIVE_DIR . $loc;
@@ -357,9 +366,11 @@ final class DerivativeImage
             if ($conf['php_extension_in_urls']) {
                 $rel_url .= '.php';
             }
+
             if ($conf['question_mark_in_urls']) {
                 $rel_url .= '?';
             }
+
             $rel_url .= '/' . $loc;
         } else {
             $rel_url = $rel_path;

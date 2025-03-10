@@ -91,6 +91,7 @@ DELETE
                     $errors[] = 'CANNOT DELETE - LANGUAGE IS ACTIVATED';
                     break;
                 }
+
                 if (! isset($this->fs_languages[$language_id])) {
                     $errors[] = 'CANNOT DELETE - LANGUAGE DOES NOT EXIST';
                     break;
@@ -116,6 +117,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 functions_mysqli::pwg_query($query);
                 break;
         }
+
         return $errors;
     }
 
@@ -127,6 +129,7 @@ UPDATE ' . USER_INFOS_TABLE . '
         if (empty($target_charset)) {
             $target_charset = functions::get_pwg_charset();
         }
+
         $target_charset = strtolower($target_charset);
 
         $dir = opendir(PHPWG_ROOT_PATH . 'language');
@@ -150,18 +153,23 @@ UPDATE ' . USER_INFOS_TABLE . '
                         $language['name'] = trim($val[1]);
                         $language['name'] = functions::convert_charset($language['name'], 'utf-8', $target_charset);
                     }
+
                     if (preg_match('|Version:\\s*([\\w.-]+)|', $plg_data, $val)) {
                         $language['version'] = trim($val[1]);
                     }
+
                     if (preg_match('|Language URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                         $language['uri'] = trim($val[1]);
                     }
+
                     if (preg_match('|Author:\\s*(.+)|', $plg_data, $val)) {
                         $language['author'] = trim($val[1]);
                     }
+
                     if (preg_match('|Author URI:\\s*(https?:\\/\\/.+)|', $plg_data, $val)) {
                         $language['author uri'] = trim($val[1]);
                     }
+
                     if (! empty($language['uri']) and strpos($language['uri'], 'extension_view.php?eid=')) {
                         list(, $extension) = explode('extension_view.php?eid=', $language['uri']);
                         if (is_numeric($extension)) {
@@ -175,6 +183,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 }
             }
         }
+
         closedir($dir);
         @uasort($this->fs_languages, '\Piwigo\inc\functions_html::name_compare');
     }
@@ -213,6 +222,7 @@ UPDATE ' . USER_INFOS_TABLE . '
             if (! preg_match('/^\d+\.\d+\.\d+$/', $version)) {
                 $version = $pem_versions[0]['name'];
             }
+
             $branch = functions::get_branch_from_version($version);
             foreach ($pem_versions as $pem_version) {
                 if (strpos($pem_version['name'], $branch) === 0) {
@@ -220,6 +230,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                 }
             }
         }
+
         if (empty($versions_to_check)) {
             return false;
         }
@@ -256,14 +267,17 @@ UPDATE ' . USER_INFOS_TABLE . '
             if (! is_array($pem_languages)) {
                 return false;
             }
+
             foreach ($pem_languages as $language) {
                 if (preg_match('/^.*? \[[A-Z]{2}\]$/', $language['extension_name'])) {
                     $this->server_languages[$language['extension_id']] = $language;
                 }
             }
+
             @uasort($this->server_languages, [$this, 'extension_name_compare']);
             return true;
         }
+
         return false;
     }
 
@@ -306,6 +320,7 @@ UPDATE ' . USER_INFOS_TABLE . '
                             if ($action == 'install') {
                                 $dest = $root;
                             }
+
                             $extract_path = PHPWG_ROOT_PATH . 'language/' . $dest;
 
                             $logger->debug(__FUNCTION__ . ', $extract_path = ' . $extract_path);
@@ -325,12 +340,14 @@ UPDATE ' . USER_INFOS_TABLE . '
                                         break;
                                     }
                                 }
+
                                 if ($status == 'ok') {
                                     $this->get_fs_languages();
                                     if ($action == 'install') {
                                         $this->perform_action('activate', $dest);
                                     }
                                 }
+
                                 if (file_exists($extract_path . '/obsolete.list')
                                   and $old_files = file($extract_path . '/obsolete.list', FILE_IGNORE_NEW_LINES)
                                   and ! empty($old_files)) {

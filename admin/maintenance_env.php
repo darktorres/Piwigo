@@ -255,6 +255,7 @@ $purge_urls[functions::l10n('All')] = sprintf($url_format, 'derivatives') . '&am
 foreach (ImageStdParams::get_defined_type_map() as $params) {
     $purge_urls[functions::l10n($params->type)] = sprintf($url_format, 'derivatives') . '&amp;type=' . $params->type;
 }
+
 $purge_urls[functions::l10n(derivative_std_params::IMG_CUSTOM)] = sprintf($url_format, 'derivatives') . '&amp;type=' . derivative_std_params::IMG_CUSTOM;
 
 $php_current_timestamp = date('Y-m-d H:i:s');
@@ -303,6 +304,7 @@ switch (pwg_image::get_library()) {
         if (preg_match('/ImageMagick \d+\.\d+\.\d+-?\d*/', $version['versionString'], $match)) {
             $library = $match[0];
         }
+
         $template->assign('GRAPHICS_LIBRARY', $library);
         break;
 
@@ -312,6 +314,7 @@ switch (pwg_image::get_library()) {
         if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match)) {
             $library .= ' ' . $match[1];
         }
+
         $template->assign('GRAPHICS_LIBRARY', $library);
         break;
 

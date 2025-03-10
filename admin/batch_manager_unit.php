@@ -82,6 +82,7 @@ SELECT id, date_creation
         if (! empty($_POST['tags-' . $row['id']])) {
             $tag_ids = functions_admin::get_tag_ids($_POST['tags-' . $row['id']]);
         }
+
         functions_admin::set_tags($tag_ids, $row['id']);
     }
 
@@ -206,6 +207,7 @@ SELECT
         if ($legend != functions::get_name_from_file($row['file'])) {
             $legend .= ' (' . $row['file'] . ')';
         }
+
         $extTab = explode('.', $row['path']);
 
         $template->append(

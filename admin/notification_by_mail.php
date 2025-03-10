@@ -115,6 +115,7 @@ switch ($page['mode']) {
             $check_key_treated = functions_notification_by_mail::subscribe_notification_by_mail(true, $_POST['cat_false']);
             functions::do_timeout_treatment('cat_false', $check_key_treated);
         }
+
         break;
 
     case 'send':
@@ -211,6 +212,7 @@ switch ($page['mode']) {
                 }
             }
         }
+
         $template->assign(
             [
                 'category_option_true' => $opt_true,
@@ -255,6 +257,7 @@ switch ($page['mode']) {
                 }
             }
         }
+
         $template->assign($page['mode'], $tpl_var);
 
         if ($conf['auth_key_duration'] > 0) {

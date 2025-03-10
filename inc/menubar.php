@@ -26,6 +26,7 @@ class menubar
         if ($conf['guest_access'] or ! functions_user::is_a_guest()) {
             $menu->load_registered_blocks();
         }
+
         $menu->prepare_display();
 
         if (@$page['section'] == 'search' and isset($page['qsearch_details'])) {
@@ -59,9 +60,11 @@ class menubar
                               'FEATURES' => (isset($url_data['nw_features']) ? $url_data['nw_features'] : ''),
                           ];
                     }
+
                     $block->data[] = $tpl_var;
                 }
             }
+
             if (! empty($block->data)) {
                 $block->template = 'menubar_links.tpl';
             }
@@ -158,6 +161,7 @@ class menubar
                         ]
                     );
                 }
+
                 $template->assign('IS_RELATED', false);
             }
             //displays all tags available for the current user
@@ -175,6 +179,7 @@ class menubar
                         ]
                     );
                 }
+
                 $template->assign('IS_RELATED', false);
             }
             //displays only the tags available from the current thumbnails displayed
@@ -192,8 +197,10 @@ class menubar
                         ]
                     );
                 }
+
                 $template->assign('IS_RELATED', true);
             }
+
             if (! empty($block->data)) {
                 $block->template = 'menubar_tags.tpl';
             }
@@ -353,13 +360,16 @@ class menubar
             if (! $conf['apache_authentication']) {
                 $template->assign('U_LOGOUT', functions_url::get_root_url() . '?act=logout');
             }
+
             if (functions_user::is_admin()) {
                 $template->assign('U_ADMIN', functions_url::get_root_url() . 'admin.php');
             }
         }
+
         if (($block = $menu->get_block('mbIdentification')) != null) {
             $block->template = 'menubar_identification.tpl';
         }
+
         $menu->apply('MENUBAR', 'menubar.tpl');
     }
 }

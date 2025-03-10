@@ -320,6 +320,7 @@ function admintools_save_picture()
         if (! empty($_POST['tags'])) {
             $tag_ids = functions_admin::get_tag_ids($_POST['tags']);
         }
+
         functions_admin::set_tags($tag_ids, $page['image_id']);
     }
 }

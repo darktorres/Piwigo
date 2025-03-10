@@ -174,6 +174,7 @@ while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
     } else {
         $author_name = stripslashes($row['username']);
     }
+
     $template->append(
         'comments',
         [

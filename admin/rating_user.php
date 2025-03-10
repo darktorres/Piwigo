@@ -71,12 +71,14 @@ while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
             'anon' => false,
         ];
     }
+
     $usr = $users_by_id[$row['user_id']];
     if ($usr['anon']) {
         $user_key = $usr['name'] . '(' . $row['anonymous_id'] . ')';
     } else {
         $user_key = $usr['name'];
     }
+
     $rating = &$by_user_ratings[$user_key];
     if ($rating === null) {
         $rating = $by_user_rating_model;
@@ -171,6 +173,7 @@ foreach ($by_user_ratings as $id => &$rating) {
         'cdtop' => $consensus_dev_top_count ? $consensus_dev_top : '',
     ];
 }
+
 unset($rating);
 
 // filter
@@ -199,6 +202,7 @@ for ($i = 0; $i < count($available_order_by); $i++) {
         $available_order_by[$i][0]
     );
 }
+
 $template->assign('order_by_options_selected', [$order_by_index]);
 
 $x = uasort($by_user_ratings, $available_order_by[$order_by_index][1]);

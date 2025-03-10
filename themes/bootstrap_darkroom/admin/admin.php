@@ -33,6 +33,7 @@ if ($page['tab'] == TAB_SETTINGS) {
         $themeconfig->save();
     }
 }
+
 // TabSheet
 $tabsheet = new tabsheet();
 $tabsheet->set_id('bsdark');

@@ -119,6 +119,7 @@ unset($test_get['tag']);
 if (count($test_get) == 0 and ! empty($_SERVER['QUERY_STRING'])) {
     $change_theme_url .= str_replace('&', '&amp;', $_SERVER['QUERY_STRING']) . '&amp;';
 }
+
 $change_theme_url .= 'change_theme=1';
 
 // ?page=plugin-community-pendings is an clean alias of

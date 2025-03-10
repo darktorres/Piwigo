@@ -32,6 +32,7 @@ functions_user::check_status(ACCESS_GUEST);
 if (isset($page['category'])) {
     functions_category::check_restrictions($page['category']['id']);
 }
+
 if ($page['start'] > 0 && $page['start'] >= count($page['items'])) {
     functions_html::page_not_found('', functions_url::duplicate_index_url([
         'start' => 0,
@@ -47,6 +48,7 @@ if (isset($_GET['image_order'])) {
     } else {
         functions_session::pwg_unset_session_var('image_order');
     }
+
     functions::redirect(
         functions_url::duplicate_index_url(
             [],        // nothing to redefine
@@ -54,6 +56,7 @@ if (isset($_GET['image_order'])) {
         )
     );
 }
+
 if (isset($_GET['display'])) {
     $page['meta_robots']['noindex'] = 1;
     if (array_key_exists($_GET['display'], ImageStdParams::get_defined_type_map())) {
@@ -90,10 +93,12 @@ if (isset($page['is_homepage']) and $page['is_homepage']) {
     if ($start > 0 && $start >= count($page['items'])) {
         $start -= $page['nb_image_page'];
     }
+
     $canonical_url = functions_url::duplicate_index_url([
         'start' => $start,
     ]);
 }
+
 $template->assign('U_CANONICAL', $canonical_url);
 
 //-------------------------------------------------------------- page title
@@ -143,6 +148,7 @@ if (empty($page['is_external'])) {
                 functions_url::duplicate_index_url($chronology_params, ['start', 'flat'])
             );
         }
+
         if ($conf['index_posted_date_icon']) {
             $chronology_params['chronology_field'] = 'posted';
             $template->assign(
@@ -156,6 +162,7 @@ if (empty($page['is_external'])) {
         } else {
             $chronology_field = 'created';
         }
+
         if ($conf['index_' . $chronology_field . '_date_icon']) {
             $url = functions_url::duplicate_index_url(
                 [
@@ -243,6 +250,7 @@ SELECT
             foreach ($authors as $author) {
                 $author_names[] = $author['author'];
             }
+
             $template->assign('AUTHORS', $authors);
 
             // in case the search has forbidden authors for current user, we need to filter the search rule
@@ -464,6 +472,7 @@ SELECT
                     }
                 }
             }
+
             if (isset($page['search_details']['matching_tag_ids'])) {
                 $tag_ids = $page['search_details']['matching_tag_ids'];
 
@@ -536,6 +545,7 @@ SELECT
             foreach ($cats as $cat) {
                 $hints[] = functions_html::get_cat_display_name([$cat], '');
             }
+
             $template->assign('category_search_results', $hints);
         }
 
@@ -567,6 +577,7 @@ SELECT
         if (($pos = strpos($first_order, ',')) !== false) {
             $first_order = substr($first_order, 0, $pos);
         }
+
         $first_order = trim($first_order);
 
         $url = functions_url::add_url_params(

@@ -37,6 +37,7 @@ if (($conf['show_exif']) and (function_exists('exif_read_data'))) {
                     if (isset($lang['exif_field_' . $field])) {
                         $key = $lang['exif_field_' . $field];
                     }
+
                     $tpl_meta['lines'][$key] = $exif[$field];
                 }
             } else {
@@ -47,10 +48,12 @@ if (($conf['show_exif']) and (function_exists('exif_read_data'))) {
                     if (isset($lang['exif_field_' . $key])) {
                         $key = $lang['exif_field_' . $key];
                     }
+
                     $tpl_meta['lines'][$key] = $exif[$field];
                 }
             }
         }
+
         $template->append('metadata', $tpl_meta);
     }
 }
@@ -69,8 +72,10 @@ if ($conf['show_iptc']) {
             if (isset($lang[$field])) {
                 $key = $lang[$field];
             }
+
             $tpl_meta['lines'][$key] = $value;
         }
+
         $template->append('metadata', $tpl_meta);
     }
 }

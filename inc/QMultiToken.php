@@ -26,12 +26,15 @@ class QMultiToken
             if ($i) {
                 $s .= ' ';
             }
+
             if ($modifier & functions_search::QST_OR) {
                 $s .= 'OR ';
             }
+
             if ($modifier & functions_search::QST_NOT) {
                 $s .= 'NOT ';
             }
+
             if (! ($this->tokens[$i]->is_single)) {
                 $s .= '(';
                 $s .= $this->tokens[$i];
@@ -40,6 +43,7 @@ class QMultiToken
                 $s .= $this->tokens[$i];
             }
         }
+
         return $s;
     }
 
@@ -64,6 +68,7 @@ class QMultiToken
                         if (strlen($crt_token)) {
                             $this->push($crt_token, $crt_modifier, $crt_scope);
                         }
+
                         $sub = new self();
                         $qi++;
                         $sub->parse_expression($q, $qi, $level + 1, $root);
@@ -71,6 +76,7 @@ class QMultiToken
                         if (isset($crt_scope) && $crt_scope->is_text) {
                             $sub->apply_scope($crt_scope); // eg. 'tag:(John OR Bill)'
                         }
+
                         $this->tokens[] = $sub;
                         $crt_modifier = 0;
                         $crt_scope = null;
@@ -79,6 +85,7 @@ class QMultiToken
                         if ($level > 0) {
                             $stop = true;
                         }
+
                         break;
                     case ':':
                         $scope = @$root->scopes[strtolower($crt_token)];
@@ -88,11 +95,13 @@ class QMultiToken
                             $crt_token = '';
                             $crt_scope = $scope;
                         }
+
                         break;
                     case '"':
                         if (strlen($crt_token)) {
                             $this->push($crt_token, $crt_modifier, $crt_scope);
                         }
+
                         $crt_modifier |= functions_search::QST_QUOTED;
                         break;
                     case '-':
@@ -101,6 +110,7 @@ class QMultiToken
                         } else {
                             $crt_modifier |= functions_search::QST_NOT;
                         }
+
                         break;
                     case '*':
                         if (strlen($crt_token)) {
@@ -109,12 +119,14 @@ class QMultiToken
                         else {
                             $crt_modifier |= functions_search::QST_WILDCARD_BEGIN;
                         }
+
                         break;
                     case '.':
                         if (isset($crt_scope) && ! $crt_scope->is_text) {
                             $crt_token .= $ch;
                             break;
                         }
+
                         if (strlen($crt_token) && preg_match('/[0-9]/', substr($crt_token, -1))
                           && $qi + 1 < strlen($q) && preg_match('/[0-9]/', $q[$qi + 1])) {// dot between digits is not a separator e.g. F2.8
                             $crt_token .= $ch;
@@ -130,6 +142,7 @@ class QMultiToken
                                 $crt_token .= $ch;
                             }
                         }
+
                         break;
                 }
             } else {// quoted
@@ -138,6 +151,7 @@ class QMultiToken
                         $crt_modifier |= functions_search::QST_WILDCARD_END;
                         $qi++;
                     }
+
                     $this->push($crt_token, $crt_modifier, $crt_scope);
                 } else {
                     $crt_token .= $ch;
@@ -163,14 +177,18 @@ class QMultiToken
                         if ($i + 1 < count($this->tokens)) {
                             $this->tokens[$i + 1]->modifier |= functions_search::QST_NOT;
                         }
+
                         $token->term = '';
                     }
+
                     if (strtolower($token->term) == 'or') {
                         if ($i + 1 < count($this->tokens)) {
                             $this->tokens[$i + 1]->modifier |= functions_search::QST_OR;
                         }
+
                         $token->term = '';
                     }
+
                     if (strtolower($token->term) == 'and') {
                         $token->term = '';
                     }
@@ -188,11 +206,13 @@ class QMultiToken
             } elseif (! count($token->tokens)) {
                 $remove = true;
             }
+
             if ($remove) {
                 array_splice($this->tokens, $i, 1);
                 if ($i < count($this->tokens) && $this->tokens[$i]->is_single) {
                     $this->tokens[$i]->modifier |= functions_search::QST_BREAK;
                 }
+
                 $i--;
             }
         }
@@ -209,12 +229,15 @@ class QMultiToken
             if (! $this->tokens[$i]->is_single) {
                 $this->tokens[$i]->check_operator_priority();
             }
+
             if ($i == 1) {
                 $crt_prio = self::priority($this->tokens[$i]->modifier);
             }
+
             if ($i <= 1) {
                 continue;
             }
+
             $prio = self::priority($this->tokens[$i]->modifier);
             if ($prio > $crt_prio) {// e.g. 'a OR b c d' i=2, operator(c)=AND -> prio(AND) > prio(OR) = operator(b)
                 $term_count = 2; // at least b and c to be regrouped
@@ -250,8 +273,10 @@ class QMultiToken
             if (isset($scope)) {
                 $modifier |= functions_search::QST_BREAK;
             }
+
             $this->tokens[] = new QSingleToken($token, $modifier, $scope);
         }
+
         $token = '';
         $modifier = 0;
         $scope = null;

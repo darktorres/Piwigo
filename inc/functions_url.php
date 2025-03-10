@@ -28,6 +28,7 @@ class functions_url
                 return substr($root_url, 2);
             }
         }
+
         return $root_url;
     }
 
@@ -55,6 +56,7 @@ class functions_url
             } else {
                 $url .= 'http://';
             }
+
             if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
                 $url .= $_SERVER['HTTP_X_FORWARDED_HOST'];
             } else {
@@ -78,6 +80,7 @@ class functions_url
                 }
             }
         }
+
         $url .= functions_cookie::cookie_path();
         return $url;
     }
@@ -102,12 +105,14 @@ class functions_url
                 } else {
                     $url .= $arg_separator;
                 }
+
                 $url .= $param;
                 if (isset($val)) {
                     $url .= '=' . $val;
                 }
             }
         }
+
         return $url;
     }
 
@@ -124,6 +129,7 @@ class functions_url
         if ($conf['php_extension_in_urls']) {
             $url .= '.php';
         }
+
         if ($conf['question_mark_in_urls']) {
             $url .= '?';
         }
@@ -214,9 +220,11 @@ class functions_url
         if ($conf['php_extension_in_urls']) {
             $url .= '.php';
         }
+
         if ($conf['question_mark_in_urls']) {
             $url .= '?';
         }
+
         $url .= '/';
         switch ($conf['picture_url_style']) {
             case 'id-file':
@@ -224,6 +232,7 @@ class functions_url
                 if (isset($params['image_file'])) {
                     $url .= '-' . functions::str2url(functions::get_filename_wo_extension($params['image_file']));
                 }
+
                 break;
             case 'file':
                 if (isset($params['image_file'])) {
@@ -237,9 +246,11 @@ class functions_url
             default:
                 $url .= $params['image_id'];
         }
+
         if (! isset($params['category'])) {// make urls shorter ...
             unset($params['flat']);
         }
+
         $url .= self::make_section_in_url($params);
         $url = self::add_well_known_params_in_url($url, $params);
         return $url;
@@ -256,6 +267,7 @@ class functions_url
             if (isset($params['chronology_view'])) {
                 $url .= '-' . $params['chronology_view'];
             }
+
             if (! empty($params['chronology_date'])) {
                 $url .= '-' . implode('-', $params['chronology_date']);
             }
@@ -268,6 +280,7 @@ class functions_url
         if (isset($params['start']) and $params['start'] > 0) {
             $url .= '/start-' . $params['start'];
         }
+
         return $url;
     }
 
@@ -442,6 +455,7 @@ class functions_url
                     } else {
                         $page['combined_categories'][] = $matches[1];
                     }
+
                     $next_token++;
                 } else {// try a permalink
                     $maybe_permalinks = [];
@@ -459,6 +473,7 @@ class functions_url
                                 $maybe_permalinks[count($maybe_permalinks) - 1]
                                 . '/' . $tokens[$current_token];
                         }
+
                         $current_token++;
                     }
 
@@ -485,6 +500,7 @@ class functions_url
                 if (empty($result)) {
                     functions_html::page_not_found(functions::l10n('Requested album does not exist'));
                 }
+
                 $page['category'] = $result;
             }
 
@@ -526,8 +542,10 @@ class functions_url
                 } else {
                     $requested_tag_url_names[] = $tokens[$i];
                 }
+
                 $i++;
             }
+
             $next_token = $i;
 
             if (empty($requested_tag_ids) && empty($requested_tag_url_names)) {
@@ -564,6 +582,7 @@ class functions_url
                     functions_html::bad_request('search identifier is missing');
                 }
             }
+
             $page['search'] = $matches[1];
             $next_token++;
         } elseif (@$tokens[$next_token] == 'list') {
@@ -582,12 +601,15 @@ class functions_url
                 if (! preg_match('/^\d+(,\d+)*$/', $tokens[$next_token])) {
                     functions_html::bad_request('wrong format on list GET parameter');
                 }
+
                 foreach (explode(',', $tokens[$next_token]) as $image_id) {
                     $page['list'][] = $image_id;
                 }
             }
+
             $next_token++;
         }
+
         return $page;
     }
 
@@ -621,6 +643,7 @@ class functions_url
                         $page['chronology_view'] = $chronology_tokens[0];
                         array_shift($chronology_tokens);
                     }
+
                     $page['chronology_date'] = $chronology_tokens;
 
                     foreach ($page['chronology_date'] as $date_token) {
@@ -635,8 +658,10 @@ class functions_url
             } elseif (preg_match('/^startcat-(\d+)/', $tokens[$i], $matches)) {
                 $page['startcat'] = $matches[1];
             }
+
             $i++;
         }
+
         return $page;
     }
 
@@ -667,6 +692,7 @@ class functions_url
         if (! self::url_is_remote($url)) {
             $url = self::embellish_url(self::get_root_url() . $url);
         }
+
         return $url;
     }
 
@@ -681,6 +707,7 @@ class functions_url
             if (isset($page['root_path'])) {
                 $page['save_root_path']['path'] = $page['root_path'];
             }
+
             $page['save_root_path']['count'] = 1;
             $page['root_path'] = self::get_absolute_root_url();
         } else {
@@ -702,6 +729,7 @@ class functions_url
                 } else {
                     unset($page['root_path']);
                 }
+
                 unset($page['save_root_path']);
             } else {
                 --$page['save_root_path']['count'];
@@ -726,6 +754,7 @@ class functions_url
                 break;
             }
         }
+
         return $url;
     }
 
@@ -739,6 +768,7 @@ class functions_url
             if (self::url_is_remote($conf['gallery_url']) or $conf['gallery_url'][0] == '/') {
                 return $conf['gallery_url'];
             }
+
             return self::get_root_url() . $conf['gallery_url'];
         }
 
@@ -778,6 +808,7 @@ class functions_url
           or strncmp($url, 'https://', 8) == 0) {
             return true;
         }
+
         return false;
     }
 

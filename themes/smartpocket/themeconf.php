@@ -63,13 +63,16 @@ if (! function_exists('add_menu_on_public_pages')) {
     if (defined('IN_ADMIN') and IN_ADMIN) {
         return false;
     }
+
     functions_plugins::add_event_handler('loc_after_page_header', 'add_menu_on_public_pages', 20);
 
     function add_menu_on_public_pages()
     {
         if (function_exists('initialize_menu')) {
             return false;
-        } # The current page has already the menu
+        }
+
+        # The current page has already the menu
         global $template, $page, $conf;
         if (isset($page['body_id']) and $page['body_id'] == 'thePicturePage') {
             $template->set_filenames([

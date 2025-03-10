@@ -321,6 +321,7 @@ class functions_search
             foreach ($search['fields']['filetypes'] as $ext) {
                 $filetypes_clauses[] = 'path LIKE \'%.' . $ext . '\'';
             }
+
             $clauses[] = implode(' OR ', $filetypes_clauses);
         }
 
@@ -412,6 +413,7 @@ class functions_search
             if (! empty($images_where)) {
                 $query .= "\n  AND " . $images_where;
             }
+
             $query .= $forbidden . '
     ' . $conf['order_by'];
             $items = functions::array_from_query($query, 'id');
@@ -427,6 +429,7 @@ class functions_search
                     } else {
                         $items = array_values(array_intersect($items, $tag_items));
                     }
+
                     break;
                 case 'OR':
                     $items = array_values(
@@ -463,6 +466,7 @@ class functions_search
             if ($token->modifier & self::QST_WILDCARD_BEGIN) {
                 $use_ft = false;
             }
+
             if ($token->modifier & (self::QST_QUOTED | self::QST_WILDCARD_END) == (self::QST_QUOTED | self::QST_WILDCARD_END)) {
                 $use_ft = false;
             }
@@ -498,9 +502,11 @@ class functions_search
                 if ($token->modifier & self::QST_QUOTED) {
                     $ft = '"' . $ft . '"';
                 }
+
                 if ($token->modifier & self::QST_WILDCARD_END) {
                     $ft .= '*';
                 }
+
                 $fts[] = $ft;
             }
         }
@@ -508,6 +514,7 @@ class functions_search
         if (count($fts)) {
             $clauses[] = 'MATCH(' . implode(', ', $fields) . ') AGAINST( \'' . addslashes(implode(' ', $fts)) . '\' IN BOOLEAN MODE)';
         }
+
         return $clauses;
     }
 
@@ -543,6 +550,7 @@ class functions_search
                     } else {
                         $clauses[] = 'author IS NULL';
                     }
+
                     break;
                 case 'width':
                 case 'height':
@@ -577,6 +585,7 @@ class functions_search
                     $clauses = functions_plugins::trigger_change('qsearch_get_images_sql_scopes', $clauses, $token, $expr);
                     break;
             }
+
             if (! empty($clauses)) {
                 $query = $query_base . '(' . implode("\n OR ", $clauses) . ')';
                 $qsr->images_iids[$i] = functions_mysqli::query2array($query, null, 'id');
@@ -594,6 +603,7 @@ class functions_search
             if (isset($token->scope) && $token->scope->id != 'tag') {
                 continue;
             }
+
             if (empty($token->term)) {
                 continue;
             }
@@ -653,6 +663,7 @@ class functions_search
         foreach ($all_tags as &$tag) {
             $tag['name'] = functions_plugins::trigger_change('render_tag_name', $tag['name'], $tag);
         }
+
         $qsr->all_tags = $all_tags;
         $qsr->tag_ids = $token_tag_ids;
     }
@@ -669,6 +680,7 @@ class functions_search
             if (isset($token->scope) && $token->scope->id != 'category') { // not relevant yet
                 continue;
             }
+
             if (empty($token->term)) {
                 continue;
             }
@@ -743,6 +755,7 @@ class functions_search
         foreach ($all_cats as &$cat) {
             $cat['name'] = functions_plugins::trigger_change('render_category_name', $cat['name'], $cat);
         }
+
         $qsr->all_cats = $all_cats;
         $qsr->cat_ids = $token_cat_ids;
     }
@@ -784,6 +797,7 @@ class functions_search
                     } else {
                         $ids = $crt_ids;
                     }
+
                     $qualifies = true;
                 }
             }
@@ -792,6 +806,7 @@ class functions_search
         if (count($not_ids)) {
             $ids = array_diff($ids, $not_ids);
         }
+
         return $ids;
     }
 
@@ -838,6 +853,7 @@ class functions_search
         if (count($res['items'])) {// cache the results only if not empty - otherwise it is useless
             $persistent_cache->set($cache_key, $res, 300);
         }
+
         return $res;
     }
 
@@ -880,6 +896,7 @@ class functions_search
         } else {
             $postedDateAliases[] = 'date';
         }
+
         $scopes[] = new QDateRangeScope('created', $createdDateAliases, true);
         $scopes[] = new QDateRangeScope('posted', $postedDateAliases);
 
@@ -898,6 +915,7 @@ class functions_search
                 if (isset($token->scope) && ! $token->scope->is_text) {
                     continue;
                 }
+
                 if (strlen($token->term) > 2
                   && ($token->modifier & (self::QST_QUOTED | self::QST_WILDCARD)) == 0
                   && strcspn($token->term, '\'0123456789') == strlen($token->term)) {
@@ -912,6 +930,7 @@ class functions_search
         if (count($expression->stokens) == 0) {
             return $search_results;
         }
+
         $qsr = new QResults();
         self::qsearch_get_tags($expression, $qsr);
         self::qsearch_get_categories($expression, $qsr);
@@ -929,6 +948,7 @@ class functions_search
               . ' modifier:' . dechex($expression->stoken_modifiers[$i])
               . (! empty($expression->stokens[$i]->variants) ? ' variants: ' . htmlspecialchars(implode(', ', $expression->stokens[$i]->variants)) : '');
         }
+
         $debug[] = 'before perms ' . count($ids);
 
         $search_results['qs']['matching_tags'] = $qsr->all_tags;
@@ -953,6 +973,7 @@ class functions_search
         if (! empty($options['images_where'])) {
             $where_clauses[] = '(' . $options['images_where'] . ')';
         }
+
         if ($permissions) {
             $where_clauses[] = functions_user::get_sql_condition_FandF(
                 [
@@ -970,6 +991,7 @@ class functions_search
             $query .= '
       INNER JOIN ' . IMAGE_CATEGORY_TABLE . ' AS ic ON id = ic.image_id';
         }
+
         $query .= '
     WHERE ' . implode("\n AND ", $where_clauses) . "\n" .
         $conf['order_by'];

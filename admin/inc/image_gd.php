@@ -65,6 +65,7 @@ class image_gd implements imageInterface
         } else {
             imagedestroy($dest);
         }
+
         return $result;
     }
 
@@ -105,6 +106,7 @@ class image_gd implements imageInterface
         } else {
             imagedestroy($dest);
         }
+
         return $result;
     }
 

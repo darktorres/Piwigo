@@ -89,6 +89,7 @@ SELECT u.' . $conf['user_fields']['username'] . ' AS username
     while ($us = functions_mysqli::pwg_db_fetch_assoc($res)) {
         $members[] = $us['username'];
     }
+
     $template->append(
         'groups',
         [

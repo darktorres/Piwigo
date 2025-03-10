@@ -101,6 +101,7 @@ final class DerivativeParams
             $in_size[1] > $this->sizing->ideal_size[1]) {
             return false;
         }
+
         return true;
     }
 
@@ -114,6 +115,7 @@ final class DerivativeParams
             return $min_size[0] <= $out_size[0]
               || $min_size[1] <= $out_size[1];
         }
+
         return false;
     }
 }

@@ -36,6 +36,7 @@ if (isset($_GET['action']) and isset($_GET['theme'])) {
         if ($_GET['action'] == 'activate' or $_GET['action'] == 'deactivate') {
             $template->delete_compiled_templates();
         }
+
         functions::redirect($base_url);
     }
 }
@@ -84,6 +85,7 @@ foreach ($themes->fs_themes as $theme_id => $fs_theme) {
             $tpl_theme['DEACTIVABLE'] = false;
             $tpl_theme['DEACTIVATE_TOOLTIP'] = functions::l10n('Impossible to deactivate this theme, you need at least one theme.');
         }
+
         if ($tpl_theme['IS_DEFAULT']) {
             $tpl_theme['DEACTIVABLE'] = false;
             $tpl_theme['DEACTIVATE_TOOLTIP'] = functions::l10n('Impossible to deactivate the default theme.');
@@ -138,6 +140,7 @@ function cmp($a, $b)
     if (@$a['IS_DEFAULT']) {
         return -1;
     }
+
     if (@$b['IS_DEFAULT']) {
         return 1;
     }
@@ -148,6 +151,7 @@ function cmp($a, $b)
 
     return $s[$a['STATE']] >= $s[$b['STATE']] ? 1 : -1;
 }
+
 usort($tpl_themes, 'cmp');
 
 $template->assign(

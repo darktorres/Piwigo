@@ -205,6 +205,7 @@ class c13y_internal
 
                         $result = true;
                     }
+
                     break;
                 case 'status':
                     if ($id == $conf['guest_id']) {
@@ -235,6 +236,7 @@ class c13y_internal
 
                         $result = true;
                     }
+
                     break;
             }
         }

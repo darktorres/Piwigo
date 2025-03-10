@@ -104,6 +104,7 @@ class pwg
                     if ($type != $derivative->get_type()) {
                         continue;
                     }
+
                     if (@filemtime($derivative->get_path()) === false) {
                         $urls[] = $derivative->get_url() . $uid;
                     }
@@ -113,6 +114,7 @@ class pwg
                     break;
                 }
             }
+
             if ($is_last) {
                 $start_id = 0;
             }
@@ -122,6 +124,7 @@ class pwg
         if ($start_id) {
             $ret['next_page'] = $start_id;
         }
+
         $ret['urls'] = $urls;
         return $ret;
     }
@@ -197,6 +200,7 @@ class pwg
                 'value' => $value,
             ];
         }
+
         return [
             'infos' => new PwgNamedArray($output, 'item'),
         ];
@@ -239,6 +243,7 @@ class pwg
             $infos['msizes'][$size_type] += @$msizes[derivative_params::derivative_to_url($size_type)];
             $all += $infos['msizes'][$size_type];
         }
+
         $infos['msizes']['all'] = $all;
 
         // Compiled templates size
@@ -299,6 +304,7 @@ class pwg
                 'user_id' => $user['id'],
             ];
         }
+
         if (count($datas)) {
             functions_mysqli::mass_inserts(
                 CADDIE_TABLE,
@@ -306,6 +312,7 @@ class pwg
                 $datas
             );
         }
+
         return count($datas);
     }
 
@@ -327,6 +334,7 @@ class pwg
         if (! empty($params['anonymous_id'])) {
             $query .= ' AND anonymous_id=\'' . $params['anonymous_id'] . '\'';
         }
+
         if (! empty($params['image_id'])) {
             $query .= ' AND element_id=' . $params['image_id'];
         }
@@ -336,6 +344,7 @@ class pwg
             include_once(PHPWG_ROOT_PATH . 'inc/functions_rate.php');
             functions_rate::update_rating_score();
         }
+
         return $changes;
     }
 
@@ -352,6 +361,7 @@ class pwg
         if (functions_user::try_log_user($params['username'], $params['password'], false)) {
             return true;
         }
+
         return new PwgError(999, 'Invalid username/password');
     }
 
@@ -365,6 +375,7 @@ class pwg
         if (! functions_user::is_a_guest()) {
             functions_user::logout_user();
         }
+
         return true;
     }
 
@@ -381,6 +392,7 @@ class pwg
         foreach (['status', 'theme', 'language'] as $k) {
             $res[$k] = $user[$k];
         }
+
         $res['pwg_token'] = functions::get_pwg_token();
         $res['charset'] = functions::get_pwg_charset();
 
@@ -481,6 +493,7 @@ class pwg
             if (isset($details['method'])) {
                 $detailsType = 'method';
             }
+
             if (isset($details['script'])) {
                 $detailsType = 'script';
             }
@@ -913,6 +926,7 @@ class pwg
             } else {
                 $user_string .= $line['user_id'];
             }
+
             $user_string .= '&nbsp;<a href="';
             $user_string .= PHPWG_ROOT_PATH . 'admin.php?page=history';
             $user_string .= '&amp;search_id=' . $search_id;

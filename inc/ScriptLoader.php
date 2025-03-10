@@ -89,12 +89,14 @@ class ScriptLoader
                 if (! isset($this->registered_scripts[$id])) {
                     $this->load_known_required_script($id, 1) or functions_html::fatal_error("inline script not found require {$id}");
                 }
+
                 $s = $this->registered_scripts[$id];
                 if ($s->load_mode == 2) {
                     $s->load_mode = 1;
                 } // until now the implementation does not allow executing inline script depending on another async script
             }
         }
+
         $this->inline_scripts[] = $code;
     }
 
@@ -112,6 +114,7 @@ class ScriptLoader
         } elseif ($this->did_footer) {
             trigger_error("Attempt to add script {$id} but the footer has been written", E_USER_WARNING);
         }
+
         if (! isset($this->registered_scripts[$id])) {
             $script = new Script($load_mode, $id, $path, $version, $require);
             $script->is_template = $is_template;
@@ -129,10 +132,12 @@ class ScriptLoader
             if (count($require)) {
                 $script->precedents = array_unique(array_merge($script->precedents, $require));
             }
+
             $script->set_path($path);
             if ($version && version_compare($script->version, $version) < 0) {
                 $script->version = $version;
             }
+
             if ($load_mode < $script->load_mode) {
                 $script->load_mode = $load_mode;
             }
@@ -158,12 +163,14 @@ class ScriptLoader
             if ($script->load_mode > 0) {
                 break;
             }
+
             if (! empty($script->path)) {
                 $this->head_done_scripts[$id] = $script;
             } else {
                 trigger_error("Script {$id} has an undefined path", E_USER_WARNING);
             }
         }
+
         $this->did_head = true;
         return self::do_combine($this->head_done_scripts, 0);
     }
@@ -179,6 +186,7 @@ class ScriptLoader
         if (! $this->did_head) {
             self::check_load_dep($this->registered_scripts);
         }
+
         $this->did_footer = true;
         $todo = [];
         foreach ($this->registered_scripts as $id => $script) {
@@ -199,6 +207,7 @@ class ScriptLoader
                 $result[$script->load_mode - 1][$id] = $script;
             }
         }
+
         return [self::do_combine($result[0], 1), self::do_combine($result[1], 2)];
     }
 
@@ -231,10 +240,12 @@ class ScriptLoader
                     if (! isset($scripts[$precedent])) {
                         continue;
                     }
+
                     if ($scripts[$precedent]->load_mode > $load) {
                         $scripts[$precedent]->load_mode = $load;
                         $changed = true;
                     }
+
                     if ($load == 2 && $scripts[$precedent]->load_mode == 2 && ($scripts[$precedent]->is_remote() or ! $conf['template_combine_files'])) {// we are async -> a predecessor cannot be async unlesss it can be merged; otherwise script execution order is not guaranteed
                         $scripts[$precedent]->load_mode = 1;
                         $changed = true;
@@ -255,6 +266,7 @@ class ScriptLoader
         if (empty($script->path) && isset(self::$known_paths[$id])) {
             $script->path = self::$known_paths[$id];
         }
+
         if (strncmp($id, 'jquery.', 7) == 0) {
             $required_ids = ['jquery'];
 
@@ -279,6 +291,7 @@ class ScriptLoader
             $this->add($id, $load_mode, [], null);
             return true;
         }
+
         return false;
     }
 
@@ -296,18 +309,22 @@ class ScriptLoader
             trigger_error("Undefined script {$script_id} is required by someone", E_USER_WARNING);
             return 0;
         }
+
         $recursion_limiter < 5 or functions_html::fatal_error('combined script circular dependency');
         $script = $this->registered_scripts[$script_id];
         if (isset($script->extra['order'])) {
             return $script->extra['order'];
         }
+
         if (count($script->precedents) == 0) {
             return $script->extra['order'] = 0;
         }
+
         $max = 0;
         foreach ($script->precedents as $precedent) {
             $max = max($max, $this->compute_script_topological_order($precedent, $recursion_limiter + 1));
         }
+
         $max++;
         return $script->extra['order'] = $max;
     }
@@ -330,6 +347,7 @@ class ScriptLoader
         if ($s1->extra['order'] == 0 and ($s1->is_remote() xor $s2->is_remote())) {
             return $s1->is_remote() ? -1 : 1;
         }
+
         return strcmp($s1->id, $s2->id);
     }
 }

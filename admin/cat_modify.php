@@ -158,6 +158,7 @@ SELECT
     }
 
 }
+
 $info_photos = functions::l10n('%d photos', $image_count);
 
 $template->assign(
@@ -281,6 +282,7 @@ if ($category['has_images'] or ! empty($category['representative_picture_id'])) 
          and ! empty($category['representative_picture_id']))) {
         $tpl_representant['ALLOW_DELETE'] = true;
     }
+
     $template->assign('representant', $tpl_representant);
 }
 

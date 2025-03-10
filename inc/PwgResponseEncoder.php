@@ -36,6 +36,7 @@ abstract class PwgResponseEncoder
                 return true;
             }
         }
+
         return false;
     }
 
@@ -55,6 +56,7 @@ abstract class PwgResponseEncoder
             if ($class == 'piwigo\inc\pwgnamedarray') {
                 $value = $value->_content;
             }
+
             if ($class == 'piwigo\inc\pwgnamedstruct') {
                 $value = $value->_content;
             }

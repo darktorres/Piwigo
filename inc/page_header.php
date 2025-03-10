@@ -79,6 +79,7 @@ if (! empty($page['meta_robots'])) {
           . '">'
     );
 }
+
 if (! isset($page['meta_robots']['noindex'])) {
     $template->assign('meta_ref', 1);
 }

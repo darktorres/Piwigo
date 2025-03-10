@@ -73,4 +73,5 @@ $user = functions_user::build_user(
 if ($conf['browser_language'] and (functions_user::is_a_guest() or functions_user::is_generic()) and $language = functions_user::get_browser_language()) {
     $user['language'] = $language;
 }
+
 functions_plugins::trigger_notify('user_init', $user);

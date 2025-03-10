@@ -41,6 +41,7 @@ class functions_rate
         if (count($ip_components) > 3) {
             array_pop($ip_components);
         }
+
         $anonymous_id = implode('.', $ip_components);
 
         if ($user_anonymous) {
@@ -87,6 +88,7 @@ class functions_rate
         if ($user_anonymous) {
             $query .= ' AND anonymous_id = \'' . $anonymous_id . '\'';
         }
+
         functions_mysqli::pwg_query($query);
         $query = '
   INSERT
@@ -155,11 +157,13 @@ class functions_rate
                     'count' => $rate_summary['rcount'],
                 ];
             }
+
             $updates[] = [
                 'id' => $id,
                 'rating_score' => $score,
             ];
         }
+
         functions_mysqli::mass_updates(
             IMAGES_TABLE,
             [

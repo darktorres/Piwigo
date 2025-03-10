@@ -145,6 +145,7 @@ if (count($errors) == 0) {
         if (! $changed and $params->use_watermark) {
             $changed = $watermark_changed;
         }
+
         if (! $changed and $params->use_watermark) {
             // if thresholds change and before/after the threshold is lower than the corresponding derivative side -> some derivatives might switch the watermark
             $changed |= $watermark->min_size[0] != $old_watermark->min_size[0] and ($watermark->min_size[0] < $params->max_width() or $old_watermark->min_size[0] < $params->max_width());

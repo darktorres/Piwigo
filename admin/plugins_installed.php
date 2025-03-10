@@ -59,9 +59,11 @@ if (isset($_GET['incompatible_plugins'])) {
         if ($plugin == '~~expire~~') {
             continue;
         }
+
         $incompatible_plugins[] = $plugin;
 
     }
+
     echo json_encode($incompatible_plugins);
     exit;
 }
@@ -170,6 +172,7 @@ if (count($missing_plugin_ids) > 0) {
         ];
         $count_types_plugins['missing']++;
     }
+
     $template->append('plugin_states', 'missing');
 }
 

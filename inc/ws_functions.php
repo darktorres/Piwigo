@@ -43,36 +43,47 @@ class ws_functions
         if (is_numeric($params['f_min_rate'])) {
             $clauses[] = $tbl_name . 'rating_score>=' . $params['f_min_rate'];
         }
+
         if (is_numeric($params['f_max_rate'])) {
             $clauses[] = $tbl_name . 'rating_score<=' . $params['f_max_rate'];
         }
+
         if (is_numeric($params['f_min_hit'])) {
             $clauses[] = $tbl_name . 'hit>=' . $params['f_min_hit'];
         }
+
         if (is_numeric($params['f_max_hit'])) {
             $clauses[] = $tbl_name . 'hit<=' . $params['f_max_hit'];
         }
+
         if (isset($params['f_min_date_available'])) {
             $clauses[] = $tbl_name . "date_available>='" . $params['f_min_date_available'] . "'";
         }
+
         if (isset($params['f_max_date_available'])) {
             $clauses[] = $tbl_name . "date_available<'" . $params['f_max_date_available'] . "'";
         }
+
         if (isset($params['f_min_date_created'])) {
             $clauses[] = $tbl_name . "date_creation>='" . $params['f_min_date_created'] . "'";
         }
+
         if (isset($params['f_max_date_created'])) {
             $clauses[] = $tbl_name . "date_creation<'" . $params['f_max_date_created'] . "'";
         }
+
         if (is_numeric($params['f_min_ratio'])) {
             $clauses[] = $tbl_name . 'width/' . $tbl_name . 'height>=' . $params['f_min_ratio'];
         }
+
         if (is_numeric($params['f_max_ratio'])) {
             $clauses[] = $tbl_name . 'width/' . $tbl_name . 'height<=' . $params['f_max_ratio'];
         }
+
         if (is_numeric($params['f_max_level'])) {
             $clauses[] = $tbl_name . 'level <= ' . $params['f_max_level'];
         }
+
         return $clauses;
     }
 
@@ -85,6 +96,7 @@ class ws_functions
         if (empty($params['order'])) {
             return $ret;
         }
+
         $matches = [];
         preg_match_all(
             '/([a-z_]+) *(?:(asc|desc)(?:ending)?)? *(?:, *|$)/i',
@@ -103,19 +115,23 @@ class ws_functions
                     $matches[1][$i] = functions_mysqli::DB_RANDOM_FUNCTION . '()';
                     break;
             }
+
             $sortable_fields = ['id', 'file', 'name', 'hit', 'rating_score',
                 'date_creation', 'date_available', functions_mysqli::DB_RANDOM_FUNCTION . '()'];
             if (in_array($matches[1][$i], $sortable_fields)) {
                 if (! empty($ret)) {
                     $ret .= ', ';
                 }
+
                 if ($matches[1][$i] != functions_mysqli::DB_RANDOM_FUNCTION . '()') {
                     $ret .= $tbl_name;
                 }
+
                 $ret .= $matches[1][$i];
                 $ret .= ' ' . $matches[2][$i];
             }
         }
+
         return $ret;
     }
 
@@ -165,6 +181,7 @@ class ws_functions
                 'height' => $size[1],
             ];
         }
+
         $ret['derivatives'] = $derivatives_arr;
         return $ret;
     }

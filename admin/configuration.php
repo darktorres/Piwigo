@@ -167,6 +167,7 @@ if (isset($_POST['submit'])) {
                             $used[$val] = true;
                         }
                     }
+
                     if (! count($_POST['order_by'])) {
                         $page['errors'][] = functions::l10n('No order field selected');
                     } else {
@@ -206,6 +207,7 @@ if (isset($_POST['submit'])) {
             foreach ($main_checkboxes as $checkbox) {
                 $_POST[$checkbox] = empty($_POST[$checkbox]) ? 'false' : 'true';
             }
+
             break;
 
         case 'watermark':
@@ -227,9 +229,11 @@ if (isset($_POST['submit'])) {
                  or $_POST['nb_comment_page'] > 50) {
                 $page['errors'][] = functions::l10n('The number of comments a page must be between 5 and 50 included.');
             }
+
             foreach ($comments_checkboxes as $checkbox) {
                 $_POST[$checkbox] = empty($_POST[$checkbox]) ? 'false' : 'true';
             }
+
             break;
 
         case 'default':
@@ -243,13 +247,16 @@ if (isset($_POST['submit'])) {
                   or $_POST['nb_categories_page'] < 4) {
                 $page['errors'][] = functions::l10n('The number of albums a page must be above 4.');
             }
+
             foreach ($display_checkboxes as $checkbox) {
                 $_POST[$checkbox] = empty($_POST[$checkbox]) ? 'false' : 'true';
             }
+
             foreach ($display_info_checkboxes as $checkbox) {
                 $_POST['picture_informations'][$checkbox] =
                   empty($_POST['picture_informations'][$checkbox]) ? false : true;
             }
+
             $_POST['picture_informations'] = addslashes(serialize($_POST['picture_informations']));
             break;
 
@@ -277,6 +284,7 @@ WHERE param = \'' . $row['param'] . '\'
                 functions_mysqli::pwg_query($query);
             }
         }
+
         $page['infos'][] = functions::l10n('Your configuration settings are saved');
         functions::pwg_activity('system', ACTIVITY_SYSTEM_CORE, 'config', [
             'config_section' => $page['section'],
@@ -394,6 +402,7 @@ switch ($page['section']) {
                 true
             );
         }
+
         break;
 
     case 'comments':
@@ -416,6 +425,7 @@ switch ($page['section']) {
                 true
             );
         }
+
         break;
 
     case 'default':
@@ -429,6 +439,7 @@ switch ($page['section']) {
             $edit_user = functions_user::build_user($conf['guest_id'], false);
             $page['infos'][] = functions::l10n('Information data registered in database');
         }
+
         $page['errors'] = array_merge($page['errors'], $errors);
 
         functions::load_profile_in_template(
@@ -451,6 +462,7 @@ switch ($page['section']) {
                 true
             );
         }
+
         $template->append(
             'display',
             [
@@ -515,10 +527,13 @@ switch ($page['section']) {
                     } else {
                         $tpl_var['minw'] = $tpl_var['minh'] = '';
                     }
+
                     $tpl_var['sharpen'] = $params->sharpen;
                 }
+
                 $tpl_vars[$type] = $tpl_var;
             }
+
             $template->assign('derivatives', $tpl_vars);
             $template->assign('resize_quality', ImageStdParams::$quality);
 
@@ -527,6 +542,7 @@ switch ($page['section']) {
             foreach (ImageStdParams::$custom as $custom => $time) {
                 $tpl_vars[$custom] = ($now - $time <= 24 * 3600) ? functions::l10n('today') : functions::time_since($time, 'day');
             }
+
             $template->assign('custom_derivatives', $tpl_vars);
         }
 
@@ -538,11 +554,13 @@ switch ($page['section']) {
         foreach (glob(PHPWG_ROOT_PATH . 'themes/default/watermarks/*.png') as $file) {
             $watermark_files[] = substr($file, strlen(PHPWG_ROOT_PATH));
         }
+
         if (($glob = glob(PHPWG_ROOT_PATH . PWG_LOCAL_DIR . 'watermarks/*.png')) !== false) {
             foreach ($glob as $file) {
                 $watermark_files[] = substr($file, strlen(PHPWG_ROOT_PATH));
             }
         }
+
         $watermark_filemap = [
             '' => '---',
         ];
@@ -550,6 +568,7 @@ switch ($page['section']) {
             $display = basename($file);
             $watermark_filemap[$file] = $display;
         }
+
         $template->assign('watermark_files', $watermark_filemap);
 
         if ($template->get_template_vars('watermark') === null) {
@@ -559,15 +578,19 @@ switch ($page['section']) {
             if ($wm->xpos == 0 and $wm->ypos == 0) {
                 $position = 'topleft';
             }
+
             if ($wm->xpos == 100 and $wm->ypos == 0) {
                 $position = 'topright';
             }
+
             if ($wm->xpos == 50 and $wm->ypos == 50) {
                 $position = 'middle';
             }
+
             if ($wm->xpos == 0 and $wm->ypos == 100) {
                 $position = 'bottomleft';
             }
+
             if ($wm->xpos == 100 and $wm->ypos == 100) {
                 $position = 'bottomright';
             }

@@ -31,6 +31,7 @@ if (isset($_POST['set_permalink']) and $_POST['cat_id'] > 0) {
     } else {
         functions_permalinks::set_cat_permalink($_POST['cat_id'], $permalink, isset($_POST['save']));
     }
+
     $selected_cat = [$_POST['cat_id']];
 } elseif (isset($_GET['delete_permanent'])) {
     functions::check_pwg_token();
@@ -81,6 +82,7 @@ SELECT id, permalink, uppercats, global_rank
 if ($sort_by[0] == 'id' or $sort_by[0] == 'permalink') {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
+
 $categories = [];
 $result = functions_mysqli::pwg_query($query);
 while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
@@ -91,6 +93,7 @@ while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {
 if ($sort_by[0] == 'name') {
     usort($categories, '\Piwigo\inc\functions_category::global_rank_compare');
 }
+
 $template->assign('permalinks', $categories);
 
 // --- generate display of old permalinks --------------------------------------
@@ -109,6 +112,7 @@ $query = 'SELECT * FROM ' . OLD_PERMALINKS_TABLE;
 if (count($sort_by)) {
     $query .= ' ORDER BY ' . $sort_by[0];
 }
+
 $result = functions_mysqli::pwg_query($query);
 $deleted_permalinks = [];
 while ($row = functions_mysqli::pwg_db_fetch_assoc($result)) {

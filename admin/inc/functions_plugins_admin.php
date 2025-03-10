@@ -30,6 +30,7 @@ class functions_plugins_admin
         } elseif (isset($page['errors'])) {
             $page['errors'][] = 'PLUGIN ERROR: "' . $file . '" is not a valid file';
         }
+
         return $url;
     }
 }

@@ -53,6 +53,7 @@ class pwg_permissions
             if (! isset($perms[$row['cat_id']])) {
                 $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
             }
+
             $perms[$row['cat_id']]['users'][] = intval($row['user_id']);
         }
 
@@ -70,6 +71,7 @@ class pwg_permissions
             if (! isset($perms[$row['cat_id']])) {
                 $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
             }
+
             $perms[$row['cat_id']]['users_indirect'][] = intval($row['user_id']);
         }
 
@@ -85,6 +87,7 @@ class pwg_permissions
             if (! isset($perms[$row['cat_id']])) {
                 $perms[$row['cat_id']]['id'] = intval($row['cat_id']);
             }
+
             $perms[$row['cat_id']]['groups'][] = intval($row['group_id']);
         }
 
@@ -96,6 +99,7 @@ class pwg_permissions
                     continue;
                 }
             }
+
             if (isset($params['user_id'])) {
                 if (
                     (empty($cat['users_indirect']) or count(array_intersect($cat['users_indirect'], $params['user_id'])) == 0)
@@ -110,6 +114,7 @@ class pwg_permissions
             $cat['users'] = ! empty($cat['users']) ? array_values(array_unique($cat['users'])) : [];
             $cat['users_indirect'] = ! empty($cat['users_indirect']) ? array_values(array_unique($cat['users_indirect'])) : [];
         }
+
         unset($cat);
 
         return [
@@ -178,6 +183,7 @@ class pwg_permissions
             if ($params['recursive']) {
                 $_POST['apply_on_sub'] = true;
             }
+
             functions_admin::add_permission_on_category($params['cat_id'], $params['user_id']);
         }
 

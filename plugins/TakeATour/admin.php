@@ -25,12 +25,14 @@ $tat_28url = 'http://';
 if (substr($user['language'], 0, 2) == 'fr') {
     $tat_28url .= 'fr.';
 }
+
 $tat_28url .= 'piwigo.org/releases/2.8.0';
 
 $tat_29url = 'http://';
 if (substr($user['language'], 0, 2) == 'fr') {
     $tat_28url .= 'fr.';
 }
+
 $tat_29url .= 'piwigo.org/releases/2.9.0';
 
 $template->assign(

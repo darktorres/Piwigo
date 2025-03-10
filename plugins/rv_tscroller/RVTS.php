@@ -28,6 +28,7 @@ class RVTS
                 $page['nb_image_page'] = max($page['nb_image_page'], count($page['items']));
             }
         }
+
         functions_plugins::add_event_handler('loc_begin_index', ['Piwigo\plugins\rv_tscroller\RVTS', 'on_index_begin'], EVENT_HANDLER_PRIORITY_NEUTRAL + 10);
     }
 
@@ -48,10 +49,12 @@ class RVTS
                 if ($adj > 0 && $mult < 5) {
                     functions_session::pwg_set_session_var('rvts_mult', ++$mult);
                 }
+
                 if ($adj < 0 && $mult > 1) {
                     functions_session::pwg_set_session_var('rvts_mult', --$mult);
                 }
             }
+
             $page['nb_image_page'] = (int) $_GET['rvts'];
             functions_plugins::add_event_handler('loc_end_index_thumbnails', ['Piwigo\plugins\rv_tscroller\RVTS', 'on_index_thumbnails_ajax'], EVENT_HANDLER_PRIORITY_NEUTRAL + 5, 1);
             $page['root_path'] = functions_url::get_absolute_root_url(false);
@@ -69,6 +72,7 @@ class RVTS
             functions_plugins::add_event_handler('loc_end_index', ['Piwigo\plugins\rv_tscroller\RVTS', 'on_end_index']);
             return $thumbs;
         }
+
         $url_model = str_replace('123456789', '%start%', functions_url::duplicate_index_url([
             'start' => 123456789,
         ]));
@@ -138,6 +142,7 @@ jQuery('.navigationBar').hide();"
                 $req = $script->id;
             }
         }
+
         if ($req != null) {
             $my_base_name = basename(dirname(__FILE__));
             $template->func_combine_script([
@@ -148,6 +153,7 @@ jQuery('.navigationBar').hide();"
                 'version' => RVTS_VERSION,
             ], $template->smarty);
         }
+
         //var_export($template->scriptLoader);
     }
 }

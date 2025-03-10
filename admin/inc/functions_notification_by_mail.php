@@ -155,6 +155,7 @@ class functions_notification_by_mail
                 }
             }
         }
+
         return $data_users;
     }
 

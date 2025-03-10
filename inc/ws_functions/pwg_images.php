@@ -70,6 +70,7 @@ class pwg_images
             if (! isset($rank)) {
                 $rank = 'auto';
             }
+
             $rank_on_category[$cat_id] = $rank;
 
             if ($rank == 'auto') {
@@ -206,6 +207,7 @@ class pwg_images
                     $chunks[] = $upload_dir . '/' . $file;
                 }
             }
+
             closedir($handle);
         }
 
@@ -262,6 +264,7 @@ class pwg_images
                     $chunks[] = $upload_dir . '/' . $file;
                 }
             }
+
             closedir($handle);
         }
 
@@ -392,6 +395,7 @@ class pwg_images
             if ($row['commentable'] == 'true') {
                 $is_commentable = true;
             }
+
             unset($row['commentable']);
 
             $row['url'] = functions_url::make_index_url(
@@ -411,6 +415,7 @@ class pwg_images
             $row['id'] = (int) $row['id'];
             $related_categories[] = $row;
         }
+
         usort($related_categories, '\Piwigo\inc\functions_category::global_rank_compare');
 
         if (empty($related_categories) and ! functions_user::is_admin()) {
@@ -508,6 +513,7 @@ class pwg_images
                 $ret[$k] = (int) $ret[$k];
             }
         }
+
         foreach (['path', 'storage_category_id'] as $k) {
             unset($ret[$k]);
         }
@@ -530,6 +536,7 @@ class pwg_images
                 WS_XML_ATTRIBUTES => $comment_post_data,
             ];
         }
+
         $ret['comments_paging'] = new PwgNamedStruct(
             [
                 'page' => $params['comments_page'],
@@ -589,6 +596,7 @@ class pwg_images
             global $conf;
             return new PwgError(403, 'Forbidden or rate not in ' . implode(',', $conf['rate_items']));
         }
+
         return $res;
     }
 
@@ -649,6 +657,7 @@ class pwg_images
                         $image[$k] = (int) $row[$k];
                     }
                 }
+
                 foreach (['file', 'name', 'comment', 'date_creation', 'date_available'] as $k) {
                     $image[$k] = $row[$k];
                 }
@@ -656,6 +665,7 @@ class pwg_images
                 $image = array_merge($image, ws_functions::ws_std_get_urls($row));
                 $images[$image_ids[$image['id']]] = $image;
             }
+
             ksort($images, SORT_NUMERIC);
             $images = array_values($images);
         }
@@ -725,20 +735,24 @@ class pwg_images
             if (! isset($params['allwords_mode'])) {
                 $params['allwords_mode'] = 'AND';
             }
+
             if (! preg_match('/^(OR|AND)$/', $params['allwords_mode'])) {
                 return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid parameter allwords_mode');
             }
+
             $search['fields']['allwords']['mode'] = $params['allwords_mode'];
 
             $allwords_fields_available = ['name', 'comment', 'file', 'author', 'tags', 'cat-title', 'cat-desc'];
             if (! isset($params['allwords_fields'])) {
                 $params['allwords_fields'] = $allwords_fields_available;
             }
+
             foreach ($params['allwords_fields'] as $field) {
                 if (! in_array($field, $allwords_fields_available)) {
                     return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid parameter allwords_fields');
                 }
             }
+
             $search['fields']['allwords']['fields'] = $params['allwords_fields'];
 
             $search['fields']['allwords']['words'] = functions_search::split_allwords($params['allwords']);
@@ -754,6 +768,7 @@ class pwg_images
             if (! isset($params['tags_mode'])) {
                 $params['tags_mode'] = 'AND';
             }
+
             if (! preg_match('/^(OR|AND)$/', $params['tags_mode'])) {
                 return new PwgError(WS_ERR_INVALID_PARAM, 'Invalid parameter tags_mode');
             }
@@ -856,6 +871,7 @@ class pwg_images
             include_once(PHPWG_ROOT_PATH . 'admin/inc/functions_admin.php');
             functions_admin::invalidate_user_cache();
         }
+
         return $affected_rows;
     }
 
@@ -1151,6 +1167,7 @@ class pwg_images
             if ($conf['uniqueness_mode'] == 'md5sum') {
                 $where_clause = "md5sum = '" . $params['original_sum'] . "'";
             }
+
             if ($conf['uniqueness_mode'] == 'filename') {
                 $where_clause = "file = '" . $params['original_filename'] . "'";
             }
@@ -1649,6 +1666,7 @@ class pwg_images
         if (! functions::mkgetdir(dirname($chunkfile_path), functions::MKGETDIR_DEFAULT & ~functions::MKGETDIR_DIE_ON_ERROR)) {
             return new PwgError(500, 'error during buffer directory creation');
         }
+
         functions::secure_directory(dirname($chunkfile_path));
 
         // move uploaded file
@@ -2014,6 +2032,7 @@ class pwg_images
                 PREG_SPLIT_NO_EMPTY
             );
         }
+
         $params['format_id'] = array_map('intval', $params['format_id']);
 
         $format_ids = [];
@@ -2326,6 +2345,7 @@ class pwg_images
                 PREG_SPLIT_NO_EMPTY
             );
         }
+
         $params['image_id'] = array_map('intval', $params['image_id']);
 
         $image_ids = [];
@@ -2399,6 +2419,7 @@ class pwg_images
                 PREG_SPLIT_NO_EMPTY
             );
         }
+
         $params['image_id'] = array_map('intval', $params['image_id']);
 
         $image_ids = [];

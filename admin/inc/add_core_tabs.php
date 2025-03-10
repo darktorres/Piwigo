@@ -109,12 +109,14 @@ function add_core_tabs($sheets, $tab_id)
                     'url' => $link_start . 'cat_options&amp;section=comments',
                 ];
             }
+
             if ($conf['allow_random_representative']) {
                 $sheets['representative'] = [
                     'caption' => functions::l10n('Representative'),
                     'url' => $link_start . 'cat_options&amp;section=representative',
                 ];
             }
+
             break;
 
         case 'comments':
@@ -218,6 +220,7 @@ function add_core_tabs($sheets, $tab_id)
                     'url' => $my_base_url . '&amp;tab=new',
                 ];
             }
+
             break;
 
         case 'menus':
@@ -260,6 +263,7 @@ function add_core_tabs($sheets, $tab_id)
                     'url' => $admin_photo_base_url . '-formats',
                 ];
             }
+
             break;
 
         case 'photos_add':
@@ -277,6 +281,7 @@ function add_core_tabs($sheets, $tab_id)
                     'url' => PHOTOS_ADD_BASE_URL . '&amp;section=ftp',
                 ];
             }
+
             break;
 
         case 'plugins':
@@ -295,6 +300,7 @@ function add_core_tabs($sheets, $tab_id)
                     'url' => $my_base_url . '&amp;tab=new',
                 ];
             }
+
             break;
 
         case 'rating':
@@ -324,6 +330,7 @@ function add_core_tabs($sheets, $tab_id)
                     'url' => $my_base_url . '&amp;tab=new',
                 ];
             }
+
             break;
 
         case 'updates':
@@ -342,6 +349,7 @@ function add_core_tabs($sheets, $tab_id)
                     'url' => $my_base_url . '&amp;tab=ext',
                 ];
             }
+
             break;
         case 'site_update':
             global $my_base_url;

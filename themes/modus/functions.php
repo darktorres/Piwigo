@@ -44,6 +44,7 @@ function modus_smarty_prefilter($source)
         if (! ($pos = strpos($source, '<div class="actionButtons">'))) {
             $pos = strpos($source, '<div class=actionButtons>');
         }
+
         if ($pos !== false) {
             $source = substr_replace($source, '<div class=actionButtonsWrapper><a id=imageActionsSwitch class=pwg-button><span class="pwg-icon pwg-icon-ellipsis"></span></a>{combine_script version=1 id=\'modus.async\' path="themes/`$themeconf.id`/js/modus.async.js" load=\'async\'}', $pos, 0);
             $pos = strpos($source, 'caddie', $pos + 1);

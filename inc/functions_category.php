@@ -76,6 +76,7 @@ class functions_category
             if (isset($page['category'])) {
                 $where .= ' OR id_uppercat IN (' . $page['category']['uppercats'] . ')';
             }
+
             $where .= ')';
         } else {
             $where = '
@@ -130,11 +131,13 @@ class functions_category
             if ($conf['index_new_icon']) {
                 $row['icon_ts'] = functions::get_icon($row['max_date_last'], $child_date_last);
             }
+
             $cats[] = $row;
             if ($row['id'] == @$page['category']['id']) { //save the number of subcats for later optim
                 $page['category']['count_categories'] = $row['count_categories'];
             }
         }
+
         usort($cats, '\Piwigo\inc\functions_category::global_rank_compare');
 
         // Update filtered data
@@ -194,6 +197,7 @@ class functions_category
                 $cat['upper_names'][] = $names[$cat_id];
             }
         }
+
         return $cat;
     }
 
@@ -265,6 +269,7 @@ class functions_category
                     )
                 );
             }
+
             $tpl_cats[$category['id']] = $option;
         }
 
@@ -309,8 +314,10 @@ class functions_category
                 $query .= '
       OR ';
             }
+
             $query .= 'uppercats ' . functions_mysqli::DB_REGEX_OPERATOR . ' \'(^|,)' . $category_id . '(,|$)\'';
         }
+
         $query .= '
   ;';
         return functions_mysqli::query2array($query, null, 'id');
@@ -330,8 +337,10 @@ class functions_category
             if (! empty($in)) {
                 $in .= ', ';
             }
+
             $in .= '\'' . $permalink . '\'';
         }
+
         $query = '
   SELECT cat_id AS id, permalink, 1 AS is_old
     FROM ' . OLD_PERMALINKS_TABLE . '
@@ -346,6 +355,7 @@ class functions_category
         if (empty($perma_hash)) {
             return null;
         }
+
         for ($i = count($permalinks) - 1; $i >= 0; $i--) {
             if (isset($perma_hash[$permalinks[$i]])) {
                 $idx = $i;
@@ -357,9 +367,11 @@ class functions_category
     LIMIT 1';
                     functions_mysqli::pwg_query($query);
                 }
+
                 return $cat_id;
             }
         }
+
         return null;
     }
 
@@ -423,6 +435,7 @@ class functions_category
                 $query .= '
       c.id=' . $category['id'];
             }
+
             $query .= '
       ' . functions_user::get_sql_condition_FandF(
                 [
@@ -528,8 +541,10 @@ class functions_category
                 if (! isset($parent['id_uppercat'])) {
                     break;
                 }
+
                 $parent = &$cats[$parent['id_uppercat']];
             } while (true);
+
             unset($parent);
         }
 
@@ -563,6 +578,7 @@ class functions_category
                 if (! isset($cats[$parent['id_uppercat']])) {
                     break;
                 }
+
                 $parent = &$cats[$parent['id_uppercat']];
             } while (true);
         }
@@ -613,6 +629,7 @@ class functions_category
             $query .= '
     HAVING COUNT(DISTINCT category_id)=' . count($cat_ids);
         }
+
         $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
 
         return functions_mysqli::query2array($query, null, 'id');

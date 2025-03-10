@@ -41,6 +41,7 @@ DELETE FROM ' . CADDIE_TABLE . '
             'element_id' => $image_id,
         ];
     }
+
     functions_mysqli::mass_inserts(
         CADDIE_TABLE,
         array_keys($inserts[0]),

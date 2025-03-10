@@ -38,6 +38,7 @@ functions_plugins::trigger_notify('loc_begin_identification');
 if (isset($_POST['redirect'])) {
     $_POST['redirect_decoded'] = urldecode($_POST['redirect']);
 }
+
 functions::check_input_parameter('redirect_decoded', $_POST, false, '{^' . preg_quote(functions_cookie::cookie_path()) . '}');
 
 $redirect_to = '';

@@ -35,6 +35,7 @@ $config_file_contents = @file_get_contents($config_file);
 if ($config_file_contents === false) {
     die('Cannot load ' . $config_file);
 }
+
 $php_end_tag = strrpos($config_file_contents, '?' . '>');
 if ($php_end_tag === false) {
     die('Cannot find php end tag in ' . $config_file);
@@ -110,6 +111,7 @@ if ($language == 'fr_FR') {
 } else {
     define('PHPWG_DOMAIN', 'piwigo.org');
 }
+
 define('PHPWG_URL', 'https://' . PHPWG_DOMAIN);
 
 functions::load_language('common.lang', '', [
@@ -184,6 +186,7 @@ if ($has_remote_site) {
         foreach ($page['errors'] as $error) {
             echo '<li>' . $error . '</li>';
         }
+
         echo '</ul>';
     }
 
@@ -395,8 +398,10 @@ else {
         if ($language == $language_code) {
             $template->assign('language_selection', $language_code);
         }
+
         $languages_options[$language_code] = $fs_language['name'];
     }
+
     $template->assign('language_options', $languages_options);
 
     $template->assign('introduction', [

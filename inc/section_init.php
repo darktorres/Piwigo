@@ -123,10 +123,12 @@ if (! isset($page['section'])) {
                         $random_index_redirect[] = $random_url;
                     }
                 }
+
                 if (! empty($random_index_redirect)) {
                     functions::redirect($random_index_redirect[mt_rand(0, count($random_index_redirect) - 1)]);
                 }
             }
+
             $page['is_homepage'] = true;
             break;
 
@@ -575,6 +577,7 @@ if (isset($page['chronology_field'])
 } elseif ($page['section'] == 'search') {
     $page['meta_robots']['nofollow'] = 1;
 }
+
 if ($filter['enabled']) {
     $page['meta_robots']['noindex'] = 1;
 }
@@ -601,8 +604,10 @@ if ($page['section'] == 'categories' and isset($page['category']) and ! isset($p
             functions_html::set_status_header(301);
             functions::redirect_http($redirect_url);
         }
+
         functions::redirect($redirect_url);
     }
+
     unset($need_redirect, $page['hit_by']);
 }
 

@@ -71,6 +71,7 @@ class pwg_image
         if ($automatic_rotation) {
             $rotation = self::get_rotation_angle($this->source_filepath);
         }
+
         $resize_dimensions = self::get_resize_dimensions($source_width, $source_height, $max_width, $max_height, $rotation, $crop, $follow_orientation);
 
         // testing on height is useless in theory: if width is unchanged, there
@@ -170,6 +171,7 @@ class pwg_image
                 'y' => $y,
             ];
         }
+
         return $result;
     }
 
@@ -186,6 +188,7 @@ class pwg_image
         if (! $fp) {
             throw new Exception("webp_info(): fopen({$f}): Failed");
         }
+
         $buf = fread($fp, 25);
         fclose($fp);
 
@@ -311,13 +314,16 @@ class pwg_image
         if (! function_exists('exec')) {
             return false;
         }
+
         @exec($conf['ext_imagick_dir'] . 'convert -version', $returnarray);
         if (is_array($returnarray) and ! empty($returnarray[0]) and preg_match('/ImageMagick/i', $returnarray[0])) {
             if (preg_match('/Version: ImageMagick (\d+\.\d+\.\d+-?\d*)/', $returnarray[0], $match)) {
                 self::$ext_imagick_version = $match[1];
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -368,6 +374,7 @@ class pwg_image
                     return self::get_library('auto', $extension);
                 }
         }
+
         return false;
     }
 
@@ -376,6 +383,7 @@ class pwg_image
         if (method_exists($this->image, 'destroy')) {
             return $this->image->destroy();
         }
+
         return true;
     }
 

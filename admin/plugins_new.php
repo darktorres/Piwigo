@@ -66,6 +66,7 @@ if (isset($_GET['installstatus'])) {
                     ]
                 );
             }
+
             break;
 
         case 'temp_path_error':
@@ -157,6 +158,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
         } elseif ($last_revision_diff->y > 3) { // 3 years or less
             $certification = 0;
         }
+
         // Between 6 month and 3 years : certification = 1
 
         $template->append('plugins', [
@@ -186,6 +188,7 @@ if ($plugins->get_server_plugins(true, $beta_test)) {
 if (! $beta_test and preg_match('/(beta|RC)/', PHPWG_VERSION)) {
     $template->assign('BETA_URL', $base_url . '&amp;beta-test=true');
 }
+
 $template->assign('ADMIN_PAGE_TITLE', functions::l10n('Plugins'));
 $template->assign('BETA_TEST', $beta_test);
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugins');

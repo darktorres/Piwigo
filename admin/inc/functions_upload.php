@@ -85,6 +85,7 @@ class functions_upload
             if (! isset($upload_form_config[$field])) {
                 continue;
             }
+
             if (is_bool($upload_form_config[$field]['default'])) {
                 if (isset($value)) {
                     $value = true;
@@ -257,6 +258,7 @@ class functions_upload
         } else {
             rename($source_filepath, $file_path);
         }
+
         @chmod($file_path, 0644);
 
         // handle the uploaded file type by potentially making a
@@ -359,6 +361,7 @@ class functions_upload
         if ($conf['use_exif'] and ! function_exists('exif_read_data')) {
             $conf['use_exif'] = false;
         }
+
         functions_metadata_admin::sync_metadata([$image_id]);
 
         // cache a derivative
@@ -455,6 +458,7 @@ class functions_upload
         } else {
             rename($source_filepath, $format_path);
         }
+
         @chmod($format_path, 0644);
 
         $file_infos = self::pwg_image_infos($format_path);
@@ -511,6 +515,7 @@ class functions_upload
         if ($ext == 'jpg') {
             $exec .= ' -quality ' . $jpg_quality;
         }
+
         $exec .= ' "' . realpath($file_path) . '"[0]';
         $exec .= ' "' . $representative_file_path . '"';
         $exec .= ' 2>&1';
@@ -792,6 +797,7 @@ class functions_upload
             if (substr(PHP_OS, 0, 3) == 'WIN') {
                 $directory = str_replace('/', DIRECTORY_SEPARATOR, $directory);
             }
+
             umask(0000);
             $recursive = true;
             if (! @mkdir($directory, 0777, $recursive)) {

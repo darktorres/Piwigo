@@ -33,6 +33,7 @@ class functions_tag
                 ]
             );
         }
+
         return $user['nb_available_tags'];
     }
 
@@ -90,6 +91,7 @@ class functions_tag
                 $tags[] = $row;
             }
         }
+
         return $tags;
     }
 
@@ -163,6 +165,7 @@ class functions_tag
                 }
             }
         }
+
         unset($tag);
 
         return $tags;
@@ -217,6 +220,7 @@ class functions_tag
             $query .= '
     HAVING COUNT(DISTINCT tag_id)=' . count($tag_ids);
         }
+
         $query .= "\n" . (empty($order_by) ? $conf['order_by'] : $order_by);
 
         return functions_mysqli::query2array($query, null, 'id');
@@ -235,6 +239,7 @@ class functions_tag
         if (empty($items)) {
             return [];
         }
+
         $query = '
   SELECT t.*, count(*) AS counter
     FROM ' . IMAGE_TAG_TABLE . '
@@ -244,6 +249,7 @@ class functions_tag
             $query .= '
       AND tag_id NOT IN (' . implode(',', $excluded_tag_ids) . ')';
         }
+
         $query .= '
     GROUP BY t.id
     ORDER BY ';
@@ -260,6 +266,7 @@ class functions_tag
             $row['name'] = functions_plugins::trigger_change('render_tag_name', $row['name'], $row);
             $tags[] = $row;
         }
+
         usort($tags, '\Piwigo\inc\functions_html::tag_alpha_compare');
         return $tags;
     }
@@ -278,14 +285,17 @@ class functions_tag
         if (! empty($ids)) {
             $where_clauses[] = 'id IN (' . implode(',', $ids) . ')';
         }
+
         if (! empty($url_names)) {
             $where_clauses[] =
               'url_name IN (\'' . implode('\', \'', $url_names) . '\')';
         }
+
         if (! empty($names)) {
             $where_clauses[] =
               'name IN (\'' . implode('\', \'', $names) . '\')';
         }
+
         if (empty($where_clauses)) {
             return [];
         }

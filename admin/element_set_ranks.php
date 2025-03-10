@@ -71,12 +71,14 @@ if (isset($_POST['submit'])) {
                 if (! empty($image_order)) {
                     $image_order .= ',';
                 }
+
                 $image_order .= $_POST['image_order'][$i];
             }
         }
     } elseif ($image_order_choice == 'rank') {
         $image_order = '`rank` ASC';
     }
+
     $query = '
 UPDATE ' . CATEGORIES_TABLE . '
   SET image_order = ' . (isset($image_order) ? '\'' . $image_order . '\'' : 'NULL') . '
@@ -165,6 +167,7 @@ if (functions_mysqli::pwg_db_num_rows($result) > 0) {
             $file_wo_ext = functions::get_filename_wo_extension($row['file']);
             $thumbnail_name = str_replace('_', ' ', $file_wo_ext);
         }
+
         $current_rank++;
         $template->append(
             'thumbnails',
@@ -178,6 +181,7 @@ if (functions_mysqli::pwg_db_num_rows($result) > 0) {
         );
     }
 }
+
 // image order management
 $sort_fields = [
     '' => '',

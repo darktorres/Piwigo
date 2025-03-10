@@ -30,6 +30,7 @@ use Piwigo\inc\functions_user;
 if (! defined('PHPWG_ROOT_PATH')) {
     die('Hacking attempt!');
 }
+
 include_once(LOCALEDIT_PATH . 'inc/functions.php');
 functions::load_language('plugin.lang', LOCALEDIT_PATH);
 $my_base_url = functions_url::get_root_url() . 'admin.php?page=plugin-' . basename(dirname(__FILE__));
@@ -54,6 +55,7 @@ $tabsheet = new tabsheet();
 foreach ($conf['LocalFilesEditor_tabs'] as $tab) {
     $tabsheet->add($tab, functions::l10n('locfiledit_onglet_' . $tab), $my_base_url . '-' . $tab);
 }
+
 $tabsheet->select($page['tab']);
 $tabsheet->assign();
 
@@ -81,12 +83,14 @@ if (isset($_POST['submit'])) {
         if (functions::get_extension($edited_file) == 'php') {
             $content_file = eval_syntax($content_file);
         }
+
         if ($content_file === false) {
             $page['errors'][] = functions::l10n('locfiledit_syntax_error');
         } else {
             if ($page['tab'] == 'plug' and ! is_dir(PHPWG_PLUGINS_PATH . 'PersonalPlugin')) {
                 @mkdir(PHPWG_PLUGINS_PATH . 'PersonalPlugin');
             }
+
             if (file_exists($edited_file)) {
                 @copy($edited_file, get_bak_file($edited_file));
                 $page['infos'][] = functions::l10n('locfiledit_saved_bak', substr(get_bak_file($edited_file), 2));
@@ -115,6 +119,7 @@ if (! empty($edited_file)) {
     if (! empty($page['errors'])) {
         $content_file = stripslashes($_POST['text']);
     }
+
     $template->assign(
         'zone_edit',
         [
@@ -126,6 +131,7 @@ if (! empty($edited_file)) {
     if (file_exists(get_bak_file($edited_file))) {
         $template->assign('restore', true);
     }
+
     if (file_exists($edited_file)) {
         $template->assign('restore_infos', true);
     }
