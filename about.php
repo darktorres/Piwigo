@@ -1,4 +1,5 @@
 <?php
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -12,8 +13,8 @@ use Piwigo\inc\functions_html;
 use Piwigo\inc\functions_plugins;
 use Piwigo\inc\functions_user;
 
-define('PHPWG_ROOT_PATH','./');
-include_once( PHPWG_ROOT_PATH.'inc/common.php' );
+define('PHPWG_ROOT_PATH', './');
+include_once(PHPWG_ROOT_PATH . 'inc/common.php');
 
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
@@ -24,30 +25,31 @@ functions_user::check_status(ACCESS_GUEST);
 //
 // Start output of page
 //
-$title= functions::l10n('About Piwigo');
+$title = functions::l10n('About Piwigo');
 $page['body_id'] = 'theAboutPage';
 
 functions_plugins::trigger_notify('loc_begin_about');
 
 $template->set_filename('about', 'about.tpl');
 
-$template->assign('ABOUT_MESSAGE', functions::load_language('about.html','', array('return'=>true)) );
+$template->assign('ABOUT_MESSAGE', functions::load_language('about.html', '', [
+    'return' => true,
+]));
 
-$theme_about = functions::load_language('about.html', PHPWG_THEMES_PATH.$user['theme'].'/', array('return' => true));
-if ( $theme_about !== false )
-{
-  $template->assign('THEME_ABOUT', $theme_about);
+$theme_about = functions::load_language('about.html', PHPWG_THEMES_PATH . $user['theme'] . '/', [
+    'return' => true,
+]);
+if ($theme_about !== false) {
+    $template->assign('THEME_ABOUT', $theme_about);
 }
 
 // include menubar
 $themeconf = $template->get_template_vars('themeconf');
-if (!isset($themeconf['hide_menu_on']) OR !in_array('theAboutPage', $themeconf['hide_menu_on']))
-{
-  include( PHPWG_ROOT_PATH.'inc/menubar.php');
+if (! isset($themeconf['hide_menu_on']) or ! in_array('theAboutPage', $themeconf['hide_menu_on'])) {
+    include(PHPWG_ROOT_PATH . 'inc/menubar.php');
 }
 
-include(PHPWG_ROOT_PATH.'inc/page_header.php');
+include(PHPWG_ROOT_PATH . 'inc/page_header.php');
 functions_html::flush_page_messages();
 $template->pparse('about');
-include(PHPWG_ROOT_PATH.'inc/page_tail.php');
-?>
+include(PHPWG_ROOT_PATH . 'inc/page_tail.php');

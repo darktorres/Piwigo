@@ -1,4 +1,5 @@
 <?php
+
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based photo gallery                                    |
 // +-----------------------------------------------------------------------+
@@ -30,45 +31,48 @@ use Piwigo\inc\functions;
  */
 function eval_syntax($code)
 {
-  $code = str_replace(array('<?php', '?>'), '', $code);
-  if (function_exists('token_get_all'))
-  {
-    $b = 0;
-    foreach (token_get_all($code) as $token)
-    {
-      if ('{' == $token) ++$b;
-      else if ('}' == $token) --$b;
+    $code = str_replace(['<?php', '?>'], '', $code);
+    if (function_exists('token_get_all')) {
+        $b = 0;
+        foreach (token_get_all($code) as $token) {
+            if ($token == '{') {
+                ++$b;
+            } elseif ($token == '}') {
+                --$b;
+            }
+        }
+        if ($b) {
+            return false;
+        }
+
+        ob_start();
+        $eval = eval('if(0){' . $code . '}');
+        ob_end_clean();
+        if ($eval === false) {
+            return false;
+        }
+
     }
-    if ($b) return false;
-    else
-    {
-      ob_start();
-      $eval = eval('if(0){' . $code . '}');
-      ob_end_clean();
-      if ($eval === false) return false;
-    }
-  }
-  return '<?php' . $code . '?>';
+    return '<?php' . $code . '?>';
 }
 
 /**
  * returns true or false if $str is bool
-  * returns $str if $str is integer
+ * returns $str if $str is integer
  * else "$str"
  *
  * @param string $value
  */
 function editarea_quote($value)
 {
-  switch (gettype($value))
-  {
-    case "boolean":
-      return $value ? 'true' : 'false';
-    case "integer":
-      return $value;
-    default:
-      return '"'.$value.'"';
-  }
+    switch (gettype($value)) {
+        case 'boolean':
+            return $value ? 'true' : 'false';
+        case 'integer':
+            return $value;
+        default:
+            return '"' . $value . '"';
+    }
 }
 
 /**
@@ -77,14 +81,12 @@ function editarea_quote($value)
  */
 function get_bak_file($file)
 {
-  if (functions::get_extension($file) == 'php')
-  {
-    return substr_replace($file, '.bak', strrpos($file , '.'), 0);
-  }
-  else
-  {
+    if (functions::get_extension($file) == 'php') {
+        return substr_replace($file, '.bak', strrpos($file, '.'), 0);
+    }
+
     return $file . '.bak';
-  }
+
 }
 
 /**
@@ -92,24 +94,19 @@ function get_bak_file($file)
  * @param string $path
  * @return array
  */
-function get_rec_dirs($path='')
+function get_rec_dirs($path = '')
 {
-  $options = array();
-  if (is_dir($path))
-  {
-    $fh = opendir($path);
-    while ($file = readdir($fh))
-    {
-      $pathfile = $path . '/' . $file;
-      if ($file != '.' and $file != '..' and $file != '.svn' and is_dir($pathfile))
-      {
-        $options[$pathfile] = str_replace(array('./', '/'), array('', ' / '), $pathfile);
-        $options = array_merge($options, get_rec_dirs($pathfile));
-      }
+    $options = [];
+    if (is_dir($path)) {
+        $fh = opendir($path);
+        while ($file = readdir($fh)) {
+            $pathfile = $path . '/' . $file;
+            if ($file != '.' and $file != '..' and $file != '.svn' and is_dir($pathfile)) {
+                $options[$pathfile] = str_replace(['./', '/'], ['', ' / '], $pathfile);
+                $options = array_merge($options, get_rec_dirs($pathfile));
+            }
+        }
+        closedir($fh);
     }
-    closedir($fh);
-  }
-  return $options;
+    return $options;
 }
-
-?>

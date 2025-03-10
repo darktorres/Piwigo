@@ -1,4 +1,5 @@
 <?php
+
 // +-----------------------------------------------------------------------+
 // | This file is part of Piwigo.                                          |
 // |                                                                       |
@@ -15,23 +16,26 @@ namespace Piwigo\inc;
  */
 class PwgNamedArray
 {
-  /*private*/ var $_content;
-  /*private*/ var $_itemName;
-  /*private*/ var $_xmlAttributes;
+    /*private*/
+    public $_content;
 
-  /**
-   * Constructs a named array
-   * @param array $arr (keys must be consecutive integers starting at 0)
-   * @param string $itemName xml element name for values of arr (e.g. image)
-   * @param array $xmlAttributes of sub-item attributes that will be encoded as
-   *      xml attributes instead of xml child elements
-   */
-  function __construct($arr, $itemName, $xmlAttributes=array() )
-  {
-    $this->_content = $arr;
-    $this->_itemName = $itemName;
-    $this->_xmlAttributes = array_flip($xmlAttributes);
-  }
+    /*private*/
+    public $_itemName;
+
+    /*private*/
+    public $_xmlAttributes;
+
+    /**
+     * Constructs a named array
+     * @param array $arr (keys must be consecutive integers starting at 0)
+     * @param string $itemName xml element name for values of arr (e.g. image)
+     * @param array $xmlAttributes of sub-item attributes that will be encoded as
+     *      xml attributes instead of xml child elements
+     */
+    public function __construct($arr, $itemName, $xmlAttributes = [])
+    {
+        $this->_content = $arr;
+        $this->_itemName = $itemName;
+        $this->_xmlAttributes = array_flip($xmlAttributes);
+    }
 }
-
-?>
