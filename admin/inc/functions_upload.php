@@ -494,7 +494,7 @@ class functions_upload
             return $representative_ext;
         }
 
-        if (! in_array(strtolower(functions::get_extension($file_path)), ['pdf'])) {
+        if (strtolower(functions::get_extension($file_path)) != 'pdf') {
             return $representative_ext;
         }
 
@@ -537,7 +537,7 @@ class functions_upload
             return $representative_ext;
         }
 
-        if (! in_array(strtolower(functions::get_extension($file_path)), ['heic'])) {
+        if (strtolower(functions::get_extension($file_path)) != 'heic') {
             return $representative_ext;
         }
 
@@ -699,7 +699,7 @@ class functions_upload
             return $representative_ext;
         }
 
-        if (! in_array(strtolower(functions::get_extension($file_path)), ['psd'])) {
+        if (strtolower(functions::get_extension($file_path)) != 'psd') {
             return $representative_ext;
         }
 
@@ -755,7 +755,7 @@ class functions_upload
             return $representative_ext;
         }
 
-        if (! in_array(strtolower(functions::get_extension($file_path)), ['eps'])) {
+        if (strtolower(functions::get_extension($file_path)) != 'eps') {
             return $representative_ext;
         }
 
